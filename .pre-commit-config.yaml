@@ -9,21 +9,6 @@
     hooks:
     -   id: check-merge-conflict
     -   id: check-symlinks
-    -   id: detect-private-key
-        files: (?!.*paddle)^.*$
     -   id: end-of-file-fixer
-        files: \.md$
     -   id: trailing-whitespace
-        files: \.md$
-
--   repo: https://github.com/Lucas-C/pre-commit-hooks
-    sha: v1.0.1
-    hooks:
-    -   id: forbid-crlf
-        files: \.md$
-    -   id: remove-crlf
-        files: \.md$
-    -   id: forbid-tabs
-        files: \.md$
-    -   id: remove-tabs
-        files: \.md$
+    -   id: check-added-large-files
