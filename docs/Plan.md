@@ -1,14 +1,20 @@
-# 初步计划
+# 一期规划
 
-支持类似TB中summary ops等可视化
+支持类似TB中summary ops 以及 computation graphs 
 
 - summary ops
   - scalar
   - histogram
-  - graph
   - image
   - audio
   - text
+- computation graphs
+
+
+# TODO List
+支持 embedding 
+
+
 
 # 参考文献
 
