@@ -1,0 +1,14 @@
+-   repo: https://github.com/pre-commit/mirrors-yapf.git
+    sha: v0.16.0
+    hooks:
+    -   id: yapf
+        files: \.py$
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    sha: a11d9314b22d8f8c7556443875b731ef05965464
+    hooks:
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-added-large-files
