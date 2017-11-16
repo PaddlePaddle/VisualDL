@@ -6,7 +6,7 @@ from optparse import OptionParser
 from flask import Flask
 from flask import request
 
-from visual_dl.log import logger
+from visualdl.log import logger
 
 app = Flask(__name__)
 
@@ -51,18 +51,6 @@ def index():
     :return:
     """
     result = gen_result(0, "Hello, this is VisualDL!")
-    return json.dumps(result)
-
-
-@app.route('/v1/scalar/start')
-def start_board():
-    """
-
-    :return:
-    """
-    app_id = request.args.get('app_id')
-    summary_dir = request.args.get('summary_dir')
-    result = gen_result(status=1, msg="please set app_id and summary_dir")
     return json.dumps(result)
 
 
