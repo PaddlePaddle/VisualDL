@@ -41,9 +41,7 @@ storage::Tablet *InformationMaintainer::AddTablet(const std::string &tag,
 }
 
 void InformationMaintainer::AddRecord(const std::string &tag,
-                                      storage::Tablet::Type type,
-                                      const std::string &data,
-                                      storage::DataType dtype) {
+                                      const storage::Record &data) {
   auto *tablet = storage_.Find(tag);
   CHECK(tablet);
 
@@ -60,8 +58,7 @@ void InformationMaintainer::AddRecord(const std::string &tag,
     record = storage_.GetRecord(tag, offset);
   }
 
-  record->set_dtype(dtype);
-  record->ParseFromString(data);
+  *record = data;
 
   tablet->set_num_records(num_records + 1);
 }
