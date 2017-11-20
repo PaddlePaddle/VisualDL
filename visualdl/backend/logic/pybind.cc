@@ -35,6 +35,7 @@ PYBIND11_MODULE(core, m) {
   py::class_<vs::StorageHelper>(m, "Storage")
       .def("timestamp", &vs::StorageHelper::timestamp)
       .def("dir", &vs::StorageHelper::dir)
+      .def("set_dir", &vs::StorageHelper::SetDir)
       .def("tablets_size", &vs::StorageHelper::tablets_size)
       .def("buffer", &vs::StorageHelper::buffer)
       .def("human_readable_buffer", &vs::StorageHelper::human_readable_buffer)
