@@ -20,8 +20,7 @@ TEST_F(ImTester, AddRecord) {
     for (int j = 0; j < 10; j++) {
       rcd.mutable_data()->add_i32s(i * 20 + j);
     }
-    im.AddRecord("tag0", storage::Tablet::Type::Tablet_Type_kGraph,
-                 rcd.SerializeAsString());
+    im.AddRecord("tag0", rcd);
   }
 
   ASSERT_EQ(im.storage().Find("tag0")->records_size(), 20UL);

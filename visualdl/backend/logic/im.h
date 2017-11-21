@@ -30,14 +30,12 @@ public:
   /*
    * @tag: tag of the target Tablet.
    * @type: type of target Tablet.
-   * @data: serialized protobuf message.
+   * @data: storage Record.
    *
    * NOTE pass in the serialized protobuf message will trigger copying, but
    * simpler to support different Tablet data formats.
    */
-  void AddRecord(const std::string &tag, storage::Tablet::Type type,
-                 const std::string &data,
-                 storage::DataType dtype = storage::DataType::kUnknown);
+  void AddRecord(const std::string &tag, const storage::Record &record);
 
   /*
    * Save the Storage Protobuf to disk.
