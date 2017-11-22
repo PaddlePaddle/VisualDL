@@ -1,0 +1,58 @@
+<template>
+    <div id="app">
+        <san-appbar title="VisualDL">
+                <div class="user-info app-follow-list" slot="right"></div>
+        </san-appbar>
+        <div id="content-container" class="content-container">
+            <div id="app-content" class="app-content">
+                <div id="content"></div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="ftext"><a href="https://github.com/VisualDL/VisualDL" target="_blank" class="bluetext">GitHub</a></div>
+            <div class="ftext ftext3">VisualDL © MIT</div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Appbar from 'san-mui/AppBar';
+import {resizeContentHeight} from './common/fun/adjustConentHeight';
+
+
+export default {
+    components: {
+        'san-appbar': Appbar
+    },
+    initData() {
+        return {};
+    },
+    attached() {
+        resizeContentHeight();
+    }
+};
+
+</script>
+
+<style lang="stylus">
+.footer
+    float: left;
+    position:relative;
+    width: 100%
+    background: #fff
+    padding-top: 0
+    margin-top: -2px
+    background #fff
+    border solid 1px #e4e4e4
+    .ftext
+        width: 30%
+        float: left
+        text-align: center
+        padding: 30px 0
+        font-size: 14px
+    .ftext3
+        margin-left: 5%
+    .bluetext
+        text-decoration: none
+        color: #398bfb
+</style>
