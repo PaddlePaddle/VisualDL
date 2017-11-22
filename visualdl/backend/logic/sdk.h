@@ -114,7 +114,7 @@ public:
 namespace components {
 
 /*
- * Read and write support for a Scalar component.
+ * Read and write support for Scalar component.
  */
 template <typename T>
 class ScalarHelper {
