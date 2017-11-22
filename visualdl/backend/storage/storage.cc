@@ -1,5 +1,5 @@
-#include <fstream>
 #include <glog/logging.h>
+#include <fstream>
 
 #include "visualdl/backend/storage/storage.h"
 
@@ -24,15 +24,15 @@ storage::Record *Storage::NewRecord(const std::string &tag) {
   CHECK(tablet) << "Tablet" << tag << " should be create first";
   auto *record = tablet->mutable_records()->Add();
   // increase num_records
-  int num_records = tablet->num_records();
-  tablet->set_num_records(num_records + 1);
+  int num_records = tablet->total_records();
+  tablet->set_total_records(num_records + 1);
   return record;
 }
 storage::Record *Storage::GetRecord(const std::string &tag, int offset) {
   auto *tablet = Find(tag);
   CHECK(tablet) << "Tablet" << tag << " should be create first";
 
-  auto num_records = tablet->num_records();
+  auto num_records = tablet->total_records();
   CHECK_LT(offset, num_records) << "invalid offset";
   return tablet->mutable_records()->Mutable(offset);
 }
@@ -60,4 +60,4 @@ void Storage::DeSerialize(const std::string &data) {
   proto_.ParseFromString(data);
 }
 
-} // namespace visualdl
+}  // namespace visualdl
