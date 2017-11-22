@@ -1,9 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
-const rider = require('rider');
 const projectPath = path.resolve(__dirname, '..');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const argv = require('yargs').argv;
 const isDev = process.env.NODE_ENV === 'dev';
 const entry = require('./entry');
@@ -48,7 +46,6 @@ const config = {
 
         alias: {
             'san-mui': 'san-mui/lib',
-            moment: 'moment/min/moment-with-locales.min.js',
             axios: 'axios/dist/axios.min.js'
         },
 
@@ -57,7 +54,6 @@ const config = {
 
     module: {
         noParse: [
-            /moment-with-locales/,
             /node_modules\/(san|axios)\//
         ],
         rules: [
@@ -126,21 +122,12 @@ const config = {
 
         new CaseSensitivePathsPlugin(),
         new webpack.LoaderOptionsPlugin({
-            test: /\.(styl|san)$/,
-            stylus: {
-                default: {
-                    use: [rider()]
-                }
-            }
+            test: /\.(styl|san)$/
         })
     ]
 };
 
 // template config
 config.plugins = config.plugins.concat(ENTR_CONFIG.template);
-// analyzer
-if (argv.analyzer) {
-    config.plugins.push(new BundleAnalyzerPlugin());
-}
 
 module.exports = config;
