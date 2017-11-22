@@ -16,6 +16,8 @@ enum DataType {
     kStrings = 9;
     kInt32s = 10;
     kBools = 11;
+
+    kUnknown = 12;
 }
 
 // A data array, which type is `type`.
