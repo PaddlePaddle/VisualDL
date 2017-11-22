@@ -3,6 +3,11 @@ const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 let merge = require('webpack-merge');
 let baseWebpackConfig = require('./webpack.config');
 
+// add hot-reload related code to entry chunks
+Object.keys(baseWebpackConfig.entry).forEach(function (name) {
+    baseWebpackConfig.entry[name] = ['./tool/dev-client'].concat(baseWebpackConfig.entry[name]);
+});
+
 /**
  * dev config
  *
