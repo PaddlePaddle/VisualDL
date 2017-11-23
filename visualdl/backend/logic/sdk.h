@@ -133,6 +133,8 @@ public:
 
   std::vector<std::string> GetCaptions() const;
 
+  size_t GetSize() const { return data_->records_size(); }
+
 private:
   storage::Tablet *data_;
 };
