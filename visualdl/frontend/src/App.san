@@ -1,0 +1,57 @@
+<template>
+    <div id="app">
+        <san-appbar title="VisualDL">
+                <div class="visual-dl-user-info visual-dl-app-follow-list" slot="right"></div>
+        </san-appbar>
+        <div id="content-container" class="visual-dl-content-container">
+            <div id="app-content" class="visual-dl-app-content">
+                <div id="visual-dl-content"></div>
+            </div>
+        </div>
+        <div class="visual-dl-footer">
+            <div class="visual-dl-ftext"><a href="https://github.com/VisualDL/VisualDL" target="_blank" class="visual-dl-bluetext">GitHub</a></div>
+            <div class="visual-dl-ftext visual-dl-ftext3">VisualDL © MIT</div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Appbar from 'san-mui/AppBar';
+
+export default {
+    components: {
+        'san-appbar': Appbar
+    },
+    initData() {
+        return {};
+    }
+};
+
+</script>
+
+<style lang="stylus">
+
+@import './style/variables';
+
++prefix-classes(prefix)
+    .footer
+        float: left;
+        position:relative;
+        width: 100%
+        background: #fff
+        padding-top: 0
+        margin-top: -2px
+        background #fff
+        border solid 1px #e4e4e4
+        .ftext
+            width: 30%
+            float: left
+            text-align: center
+            padding: 30px 0
+            font-size: 14px
+        .ftext3
+            margin-left: 5%
+        .bluetext
+            text-decoration: none
+            color: #398bfb
+</style>

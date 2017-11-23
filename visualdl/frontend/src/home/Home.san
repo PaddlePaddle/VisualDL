@@ -1,0 +1,18 @@
+<template>
+
+<article>
+    <h1>
+        welcome
+    </h1>
+
+</article>
+
+</template>
+
+
+<script>
+    export default {
+
+    };
+
+</script>
