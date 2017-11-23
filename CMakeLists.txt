@@ -16,7 +16,6 @@ link_directories(${PROJECT_SOURCE_DIR}/thirdparty/local/lib)
 add_library(storage
         ${PROJECT_SOURCE_DIR}/visualdl/backend/storage/storage.cc
         ${PROJECT_SOURCE_DIR}/visualdl/backend/storage/storage.pb.cc)
-add_library(c_api ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/c_api.cc)
 add_library(sdk ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/sdk.cc)
 add_library(im ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/im.cc)
 
@@ -29,4 +28,3 @@ add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/backend/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/im_test.cc)
 target_link_libraries(vl_test storage im gtest glog protobuf gflags)
-

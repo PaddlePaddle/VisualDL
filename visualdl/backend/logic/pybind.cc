@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "visualdl/backend/logic/sdk.h"
 
@@ -10,19 +11,6 @@ PYBIND11_MODULE(core, m) {
   m.doc() = "visualdl python core API";
 
   py::class_<vs::TabletHelper>(m, "Tablet")
-      // interfaces for components
-      .def("add_scalar_int32",
-           &vs::TabletHelper::AddScalarRecord<int32_t>,
-           "add a scalar int32 record",
-           pybind11::arg("id"),
-           pybind11::arg("value"))
-      .def("add_scalar_int64",
-           &vs::TabletHelper::AddScalarRecord<int64_t>,
-           "add a scalar int64 record",
-           pybind11::arg("id"),
-           pybind11::arg("value"))
-      .def("add_scalar_float", &vs::TabletHelper::AddScalarRecord<float>)
-      .def("add_scalar_double", &vs::TabletHelper::AddScalarRecord<double>)
       // other member setter and getter
       .def("record_buffer", &vs::TabletHelper::record_buffer)
       .def("records_size", &vs::TabletHelper::records_size)
@@ -30,7 +18,23 @@ PYBIND11_MODULE(core, m) {
       .def("human_readable_buffer", &vs::TabletHelper::human_readable_buffer)
       .def("set_buffer",
            (void (vs::TabletHelper::*)(const std::string&)) &
-               vs::TabletHelper::SetBuffer);
+               vs::TabletHelper::SetBuffer)
+      // scalar interface
+      .def("as_int32_scalar",
+           [](const vs::TabletHelper& self) {
+             return vs::components::ScalarHelper<int32_t>(&self.data());
+           })
+      .def("as_int64_scalar",
+           [](const vs::TabletHelper& self) {
+             return vs::components::ScalarHelper<int64_t>(&self.data());
+           })
+      .def("as_float_scalar",
+           [](const vs::TabletHelper& self) {
+             return vs::components::ScalarHelper<float>(&self.data());
+           })
+      .def("as_double_scalar", [](const vs::TabletHelper& self) {
+        return vs::components::ScalarHelper<double>(&self.data());
+      });
 
   py::class_<vs::StorageHelper>(m, "Storage")
       .def("timestamp", &vs::StorageHelper::timestamp)
@@ -46,7 +50,24 @@ PYBIND11_MODULE(core, m) {
   py::class_<vs::ImHelper>(m, "Im")
       .def("storage", &vs::ImHelper::storage)
       .def("tablet", &vs::ImHelper::tablet)
-      .def("add_tablet", &vs::ImHelper::AddTablet);
+      .def("add_tablet", &vs::ImHelper::AddTablet)
+      .def("persist_to_disk", &vs::ImHelper::PersistToDisk)
+      .def("clear_tablets", &vs::ImHelper::ClearTablets);
 
   m.def("im", &vs::get_im, "global information-maintainer object.");
+
+// interfaces for components
+#define ADD_SCALAR_TYPED_INTERFACE(T, name__)                             \
+  py::class_<vs::components::ScalarHelper<T>>(m, #name__)                 \
+      .def("add_record", &vs::components::ScalarHelper<T>::AddRecord)     \
+      .def("set_captions", &vs::components::ScalarHelper<T>::SetCaptions) \
+      .def("get_records", &vs::components::ScalarHelper<T>::GetRecords)   \
+      .def("get_captions", &vs::components::ScalarHelper<T>::GetCaptions) \
+      .def("get_ids", &vs::components::ScalarHelper<T>::GetIds)           \
+      .def("get_timestamps", &vs::components::ScalarHelper<T>::GetTimestamps);
+  ADD_SCALAR_TYPED_INTERFACE(int32_t, ScalarInt32);
+  ADD_SCALAR_TYPED_INTERFACE(int64_t, ScalarInt64);
+  ADD_SCALAR_TYPED_INTERFACE(float, ScalarFloat);
+  ADD_SCALAR_TYPED_INTERFACE(double, ScalarDouble);
+#undef ADD_SCALAR_TYPED_INTERFACE
 }
