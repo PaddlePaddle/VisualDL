@@ -69,6 +69,7 @@ namespace components {
 
 template <typename T>
 void ScalarHelper<T>::SetCaptions(const std::vector<std::string> &captions) {
+  CHECK_EQ(data_->captions_size(), 0UL) << "the captions can set only once";
   for (int i = 0; i < captions.size(); i++) {
     data_->add_captions(captions[i]);
   }
