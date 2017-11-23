@@ -13,7 +13,7 @@ let spinner = ora('building for production...');
 spinner.start();
 
 let feRoots = {
-    'index': '/dist/'
+    'index': './'
 };
 
 webpackConfig.plugins = webpackConfig.plugins.concat([
