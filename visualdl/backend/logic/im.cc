@@ -1,5 +1,5 @@
-#include <ctime>
 #include <glog/logging.h>
+#include <ctime>
 
 #include "visualdl/backend/logic/im.h"
 
@@ -45,11 +45,17 @@ void InformationMaintainer::AddRecord(const std::string &tag,
   auto *tablet = storage_.Find(tag);
   CHECK(tablet);
 
-  auto num_records = tablet->num_records();
+  auto num_records = tablet->total_records();
   const auto num_samples = tablet->num_samples();
-  const auto offset = ReserviorSample(num_samples, num_records + 1);
-  if (offset < 0)
-    return;
+
+  int offset;
+  // use reservoir sampling or not
+  if (num_samples > 0) {
+    offset = ReserviorSample(num_samples, num_records + 1);
+    if (offset < 0) return;
+  } else {
+    offset = num_records;
+  }
 
   storage::Record *record;
   if (offset >= num_records) {
@@ -59,13 +65,21 @@ void InformationMaintainer::AddRecord(const std::string &tag,
   }
 
   *record = data;
+  tablet->set_total_records(num_records + 1);
+}
 
-  tablet->set_num_records(num_records + 1);
+void InformationMaintainer::Clear() {
+  auto *data = storage().mutable_data();
+  data->clear_tablets();
+  data->clear_dir();
+  data->clear_timestamp();
 }
 
 void InformationMaintainer::PersistToDisk() {
   CHECK(!storage_.data().dir().empty()) << "path of storage should be set";
-  storage_.Save(storage_.data().dir());
+  // TODO make dir first
+  // MakeDir(storage_.data().dir());
+  storage_.Save(storage_.data().dir() + "/storage.pb");
 }
 
-} // namespace visualdl
+}  // namespace visualdl

@@ -29,13 +29,17 @@ public:
 
   /*
    * @tag: tag of the target Tablet.
-   * @type: type of target Tablet.
-   * @data: storage Record.
+   * @record: a record
    *
    * NOTE pass in the serialized protobuf message will trigger copying, but
    * simpler to support different Tablet data formats.
    */
   void AddRecord(const std::string &tag, const storage::Record &record);
+
+  /*
+   * delete all the information.
+   */
+  void Clear();
 
   /*
    * Save the Storage Protobuf to disk.
