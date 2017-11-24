@@ -26,5 +26,6 @@ set_target_properties(core PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/backend/test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/backend/storage/storage_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/im_test.cc)
-target_link_libraries(vl_test storage im gtest glog protobuf gflags)
+target_link_libraries(vl_test storage im gtest glog protobuf gflags pthread)

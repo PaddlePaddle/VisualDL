@@ -98,7 +98,7 @@ public:
         InformationMaintainer::Global().storage().mutable_data());
   }
   TabletHelper tablet(const std::string &tag) {
-    return TabletHelper(InformationMaintainer::Global().storage().Find(tag));
+    return TabletHelper(InformationMaintainer::Global().storage().tablet(tag));
   }
   TabletHelper AddTablet(const std::string &tag, int num_samples) {
     return TabletHelper(
