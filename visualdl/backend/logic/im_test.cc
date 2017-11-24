@@ -18,7 +18,7 @@ TEST_F(ImTester, AddRecord) {
   rcd.set_dtype(storage::DataType::kInt32s);
   for (int i = 0; i < 100; i++) {
     for (int j = 0; j < 10; j++) {
-      rcd.mutable_data()->add_i32s(i * 20 + j);
+      rcd.add_data()->add_i32s(i * 20 + j);
     }
     im.AddRecord("tag0", rcd);
   }

@@ -7,8 +7,9 @@
 namespace py = pybind11;
 namespace vs = visualdl;
 
-PYBIND11_MODULE(core, m) {
-  m.doc() = "visualdl python core API";
+PYBIND11_PLUGIN(core) {
+  py::module m("core", "C++ core of VisualDL");
+  //  m.doc() = "visualdl python core API";
 
   py::class_<vs::TabletHelper>(m, "Tablet")
       // other member setter and getter
