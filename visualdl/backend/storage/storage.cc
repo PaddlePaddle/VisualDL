@@ -2,8 +2,60 @@
 #include <fstream>
 
 #include "visualdl/backend/storage/storage.h"
+#include "visualdl/backend/utils/filesystem.h"
 
 namespace visualdl {
+
+std::string GenPathFromTag(const std::string &dir, const std::string &tag) {
+  return dir + "/" + tag;
+}
+
+const std::string StorageBase::meta_file_name = "storage.meta";
+
+storage::Tablet *MemoryStorage::NewTablet(const std::string &tag,
+                                          int num_samples) {
+  auto it = tablets_.find(tag);
+  if (it == tablets_.end()) {
+    // create new tablet
+    tablets_[tag] = storage::Tablet();
+    *storage_.add_tags() = tag;
+  } else {
+    return &it->second;
+  }
+  return &tablets_[tag];
+}
+
+storage::Tablet *MemoryStorage::tablet(const std::string &tag) {
+  auto it = tablets_.find(tag);
+  CHECK(it != tablets_.end()) << "tablet tagged as " << tag << " not exists";
+  return &it->second;
+}
+
+void MemoryStorage::PersistToDisk() const {
+  // write storage out
+  const auto meta_path = storage_.dir() + "/" + meta_file_name;
+  fs::Write(meta_path, storage_.SerializeAsString());
+  // write all the tablets
+  for (auto tag : storage_.tags()) {
+    auto path = GenPathFromTag(storage_.dir(), tag);
+    auto it = tablets_.find(tag);
+    CHECK(it != tablets_.end());
+    fs::Write(path, it->second.SerializeAsString());
+  }
+}
+
+void MemoryStorage::LoadFromDisk(const std::string &dir) {
+  // load storage
+  const auto meta_path = storage_.dir() + "/" + meta_file_name;
+  storage_.ParseFromString(fs::Read(meta_path));
+
+  // load all the tablets
+  for (auto tag : storage_.tags()) {
+    auto path = GenPathFromTag(storage_.dir(), tag);
+    tablets_[tag];
+    tablets_[tag].ParseFromString(fs::Read(path));
+  }
+}
 
 storage::Tablet *Storage::Add(const std::string &tag, int num_samples) {
   auto *tablet = &(*proto_.mutable_tablets())[tag];
