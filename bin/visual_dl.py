@@ -52,7 +52,6 @@ static_file_path = "../visualdl/frontend/dist/"
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
-    print("aaa")
     return send_from_directory(os.path.join(server_path, static_file_path), filename)
 
 
