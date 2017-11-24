@@ -46,11 +46,7 @@ class TabletTester(unittest.TestCase):
         scalar = self.tablet.as_float_scalar()
         py_captions = ["train", "test"]
         step_ids = [10, 20, 30]
-        py_records = [
-            [0.1, 0.2],
-            [0.2, 0.3],
-            [0.3, 0.4]
-        ]
+        py_records = [[0.1, 0.2], [0.2, 0.3], [0.3, 0.4]]
 
         scalar.set_captions(py_captions)
         for i in range(len(py_records)):
