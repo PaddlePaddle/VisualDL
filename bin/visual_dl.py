@@ -2,14 +2,13 @@
 """
 import json
 import os
+import sys
 from optparse import OptionParser
+
+from flask import Flask, redirect
 from flask import send_from_directory
 
-from flask import Flask
-from flask import request
-
 from visualdl.log import logger
-
 
 app = Flask(__name__, static_url_path="")
 
@@ -46,21 +45,24 @@ def gen_result(status, msg):
     result['data'] = {}
     return result
 
-@app.route('/')
-def root():
-    return app.send_static_file('index.html')
 
-@app.route('/js/<path:filename>')
+server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+static_file_path = "../visualdl/frontend/dist/"
+
+
+@app.route('/static/<path:filename>')
 def serve_static(filename):
-    root_dir = os.path.dirname(os.getcwd())
-    return send_from_directory(os.path.join('.', 'dist'), filename)
+    print("aaa")
+    return send_from_directory(os.path.join(server_path, static_file_path), filename)
+
+
+@app.route("/")
+def index():
+    return redirect('/static/index.html', code=302)
+
 
 @app.route('/hello')
-def index():
-    """
-
-    :return:
-    """
+def hello():
     result = gen_result(0, "Hello, this is VisualDL!")
     return json.dumps(result)
 
