@@ -1,8 +1,8 @@
 #ifndef VISUALDL_STORAGE_H
 #define VISUALDL_STORAGE_H
 
-#include <string>
 #include <time.h>
+#include <string>
 
 #include "visualdl/backend/storage/storage.pb.h"
 
@@ -66,6 +66,6 @@ private:
   storage::Storage proto_;
 };
 
-} // namespace visualdl
+}  // namespace visualdl
 
-#endif // VISUALDL_STORAGE_H
+#endif  // VISUALDL_STORAGE_H

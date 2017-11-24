@@ -159,7 +159,7 @@ histogram 需要得到tensor的分布，因此会把完整的tensor 的数值存
 ]
 ```
 
-## graph 
+## graph
 graph 会复杂一些，可能无法借用上述类型
 
 ```javascript

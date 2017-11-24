@@ -26,4 +26,4 @@ TEST_F(ImTester, AddRecord) {
   ASSERT_EQ(im.storage().Find("tag0")->records_size(), 20UL);
 }
 
-} // namespace visualdl
+}  // namespace visualdl

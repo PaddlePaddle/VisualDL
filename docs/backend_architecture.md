@@ -48,4 +48,3 @@ IM 与 Server 的关系是
 ### Protobuf API
 - 决定了底层的数据格式，protobuf 提供了序列化的公共界面
 - SDK通过Protobuf API操作底层数据
-
