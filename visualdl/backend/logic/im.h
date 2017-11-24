@@ -1,6 +1,8 @@
 #ifndef VISUALDL_BACKEND_LOGIC_IM_H
 #define VISUALDL_BACKEND_LOGIC_IM_H
 
+#include <glog/logging.h>
+#include <memory>
 #include <string>
 
 #include "visualdl/backend/storage/storage.h"
@@ -13,7 +15,15 @@ namespace visualdl {
  */
 class InformationMaintainer final {
 public:
-  InformationMaintainer() {}
+  InformationMaintainer(StorageBase::Type type = StorageBase::Type::kMemory) {
+    switch (type) {
+      case StorageBase::Type::kMemory:
+        storage_.reset(new MemoryStorage);
+        break;
+      default:
+        CHECK(false) << "Unsupported storage kind " << type;
+    }
+  }
 
   static InformationMaintainer &Global() {
     static InformationMaintainer *x = new InformationMaintainer();
@@ -46,12 +56,12 @@ public:
    */
   void PersistToDisk();
 
-  Storage &storage() { return storage_; }
+  StorageBase &storage() { return *storage_; }
 
 private:
-  Storage storage_;
+  std::unique_ptr<StorageBase> storage_;
 };
 
-} // namespace visualdl
+}  // namespace visualdl
 
-#endif // VISUALDL_BACKEND_LOGIC_IM_H
+#endif  // VISUALDL_BACKEND_LOGIC_IM_H
