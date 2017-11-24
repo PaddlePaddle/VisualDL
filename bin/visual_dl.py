@@ -1,14 +1,17 @@
 """ entry point of visual_dl
 """
 import json
+import os
 from optparse import OptionParser
+from flask import send_from_directory
 
 from flask import Flask
 from flask import request
 
 from visualdl.log import logger
 
-app = Flask(__name__)
+
+app = Flask(__name__, static_url_path="")
 
 
 def option_parser():
@@ -43,8 +46,16 @@ def gen_result(status, msg):
     result['data'] = {}
     return result
 
-
 @app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
+@app.route('/js/<path:filename>')
+def serve_static(filename):
+    root_dir = os.path.dirname(os.getcwd())
+    return send_from_directory(os.path.join('.', 'dist'), filename)
+
+@app.route('/hello')
 def index():
     """
 
