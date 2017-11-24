@@ -52,6 +52,6 @@ private:
   Storage storage_;
 };
 
-} // namespace visualdl
+}  // namespace visualdl
 
-#endif // VISUALDL_BACKEND_LOGIC_IM_H
+#endif  // VISUALDL_BACKEND_LOGIC_IM_H

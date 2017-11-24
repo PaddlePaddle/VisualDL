@@ -6,4 +6,3 @@ new App({
         titleName: 'VisualDL'
     }
 }).attach(document.getElementById('root'));
-
