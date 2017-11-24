@@ -64,6 +64,7 @@ PYBIND11_MODULE(core, m) {
       .def("get_records", &vs::components::ScalarHelper<T>::GetRecords)   \
       .def("get_captions", &vs::components::ScalarHelper<T>::GetCaptions) \
       .def("get_ids", &vs::components::ScalarHelper<T>::GetIds)           \
+      .def("get_record_size", &vs::components::ScalarHelper<T>::GetSize)  \
       .def("get_timestamps", &vs::components::ScalarHelper<T>::GetTimestamps);
   ADD_SCALAR_TYPED_INTERFACE(int32_t, ScalarInt32);
   ADD_SCALAR_TYPED_INTERFACE(int64_t, ScalarInt64);
