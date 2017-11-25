@@ -130,7 +130,9 @@ The Storage stores all the records.
 */
 message Storage {
   // tags to Tablet, should be thread safe if fix the keys after initialization.
+  // TODO to delete in the new storage interface.
   map<string, Tablet> tablets = 1;
+  repeated string tags = 4;
   string dir = 2;
   int64 timestamp = 3;
 }

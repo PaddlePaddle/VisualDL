@@ -26,24 +26,21 @@ int ReserviorSample(int num_samples, int num_records) {
 }
 
 void InformationMaintainer::SetPersistDest(const std::string &path) {
-  CHECK(storage_.mutable_data()->dir().empty())
+  CHECK(storage_->mutable_data()->dir().empty())
       << "duplicate set storage's path";
-  storage_.mutable_data()->set_dir(path);
+  storage_->mutable_data()->set_dir(path);
 }
 
 storage::Tablet *InformationMaintainer::AddTablet(const std::string &tag,
                                                   int num_samples) {
-  auto *tablet = storage_.Find(tag);
-  if (!tablet) {
-    tablet = storage_.Add(tag, num_samples);
-  }
+  auto tablet = storage_->NewTablet(tag, num_samples);
   return tablet;
 }
 
 void InformationMaintainer::AddRecord(const std::string &tag,
                                       const storage::Record &data) {
-  auto *tablet = storage_.Find(tag);
-  CHECK(tablet);
+  auto *tablet = storage_->tablet(tag);
+  CHECK(tablet) << "no tablet called " << tag;
 
   auto num_records = tablet->total_records();
   const auto num_samples = tablet->num_samples();
@@ -59,9 +56,9 @@ void InformationMaintainer::AddRecord(const std::string &tag,
 
   storage::Record *record;
   if (offset >= num_records) {
-    record = storage_.NewRecord(tag);
+    record = tablet->add_records();
   } else {
-    record = storage_.GetRecord(tag, offset);
+    record = tablet->mutable_records(offset);
   }
 
   *record = data;
@@ -76,10 +73,10 @@ void InformationMaintainer::Clear() {
 }
 
 void InformationMaintainer::PersistToDisk() {
-  CHECK(!storage_.data().dir().empty()) << "path of storage should be set";
+  CHECK(!storage_->data().dir().empty()) << "path of storage should be set";
   // TODO make dir first
   // MakeDir(storage_.data().dir());
-  storage_.Save(storage_.data().dir() + "/storage.pb");
+  storage_->PersistToDisk();
 }
 
 }  // namespace visualdl
