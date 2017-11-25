@@ -2,62 +2,69 @@
 #include <fstream>
 
 #include "visualdl/backend/storage/storage.h"
+#include "visualdl/backend/utils/filesystem.h"
 
 namespace visualdl {
 
-storage::Tablet *Storage::Add(const std::string &tag, int num_samples) {
-  auto *tablet = &(*proto_.mutable_tablets())[tag];
-  tablet->set_num_samples(num_samples);
-  return tablet;
+std::string GenPathFromTag(const std::string &dir, const std::string &tag) {
+  return dir + "/" + tag;
 }
 
-storage::Tablet *Storage::Find(const std::string &tag) {
-  auto it = proto_.mutable_tablets()->find(tag);
-  if (it != proto_.tablets().end()) {
+const std::string StorageBase::meta_file_name = "storage.meta";
+
+storage::Tablet *MemoryStorage::NewTablet(const std::string &tag,
+                                          int num_samples) {
+  auto it = tablets_.find(tag);
+  if (it == tablets_.end()) {
+    // create new tablet
+    tablets_[tag] = storage::Tablet();
+    tablets_[tag].set_tag(tag);
+    *storage_.add_tags() = tag;
+  } else {
     return &it->second;
   }
-  return nullptr;
+  return &tablets_[tag];
 }
 
-storage::Record *Storage::NewRecord(const std::string &tag) {
-  auto *tablet = Find(tag);
-  CHECK(tablet) << "Tablet" << tag << " should be create first";
-  auto *record = tablet->mutable_records()->Add();
-  // increase num_records
-  int num_records = tablet->total_records();
-  tablet->set_total_records(num_records + 1);
-  return record;
-}
-storage::Record *Storage::GetRecord(const std::string &tag, int offset) {
-  auto *tablet = Find(tag);
-  CHECK(tablet) << "Tablet" << tag << " should be create first";
-
-  auto num_records = tablet->total_records();
-  CHECK_LT(offset, num_records) << "invalid offset";
-  return tablet->mutable_records()->Mutable(offset);
+storage::Tablet *MemoryStorage::tablet(const std::string &tag) {
+  auto it = tablets_.find(tag);
+  CHECK(it != tablets_.end()) << "tablet tagged as " << tag << " not exists";
+  return &it->second;
 }
 
-void Storage::Save(const std::string &path) const {
-  std::ofstream file(path, file.binary | file.out);
-  CHECK(file.is_open()) << "can't open path " << path;
-  auto str = Serialize();
-  file.write(str.c_str(), str.size());
+void MemoryStorage::PersistToDisk() const {
+  VLOG(3) << "persist storage to disk path " << storage_.dir();
+  // make a directory if not exist
+  fs::TryMkdir(storage_.dir());
+  // write storage out
+  CHECK(!storage_.dir().empty()) << "storage's dir should be set first";
+  const auto meta_path = storage_.dir() + "/" + meta_file_name;
+  fs::Write(meta_path, fs::Serialize(storage_));
+  // write all the tablets
+  for (auto tag : storage_.tags()) {
+    auto path = GenPathFromTag(storage_.dir(), tag);
+    auto it = tablets_.find(tag);
+    CHECK(it != tablets_.end());
+    fs::Write(path, fs::Serialize(it->second));
+  }
 }
 
-void Storage::Load(const std::string &path) {
-  std::ifstream file(path, file.binary);
-  CHECK(file.is_open()) << "can't open path " << path;
-  size_t size = file.tellg();
-  std::string buffer(size, ' ');
-  file.seekg(0);
-  file.read(&buffer[0], size);
-  DeSerialize(buffer);
-}
+void MemoryStorage::LoadFromDisk(const std::string &dir) {
+  VLOG(3) << "load storage from disk path " << dir;
+  CHECK(!dir.empty()) << "dir is empty";
+  // load storage
+  const auto meta_path = dir + "/" + meta_file_name;
+  auto buf = fs::Read(meta_path);
+  CHECK(fs::DeSerialize(&storage_, buf))
+      << "failed to parse protobuf loaded from " << meta_path;
 
-std::string Storage::Serialize() const { return proto_.SerializeAsString(); }
-
-void Storage::DeSerialize(const std::string &data) {
-  proto_.ParseFromString(data);
+  // load all the tablets
+  for (int i = 0; i < storage_.tags_size(); i++) {
+    std::string tag = storage_.tags(i);
+    auto path = GenPathFromTag(storage_.dir(), tag);
+    CHECK(tablets_[tag].ParseFromString(fs::Read(path)))
+        << "failed to parse protobuf text loaded from " << path;
+  }
 }
 
 }  // namespace visualdl
