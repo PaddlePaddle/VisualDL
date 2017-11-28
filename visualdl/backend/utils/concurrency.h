@@ -1,6 +1,7 @@
 #ifndef VISUALDL_BACKEND_UTILS_CONCURRENCY_H
 #define VISUALDL_BACKEND_UTILS_CONCURRENCY_H
 
+#include <glog/logging.h>
 #include <chrono>
 #include <memory>
 #include <thread>
@@ -14,10 +15,9 @@ namespace cc {
  * Each evoke will start a thread to do this asynchronously.
  */
 struct PeriodExector {
-  using task_t = std::function<void()>;
-  using duration_t = std::chrono::milliseconds;
+  using task_t = std::function<bool()>;
 
-  PeriodExector& Global() {
+  static PeriodExector& Global() {
     static PeriodExector exec;
     return exec;
   }
@@ -27,11 +27,11 @@ struct PeriodExector {
     quit = true;
   }
 
-  void operator()(task_t&& task, duration_t duration) {
-    auto task_wrapper = [&, task] {
+  void operator()(task_t&& task, int msec) {
+    auto task_wrapper = [=] {
       while (!quit) {
-        task();
-        std::this_thread::sleep_for(duration);
+        if (!task()) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(msec));
       }
     };
     threads_.emplace_back(std::thread(std::move(task_wrapper)));
