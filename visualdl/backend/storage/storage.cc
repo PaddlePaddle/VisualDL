@@ -6,11 +6,16 @@
 
 namespace visualdl {
 
-std::string GenPathFromTag(const std::string &dir, const std::string &tag) {
-  return dir + "/" + tag;
-}
-
 const std::string StorageBase::meta_file_name = "storage.meta";
+
+std::string StorageBase::meta_path() const {
+  CHECK(!storage_.dir().empty()) << "storage.dir should be set first";
+  return storage_.dir() + "/" + meta_file_name;
+}
+std::string StorageBase::tablet_path(const std::string &tag) const {
+  CHECK(!storage_.dir().empty()) << "storage.dir should be set first";
+  return storage_.dir() + "/" + tag;
+}
 
 storage::Tablet *MemoryStorage::NewTablet(const std::string &tag,
                                           int num_samples) {
@@ -32,38 +37,38 @@ storage::Tablet *MemoryStorage::tablet(const std::string &tag) {
   return &it->second;
 }
 
+// TODO add some checksum to avoid unnecessary saving
 void MemoryStorage::PersistToDisk() const {
+  LOG(INFO) << "inside dir " << storage_.dir() << " "
+            << (!storage_.dir().empty());
+  CHECK(!storage_.dir().empty()) << "storage's dir should be set first";
+  LOG(INFO) << "after check dir";
   VLOG(3) << "persist storage to disk path " << storage_.dir();
   // make a directory if not exist
   fs::TryMkdir(storage_.dir());
   // write storage out
-  CHECK(!storage_.dir().empty()) << "storage's dir should be set first";
-  const auto meta_path = storage_.dir() + "/" + meta_file_name;
-  fs::Write(meta_path, fs::Serialize(storage_));
+  fs::SerializeToFile(storage_, meta_path());
   // write all the tablets
   for (auto tag : storage_.tags()) {
-    auto path = GenPathFromTag(storage_.dir(), tag);
     auto it = tablets_.find(tag);
     CHECK(it != tablets_.end());
-    fs::Write(path, fs::Serialize(it->second));
+    fs::SerializeToFile(it->second, tablet_path(tag));
   }
 }
 
+// TODO add some checksum to avoid unnecessary loading
 void MemoryStorage::LoadFromDisk(const std::string &dir) {
   VLOG(3) << "load storage from disk path " << dir;
   CHECK(!dir.empty()) << "dir is empty";
+  storage_.set_dir(dir);
   // load storage
-  const auto meta_path = dir + "/" + meta_file_name;
-  auto buf = fs::Read(meta_path);
-  CHECK(fs::DeSerialize(&storage_, buf))
-      << "failed to parse protobuf loaded from " << meta_path;
+  CHECK(fs::DeSerializeFromFile(&storage_, meta_path()))
+      << "parse from " << meta_path() << " failed";
 
   // load all the tablets
   for (int i = 0; i < storage_.tags_size(); i++) {
-    std::string tag = storage_.tags(i);
-    auto path = GenPathFromTag(storage_.dir(), tag);
-    CHECK(tablets_[tag].ParseFromString(fs::Read(path)))
-        << "failed to parse protobuf text loaded from " << path;
+    auto tag = storage_.tags(i);
+    CHECK(fs::DeSerializeFromFile(&tablets_[tag], tablet_path(tag)));
   }
 }
 
