@@ -1,4 +1,5 @@
 #include <glog/logging.h>
+#include <visualdl/backend/utils/concurrency.h>
 #include <fstream>
 
 #include "visualdl/backend/storage/storage.h"
@@ -72,4 +73,21 @@ void MemoryStorage::LoadFromDisk(const std::string &dir) {
   }
 }
 
+void MemoryStorage::StartReadService() {
+  cc::PeriodExector::task_t task = [this] {
+    LOG(INFO) << "loading from " << storage_.dir();
+    LoadFromDisk(storage_.dir());
+    return true;
+  };
+  cc::PeriodExector::Global()(std::move(task), 2512);
+}
+
+void MemoryStorage::StartWriteSerice() {
+  cc::PeriodExector::task_t task = [this] {
+    LOG(INFO) << "writing to " << storage_.dir();
+    PersistToDisk();
+    return true;
+  };
+  cc::PeriodExector::Global()(std::move(task), 2000);
+}
 }  // namespace visualdl

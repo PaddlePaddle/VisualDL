@@ -10,7 +10,7 @@
 namespace visualdl {
 
 /*
- * InformationMaintainer(IM) maintain the Storage singleton in memory,
+ * IM(IM) maintain the Storage singleton in memory,
  * pre-compute some the statistical information to help visualizaton.
  *
  * There should be two processes and each have an IM, one is the web server
@@ -24,9 +24,9 @@ namespace visualdl {
  * The SDK's IM will maintain the changes and periodically write to disk, and
  * the web server's IM will periodically read latest storage from disk.
  */
-class InformationMaintainer final {
+class IM final {
 public:
-  InformationMaintainer(StorageBase::Type type = StorageBase::Type::kMemory) {
+  IM(StorageBase::Type type = StorageBase::Type::kMemory) {
     switch (type) {
       case StorageBase::Type::kMemory:
         storage_.reset(new MemoryStorage);
@@ -36,8 +36,8 @@ public:
     }
   }
 
-  static InformationMaintainer &Global() {
-    static InformationMaintainer *x = new InformationMaintainer();
+  static IM &Global() {
+    static IM *x = new IM();
     return *x;
   }
 

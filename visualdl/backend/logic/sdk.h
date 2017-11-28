@@ -94,18 +94,16 @@ public:
   ImHelper() {}
 
   StorageHelper storage() {
-    return StorageHelper(
-        InformationMaintainer::Global().storage().mutable_data());
+    return StorageHelper(IM::Global().storage().mutable_data());
   }
   TabletHelper tablet(const std::string &tag) {
-    return TabletHelper(InformationMaintainer::Global().storage().tablet(tag));
+    return TabletHelper(IM::Global().storage().tablet(tag));
   }
   TabletHelper AddTablet(const std::string &tag, int num_samples) {
-    return TabletHelper(
-        InformationMaintainer::Global().AddTablet(tag, num_samples));
+    return TabletHelper(IM::Global().AddTablet(tag, num_samples));
   }
   void ClearTablets() {
-    InformationMaintainer::Global().storage().mutable_data()->clear_tablets();
+    IM::Global().storage().mutable_data()->clear_tablets();
   }
 
   void PersistToDisk() const;

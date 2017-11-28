@@ -25,20 +25,18 @@ int ReserviorSample(int num_samples, int num_records) {
   return -1;
 }
 
-void InformationMaintainer::SetPersistDest(const std::string &path) {
+void IM::SetPersistDest(const std::string &path) {
   CHECK(storage_->mutable_data()->dir().empty())
       << "duplicate set storage's path";
   storage_->mutable_data()->set_dir(path);
 }
 
-storage::Tablet *InformationMaintainer::AddTablet(const std::string &tag,
-                                                  int num_samples) {
+storage::Tablet *IM::AddTablet(const std::string &tag, int num_samples) {
   auto tablet = storage_->NewTablet(tag, num_samples);
   return tablet;
 }
 
-void InformationMaintainer::AddRecord(const std::string &tag,
-                                      const storage::Record &data) {
+void IM::AddRecord(const std::string &tag, const storage::Record &data) {
   auto *tablet = storage_->tablet(tag);
   CHECK(tablet) << "no tablet called " << tag;
 
@@ -65,14 +63,14 @@ void InformationMaintainer::AddRecord(const std::string &tag,
   tablet->set_total_records(num_records + 1);
 }
 
-void InformationMaintainer::Clear() {
+void IM::Clear() {
   auto *data = storage().mutable_data();
   data->clear_tablets();
   data->clear_dir();
   data->clear_timestamp();
 }
 
-void InformationMaintainer::PersistToDisk() {
+void IM::PersistToDisk() {
   CHECK(!storage_->data().dir().empty()) << "path of storage should be set";
   // TODO make dir first
   // MakeDir(storage_.data().dir());
