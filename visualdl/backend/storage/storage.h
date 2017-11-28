@@ -26,6 +26,8 @@ public:
   const static std::string meta_file_name;
 
   enum Type { kMemory = 0, kDisk = 1 };
+  // mode of the sevice, either reading or writing.
+  enum Mode { kRead = 0, kWrite = 1 };
 
   void SetStorage(const std::string &dir) {
     time_t t;
