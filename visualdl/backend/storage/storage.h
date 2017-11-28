@@ -34,6 +34,9 @@ public:
     storage_.set_dir(dir);
   }
 
+  std::string meta_path() const;
+  std::string tablet_path(const std::string &tag) const;
+
   /*
    * Create a new Tablet storage.
    */
@@ -77,6 +80,18 @@ public:
   void PersistToDisk() const override;
 
   void LoadFromDisk(const std::string &dir) override;
+
+  /*
+   * Create a thread which will keep reading the latest data from the disk to
+   * memory.
+   */
+  void StartReadService();
+
+  /*
+   * Create a thread which will keep writing the latest changes from memory to
+   * disk.
+   */
+  void StartWriteSerice();
 
 private:
   std::map<std::string, storage::Tablet> tablets_;
