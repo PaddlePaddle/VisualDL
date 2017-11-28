@@ -26,15 +26,8 @@ namespace visualdl {
  */
 class IM final {
 public:
-  IM(StorageBase::Type type = StorageBase::Type::kMemory) {
-    switch (type) {
-      case StorageBase::Type::kMemory:
-        storage_.reset(new MemoryStorage);
-        break;
-      default:
-        CHECK(false) << "Unsupported storage kind " << type;
-    }
-  }
+  IM(StorageBase::Type type = StorageBase::Type::kMemory,
+     StorageBase::Mode mode = StorageBase::Mode::kNone);
 
   static IM &Global() {
     static IM *x = new IM();

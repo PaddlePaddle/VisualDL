@@ -27,7 +27,7 @@ public:
 
   enum Type { kMemory = 0, kDisk = 1 };
   // mode of the sevice, either reading or writing.
-  enum Mode { kRead = 0, kWrite = 1 };
+  enum Mode { kRead = 0, kWrite = 1, kNone = 2 };
 
   void SetStorage(const std::string &dir) {
     time_t t;
