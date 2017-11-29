@@ -40,10 +40,7 @@ storage::Tablet *MemoryStorage::tablet(const std::string &tag) {
 
 // TODO add some checksum to avoid unnecessary saving
 void MemoryStorage::PersistToDisk() const {
-  LOG(INFO) << "inside dir " << storage_.dir() << " "
-            << (!storage_.dir().empty());
   CHECK(!storage_.dir().empty()) << "storage's dir should be set first";
-  LOG(INFO) << "after check dir";
   VLOG(3) << "persist storage to disk path " << storage_.dir();
   // make a directory if not exist
   fs::TryMkdir(storage_.dir());
@@ -59,7 +56,6 @@ void MemoryStorage::PersistToDisk() const {
 
 // TODO add some checksum to avoid unnecessary loading
 void MemoryStorage::LoadFromDisk(const std::string &dir) {
-  VLOG(3) << "load storage from disk path " << dir;
   CHECK(!dir.empty()) << "dir is empty";
   storage_.set_dir(dir);
   // load storage
@@ -75,16 +71,18 @@ void MemoryStorage::LoadFromDisk(const std::string &dir) {
 
 void MemoryStorage::StartReadService() {
   cc::PeriodExector::task_t task = [this] {
-    LOG(INFO) << "loading from " << storage_.dir();
+    VLOG(3) << "loading from " << storage_.dir();
     LoadFromDisk(storage_.dir());
     return true;
   };
+  cc::PeriodExector::Global().Start();
+  VLOG(3) << "push read task";
   cc::PeriodExector::Global()(std::move(task), 2512);
 }
 
 void MemoryStorage::StartWriteSerice() {
+  cc::PeriodExector::Global().Start();
   cc::PeriodExector::task_t task = [this] {
-    LOG(INFO) << "writing to " << storage_.dir();
     PersistToDisk();
     return true;
   };
