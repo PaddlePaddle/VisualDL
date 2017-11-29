@@ -1,14 +1,14 @@
 import summary
 import numpy as np
 import unittest
-
-summary.set_storage("tmp_dir")
+import time
 
 once_flag = False
 
 
 class ScalarTester(unittest.TestCase):
     def setUp(self):
+        summary.set_storage("tmp_dir")
         global once_flag
         self.scalar = summary.scalar("scalar0")
         if not once_flag:

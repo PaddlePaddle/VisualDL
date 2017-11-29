@@ -4,8 +4,6 @@ __all__ = [
 ]
 import core
 
-im = core.im()
-
 dtypes = ("float", "double", "int32", "int64")
 
 
@@ -15,7 +13,19 @@ def set_storage(dir):
         directory of summary to write log.
     :return: None
     '''
-    im.storage().set_dir(dir)
+    core.im().storage().set_dir(dir)
+
+
+def set_readable_storage(dir):
+    core.start_read_service(dir)
+
+
+def set_writable_storage(dir):
+    core.start_write_service(dir)
+
+
+def stop_service():
+    core.stop_threads()
 
 
 class _Scalar(object):
@@ -95,7 +105,19 @@ def scalar(tag, dtype='float'):
     '''
     assert dtype in dtypes, "invalid dtype(%s), should be one of %s" % (
         dtype, str(dtypes))
-    tablet = im.add_tablet(tag, -1)
+    tablet = core.im().add_tablet(tag, -1)
+    dtype2obj = {
+        'float': tablet.as_float_scalar,
+        'double': tablet.as_double_scalar,
+        'int32': tablet.as_int32_scalar,
+        'int64': tablet.as_int64_scalar,
+    }
+    obj = dtype2obj[dtype]()
+    return _Scalar(obj)
+
+
+def read_scalar(tag, dtype='float'):
+    tablet = core.im().tablet(tag)
     dtype2obj = {
         'float': tablet.as_float_scalar,
         'double': tablet.as_double_scalar,

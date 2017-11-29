@@ -27,14 +27,18 @@ struct PeriodExector {
     quit = true;
   }
 
+  void Start() { quit = false; }
+
   void operator()(task_t&& task, int msec) {
     auto task_wrapper = [=] {
       while (!quit) {
         if (!task()) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(msec));
       }
+      LOG(INFO) << "quit job";
     };
     threads_.emplace_back(std::thread(std::move(task_wrapper)));
+    msec_ = msec;
   }
 
   ~PeriodExector() {
@@ -48,6 +52,7 @@ struct PeriodExector {
 private:
   bool quit = false;
   std::vector<std::thread> threads_;
+  int msec_;
 };
 
 }  // namespace cc

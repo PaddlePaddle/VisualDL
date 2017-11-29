@@ -27,9 +27,9 @@ int ReserviorSample(int num_samples, int num_records) {
 
 IM::IM(StorageBase::Type type, StorageBase::Mode mode) {
   switch (type) {
-    case StorageBase::Type::kMemory:
+    case StorageBase::Type::kMemory: {
       storage_.reset(new MemoryStorage);
-      break;
+    } break;
     default:
       CHECK(false) << "Unsupported storage kind " << type;
   }

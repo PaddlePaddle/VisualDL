@@ -2,6 +2,7 @@
 #define VISUALDL_BACKEND_LOGIC_IM_H
 
 #include <glog/logging.h>
+#include <visualdl/backend/utils/concurrency.h>
 #include <memory>
 #include <string>
 
@@ -10,7 +11,7 @@
 namespace visualdl {
 
 /*
- * IM(IM) maintain the Storage singleton in memory,
+ * IM(Information Maintainer) maintain the Storage singleton in memory,
  * pre-compute some the statistical information to help visualizaton.
  *
  * There should be two processes and each have an IM, one is the web server
@@ -26,12 +27,22 @@ namespace visualdl {
  */
 class IM final {
 public:
-  IM(StorageBase::Type type = StorageBase::Type::kMemory,
-     StorageBase::Mode mode = StorageBase::Mode::kNone);
+  IM() { storage_.reset(new MemoryStorage); }
+  IM(StorageBase::Type type, StorageBase::Mode mode);
+  ~IM() { cc::PeriodExector::Global().Quit(); }
 
   static IM &Global() {
-    static IM *x = new IM();
-    return *x;
+    static IM x;
+    return x;
+  }
+
+  void MaintainRead() {
+    LOG(INFO) << "start maintain read";
+    dynamic_cast<MemoryStorage *>(storage_.get())->StartReadService();
+  }
+
+  void MaintainWrite() {
+    dynamic_cast<MemoryStorage *>(storage_.get())->StartWriteSerice();
   }
 
   /*
