@@ -1,6 +1,11 @@
 import 'normalize.css/normalize.css';
 import 'san-mui/index.css';
-let App = require('./App');
+import './common/ui/ui-common.styl';
+
+import './home/index';
+import './scalars/index';
+
+import App from './App';
 new App({
     data: {
         titleName: 'VisualDL'

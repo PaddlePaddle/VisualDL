@@ -1,0 +1,43 @@
+<template>
+    <div class="sm-form-item">
+        <label class="label">{{label}}</label>
+        <san-drop-down-menu
+            error="{{error}}"
+            disabled="{{disabled}}"
+            value="{=value=}"
+            maxHeight="{{200}}"
+            autoWidth="{{false}}">
+            <san-menu-item
+                s-for="item in items"
+                on-change="menuItemChange(item)"
+                value="{{item.value}}"
+                label="{{item.name}}" />
+        </sm-drop-down-menu>
+    </div>
+</template>
+<script>
+import {DataTypes} from 'san';
+import {MenuItem, DropDownMenu} from 'san-mui/Menu';
+export default {
+    components: {
+        'san-menu-item': MenuItem,
+        'san-drop-down-menu': DropDownMenu
+    },
+    dataTypes: {
+        value: DataTypes.string,
+        items: DataTypes.array,
+        disabled: DataTypes.bool
+    },
+    menuItemChange(item) {
+        let value = item.value;
+        this.fire('valueChange', value);
+        this.dispatch('UI:form-item-change');
+    },
+    initData() {
+        return {
+            value: '',
+            items: []
+        };
+    }
+};
+</script>

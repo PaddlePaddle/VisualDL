@@ -1,6 +1,5 @@
 import XLSX from 'xlsx';
 import FileSaver from 'file-saver';
-// const JSON_TO_SHEET = XLSX.utils.json_to_sheet;
 const aoaToSheet = XLSX.utils.aoa_to_sheet;
 const saveAs = FileSaver.saveAs;
 function s2ab(s) {
@@ -48,5 +47,24 @@ export const generateXLSXandAutoDownload = function (data, name) {
             }
         ),
         name + '.xlsx' || 'sheetjs.xlsx'
+    );
+};
+
+/**
+ * download json
+ *
+ * @desc download json
+ * @param {Array} data the data for the xlsx
+ * @param {string} name filename
+ */
+export const generateJsonAndDownload = function (data, name) {
+    saveAs(
+        new Blob(
+            [s2ab(JSON.stringify(data, null, '    '))],
+            {
+                type: 'application/octet-stream'
+            }
+        ),
+        name + '.json' || 'json.json'
     );
 };
