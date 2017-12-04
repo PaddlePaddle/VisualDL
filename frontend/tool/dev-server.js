@@ -38,47 +38,23 @@ compiler.plugin('compilation', function (compilation) {
     });
 });
 
-var context = [
-    '/example',
-];
-var proxypath = '';
-
-var options = {
-    target: proxypath,
-    changeOrigin: true,
-};
-if (context.length) {
-   // app.use(proxyMiddleware(context, options));
-    app.use('/example', proxyMiddleware({
-        target: 'www.baidu.com',
-        changeOrigin: true,
-    }));
+// autoresponse
+let AutoresponseMatchs = ['data'];
+let matchsReg = new RegExp(AutoresponseMatchs.join('\|'));
+let excludeReg = /\.(html|js|map)$/;
+let isAutoresponseRequest = (path) => {
+    return !excludeReg.test(path) && matchsReg.test(path);
 }
+
 app.use(autoresponse({
     logLevel: 'debug',
     root: path.dirname(__dirname),
     rules: [
         {
-            match: '/example/:id',
-            method: ['get']
+            match: isAutoresponseRequest,
+            method: ['get', 'post', , 'delete']
         }
-    ],
-    post: {
-        match: function (reqPathName) {
-            return !/\.(html|js|map)$/.test(reqPathName) && /^\/(api)(.*)/.test(reqPathName);
-        }
-    },
-    delete: {
-        match: function () {
-            return true;
-        }
-    },
-    get: {
-        match: function (reqPathName) {
-            return !/\.(html|js|map)$/.test(reqPathName) && /^\/(api)(.*)/.test(reqPathName);
-        }
-    }
-
+    ]
 }));
 
 // serve webpack bundle output

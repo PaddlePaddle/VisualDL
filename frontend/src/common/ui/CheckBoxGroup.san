@@ -1,0 +1,114 @@
+<template>
+    <div class="sm-form-item">
+        <label class="label">{{label}}</label>
+        <div class="group-box">
+            <san-checkbox
+                san-if="showAll"
+                class="checkbox-all"
+                label="全选"
+                value="all"
+                on-change="handleAllChange($event)"
+                checked="{{All}}"
+            ></san-checkbox>
+            <div class="san-form-check-group">
+                <san-checkbox
+                    san-for="item in items"
+                    label="{{item.name}}"
+                    value="{{item.value}}"
+                    disabled="{{item.disabled}}"
+                    checked="{{value}}"
+                    on-change="handleChange($event, item)"
+                ></san-checkbox>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    import Checkbox from 'san-mui/Checkbox';
+    import {DataTypes} from 'san';
+    export default {
+        components: {
+            'san-checkbox': Checkbox
+        },
+        dataTypes: {
+            items: DataTypes.array,
+            value: DataTypes.array
+        },
+        initData() {
+            return {
+                allValue: [],
+                items: {},
+                value: [],
+                All: [],
+                showAll: false
+            };
+        },
+        computed: {
+            allValue() {
+                let items = this.data.get('items') || [];
+                return items.map(item => item.value);
+            }
+        },
+        attached() {
+            this.jugdeAll();
+            this.watch('value', val => {
+                this.dispatch('UI:form-item-change');
+                this.jugdeAll();
+            });
+        },
+        handleChange(e, item) {
+            let checked = e.target.checked;
+            let valueItem = item.value;
+            if (checked) {
+                this.addValue(valueItem);
+            }
+            else {
+                this.removeValue(valueItem);
+            }
+            this.dispatch('UI:form-item-change');
+            this.jugdeAll();
+
+        },
+        handleAllChange(e) {
+            let checked = e.target.checked;
+            let allValue = this.data.get('allValue') || [];
+            if (checked) {
+                this.data.set('value', allValue.slice());
+                this.fire('valueChange', allValue.slice());
+            }
+            else {
+                this.data.set('value', []);
+                this.fire('valueChange', []);
+            }
+            this.dispatch('UI:form-item-change');
+        },
+        addValue(itemValue) {
+            let value = this.data.get('value') || [];
+            if (!value.includes(itemValue)) {
+                value.push(itemValue);
+                this.data.set('value', value.slice());
+                this.fire('valueChange', value.slice());
+            }
+        },
+        removeValue(itemValue) {
+            let value = this.data.get('value') || [];
+            if (value.includes(itemValue)) {
+                let index = value.indexOf(itemValue);
+                value.splice(index, 1);
+                this.data.set('value', value.slice());
+                this.fire('valueChange', value.slice());
+            }
+        },
+        jugdeAll() {
+            let allValue = this.data.get('allValue') || [];
+            let value = this.data.get('value') || [];
+            let isAll = allValue.every(val => value.includes(val));
+            if (isAll) {
+                this.data.set('All', ['all']);
+            }
+            else {
+                this.data.set('All', []);
+            }
+        }
+    };
+</script>

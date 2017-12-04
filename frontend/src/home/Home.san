@@ -2,7 +2,7 @@
 
 <article>
     <h1>
-        welcome
+        {{text}}
     </h1>
 
 </article>
@@ -12,7 +12,11 @@
 
 <script>
     export default {
-
+        initData() {
+            return {
+                text: 'welcome'
+            };
+        }
     };
 
 </script>
