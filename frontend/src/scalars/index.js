@@ -1,10 +1,9 @@
 import {router} from 'san-router';
 
-
-import HomePage from './Home';
+import Scalar from './Scalars';
 
 router.add({
     target: '#content',
-    rule: '/home',
-    Component: HomePage
+    rule: '/scalars',
+    Component: Scalar
 });
