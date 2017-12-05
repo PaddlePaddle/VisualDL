@@ -1,0 +1,71 @@
+<template>
+    <div class="visaul-dl-chart-page">
+        <ui-expand-panel title="{{title}}">
+            <div class="visaul-dl-chart-box">
+                <ui-chart
+                    san-for="tag in filteredTagList"
+                    tagInfo="{{tag}}"
+                    config="{{config}}"
+                    runsItems="{{runsItems}}"
+                ></ui-chart>
+            </div>
+            <ui-pagination
+                san-if="total > pageSize"
+                on-pageChange="handlePageChange($event)"
+                current="{{currentPage}}"
+                pageSize="{{pageSize}}"
+                total="{{total}}"
+                showSizeChanger="{{false}}"
+            />
+        </ui-expand-panel>
+    </div>
+</template>
+<script>
+import ExpandPanel from '../../common/ui/ExpandPanel';
+import chart from '../../common/ui/Charts/chart';
+import Pagination from 'san-mui/Pagination';
+
+export default {
+    components: {
+        'ui-chart': chart,
+        'ui-expand-panel': ExpandPanel,
+        'ui-pagination': Pagination
+    },
+    computed: {
+        filteredTagList() {
+            let tagList = this.data.get('tagList') || [];
+            let currentPage = this.data.get('currentPage');
+            let pageSize = this.data.get('pageSize');
+            return tagList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+        },
+        total() {
+            let tagList = this.data.get('tagList') || [];
+            return tagList.length;
+        }
+    },
+    initData() {
+        return {
+            // current page
+            currentPage: 1,
+            // item per page
+            pageSize: 8
+        };
+    },
+
+    handlePageChange({pageNum}) {
+        this.data.set('currentPage', pageNum);
+    }
+};
+</script>
+<style lang="stylus">
+@import '../../style/variables';
+
++prefix-classes('visual-dl-')
+    .visaul-dl-chart-page
+        .visaul-dl-chart-box:after
+                content: "";
+                clear: both;
+                display: block;
+</style>
+
+

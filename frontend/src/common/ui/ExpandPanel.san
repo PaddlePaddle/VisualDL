@@ -1,0 +1,55 @@
+<template>
+    <div class="visaul-dl-expand-panel">
+        <h3
+            class="visaul-dl-expand-head"
+            on-click="handleHeadClick()"
+        >
+            <span>{{title}}</span>
+        </h3>
+        <div
+            style="display:{{displayStyle}}"
+            class="visaul-dl-expand-panel-content"
+        >
+            <slot></slot>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    computed: {
+        displayStyle() {
+            let isShow = this.data.get('isShow');
+            return isShow ? 'block' : 'none';
+        }
+    },
+    initData() {
+        return {
+            isShow: false
+        };
+    },
+    handleHeadClick() {
+        this.toogleShow();
+    },
+    toogleShow() {
+        let isShow = this.data.get('isShow');
+        this.data.set('isShow', !isShow);
+    }
+};
+</script>
+<style lang="stylus">
+    .visaul-dl-expand-panel
+        .visaul-dl-expand-head
+            border solid 1px #e4e4e4
+            line-height 50px
+            height 50px
+            padding 0 20px
+            cursor pointer
+        .visaul-dl-expand-panel-content
+            padding 0 20px
+        .visaul-dl-expand-panel-content:after
+            content: "";
+            clear: both;
+            display: block;
+</style>
+
+

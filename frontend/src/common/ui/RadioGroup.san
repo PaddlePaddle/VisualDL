@@ -1,0 +1,43 @@
+<template>
+    <div class="sm-form-item">
+        <label class="label">{{label}}</label>
+        <div class="group-box">
+            <san-radio
+                on-change="handleChange($event)"
+                san-for="item in items"
+                label="{{item.name}}"
+                value="{{item.value}}"
+                disabled="{{item.disabled}}"
+                checked="{=value=}"
+            ></san-radio>
+        </div>
+    </div>
+</template>
+<script>
+    import Radio from 'san-mui/Radio';
+    import {DataTypes} from 'san';
+    export default {
+        components: {
+            'san-radio': Radio
+        },
+        dataTypes: {
+            items: DataTypes.array,
+            value: DataTypes.string
+        },
+        initData() {
+            return {
+                items: {},
+                value: [],
+                label: ''
+            };
+        },
+        attached(value) {
+            this.watch('value', val => {
+                this.dispatch('UI:form-item-change', val);
+            });
+        },
+        handleChange(val) {
+            this.fire('valueChange', val);
+        }
+    };
+</script>
