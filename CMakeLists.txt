@@ -31,5 +31,9 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/backend/logic)
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/backend/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/backend/storage/storage_test.cc
-        ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/im_test.cc)
+        ${PROJECT_SOURCE_DIR}/visualdl/backend/utils/test_concurrency.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/im_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/backend/utils/concurrency.h
+        ${PROJECT_SOURCE_DIR}/visualdl/backend/utils/filesystem.h
+        )
 target_link_libraries(vl_test storage im gtest glog protobuf gflags pthread)

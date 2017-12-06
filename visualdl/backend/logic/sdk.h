@@ -77,7 +77,10 @@ public:
 
   void SetBuffer(const storage::Storage &buffer) { *data_ = buffer; }
   void SetBuffer(const std::string &buffer) { data_->ParseFromString(buffer); }
-  void SetDir(const std::string &dir) { data_->set_dir(dir); }
+  void SetDir(const std::string &dir) {
+    CHECK(data_) << "no storage instance hold";
+    data_->set_dir(dir);
+  }
 
   int64_t timestamp() const { return data_->timestamp(); }
   std::string dir() const { return data_->dir(); }
@@ -86,64 +89,19 @@ public:
   std::string human_readable_buffer() const;
 
 private:
-  storage::Storage *data_;
+  storage::Storage *data_{nullptr};
 };
 
 class ImHelper {
 public:
   ImHelper() {}
 
-  StorageHelper storage() {
-    return StorageHelper(
-        InformationMaintainer::Global().storage().mutable_data());
-  }
-  TabletHelper tablet(const std::string &tag) {
-    return TabletHelper(InformationMaintainer::Global().storage().tablet(tag));
-  }
-  TabletHelper AddTablet(const std::string &tag, int num_samples) {
-    return TabletHelper(
-        InformationMaintainer::Global().AddTablet(tag, num_samples));
-  }
-  void ClearTablets() {
-    InformationMaintainer::Global().storage().mutable_data()->clear_tablets();
-  }
-
-  void PersistToDisk() const;
-};
-
-namespace components {
-
-/*
- * Read and write support for Scalar component.
- */
-template <typename T>
-class ScalarHelper {
-public:
-  ScalarHelper(storage::Tablet *tablet) : data_(tablet) {}
-
-  void SetCaptions(const std::vector<std::string> &captions);
-
-  void AddRecord(int id, const std::vector<T> &values);
-
-  std::vector<std::vector<T>> GetRecords() const;
-
-  std::vector<int> GetIds() const;
-
-  std::vector<int> GetTimestamps() const;
-
-  std::vector<std::string> GetCaptions() const;
-
-  size_t GetSize() const { return data_->records_size(); }
-
-private:
-  storage::Tablet *data_;
-};
-
-}  // namespace components
-
-static ImHelper &get_im() {
-  static ImHelper im;
-  return im;
+  /*
+   * mode:
+   * 0: read
+   * 1: write
+   * 2: none
+   */
 }
 
 }  // namespace visualdl

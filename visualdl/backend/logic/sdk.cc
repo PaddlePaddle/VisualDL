@@ -60,9 +60,7 @@ std::string TabletHelper::human_readable_buffer() const {
   return buffer;
 }
 
-void ImHelper::PersistToDisk() const {
-  InformationMaintainer::Global().PersistToDisk();
-}
+void ImHelper::PersistToDisk() const { IM::Global().PersistToDisk(); }
 
 // implementations for components
 namespace components {

@@ -55,7 +55,14 @@ PYBIND11_PLUGIN(core) {
       .def("persist_to_disk", &vs::ImHelper::PersistToDisk)
       .def("clear_tablets", &vs::ImHelper::ClearTablets);
 
-  m.def("im", &vs::get_im, "global information-maintainer object.");
+  m.def("start_read_service",
+        &vs::start_read_service,
+        "global information-maintainer object.");
+  m.def("start_write_service",
+        &vs::start_write_service,
+        "global information-maintainer object.");
+  m.def("im", &vs::im);
+  m.def("stop_threads", &vs::StopThreads);
 
 // interfaces for components
 #define ADD_SCALAR_TYPED_INTERFACE(T, name__)                             \

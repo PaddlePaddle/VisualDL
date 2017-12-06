@@ -26,6 +26,8 @@ public:
   const static std::string meta_file_name;
 
   enum Type { kMemory = 0, kDisk = 1 };
+  // mode of the sevice, either reading or writing.
+  enum Mode { kRead = 0, kWrite = 1, kNone = 2 };
 
   void SetStorage(const std::string &dir) {
     time_t t;
@@ -33,6 +35,9 @@ public:
     storage_.set_timestamp(t);
     storage_.set_dir(dir);
   }
+
+  std::string meta_path() const;
+  std::string tablet_path(const std::string &tag) const;
 
   /*
    * Create a new Tablet storage.
@@ -77,6 +82,18 @@ public:
   void PersistToDisk() const override;
 
   void LoadFromDisk(const std::string &dir) override;
+
+  /*
+   * Create a thread which will keep reading the latest data from the disk to
+   * memory.
+   */
+  void StartReadService();
+
+  /*
+   * Create a thread which will keep writing the latest changes from memory to
+   * disk.
+   */
+  void StartWriteSerice();
 
 private:
   std::map<std::string, storage::Tablet> tablets_;

@@ -8,7 +8,7 @@ class ImTester : public ::testing::Test {
 protected:
   void SetUp() override {}
 
-  InformationMaintainer &im = InformationMaintainer::Global();
+  IM &im = IM::Global();
 };
 
 TEST_F(ImTester, AddTablet) {
