@@ -32,6 +32,8 @@ TEST_F(MemoryStorageTest, AddTablet) {
 }
 
 TEST_F(MemoryStorageTest, PersistToDisk) {
+  storage_.SetStorage("./tmp");
+  CHECK(!storage_.data().dir().empty());
   string tag = "add%20tag0";
   storage_.NewTablet(tag, -1);
 

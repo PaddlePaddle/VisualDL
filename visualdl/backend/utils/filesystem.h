@@ -30,6 +30,18 @@ bool DeSerialize(T* proto, const std::string buf, bool human_readable = false) {
   return proto->ParseFromString(buf);
 }
 
+template <typename T>
+bool SerializeToFile(const T& proto, const std::string& path) {
+  std::ofstream file(path, std::ios::binary);
+  return proto.SerializeToOstream(&file);
+}
+
+template <typename T>
+bool DeSerializeFromFile(T* proto, const std::string& path) {
+  std::ifstream file(path, std::ios::binary);
+  return proto->ParseFromIstream(&file);
+}
+
 void TryMkdir(const std::string& dir) {
   VLOG(1) << "try to mkdir " << dir;
   struct stat st = {0};

@@ -2,6 +2,7 @@
 #define VISUALDL_BACKEND_LOGIC_IM_H
 
 #include <glog/logging.h>
+#include <visualdl/backend/utils/concurrency.h>
 #include <memory>
 #include <string>
 
@@ -10,24 +11,38 @@
 namespace visualdl {
 
 /*
- * Maintain the Storage singleton in memory, pre-compute some the statical
- * information to help visualizaton.
+ * IM(Information Maintainer) maintain the Storage singleton in memory,
+ * pre-compute some the statistical information to help visualizaton.
+ *
+ * There should be two processes and each have an IM, one is the web server
+ * which hold one IM to read the storage, the other is the SDK(python or C++),
+ * it will get an IM to write latest changes to storage.
+ *
+ * An IM have an underlying Storage object, which might be a memory based
+ * storage or a disk based one, both has the same interfaces those defined by
+ * class StorageBase.
+ *
+ * The SDK's IM will maintain the changes and periodically write to disk, and
+ * the web server's IM will periodically read latest storage from disk.
  */
-class InformationMaintainer final {
+class IM final {
 public:
-  InformationMaintainer(StorageBase::Type type = StorageBase::Type::kMemory) {
-    switch (type) {
-      case StorageBase::Type::kMemory:
-        storage_.reset(new MemoryStorage);
-        break;
-      default:
-        CHECK(false) << "Unsupported storage kind " << type;
-    }
+  IM() { storage_.reset(new MemoryStorage); }
+  IM(StorageBase::Type type, StorageBase::Mode mode);
+  ~IM() { cc::PeriodExector::Global().Quit(); }
+
+  static IM &Global() {
+    static IM x;
+    return x;
   }
 
-  static InformationMaintainer &Global() {
-    static InformationMaintainer *x = new InformationMaintainer();
-    return *x;
+  void MaintainRead() {
+    LOG(INFO) << "start maintain read";
+    dynamic_cast<MemoryStorage *>(storage_.get())->StartReadService();
+  }
+
+  void MaintainWrite() {
+    dynamic_cast<MemoryStorage *>(storage_.get())->StartWriteSerice();
   }
 
   /*
