@@ -30,12 +30,27 @@ struct PeriodExector {
   void Start() { quit = false; }
 
   void operator()(task_t&& task, int msec) {
+    const int interval = 500;
+
     auto task_wrapper = [=] {
       while (!quit) {
         if (!task()) break;
-        std::this_thread::sleep_for(std::chrono::milliseconds(msec));
+        // if the program is terminated, quit while as soon as possible.
+        // this is just trick, but should works.
+        if (msec > 1000) {
+          int i;
+          for (i = 0; i < msec / interval; i++) {
+            if (quit) break;
+            std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+          }
+          std::this_thread::sleep_for(
+              std::chrono::milliseconds(msec - i * interval));
+          if (quit) break;
+        } else {
+          std::this_thread::sleep_for(std::chrono::milliseconds(msec));
+        }
       }
-      LOG(INFO) << "quit job";
+      LOG(INFO) << "quit concurrent job";
     };
     threads_.emplace_back(std::thread(std::move(task_wrapper)));
     msec_ = msec;
