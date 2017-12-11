@@ -96,12 +96,55 @@ class ImHelper {
 public:
   ImHelper() {}
 
-  /*
-   * mode:
-   * 0: read
-   * 1: write
-   * 2: none
-   */
+  StorageHelper storage() {
+    return StorageHelper(IM::Global().storage().mutable_data());
+  }
+  TabletHelper tablet(const std::string &tag) {
+    return TabletHelper(IM::Global().storage().tablet(tag));
+  }
+  TabletHelper AddTablet(const std::string &tag, int num_samples) {
+    return TabletHelper(IM::Global().AddTablet(tag, num_samples));
+  }
+  void ClearTablets() {
+    IM::Global().storage().mutable_data()->clear_tablets();
+  }
+
+  void PersistToDisk() const;
+};
+
+namespace components {
+
+/*
+ * Read and write support for Scalar component.
+ */
+template <typename T>
+class ScalarHelper {
+public:
+  ScalarHelper(storage::Tablet *tablet) : data_(tablet) {}
+
+  void SetCaptions(const std::vector<std::string> &captions);
+
+  void AddRecord(int id, const std::vector<T> &values);
+
+  std::vector<std::vector<T>> GetRecords() const;
+
+  std::vector<int> GetIds() const;
+
+  std::vector<int> GetTimestamps() const;
+
+  std::vector<std::string> GetCaptions() const;
+
+  size_t GetSize() const { return data_->records_size(); }
+
+private:
+  storage::Tablet *data_;
+};
+
+}  // namespace components
+
+static ImHelper &get_im() {
+  static ImHelper im;
+  return im;
 }
 
 }  // namespace visualdl
