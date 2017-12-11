@@ -37,3 +37,7 @@ add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/backend/utils/filesystem.h
         )
 target_link_libraries(vl_test storage im gtest glog protobuf gflags pthread)
+
+enable_testing ()
+
+add_test(NAME vstest COMMAND vl_test)
