@@ -96,13 +96,68 @@ class ImHelper {
 public:
   ImHelper() {}
 
-  /*
-   * mode:
-   * 0: read
-   * 1: write
-   * 2: none
-   */
+  StorageHelper storage() {
+    return StorageHelper(IM::Global().storage().mutable_data());
+  }
+  TabletHelper tablet(const std::string &tag) {
+    return TabletHelper(IM::Global().storage().tablet(tag));
+  }
+  TabletHelper AddTablet(const std::string &tag, int num_samples) {
+    return TabletHelper(IM::Global().AddTablet(tag, num_samples));
+  }
+  void ClearTablets() {
+    IM::Global().storage().mutable_data()->clear_tablets();
+  }
+
+  void PersistToDisk() const { IM::Global().PersistToDisk(); }
+};
+
+namespace components {
+
+/*
+ * Read and write support for Scalar component.
+ */
+template <typename T>
+class ScalarHelper {
+public:
+  ScalarHelper(storage::Tablet *tablet) : data_(tablet) {}
+
+  void SetCaptions(const std::vector<std::string> &captions);
+
+  void AddRecord(int id, const std::vector<T> &values);
+
+  std::vector<std::vector<T>> GetRecords() const;
+
+  std::vector<int> GetIds() const;
+
+  std::vector<int> GetTimestamps() const;
+
+  std::vector<std::string> GetCaptions() const;
+
+  size_t GetSize() const { return data_->records_size(); }
+
+private:
+  storage::Tablet *data_;
+};
+
+}  // namespace components
+
+static ImHelper &im() {
+  static ImHelper im;
+  return im;
 }
+
+static void start_read_service(const std::string &dir) {
+  IM::Global().SetPersistDest(dir);
+  IM::Global().MaintainRead();
+}
+
+static void start_write_service(const std::string &dir) {
+  IM::Global().SetPersistDest(dir);
+  IM::Global().MaintainWrite();
+}
+
+static void stop_threads() { cc::PeriodExector::Global().Quit(); }
 
 }  // namespace visualdl
 
