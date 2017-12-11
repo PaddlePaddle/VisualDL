@@ -62,7 +62,7 @@ PYBIND11_PLUGIN(core) {
         &vs::start_write_service,
         "global information-maintainer object.");
   m.def("im", &vs::im);
-  m.def("stop_threads", &vs::StopThreads);
+  m.def("stop_threads", &vs::stop_threads);
 
 // interfaces for components
 #define ADD_SCALAR_TYPED_INTERFACE(T, name__)                             \

@@ -109,7 +109,7 @@ public:
     IM::Global().storage().mutable_data()->clear_tablets();
   }
 
-  void PersistToDisk() const;
+  void PersistToDisk() const { IM::Global().PersistToDisk(); }
 };
 
 namespace components {
@@ -142,10 +142,22 @@ private:
 
 }  // namespace components
 
-static ImHelper &get_im() {
+static ImHelper &im() {
   static ImHelper im;
   return im;
 }
+
+static void start_read_service(const std::string &dir) {
+  IM::Global().SetPersistDest(dir);
+  IM::Global().MaintainRead();
+}
+
+static void start_write_service(const std::string &dir) {
+  IM::Global().SetPersistDest(dir);
+  IM::Global().MaintainWrite();
+}
+
+static void stop_threads() { cc::PeriodExector::Global().Quit(); }
 
 }  // namespace visualdl
 
