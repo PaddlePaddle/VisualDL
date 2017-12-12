@@ -1,12 +1,12 @@
-#ifndef VISUALDL_BACKEND_LOGIC_IM_H
-#define VISUALDL_BACKEND_LOGIC_IM_H
+#ifndef VISUALDL_LOGIC_IM_H
+#define VISUALDL_LOGIC_IM_H
 
 #include <glog/logging.h>
-#include <visualdl/backend/utils/concurrency.h>
 #include <memory>
 #include <string>
 
-#include "visualdl/backend/storage/storage.h"
+#include "visualdl/storage/storage.h"
+#include "visualdl/utils/concurrency.h"
 
 namespace visualdl {
 

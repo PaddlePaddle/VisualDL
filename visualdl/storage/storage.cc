@@ -1,9 +1,9 @@
 #include <glog/logging.h>
-#include <visualdl/backend/utils/concurrency.h>
 #include <fstream>
 
-#include "visualdl/backend/storage/storage.h"
-#include "visualdl/backend/utils/filesystem.h"
+#include "visualdl/storage/storage.h"
+#include "visualdl/utils/concurrency.h"
+#include "visualdl/utils/filesystem.h"
 
 namespace visualdl {
 
