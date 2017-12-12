@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-sudo apt-get install --only-upgrade cmake -y
+#sudo apt-get install --only-upgrade cmake -y
 mkdir -p build
 cd build
 cmake ..
