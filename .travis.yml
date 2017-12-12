@@ -3,7 +3,6 @@ cache:
   directories:
     - $HOME/.ccache
     - $HOME/.cache/pip
-    - $TRAVIS_BUILD_DIR/build/third_party
 sudo: required
 dist: trusty
 os:
@@ -20,6 +19,9 @@ addons:
       - python-wheel
       - clang-format-3.8
       - ccache
+script:
+  /bin/bash ./tests.sh
+
 notifications:
   email:
     on_success: change

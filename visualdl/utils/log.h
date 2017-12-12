@@ -1,7 +1,8 @@
-#ifndef VISUALDL_BACKEND_UTILS_LOG_H
-#define VISUALDL_BACKEND_UTILS_LOG_H
+#ifndef VISUALDL_UTILS_LOG_H
+#define VISUALDL_UTILS_LOG_H
 
 #include <stdexcept>
+
 namespace visualdl {
 
 namespace log {

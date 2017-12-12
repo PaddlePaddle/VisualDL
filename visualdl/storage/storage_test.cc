@@ -1,4 +1,4 @@
-#include "visualdl/backend/storage/storage.h"
+#include "visualdl/storage/storage.h"
 
 #include <glog/logging.h>
 #include <gtest/gtest.h>

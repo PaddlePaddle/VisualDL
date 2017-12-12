@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-#include "visualdl/backend/storage/storage.pb.h"
+#include "visualdl/storage/storage.pb.h"
 
 namespace visualdl {
 

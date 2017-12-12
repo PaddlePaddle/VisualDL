@@ -1,7 +1,7 @@
 #include <glog/logging.h>
 #include <ctime>
 
-#include "visualdl/backend/logic/im.h"
+#include "visualdl/logic/im.h"
 
 namespace visualdl {
 
