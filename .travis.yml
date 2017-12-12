@@ -23,7 +23,7 @@ addons:
       - cmake
 
 script:
-    - apt-get upgrade cmake
+    - sudo apt-get upgrade cmake
     - mkdir -p build
     - cd build && cmake .. && make && make test
     - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi
