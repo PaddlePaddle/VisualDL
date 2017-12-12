@@ -20,9 +20,10 @@ addons:
       - python-wheel
       - clang-format-3.8
       - ccache
+      - cmake
 
 script:
-    - mkdir build
+    - mkdir -p build
     - cd build && cmake .. && make && make test
     - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi
     - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/run_on_non_pull_requests; fi
