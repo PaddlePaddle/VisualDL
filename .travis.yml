@@ -21,9 +21,10 @@ addons:
       - clang-format-3.8
       - ccache
       - cmake
+before_install:
+    - sudo apt-get upgrade cmake --yes
 
 script:
-    - sudo apt-get upgrade cmake
     - mkdir -p build
     - cd build && cmake .. && make && make test
     - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi
