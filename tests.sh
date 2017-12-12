@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-sudo pip install numpy -y
+sudo pip install numpy
 #sudo apt-get install --only-upgrade cmake -y
 mkdir -p build
 cd build
