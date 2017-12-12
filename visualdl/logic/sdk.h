@@ -1,11 +1,11 @@
-#ifndef VISUALDL_BACKEND_LOGIC_SDK_H
-#define VISUALDL_BACKEND_LOGIC_SDK_H
+#ifndef VISUALDL_LOGIC_SDK_H
+#define VISUALDL_LOGIC_SDK_H
 
 #include <glog/logging.h>
 #include <time.h>
 #include <map>
 
-#include "visualdl/backend/logic/im.h"
+#include "visualdl/logic/im.h"
 
 namespace visualdl {
 
