@@ -1,5 +1,5 @@
-#ifndef VISUALDL_BACKEND_UTILS_FILESYSTEM_H
-#define VISUALDL_BACKEND_UTILS_FILESYSTEM_H
+#ifndef VISUALDL_UTILS_FILESYSTEM_H
+#define VISUALDL_UTILS_FILESYSTEM_H
 
 #include <google/protobuf/text_format.h>
 #include <sys/stat.h>
