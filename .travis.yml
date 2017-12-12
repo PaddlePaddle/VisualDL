@@ -3,7 +3,6 @@ cache:
   directories:
     - $HOME/.ccache
     - $HOME/.cache/pip
-    - $TRAVIS_BUILD_DIR/build/third_party
 sudo: required
 dist: trusty
 os:
@@ -20,15 +19,8 @@ addons:
       - python-wheel
       - clang-format-3.8
       - ccache
-      - cmake
-before_install:
-    - sudo apt-get upgrade cmake --yes
-
 script:
-    - mkdir -p build
-    - cd build && cmake .. && make && make test
-    - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi
-    - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/run_on_non_pull_requests; fi
+  /bin/bash ./tests.sh
 
 notifications:
   email:
