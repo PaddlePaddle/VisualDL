@@ -1,4 +1,4 @@
-#include "visualdl/backend/utils/concurrency.h"
+#include "visualdl/utils/concurrency.h"
 
 #include <glog/logging.h>
 #include <gtest/gtest.h>
