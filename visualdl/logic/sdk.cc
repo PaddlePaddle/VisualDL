@@ -1,4 +1,5 @@
-#include "visualdl/backend/logic/sdk.h"
+#include "visualdl/logic/sdk.h"
+
 #include <google/protobuf/text_format.h>
 
 namespace visualdl {

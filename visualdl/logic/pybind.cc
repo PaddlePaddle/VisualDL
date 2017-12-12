@@ -2,7 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "visualdl/backend/logic/sdk.h"
+#include "visualdl/logic/sdk.h"
 
 namespace py = pybind11;
 namespace vs = visualdl;
