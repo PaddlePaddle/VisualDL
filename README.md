@@ -22,7 +22,7 @@ cp -r frontend/dist server/visualdl/frontend/dist
 cd server/
 python setup.py bdist_wheel
 cd dist
-pip install --upgrade visualdl-0.0.1-py2-none-any.whl
+sudo pip install --upgrade visualdl-0.0.1-py2-none-any.whl
 ```
 
 
