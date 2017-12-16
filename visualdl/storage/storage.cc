@@ -9,13 +9,14 @@ namespace visualdl {
 
 const std::string StorageBase::meta_file_name = "storage.meta";
 
-std::string StorageBase::meta_path() const {
-  CHECK(!storage_.dir().empty()) << "storage.dir should be set first";
-  return storage_.dir() + "/" + meta_file_name;
+std::string StorageBase::meta_path(const std::string &dir) const {
+  CHECK(!dir.empty()) << "dir is empty";
+  return dir + "/" + meta_file_name;
 }
-std::string StorageBase::tablet_path(const std::string &tag) const {
-  CHECK(!storage_.dir().empty()) << "storage.dir should be set first";
-  return storage_.dir() + "/" + tag;
+std::string StorageBase::tablet_path(const std::string &dir,
+                                     const std::string &tag) const {
+  CHECK(!dir.empty()) << "dir should be set first";
+  return dir + "/" + tag;
 }
 
 storage::Tablet *MemoryStorage::NewTablet(const std::string &tag,
@@ -39,18 +40,20 @@ storage::Tablet *MemoryStorage::tablet(const std::string &tag) {
 }
 
 // TODO add some checksum to avoid unnecessary saving
-void MemoryStorage::PersistToDisk() const {
-  CHECK(!storage_.dir().empty()) << "storage's dir should be set first";
-  VLOG(3) << "persist storage to disk path " << storage_.dir();
+void MemoryStorage::PersistToDisk(const std::string &dir) {
+  CHECK(!dir.empty());
+  storage_.set_dir(dir);
   // make a directory if not exist
-  fs::TryMkdir(storage_.dir());
+  fs::TryMkdir(dir);
   // write storage out
-  fs::SerializeToFile(storage_, meta_path());
+  LOG(INFO) << "to serize meta to dir " << dir;
+  fs::SerializeToFile(storage_, meta_path(dir));
+  LOG(INFO) << "serize meta to dir " << dir;
   // write all the tablets
   for (auto tag : storage_.tags()) {
     auto it = tablets_.find(tag);
     CHECK(it != tablets_.end());
-    fs::SerializeToFile(it->second, tablet_path(tag));
+    fs::SerializeToFile(it->second, tablet_path(dir, tag));
   }
 }
 
@@ -59,33 +62,53 @@ void MemoryStorage::LoadFromDisk(const std::string &dir) {
   CHECK(!dir.empty()) << "dir is empty";
   storage_.set_dir(dir);
   // load storage
-  CHECK(fs::DeSerializeFromFile(&storage_, meta_path()))
-      << "parse from " << meta_path() << " failed";
+  CHECK(fs::DeSerializeFromFile(&storage_, meta_path(dir)))
+      << "parse from " << meta_path(dir) << " failed";
 
   // load all the tablets
   for (int i = 0; i < storage_.tags_size(); i++) {
     auto tag = storage_.tags(i);
-    CHECK(fs::DeSerializeFromFile(&tablets_[tag], tablet_path(tag)));
+    CHECK(fs::DeSerializeFromFile(&tablets_[tag], tablet_path(dir, tag)));
   }
 }
 
-void MemoryStorage::StartReadService() {
-  cc::PeriodExector::task_t task = [this] {
-    VLOG(3) << "loading from " << storage_.dir();
-    LoadFromDisk(storage_.dir());
+void MemoryStorage::StartReadService(const std::string &dir,
+                                     int msecs,
+                                     std::mutex *handler) {
+  CHECK(executor_ != nullptr);
+  CHECK(!dir.empty()) << "dir should be set first";
+  cc::PeriodExector::task_t task = [dir, this, handler] {
+    LOG(INFO) << "loading from " << dir;
+    if (handler != nullptr) {
+      std::lock_guard<std::mutex> _(*handler);
+      LoadFromDisk(dir);
+    } else {
+      LoadFromDisk(dir);
+    }
     return true;
   };
-  cc::PeriodExector::Global().Start();
-  VLOG(3) << "push read task";
-  cc::PeriodExector::Global()(std::move(task), 2512);
+  // executor_.Start();
+  LOG(INFO) << "push read task";
+  (*executor_)(std::move(task), msecs);
 }
 
-void MemoryStorage::StartWriteSerice() {
-  cc::PeriodExector::Global().Start();
-  cc::PeriodExector::task_t task = [this] {
-    PersistToDisk();
+void MemoryStorage::StartWriteSerice(const std::string &dir,
+                                     int msecs,
+                                     std::mutex *handler) {
+  CHECK(executor_ != nullptr);
+  CHECK(!dir.empty()) << "dir should be set first";
+  storage_.set_dir(dir);
+  // executor_.Start();
+  cc::PeriodExector::task_t task = [dir, handler, this] {
+    LOG(INFO) << "persist to disk";
+    if (handler != nullptr) {
+      std::lock_guard<std::mutex> _(*handler);
+      PersistToDisk(dir);
+    } else {
+      PersistToDisk(dir);
+    }
     return true;
   };
-  cc::PeriodExector::Global()(std::move(task), 2000);
+  (*executor_)(std::move(task), msecs);
 }
 }  // namespace visualdl

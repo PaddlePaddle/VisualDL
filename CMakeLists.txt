@@ -39,10 +39,11 @@ add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
         ${PROJECT_SOURCE_DIR}/visualdl/logic/im_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
         ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
         )
-target_link_libraries(vl_test storage im gtest glog protobuf gflags pthread)
+target_link_libraries(vl_test storage sdk im gtest glog protobuf gflags pthread)
 
 enable_testing ()
 

@@ -53,18 +53,20 @@ PYBIND11_PLUGIN(core) {
       .def("tablet", &vs::ImHelper::tablet)
       .def("add_tablet", &vs::ImHelper::AddTablet)
       .def("persist_to_disk", &vs::ImHelper::PersistToDisk)
-      .def("clear_tablets", &vs::ImHelper::ClearTablets);
+      .def("clear_tablets", &vs::ImHelper::ClearTablets)
+      .def("start_read_service",
+           &vs::ImHelper::StartReadService,
+           "start a thread to maintain read service")
+      .def("start_write_service",
+           &vs::ImHelper::StartWriteSerice,
+           "start a thread to maintain write service")
+      .def("stop_service",
+           &vs::ImHelper::StopService,
+           "stop the service thread");
 
-  m.def("start_read_service",
-        &vs::start_read_service,
-        "global information-maintainer object.");
-  m.def("start_write_service",
-        &vs::start_write_service,
-        "global information-maintainer object.");
-  m.def("im", &vs::im);
-  m.def("stop_threads", &vs::stop_threads);
+// interfaces for components begin
 
-// interfaces for components
+// different data type of scalar conponent
 #define ADD_SCALAR_TYPED_INTERFACE(T, name__)                             \
   py::class_<vs::components::ScalarHelper<T>>(m, #name__)                 \
       .def("add_record", &vs::components::ScalarHelper<T>::AddRecord)     \

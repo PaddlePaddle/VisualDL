@@ -25,26 +25,26 @@ int ReserviorSample(int num_samples, int num_records) {
   return -1;
 }
 
-IM::IM(StorageBase::Type type, StorageBase::Mode mode) {
-  switch (type) {
-    case StorageBase::Type::kMemory: {
-      storage_.reset(new MemoryStorage);
-    } break;
-    default:
-      CHECK(false) << "Unsupported storage kind " << type;
-  }
+// IM::IM(StorageBase::Type type, StorageBase::Mode mode) {
+//   switch (type) {
+//     case StorageBase::Type::kMemory: {
+//       storage_.reset(new MemoryStorage);
+//     } break;
+//     default:
+//       CHECK(false) << "Unsupported storage kind " << type;
+//   }
 
-  switch (mode) {
-    case StorageBase::Mode::kRead:
-      dynamic_cast<MemoryStorage *>(storage_.get())->StartReadService();
-      break;
-    case StorageBase::Mode::kWrite:
-      dynamic_cast<MemoryStorage *>(storage_.get())->StartWriteSerice();
-      break;
-    default:
-      break;
-  }
-}
+//   switch (mode) {
+//     case StorageBase::Mode::kRead:
+//       dynamic_cast<MemoryStorage *>(storage_.get())->StartReadService(500);
+//       break;
+//     case StorageBase::Mode::kWrite:
+//       dynamic_cast<MemoryStorage *>(storage_.get())->StartWriteSerice(500);
+//       break;
+//     default:
+//       break;
+//   }
+// }
 
 void IM::SetPersistDest(const std::string &path) {
   CHECK(storage_->mutable_data()->dir().empty())
@@ -95,7 +95,7 @@ void IM::PersistToDisk() {
   CHECK(!storage_->data().dir().empty()) << "path of storage should be set";
   // TODO make dir first
   // MakeDir(storage_.data().dir());
-  storage_->PersistToDisk();
+  storage_->PersistToDisk(storage_->data().dir());
 }
 
 }  // namespace visualdl

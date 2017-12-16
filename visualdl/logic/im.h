@@ -27,22 +27,21 @@ namespace visualdl {
  */
 class IM final {
 public:
-  IM() { storage_.reset(new MemoryStorage); }
-  IM(StorageBase::Type type, StorageBase::Mode mode);
-  ~IM() { cc::PeriodExector::Global().Quit(); }
-
-  static IM &Global() {
-    static IM x;
-    return x;
+  IM() { storage_.reset(new MemoryStorage(&executor_)); }
+  // IM(StorageBase::Type type, StorageBase::Mode mode);
+  ~IM() { executor_.Quit();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
 
-  void MaintainRead() {
+  void MaintainRead(const std::string &dir, int msecs) {
     LOG(INFO) << "start maintain read";
-    dynamic_cast<MemoryStorage *>(storage_.get())->StartReadService();
+    dynamic_cast<MemoryStorage *>(storage_.get())
+        ->StartReadService(dir, msecs, &lock_);
   }
 
-  void MaintainWrite() {
-    dynamic_cast<MemoryStorage *>(storage_.get())->StartWriteSerice();
+  void MaintainWrite(const std::string &dir, int msecs) {
+    dynamic_cast<MemoryStorage *>(storage_.get())
+        ->StartWriteSerice(dir, msecs, &lock_);
   }
 
   /*
@@ -73,8 +72,15 @@ public:
 
   StorageBase &storage() { return *storage_; }
 
+  cc::PeriodExector &executor() { return executor_; }
+
+  std::mutex &handler() { return lock_; }
+
 private:
+  // read write lock for protobuf in memory
+  std::mutex lock_;
   std::unique_ptr<StorageBase> storage_;
+  cc::PeriodExector executor_;
 };
 
 }  // namespace visualdl
