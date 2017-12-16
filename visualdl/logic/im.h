@@ -29,9 +29,7 @@ class IM final {
 public:
   IM() { storage_.reset(new MemoryStorage(&executor_)); }
   // IM(StorageBase::Type type, StorageBase::Mode mode);
-  ~IM() { executor_.Quit();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  }
+  ~IM() { executor_.Quit(); }
 
   void MaintainRead(const std::string &dir, int msecs) {
     LOG(INFO) << "start maintain read";
