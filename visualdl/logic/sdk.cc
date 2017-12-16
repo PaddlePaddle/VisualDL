@@ -66,6 +66,8 @@ namespace components {
 
 template <typename T>
 void ScalarHelper<T>::SetCaptions(const std::vector<std::string> &captions) {
+  ACQUIRE_HANDLER(handler_);
+
   CHECK_EQ(data_->captions_size(), 0UL) << "the captions can set only once";
   for (int i = 0; i < captions.size(); i++) {
     data_->add_captions(captions[i]);
@@ -74,6 +76,8 @@ void ScalarHelper<T>::SetCaptions(const std::vector<std::string> &captions) {
 
 template <typename T>
 void ScalarHelper<T>::AddRecord(int id, const std::vector<T> &values) {
+  ACQUIRE_HANDLER(handler_);
+
   CHECK_NOTNULL(data_);
   CHECK_GT(data_->captions_size(), 0UL) << "captions should be set first";
   CHECK_EQ(data_->captions_size(), values.size())
@@ -94,6 +98,8 @@ void ScalarHelper<T>::AddRecord(int id, const std::vector<T> &values) {
 
 template <typename T>
 std::vector<std::vector<T>> ScalarHelper<T>::GetRecords() const {
+  ACQUIRE_HANDLER(handler_);
+
   std::vector<std::vector<T>> result;
   EntryHelper<T> entry_helper;
   for (int i = 0; i < data_->records_size(); i++) {
@@ -107,6 +113,7 @@ std::vector<std::vector<T>> ScalarHelper<T>::GetRecords() const {
 
 template <typename T>
 std::vector<int> ScalarHelper<T>::GetIds() const {
+  ACQUIRE_HANDLER(handler_);
   CHECK_NOTNULL(data_);
   std::vector<int> result;
   for (int i = 0; i < data_->records_size(); i++) {
@@ -117,6 +124,7 @@ std::vector<int> ScalarHelper<T>::GetIds() const {
 
 template <typename T>
 std::vector<int> ScalarHelper<T>::GetTimestamps() const {
+  ACQUIRE_HANDLER(handler_);
   CHECK_NOTNULL(data_);
   std::vector<int> result;
   for (int i = 0; i < data_->records_size(); i++) {
@@ -127,6 +135,7 @@ std::vector<int> ScalarHelper<T>::GetTimestamps() const {
 
 template <typename T>
 std::vector<std::string> ScalarHelper<T>::GetCaptions() const {
+  ACQUIRE_HANDLER(handler_);
   return std::vector<std::string>(data_->captions().begin(),
                                   data_->captions().end());
 }
