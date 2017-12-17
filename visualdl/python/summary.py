@@ -103,15 +103,3 @@ def scalar(im, tag, dtype='float'):
     }
     obj = dtype2obj[dtype](im)
     return _Scalar(obj)
-
-
-# def read_scalar(tag, dtype='float'):
-#     tablet = core.im().tablet(tag)
-#     dtype2obj = {
-#         'float': tablet.as_float_scalar,
-#         'double': tablet.as_double_scalar,
-#         'int32': tablet.as_int32_scalar,
-#         'int64': tablet.as_int64_scalar,
-#     }
-#     obj = dtype2obj[dtype]()
-#     return _Scalar(obj)
