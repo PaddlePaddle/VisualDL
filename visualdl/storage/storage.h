@@ -4,6 +4,7 @@
 #include <time.h>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include "visualdl/storage/storage.pb.h"
