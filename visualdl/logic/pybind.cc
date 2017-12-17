@@ -22,19 +22,22 @@ PYBIND11_PLUGIN(core) {
                vs::TabletHelper::SetBuffer)
       // scalar interface
       .def("as_int32_scalar",
-           [](const vs::TabletHelper& self) {
-             return vs::components::ScalarHelper<int32_t>(&self.data());
+           [](vs::TabletHelper& self, vs::ImHelper& im) {
+             return vs::components::ScalarHelper<int32_t>(self, &im.handler());
            })
       .def("as_int64_scalar",
-           [](const vs::TabletHelper& self) {
-             return vs::components::ScalarHelper<int64_t>(&self.data());
+           [](vs::TabletHelper& self, vs::ImHelper& im) {
+             return vs::components::ScalarHelper<int64_t>(&self.data(),
+                                                          &im.handler());
            })
       .def("as_float_scalar",
-           [](const vs::TabletHelper& self) {
-             return vs::components::ScalarHelper<float>(&self.data());
+           [](vs::TabletHelper& self, vs::ImHelper& im) {
+             return vs::components::ScalarHelper<float>(&self.data(),
+                                                        &im.handler());
            })
-      .def("as_double_scalar", [](const vs::TabletHelper& self) {
-        return vs::components::ScalarHelper<double>(&self.data());
+      .def("as_double_scalar", [](vs::TabletHelper& self, vs::ImHelper& im) {
+        return vs::components::ScalarHelper<double>(&self.data(),
+                                                    &im.handler());
       });
 
   py::class_<vs::StorageHelper>(m, "Storage")
@@ -49,6 +52,8 @@ PYBIND11_PLUGIN(core) {
                vs::StorageHelper::SetBuffer);
 
   py::class_<vs::ImHelper>(m, "Im")
+      .def("__init__",
+           [](vs::ImHelper& instance) { new (&instance) vs::ImHelper(); })
       .def("storage", &vs::ImHelper::storage)
       .def("tablet", &vs::ImHelper::tablet)
       .def("add_tablet", &vs::ImHelper::AddTablet)

@@ -64,7 +64,6 @@ void MemoryStorage::LoadFromDisk(const std::string &dir) {
   // load storage
   CHECK(fs::DeSerializeFromFile(&storage_, meta_path(dir)))
       << "parse from " << meta_path(dir) << " failed";
-
   // load all the tablets
   for (int i = 0; i < storage_.tags_size(); i++) {
     auto tag = storage_.tags(i);
