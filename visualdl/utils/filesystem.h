@@ -39,6 +39,7 @@ bool SerializeToFile(const T& proto, const std::string& path) {
 template <typename T>
 bool DeSerializeFromFile(T* proto, const std::string& path) {
   std::ifstream file(path, std::ios::binary);
+  CHECK(file.is_open()) << "open " << path << " failed";
   return proto->ParseFromIstream(&file);
 }
 

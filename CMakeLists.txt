@@ -48,4 +48,6 @@ target_link_libraries(vl_test storage sdk im gtest glog protobuf gflags pthread)
 
 enable_testing ()
 
-add_test(NAME vstest COMMAND vl_test)
+add_custom_target(test_init COMMAND ./init_test.sh $CMAKE_BINARY_DIR)
+add_test(NAME vstest COMMAND ./vl_test)
+set_target_properties(vl_test PROPERTIES DEPENDS test_init)

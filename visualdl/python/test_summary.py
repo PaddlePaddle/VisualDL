@@ -8,12 +8,11 @@ once_flag = False
 
 class ScalarTester(unittest.TestCase):
     def setUp(self):
-        summary.set_storage("tmp_dir")
-        global once_flag
-        self.scalar = summary.scalar("scalar0")
-        if not once_flag:
-            self.py_captions = ["train cost", "test cost"]
-            self.scalar.set_captions(self.py_captions)
+        dir = "tmp/3.test"
+        self.im = summary.IM("write", dir)
+        self.scalar = summary.scalar(self.im, "scalar0")
+        self.py_captions = ["train cost", "test cost"]
+        self.scalar.set_captions(self.py_captions)
 
         self.py_records = []
         self.py_ids = []
@@ -22,9 +21,8 @@ class ScalarTester(unittest.TestCase):
             id = i * 10
             self.py_records.append(record)
             self.py_ids.append(id)
-            if not once_flag:
-                self.scalar.add(id, record)
-        once_flag = True
+            self.scalar.add(id, record)
+
 
     def test_records(self):
         self.assertEqual(self.scalar.size, len(self.py_records))
