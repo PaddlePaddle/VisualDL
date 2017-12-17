@@ -33,6 +33,7 @@ include_directories(${PROJECT_SOURCE_DIR}/thirdparty/local/include)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
