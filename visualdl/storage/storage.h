@@ -3,6 +3,7 @@
 
 #include <time.h>
 #include <map>
+#include <memory>
 #include <string>
 
 #include "visualdl/storage/storage.pb.h"
