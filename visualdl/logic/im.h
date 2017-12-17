@@ -3,6 +3,7 @@
 
 #include <glog/logging.h>
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include "visualdl/storage/storage.h"
