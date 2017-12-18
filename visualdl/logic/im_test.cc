@@ -2,13 +2,15 @@
 
 #include "gtest/gtest.h"
 
+#include "visualdl/storage/storage.h"
+
 namespace visualdl {
 
 class ImTester : public ::testing::Test {
 protected:
   void SetUp() override {}
 
-  IM &im = IM::Global();
+  IM im;
 };
 
 TEST_F(ImTester, AddTablet) {

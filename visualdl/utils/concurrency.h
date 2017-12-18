@@ -17,13 +17,9 @@ namespace cc {
 struct PeriodExector {
   using task_t = std::function<bool()>;
 
-  static PeriodExector& Global() {
-    static PeriodExector exec;
-    return exec;
-  }
-
   void Quit() {
     // TODO use some conditonal variable to help quit immediately.
+    // std::this_thread::sleep_for(std::chrono::milliseconds(200));
     quit = true;
   }
 
@@ -34,6 +30,7 @@ struct PeriodExector {
 
     auto task_wrapper = [=] {
       while (!quit) {
+        // task failed
         if (!task()) break;
         // if the program is terminated, quit while as soon as possible.
         // this is just trick, but should works.
@@ -57,6 +54,7 @@ struct PeriodExector {
   }
 
   ~PeriodExector() {
+    Quit();
     for (auto& t : threads_) {
       if (t.joinable()) {
         t.join();
