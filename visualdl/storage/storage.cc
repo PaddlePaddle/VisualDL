@@ -46,9 +46,9 @@ void MemoryStorage::PersistToDisk(const std::string &dir) {
   // make a directory if not exist
   fs::TryRecurMkdir(dir);
   // write storage out
-  LOG(INFO) << "to serize meta to dir " << dir;
+  VLOG(2) << "to serize meta to dir " << dir;
   fs::SerializeToFile(storage_, meta_path(dir));
-  LOG(INFO) << "serize meta to dir " << dir;
+  VLOG(2) << "serize meta to dir " << dir;
   // write all the tablets
   for (auto tag : storage_.tags()) {
     auto it = tablets_.find(tag);
@@ -77,7 +77,7 @@ void MemoryStorage::StartReadService(const std::string &dir,
   CHECK(executor_ != nullptr);
   CHECK(!dir.empty()) << "dir should be set first";
   cc::PeriodExector::task_t task = [dir, this, handler] {
-    LOG(INFO) << "loading from " << dir;
+    VLOG(1) << "loading from " << dir;
     if (handler != nullptr) {
       std::lock_guard<std::mutex> _(*handler);
       LoadFromDisk(dir);
@@ -87,7 +87,7 @@ void MemoryStorage::StartReadService(const std::string &dir,
     return true;
   };
   // executor_.Start();
-  LOG(INFO) << "push read task";
+  VLOG(1) << "push read task";
   (*executor_)(std::move(task), msecs);
 }
 
@@ -99,7 +99,7 @@ void MemoryStorage::StartWriteService(const std::string &dir,
   storage_.set_dir(dir);
   // executor_.Start();
   cc::PeriodExector::task_t task = [dir, handler, this] {
-    LOG(INFO) << "persist to disk";
+    VLOG(2) << "persist to disk";
     if (handler != nullptr) {
       std::lock_guard<std::mutex> _(*handler);
       PersistToDisk(dir);
