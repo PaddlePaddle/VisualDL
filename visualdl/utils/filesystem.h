@@ -44,7 +44,7 @@ bool DeSerializeFromFile(T* proto, const std::string& path) {
 }
 
 void TryMkdir(const std::string& dir) {
-  LOG(INFO) << "try to mkdir " << dir;
+  VLOG(1) << "try to mkdir " << dir;
   struct stat st = {0};
   if (stat(dir.c_str(), &st) == -1) {
     ::mkdir(dir.c_str(), 0700);
