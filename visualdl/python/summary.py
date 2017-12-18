@@ -6,26 +6,15 @@ import core
 
 dtypes = ("float", "double", "int32", "int64")
 
-
-def set_storage(dir):
-    '''
-    :param dir: str
-        directory of summary to write log.
-    :return: None
-    '''
-    core.im().storage().set_dir(dir)
-
-
-def set_readable_storage(dir):
-    core.start_read_service(dir)
-
-
-def set_writable_storage(dir):
-    core.start_write_service(dir)
-
-
-def stop_service():
-    core.stop_threads()
+def IM(dir, mode="read", msecs=500):
+    im = core.Im()
+    READ = "read"
+    WRITE = "write"
+    if mode == READ:
+        im.start_read_service(dir, msecs)
+    else:
+        im.start_write_service(dir, msecs)
+    return im
 
 
 class _Scalar(object):
@@ -93,7 +82,7 @@ class _Scalar(object):
         return self._core_object.get_record_size()
 
 
-def scalar(tag, dtype='float'):
+def scalar(im, tag, dtype='float'):
     '''
     create a scalar component.
 
@@ -105,24 +94,12 @@ def scalar(tag, dtype='float'):
     '''
     assert dtype in dtypes, "invalid dtype(%s), should be one of %s" % (
         dtype, str(dtypes))
-    tablet = core.im().add_tablet(tag, -1)
+    tablet = im.add_tablet(tag, -1)
     dtype2obj = {
         'float': tablet.as_float_scalar,
         'double': tablet.as_double_scalar,
         'int32': tablet.as_int32_scalar,
         'int64': tablet.as_int64_scalar,
     }
-    obj = dtype2obj[dtype]()
-    return _Scalar(obj)
-
-
-def read_scalar(tag, dtype='float'):
-    tablet = core.im().tablet(tag)
-    dtype2obj = {
-        'float': tablet.as_float_scalar,
-        'double': tablet.as_double_scalar,
-        'int32': tablet.as_int32_scalar,
-        'int64': tablet.as_int64_scalar,
-    }
-    obj = dtype2obj[dtype]()
+    obj = dtype2obj[dtype](im)
     return _Scalar(obj)

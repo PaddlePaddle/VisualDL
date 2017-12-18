@@ -94,25 +94,39 @@ private:
 
 class ImHelper {
 public:
-  ImHelper() {}
+  // TODO(ChunweiYan) decouple helper with resource.
+  ImHelper() { im_.reset(new IM); }
+  ImHelper(std::unique_ptr<IM> im) : im_(std::move(im)) {}
 
   StorageHelper storage() {
-    return StorageHelper(IM::Global().storage().mutable_data());
+    return StorageHelper(im_->storage().mutable_data());
   }
   TabletHelper tablet(const std::string &tag) {
-    return TabletHelper(IM::Global().storage().tablet(tag));
+    return TabletHelper(im_->storage().tablet(tag));
   }
   TabletHelper AddTablet(const std::string &tag, int num_samples) {
-    return TabletHelper(IM::Global().AddTablet(tag, num_samples));
+    return TabletHelper(im_->AddTablet(tag, num_samples));
   }
-  void ClearTablets() {
-    IM::Global().storage().mutable_data()->clear_tablets();
+  std::mutex &handler() { return im_->handler(); }
+  void ClearTablets() { im_->storage().mutable_data()->clear_tablets(); }
+  void StartReadService(const std::string &dir, int msecs) {
+    im_->SetPersistDest(dir);
+    im_->MaintainRead(dir, msecs);
   }
+  void StartWriteSerice(const std::string &dir, int msecs) {
+    im_->SetPersistDest(dir);
+    im_->MaintainWrite(dir, msecs);
+  }
+  void StopService() { im_->executor().Quit(); }
+  void PersistToDisk() const { im_->PersistToDisk(); }
 
-  void PersistToDisk() const { IM::Global().PersistToDisk(); }
+private:
+  std::unique_ptr<IM> im_;
 };
 
 namespace components {
+
+#define ACQUIRE_HANDLER(handler) std::lock_guard<std::mutex> ____(*handler);
 
 /*
  * Read and write support for Scalar component.
@@ -120,7 +134,10 @@ namespace components {
 template <typename T>
 class ScalarHelper {
 public:
-  ScalarHelper(storage::Tablet *tablet) : data_(tablet) {}
+  ScalarHelper(storage::Tablet *tablet, std::mutex *handler = nullptr)
+      : data_(tablet), handler_(handler) {}
+  ScalarHelper(TabletHelper &tablet, std::mutex *handler = nullptr)
+      : data_(&tablet.data()), handler_(handler) {}
 
   void SetCaptions(const std::vector<std::string> &captions);
 
@@ -138,27 +155,10 @@ public:
 
 private:
   storage::Tablet *data_;
+  std::mutex *handler_;
 };
 
 }  // namespace components
-
-static ImHelper &im() {
-  static ImHelper im;
-  return im;
-}
-
-static void start_read_service(const std::string &dir) {
-  IM::Global().SetPersistDest(dir);
-  IM::Global().MaintainRead();
-}
-
-static void start_write_service(const std::string &dir) {
-  IM::Global().SetPersistDest(dir);
-  IM::Global().MaintainWrite();
-}
-
-static void stop_threads() { cc::PeriodExector::Global().Quit(); }
-
 }  // namespace visualdl
 
 #endif  // VISUALDL_BACKEND_LOGIC_SDK_H

@@ -3,6 +3,7 @@
 
 #include <glog/logging.h>
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include "visualdl/storage/storage.h"
@@ -27,22 +28,19 @@ namespace visualdl {
  */
 class IM final {
 public:
-  IM() { storage_.reset(new MemoryStorage); }
-  IM(StorageBase::Type type, StorageBase::Mode mode);
-  ~IM() { cc::PeriodExector::Global().Quit(); }
+  IM() { storage_.reset(new MemoryStorage(&executor_)); }
+  // IM(StorageBase::Type type, StorageBase::Mode mode);
+  ~IM() { executor_.Quit(); }
 
-  static IM &Global() {
-    static IM x;
-    return x;
-  }
-
-  void MaintainRead() {
+  void MaintainRead(const std::string &dir, int msecs) {
     LOG(INFO) << "start maintain read";
-    dynamic_cast<MemoryStorage *>(storage_.get())->StartReadService();
+    dynamic_cast<MemoryStorage *>(storage_.get())
+        ->StartReadService(dir, msecs, &lock_);
   }
 
-  void MaintainWrite() {
-    dynamic_cast<MemoryStorage *>(storage_.get())->StartWriteSerice();
+  void MaintainWrite(const std::string &dir, int msecs) {
+    dynamic_cast<MemoryStorage *>(storage_.get())
+        ->StartWriteService(dir, msecs, &lock_);
   }
 
   /*
@@ -73,8 +71,17 @@ public:
 
   StorageBase &storage() { return *storage_; }
 
+  cc::PeriodExector &executor() { return executor_; }
+
+  std::mutex &handler() { return lock_; }
+
 private:
+  // read write lock for protobuf in memory
+  // TODO(ChunweiYan) mutex too heavy here, might change to a message queue to
+  // reduce the frequency of visiting disk
+  std::mutex lock_;
   std::unique_ptr<StorageBase> storage_;
+  cc::PeriodExector executor_;
 };
 
 }  // namespace visualdl

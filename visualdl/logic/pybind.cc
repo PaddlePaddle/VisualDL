@@ -22,19 +22,22 @@ PYBIND11_PLUGIN(core) {
                vs::TabletHelper::SetBuffer)
       // scalar interface
       .def("as_int32_scalar",
-           [](const vs::TabletHelper& self) {
-             return vs::components::ScalarHelper<int32_t>(&self.data());
+           [](vs::TabletHelper& self, vs::ImHelper& im) {
+             return vs::components::ScalarHelper<int32_t>(self, &im.handler());
            })
       .def("as_int64_scalar",
-           [](const vs::TabletHelper& self) {
-             return vs::components::ScalarHelper<int64_t>(&self.data());
+           [](vs::TabletHelper& self, vs::ImHelper& im) {
+             return vs::components::ScalarHelper<int64_t>(&self.data(),
+                                                          &im.handler());
            })
       .def("as_float_scalar",
-           [](const vs::TabletHelper& self) {
-             return vs::components::ScalarHelper<float>(&self.data());
+           [](vs::TabletHelper& self, vs::ImHelper& im) {
+             return vs::components::ScalarHelper<float>(&self.data(),
+                                                        &im.handler());
            })
-      .def("as_double_scalar", [](const vs::TabletHelper& self) {
-        return vs::components::ScalarHelper<double>(&self.data());
+      .def("as_double_scalar", [](vs::TabletHelper& self, vs::ImHelper& im) {
+        return vs::components::ScalarHelper<double>(&self.data(),
+                                                    &im.handler());
       });
 
   py::class_<vs::StorageHelper>(m, "Storage")
@@ -49,22 +52,26 @@ PYBIND11_PLUGIN(core) {
                vs::StorageHelper::SetBuffer);
 
   py::class_<vs::ImHelper>(m, "Im")
+      .def("__init__",
+           [](vs::ImHelper& instance) { new (&instance) vs::ImHelper(); })
       .def("storage", &vs::ImHelper::storage)
       .def("tablet", &vs::ImHelper::tablet)
       .def("add_tablet", &vs::ImHelper::AddTablet)
       .def("persist_to_disk", &vs::ImHelper::PersistToDisk)
-      .def("clear_tablets", &vs::ImHelper::ClearTablets);
+      .def("clear_tablets", &vs::ImHelper::ClearTablets)
+      .def("start_read_service",
+           &vs::ImHelper::StartReadService,
+           "start a thread to maintain read service")
+      .def("start_write_service",
+           &vs::ImHelper::StartWriteSerice,
+           "start a thread to maintain write service")
+      .def("stop_service",
+           &vs::ImHelper::StopService,
+           "stop the service thread");
 
-  m.def("start_read_service",
-        &vs::start_read_service,
-        "global information-maintainer object.");
-  m.def("start_write_service",
-        &vs::start_write_service,
-        "global information-maintainer object.");
-  m.def("im", &vs::im);
-  m.def("stop_threads", &vs::stop_threads);
+// interfaces for components begin
 
-// interfaces for components
+// different data type of scalar conponent
 #define ADD_SCALAR_TYPED_INTERFACE(T, name__)                             \
   py::class_<vs::components::ScalarHelper<T>>(m, #name__)                 \
       .def("add_record", &vs::components::ScalarHelper<T>::AddRecord)     \

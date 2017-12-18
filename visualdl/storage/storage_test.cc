@@ -32,15 +32,17 @@ TEST_F(MemoryStorageTest, AddTablet) {
 }
 
 TEST_F(MemoryStorageTest, PersistToDisk) {
-  storage_.SetStorage("./tmp");
-  CHECK(!storage_.data().dir().empty());
+  const std::string dir = "./tmp/201.test";
+  storage_.SetStorage(dir);
   string tag = "add%20tag0";
   storage_.NewTablet(tag, -1);
 
-  storage_.PersistToDisk();
+  storage_.PersistToDisk(dir);
+  LOG(INFO) << "persist to disk";
 
   MemoryStorage other;
-  other.LoadFromDisk("./tmp");
+  other.LoadFromDisk(dir);
+  LOG(INFO) << "read from disk";
   ASSERT_EQ(other.data().SerializeAsString(),
             storage_.data().SerializeAsString());
 }

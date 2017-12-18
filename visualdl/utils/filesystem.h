@@ -39,6 +39,7 @@ bool SerializeToFile(const T& proto, const std::string& path) {
 template <typename T>
 bool DeSerializeFromFile(T* proto, const std::string& path) {
   std::ifstream file(path, std::ios::binary);
+  CHECK(file.is_open()) << "open " << path << " failed";
   return proto->ParseFromIstream(&file);
 }
 
@@ -48,6 +49,19 @@ void TryMkdir(const std::string& dir) {
   if (stat(dir.c_str(), &st) == -1) {
     ::mkdir(dir.c_str(), 0700);
   }
+}
+
+// Create a path by recursively create directries
+void TryRecurMkdir(const std::string& path) {
+  // split path by '/'
+  for (int i = 1; i < path.size() - 1; i++) {
+    if (path[i] == '/') {
+      auto dir = path.substr(0, i + 1);
+      TryMkdir(dir);
+    }
+  }
+  // the last level
+  TryMkdir(path);
 }
 
 inline void Write(const std::string& path,
