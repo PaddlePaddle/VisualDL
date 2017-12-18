@@ -40,7 +40,7 @@ public:
 
   void MaintainWrite(const std::string &dir, int msecs) {
     dynamic_cast<MemoryStorage *>(storage_.get())
-        ->StartWriteSerice(dir, msecs, &lock_);
+        ->StartWriteService(dir, msecs, &lock_);
   }
 
   /*
@@ -77,6 +77,8 @@ public:
 
 private:
   // read write lock for protobuf in memory
+  // TODO(ChunweiYan) mutex too heavy here, might change to a message queue to
+  // reduce the frequency of visiting disk
   std::mutex lock_;
   std::unique_ptr<StorageBase> storage_;
   cc::PeriodExector executor_;
