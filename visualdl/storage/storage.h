@@ -105,7 +105,9 @@ public:
    *
    * msecs: how many millisecond to sync memory and disk.
    */
-  void StartWriteSerice(const std::string &dir, int msecs, std::mutex *handler);
+  void StartWriteService(const std::string &dir,
+                         int msecs,
+                         std::mutex *handler);
 
 private:
   std::map<std::string, storage::Tablet> tablets_;

@@ -91,9 +91,9 @@ void MemoryStorage::StartReadService(const std::string &dir,
   (*executor_)(std::move(task), msecs);
 }
 
-void MemoryStorage::StartWriteSerice(const std::string &dir,
-                                     int msecs,
-                                     std::mutex *handler) {
+void MemoryStorage::StartWriteService(const std::string &dir,
+                                      int msecs,
+                                      std::mutex *handler) {
   CHECK(executor_ != nullptr);
   CHECK(!dir.empty()) << "dir should be set first";
   storage_.set_dir(dir);
