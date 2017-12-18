@@ -44,7 +44,7 @@ void MemoryStorage::PersistToDisk(const std::string &dir) {
   CHECK(!dir.empty());
   storage_.set_dir(dir);
   // make a directory if not exist
-  fs::TryMkdir(dir);
+  fs::TryRecurMkdir(dir);
   // write storage out
   LOG(INFO) << "to serize meta to dir " << dir;
   fs::SerializeToFile(storage_, meta_path(dir));

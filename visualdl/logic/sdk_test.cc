@@ -7,13 +7,16 @@ namespace visualdl {
 struct ScalarTestHelper {
   ImHelper rim;
   ImHelper wim;
-  const std::string dir = "./tmp/1.test";
+  const std::string dir = "./tmp/sdk_test.test";
 
   void operator()(std::function<void()> read, std::function<void()> write) {
     wim.StartWriteSerice(dir, 200);
     write();
 
-    rim.StartReadService(dir, 200);
+    // should wait for the write service create log's path
+    std::this_thread::sleep_for(std::chrono::milliseconds(400));
+    rim.StartReadService(dir, 100);
+    // should wait for the read service to load "tag0" tablet into memory
     std::this_thread::sleep_for(std::chrono::milliseconds(600));
     read();
   }
