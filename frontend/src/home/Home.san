@@ -1,0 +1,22 @@
+<template>
+
+<article>
+    <h1>
+        {{text}}
+    </h1>
+
+</article>
+
+</template>
+
+
+<script>
+    export default {
+        initData() {
+            return {
+                text: 'welcome'
+            };
+        }
+    };
+
+</script>

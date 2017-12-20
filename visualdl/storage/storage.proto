@@ -1,0 +1,138 @@
+syntax = "proto3";
+package storage;
+
+enum DataType {
+  // single entry
+  kInt32 = 0;
+  kInt64 = 1;
+  kFloat = 2;
+  kDouble = 3;
+  kString = 4;
+  kBool = 5;
+  // entrys
+  kInt64s = 6;
+  kFloats = 7;
+  kDoubles = 8;
+  kStrings = 9;
+  kInt32s = 10;
+  kBools = 11;
+
+  kUnknown = 12;
+}
+
+// A data array, which type is `type`.
+message Entry {
+  // if all the entries in a record share the same data type, ignore this field
+  // and store type to `dtype` in `Record`.
+  DataType dtype = 1;
+  // single element
+  int32 i32 = 2;
+  int64 i64 = 3;
+  string s = 4;
+  float f = 5;
+  double d = 6;
+  bool b = 7;
+  // array
+  repeated int64 i64s = 8;
+  repeated float fs = 9;
+  repeated double ds = 10;
+  repeated int32 i32s = 11;
+  repeated string ss = 12;
+  repeated bool bs = 13;
+}
+
+/*
+The Record proto is designed to represent any data structure for any component,
+for
+example, to store a record of Scalar component
+
+Record {
+  // training error is 0.1, testing error is 0.2
+  data = [0.1, 0.2],
+  timestamp = xxxx,
+  // step id
+  id = xxxx
+}
+
+to store a record of Image component
+
+Record {
+  // RBG pixel weights of a image
+  data = [[0.1, 0.2, ...], [...], [...]],
+  timestamp = xxxx,
+  // image shape
+  meta = [100, 200]
+}
+
+for other complex structure which have more fields than `timestamp`, `id` and
+meta, the additional fields
+can store in the `data` field, for it can store a list of values in different
+basic data types.
+
+A component handlers in logic layer should know how to write or load a record
+for the corresponding component.
+*/
+message Record {
+  // one record might have multiple fields, one specific component should know
+  // how
+  // to parse the records.
+  repeated Entry data = 1;
+  // NOTE the timestamp, id, dtype might be useless for that all the meta info
+  // can
+  // be stored in `data` field.
+  int64 timestamp = 2;
+  int64 id = 3;
+  DataType dtype = 4;
+  // shape or some other meta infomation for this record, if all the records
+  // share the same meta, just store one copy of meta in `Storage`, or create
+  // a unique copy for each `Record`.
+  Entry meta = 5;
+}
+
+/*
+A Tablet stores the records of a component which type is `component` and
+indidates as `tag`.
+The records will be saved in a file which name contains `tag`. During the
+running period,
+`num_records` will be accumulated, and `num_samples` indicates the size of
+sample set the
+reservoir sampling algorithm will collect.
+*/
+message Tablet {
+  // the kinds of the components that supported
+  enum Type {
+    kScalar = 0;
+    kHistogram = 1;
+    kGraph = 2;
+  }
+  // type of the component, different component should have different storage
+  // format.
+  Type component = 1;
+  // records the total count of records, each Write operation should increate
+  // this value.
+  int64 total_records = 2;
+  // indicate the number of instances to sample, this should be a constant
+  // value.
+  int32 num_samples = 3;
+  repeated Record records = 4;
+  // store a meta infomation if all the records share.
+  Entry meta = 5;
+  // the unique identification for this `Tablet`.
+  string tag = 6;
+  // one tablet might have multiple captions, for example, a scalar component
+  // might have
+  // two plots labeled "train" and "test".
+  repeated string captions = 7;
+}
+
+/*
+The Storage stores all the records.
+*/
+message Storage {
+  // tags to Tablet, should be thread safe if fix the keys after initialization.
+  // TODO to delete in the new storage interface.
+  map<string, Tablet> tablets = 1;
+  repeated string tags = 4;
+  string dir = 2;
+  int64 timestamp = 3;
+}

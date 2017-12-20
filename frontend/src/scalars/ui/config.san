@@ -1,0 +1,126 @@
+<template>
+    <div class="visual-dl-scalar-config-com">
+        <san-text-field
+            hintText="input a tag group name to search"
+            label="Group name RegExp"
+            inputValue="{=config.groupNameReg=}"
+        />
+        <ui-slider
+            label="Smoothing"
+            value="{=config.smoothing=}"
+            min="{{0}}"
+            max="{{1}}"
+            step="{{0.001}}"
+        />
+        <ui-radio-group
+            label="Horizontal"
+            value="{{config.horizontal}}"
+            items="{{horizontalItems}}"
+        />
+        <ui-dropdown-menu
+            label="Tooltip sorting method"
+            items="{{sortingMethodItems}}"
+            value="{=config.sortingMethod=}"
+        />
+        <ui-checkbox-group
+            value="{=config.link=}"
+            items="{{lnksItems}}"
+        />
+        <ui-checkbox-group
+            value="{=config.chart=}"
+            items="{{chartItems}}"
+        />
+        <ui-checkbox-group
+            label="Runs"
+            items="{{runsItems}}"
+        />
+        <san-button class="visual-dl-scalar-run-toggle" variants="raised secondery">Toggle All Runs</san-button>
+    </div>
+</template>
+<script>
+import TextField from 'san-mui/TextField';
+import Slider from '../../common/ui/Slider';
+import RadioGroup from '../../common/ui/RadioGroup';
+import DropDownMenu from '../../common/ui/DropDownMenu';
+import CheckBoxGroup from '../../common/ui/CheckBoxGroup';
+import Button from 'san-mui/Button';
+export default {
+    components: {
+        'san-text-field': TextField,
+        'ui-slider': Slider,
+        'ui-radio-group': RadioGroup,
+        'ui-dropdown-menu': DropDownMenu,
+        'ui-checkbox-group': CheckBoxGroup,
+        'san-button': Button
+    },
+    initData() {
+        return {
+            config: {
+                groupName: 'aa',
+                smoothing: '0.5',
+                horizontal: '1',
+                sortingMethod: '2',
+                link: [],
+                chart: []
+            },
+            horizontalItems: [
+                {
+                    name: 'Step',
+                    value: '1'
+                },
+                {
+                    name: 'Relative',
+                    value: '2'
+                },
+                {
+                    name: 'Wall',
+                    value: '3'
+                }
+            ],
+            sortingMethodItems: [
+                {
+                    name: 'default',
+                    value: '1'
+                },
+                {
+                    name: 'descending',
+                    value: '2'
+                },
+                {
+                    name: 'ascending',
+                    value: '3'
+                },
+                {
+                    name: 'nearest',
+                    value: '4'
+                }
+            ],
+            runsItems: [],
+            lnksItems: [
+                {
+                    value: '1',
+                    name: 'Show data download links'
+                }
+            ],
+            chartItems: [
+                {
+                    value: '1',
+                    name: 'Ignore outliers in chart scaling'
+                }
+            ]
+        };
+    }
+};
+</script>
+<style lang="stylus">
+@import '../../style/variables';
++prefix-classes('visual-dl-scalar-')
+    .config-com
+        width 90%
+        margin 0 auto
+        .run-toggle
+            width 100%
+            margin-top 20px
+</style>
+
+
