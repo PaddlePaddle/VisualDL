@@ -1,0 +1,42 @@
+<template>
+    <div id="app">
+        <ui-app-menu
+            on-item-click="menuChange($event)"
+        ></ui-app-menu>
+        <div id="content-container" class="visual-dl-content-container">
+            <div id="app-content" class="visual-dl-app-content">
+                <div id="content"></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import AppMenu from './common/ui/AppMenu';
+import {router} from 'san-router';
+import {routeTo} from './common/util/routeTo';
+
+export default {
+    components: {
+        'ui-app-menu': AppMenu
+    },
+    initData() {
+        return {};
+    },
+    attached() {
+        router.start();
+    },
+    menuChange({value, url, title}) {
+        routeTo(url);
+    }
+};
+
+</script>
+
+<style lang="stylus">
+
+// @import './style/variables';
+
+// +prefix-classes(prefix)
+
+</style>
