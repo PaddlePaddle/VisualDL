@@ -32,6 +32,7 @@ void IM::SetPersistDest(const std::string &path) {
 }
 
 storage::Tablet *IM::AddTablet(const std::string &tag, int num_samples) {
+  CHECK(!tag.empty()) << "invalid tag name '" << tag << "'";
   auto tablet = storage_->NewTablet(tag, num_samples);
   return tablet;
 }

@@ -41,6 +41,7 @@ PYBIND11_PLUGIN(core) {
       });
 
   py::class_<vs::StorageHelper>(m, "Storage")
+      .def("tags", &vs::StorageHelper::tags)
       .def("timestamp", &vs::StorageHelper::timestamp)
       .def("dir", &vs::StorageHelper::dir)
       .def("set_dir", &vs::StorageHelper::SetDir)

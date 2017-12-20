@@ -4,8 +4,6 @@ import unittest
 import random
 import time
 
-once_flag = False
-
 
 class ScalarTester(unittest.TestCase):
     def setUp(self):

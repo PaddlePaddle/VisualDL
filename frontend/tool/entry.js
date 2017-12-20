@@ -1,3 +1,4 @@
+"use strict";
 const path = require('path');
 const projectPath = path.resolve(__dirname, '..');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
