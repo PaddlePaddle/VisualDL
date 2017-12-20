@@ -82,6 +82,10 @@ public:
     data_->set_dir(dir);
   }
 
+  std::vector<std::string> tags() {
+    return std::vector<std::string>(data_->tags().begin(), data_->tags().end());
+  }
+
   int64_t timestamp() const { return data_->timestamp(); }
   std::string dir() const { return data_->dir(); }
   int tablets_size() const { return data_->tablets_size(); }

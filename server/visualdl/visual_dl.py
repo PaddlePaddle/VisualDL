@@ -13,6 +13,7 @@ from flask import Response
 from visualdl.log import logger
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
+import summary
 
 app = Flask(__name__, static_url_path="")
 
@@ -31,7 +32,14 @@ def option_parser():
         default=8040,
         action="store",
         dest="port",
-        help="rest api service port")
+        help="api service port")
+    parser.add_option(
+        "-t",
+        "--host",
+        type=str,
+        default="0.0.0.0",
+        action="store",
+        help="api service ip")
     parser.add_option(
         "--logdir", action="store", dest="logdir", help="log file directory")
     return parser.parse_args()
@@ -41,6 +49,8 @@ options, args = option_parser()
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = "./frontend/dist/"
 mock_data_path = "./mock_data/"
+
+im = summary.IM('./tmp', 'read', 500)
 
 
 # return data
@@ -85,7 +95,15 @@ def runs():
 @app.route("/data/plugin/scalars/tags")
 def tags():
     is_debug = bool(request.args.get('debug'))
-    result = gen_result(0, "", mock_tags.data())
+    tag = request.args.get('tag')
+    # NOTE debug
+    is_debug = True
+    if is_debug:
+        result = mock_tags.data()
+    else:
+        result = im.storage().tags()
+    print 'tags', result
+    result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -93,11 +111,30 @@ def tags():
 def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
+    # NOTE debug
+    tag = "tag0"
     is_debug = bool(request.args.get('debug'))
-    result = gen_result(0, "", mock_data.sequence_data())
+    if is_debug:
+        result = gen_result(0, "", mock_data.sequence_data())
+    else:
+        scalar = summary.scalar(im, tag)
+        result = []
+
+        for id, tag in enumerate(scalar.captions):
+            records = [v[id] for v in scalar.records]
+            line = [
+                a
+                for a in zip([float(a)
+                              for a in scalar.timestamps], scalar.ids, records)
+            ]
+            result.append(line)
+
+        result = result[0]
+        result = gen_result(0, "", result)
+
     return Response(json.dumps(result), mimetype='application/json')
 
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
-    app.run(debug=False, host="0.0.0.0", port=options.port)
+    app.run(debug=False, host=options.host, port=options.port)
