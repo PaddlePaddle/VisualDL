@@ -21,7 +21,6 @@ TEST_F(StorageTest, main) {
   auto tag0 = storage.AddTablet("tag0");
   auto tag1 = storage.AddTablet("tag1");
 
-
   StorageReader reader("./tmp/storage_test");
   auto modes = reader.Modes();
 
