@@ -5,8 +5,10 @@
 namespace visualdl {
 
 struct ScalarTestHelper {
-  ImHelper rim;
-  ImHelper wim;
+  ImHelper _rim;
+  ImHelper _wim;
+  ImHelper rim = _rim.AsMode("train");
+  ImHelper wim = _wim.AsMode("train");
   const std::string dir = "./tmp/sdk_test.test";
 
   void operator()(std::function<void()> read, std::function<void()> write) {
@@ -76,6 +78,21 @@ TEST(Scalar, add_records) {
   };
 
   helper(read, write);
+}
+
+TEST(Scalar, mode) {
+  ScalarTestHelper helper;
+  auto train_wim = helper.wim.AsMode("train");
+
+  auto write = [&] {
+    auto tablet = train_wim.AddTablet("tag1", -1);
+    components::ScalarHelper<float> scalar(tablet, &train_wim.handler());
+
+    scalar.SetCaptions(std::vector<std::string>({"train"}));
+    scalar.AddRecord(10, std::vector<float>({0.1}));
+  };
+
+  auto reader = [&] {};
 }
 
 }  // namespace visualdl
