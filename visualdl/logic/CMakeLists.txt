@@ -1,6 +1,8 @@
 #add_library(sdk ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk.cc)
 add_library(im ${PROJECT_SOURCE_DIR}/visualdl/logic/im.cc)
+add_library(sdk ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk.cc)
 add_dependencies(im storage_proto)
+add_dependencies(sdk storage_proto)
 #add_dependencies(sdk storage_proto)
 
 ## pybind
