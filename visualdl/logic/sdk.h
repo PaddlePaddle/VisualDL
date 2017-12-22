@@ -12,12 +12,15 @@ namespace components {
  */
 template <typename T>
 struct Scalar {
-  Scalar(Tablet tablet) : tablet_(tablet) { tablet_.SetType(Tablet::Type::kScalar);}
+  Scalar(Tablet tablet) : tablet_(tablet) {
+    tablet_.SetType(Tablet::Type::kScalar);
+  }
+
   void SetCaption(const std::string cap) {
     tablet_.SetCaptions(std::vector<std::string>({cap}));
   }
 
-  void AddRecord(int id, const std::vector<T> &values);
+  void AddRecord(int id, const std::vector<T>& values);
 
 private:
   Tablet tablet_;
@@ -33,7 +36,7 @@ struct ScalarReader {
   std::vector<std::string> captions() const;
   size_t size() const;
 
- private:
+private:
   TabletReader reader_;
 };
 

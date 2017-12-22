@@ -2,7 +2,7 @@
 
 namespace visualdl {
 
-namespace  components {
+namespace components {
 
 template <typename T>
 void components::Scalar<T>::AddRecord(int id, const std::vector<T> &values) {
