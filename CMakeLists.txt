@@ -32,19 +32,17 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/local/include)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
-#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
-        #${PROJECT_SOURCE_DIR}/visualdl/logic/im_test.cc
-        #${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
         ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
         )
-target_link_libraries(vl_test storage gtest glog protobuf gflags pthread)
+target_link_libraries(vl_test storage im gtest glog protobuf gflags pthread)
 
 enable_testing ()
 

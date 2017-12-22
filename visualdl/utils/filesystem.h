@@ -43,7 +43,7 @@ bool DeSerializeFromFile(T* proto, const std::string& path) {
   return proto->ParseFromIstream(&file);
 }
 
-void TryMkdir(const std::string& dir) {
+static void TryMkdir(const std::string& dir) {
   VLOG(1) << "try to mkdir " << dir;
   struct stat st = {0};
   if (stat(dir.c_str(), &st) == -1) {
@@ -52,7 +52,7 @@ void TryMkdir(const std::string& dir) {
 }
 
 // Create a path by recursively create directries
-void TryRecurMkdir(const std::string& path) {
+static void TryRecurMkdir(const std::string& path) {
   // split path by '/'
   for (int i = 1; i < path.size() - 1; i++) {
     if (path[i] == '/') {
