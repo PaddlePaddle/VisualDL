@@ -54,6 +54,12 @@ template <typename T>
 size_t ScalarReader<T>::size() const {
   return reader_.total_records();
 }
+
+template class Scalar<int>;
+template class Scalar<int64_t>;
+template class Scalar<float>;
+template class Scalar<double>;
+
 }  // namespace components
 
 }  // namespace visualdl

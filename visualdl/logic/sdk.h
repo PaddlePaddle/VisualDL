@@ -3,8 +3,45 @@
 
 #include "visualdl/storage/storage.h"
 #include "visualdl/storage/tablet.h"
-
+#include "visualdl/utils/string.h"
 namespace visualdl {
+
+class Writer {
+public:
+  Writer(const std::string& mode, const std::string& dir) : mode_(mode) {
+    storage_.SetDir(dir);
+  }
+
+  Tablet AddTablet(const std::string& tag) {
+    // TODO(ChunweiYan) add string check here.
+    auto tmp = mode_ + "/" + tag;
+    string::TagEncode(tmp);
+    return storage_.AddTablet(tmp);
+  }
+
+  Storage& storage() { return storage_; }
+
+private:
+  Storage storage_;
+  std::string mode_;
+};
+
+class Reader {
+public:
+  Reader(const std::string& mode, const std::string& dir)
+      : mode_(mode), reader_(dir) {}
+
+  TabletReader tablet(const std::string& tag) {
+    auto tmp = mode_ + "/" + tag;
+    string::TagEncode(tmp);
+    return reader_.tablet(tmp);
+  }
+
+private:
+  StorageReader reader_;
+  std::string mode_;
+};
+
 namespace components {
 
 /*
