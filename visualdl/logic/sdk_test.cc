@@ -13,7 +13,7 @@ TEST(Scalar, write) {
   auto tablet = storage.AddTablet("scalar0");
   components::Scalar<int> scalar(tablet);
   scalar.SetCaption("train");
-  scalar.AddRecord(0, std::vector<int>({12}));
+  scalar.AddRecord(0, 12);
 
   // read from disk
   StorageReader reader(dir);
@@ -24,9 +24,8 @@ TEST(Scalar, write) {
   ASSERT_EQ(scalar_reader.total_records(), 1);
   auto record = scalar_reader.record(0);
   // check the first entry of first record
-  auto vs = record.data<int>(0).GetMulti();
-  ASSERT_EQ(vs.size(), 1);
-  ASSERT_EQ(vs.front(), 12);
+  auto vs = record.data<int>(0).Get();
+  ASSERT_EQ(vs, 12);
 }
 
 }  // namespace visualdl

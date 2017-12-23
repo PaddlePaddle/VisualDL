@@ -57,7 +57,12 @@ struct Scalar {
     tablet_.SetCaptions(std::vector<std::string>({cap}));
   }
 
-  void AddRecord(int id, const std::vector<T>& values);
+  void AddRecord(int id, T value) {
+    auto record = tablet_.AddRecord();
+    record.SetId(id);
+    auto entry = record.AddData<T>();
+    entry.Set(value);
+  }
 
 private:
   Tablet tablet_;
@@ -68,14 +73,51 @@ struct ScalarReader {
   ScalarReader(TabletReader&& reader) : reader_(reader) {}
 
   std::vector<T> records() const;
-  std::vector<int> ids() const;
-  std::vector<int> timestamps() const;
+  std::vector<T> ids() const;
+  std::vector<T> timestamps() const;
   std::vector<std::string> captions() const;
   size_t size() const;
 
 private:
   TabletReader reader_;
 };
+
+template <typename T>
+std::vector<T> ScalarReader<T>::records() const {
+  std::vector<T> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).data<T>(0).Get());
+  }
+  return res;
+}
+
+template <typename T>
+std::vector<T> ScalarReader<T>::ids() const {
+  std::vector<T> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).id());
+  }
+  return res;
+}
+
+template <typename T>
+std::vector<T> ScalarReader<T>::timestamps() const {
+  std::vector<T> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).timestamp());
+  }
+  return res;
+}
+
+template <typename T>
+std::vector<std::string> ScalarReader<T>::captions() const {
+  return reader_.captions();
+}
+
+template <typename T>
+size_t ScalarReader<T>::size() const {
+  return reader_.total_records();
+}
 
 }  // namespace components
 }  // namespace visualdl

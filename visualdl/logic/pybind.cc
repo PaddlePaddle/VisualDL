@@ -45,7 +45,7 @@ PYBIND11_PLUGIN(core) {
       // clang-format off
     ADD_SCALAR(float)
     ADD_SCALAR(double)
-    ADD_SCALAR(int)
+    ADD_SCALAR(int);
 // clang-format on
 #undef ADD_SCALAR
 
@@ -64,7 +64,7 @@ PYBIND11_PLUGIN(core) {
       // clang-format off
     ADD_SCALAR(float)
     ADD_SCALAR(double)
-    ADD_SCALAR(int)
+    ADD_SCALAR(int);
 // clang-format on
 #undef ADD_SCALAR
 
