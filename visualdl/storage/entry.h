@@ -19,9 +19,9 @@ struct Entry {
   storage::Entry* entry{nullptr};
 
   Entry() {}
-  explicit Entry(storage::Entry* entry, void* parent)
+  explicit Entry(storage::Entry* entry, Storage* parent)
       : entry(entry), x_(parent) {}
-  void operator()(storage::Entry* entry, void* parent) {
+  void operator()(storage::Entry* entry, Storage* parent) {
     this->entry = entry;
     x_ = parent;
   }

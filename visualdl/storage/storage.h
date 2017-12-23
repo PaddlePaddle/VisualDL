@@ -54,9 +54,10 @@ struct Storage {
   }
 
   Tablet AddTablet(const std::string& x) {
-    AddTag(x);
     CHECK(tablets_.count(x) == 0) << "tablet [" << x << "] has existed";
     tablets_[x] = storage::Tablet();
+    AddTag(x);
+    LOG(INFO) << "really add tag " << x;
     WRITE_GUARD
     return Tablet(&tablets_[x], this);
   }
@@ -83,7 +84,6 @@ struct Storage {
 
 protected:
   void AddTag(const std::string& x) {
-    WRITE_GUARD
     *data_->add_tags() = x;
   }
 
