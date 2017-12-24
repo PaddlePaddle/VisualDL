@@ -8,15 +8,23 @@ namespace visualdl {
 
 class Writer {
 public:
-  Writer(const std::string& mode, const std::string& dir) : mode_(mode) {
+  Writer(const std::string& dir) {
     storage_.SetDir(dir);
+  }
+
+  Writer& AsMode(const std::string& mode) {
+    mode_ = mode;
+    storage_.AddMode(mode);
+    return *this;
   }
 
   Tablet AddTablet(const std::string& tag) {
     // TODO(ChunweiYan) add string check here.
     auto tmp = mode_ + "/" + tag;
     string::TagEncode(tmp);
-    return storage_.AddTablet(tmp);
+    auto res = storage_.AddTablet(tmp);
+    res.SetCaptions(std::vector<std::string>({mode_}));
+    return res;
   }
 
   Storage& storage() { return storage_; }
@@ -39,7 +47,7 @@ public:
 
 private:
   StorageReader reader_;
-  std::string mode_;
+  std::string mode_{"default"};
 };
 
 namespace components {
@@ -75,7 +83,8 @@ struct ScalarReader {
   std::vector<T> records() const;
   std::vector<T> ids() const;
   std::vector<T> timestamps() const;
-  std::vector<std::string> captions() const;
+  std::string caption() const;
+  size_t total_records() {return reader_.total_records();}
   size_t size() const;
 
 private:
@@ -110,8 +119,9 @@ std::vector<T> ScalarReader<T>::timestamps() const {
 }
 
 template <typename T>
-std::vector<std::string> ScalarReader<T>::captions() const {
-  return reader_.captions();
+std::string ScalarReader<T>::caption() const {
+  CHECK(!reader_.captions().empty()) << "no caption";
+  return reader_.captions().front();
 }
 
 template <typename T>

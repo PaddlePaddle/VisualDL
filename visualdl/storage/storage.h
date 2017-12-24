@@ -2,10 +2,11 @@
 #define VISUALDL_STORAGE_STORAGE_H
 
 #include <glog/logging.h>
-#include <visualdl/utils/guard.h>
 #include <vector>
+#include <set>
 
 #include "visualdl/logic/im.h"
+#include "visualdl/utils/guard.h"
 #include "visualdl/storage/storage.pb.h"
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/filesystem.h"
@@ -49,7 +50,10 @@ struct Storage {
 
   // write operations
   void AddMode(const std::string& x) {
+    // avoid duplicate modes.
+    if (modes_.count(x) != 0) return;
     *data_->add_modes() = x;
+    modes_.insert(x);
     WRITE_GUARD
   }
 
@@ -68,7 +72,7 @@ struct Storage {
    * Save memory to disk.
    */
   void PersistToDisk(const std::string& dir) {
-    LOG(INFO) << "persist to disk " << dir;
+    // LOG(INFO) << "persist to disk " << dir;
     CHECK(!dir.empty()) << "dir should be set.";
     fs::TryRecurMkdir(dir);
 
@@ -91,6 +95,7 @@ private:
   std::string dir_;
   std::map<std::string, storage::Tablet> tablets_;
   std::shared_ptr<storage::Storage> data_;
+  std::set<std::string> modes_;
 };
 
 /*
