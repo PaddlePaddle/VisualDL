@@ -48,6 +48,7 @@ struct Tablet {
   }
 
   void SetCaptions(const std::vector<std::string>& xs) {
+    data_->clear_captions();
     for (const auto& x : xs) {
       *data_->add_captions() = x;
     }

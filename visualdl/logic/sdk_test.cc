@@ -14,18 +14,19 @@ TEST(Scalar, write) {
   components::Scalar<int> scalar(tablet);
   scalar.SetCaption("train");
   scalar.AddRecord(0, 12);
+  storage.PersistToDisk();
 
   // read from disk
   StorageReader reader(dir);
-  auto scalar_reader = reader.tablet("scalar0");
-  auto captioins = scalar_reader.captions();
-  ASSERT_EQ(captioins.size(), 1);
-  ASSERT_EQ(captioins.front(), "train");
+  auto tablet_reader = reader.tablet("scalar0");
+  auto scalar_reader = components::ScalarReader<int>(std::move(tablet_reader));
+  auto captioin = scalar_reader.caption();
+  ASSERT_EQ(captioin, "train");
   ASSERT_EQ(scalar_reader.total_records(), 1);
-  auto record = scalar_reader.record(0);
+  auto record = scalar_reader.records();
+  ASSERT_EQ(record.size(), 1);
   // check the first entry of first record
-  auto vs = record.data<int>(0).Get();
-  ASSERT_EQ(vs, 12);
+  ASSERT_EQ(record.front(), 12);
 }
 
 }  // namespace visualdl
