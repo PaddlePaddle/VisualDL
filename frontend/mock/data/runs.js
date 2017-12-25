@@ -16,7 +16,7 @@ module.exports = function (path, queryParam, postParam) {
         _data: {
             status: 0,
             msg: 'SUCCESS',
-            data: ["train", "test", "model"]
+            data: ["train", "test"]
         }
     };
 };

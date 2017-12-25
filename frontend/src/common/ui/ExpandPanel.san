@@ -7,7 +7,7 @@
             <span>{{title}}</span>
         </h3>
         <div
-            style="display:{{displayStyle}}"
+            san-if="{{isShow}}"
             class="visaul-dl-expand-panel-content"
         >
             <slot></slot>
@@ -16,12 +16,6 @@
 </template>
 <script>
 export default {
-    computed: {
-        displayStyle() {
-            let isShow = this.data.get('isShow');
-            return isShow ? 'block' : 'none';
-        }
-    },
     initData() {
         return {
             isShow: false

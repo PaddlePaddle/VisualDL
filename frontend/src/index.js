@@ -4,6 +4,7 @@ import './common/ui/ui-common.styl';
 
 import './home/index';
 import './scalars/index';
+import './images/index';
 
 import App from './App';
 new App({
