@@ -14,12 +14,18 @@ class StorageTest(unittest.TestCase):
         scalar = self.writer.scalar("model/scalar/min")
         # scalar.set_caption("model/scalar/min")
         for i in range(10):
-            scalar.add_record(i, 1.0)
+            scalar.add_record(i, float(i))
 
         print 'test read'
         self.reader = storage.StorageReader("train", self.dir)
         scalar = self.reader.scalar("model/scalar/min")
         self.assertEqual(scalar.caption(), "train")
+        records = scalar.records()
+        ids = scalar.ids()
+        self.assertTrue(np.equal(records, [float(i) for i in range(10)]).all())
+        self.assertTrue(np.equal(ids, [float(i) for i in range(10)]).all())
+        print 'records', records
+        print 'ids', ids
 
 
 if __name__ == '__main__':

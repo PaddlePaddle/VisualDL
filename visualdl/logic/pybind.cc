@@ -15,6 +15,7 @@ PYBIND11_PLUGIN(core) {
   py::class_<cp::ScalarReader<T>>(m, "ScalarReader__" #T)  \
       .def("records", &cp::ScalarReader<T>::records)       \
       .def("timestamps", &cp::ScalarReader<T>::timestamps) \
+      .def("ids", &cp::ScalarReader<T>::ids)               \
       .def("caption", &cp::ScalarReader<T>::caption);
   ADD_SCALAR(int);
   ADD_SCALAR(float);
@@ -57,9 +58,7 @@ PYBIND11_PLUGIN(core) {
 
   py::class_<vs::Writer>(m, "Writer")
       .def("__init__",
-           [](vs::Writer& instance,
-              const std::string& dir,
-              int sync_cycle) {
+           [](vs::Writer& instance, const std::string& dir, int sync_cycle) {
              new (&instance) vs::Writer(dir);
              instance.storage().meta.cycle = sync_cycle;
            })

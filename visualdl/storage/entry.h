@@ -14,7 +14,7 @@ struct Storage;
  */
 template <typename T>
 struct Entry {
-  DECL_GUARD(Entry)
+  DECL_GUARD(Entry<T>)
   // use pointer to avoid copy
   storage::Entry* entry{nullptr};
 

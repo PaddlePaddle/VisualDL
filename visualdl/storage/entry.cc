@@ -7,6 +7,7 @@ namespace visualdl {
   void Entry<ctype__>::method__(ctype__ v) {                     \
     entry->set_dtype(storage::DataType::dtype__);                \
     entry->opr__(v);                                             \
+    WRITE_GUARD                                                  \
   }
 
 IMPL_ENTRY_SET_OR_ADD(Set, int, kInt32, set_i32);
@@ -56,6 +57,5 @@ template class EntryReader<int>;
 template class EntryReader<float>;
 template class EntryReader<double>;
 template class EntryReader<bool>;
-
 
 }  // namespace visualdl
