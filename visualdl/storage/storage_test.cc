@@ -1,50 +1,35 @@
 #include "visualdl/storage/storage.h"
 
-#include <glog/logging.h>
 #include <gtest/gtest.h>
+#include <memory>
 
 namespace visualdl {
-using namespace std;
-
-class MemoryStorageTest : public ::testing::Test {
+class StorageTest : public ::testing::Test {
 public:
-  void SetUp() override { storage_.SetStorage("./tmp"); }
+  void SetUp() {
+    storage.SetDir("./tmp/storage_test");
+    storage.meta.cycle = 1;
+  }
 
-  MemoryStorage storage_;
+  Storage storage;
 };
 
-TEST_F(MemoryStorageTest, SetStorage) {
-  string dir = "./tmp";
-  storage_.SetStorage(dir);
+TEST_F(StorageTest, main) {
+  storage.AddMode("train");
+  storage.AddMode("test");
 
-  ASSERT_EQ(storage_.data().dir(), dir);
-}
+  auto tag0 = storage.AddTablet("tag0");
+  auto tag1 = storage.AddTablet("tag1");
+  auto record = tag0.AddRecord();
+  auto entry = record.AddData<int>();
+  entry.Set(12);
 
-TEST_F(MemoryStorageTest, AddTablet) {
-  // TODO need to escape tag as name
-  string tag = "add%20tag0";
-  storage_.NewTablet(tag, -1);
+  StorageReader reader("./tmp/storage_test");
+  auto modes = reader.Modes();
 
-  auto* tablet = storage_.tablet(tag);
-
-  ASSERT_TRUE(tablet != nullptr);
-  ASSERT_EQ(tablet->tag(), tag);
-}
-
-TEST_F(MemoryStorageTest, PersistToDisk) {
-  const std::string dir = "./tmp/201.test";
-  storage_.SetStorage(dir);
-  string tag = "add%20tag0";
-  storage_.NewTablet(tag, -1);
-
-  storage_.PersistToDisk(dir);
-  LOG(INFO) << "persist to disk";
-
-  MemoryStorage other;
-  other.LoadFromDisk(dir);
-  LOG(INFO) << "read from disk";
-  ASSERT_EQ(other.data().SerializeAsString(),
-            storage_.data().SerializeAsString());
+  ASSERT_EQ(modes.size(), 2);
+  ASSERT_EQ(modes[0], "train");
+  ASSERT_EQ(modes[1], "test");
 }
 
 }  // namespace visualdl

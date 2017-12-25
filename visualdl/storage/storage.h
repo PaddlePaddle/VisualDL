@@ -1,120 +1,140 @@
-#ifndef VISUALDL_STORAGE_H
-#define VISUALDL_STORAGE_H
+#ifndef VISUALDL_STORAGE_STORAGE_H
+#define VISUALDL_STORAGE_STORAGE_H
 
-#include <time.h>
-#include <map>
-#include <memory>
-#include <mutex>
-#include <string>
+#include <glog/logging.h>
+#include <vector>
+#include <set>
 
+#include "visualdl/logic/im.h"
+#include "visualdl/utils/guard.h"
 #include "visualdl/storage/storage.pb.h"
-#include "visualdl/utils/concurrency.h"
+#include "visualdl/storage/tablet.h"
+#include "visualdl/utils/filesystem.h"
 
 namespace visualdl {
 
-/*
- * Generate a tablet path in disk from its tag.
- */
-inline std::string GenPathFromTag(const std::string &dir,
-                                  const std::string &tag);
+static const std::string meta_file_name = "storage.meta";
 
-/*
- * Storage Interface. The might be a bunch of implementations, for example, a
- * MemStorage that keep a copy of all the taplets in memory, can be changed with
- * a higher performance; a DiskStorage that keep all the data in disk, apply to
- * the scenerios where memory consumption should be considered.
- */
-class StorageBase {
-public:
-  const static std::string meta_file_name;
+static std::string meta_path(const std::string& dir) {
+  CHECK(!dir.empty()) << "dir is empty";
+  return dir + "/" + meta_file_name;
+}
+static std::string tablet_path(const std::string& dir, const std::string& tag) {
+  CHECK(!dir.empty()) << "dir should be set first";
+  return dir + "/" + tag;
+}
 
-  enum Type { kMemory = 0, kDisk = 1 };
-  // mode of the sevice, either reading or writing.
-  enum Mode { kRead = 0, kWrite = 1, kNone = 2 };
+struct SimpleSyncMeta {
+  void Inc() { counter++; }
 
-  void SetStorage(const std::string &dir) {
-    time_t t;
-    time(&t);
-    storage_.set_timestamp(t);
-    storage_.set_dir(dir);
-  }
+  bool ToSync() { return counter % cycle == 0; }
 
-  std::string meta_path(const std::string &dir) const;
-  std::string tablet_path(const std::string &dir, const std::string &tag) const;
-
-  /*
-   * Create a new Tablet storage.
-   */
-  virtual storage::Tablet *NewTablet(const std::string &tag,
-                                     int num_samples) = 0;
-
-  /*
-   * Get a tablet from memory, this can be viewed as a cache, if the storage is
-   * in disk, a hash map in memory will first load the corresponding Tablet
-   * Protobuf from disk and hold all the changes.
-   */
-  virtual storage::Tablet *tablet(const std::string &tag) = 0;
-
-  /*
-   * Persist the data from cache to disk. Both the memory storage or disk
-   * storage should write changes to disk for persistence.
-   */
-  virtual void PersistToDisk(const std::string &dir) = 0;
-
-  /*
-   * Load data from disk.
-   */
-  virtual void LoadFromDisk(const std::string &dir) = 0;
-
-  storage::Storage *mutable_data() { return &storage_; }
-  const storage::Storage &data() { return storage_; }
-
-protected:
-  storage::Storage storage_;
+  size_t counter{0};
+  int cycle;
 };
 
 /*
- * Storage in Memory, that will support quick edits on data.
+ * Helper for operations on storage::Storage.
  */
-class MemoryStorage final : public StorageBase {
-public:
-  MemoryStorage() {}
-  MemoryStorage(cc::PeriodExector *executor) : executor_(executor) {}
-  ~MemoryStorage() {
-    if (executor_ != nullptr) executor_->Quit();
+struct Storage {
+  DECL_GUARD(Storage)
+
+  mutable SimpleSyncMeta meta;
+
+  Storage() { data_ = std::make_shared<storage::Storage>(); }
+  Storage(const std::shared_ptr<storage::Storage>& x) : data_(x) {
+    time_t t;
+    time(&t);
+    data_->set_timestamp(t);
   }
-  storage::Tablet *NewTablet(const std::string &tag, int num_samples) override;
 
-  storage::Tablet *tablet(const std::string &tag) override;
+  // write operations
+  void AddMode(const std::string& x) {
+    // avoid duplicate modes.
+    if (modes_.count(x) != 0) return;
+    *data_->add_modes() = x;
+    modes_.insert(x);
+    WRITE_GUARD
+  }
 
-  void PersistToDisk(const std::string &dir) override;
+  Tablet AddTablet(const std::string& x) {
+    CHECK(tablets_.count(x) == 0) << "tablet [" << x << "] has existed";
+    tablets_[x] = storage::Tablet();
+    AddTag(x);
+    LOG(INFO) << "really add tag " << x;
+    WRITE_GUARD
+    return Tablet(&tablets_[x], this);
+  }
 
-  void LoadFromDisk(const std::string &dir) override;
-
+  void SetDir(const std::string& dir) { dir_ = dir; }
+  void PersistToDisk() { PersistToDisk(dir_); }
   /*
-   * Create a thread which will keep reading the latest data from the disk to
-   * memory.
-   *
-   * msecs: how many millisecond to sync memory and disk.
+   * Save memory to disk.
    */
-  void StartReadService(const std::string &dir, int msecs, std::mutex *handler);
+  void PersistToDisk(const std::string& dir) {
+    // LOG(INFO) << "persist to disk " << dir;
+    CHECK(!dir.empty()) << "dir should be set.";
+    fs::TryRecurMkdir(dir);
 
-  /*
-   * Create a thread which will keep writing the latest changes from memory to
-   * disk.
-   *
-   * msecs: how many millisecond to sync memory and disk.
-   */
-  void StartWriteService(const std::string &dir,
-                         int msecs,
-                         std::mutex *handler);
+    fs::SerializeToFile(*data_, meta_path(dir));
+    for (auto tag : data_->tags()) {
+      auto it = tablets_.find(tag);
+      CHECK(it != tablets_.end()) << "tag " << tag << " not exist.";
+      fs::SerializeToFile(it->second, tablet_path(dir, tag));
+    }
+  }
+
+  Storage* parent() { return this; }
+
+protected:
+  void AddTag(const std::string& x) {
+    *data_->add_tags() = x;
+  }
 
 private:
+  std::string dir_;
   std::map<std::string, storage::Tablet> tablets_;
-  // TODO(ChunweiYan) remove executor here.
-  cc::PeriodExector *executor_{nullptr};
+  std::shared_ptr<storage::Storage> data_;
+  std::set<std::string> modes_;
+};
+
+/*
+ * Storage reader, each interface will trigger a read.
+ */
+struct StorageReader {
+  StorageReader(const std::string& dir) : dir_(dir) {}
+
+  // read operations
+  std::vector<std::string> Tags() {
+    storage::Storage storage;
+    Reload(storage);
+    return std::vector<std::string>(storage.tags().begin(),
+                                    storage.tags().end());
+  }
+  std::vector<std::string> Modes() {
+    storage::Storage storage;
+    Reload(storage);
+    return std::vector<std::string>(storage.modes().begin(),
+                                    storage.modes().end());
+  }
+
+  TabletReader tablet(const std::string& tag) const {
+    auto path = tablet_path(dir_, tag);
+    storage::Tablet tablet;
+    fs::DeSerializeFromFile(&tablet, path);
+    return TabletReader(tablet);
+  }
+
+protected:
+  void Reload(storage::Storage& storage) {
+    const std::string path = meta_path(dir_);
+    fs::DeSerializeFromFile(&storage, path);
+  }
+
+private:
+  std::string dir_;
 };
 
 }  // namespace visualdl
 
-#endif  // VISUALDL_STORAGE_H
+#endif
