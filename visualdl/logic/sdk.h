@@ -145,11 +145,15 @@ private:
  */
 struct Image {
   using value_t = float;
+  using shape_t = int64_t;
 
   Image(Tablet tablet, int num_samples) : writer_(tablet) {
     writer_.SetType(Tablet::Type::kImage);
     writer_.SetNumSamples(num_samples);
     num_samples_ = num_samples;
+  }
+  void SetCaption(const std::string& c) {
+    writer_.SetCaptions(std::vector<std::string>({c}));
   }
   /*
    * Start a sample period.
@@ -165,7 +169,7 @@ struct Image {
   void FinishSampling();
 
   void SetSample(int index,
-                 const std::vector<int64_t>& shape,
+                 const std::vector<shape_t>& shape,
                  const std::vector<value_t>& data);
 
 private:
@@ -173,6 +177,31 @@ private:
   Record step_;
   int num_records_{0};
   int num_samples_{0};
+};
+
+/*
+ * Image reader.
+ */
+struct ImageReader {
+  using value_t = typename Image::value_t;
+  using shape_t = typename Image::shape_t;
+
+  ImageReader(TabletReader tablet) : reader_(tablet) {}
+
+  std::string caption() {
+    CHECK_EQ(reader_.captions().size(), 1);
+    return reader_.captions().front();
+  }
+
+  // number of steps.
+  int num_records() { return reader_.total_records(); }
+
+  std::vector<value_t> data(int step, int index);
+
+  std::vector<shape_t> shape(int step, int index);
+
+private:
+  TabletReader reader_;
 };
 
 }  // namespace components

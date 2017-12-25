@@ -60,6 +60,7 @@ IMPL_ENTRY_GET(bool, b);
   }
 
 IMPL_ENTRY_GET_MULTI(int, i32s);
+IMPL_ENTRY_GET_MULTI(int64_t, i64s);
 IMPL_ENTRY_GET_MULTI(float, fs);
 IMPL_ENTRY_GET_MULTI(double, ds);
 IMPL_ENTRY_GET_MULTI(std::string, ss);
