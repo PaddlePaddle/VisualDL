@@ -38,16 +38,14 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
-        ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
-        ${PROJECT_SOURCE_DIR}/visualdl/logic/im_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
         ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
         )
-target_link_libraries(vl_test storage sdk im gtest glog protobuf gflags pthread)
+target_link_libraries(vl_test sdk storage entry im gtest glog protobuf gflags pthread)
 
 enable_testing ()
 
-add_custom_target(test_init COMMAND ./init_test.sh $CMAKE_BINARY_DIR)
+add_custom_target(test_init COMMAND $CMAKE_BINARY_DIR)
 add_test(NAME vstest COMMAND ./vl_test)
-set_target_properties(vl_test PROPERTIES DEPENDS test_init)

@@ -6,85 +6,68 @@
 
 namespace py = pybind11;
 namespace vs = visualdl;
+namespace cp = visualdl::components;
 
 PYBIND11_PLUGIN(core) {
   py::module m("core", "C++ core of VisualDL");
-  //  m.doc() = "visualdl python core API";
 
-  py::class_<vs::TabletHelper>(m, "Tablet")
-      // other member setter and getter
-      .def("record_buffer", &vs::TabletHelper::record_buffer)
-      .def("records_size", &vs::TabletHelper::records_size)
-      .def("buffer", &vs::TabletHelper::buffer)
-      .def("human_readable_buffer", &vs::TabletHelper::human_readable_buffer)
-      .def("set_buffer",
-           (void (vs::TabletHelper::*)(const std::string&)) &
-               vs::TabletHelper::SetBuffer)
-      // scalar interface
-      .def("as_int32_scalar",
-           [](vs::TabletHelper& self, vs::ImHelper& im) {
-             return vs::components::ScalarHelper<int32_t>(self, &im.handler());
-           })
-      .def("as_int64_scalar",
-           [](vs::TabletHelper& self, vs::ImHelper& im) {
-             return vs::components::ScalarHelper<int64_t>(&self.data(),
-                                                          &im.handler());
-           })
-      .def("as_float_scalar",
-           [](vs::TabletHelper& self, vs::ImHelper& im) {
-             return vs::components::ScalarHelper<float>(&self.data(),
-                                                        &im.handler());
-           })
-      .def("as_double_scalar", [](vs::TabletHelper& self, vs::ImHelper& im) {
-        return vs::components::ScalarHelper<double>(&self.data(),
-                                                    &im.handler());
-      });
+#define ADD_SCALAR(T)                                      \
+  py::class_<cp::ScalarReader<T>>(m, "ScalarReader__" #T)  \
+      .def("records", &cp::ScalarReader<T>::records)       \
+      .def("timestamps", &cp::ScalarReader<T>::timestamps) \
+      .def("ids", &cp::ScalarReader<T>::ids)               \
+      .def("caption", &cp::ScalarReader<T>::caption);
+  ADD_SCALAR(int);
+  ADD_SCALAR(float);
+  ADD_SCALAR(double);
+  ADD_SCALAR(int64_t);
+#undef ADD_SCALAR
 
-  py::class_<vs::StorageHelper>(m, "Storage")
-      .def("tags", &vs::StorageHelper::tags)
-      .def("timestamp", &vs::StorageHelper::timestamp)
-      .def("dir", &vs::StorageHelper::dir)
-      .def("set_dir", &vs::StorageHelper::SetDir)
-      .def("tablets_size", &vs::StorageHelper::tablets_size)
-      .def("buffer", &vs::StorageHelper::buffer)
-      .def("human_readable_buffer", &vs::StorageHelper::human_readable_buffer)
-      .def("set_buffer",
-           (void (vs::StorageHelper::*)(const std::string&)) &
-               vs::StorageHelper::SetBuffer);
+#define ADD_SCALAR_WRITER(T)                          \
+  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T)   \
+      .def("set_caption", &cp::Scalar<T>::SetCaption) \
+      .def("add_record", &cp::Scalar<T>::AddRecord);
+  ADD_SCALAR_WRITER(int);
+  ADD_SCALAR_WRITER(float);
+  ADD_SCALAR_WRITER(double);
+#undef ADD_SCALAR_WRITER
 
-  py::class_<vs::ImHelper>(m, "Im")
+#define ADD_SCALAR(T)                                                   \
+  .def("get_scalar_" #T, [](vs::Reader& self, const std::string& tag) { \
+    auto tablet = self.tablet(tag);                                     \
+    return vs::components::ScalarReader<T>(std::move(tablet));          \
+  })
+  py::class_<vs::Reader>(m, "Reader")
+      .def(
+          "__init__",
+          [](vs::Reader& instance,
+             const std::string& mode,
+             const std::string& dir) { new (&instance) vs::Reader(mode, dir); })
+      // clang-format off
+    ADD_SCALAR(float)
+    ADD_SCALAR(double)
+    ADD_SCALAR(int);
+// clang-format on
+#undef ADD_SCALAR
+
+#define ADD_SCALAR(T)                                                   \
+  .def("new_scalar_" #T, [](vs::Writer& self, const std::string& tag) { \
+    auto tablet = self.AddTablet(tag);                                  \
+    return cp::Scalar<T>(tablet);                                       \
+  })
+
+  py::class_<vs::Writer>(m, "Writer")
       .def("__init__",
-           [](vs::ImHelper& instance) { new (&instance) vs::ImHelper(); })
-      .def("storage", &vs::ImHelper::storage)
-      .def("tablet", &vs::ImHelper::tablet)
-      .def("add_tablet", &vs::ImHelper::AddTablet)
-      .def("persist_to_disk", &vs::ImHelper::PersistToDisk)
-      .def("clear_tablets", &vs::ImHelper::ClearTablets)
-      .def("start_read_service",
-           &vs::ImHelper::StartReadService,
-           "start a thread to maintain read service")
-      .def("start_write_service",
-           &vs::ImHelper::StartWriteSerice,
-           "start a thread to maintain write service")
-      .def("stop_service",
-           &vs::ImHelper::StopService,
-           "stop the service thread");
+           [](vs::Writer& instance, const std::string& dir, int sync_cycle) {
+             new (&instance) vs::Writer(dir);
+             instance.storage().meta.cycle = sync_cycle;
+           })
+      .def("as_mode", &vs::Writer::AsMode)
+      // clang-format off
+      ADD_SCALAR(float)
+      ADD_SCALAR(double)
+      ADD_SCALAR(int);
+// clang-format on
+#undef ADD_SCALAR
 
-// interfaces for components begin
-
-// different data type of scalar conponent
-#define ADD_SCALAR_TYPED_INTERFACE(T, name__)                             \
-  py::class_<vs::components::ScalarHelper<T>>(m, #name__)                 \
-      .def("add_record", &vs::components::ScalarHelper<T>::AddRecord)     \
-      .def("set_captions", &vs::components::ScalarHelper<T>::SetCaptions) \
-      .def("get_records", &vs::components::ScalarHelper<T>::GetRecords)   \
-      .def("get_captions", &vs::components::ScalarHelper<T>::GetCaptions) \
-      .def("get_ids", &vs::components::ScalarHelper<T>::GetIds)           \
-      .def("get_record_size", &vs::components::ScalarHelper<T>::GetSize)  \
-      .def("get_timestamps", &vs::components::ScalarHelper<T>::GetTimestamps);
-  ADD_SCALAR_TYPED_INTERFACE(int32_t, ScalarInt32);
-  ADD_SCALAR_TYPED_INTERFACE(int64_t, ScalarInt64);
-  ADD_SCALAR_TYPED_INTERFACE(float, ScalarFloat);
-  ADD_SCALAR_TYPED_INTERFACE(double, ScalarDouble);
-#undef ADD_SCALAR_TYPED_INTERFACE
-}
+}  // end pybind
