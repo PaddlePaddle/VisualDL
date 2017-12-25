@@ -5,6 +5,10 @@
             on-click="handleHeadClick()"
         >
             <span>{{title}}</span>
+            <span class="visaul-dl-expand-head-info">
+                <ui-icon class="visaul-dl-expand-head-arrow" size="20">{{iconName}}</ui-icon>
+                <span class="visaul-dl-expand-head-num">({{info}})</span>
+            </span>
         </h3>
         <div
             san-if="{{isShow}}"
@@ -15,7 +19,17 @@
     </div>
 </template>
 <script>
+import Icon from 'san-mui/Icon';
 export default {
+    components: {
+        'ui-icon': Icon
+    },
+    computed: {
+        iconName() {
+            let isShow = this.data.get('isShow');
+            return isShow ? 'expand_less' : 'expand_more';
+        }
+    },
     initData() {
         return {
             isShow: false
@@ -38,6 +52,16 @@ export default {
             height 50px
             padding 0 20px
             cursor pointer
+            position relative
+            .visaul-dl-expand-head-info
+                position absolute
+                left 90%
+                .visaul-dl-expand-head-arrow
+                    vertical-align middle
+                .visaul-dl-expand-head-num
+                    line-height 20px
+                    font-size 12px
+                    font-weight normal
         .visaul-dl-expand-panel-content
             padding 0 20px
         .visaul-dl-expand-panel-content:after
