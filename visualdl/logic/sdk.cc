@@ -49,6 +49,10 @@ template class ScalarReader<double>;
 
 void Image::StartSampling() {
   step_ = writer_.AddRecord();
+  // resize record
+  for (int i = 0; i < num_samples_; i++) {
+    step_.AddData<value_t>();
+  }
   num_records_ = 0;
 }
 
@@ -58,8 +62,8 @@ int Image::IsSampleTaken() {
     return num_records_ - 1;
   }
   float prob = float(num_samples_) / num_records_;
-  float thre = (float)rand() / RAND_MAX;
-  if (prob < thre) {
+  float randv = (float)rand() / RAND_MAX;
+  if (randv < prob) {
     // take this sample
     int index = rand() % num_samples_;
     return index;
@@ -82,7 +86,7 @@ struct is_same_type<T, T> {
 };
 
 void Image::SetSample(int index,
-                      const std::vector<int64_t>& shape,
+                      const std::vector<shape_t>& shape,
                       const std::vector<value_t>& data) {
   // production
   int size = std::accumulate(
@@ -92,24 +96,30 @@ void Image::SetSample(int index,
   CHECK_LE(index, num_records_);
 
   // set data
-  Entry<value_t> entry;
-  if (index == num_records_) {
-    // add one entry
-    entry = step_.AddData<value_t>();
-  } else {
-    entry = step_.MutableData<value_t>(index);
-  }
+  auto entry = step_.MutableData<value_t>(index);
   entry.SetMulti(data);
 
   static_assert(
-      !is_same_type<value_t, int64_t>::value,
+      !is_same_type<value_t, shape_t>::value,
       "value_t should not use int64_t field, this type is used to store shape");
 
   // set meta with hack
-  Entry<int64_t> meta;
+  Entry<shape_t> meta;
   meta.set_parent(entry.parent());
   meta.entry = entry.entry;
   meta.SetMulti(shape);
+}
+
+std::vector<ImageReader::value_t> ImageReader::data(int step, int index) {
+  auto record = reader_.record(step);
+  auto entry = record.data<value_t>(index);
+  return entry.GetMulti();
+}
+
+std::vector<ImageReader::shape_t> ImageReader::shape(int step, int index) {
+  auto record = reader_.record(step);
+  auto entry = record.data<shape_t>(index);
+  return entry.GetMulti();
 }
 
 }  // namespace components
