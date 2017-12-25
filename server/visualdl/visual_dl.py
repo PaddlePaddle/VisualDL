@@ -13,7 +13,7 @@ from flask import Response
 from visualdl.log import logger
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
-import summary
+import storage
 
 app = Flask(__name__, static_url_path="")
 
@@ -50,7 +50,7 @@ server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = "./frontend/dist/"
 mock_data_path = "./mock_data/"
 
-im = summary.IM('./tmp', 'read', 500)
+storage = storage.StorageReader(options.logdir)
 
 
 # return data
@@ -96,12 +96,19 @@ def runs():
 def tags():
     is_debug = bool(request.args.get('debug'))
     tag = request.args.get('tag')
-    # NOTE debug
-    is_debug = True
     if is_debug:
         result = mock_tags.data()
     else:
-        result = im.storage().tags()
+        result = {}
+        print 'modes', storage.modes()
+        for mode in storage.modes():
+            result[mode] = {}
+            reader = storage.as_mode(mode)
+            for tag in reader.tags("scalar"):
+                result[mode][tag] = {
+                    'displayName': reader.scalar(tag).caption(),
+                    'description': ""
+                }
     print 'tags', result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
@@ -111,25 +118,18 @@ def tags():
 def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
-    # NOTE debug
-    tag = "tag0"
     is_debug = bool(request.args.get('debug'))
     if is_debug:
         result = gen_result(0, "", mock_data.sequence_data())
     else:
-        scalar = summary.scalar(im, tag)
-        result = []
+        reader = storage.as_mode(run)
+        scalar = reader.scalar(tag)
 
-        for id, tag in enumerate(scalar.captions):
-            records = [v[id] for v in scalar.records]
-            line = [
-                a
-                for a in zip([float(a)
-                              for a in scalar.timestamps], scalar.ids, records)
-            ]
-            result.append(line)
+        records = scalar.records()
+        ids = scalar.ids()
+        timestamps = scalar.timestamps()
 
-        result = result[0]
+        result = zip(timestamps, ids, records)
         result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')

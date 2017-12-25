@@ -17,7 +17,7 @@ class StorageTest(unittest.TestCase):
             scalar.add_record(i, float(i))
 
         print 'test read'
-        self.reader = storage.StorageReader("train", self.dir)
+        self.reader = storage.StorageReader(self.dir).as_mode("train")
         scalar = self.reader.scalar("model/scalar/min")
         self.assertEqual(scalar.caption(), "train")
         records = scalar.records()
