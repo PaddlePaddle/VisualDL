@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import AppMenu from './common/ui/AppMenu';
+import AppMenu from './common/component/AppMenu';
 import {router} from 'san-router';
 import {routeTo} from './common/util/routeTo';
 
