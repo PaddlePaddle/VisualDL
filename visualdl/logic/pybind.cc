@@ -38,11 +38,13 @@ PYBIND11_PLUGIN(core) {
     return vs::components::ScalarReader<T>(std::move(tablet));          \
   })
   py::class_<vs::Reader>(m, "Reader")
-      .def(
-          "__init__",
-          [](vs::Reader& instance,
-             const std::string& mode,
-             const std::string& dir) { new (&instance) vs::Reader(mode, dir); })
+      .def("__init__",
+           [](vs::Reader& instance, const std::string& dir) {
+             new (&instance) vs::Reader(dir);
+           })
+      .def("as_mode", &vs::Reader::AsMode)
+      .def("modes", [](vs::Reader& self) { return self.storage().modes(); })
+      .def("tags", &vs::Reader::tags)
       // clang-format off
     ADD_SCALAR(float)
     ADD_SCALAR(double)
@@ -59,8 +61,7 @@ PYBIND11_PLUGIN(core) {
   py::class_<vs::Writer>(m, "Writer")
       .def("__init__",
            [](vs::Writer& instance, const std::string& dir, int sync_cycle) {
-             new (&instance) vs::Writer(dir);
-             instance.storage().meta.cycle = sync_cycle;
+             new (&instance) vs::Writer(dir, sync_cycle);
            })
       .def("as_mode", &vs::Writer::AsMode)
       // clang-format off

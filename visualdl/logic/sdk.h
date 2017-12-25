@@ -6,16 +6,24 @@
 #include "visualdl/utils/string.h"
 namespace visualdl {
 
+const static std::string kDefaultMode{"default"};
+
 class Writer {
 public:
-  Writer(const std::string& dir) {
+  Writer(const std::string& dir, int sync_cycle) {
     storage_.SetDir(dir);
+    storage_.meta.cycle = sync_cycle;
+  }
+  Writer(const Writer& other) {
+    storage_ = other.storage_;
+    mode_ = other.mode_;
   }
 
-  Writer& AsMode(const std::string& mode) {
-    mode_ = mode;
+  Writer AsMode(const std::string& mode) {
+    Writer writer = *this;
     storage_.AddMode(mode);
-    return *this;
+    writer.mode_ = mode;
+    return writer;
   }
 
   Tablet AddTablet(const std::string& tag) {
@@ -31,13 +39,18 @@ public:
 
 private:
   Storage storage_;
-  std::string mode_;
+  std::string mode_{kDefaultMode};
 };
 
 class Reader {
 public:
-  Reader(const std::string& mode, const std::string& dir)
-      : mode_(mode), reader_(dir) {}
+  Reader(const std::string& dir) : reader_(dir) {}
+
+  Reader AsMode(const std::string& mode) {
+    auto tmp = *this;
+    tmp.mode_ = mode;
+    return tmp;
+  }
 
   TabletReader tablet(const std::string& tag) {
     auto tmp = mode_ + "/" + tag;
@@ -45,9 +58,45 @@ public:
     return reader_.tablet(tmp);
   }
 
+  std::vector<std::string> all_tags() {
+    auto tags = reader_.all_tags();
+    auto it =
+        std::remove_if(tags.begin(), tags.end(), [&](const std::string& tag) {
+          return !TagMatchMode(tag);
+        });
+    tags.erase(it + 1);
+    return tags;
+  }
+
+  std::vector<std::string> tags(const std::string& component) {
+    auto type = Tablet::type(component);
+    auto tags = reader_.tags(type);
+    CHECK(!tags.empty());
+    std::vector<std::string> res;
+    for (const auto& tag : tags) {
+      if (TagMatchMode(tag)) {
+        res.push_back(GenReadableTag(tag));
+      }
+    }
+    return res;
+  }
+
+  StorageReader& storage() { return reader_; }
+
+protected:
+  bool TagMatchMode(const std::string& tag) {
+    if (tag.size() <= mode_.size()) return false;
+    return tag.substr(0, mode_.size()) == mode_;
+  }
+  std::string GenReadableTag(const std::string& tag) {
+    auto tmp = tag;
+    string::TagDecode(tmp);
+    return tmp.substr(mode_.size() + 1);  // including `/`
+  }
+
 private:
   StorageReader reader_;
-  std::string mode_{"default"};
+  std::string mode_{kDefaultMode};
 };
 
 namespace components {
@@ -84,13 +133,12 @@ struct ScalarReader {
   std::vector<T> ids() const;
   std::vector<T> timestamps() const;
   std::string caption() const;
-  size_t total_records() {return reader_.total_records();}
+  size_t total_records() { return reader_.total_records(); }
   size_t size() const;
 
 private:
   TabletReader reader_;
 };
-
 
 }  // namespace components
 }  // namespace visualdl

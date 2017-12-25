@@ -2,14 +2,15 @@
 #define VISUALDL_STORAGE_STORAGE_H
 
 #include <glog/logging.h>
-#include <vector>
+#include <algorithm>
 #include <set>
+#include <vector>
 
 #include "visualdl/logic/im.h"
-#include "visualdl/utils/guard.h"
 #include "visualdl/storage/storage.pb.h"
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/filesystem.h"
+#include "visualdl/utils/guard.h"
 
 namespace visualdl {
 
@@ -41,29 +42,34 @@ struct Storage {
 
   mutable SimpleSyncMeta meta;
 
-  Storage() { data_ = std::make_shared<storage::Storage>(); }
-  Storage(const std::shared_ptr<storage::Storage>& x) : data_(x) {
+  Storage() {
+    data_ = std::make_shared<storage::Storage>();
+    tablets_ = std::make_shared<std::map<std::string, storage::Tablet>>();
+    modes_ = std::make_shared<std::set<std::string>>();
     time_t t;
     time(&t);
     data_->set_timestamp(t);
   }
+  Storage(const Storage& other)
+      : data_(other.data_), tablets_(other.tablets_), modes_(other.modes_) {}
 
   // write operations
   void AddMode(const std::string& x) {
     // avoid duplicate modes.
-    if (modes_.count(x) != 0) return;
+    if (modes_->count(x) != 0) return;
     *data_->add_modes() = x;
-    modes_.insert(x);
+    modes_->insert(x);
     WRITE_GUARD
   }
 
   Tablet AddTablet(const std::string& x) {
-    CHECK(tablets_.count(x) == 0) << "tablet [" << x << "] has existed";
-    tablets_[x] = storage::Tablet();
+    CHECK(tablets_->count(x) == 0) << "tablet [" << x << "] has existed";
+    (*tablets_)[x] = storage::Tablet();
     AddTag(x);
     LOG(INFO) << "really add tag " << x;
-    WRITE_GUARD
-    return Tablet(&tablets_[x], this);
+    // WRITE_GUARD
+    PersistToDisk();
+    return Tablet(&(*tablets_)[x], this);
   }
 
   void SetDir(const std::string& dir) { dir_ = dir; }
@@ -78,8 +84,8 @@ struct Storage {
 
     fs::SerializeToFile(*data_, meta_path(dir));
     for (auto tag : data_->tags()) {
-      auto it = tablets_.find(tag);
-      CHECK(it != tablets_.end()) << "tag " << tag << " not exist.";
+      auto it = tablets_->find(tag);
+      CHECK(it != tablets_->end()) << "tag " << tag << " not exist.";
       fs::SerializeToFile(it->second, tablet_path(dir, tag));
     }
   }
@@ -89,13 +95,16 @@ struct Storage {
 protected:
   void AddTag(const std::string& x) {
     *data_->add_tags() = x;
+    LOG(INFO) << "add tag " << x;
+    LOG(INFO) << "tag.size " << data_->tags_size();
+    WRITE_GUARD
   }
 
 private:
   std::string dir_;
-  std::map<std::string, storage::Tablet> tablets_;
+  std::shared_ptr<std::map<std::string, storage::Tablet>> tablets_;
   std::shared_ptr<storage::Storage> data_;
-  std::set<std::string> modes_;
+  std::shared_ptr<std::set<std::string>> modes_;
 };
 
 /*
@@ -105,13 +114,23 @@ struct StorageReader {
   StorageReader(const std::string& dir) : dir_(dir) {}
 
   // read operations
-  std::vector<std::string> Tags() {
+  std::vector<std::string> all_tags() {
     storage::Storage storage;
     Reload(storage);
     return std::vector<std::string>(storage.tags().begin(),
                                     storage.tags().end());
   }
-  std::vector<std::string> Modes() {
+  std::vector<std::string> tags(Tablet::Type component) {
+    auto tags = all_tags();
+    auto it =
+        std::remove_if(tags.begin(), tags.end(), [&](const std::string& tag) {
+          auto tb = tablet(tag);
+          return tb.type() != component;
+        });
+    tags.resize(it - tags.begin());
+    return tags;
+  }
+  std::vector<std::string> modes() {
     storage::Storage storage;
     Reload(storage);
     return std::vector<std::string>(storage.modes().begin(),

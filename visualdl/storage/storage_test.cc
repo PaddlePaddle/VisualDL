@@ -25,7 +25,7 @@ TEST_F(StorageTest, main) {
   entry.Set(12);
 
   StorageReader reader("./tmp/storage_test");
-  auto modes = reader.Modes();
+  auto modes = reader.modes();
 
   ASSERT_EQ(modes.size(), 2);
   ASSERT_EQ(modes[0], "train");
