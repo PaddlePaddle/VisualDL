@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel title="{{title}}">
+        <ui-expand-panel info="{{tagList.length}}" title="{{title}}">
             <div class="visual-dl-chart-box">
                 <ui-chart
                     san-for="tag in filteredTagList"
