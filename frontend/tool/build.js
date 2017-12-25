@@ -1,4 +1,3 @@
-"use strict";
 const webpack = require('webpack');
 const rm = require('rimraf');
 const ora = require('ora');
