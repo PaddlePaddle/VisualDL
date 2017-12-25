@@ -140,6 +140,41 @@ private:
   TabletReader reader_;
 };
 
+/*
+ * Image component writer.
+ */
+struct Image {
+  using value_t = float;
+
+  Image(Tablet tablet, int num_samples) : writer_(tablet) {
+    writer_.SetType(Tablet::Type::kImage);
+    writer_.SetNumSamples(num_samples);
+    num_samples_ = num_samples;
+  }
+  /*
+   * Start a sample period.
+   */
+  void StartSampling();
+  /*
+   * Will this sample will be taken.
+   */
+  int IsSampleTaken();
+  /*
+   * End a sample period.
+   */
+  void FinishSampling();
+
+  void SetSample(int index,
+                 const std::vector<int64_t>& shape,
+                 const std::vector<value_t>& data);
+
+private:
+  Tablet writer_;
+  Record step_;
+  int num_records_{0};
+  int num_samples_{0};
+};
+
 }  // namespace components
 }  // namespace visualdl
 

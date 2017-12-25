@@ -10,6 +10,17 @@ namespace visualdl {
     WRITE_GUARD                                                  \
   }
 
+#define IMPL_ENTRY_SETMUL(ctype__, dtype__, field__)              \
+  template <>                                                     \
+  void Entry<ctype__>::SetMulti(const std::vector<ctype__>& vs) { \
+    entry->set_dtype(storage::DataType::dtype__);                 \
+    entry->clear_##field__();                                     \
+    for (auto v : vs) {                                           \
+      entry->add_##field__(v);                                    \
+    }                                                             \
+    WRITE_GUARD                                                   \
+  }
+
 IMPL_ENTRY_SET_OR_ADD(Set, int, kInt32, set_i32);
 IMPL_ENTRY_SET_OR_ADD(Set, int64_t, kInt64, set_i64);
 IMPL_ENTRY_SET_OR_ADD(Set, bool, kBool, set_b);
@@ -21,6 +32,12 @@ IMPL_ENTRY_SET_OR_ADD(Add, float, kFloats, add_fs);
 IMPL_ENTRY_SET_OR_ADD(Add, double, kDoubles, add_ds);
 IMPL_ENTRY_SET_OR_ADD(Add, std::string, kStrings, add_ss);
 IMPL_ENTRY_SET_OR_ADD(Add, bool, kBools, add_bs);
+
+IMPL_ENTRY_SETMUL(int, kInt32, i32s);
+IMPL_ENTRY_SETMUL(int64_t, kInt64, i64s);
+IMPL_ENTRY_SETMUL(float, kFloat, fs);
+IMPL_ENTRY_SETMUL(double, kDouble, ds);
+IMPL_ENTRY_SETMUL(bool, kBool, bs);
 
 #define IMPL_ENTRY_GET(T, fieldname__) \
   template <>                          \
