@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace std;
+
 namespace visualdl {
 
 TEST(Scalar, write) {
@@ -38,6 +40,29 @@ TEST(Scalar, write) {
   components::ScalarReader<float> scalar_reader1(
       reader.tablet("model/layer/min"));
   ASSERT_EQ(scalar_reader1.caption(), "customized caption");
+}
+
+TEST(Image, test) {
+  const auto dir = "./tmp/sdk_test.image";
+  Writer writer__(dir, 1);
+  auto writer = writer__.AsMode("train");
+
+  auto tablet = writer.AddTablet("image0");
+  components::Image image(tablet, 3);
+
+  image.StartSampling();
+  for (int i = 0; i < 100; i++) {
+    vector<int64_t> shape({3, 5, 5});
+    vector<float> data;
+    for (int j = 0; j < 3 * 5 * 5; j++) {
+      data.push_back(float(rand()) / RAND_MAX);
+    }
+    int index = image.IsSampleTaken();
+    if (index != -1) {
+      image.SetSample(index, shape, data);
+    }
+  }
+  image.FinishSampling();
 }
 
 }  // namespace visualdl

@@ -19,8 +19,9 @@ struct Entry {
   storage::Entry* entry{nullptr};
 
   Entry() {}
-  explicit Entry(storage::Entry* entry, Storage* parent)
-      : entry(entry), x_(parent) {}
+  Entry(storage::Entry* entry, Storage* parent) : entry(entry), x_(parent) {}
+  Entry(const Entry<T>& other) : entry(other.entry), x_(other.x_) {}
+
   void operator()(storage::Entry* entry, Storage* parent) {
     this->entry = entry;
     x_ = parent;
@@ -32,7 +33,10 @@ struct Entry {
   // Add a value to repeated message field.
   void Add(T v);
 
+  void SetMulti(const std::vector<T>& v);
+
   Storage* parent() { return x_; }
+  void set_parent(Storage* x) { x_ = x; }
 
 private:
   Storage* x_;
