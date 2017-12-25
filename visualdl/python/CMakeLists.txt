@@ -10,4 +10,4 @@ function(py_test TARGET_NAME)
              )
 endfunction()
 
-py_test(test_summary SRCS test_summary.py)
+py_test(test_summary SRCS test_storage.py)
