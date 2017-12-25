@@ -1,5 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.2)
 project(VisualDL)
+
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 11)
@@ -25,11 +31,21 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/thirdparty/local/include)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/backend/storage)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/backend/logic)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
 add_executable(vl_test
-        ${PROJECT_SOURCE_DIR}/visualdl/backend/test.cc
-        ${PROJECT_SOURCE_DIR}/visualdl/backend/storage/storage_test.cc
-        ${PROJECT_SOURCE_DIR}/visualdl/backend/logic/im_test.cc)
-target_link_libraries(vl_test storage im gtest glog protobuf gflags pthread)
+        ${PROJECT_SOURCE_DIR}/visualdl/test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
+        ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
+        )
+target_link_libraries(vl_test sdk storage entry im gtest glog protobuf gflags pthread)
+
+enable_testing ()
+
+add_custom_target(test_init COMMAND $CMAKE_BINARY_DIR)
+add_test(NAME vstest COMMAND ./vl_test)

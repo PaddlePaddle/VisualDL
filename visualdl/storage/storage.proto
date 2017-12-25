@@ -91,25 +91,33 @@ message Record {
 
 /*
 A Tablet stores the records of a component which type is `component` and
-indidates as `tag`.
+indidated as `tag`.
 The records will be saved in a file which name contains `tag`. During the
 running period,
 `num_records` will be accumulated, and `num_samples` indicates the size of
-sample set the
-reservoir sampling algorithm will collect.
+sample set the reservoir sampling algorithm will collect, if `num_samples`
+set to -1, no sample will be applied.
 */
 message Tablet {
-  // the kinds of the components that supported
+  // the kinds of the components that supported.
   enum Type {
     kScalar = 0;
     kHistogram = 1;
-    kGraph = 2;
+    kImage = 2;
   }
+  // The unique identification for this `Tablet`. VisualDL will have no the
+  // concept of FileWriter like TB. It will store all the tablets in a single
+  // directory, so it has a `mode` concept. `mode` will be stored in `tag`
+  // as the prefix, so that the same tablet in different modes will have
+  // different `tag`. for example, a tablet called "layer/grad/min" in "train"
+  // and "test" mode will have tags like "train/layer/grad/min" and
+  // "test/layer/grad/min".
+  string tag = 6;
   // type of the component, different component should have different storage
   // format.
   Type component = 1;
-  // records the total count of records, each Write operation should increate
-  // this value.
+  // Keep a record of the total count of records, each Write operation should
+  // increate this value. 
   int64 total_records = 2;
   // indicate the number of instances to sample, this should be a constant
   // value.
@@ -117,22 +125,21 @@ message Tablet {
   repeated Record records = 4;
   // store a meta infomation if all the records share.
   Entry meta = 5;
-  // the unique identification for this `Tablet`.
-  string tag = 6;
-  // one tablet might have multiple captions, for example, a scalar component
-  // might have
-  // two plots labeled "train" and "test".
+  // one tablet might have just one caption, if not set, it should be the value
+  // of `mode`.
   repeated string captions = 7;
+
+  string description = 8;
 }
 
 /*
 The Storage stores all the records.
 */
 message Storage {
-  // tags to Tablet, should be thread safe if fix the keys after initialization.
-  // TODO to delete in the new storage interface.
-  map<string, Tablet> tablets = 1;
-  repeated string tags = 4;
-  string dir = 2;
-  int64 timestamp = 3;
+  // VisualDL will not have the concept like TB's FileWriter, just one storage,
+  // each tablet has different `mode`.
+  repeated string modes = 1;
+  // tags will be used to generate paths of tablets.
+  repeated string tags = 2;
+  int64 timestamp = 5;
 }
