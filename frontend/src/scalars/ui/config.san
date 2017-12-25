@@ -9,12 +9,12 @@
             label="Smoothing"
             value="{=config.smoothing=}"
             min="{{0}}"
-            max="{{1}}"
+            max="{{0.999}}"
             step="{{0.001}}"
         />
         <ui-radio-group
             label="Horizontal"
-            value="{{config.horizontal}}"
+            value="{=config.horizontal=}"
             items="{{horizontalItems}}"
         />
         <ui-dropdown-menu
@@ -23,18 +23,25 @@
             value="{=config.sortingMethod=}"
         />
         <ui-checkbox-group
-            value="{=config.link=}"
+            value="{=config.downloadLink=}"
             items="{{lnksItems}}"
         />
         <ui-checkbox-group
-            value="{=config.chart=}"
+            value="{=config.outlier=}"
             items="{{chartItems}}"
         />
         <ui-checkbox-group
+            value="{=config.runs=}"
             label="Runs"
             items="{{runsItems}}"
         />
-        <san-button class="visual-dl-scalar-run-toggle" variants="raised secondery">Toggle All Runs</san-button>
+        <san-button
+            class="visual-dl-scalar-run-toggle"
+            variants="raised {{config.running ? 'secondery' : 'primary'}}"
+            on-click="toggleAllRuns"
+        >
+            {{config.running ? 'Running' : 'Stopped'}}
+        </san-button>
     </div>
 </template>
 <script>
@@ -56,59 +63,65 @@ export default {
     initData() {
         return {
             config: {
-                groupName: 'aa',
-                smoothing: '0.5',
-                horizontal: '1',
+                groupNameReg: '.*',
+                smoothing: '0.6',
+                horizontal: 'step',
                 sortingMethod: '2',
-                link: [],
-                chart: []
+                downloadLink: [],
+                outlier: [],
+                running: true
             },
             horizontalItems: [
                 {
                     name: 'Step',
-                    value: '1'
+                    value: 'step'
                 },
                 {
                     name: 'Relative',
-                    value: '2'
+                    value: 'relative'
                 },
                 {
                     name: 'Wall',
-                    value: '3'
+                    value: 'wall'
                 }
             ],
             sortingMethodItems: [
                 {
                     name: 'default',
-                    value: '1'
+                    value: 'default'
                 },
                 {
                     name: 'descending',
-                    value: '2'
+                    value: 'desc'
                 },
                 {
                     name: 'ascending',
-                    value: '3'
+                    value: 'asc'
                 },
                 {
                     name: 'nearest',
-                    value: '4'
+                    value: 'nearest'
                 }
             ],
             runsItems: [],
             lnksItems: [
                 {
-                    value: '1',
+                    value: 'yes',
                     name: 'Show data download links'
                 }
             ],
             chartItems: [
                 {
-                    value: '1',
+                    value: 'yes',
                     name: 'Ignore outliers in chart scaling'
                 }
             ]
         };
+    },
+    toggleAllRuns() {
+        let running = this.data.get('config.running');
+        this.data.set('config.running', !running);
+        this.fire('runningChange', running);
     }
 };
 </script>
