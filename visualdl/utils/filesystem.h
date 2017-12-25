@@ -1,5 +1,5 @@
-#ifndef VISUALDL_BACKEND_UTILS_FILESYSTEM_H
-#define VISUALDL_BACKEND_UTILS_FILESYSTEM_H
+#ifndef VISUALDL_UTILS_FILESYSTEM_H
+#define VISUALDL_UTILS_FILESYSTEM_H
 
 #include <google/protobuf/text_format.h>
 #include <sys/stat.h>
@@ -30,12 +30,38 @@ bool DeSerialize(T* proto, const std::string buf, bool human_readable = false) {
   return proto->ParseFromString(buf);
 }
 
-void TryMkdir(const std::string& dir) {
+template <typename T>
+bool SerializeToFile(const T& proto, const std::string& path) {
+  std::ofstream file(path, std::ios::binary);
+  return proto.SerializeToOstream(&file);
+}
+
+template <typename T>
+bool DeSerializeFromFile(T* proto, const std::string& path) {
+  std::ifstream file(path, std::ios::binary);
+  CHECK(file.is_open()) << "open " << path << " failed";
+  return proto->ParseFromIstream(&file);
+}
+
+static void TryMkdir(const std::string& dir) {
   VLOG(1) << "try to mkdir " << dir;
   struct stat st = {0};
   if (stat(dir.c_str(), &st) == -1) {
     ::mkdir(dir.c_str(), 0700);
   }
+}
+
+// Create a path by recursively create directries
+static void TryRecurMkdir(const std::string& path) {
+  // split path by '/'
+  for (int i = 1; i < path.size() - 1; i++) {
+    if (path[i] == '/') {
+      auto dir = path.substr(0, i + 1);
+      TryMkdir(dir);
+    }
+  }
+  // the last level
+  TryMkdir(path);
 }
 
 inline void Write(const std::string& path,

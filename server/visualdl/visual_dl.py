@@ -27,6 +27,7 @@ def option_parser():
     parser.add_option(
         "-p",
         "--port",
+        type=int,
         default=8040,
         action="store",
         dest="port",
