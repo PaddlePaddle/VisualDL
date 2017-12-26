@@ -1,7 +1,7 @@
 ## VisualDL Graph Data Format Design
 
 ## Background
-Neural network has a concept called  `Model`. VisualDL has an important feature that visualizes the structure of a deep learning `Model`. As a visualization tool, it tries to support various deep learning frameworks. It uses a generic `Model` data format that is supported by most of the frameworks.
+Neural network has a concept called  `Model`. VisualDL has an important feature that can visualize the structure of a deep learning `Model`. As a visualization tool, it tries to support various deep learning frameworks. It uses a generic `Model` data format that is supported by most of the frameworks.
 
 Facebook has an open-source project called [ONNX](http://onnx.ai/)(Open Neural Network Exchange). ONNX is an open format that represents deep learning models. It is now officially supported by most popular frameworks such as Tensorflow, Caffe2, MxNet, PaddlePaddle Fluid, etc. So we decided to choose ONNX as the standard Model format and support the visualization of ONNX model.
 
