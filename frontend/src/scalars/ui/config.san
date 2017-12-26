@@ -39,10 +39,10 @@
 </template>
 <script>
 import TextField from 'san-mui/TextField';
-import Slider from '../../common/ui/Slider';
-import RadioGroup from '../../common/ui/RadioGroup';
-import DropDownMenu from '../../common/ui/DropDownMenu';
-import CheckBoxGroup from '../../common/ui/CheckBoxGroup';
+import Slider from '../../common/component/Slider';
+import RadioGroup from '../../common/component/RadioGroup';
+import DropDownMenu from '../../common/component/DropDownMenu';
+import CheckBoxGroup from '../../common/component/CheckBoxGroup';
 import Button from 'san-mui/Button';
 export default {
     components: {
