@@ -1,6 +1,6 @@
 import 'normalize.css/normalize.css';
 import 'san-mui/index.css';
-import './common/ui/ui-common.styl';
+import './common/component/ui-common.styl';
 
 import './home/index';
 import './scalars/index';

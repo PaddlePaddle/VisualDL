@@ -1,6 +1,8 @@
 #ifndef VISUALDL_TABLET_H
 #define VISUALDL_TABLET_H
 
+#include <glog/logging.h>
+
 #include "visualdl/logic/im.h"
 #include "visualdl/storage/record.h"
 #include "visualdl/storage/storage.pb.h"
@@ -17,6 +19,19 @@ struct Tablet {
   DECL_GUARD(Tablet);
 
   Tablet(storage::Tablet* x, Storage* parent) : data_(x), x_(parent) {}
+
+  static Type type(const std::string& name) {
+    if (name == "scalar") {
+      return kScalar;
+    }
+    if (name == "histogram") {
+      return kHistogram;
+    }
+    if (name == "image") {
+      return kImage;
+    }
+    LOG(ERROR) << "unknown component: " << name;
+  }
 
   // write operations.
   void SetNumSamples(int x) {

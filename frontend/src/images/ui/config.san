@@ -19,19 +19,11 @@
 </template>
 <script>
 import TextField from 'san-mui/TextField';
-import Slider from '../../common/ui/Slider';
-import RadioGroup from '../../common/ui/RadioGroup';
-import DropDownMenu from '../../common/ui/DropDownMenu';
-import CheckBoxGroup from '../../common/ui/CheckBoxGroup';
-import Button from 'san-mui/Button';
+import CheckBoxGroup from '../../common/component/CheckBoxGroup';
 export default {
     components: {
         'san-text-field': TextField,
-        'ui-slider': Slider,
-        'ui-radio-group': RadioGroup,
-        'ui-dropdown-menu': DropDownMenu,
-        'ui-checkbox-group': CheckBoxGroup,
-        'san-button': Button
+        'ui-checkbox-group': CheckBoxGroup
     },
     initData() {
         return {

@@ -28,8 +28,8 @@
     </div>
 </template>
 <script>
-import ExpandPanel from '../../common/ui/ExpandPanel';
-import chart from '../../common/ui/Charts/chart';
+import ExpandPanel from '../../common/component/ExpandPanel';
+import chart from '../../common/component/Charts/chart';
 import Pagination from 'san-mui/Pagination';
 
 export default {

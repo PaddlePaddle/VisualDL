@@ -21,8 +21,8 @@
     </div>
 </template>
 <script>
-import ExpandPanel from '../../common/ui/ExpandPanel';
-import image from '../../common/ui/Charts/image';
+import ExpandPanel from '../../common/component/ExpandPanel';
+import image from '../../common/component/Charts/image';
 import Pagination from 'san-mui/Pagination';
 
 export default {

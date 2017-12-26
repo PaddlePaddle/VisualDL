@@ -13,6 +13,7 @@ from flask import Response
 from visualdl.log import logger
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
+import storage
 
 app = Flask(__name__, static_url_path="")
 
@@ -31,7 +32,14 @@ def option_parser():
         default=8040,
         action="store",
         dest="port",
-        help="rest api service port")
+        help="api service port")
+    parser.add_option(
+        "-t",
+        "--host",
+        type=str,
+        default="0.0.0.0",
+        action="store",
+        help="api service ip")
     parser.add_option(
         "--logdir", action="store", dest="logdir", help="log file directory")
     return parser.parse_args()
@@ -41,6 +49,8 @@ options, args = option_parser()
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = "./frontend/dist/"
 mock_data_path = "./mock_data/"
+
+storage = storage.StorageReader(options.logdir)
 
 
 # return data
@@ -85,7 +95,22 @@ def runs():
 @app.route("/data/plugin/scalars/tags")
 def tags():
     is_debug = bool(request.args.get('debug'))
-    result = gen_result(0, "", mock_tags.data())
+    tag = request.args.get('tag')
+    if is_debug:
+        result = mock_tags.data()
+    else:
+        result = {}
+        print 'modes', storage.modes()
+        for mode in storage.modes():
+            result[mode] = {}
+            reader = storage.as_mode(mode)
+            for tag in reader.tags("scalar"):
+                result[mode][tag] = {
+                    'displayName': reader.scalar(tag).caption(),
+                    'description': ""
+                }
+    print 'tags', result
+    result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -94,10 +119,22 @@ def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
     is_debug = bool(request.args.get('debug'))
-    result = gen_result(0, "", mock_data.sequence_data())
+    if is_debug:
+        result = gen_result(0, "", mock_data.sequence_data())
+    else:
+        reader = storage.as_mode(run)
+        scalar = reader.scalar(tag)
+
+        records = scalar.records()
+        ids = scalar.ids()
+        timestamps = scalar.timestamps()
+
+        result = zip(timestamps, ids, records)
+        result = gen_result(0, "", result)
+
     return Response(json.dumps(result), mimetype='application/json')
 
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
-    app.run(debug=False, host="0.0.0.0", port=options.port)
+    app.run(debug=False, host=options.host, port=options.port)
