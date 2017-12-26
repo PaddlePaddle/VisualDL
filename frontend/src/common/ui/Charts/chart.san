@@ -34,6 +34,7 @@ import {isFinite, flatten, maxBy, minBy, sortBy, max, min} from 'lodash';
 import echarts from 'echarts';
 import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
 import {quantile} from '../../../common/util/index';
+import moment from 'moment';
 
 // service
 import {getPluginScalarsScalars} from '../../../service';
@@ -80,7 +81,7 @@ export default {
             this.initDownloadType();
         });
 
-        this.watch('orginData', orginData => {
+        this.watch('originData', originData => {
             this.setChartData();
             this.setChartsOutlier();
             this.setChartHorizon();
@@ -174,6 +175,7 @@ export default {
         );
         seriesOption = flatten(seriesOption);
         let legendOptions = tagList.map(item => item.run);
+        let that = this;
         let option = {
             title: {
                 text: tag,
@@ -186,7 +188,12 @@ export default {
                 axisPointer: {
                     animation: true
                 },
-                position: ['10%', '90%']
+                position: ['10%', '90%'],
+                formatter(params, ticket, callback) {
+                    let data = that.getFormatterPoints(params[0].data);
+                    return that.tansformFormatterData(data);
+
+                }
             },
             toolbox: {
                 show: true,
@@ -246,13 +253,13 @@ export default {
             return getPluginScalarsScalars(params);
         });
         axios.all(requestList).then(resArray => {
-            this.data.set('orginData', resArray.map(res => res.data));
+            this.data.set('originData', resArray.map(res => res.data));
         });
     },
 
     setChartData() {
-        let orginData = this.data.get('orginData');
-        let seriesData = orginData.map(lineData => {
+        let originData = this.data.get('originData');
+        let seriesData = originData.map(lineData => {
             // add the smoothed data
             this.tansformDataset(lineData);
             return [
@@ -319,7 +326,7 @@ export default {
                 startValue = millisecond;
             }
             // relative time, millisecond to hours
-            d[4] = Math.floor(millisecond - startValue);
+            d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
             if (!isFinite(nextVal)) {
                 d[3] = nextVal;
             } else {
@@ -339,8 +346,8 @@ export default {
     // compute Y domain from originData
     setChartsOutlier(seriesData) {
         let outlier = this.data.get('outlier');
-        let orginData = this.data.get('orginData');
-        let domainRangeArray = orginData.map(seriesData => this.computeDataRange(seriesData, outlier));
+        let originData = this.data.get('originData');
+        let domainRangeArray = originData.map(seriesData => this.computeDataRange(seriesData, outlier));
 
         // compare，get the best Y domain。
         let flattenNumbers = flatten(domainRangeArray);
@@ -452,6 +459,106 @@ export default {
         }
 
     },
+
+    getFormatterPoints(data) {
+        let originData = this.data.get('originData');
+        let tagList = this.data.get('tagInfo.tagList');
+        let sortingMethod = this.data.get('sortingMethod');
+        // Can't know exactly the tigger runs.
+        // If the step is same, regard the point as the trigger point.
+        let triggerValue = data[2];
+        let step = data[1];
+        let points = originData.map((series, index) => {
+            let nearestItem;
+            if (step === 0) {
+                nearestItem = series[0];
+
+            }
+            else {
+                for(let i = 0; i < series.length; i++) {
+                    let item = series[i];
+                    if (item[1] === step) {
+                        nearestItem = item;
+                        break;
+                    }
+                    if (item[1] > step) {
+                        nearestItem = series[i -1];
+                        break;
+                    }
+                    if (!nearestItem) {
+                        nearestItem = series[series.length - 1];
+                    }
+                }
+            }
+            return {
+                run: tagList[index].run,
+                item: nearestItem
+            };
+        });
+
+        if (sortingMethod === 'default' || !sortingMethod) {
+            return points;
+        }
+        let sortedPoints;
+        switch (sortingMethod) {
+            case 'desc':
+                sortedPoints = sortBy(points, one => one.item[3]);
+                sortedPoints.reverse();
+                break;
+            case 'asc':
+                sortedPoints = sortBy(points, one => one.item[3]);
+                break;
+            case 'nearest':
+                // compare other ponts width the trigger point, caculate the nearest sort.
+                sortedPoints = sortBy(points, one => one.item[3] - triggerValue);
+                break;
+            default:
+                sortedPoints = points
+        }
+        return sortedPoints;
+    },
+
+    tansformFormatterData(data) {
+        let indexPropMap = {
+            Time: 0,
+            Step: 1,
+            Value: 2,
+            Smoothed: 3,
+            Relative: 4
+        };
+        let tranformedData = data.map(item => {
+            let data = item.item;
+            return {
+                Run: item.run,
+                // keep six number for easy-read
+                Smoothed: data[indexPropMap['Smoothed']].toString().slice(0, 6),
+                Value: data[indexPropMap['Value']].toString().slice(0, 6),
+                Step: data[indexPropMap['Step']],
+                Time: moment(Math.floor(data[indexPropMap['Time'] * 1000]), 'X').format('YYYY-MM-DD HH:mm:ss'),
+                // relative display value should take easy-read into consideration.
+                // better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
+                Relative: Math.floor(data[indexPropMap['Relative']] * 60 * 60) + 's'
+            };
+        });
+
+        let headerHtml = '<tr>';
+        headerHtml += Object.keys(tranformedData[0]).map(key => {
+            return '<td style="padding: 4px">' + key + '</td>';
+        }).join('');
+        headerHtml += '</tr>';
+
+        let content = tranformedData.map(item => {
+            let str = '<tr>';
+            str += Object.keys(item).map(val => {
+                return '<td style="padding: 4px">' + item[val] + '</td>';
+            }).join('');
+            str += '</tr>';
+            return str;
+        }).join('');
+
+        return '<table style="font-size:12px;text-align: left;padding: 2px;"><thead>' + headerHtml + '</thead>'
+        + '<tbody>' + content  + '</tbody><table>';
+        },
 
     setChartsRuns() {
         // let tagInfo = this.data.get('tagInfo');
