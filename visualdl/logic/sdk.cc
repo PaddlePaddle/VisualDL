@@ -49,6 +49,10 @@ template class ScalarReader<double>;
 
 void Image::StartSampling() {
   step_ = writer_.AddRecord();
+
+  time_t time = std::time(nullptr);
+  step_.SetTimeStamp(time);
+
   // resize record
   for (int i = 0; i < num_samples_; i++) {
     step_.AddData<value_t>();
@@ -108,6 +112,16 @@ void Image::SetSample(int index,
   meta.set_parent(entry.parent());
   meta.entry = entry.entry;
   meta.SetMulti(shape);
+}
+
+std::string ImageReader::caption() {
+  CHECK_EQ(reader_.captions().size(), 1);
+  auto caption = reader_.captions().front();
+  if (Reader::TagMatchMode(caption, mode_)) {
+    return Reader::GenReadableTag(mode_, caption);
+  }
+  string::TagDecode(caption);
+  return caption;
 }
 
 std::vector<ImageReader::value_t> ImageReader::data(int step, int index) {

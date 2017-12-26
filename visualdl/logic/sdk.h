@@ -199,18 +199,14 @@ struct ImageReader {
   ImageReader(const std::string& mode, TabletReader tablet)
       : reader_(tablet), mode_{mode} {}
 
-  std::string caption() {
-    CHECK_EQ(reader_.captions().size(), 1);
-    auto caption = reader_.captions().front();
-    if (Reader::TagMatchMode(caption, mode_)) {
-      return Reader::GenReadableTag(mode_, caption);
-    }
-    string::TagDecode(caption);
-    return caption;
-  }
+  std::string caption();
 
   // number of steps.
   int num_records() { return reader_.total_records(); }
+
+  int num_samples() { return reader_.num_samples(); }
+
+  int64_t timestamp(int step) { return reader_.record(step).timestamp(); }
 
   std::vector<value_t> data(int step, int index);
 

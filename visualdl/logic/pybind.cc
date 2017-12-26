@@ -91,6 +91,8 @@ PYBIND11_PLUGIN(core) {
   py::class_<cp::ImageReader>(m, "ImageReader")
       .def("caption", &cp::ImageReader::caption)
       .def("num_records", &cp::ImageReader::num_records)
+      .def("num_samples", &cp::ImageReader::num_samples)
+      .def("timestamp", &cp::ImageReader::timestamp)
       .def("data", &cp::ImageReader::data)
       .def("shape", &cp::ImageReader::shape);
 

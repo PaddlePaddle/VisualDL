@@ -2,18 +2,20 @@
 """
 import json
 import os
+import re
 import sys
 from optparse import OptionParser
 
 from flask import Flask, redirect
 from flask import request
-from flask import send_from_directory
+from flask import send_from_directory, send_file
 from flask import Response
 
 from visualdl.log import logger
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
 import storage
+import lib
 
 app = Flask(__name__, static_url_path="")
 
@@ -87,7 +89,7 @@ def logdir():
 
 @app.route('/data/runs')
 def runs():
-    is_debug = bool(request.args.get('debug'))
+    modes = storage.modes()
     result = gen_result(0, "", ["train", "test"])
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -95,20 +97,18 @@ def runs():
 @app.route("/data/plugin/scalars/tags")
 def tags():
     is_debug = bool(request.args.get('debug'))
-    tag = request.args.get('tag')
     if is_debug:
         result = mock_tags.data()
     else:
-        result = {}
-        print 'modes', storage.modes()
-        for mode in storage.modes():
-            result[mode] = {}
-            reader = storage.as_mode(mode)
-            for tag in reader.tags("scalar"):
-                result[mode][tag] = {
-                    'displayName': reader.scalar(tag).caption(),
-                    'description': ""
-                }
+        result = lib.get_scalar_tags(storage, mode)
+    print 'tags', result
+    result = gen_result(0, "", result)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route("/data/plugin/images/tags")
+def tags():
+    result = lib.get_image_tags(storage, mode)
     print 'tags', result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
@@ -133,6 +133,29 @@ def scalars():
         result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/images/images')
+def images():
+    run = request.args.get('run')
+    tag = request.args.get('tag')
+
+    res = lib.gen_image_tag_steps(storage, mode, tag)
+
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/images/individualImage')
+def individual_image():
+    run = request.args.get('run')
+    tag = request.args.get('tag')  # include a index
+    index = request.args.get('index')  # index of step
+    offset = 0
+
+    imagefile = lib.get_invididual_image(storage, mode, tag)
+    response = send_file(
+        imagefile, as_attachment=True, attachment_filename='img.png')
+    return response
 
 
 if __name__ == '__main__':
