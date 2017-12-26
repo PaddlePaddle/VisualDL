@@ -17,7 +17,7 @@
 <script>
 import Button from 'san-mui/Button';
 import Icon from 'san-mui/Icon';
-import DropDownMenu from '../../../common/ui/DropDownMenu';
+import DropDownMenu from '../../../common/component/DropDownMenu';
 import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
 import echarts from 'echarts';
 import axios from 'axios';
