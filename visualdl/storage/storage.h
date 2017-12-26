@@ -78,7 +78,7 @@ struct Storage {
    * Save memory to disk.
    */
   void PersistToDisk(const std::string& dir) {
-    // LOG(INFO) << "persist to disk " << dir;
+    LOG(INFO) << "persist to disk " << dir;
     CHECK(!dir.empty()) << "dir should be set.";
     fs::TryRecurMkdir(dir);
 

@@ -32,6 +32,7 @@ public:
     string::TagEncode(tmp);
     auto res = storage_.AddTablet(tmp);
     res.SetCaptions(std::vector<std::string>({mode_}));
+    res.SetTag(mode_, tag);
     return res;
   }
 
@@ -52,6 +53,8 @@ public:
     return tmp;
   }
 
+  const std::string& mode() { return mode_; }
+
   TabletReader tablet(const std::string& tag) {
     auto tmp = mode_ + "/" + tag;
     string::TagEncode(tmp);
@@ -62,7 +65,7 @@ public:
     auto tags = reader_.all_tags();
     auto it =
         std::remove_if(tags.begin(), tags.end(), [&](const std::string& tag) {
-          return !TagMatchMode(tag);
+          return !TagMatchMode(tag, mode_);
         });
     tags.erase(it + 1);
     return tags;
@@ -74,8 +77,8 @@ public:
     CHECK(!tags.empty());
     std::vector<std::string> res;
     for (const auto& tag : tags) {
-      if (TagMatchMode(tag)) {
-        res.push_back(GenReadableTag(tag));
+      if (TagMatchMode(tag, mode_)) {
+        res.push_back(GenReadableTag(mode_, tag));
       }
     }
     return res;
@@ -83,17 +86,19 @@ public:
 
   StorageReader& storage() { return reader_; }
 
-protected:
-  bool TagMatchMode(const std::string& tag) {
-    if (tag.size() <= mode_.size()) return false;
-    return tag.substr(0, mode_.size()) == mode_;
-  }
-  std::string GenReadableTag(const std::string& tag) {
+  static std::string GenReadableTag(const std::string& mode,
+                                    const std::string& tag) {
     auto tmp = tag;
     string::TagDecode(tmp);
-    return tmp.substr(mode_.size() + 1);  // including `/`
+    return tmp.substr(mode.size() + 1);  // including `/`
   }
 
+  static bool TagMatchMode(const std::string& tag, const std::string& mode) {
+    if (tag.size() <= mode.size()) return false;
+    return tag.substr(0, mode.size()) == mode;
+  }
+
+protected:
 private:
   StorageReader reader_;
   std::string mode_{kDefaultMode};
@@ -149,7 +154,9 @@ struct Image {
 
   Image(Tablet tablet, int num_samples) : writer_(tablet) {
     writer_.SetType(Tablet::Type::kImage);
+    // make image's tag as the default caption.
     writer_.SetNumSamples(num_samples);
+    SetCaption(tablet.reader().tag());
     num_samples_ = num_samples;
   }
   void SetCaption(const std::string& c) {
@@ -168,6 +175,9 @@ struct Image {
    */
   void FinishSampling();
 
+  /*
+   * Just store a tensor with nothing to do with image format.
+   */
   void SetSample(int index,
                  const std::vector<shape_t>& shape,
                  const std::vector<value_t>& data);
@@ -186,11 +196,17 @@ struct ImageReader {
   using value_t = typename Image::value_t;
   using shape_t = typename Image::shape_t;
 
-  ImageReader(TabletReader tablet) : reader_(tablet) {}
+  ImageReader(const std::string& mode, TabletReader tablet)
+      : reader_(tablet), mode_{mode} {}
 
   std::string caption() {
     CHECK_EQ(reader_.captions().size(), 1);
-    return reader_.captions().front();
+    auto caption = reader_.captions().front();
+    if (Reader::TagMatchMode(caption, mode_)) {
+      return Reader::GenReadableTag(mode_, caption);
+    }
+    string::TagDecode(caption);
+    return caption;
   }
 
   // number of steps.
@@ -202,6 +218,7 @@ struct ImageReader {
 
 private:
   TabletReader reader_;
+  std::string mode_;
 };
 
 }  // namespace components

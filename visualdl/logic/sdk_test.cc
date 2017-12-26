@@ -74,7 +74,7 @@ TEST(Image, test) {
   Reader reader__(dir);
   auto reader = reader__.AsMode("train");
   auto tablet2read = reader.tablet("image0");
-  components::ImageReader image2read(tablet2read);
+  components::ImageReader image2read("train", tablet2read);
   CHECK_EQ(image2read.caption(), "this is an image");
   CHECK_EQ(image2read.num_records(), num_steps);
 }
