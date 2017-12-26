@@ -34,13 +34,13 @@ class StorageTest(unittest.TestCase):
         image_writer = self.writer.image(tag, 10)
         num_passes = 10
         num_samples = 100
+        shape = [3, 10, 10]
 
         for pass_ in xrange(num_passes):
             image_writer.start_sampling()
             for ins in xrange(num_samples):
                 index =  image_writer.is_sample_taken()
                 if index != -1:
-                    shape = [3, 10, 10]
                     data = np.random.random(shape) * 256
                     data = np.ndarray.flatten(data)
                     image_writer.set_sample(index, shape, list(data))
@@ -49,6 +49,14 @@ class StorageTest(unittest.TestCase):
         self.reader = storage.StorageReader(self.dir).as_mode("train")
         image_reader = self.reader.image(tag)
         self.assertEqual(image_reader.caption(), tag)
+        self.assertEqual(image_reader.num_records(), num_passes)
+        self.assertTrue(np.equal(image_reader.shape(0, 1), shape).all())
+        data = image_reader.data(0, 1)
+        self.assertEqual(len(data), np.prod(shape))
+
+        image_tags = self.reader.tags("image")
+        self.assertTrue(image_tags)
+        self.assertEqual(len(image_tags), 1)
 
 
 if __name__ == '__main__':
