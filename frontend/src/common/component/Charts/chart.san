@@ -26,12 +26,12 @@
 // components
 import Button from 'san-mui/Button';
 import Icon from 'san-mui/Icon';
-import DropDownMenu from '../../../common/ui/DropDownMenu';
+import DropDownMenu from '../../../common/component/DropDownMenu';
 
 // libs
+import echarts from 'echarts';
 import axios from 'axios';
 import {isFinite, flatten, maxBy, minBy, sortBy, max, min} from 'lodash';
-import echarts from 'echarts';
 import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
 import {quantile} from '../../../common/util/index';
 import moment from 'moment';
@@ -466,8 +466,7 @@ export default {
         let sortingMethod = this.data.get('sortingMethod');
         // Can't know exactly the tigger runs.
         // If the step is same, regard the point as the trigger point.
-        let triggerValue = data[2];
-        let step = data[1];
+        let [, step, triggerValue] = data;
         let points = originData.map((series, index) => {
             let nearestItem;
             if (step === 0) {
@@ -475,14 +474,14 @@ export default {
 
             }
             else {
-                for(let i = 0; i < series.length; i++) {
+                for (let i = 0; i < series.length; i++) {
                     let item = series[i];
                     if (item[1] === step) {
                         nearestItem = item;
                         break;
                     }
                     if (item[1] > step) {
-                        nearestItem = series[i -1];
+                        nearestItem = series[i - 1];
                         break;
                     }
                     if (!nearestItem) {
@@ -513,7 +512,7 @@ export default {
                 sortedPoints = sortBy(points, one => one.item[3] - triggerValue);
                 break;
             default:
-                sortedPoints = points
+                sortedPoints = points;
         }
         return sortedPoints;
     },
@@ -526,39 +525,47 @@ export default {
             Smoothed: 3,
             Relative: 4
         };
+        let widthPropMap = {
+            Run: 40,
+            Time: 90,
+            Step: 40,
+            Value: 50,
+            Smoothed: 50,
+            Relative: 40
+        };
         let tranformedData = data.map(item => {
             let data = item.item;
             return {
                 Run: item.run,
                 // keep six number for easy-read
-                Smoothed: data[indexPropMap['Smoothed']].toString().slice(0, 6),
-                Value: data[indexPropMap['Value']].toString().slice(0, 6),
-                Step: data[indexPropMap['Step']],
-                Time: moment(Math.floor(data[indexPropMap['Time'] * 1000]), 'X').format('YYYY-MM-DD HH:mm:ss'),
+                Smoothed: data[indexPropMap.Smoothed].toString().slice(0, 6),
+                Value: data[indexPropMap.Value].toString().slice(0, 6),
+                Step: data[indexPropMap.Step],
+                Time: moment(Math.floor(data[indexPropMap.Time] * 1000), 'X').format('YYYY-MM-DD HH:mm:ss'),
                 // relative display value should take easy-read into consideration.
                 // better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
-                Relative: Math.floor(data[indexPropMap['Relative']] * 60 * 60) + 's'
+                Relative: Math.floor(data[indexPropMap.Relative] * 60 * 60) + 's'
             };
         });
 
-        let headerHtml = '<tr>';
+        let headerHtml = '<tr style="font-size:14px;">';
         headerHtml += Object.keys(tranformedData[0]).map(key => {
-            return '<td style="padding: 4px">' + key + '</td>';
+            return '<td style="padding: 0 4px; font-weight: bold; width:' + widthPropMap[key] + 'px;">' + key + '</td>';
         }).join('');
         headerHtml += '</tr>';
 
         let content = tranformedData.map(item => {
-            let str = '<tr>';
+            let str = '<tr style="font-size:12px;">';
             str += Object.keys(item).map(val => {
-                return '<td style="padding: 4px">' + item[val] + '</td>';
+                return '<td style="padding: 0 4px">' + item[val] + '</td>';
             }).join('');
             str += '</tr>';
             return str;
         }).join('');
 
-        return '<table style="font-size:12px;text-align: left;padding: 2px;"><thead>' + headerHtml + '</thead>'
+        return '<table style="text-align: left;table-layout: fixed;width: 480px;"><thead>' + headerHtml + '</thead>'
         + '<tbody>' + content  + '</tbody><table>';
-        },
+    },
 
     setChartsRuns() {
         // let tagInfo = this.data.get('tagInfo');
