@@ -135,6 +135,7 @@ def images():
     tag = request.args.get('displayName')
 
     result = lib.get_image_tag_steps(storage, mode, tag)
+    result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -143,10 +144,10 @@ def images():
 def individual_image():
     mode = request.args.get('run')
     tag = request.args.get('tag')  # include a index
-    step_index = request.args.get('index')  # index of step
+    step_index = int(request.args.get('index'))  # index of step
     offset = 0
 
-    imagefile = lib.get_invididual_image(storage, mode, tag, step_)
+    imagefile = lib.get_invididual_image(storage, mode, tag, step_index)
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response

@@ -108,8 +108,13 @@ void Image::SetSample(int index,
   CHECK_LE(index, num_records_);
 
   // set data
-  auto entry = step_.MutableData<value_t>(index);
-  entry.SetMulti(data);
+  auto entry = step_.MutableData<std::vector<char>>(index);
+  // trick to store int8 to protobuf
+  std::vector<char> data_str(data.size());
+  for (int i = 0; i < data.size(); i++) {
+    data_str[i] = data[i];
+  }
+  entry.Set(data_str);
 
   static_assert(
       !is_same_type<value_t, shape_t>::value,
@@ -135,10 +140,13 @@ std::string ImageReader::caption() {
 ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   ImageRecord res;
   auto record = reader_.record(offset);
-  auto data_entry = record.data<value_t>(index);
+  auto data_entry = record.data<std::vector<char>>(index);
   auto shape_entry = record.data<shape_t>(index);
-
-  res.data = data_entry.GetMulti();
+  auto data_str = data_entry.Get();
+  std::transform(data_str.begin(),
+                 data_str.end(),
+                 std::back_inserter(res.data),
+                 [](char i) { return (int)((unsigned char)i); });
   res.shape = shape_entry.GetMulti();
   res.step_id = record.id();
   return res;

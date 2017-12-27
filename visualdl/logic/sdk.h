@@ -210,7 +210,7 @@ struct ImageReader {
 
   struct ImageRecord {
     int step_id;
-    std::vector<value_t> data;
+    std::vector<int> data;
     std::vector<shape_t> shape;
   };
 
