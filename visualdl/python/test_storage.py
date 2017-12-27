@@ -1,8 +1,10 @@
-import storage
-import numpy as np
-import unittest
 import random
 import time
+import unittest
+
+import numpy as np
+
+import storage
 
 
 class StorageTest(unittest.TestCase):

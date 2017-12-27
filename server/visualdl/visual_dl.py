@@ -4,16 +4,14 @@ import re
 import sys
 from optparse import OptionParser
 
-from flask import Flask, redirect
-from flask import request
-from flask import send_from_directory, send_file
-from flask import Response
+from flask import (Flask, Response, redirect, request, send_file,
+                   send_from_directory)
 
-from visualdl.log import logger
+import lib
+import storage
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
-import storage
-import lib
+from visualdl.log import logger
 
 app = Flask(__name__, static_url_path="")
 
