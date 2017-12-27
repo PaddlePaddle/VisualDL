@@ -10,22 +10,22 @@ def reorganize_inout(json_obj, key):
     :return:
     """
     for index in range(len(json_obj[key])):
-        input = json_obj[key][index]
-        input_new = dict()
+        var = json_obj[key][index]
+        var_new = dict()
 
         # set name
-        input_new['name'] = input['name']
+        var_new['name'] = var['name']
 
-        tensor_type = input['type']['tensorType']
+        tensor_type = var['type']['tensorType']
 
         # set data_type
-        input_new['data_type'] = tensor_type['elemType']
+        var_new['data_type'] = tensor_type['elemType']
 
         # set shape
         shape = [dim['dimValue'] for dim in tensor_type['shape']['dim']]
-        input_new['shape'] = shape
+        var_new['shape'] = shape
 
-        json_obj[key][index] = input_new
+        json_obj[key][index] = var_new
 
 
 def load_model(model_pb_path):
