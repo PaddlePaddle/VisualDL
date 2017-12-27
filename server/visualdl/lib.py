@@ -65,22 +65,23 @@ def get_image_tags(storage, mode):
 def get_image_tag_steps(storage, mode, tag):
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
-    step_index = 0
+    sample_index = 0
     origin_tag = tag
     if res:
         tag = tag[:tag.rfind('/')]
-        step_index = int(res.groups()[0])
+        sample_index = int(res.groups()[0])
 
     reader = storage.as_mode(mode)
     image = reader.image(tag)
     res = []
 
-    for i in range(image.num_samples()):
-        record = image.record(step_index, i)
+
+    for step_index in range(image.num_records()):
+        record = image.record(step_index, sample_index)
         shape = record.shape()
         query = urllib.urlencode({
             'sample': 0,
-            'index': i,
+            'index': step_index,
             'tag': origin_tag,
             'run': mode,
         })

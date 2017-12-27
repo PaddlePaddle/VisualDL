@@ -21,7 +21,22 @@ namespace visualdl {
     WRITE_GUARD                                                   \
   }
 
+template <>
+void Entry<std::vector<char>>::Set(std::vector<char> v) {
+  entry->set_dtype(storage::DataType::kBytes);
+  entry->set_y(std::string(v.begin(), v.end()));
+  WRITE_GUARD
+}
+
+template <>
+void Entry<std::vector<char>>::Add(std::vector<char> v) {
+  entry->set_dtype(storage::DataType::kBytess);
+  *entry->add_ys() = std::string(v.begin(), v.end());
+  WRITE_GUARD
+}
+
 IMPL_ENTRY_SET_OR_ADD(Set, int, kInt32, set_i32);
+IMPL_ENTRY_SET_OR_ADD(Set, std::string, kString, set_s);
 IMPL_ENTRY_SET_OR_ADD(Set, int64_t, kInt64, set_i64);
 IMPL_ENTRY_SET_OR_ADD(Set, bool, kBool, set_b);
 IMPL_ENTRY_SET_OR_ADD(Set, float, kFloat, set_f);
@@ -42,7 +57,7 @@ IMPL_ENTRY_SETMUL(bool, kBool, bs);
 #define IMPL_ENTRY_GET(T, fieldname__) \
   template <>                          \
   T EntryReader<T>::Get() const {      \
-    data_.fieldname__();               \
+    return data_.fieldname__();        \
   }
 
 IMPL_ENTRY_GET(int, i32);
@@ -51,6 +66,12 @@ IMPL_ENTRY_GET(float, f);
 IMPL_ENTRY_GET(double, d);
 IMPL_ENTRY_GET(std::string, s);
 IMPL_ENTRY_GET(bool, b);
+
+template <>
+std::vector<char> EntryReader<std::vector<char>>::Get() const {
+  const auto& y = data_.y();
+  return std::vector<char>(y.begin(), y.end());
+}
 
 #define IMPL_ENTRY_GET_MULTI(T, fieldname__)           \
   template <>                                          \
@@ -70,10 +91,12 @@ template class Entry<int>;
 template class Entry<float>;
 template class Entry<double>;
 template class Entry<bool>;
+template class Entry<std::vector<char>>;
 
 template class EntryReader<int>;
 template class EntryReader<float>;
 template class EntryReader<double>;
 template class EntryReader<bool>;
+template class EntryReader<std::vector<char>>;
 
 }  // namespace visualdl

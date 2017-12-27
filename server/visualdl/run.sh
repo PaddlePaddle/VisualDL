@@ -5,4 +5,4 @@ export PYTHONPATH="$(pwd)/..:/home/superjom/project/VisualDL/build/visualdl/logi
 export FLASK_APP=visual_dl.py
 export FLASK_DEBUG=1
 
-python visual_dl.py --logdir ./tmp/mock --host 172.23.233.68 --port 8041
+python visual_dl.py --logdir ./tmp/mock --host 172.23.233.68 --port 8043
