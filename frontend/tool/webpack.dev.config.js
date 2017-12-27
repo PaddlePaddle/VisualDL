@@ -1,3 +1,4 @@
+'use strict';
 const webpack = require('webpack');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 let merge = require('webpack-merge');
