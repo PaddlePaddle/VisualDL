@@ -1,8 +1,8 @@
 language: cpp
 cache:
-  directories:
-    - $HOME/.ccache
-    - $HOME/.cache/pip
+  - pip
+  - ccache
+  - yarn
 sudo: required
 dist: trusty
 os:
@@ -19,8 +19,11 @@ addons:
       - python-wheel
       - clang-format-3.8
       - ccache
+      - npm
+      - nodejs
+
 script:
-  /bin/bash ./tests.sh
+  /bin/bash ./tests.sh all
 
 notifications:
   email:
