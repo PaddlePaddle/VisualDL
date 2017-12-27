@@ -48,7 +48,11 @@ template class ScalarReader<float>;
 template class ScalarReader<double>;
 
 void Image::StartSampling() {
+  // TODO(ChunweiYan) big bug here, every step will be stored in protobuf
+  // and that might result in explosion in some scenerios, Just sampling
+  // some steps should be better.
   step_ = writer_.AddRecord();
+  step_.SetId(step_id_);
 
   time_t time = std::time(nullptr);
   step_.SetTimeStamp(time);
@@ -61,6 +65,7 @@ void Image::StartSampling() {
 }
 
 int Image::IsSampleTaken() {
+  if (!ToSampleThisStep()) return -1;
   num_records_++;
   if (num_records_ <= num_samples_) {
     return num_records_ - 1;
@@ -76,8 +81,11 @@ int Image::IsSampleTaken() {
 }
 
 void Image::FinishSampling() {
-  // TODO(ChunweiYan) much optimizement here.
-  writer_.parent()->PersistToDisk();
+  step_id_++;
+  if (ToSampleThisStep()) {
+    // TODO(ChunweiYan) much optimizement here.
+    writer_.parent()->PersistToDisk();
+  }
 }
 
 template <typename T, typename U>
@@ -124,16 +132,16 @@ std::string ImageReader::caption() {
   return caption;
 }
 
-std::vector<ImageReader::value_t> ImageReader::data(int step, int index) {
-  auto record = reader_.record(step);
-  auto entry = record.data<value_t>(index);
-  return entry.GetMulti();
-}
+ImageReader::ImageRecord ImageReader::record(int offset, int index) {
+  ImageRecord res;
+  auto record = reader_.record(offset);
+  auto data_entry = record.data<value_t>(index);
+  auto shape_entry = record.data<shape_t>(index);
 
-std::vector<ImageReader::shape_t> ImageReader::shape(int step, int index) {
-  auto record = reader_.record(step);
-  auto entry = record.data<shape_t>(index);
-  return entry.GetMulti();
+  res.data = data_entry.GetMulti();
+  res.shape = shape_entry.GetMulti();
+  res.step_id = record.id();
+  return res;
 }
 
 }  // namespace components

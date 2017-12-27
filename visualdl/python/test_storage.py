@@ -31,7 +31,7 @@ class StorageTest(unittest.TestCase):
 
     def test_image(self):
         tag = "layer1/layer2/image0"
-        image_writer = self.writer.image(tag, 10)
+        image_writer = self.writer.image(tag, 10, 1)
         num_passes = 10
         num_samples = 100
         shape = [3, 10, 10]
@@ -50,8 +50,10 @@ class StorageTest(unittest.TestCase):
         image_reader = self.reader.image(tag)
         self.assertEqual(image_reader.caption(), tag)
         self.assertEqual(image_reader.num_records(), num_passes)
-        self.assertTrue(np.equal(image_reader.shape(0, 1), shape).all())
-        data = image_reader.data(0, 1)
+
+        image_record = image_reader.record(0, 1)
+        self.assertTrue(np.equal(image_record.shape(), shape).all())
+        data = image_record.data()
         self.assertEqual(len(data), np.prod(shape))
 
         image_tags = self.reader.tags("image")

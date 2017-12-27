@@ -3,6 +3,8 @@ import re
 import storage
 from PIL import Image
 from tempfile import NamedTemporaryFile
+import pprint
+import urllib
 
 
 def get_scalar_tags(storage, mode):
@@ -31,14 +33,14 @@ def get_image_tags(storage, mode):
             image = reader.image(tag)
             if image.num_samples() == 1:
                 result[mode][tag] = {
-                    'displayName': reader.scalar(tag).caption(),
+                    'displayName': mage.caption(),
                     'description': "",
                     'samples': 1,
                 }
             else:
                 for i in xrange(image.num_samples()):
                     result[mode][tag + '/%d' % i] = {
-                        'displayName': reader.scalar(tag).caption(),
+                        'displayName': image.caption(),
                         'description': "",
                         'samples': 1,
                     }
@@ -48,32 +50,35 @@ def get_image_tags(storage, mode):
 def get_image_tag_steps(storage, mode, tag):
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
+    step_index = 0
     if res:
         tag = tag[:tag.rfind('/')]
+        step_index = int(res.groups()[0])
 
     reader = storage.as_mode(mode)
     image = reader.image(tag)
-    # TODO(ChunweiYan) make max_steps a config
-    max_steps = 10
     res = []
-    steps = []
-    if image.num_records() > max_steps:
-        span = int(image.num_records() / max_steps)
-        steps = [image.num_records() - i * span - 1 for i in xrange(max_steps)]
-        steps = [i for i in reversed(steps)]
-        steps[0] = max(steps[0], 0)
-    else:
-        steps = [i for i in xrange(image.num_records())]
 
-    for step in steps:
+    for i in range(image.num_samples()):
+        record = image.record(step_index, i)
+        shape = record.shape()
+        query = urllib.urlencode({
+            'sample': 0,
+            'index': i,
+            'tag': tag,
+            'run': mode,
+        })
         res.append({
-            'wall_time': image.timestamp(step),
-            'step': step,
+            'height': shape[0],
+            'width': shape[1],
+            'step': record.step_id(),
+            'wall_time': image.timestamp(step_index),
+            'query': query,
         })
     return res
 
 
-def get_invididual_image(storage, mode, tag, index):
+def get_invididual_image(storage, mode, tag, step_index):
     reader = storage.as_mode(mode)
     res = re.search(r".*/([0-9]+$)", tag)
     # remove suffix '/x'
@@ -82,11 +87,9 @@ def get_invididual_image(storage, mode, tag, index):
         tag = tag[:tag.rfind('/')]
 
     image = reader.image(tag)
-    data = image.data(offset, index)
-    shape = image.shape(offset, index)
-    # print data
-    # print shape
-    data = np.array(data, dtype='uint8').reshape(shape)
+    record = image.record(step_index, offset)
+
+    data = np.array(record.data(), dtype='uint8').reshape(record.shape())
     tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
     with Image.fromarray(data) as im:
         im.save(tempfile)
@@ -99,7 +102,8 @@ if __name__ == '__main__':
     tags = get_image_tags(reader, 'train')
 
     tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
-    print 'image step tags', tags
+    print 'image step tags'
+    pprint.pprint(tags)
 
     image = get_invididual_image(reader, "train", 'layer1/layer2/image0/0', 2)
     print image

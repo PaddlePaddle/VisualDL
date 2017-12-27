@@ -152,12 +152,19 @@ struct Image {
   using value_t = float;
   using shape_t = int64_t;
 
-  Image(Tablet tablet, int num_samples) : writer_(tablet) {
+  /*
+   * step_cycle: store every `step_cycle` as a record.
+   * num_samples: how many samples to take in a step.
+   */
+  Image(Tablet tablet, int num_samples, int step_cycle)
+      : writer_(tablet), num_samples_(num_samples), step_cycle_(step_cycle) {
+    CHECK_GT(step_cycle, 0);
+    CHECK_GT(num_samples, 0);
+
     writer_.SetType(Tablet::Type::kImage);
     // make image's tag as the default caption.
     writer_.SetNumSamples(num_samples);
     SetCaption(tablet.reader().tag());
-    num_samples_ = num_samples;
   }
   void SetCaption(const std::string& c) {
     writer_.SetCaptions(std::vector<std::string>({c}));
@@ -182,11 +189,16 @@ struct Image {
                  const std::vector<shape_t>& shape,
                  const std::vector<value_t>& data);
 
+protected:
+  bool ToSampleThisStep() { return step_id_ % step_cycle_ == 0; }
+
 private:
   Tablet writer_;
   Record step_;
   int num_records_{0};
   int num_samples_{0};
+  int step_id_{0};
+  int step_cycle_;
 };
 
 /*
@@ -195,6 +207,12 @@ private:
 struct ImageReader {
   using value_t = typename Image::value_t;
   using shape_t = typename Image::shape_t;
+
+  struct ImageRecord {
+    int step_id;
+    std::vector<value_t> data;
+    std::vector<shape_t> shape;
+  };
 
   ImageReader(const std::string& mode, TabletReader tablet)
       : reader_(tablet), mode_{mode} {}
@@ -208,9 +226,25 @@ struct ImageReader {
 
   int64_t timestamp(int step) { return reader_.record(step).timestamp(); }
 
-  std::vector<value_t> data(int step, int index);
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  ImageRecord record(int offset, int index);
 
-  std::vector<shape_t> shape(int step, int index);
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  std::vector<value_t> data(int offset, int index);
+
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  std::vector<shape_t> shape(int offset, int index);
+
+  int stepid(int offset, int index);
 
 private:
   TabletReader reader_;
