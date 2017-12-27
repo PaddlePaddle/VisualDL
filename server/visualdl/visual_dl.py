@@ -122,7 +122,7 @@ def scalars():
     tag = request.args.get('tag')
     is_debug = bool(request.args.get('debug'))
     if is_debug:
-        result =  mock_data.sequence_data()
+        result = mock_data.sequence_data()
     else:
         result = lib.get_scalar(storage, run, tag)
 
