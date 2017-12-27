@@ -1,5 +1,3 @@
-""" entry point of visual_dl
-"""
 import json
 import os
 import re
