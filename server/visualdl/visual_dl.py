@@ -14,6 +14,7 @@ from visualdl.log import logger
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
 import storage
+import graph
 
 app = Flask(__name__, static_url_path="")
 
@@ -133,6 +134,12 @@ def scalars():
         result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/graphs/graph')
+def graph():
+    model_json = graph.load_model("")
+    return Response(model_json, mimetype='application/json')
 
 
 if __name__ == '__main__':
