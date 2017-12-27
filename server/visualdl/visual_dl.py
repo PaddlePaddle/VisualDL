@@ -12,6 +12,8 @@ import storage
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
 from visualdl.log import logger
+import storage
+import graph
 
 app = Flask(__name__, static_url_path="")
 
@@ -148,6 +150,11 @@ def individual_image():
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
+
+@app.route('/data/plugin/graphs/graph')
+def graph():
+    model_json = graph.load_model("")
+    return Response(model_json, mimetype='application/json')
 
 
 if __name__ == '__main__':

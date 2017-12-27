@@ -1,0 +1,155 @@
+<template>
+    <div class="visual-dl-scalar-container">
+        <div class="visual-dl-scalar-left">
+            <div class="visual-dl-scalar-config-container">
+                <ui-config
+                    runsItems="{{runsItems}}"
+                    config="{=config=}"
+                ></ui-config>
+            </div>
+        </div>
+        <div class="visual-dl-scalar-right">
+            <ui-chart-page
+                config="{{config}}"
+                runsItems="{{runsItems}}"
+                tagList="{{filteredTagsList}}"
+                title="Tags matching {{config.groupNameReg}}"
+            ></ui-chart-page>
+            <ui-chart-page
+                san-for="item in groupedTags"
+                config="{{config}}"
+                runsItems="{{runsItems}}"
+                tagList="{{item.tags}}"
+                title="{{item.group}}"
+            ></ui-chart-page>
+        </div>
+    </div>
+</template>
+
+<script>
+import {getPluginImagesTags, getRuns} from '../service';
+import config from './ui/config';
+import chartPage from './ui/chartPage';
+import {debounce, flatten, uniq} from 'lodash';
+export default {
+    components: {
+        'ui-config': config,
+        'ui-chart-page': chartPage
+    },
+    computed: {
+        runsItems() {
+            let runsArray = this.data.get('runsArray') || [];
+            return runsArray.map(item => {
+                return {
+                    name: item,
+                    value: item
+                };
+            });
+        },
+        tagsList() {
+            let tags = this.data.get('tags');
+
+            let runs = Object.keys(tags);
+            let tagsArray = runs.map(run => Object.keys(tags[run]));
+            let allUniqTags = uniq(flatten(tagsArray));
+
+            // get the data for every chart
+            return allUniqTags.map(tag => {
+                let tagList = runs.map(run => {
+                    return {
+                        run,
+                        tag: tags[run][tag]
+                    };
+                });
+                return {
+                    tagList,
+                    tag,
+                    group: tag.split('/')[0]
+                };
+            });
+        },
+        groupedTags() {
+            let tagsList = this.data.get('tagsList') || [];
+            // put data in group
+            let groupData = {};
+            tagsList.forEach(item => {
+                let group = item.group;
+                if (groupData[group] === undefined) {
+                    groupData[group] = [];
+                    groupData[group].push(item);
+                }
+                else {
+                    groupData[group].push(item);
+                }
+            });
+
+            // to array
+            let groups = Object.keys(groupData);
+            return groups.map(group => {
+                return {
+                    group,
+                    tags: groupData[group]
+                };
+            });
+        }
+    },
+    initData() {
+        return {
+            runsArray: [],
+            tags: [],
+            config: {
+                groupNameReg: '.*',
+                smoothing: '0.5',
+                horizontal: '1',
+                sortingMethod: '2',
+                link: [],
+                chart: []
+            }
+        };
+    },
+    inited() {
+        getPluginImagesTags().then(({errno, data}) => {
+            this.data.set('tags', data);
+
+            // filter when inited
+            let groupNameReg = this.data.get('config.groupNameReg');
+            this.filterTagsList(groupNameReg);
+        });
+        getRuns().then(({errno, data}) => {
+            this.data.set('runsArray', data);
+        });
+
+        // need debounce， can't use computed
+        this.watch('config.groupNameReg', debounce(this.filterTagsList, 300));
+    },
+
+    filterTagsList(groupNameReg) {
+        let tagsList = this.data.get('tagsList') || [];
+        let regExp = new RegExp(groupNameReg);
+        let filtedTagsList = tagsList.filter(item => regExp.test(item.tag));
+        this.data.set('filteredTagsList', filtedTagsList);
+    }
+};
+
+</script>
+
+<style lang="stylus">
+
+@import '../style/variables';
+
++prefix-classes('visual-dl-scalar-')
+    .container
+        padding-left 300px
+        position relative
+        .left
+            width 280px
+            min-height 300px
+            border solid 1px #e4e4e4
+            position absolute
+            left 0
+        .right
+            width 100%
+            border solid 1px #e4e4e4
+            min-height 300px
+            padding 20px
+</style>

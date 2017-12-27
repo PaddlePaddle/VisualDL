@@ -1,11 +1,18 @@
 <template>
-    <div class="visaul-dl-chart-page">
-        <ui-expand-panel title="{{title}}">
-            <div class="visaul-dl-chart-box">
+    <div class="visual-dl-chart-page">
+        <ui-expand-panel info="{{tagList.length}}" title="{{title}}">
+            <div class="visual-dl-chart-box">
                 <ui-chart
                     san-for="tag in filteredTagList"
                     tagInfo="{{tag}}"
-                    config="{{config}}"
+                    groupNameReg="{{config.groupNameReg}}"
+                    smoothing="{{config.smoothing}}"
+                    horizontal="{{config.horizontal}}"
+                    sortingMethod="{{config.sortingMethod}}"
+                    downloadLink="{{config.downloadLink}}"
+                    outlier="{{config.outlier}}"
+                    runs="{{config.runs}}"
+                    running="{{config.running}}"
                     runsItems="{{runsItems}}"
                 ></ui-chart>
             </div>
@@ -61,11 +68,11 @@ export default {
 @import '../../style/variables';
 
 +prefix-classes('visual-dl-')
-    .visaul-dl-chart-page
-        .visaul-dl-chart-box:after
-                content: "";
-                clear: both;
-                display: block;
+    .chart-page
+        .chart-box:after
+            content: "";
+            clear: both;
+            display: block;
 </style>
 
 
