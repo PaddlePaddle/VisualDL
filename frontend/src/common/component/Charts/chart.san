@@ -3,26 +3,52 @@
         <div class="visual-dl-chart-box" style="{{computedStyle}}">
         </div>
         <div class="visual-dl-chart-actions">
+            <san-button on-click="expandArea">
+                <san-icon size="20">settings_overscan</san-icon>
+            </san-button>
             <ui-dropdown-menu
+                san-if="downloadLink"
+                stlye="width:100px;"
                 hintText="download type"
                 items="{{runsItems}}"
                 value="{=downloadType=}"
             />
-            <san-button on-click="handleDownLoad">
-                <san-icon>file_download</san-icon>
+            <san-button
+                san-if="downloadLink"
+                on-click="handleDownLoad">
+                <san-icon size="20">file_download</san-icon>
             </san-button>
         </div>
     </div>
 </template>
 <script>
+
+// components
 import Button from 'san-mui/Button';
 import Icon from 'san-mui/Icon';
 import DropDownMenu from '../../../common/component/DropDownMenu';
-import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
+
+// libs
 import echarts from 'echarts';
 import axios from 'axios';
+import {isFinite, flatten, maxBy, minBy, sortBy, max, min} from 'lodash';
+import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
+import {quantile} from '../../../common/util/index';
+import moment from 'moment';
+
+// service
 import {getPluginScalarsScalars} from '../../../service';
+
+const originLinesOpacity = 0.3;
+const defaultSmoothWeight = 0.6;
+const lineWidth = 1.5;
+const minQuantile = 0.05;
+const maxQuantile = 0.95;
+// the time to refresh chart data
+const intervalTime = 30;
+
 export default {
+
     components: {
         'ui-dropdown-menu': DropDownMenu,
         'san-button': Button,
@@ -40,8 +66,6 @@ export default {
         return {
             width: 400,
             height: 300,
-            // line config
-            options: {},
             data: [
                 {
                     name: 'train',
@@ -56,11 +80,45 @@ export default {
         this.watch('runsItems', val => {
             this.initDownloadType();
         });
+
+        this.watch('originData', originData => {
+            this.setChartData();
+            this.setChartsOutlier();
+            this.setChartHorizon();
+        });
+
+        this.watch('smoothing', smoothing => {
+            this.setChartData();
+        });
+
+        this.watch('outlier', outlier => {
+            // outlier
+            this.setChartsOutlier();
+        });
+
+        this.watch('horizontal', horizontal => {
+            this.setChartHorizon();
+        });
+
+        this.watch('runs', runs => {
+            this.setChartsRuns();
+        });
     },
 
     attached() {
         let tagInfo = this.data.get('tagInfo');
         this.initCharts(tagInfo);
+
+        if (this.data.get('running')) {
+            this.startInterval();
+        }
+        this.watch('running', running => {
+            running ? this.startInterval() : this.stopInterval();
+        });
+    },
+
+    detached() {
+        this.stopInterval();
     },
 
     initDownloadType() {
@@ -74,25 +132,50 @@ export default {
     initCharts(tagInfo) {
         this.createChart();
         this.setChartsOptions(tagInfo);
-        this.setChartsData(tagInfo);
+        this.getOriginChartsData(tagInfo);
     },
 
     createChart() {
         let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
         this.myChart = echarts.init(el);
     },
+
     setChartsOptions({tagList, tag}) {
-        let seriesOption = tagList.map(item => {
-            return {
-                name: item.run,
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                data: [],
-                smooth: true
-            };
-        });
+        let seriesOption = tagList.map(item => [
+                {
+                    name: item.run,
+                    type: 'line',
+                    showSymbol: false,
+                    hoverAnimation: false,
+                    z: 0,
+                    data: [],
+                    animationDuration: 100,
+                    lineStyle: {
+                        normal: {
+                            opacity: originLinesOpacity,
+                            width: lineWidth
+                        }
+                    }
+                },
+                {
+                    name: item.run,
+                    type: 'line',
+                    showSymbol: false,
+                    hoverAnimation: false,
+                    z: 1,
+                    data: [],
+                    animationDuration: 100,
+                    lineStyle: {
+                        normal: {
+                            width: lineWidth
+                        }
+                    }
+                }
+            ]
+        );
+        seriesOption = flatten(seriesOption);
         let legendOptions = tagList.map(item => item.run);
+        let that = this;
         let option = {
             title: {
                 text: tag,
@@ -103,9 +186,14 @@ export default {
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
-                    animation: false
+                    animation: true
                 },
-                position: [10, 300]
+                position: ['10%', '90%'],
+                formatter(params, ticket, callback) {
+                    let data = that.getFormatterPoints(params[0].data);
+                    return that.tansformFormatterData(data);
+
+                }
             },
             toolbox: {
                 show: true,
@@ -115,39 +203,26 @@ export default {
                     restore: {},
                     saveAsImage: {}
                 },
-                left: 40,
-                top: 270
+                left: '10%',
+                top: '90%'
             },
             legend: {
                 data: legendOptions,
-                top: 30
+                top: '10%'
             },
             grid: {
-                top: 70,
-                bottom: 50
+                left: '10%',
+                top: '20%',
+                right: '10%',
+                bottom: '20%'
             },
-            xAxis: [
-                {
-                    type: 'value',
-                    boundaryGap: false
-                },
-                {
-                    type: 'value',
-                    boundaryGap: false
-                }
-            ],
+            xAxis: {
+                type: 'value'
+            },
             yAxis: {
                 type: 'value',
-                boundaryGap: [0, '100%'],
-                min(value) {
-                    return value.min;
-                },
-                max(value) {
-                    return value.max;
-                },
                 axisLabel: {
                     formatter(value, index) {
-                        // keep 0.11111 to 0.111
                         return value.toString().slice(0, 5);
                     }
                 }
@@ -156,7 +231,20 @@ export default {
         };
         this.myChart.setOption(option);
     },
-    setChartsData({tagList, tag}) {
+
+    // get origin data per 60 seconds
+    startInterval() {
+        this.getOringDataInterval = setInterval(() => {
+            let tagInfo = this.data.get('tagInfo');
+            this.getOriginChartsData(tagInfo);
+        }, intervalTime * 1000);
+    },
+
+    stopInterval() {
+        clearInterval(this.getOringDataInterval);
+    },
+
+    getOriginChartsData({tagList, tag}) {
         let requestList = tagList.map(item => {
             let params = {
                 run: item.run,
@@ -165,22 +253,41 @@ export default {
             return getPluginScalarsScalars(params);
         });
         axios.all(requestList).then(resArray => {
-            let seriesData = resArray.map(res => {
-                return {
-                    data: res.data,
-                    encode: {
-                        // map 1 to xAixs。
-                        x: [1],
-                        // map 2 to yAixs。
-                        y: [2]
-                    }
-                };
-            });
-            this.myChart.setOption({
-                series: seriesData
-            });
+            this.data.set('originData', resArray.map(res => res.data));
         });
     },
+
+    setChartData() {
+        let originData = this.data.get('originData');
+        let seriesData = originData.map(lineData => {
+            // add the smoothed data
+            this.tansformDataset(lineData);
+            return [
+                {
+                    data: lineData,
+                    encode: {
+                        // map 1 to xAixs
+                        x: [1],
+                        // map 2 to yAixs
+                        y: [2]
+                    }
+                },
+                {
+                    data: lineData,
+                    encode: {
+                        // map 1 to xAixs
+                        x: [1],
+                        // map 3 to yAixs, the third number is smoothed value
+                        y: [3]
+                    }
+                }
+            ];
+        });
+        this.myChart.setOption({
+            series: flatten(seriesData)
+        });
+    },
+
     getChartOptions() {
         return this.myChart.getOption() || {};
     },
@@ -192,15 +299,307 @@ export default {
         let tagInfo = this.data.get('tagInfo');
         let fileName = tagInfo.tag.replace(/\//g, '-');
         generateJsonAndDownload(sery.data, fileName);
+    },
+
+    tansformDataset(seriesData) {
+        let smoothing = this.data.get('smoothing');
+        // smooth
+        this.tansformData(seriesData, smoothing || defaultSmoothWeight);
+    },
+
+    /**
+    * @desc 1、add smooth data depend on smoothingWeight. see https://en.wikipedia.org/wiki/Moving_average for detail
+    * 2、add relative data
+    * @param {Object} echarts series Object
+    * @param {number} smoothingWeight smooth weight, between 0 ~ 1
+    */
+    tansformData(seriesData, smoothingWeight) {
+        let data = seriesData;
+        let last = data.length > 0 ? 0 : NaN;
+        let numAccum = 0;
+        let startValue;
+        data.forEach((d, i) => {
+            let nextVal = d[2];
+            // second to millisecond
+            let millisecond =  Math.floor(d[0] * 1000);
+            if (i === 0) {
+                startValue = millisecond;
+            }
+            // relative time, millisecond to hours
+            d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
+            if (!isFinite(nextVal)) {
+                d[3] = nextVal;
+            } else {
+                last = last * smoothingWeight + (1 - smoothingWeight) * nextVal;
+                numAccum++;
+                let debiasWeight = 1;
+                if (smoothingWeight !== 1.0) {
+                    debiasWeight = 1.0 - Math.pow(smoothingWeight, numAccum);
+                }
+                d[3] = last / debiasWeight;
+            }
+        });
+    },
+
+    // chart outlier options methods and functions ---- start
+
+    // compute Y domain from originData
+    setChartsOutlier(seriesData) {
+        let outlier = this.data.get('outlier');
+        let originData = this.data.get('originData');
+        let domainRangeArray = originData.map(seriesData => this.computeDataRange(seriesData, outlier));
+
+        // compare，get the best Y domain。
+        let flattenNumbers = flatten(domainRangeArray);
+        let finalMax = max(flattenNumbers);
+        let finalMin = min(flattenNumbers);
+
+        // add padding
+        let PaddedYDomain = this.paddedYDomain(finalMin, finalMax);
+
+        this.setChartOutlierOptions(PaddedYDomain);
+
+        // store Y domain，if originData is not change，Y domain keep same.
+
+    },
+
+    // compute  max and min from array, if outlier is true, return quantile range
+    computeDataRange(arr, isQuantile) {
+        // get data range
+        let max;
+        let min;
+        if (!isQuantile) {
+            // get the orgin data range
+            max = maxBy(arr, item => item[2])[2];
+            min = minBy(arr, item => item[2])[2];
+        }
+        else {
+            // get the quantile range
+            let sorted = sortBy(arr, [item => item[2]]);
+            min = quantile(sorted, minQuantile, item => item[2]);
+            max = quantile(arr, maxQuantile, item => item[2]);
+        }
+        return [min, max];
+    },
+
+    paddedYDomain(min, max) {
+        return {
+            max: max > 0 ? max * 1.1 : max * 0.9,
+            min: min > 0 ? min * 0.9 : min * 1.1
+        };
+    },
+
+    setChartOutlierOptions({min, max}) {
+        this.myChart.setOption({
+            yAxis: {
+                min,
+                max
+            }
+        });
+    },
+
+    // chart horizontal options methods and functions ---- start
+    setChartHorizon() {
+        let horizontal = this.data.get('horizontal');
+        let seriesOption = this.myChart.getOption().series;
+        let encodeSeries = val => {
+            return {
+                encode: {
+                    x: [val]
+                }
+            };
+        };
+        let stepSeies = seriesOption.map(item => encodeSeries(1));
+        let relativeSeies = seriesOption.map(item => encodeSeries(4));
+        let wallSeries = seriesOption.map(item => encodeSeries(0));
+        let horizontalToxAxisOptions = {
+            step: {
+                xAxis: {
+                    type: 'value'
+                },
+                series: stepSeies
+            },
+            relative: {
+                xAxis: {
+                    type: 'value'
+                },
+                series: relativeSeies
+            },
+            wall: {
+                xAxis: {
+                    type: 'time'
+                },
+                series: wallSeries
+            }
+        };
+        this.myChart.setOption(horizontalToxAxisOptions[horizontal]);
+    },
+
+    expandArea() {
+        let isExpand = this.data.get('isExpand');
+        if (!isExpand) {
+            let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+            el.style.width = '800px';
+            el.style.height = '600px';
+            this.data.set('isExpand', true);
+            this.myChart.resize({
+                width: 800,
+                height: 600
+            });
+        }
+        else {
+            let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+            el.style.width = '400px';
+            el.style.height = '300px';
+            this.data.set('isExpand', false);
+            this.myChart.resize({
+                width: 400,
+                height: 300
+            });
+        }
+
+    },
+
+    getFormatterPoints(data) {
+        let originData = this.data.get('originData');
+        let tagList = this.data.get('tagInfo.tagList');
+        let sortingMethod = this.data.get('sortingMethod');
+        // Can't know exactly the tigger runs.
+        // If the step is same, regard the point as the trigger point.
+        let [, step, triggerValue] = data;
+        let points = originData.map((series, index) => {
+            let nearestItem;
+            if (step === 0) {
+                nearestItem = series[0];
+
+            }
+            else {
+                for (let i = 0; i < series.length; i++) {
+                    let item = series[i];
+                    if (item[1] === step) {
+                        nearestItem = item;
+                        break;
+                    }
+                    if (item[1] > step) {
+                        nearestItem = series[i - 1];
+                        break;
+                    }
+                    if (!nearestItem) {
+                        nearestItem = series[series.length - 1];
+                    }
+                }
+            }
+            return {
+                run: tagList[index].run,
+                item: nearestItem
+            };
+        });
+
+        if (sortingMethod === 'default' || !sortingMethod) {
+            return points;
+        }
+        let sortedPoints;
+        switch (sortingMethod) {
+            case 'desc':
+                sortedPoints = sortBy(points, one => one.item[3]);
+                sortedPoints.reverse();
+                break;
+            case 'asc':
+                sortedPoints = sortBy(points, one => one.item[3]);
+                break;
+            case 'nearest':
+                // compare other ponts width the trigger point, caculate the nearest sort.
+                sortedPoints = sortBy(points, one => one.item[3] - triggerValue);
+                break;
+            default:
+                sortedPoints = points;
+        }
+        return sortedPoints;
+    },
+
+    tansformFormatterData(data) {
+        let indexPropMap = {
+            Time: 0,
+            Step: 1,
+            Value: 2,
+            Smoothed: 3,
+            Relative: 4
+        };
+        let widthPropMap = {
+            Run: 40,
+            Time: 90,
+            Step: 40,
+            Value: 50,
+            Smoothed: 50,
+            Relative: 40
+        };
+        let tranformedData = data.map(item => {
+            let data = item.item;
+            return {
+                Run: item.run,
+                // keep six number for easy-read
+                Smoothed: data[indexPropMap.Smoothed].toString().slice(0, 6),
+                Value: data[indexPropMap.Value].toString().slice(0, 6),
+                Step: data[indexPropMap.Step],
+                Time: moment(Math.floor(data[indexPropMap.Time] * 1000), 'X').format('YYYY-MM-DD HH:mm:ss'),
+                // relative display value should take easy-read into consideration.
+                // better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
+                Relative: Math.floor(data[indexPropMap.Relative] * 60 * 60) + 's'
+            };
+        });
+
+        let headerHtml = '<tr style="font-size:14px;">';
+        headerHtml += Object.keys(tranformedData[0]).map(key => {
+            return '<td style="padding: 0 4px; font-weight: bold; width:' + widthPropMap[key] + 'px;">' + key + '</td>';
+        }).join('');
+        headerHtml += '</tr>';
+
+        let content = tranformedData.map(item => {
+            let str = '<tr style="font-size:12px;">';
+            str += Object.keys(item).map(val => {
+                return '<td style="padding: 0 4px">' + item[val] + '</td>';
+            }).join('');
+            str += '</tr>';
+            return str;
+        }).join('');
+
+        return '<table style="text-align: left;table-layout: fixed;width: 480px;"><thead>' + headerHtml + '</thead>'
+        + '<tbody>' + content  + '</tbody><table>';
+    },
+
+    setChartsRuns() {
+        // let tagInfo = this.data.get('tagInfo');
+        // let runs = this.data.get('config.runs');
+        // let seriesOption = [
+        //     {
+        //         lineStyle: {
+        //             normal: {
+        //                 opacity: originLinesOpacity
+        //             }
+        //         }
+        //     }
+        // ];
     }
 };
 </script>
 <style lang="stylus">
     .visual-dl-charts
         float left
+        margin-bottom 20px
         .visual-dl-chart-actions
+            height 50px
+            margin-left 10%
             .sm-form-item
-                width 300px
-                display inline-block
+                float left
+                width 100px
+                margin-top 0px
+                display block
+            .sm-button
+                float left
+                display block
+                height 20px
+                line-height 20px
+                margin-top 10px
+                padding 0 10px
 </style>
 
