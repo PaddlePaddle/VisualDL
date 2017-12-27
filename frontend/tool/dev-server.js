@@ -1,3 +1,4 @@
+'use strict';
 process.env.NODE_ENV = 'dev';
 let devPort = 8999;
 let opn = require('opn');

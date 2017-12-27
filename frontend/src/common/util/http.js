@@ -1,6 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
-import Notification from '../ui/Notification';
+import Notification from '../component/Notification';
 
 const STATUS = 'status';
 const STATUSINFO = 'msg';
