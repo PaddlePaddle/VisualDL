@@ -95,7 +95,8 @@ def runs():
 
 
 @app.route("/data/plugin/scalars/tags")
-def tags():
+def scalar_tags():
+    mode = request.args.get('mode')
     is_debug = bool(request.args.get('debug'))
     if is_debug:
         result = mock_tags.data()
@@ -107,7 +108,8 @@ def tags():
 
 
 @app.route("/data/plugin/images/tags")
-def tags():
+def image_tags():
+    mode = request.args.get('mode')
     result = lib.get_image_tags(storage, mode)
     print 'tags', result
     result = gen_result(0, "", result)
@@ -120,39 +122,33 @@ def scalars():
     tag = request.args.get('tag')
     is_debug = bool(request.args.get('debug'))
     if is_debug:
-        result = gen_result(0, "", mock_data.sequence_data())
+        result =  mock_data.sequence_data()
     else:
-        reader = storage.as_mode(run)
-        scalar = reader.scalar(tag)
+        result = lib.get_scalar(storage, run, tag)
 
-        records = scalar.records()
-        ids = scalar.ids()
-        timestamps = scalar.timestamps()
-
-        result = zip(timestamps, ids, records)
-        result = gen_result(0, "", result)
-
+    result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route('/data/plugin/images/images')
 def images():
-    run = request.args.get('run')
-    tag = request.args.get('tag')
+    mode = request.args.get('run')
+    #tag = request.args.get('tag')
+    tag = request.args.get('displayName')
 
-    res = lib.gen_image_tag_steps(storage, mode, tag)
+    result = lib.get_image_tag_steps(storage, mode, tag)
 
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route('/data/plugin/images/individualImage')
 def individual_image():
-    run = request.args.get('run')
+    mode = request.args.get('run')
     tag = request.args.get('tag')  # include a index
-    index = request.args.get('index')  # index of step
+    step_index = request.args.get('index')  # index of step
     offset = 0
 
-    imagefile = lib.get_invididual_image(storage, mode, tag)
+    imagefile = lib.get_invididual_image(storage, mode, tag, step_)
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
@@ -160,4 +156,4 @@ def individual_image():
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
-    app.run(debug=False, host=options.host, port=options.port)
+    app.run(debug=True, host=options.host, port=options.port)
