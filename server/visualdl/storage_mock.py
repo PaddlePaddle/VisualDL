@@ -29,14 +29,15 @@ for i in range(100):
 def add_image(mode):
     writer_ = writer.as_mode(mode)
     tag = "layer1/layer2/image0"
-    image_writer = writer_.image(tag, 10, 1)
-    num_passes = 25
-    num_samples = 100
-    shape = [10, 10, 3]
+    # TODO check step_cycle
+    num_samples = 10
+    num_passes = 10
+    image_writer = writer_.image(tag, num_samples, 1)
+    shape = [400, 400, 3]
 
     for pass_ in xrange(num_passes):
         image_writer.start_sampling()
-        for ins in xrange(num_samples):
+        for ins in xrange(2*num_samples):
             index =  image_writer.is_sample_taken()
             if index != -1:
                 data = np.random.random(shape) * 256
