@@ -1,0 +1,55 @@
+<template>
+    <div class="visual-dl-scalar-config-com">
+        <san-text-field
+            hintText="input a tag group name to search"
+            label="Group name RegExp"
+            inputValue="{=config.groupNameReg=}"
+        />
+        <ui-checkbox-group
+            value="{=config.imageSize=}"
+            items="{{imageSizeItems}}"
+        />
+        <ui-checkbox-group
+            value="{=config.run=}"
+            label="Runs"
+            items="{{runsItems}}"
+        />
+        <san-button class="visual-dl-scalar-run-toggle" variants="raised secondery">Toggle All Runs</san-button>
+    </div>
+</template>
+<script>
+import TextField from 'san-mui/TextField';
+import CheckBoxGroup from '../../common/component/CheckBoxGroup';
+export default {
+    components: {
+        'san-text-field': TextField,
+        'ui-checkbox-group': CheckBoxGroup
+    },
+    initData() {
+        return {
+            config: {
+                groupName: 'aa',
+                imageSize: '0.5',
+                run: ''
+            },
+            runsItems: [],
+            imageSizeItems: [
+                {
+                    value: '1',
+                    name: 'Show actual image size'
+                }
+            ]
+        };
+    }
+};
+</script>
+<style lang="stylus">
+@import '../../style/variables';
++prefix-classes('visual-dl-scalar-')
+    .config-com
+        width 90%
+        margin 0 auto
+        .run-toggle
+            width 100%
+            margin-top 20px
+</style>
