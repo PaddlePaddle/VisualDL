@@ -22,6 +22,9 @@ echo "mode" $mode
 
 if [ $mode = "backend" ]; then
     backend_test
+elif [ $mode = "all" ]; then
+    frontend_test
+    backend_test
 else
     frontend_test
 fi
