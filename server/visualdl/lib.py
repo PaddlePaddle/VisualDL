@@ -21,6 +21,18 @@ def get_scalar_tags(storage, mode):
     return result
 
 
+def get_scalar(storage, mode, tag):
+    reader = storage.as_mode(mode)
+    scalar = reader.scalar(tag)
+
+    records = scalar.records()
+    ids = scalar.ids()
+    timestamps = scalar.timestamps()
+
+    result = zip(timestamps, ids, records)
+    return result
+
+
 def get_image_tags(storage, mode):
     result = {}
 
@@ -31,16 +43,17 @@ def get_image_tags(storage, mode):
         result[mode] = {}
         for tag in reader.tags('image'):
             image = reader.image(tag)
-            if image.num_samples() == 1:
+            if image.num_samples() <= 1:
                 result[mode][tag] = {
-                    'displayName': mage.caption(),
+                    'displayName': image.caption(),
                     'description': "",
                     'samples': 1,
                 }
             else:
                 for i in xrange(image.num_samples()):
-                    result[mode][tag + '/%d' % i] = {
-                        'displayName': image.caption(),
+                    caption = tag + '/%d' % i
+                    result[mode][caption] = {
+                        'displayName': caption,
                         'description': "",
                         'samples': 1,
                     }
@@ -51,6 +64,7 @@ def get_image_tag_steps(storage, mode, tag):
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
     step_index = 0
+    origin_tag = tag
     if res:
         tag = tag[:tag.rfind('/')]
         step_index = int(res.groups()[0])
@@ -65,7 +79,7 @@ def get_image_tag_steps(storage, mode, tag):
         query = urllib.urlencode({
             'sample': 0,
             'index': i,
-            'tag': tag,
+            'tag': origin_tag,
             'run': mode,
         })
         res.append({
