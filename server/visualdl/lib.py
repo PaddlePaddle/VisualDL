@@ -1,10 +1,12 @@
-import numpy as np
-import re
-import storage
-from PIL import Image
-from tempfile import NamedTemporaryFile
 import pprint
+import re
 import urllib
+from tempfile import NamedTemporaryFile
+
+import numpy as np
+from PIL import Image
+
+import storage
 
 
 def get_scalar_tags(storage, mode):

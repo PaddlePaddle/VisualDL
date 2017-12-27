@@ -1,8 +1,10 @@
-import storage
-import numpy as np
-import unittest
 import random
 import time
+import unittest
+
+import numpy as np
+
+import storage
 
 dir = "./tmp/mock"
 writer = storage.StorageWriter(dir, sync_cycle=20)
