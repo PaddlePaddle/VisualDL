@@ -53,9 +53,12 @@ PYBIND11_PLUGIN(core) {
       WRITER_ADD_SCALAR(int)
       // clang-format on
       .def("new_image",
-           [](vs::Writer& self, const std::string& tag, int num_samples) {
+           [](vs::Writer& self,
+              const std::string& tag,
+              int num_samples,
+              int step_cycle) {
              auto tablet = self.AddTablet(tag);
-             return vs::components::Image(tablet, num_samples);
+             return vs::components::Image(tablet, num_samples, step_cycle);
            });
 
 //------------------- components --------------------
@@ -88,12 +91,22 @@ PYBIND11_PLUGIN(core) {
       .def("finish_sampling", &cp::Image::FinishSampling)
       .def("set_sample", &cp::Image::SetSample);
 
+  py::class_<cp::ImageReader::ImageRecord>(m, "ImageRecord")
+      // TODO(ChunweiYan) make these copyless.
+      .def("data", [](cp::ImageReader::ImageRecord& self) { return self.data; })
+      .def("shape",
+           [](cp::ImageReader::ImageRecord& self) { return self.shape; })
+      .def("step_id",
+           [](cp::ImageReader::ImageRecord& self) { return self.step_id; });
+
   py::class_<cp::ImageReader>(m, "ImageReader")
       .def("caption", &cp::ImageReader::caption)
       .def("num_records", &cp::ImageReader::num_records)
       .def("num_samples", &cp::ImageReader::num_samples)
-      .def("timestamp", &cp::ImageReader::timestamp)
-      .def("data", &cp::ImageReader::data)
-      .def("shape", &cp::ImageReader::shape);
+      .def("record", &cp::ImageReader::record)
+      .def("timestamp", &cp::ImageReader::timestamp);
+
+  // .def("data", &cp::ImageReader::data)
+  // .def("shape", &cp::ImageReader::shape);
 
 }  // end pybind

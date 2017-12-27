@@ -48,7 +48,7 @@ TEST(Image, test) {
   auto writer = writer__.AsMode("train");
 
   auto tablet = writer.AddTablet("image0");
-  components::Image image(tablet, 3);
+  components::Image image(tablet, 3, 1);
   const int num_steps = 10;
 
   LOG(INFO) << "write images";

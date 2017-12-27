@@ -27,7 +27,7 @@ for i in range(100):
 def add_image(mode):
     writer_ = writer.as_mode(mode)
     tag = "layer1/layer2/image0"
-    image_writer = writer_.image(tag, 10)
+    image_writer = writer_.image(tag, 10, 1)
     num_passes = 25
     num_samples = 100
     shape = [10, 10, 3]

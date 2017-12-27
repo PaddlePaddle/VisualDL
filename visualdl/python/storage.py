@@ -54,5 +54,5 @@ class StorageWriter(object):
         }
         return type2scalar[type](tag)
 
-    def image(self, tag, num_samples):
-        return self.writer.new_image(tag, num_samples)
+    def image(self, tag, num_samples, step_cycle):
+        return self.writer.new_image(tag, num_samples, step_cycle)
