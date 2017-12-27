@@ -92,7 +92,7 @@ Frontend uses rest API to get data from the server. The data format will be JSON
         }
     ],
     "edge": [
-        {"source": "x", "target": "1", "label": "label1"},
+        {"source": "X", "target": "1", "label": "label1"},
         {"source": "W1", "target": "1", "label": "label2"},
         {"source": "B1", "target": "1", "label": "label3"},
         {"source": "1", "target": "2", "label": "label4"},
