@@ -1,13 +1,27 @@
 #!/bin/bash
 set -ex
 
-sudo pip install numpy
-#sudo apt-get install --only-upgrade cmake -y
-mkdir -p build
-cd build
-cmake ..
-make
-make test
+mode=$1
 
-#if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi
-#if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/run_on_non_pull_requests; fi
+backend_test() {
+    sudo pip install numpy
+    mkdir -p build
+    cd build
+    cmake ..
+    make
+    make test
+}
+
+frontend_test() {
+    cd frontend
+    npm install
+    npm run build
+}
+
+echo "mode" $mode
+
+if [ $mode = "backend" ]; then
+    backend_test
+else
+    frontend_test
+fi

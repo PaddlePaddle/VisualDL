@@ -5,22 +5,42 @@ cache:
     - $HOME/.cache/pip
 sudo: required
 dist: trusty
-os:
-  - linux
-addons:
-  apt:
-    packages:
-      - gcc-4.8
-      - g++-4.8
-      - git
-      - python
-      - python-pip
-      - python2.7-dev
-      - python-wheel
-      - clang-format-3.8
-      - ccache
-script:
-  /bin/bash ./tests.sh
+matrix:
+  include:
+    os: linux
+    addons:
+      apt:
+        packages:
+          - gcc-4.8
+          - g++-4.8
+          - git
+          - python
+          - python-pip
+          - python2.7-dev
+          - python-wheel
+          - clang-format-3.8
+          - ccache
+          - npm
+          - nodejs
+      script:
+        /bin/bash ./tests.sh backend
+
+  include:
+    os: linux
+    addons:
+      apt:
+        packages:
+          - gcc-4.8
+          - g++-4.8
+          - git
+          - python
+          - python-pip
+          - python2.7-dev
+          - python-wheel
+          - npm
+          - nodejs
+      script:
+        /bin/bash ./tests.sh frontend
 
 notifications:
   email:
