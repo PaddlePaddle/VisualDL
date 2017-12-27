@@ -13,71 +13,103 @@ Each computation data flow graph is structured as a list of nodes that form the 
 ## Rest API data format
 Frontend uses rest API to get data from the server. The data format will be JSON. The data structure of a Graph is as below. Each Graph has three vectors:
 
-- `node` represents Operator. It has type, input, and output.
+- `node` represents Operator, it has type, input, and output.
 - `input` represents input data or parameters, it has shape info.
 - `output` represents output data of the graph, it has shape info.
+- `edge` represents links in the graph, it has source, target and label.
 
 ```json
 {
-    "graph": {
-        "nodes": [
-            {
-                "name": "op_1",
-                "type": "mul_op",
-                "input": [
-                    "in1",
-                    "w1"
-                ],
-                "output": [
-                    "out1",
-                    "out2"
-                ]
-            },
-            {
-                "name": "op_2",
-                "type": "add_op",
-                "input": [
-                    "out1",
-                    "b1"
-                ],
-                "output": [
-                    "out3"
-                ]
-            }
-        ],
-        "inputs": [
-            {
-                "name": "in1",
-                "shape": [
-                    -1,
-                    2
-                ]
-            },
-            {
-                "name": "b1",
-                "shape": [
-                    1,
-                    3
-                ]
-            },
-            {
-                "name": "w1",
-                "shape": [
-                    2,
-                    3
-                ]
-            }
-        ],
-        "outputs": [
-            {
-                "name": "out3",
-                "shape": [
-                    -1,
-                    3
-                ]
-            }
-        ]
-    }
+    "input": [
+        {
+            "data_type": "FLOAT",
+            "name": "X",
+            "shape": [
+                "1"
+            ]
+        },
+        {
+            "data_type": "FLOAT",
+            "name": "W1",
+            "shape": [
+                "1"
+            ]
+        },
+        {
+            "data_type": "FLOAT",
+            "name": "B1",
+            "shape": [
+                "1"
+            ]
+        },
+        {
+            "data_type": "FLOAT",
+            "name": "W2",
+            "shape": [
+                "1"
+            ]
+        },
+        {
+            "data_type": "FLOAT",
+            "name": "B2",
+            "shape": [
+                "1"
+            ]
+        }
+    ],
+    "name": "MLP",
+    "node": [
+        {
+            "input": [
+                "X",
+                "W1",
+                "B1"
+            ],
+            "opType": "FC",
+            "output": [
+                "H1"
+            ]
+        },
+        {
+            "input": [
+                "H1"
+            ],
+            "opType": "Relu",
+            "output": [
+                "R1"
+            ]
+        },
+        {
+            "input": [
+                "R1",
+                "W2",
+                "B2"
+            ],
+            "opType": "FC",
+            "output": [
+                "Y"
+            ]
+        }
+    ],
+    "edge": [
+        {"source": "x", "target": "1"},
+        {"source": "W1", "target": "1"},
+        {"source": "B1", "target": "1"},
+        {"source": "1", "target": "2"},
+        {"source": "2", "target": "3"},
+        {"source": "W2", "target": "3"},
+        {"source": "B2", "target": "3"},
+        {"source": "3", "target": "Y"}
+    ],
+    "output": [
+        {
+            "data_type": "FLOAT",
+            "name": "Y",
+            "shape": [
+                "1"
+            ]
+        }
+    ]
 }
 ```
 
