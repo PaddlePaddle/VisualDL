@@ -41,5 +41,9 @@ def load_model(model_pb_path):
     return json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': '))
 
 
-json_str = load_model("/Users/qiaolongfei/project/onnx/model/inception_v1/model.pb")
-print(json_str)
+if __name__ == '__main__':
+    import os
+    import sys
+    current_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+    json_str = load_model(current_path + "/mock/inception_v1.pb")
+    print(json_str)
