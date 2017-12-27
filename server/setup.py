@@ -1,6 +1,9 @@
 from setuptools import setup
 
-packages = ['visualdl', 'visualdl.frontend.dist', 'visualdl.mock']
+packages = ['visualdl',
+            'visualdl.onnx',
+            'visualdl.mock',
+            'visualdl.frontend.dist']
 
 setup(
     name="visualdl",
