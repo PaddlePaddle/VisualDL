@@ -1,20 +1,13 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel info="{{tagList.length}}" title="{{title}}">
-            <div class="visual-dl-chart-box">
-                <ui-chart
-                    san-for="tag in filteredTagList"
+        <ui-expand-panel title="{{title}}">
+            <div san-for="tag in filteredTagList" class="visual-dl-chart-box">
+                <ui-image
+                    san-for="tag in tag.tagList"
                     tagInfo="{{tag}}"
-                    groupNameReg="{{config.groupNameReg}}"
-                    smoothing="{{config.smoothing}}"
-                    horizontal="{{config.horizontal}}"
-                    sortingMethod="{{config.sortingMethod}}"
-                    downloadLink="{{config.downloadLink}}"
-                    outlier="{{config.outlier}}"
-                    runs="{{config.runs}}"
-                    running="{{config.running}}"
+                    config="{{config}}"
                     runsItems="{{runsItems}}"
-                ></ui-chart>
+                ></ui-image>
             </div>
             <ui-pagination
                 san-if="total > pageSize"
@@ -29,12 +22,12 @@
 </template>
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
-import chart from '../../common/component/Charts/chart';
+import image from '../../common/component/Charts/image';
 import Pagination from 'san-mui/Pagination';
 
 export default {
     components: {
-        'ui-chart': chart,
+        'ui-image': image,
         'ui-expand-panel': ExpandPanel,
         'ui-pagination': Pagination
     },

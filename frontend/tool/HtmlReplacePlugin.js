@@ -1,3 +1,4 @@
+'use strict';
 function noopReplace (val) { return val; }
 
 function HtmlReplacePlugin(options) {

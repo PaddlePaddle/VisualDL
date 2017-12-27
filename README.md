@@ -20,7 +20,7 @@ cp -r frontend/dist server/visualdl/frontend/dist
 #### Step 3: build and install Python package
 ```shell
 cd server/
-python setup.py bdist_wheel
+sh build.sh
 cd dist
 sudo pip install --upgrade visualdl-0.0.1-py2-none-any.whl
 ```
