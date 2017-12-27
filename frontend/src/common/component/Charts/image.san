@@ -1,0 +1,101 @@
+<template>
+    <div class="visual-dl-image">
+        <h3>{{tagInfo.tag.displayName}}
+            <span>{{tagInfo.run}}</span>
+        </h3>
+        <p>
+            <span>Step:</span>
+            <span>{{imgData.step}};</span>
+            <span>{{imgData.wall_time | formatTime}}</span>
+        </p>
+        <san-slider
+            on-change="handleSlideChange($event)"
+            value="{{currentIndex}}"
+            min="{{slider.min}}"
+            max="{{steps}}"
+            step="{{1}}"
+        />
+        <img src="{{imgData.imgSrc}}" width="{{imgData.width}}" height="{{imgData.height}}"/>
+    </div>
+</template>
+<script>
+import Slider from 'san-mui/Slider';
+import {getPluginImagesImages} from '../../../service';
+
+export default {
+    components: {
+        'san-slider': Slider
+    },
+    computed: {
+        steps() {
+            let data = this.data.get('data') || [];
+            return data.length - 1;
+        }
+    },
+    filters: {
+        formatTime(value) {
+            if (!value) {
+                return;
+            }
+            let time = new Date();
+            time.setTime(value.toString().split('.')[0]);
+            return time;
+        }
+    },
+    initData() {
+        return {
+            slider: {
+                value: '0',
+                label: '',
+                min: 0,
+                step: 1
+            },
+            currentIndex: 0
+        };
+    },
+    inited() {
+        let {run, tag} = this.data.get('tagInfo');
+        let {displayName, samples} = tag;
+        let params = {
+            run,
+            displayName,
+            samples
+        };
+        getPluginImagesImages(params).then(({data}) => {
+            this.data.set('data', data);
+            this.data.set('currentIndex', data.length - 1);
+        });
+
+        // currentIndex change event
+        this.watch('currentIndex', index => {
+            /* eslint-disable fecs-camelcase */
+            let currentImgInfo = this.data.get('data') ? this.data.get('data')[index] : {};
+            let {height, width, query, step, wall_time} = currentImgInfo;
+            let url = '/data/plugin/images/individualImage?ts=' + wall_time;
+            let imgSrc = [url, query].join('&');
+            this.data.set('imgData', {
+                imgSrc,
+                height,
+                width,
+                step,
+                wall_time
+            });
+            /* eslint-enable fecs-camelcase */
+        });
+    },
+    handleSlideChange(val) {
+        this.data.set('currentIndex', val);
+    }
+};
+</script>
+<style lang="stylus">
+    .visual-dl-image
+        float left
+        padding 10px
+        font-size 12px
+        .visual-dl-chart-actions
+            .sm-form-item
+                width 300px
+                display inline-block
+</style>
+

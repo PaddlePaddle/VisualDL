@@ -32,7 +32,7 @@ export default {
                 },
                 {
                     value: '2',
-                    url: '/image',
+                    url: '/images',
                     title: 'IMAGES'
                 }
             ]
