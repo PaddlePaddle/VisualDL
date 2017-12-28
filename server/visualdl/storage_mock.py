@@ -26,11 +26,12 @@ def add_image(writer,
     for pass_ in xrange(num_passes):
         image_writer.start_sampling()
         for ins in xrange(2 * num_samples):
-            print '.',
             index = image_writer.is_sample_taken()
             if index != -1:
                 data = np.random.random(shape) * 256
                 data = np.ndarray.flatten(data)
+                assert shape
+                assert len(data) > 0
                 image_writer.set_sample(index, shape, list(data))
         image_writer.finish_sampling()
 

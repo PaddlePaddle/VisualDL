@@ -89,7 +89,7 @@ def logdir():
 @app.route('/data/runs')
 def runs():
     modes = storage.modes()
-    result = gen_result(0, "", lib.modes())
+    result = gen_result(0, "", lib.get_modes())
     return Response(json.dumps(result), mimetype='application/json')
 
 
