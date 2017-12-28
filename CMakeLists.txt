@@ -23,6 +23,7 @@ include(external/zlib)      # download, build, install zlib
 include(external/gflags)    # download, build, install gflags
 include(external/glog)      # download, build, install glog
 include(external/gtest)     # download, build, install gtest
+include(external/eigen)     # download eigen
 include(external/pybind11)  # download pybind11
 include(external/protobuf)  # download, build, install protobuf
 include(external/python)    # find python and set path
