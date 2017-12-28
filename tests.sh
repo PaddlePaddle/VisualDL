@@ -11,6 +11,7 @@ export PYTHONPATH="${core_path}:${python_path}"
 backend_test() {
     cd $cur
     sudo pip install numpy
+    sudo pip install Pillow
     mkdir -p build
     cd build
     cmake ..
