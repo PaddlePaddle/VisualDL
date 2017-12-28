@@ -48,9 +48,8 @@ template class ScalarReader<float>;
 template class ScalarReader<double>;
 
 void Image::StartSampling() {
-  // TODO(ChunweiYan) big bug here, every step will be stored in protobuf
-  // and that might result in explosion in some scenerios, Just sampling
-  // some steps should be better.
+  if (!ToSampleThisStep()) return;
+
   step_ = writer_.AddRecord();
   step_.SetId(step_id_);
 
@@ -103,6 +102,7 @@ void Image::SetSample(int index,
   // production
   int size = std::accumulate(
       shape.begin(), shape.end(), 1., [](float a, float b) { return a * b; });
+  CHECK_GT(size, 0);
   CHECK_EQ(size, data.size()) << "image's shape not match data";
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
