@@ -1,13 +1,43 @@
 #!/bin/bash
 set -ex
 
-sudo pip install numpy
-#sudo apt-get install --only-upgrade cmake -y
-mkdir -p build
-cd build
-cmake ..
-make
-make test
+mode=$1
+readonly cur=$(pwd)
+readonly core_path=$cur/build/visualdl/logic
+readonly python_path=$cur/visualdl/python
 
-#if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis/run_on_pull_requests; fi
-#if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis/run_on_non_pull_requests; fi
+export PYTHONPATH="${core_path}:${python_path}"
+
+backend_test() {
+    cd $cur
+    sudo pip install numpy
+    mkdir -p build
+    cd build
+    cmake ..
+    make
+    make test
+}
+
+frontend_test() {
+    cd $cur
+    cd frontend
+    npm install
+    npm run build
+}
+
+server_test() {
+    cd $cur/server/visualdl
+    python lib_test.py
+}
+
+echo "mode" $mode
+
+if [ $mode = "backend" ]; then
+    backend_test
+elif [ $mode = "all" ]; then
+    frontend_test
+    backend_test
+    server_test
+else
+    frontend_test
+fi
