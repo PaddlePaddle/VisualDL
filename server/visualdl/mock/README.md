@@ -1,5 +1,7 @@
 ## Note
-Squeezenet and Inception_v1 are onnx/models.
+Test data squeezenet and inception_v1 are from onnx/models.
+
+https://github.com/onnx/models
 
 squeezenet has 53 inputs, 66 nodes and 1 output.
 
