@@ -71,6 +71,6 @@ if __name__ == '__main__':
     import os
     import sys
     current_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-    # json_str = load_model(current_path + "/mock/inception_v1.pb")
+    # json_str = load_model(current_path + "/mock/inception_v1_model.pb")
     json_str = load_model(current_path + "/mock/squeezenet_model.pb")
     print(json_str)
