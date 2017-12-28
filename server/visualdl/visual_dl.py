@@ -16,11 +16,12 @@ import storage
 import graph
 
 app = Flask(__name__, static_url_path="")
+# set static expires in a short time to reduce browser's memory usage.
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
 
 def option_parser():
     """
-
     :return:
     """
     parser = OptionParser(usage="usage: visual_dl visual_dl.py "\
@@ -151,6 +152,7 @@ def individual_image():
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
+
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
