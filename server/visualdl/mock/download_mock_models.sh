@@ -10,10 +10,11 @@ rm inception_v1.tar.gz
 
 
 # Download squeezenet model
-#curl -LOk https://s3.amazonaws.com/download.onnx/models/squeezenet.tar.gz
+curl -LOk https://s3.amazonaws.com/download.onnx/models/squeezenet.tar.gz
 
 tar -xvzf squeezenet.tar.gz
 cp squeezenet/model.pb squeezenet_model.pb
 
 rm -rf squeezenet
 rm squeezenet.tar.gz
+
