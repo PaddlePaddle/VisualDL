@@ -21,6 +21,9 @@ class LibTest(unittest.TestCase):
         add_image(writer, "train", "layer/image0", 7, 10, 1)
         add_image(writer, "test", "layer/image0", 7, 10, 3)
 
+        add_image(writer, "train", "layer/image1", 7, 10, 1, shape=[30,30,2])
+        add_image(writer, "test", "layer/image1", 7, 10, 1, shape=[30,30,2])
+
         self.reader = storage.StorageReader(dir)
 
     def test_modes(self):

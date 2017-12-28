@@ -103,6 +103,10 @@ void Image::SetSample(int index,
   int size = std::accumulate(
       shape.begin(), shape.end(), 1., [](float a, float b) { return a * b; });
   CHECK_GT(size, 0);
+  CHECK_EQ(shape.size(), 3)
+      << "shape should be something like (width, height, num_channel)";
+  CHECK_LE(shape.back(), 3);
+  CHECK_GE(shape.back(), 2);
   CHECK_EQ(size, data.size()) << "image's shape not match data";
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
