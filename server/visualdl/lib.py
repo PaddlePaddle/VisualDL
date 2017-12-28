@@ -119,7 +119,6 @@ if __name__ == '__main__':
     tags = get_image_tags(reader, 'train')
 
     tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
-    print 'image step tags'
     pprint.pprint(tags)
 
     image = get_invididual_image(reader, "train", 'layer1/layer2/image0/0', 2)

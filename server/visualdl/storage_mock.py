@@ -21,7 +21,6 @@ test_scalar1 = test_writer.scalar("model/scalar/max")
 for i in range(100):
     train_scalar.add_record(i, random.random())
     train_scalar1.add_record(i, random.random())
-    #time.sleep(1)
     if i % 10 == 0:
         test_scalar.add_record(i, random.random())
         test_scalar1.add_record(i, random.random())
@@ -31,13 +30,14 @@ def add_image(mode):
     tag = "layer1/layer2/image0"
     # TODO check step_cycle
     num_samples = 10
-    num_passes = 10
+    num_passes = 20
     image_writer = writer_.image(tag, num_samples, 1)
-    shape = [400, 400, 3]
+    shape = [50, 50, 3]
 
     for pass_ in xrange(num_passes):
         image_writer.start_sampling()
         for ins in xrange(2*num_samples):
+            print '.',
             index =  image_writer.is_sample_taken()
             if index != -1:
                 data = np.random.random(shape) * 256
