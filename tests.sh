@@ -26,6 +26,8 @@ frontend_test() {
 }
 
 server_test() {
+    cd $cur/server
+    bash build.sh
     cd $cur/server/visualdl
     python lib_test.py
 }
