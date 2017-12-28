@@ -51,9 +51,9 @@ def get_image_tags(storage):
             for tag in tags:
                 image = reader.image(tag)
                 for i in xrange(max(1, image.num_samples())):
-                    tag = image.caption() if image.num_samples() <= 1 else '%s/%d'%(tag, i)
-                    result[mode][tag] = {
-                        'displayName': tag,
+                    caption = tag if image.num_samples() <= 1 else '%s/%d'%(tag, i)
+                    result[mode][caption] = {
+                        'displayName': caption,
                         'description': "",
                         'samples': 1,
                     }
@@ -61,6 +61,7 @@ def get_image_tags(storage):
 
 
 def get_image_tag_steps(storage, mode, tag):
+    print 'image_tag_steps,mode,tag:', mode, tag
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
     sample_index = 0
@@ -76,6 +77,7 @@ def get_image_tag_steps(storage, mode, tag):
     for step_index in range(image.num_records()):
         record = image.record(step_index, sample_index)
         shape = record.shape()
+        assert shape, "%s,%s" % (mode, tag)
         query = urllib.urlencode({
             'sample': 0,
             'index': step_index,
