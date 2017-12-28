@@ -9,17 +9,22 @@ from PIL import Image
 import storage
 
 
+def get_modes(storage):
+    return storage.modes()
+
+
 def get_scalar_tags(storage, mode):
     result = {}
-    print 'modes', storage.modes()
     for mode in storage.modes():
-        result[mode] = {}
         reader = storage.as_mode(mode)
-        for tag in reader.tags('scalar'):
-            result[mode][tag] = {
-                'displayName': reader.scalar(tag).caption(),
-                'description': "",
-            }
+        tags = reader.tags('scalar')
+        if tags:
+            result[mode] = {}
+            for tag in tags:
+                result[mode][tag] = {
+                    'displayName': reader.scalar(tag).caption(),
+                    'description': "",
+                }
     return result
 
 
@@ -35,27 +40,20 @@ def get_scalar(storage, mode, tag):
     return result
 
 
-def get_image_tags(storage, mode):
+def get_image_tags(storage):
     result = {}
 
-    print 'modes', storage.modes()
     for mode in storage.modes():
         reader = storage.as_mode(mode)
-        print 'tags', reader.tags('image')
-        result[mode] = {}
-        for tag in reader.tags('image'):
-            image = reader.image(tag)
-            if image.num_samples() <= 1:
-                result[mode][tag] = {
-                    'displayName': image.caption(),
-                    'description': "",
-                    'samples': 1,
-                }
-            else:
-                for i in xrange(image.num_samples()):
-                    caption = tag + '/%d' % i
-                    result[mode][caption] = {
-                        'displayName': caption,
+        tags = reader.tags('image')
+        if tags:
+            result[mode] = {}
+            for tag in tags:
+                image = reader.image(tag)
+                for i in xrange(max(1, image.num_samples())):
+                    tag = image.caption() if image.num_samples() <= 1 else '%s/%d'%(tag, i)
+                    result[mode][tag] = {
+                        'displayName': tag,
                         'description': "",
                         'samples': 1,
                     }
@@ -74,7 +72,6 @@ def get_image_tag_steps(storage, mode, tag):
     reader = storage.as_mode(mode)
     image = reader.image(tag)
     res = []
-
 
     for step_index in range(image.num_records()):
         record = image.record(step_index, sample_index)
@@ -116,7 +113,7 @@ def get_invididual_image(storage, mode, tag, step_index):
 
 if __name__ == '__main__':
     reader = storage.StorageReader('./tmp/mock')
-    tags = get_image_tags(reader, 'train')
+    tags = get_image_tags(reader)
 
     tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
     pprint.pprint(tags)

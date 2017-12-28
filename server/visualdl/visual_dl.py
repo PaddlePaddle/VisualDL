@@ -89,7 +89,7 @@ def logdir():
 @app.route('/data/runs')
 def runs():
     modes = storage.modes()
-    result = gen_result(0, "", ["train", "test"])
+    result = gen_result(0, "", lib.modes())
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -101,16 +101,16 @@ def scalar_tags():
         result = mock_tags.data()
     else:
         result = lib.get_scalar_tags(storage, mode)
-    print 'tags', result
+    print 'scalar tags (mode: %s)' % mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/images/tags")
 def image_tags():
-    mode = request.args.get('mode')
-    result = lib.get_image_tags(storage, mode)
-    print 'tags', result
+    mode = request.args.get('run')
+    result = lib.get_image_tags(storage)
+    print 'image tags (mode: %s)'%mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -132,6 +132,7 @@ def scalars():
 @app.route('/data/plugin/images/images')
 def images():
     mode = request.args.get('run')
+    # TODO(ChunweiYan) update this when frontend fix the field name
     #tag = request.args.get('tag')
     tag = request.args.get('displayName')
 
