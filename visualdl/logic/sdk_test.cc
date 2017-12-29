@@ -56,7 +56,7 @@ TEST(Image, test) {
   for (int step = 0; step < num_steps; step++) {
     image.StartSampling();
     for (int i = 0; i < 7; i++) {
-      vector<int64_t> shape({3, 5, 5});
+      vector<int64_t> shape({5, 5, 3});
       vector<float> data;
       for (int j = 0; j < 3 * 5 * 5; j++) {
         data.push_back(float(rand()) / RAND_MAX);
