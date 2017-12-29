@@ -1,5 +1,7 @@
 #include "visualdl/logic/sdk.h"
 
+#include "visualdl/utils/image.h"
+
 namespace visualdl {
 
 namespace components {
@@ -101,7 +103,7 @@ void Image::SetSample(int index,
                       const std::vector<value_t>& data) {
   // production
   int size = std::accumulate(
-      shape.begin(), shape.end(), 1., [](float a, float b) { return a * b; });
+      shape.begin(), shape.end(), 1., [](int a, int b) { return a * b; });
   CHECK_GT(size, 0);
   CHECK_EQ(shape.size(), 3)
       << "shape should be something like (width, height, num_channel)";
@@ -111,7 +113,6 @@ void Image::SetSample(int index,
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
 
-  // set data
   auto entry = step_.MutableData<std::vector<char>>(index);
   // trick to store int8 to protobuf
   std::vector<char> data_str(data.size());
