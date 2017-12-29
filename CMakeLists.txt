@@ -31,7 +31,7 @@ include(external/python)    # find python and set path
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # TODO(ChunweiYan) debug, remote latter
-include_directories(/home/superjom/project/VisualDL/build/third_party/eigen3/src/extern_eigen3)
+#include_directories(/home/superjom/project/VisualDL/build/third_party/eigen3/src/extern_eigen3)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
@@ -40,6 +40,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/test_image.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
