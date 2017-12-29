@@ -36,7 +36,7 @@ class StorageTest(unittest.TestCase):
         image_writer = self.writer.image(tag, 10, 1)
         num_passes = 10
         num_samples = 100
-        shape = [3, 10, 10]
+        shape = [10, 10, 3]
 
         for pass_ in xrange(num_passes):
             image_writer.start_sampling()
