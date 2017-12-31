@@ -42,7 +42,7 @@ class StorageTest(unittest.TestCase):
         for pass_ in xrange(num_passes):
             image_writer.start_sampling()
             for ins in xrange(num_samples):
-                index =  image_writer.is_sample_taken()
+                index = image_writer.is_sample_taken()
                 if index != -1:
                     data = np.random.random(shape) * 256
                     data = np.ndarray.flatten(data)
@@ -89,19 +89,14 @@ class StorageTest(unittest.TestCase):
         data = image_record.data()
         shape = image_record.shape()
 
-        PIL_image_shape = (shape[0]*shape[1], shape[2])
+        PIL_image_shape = (shape[0] * shape[1], shape[2])
         data = np.array(data, dtype='uint8').reshape(PIL_image_shape)
         print 'origin', origin_data.flatten()
         print 'data', data.flatten()
         image = Image.fromarray(data.reshape(shape))
 
-        self.assertTrue(np.equal(origin_data.reshape(PIL_image_shape), data).all())
-
-
-
-
-
-
+        self.assertTrue(
+            np.equal(origin_data.reshape(PIL_image_shape), data).all())
 
 
 if __name__ == '__main__':

@@ -119,7 +119,11 @@ void Image::SetSample(int index,
   for (int i = 0; i < data.size(); i++) {
     data_str[i] = data[i];
   }
-  entry.SetRaw(std::string(data_str.begin(), data_str.end()));
+  Uint8Image image(shape[2], shape[0] * shape[1]);
+  NormalizeImage(&image, &data[0], shape[0] * shape[1], shape[2]);
+  // entry.SetRaw(std::string(data_str.begin(), data_str.end()));
+  entry.SetRaw(
+      std::string(image.data(), image.data() + image.rows() * image.cols()));
 
   static_assert(
       !is_same_type<value_t, shape_t>::value,

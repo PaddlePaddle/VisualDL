@@ -13,7 +13,8 @@ using uint8_t = unsigned char;
  * 2: height*width, channel
  */
 template <typename T>
-using ImageDT = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+using ImageDT =
+    Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using Uint8Image = ImageDT<uint8_t>;
 
 /*
@@ -21,10 +22,13 @@ using Uint8Image = ImageDT<uint8_t>;
  * depth: number of channels
  */
 static void NormalizeImage(Uint8Image* image,
-                           float* buffer,
+                           const float* buffer,
                            int hw,
                            int depth) {
-  Eigen::Map<Eigen::MatrixXf> values(buffer, depth, hw);
+  // Both image and buffer should be used in row major.
+  Eigen::Map<const Eigen::
+                 Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>
+      values(buffer, depth, hw);
 
   CHECK_EQ(image->size(), hw * depth);
   CHECK_EQ(image->row(0).size(), hw);
@@ -60,10 +64,11 @@ static void NormalizeImage(Uint8Image* image,
     float max_val = std::max(std::abs(image_min), image_max);
     scale = (max_val < kZeroThreshold ? 0.0f : 127.0f) / max_val;
   } else {
-    scale =
-        (image_max < image_max < kZeroThreshold ? 0.0f : 255.0f) / image_max;
+    scale = (image_max < kZeroThreshold ? 0.0f : 255.0f) / image_max;
     offset = 0.0f;
   }
+
+  LOG(INFO) << "scale " << scale;
 
   // Transform image, turning nonfinite values to bad_color
   for (int i = 0; i < depth; i++) {
