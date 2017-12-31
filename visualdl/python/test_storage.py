@@ -1,6 +1,7 @@
 import random
 import time
 import unittest
+from PIL import Image
 
 import numpy as np
 
@@ -61,6 +62,46 @@ class StorageTest(unittest.TestCase):
         image_tags = self.reader.tags("image")
         self.assertTrue(image_tags)
         self.assertEqual(len(image_tags), 1)
+
+    def test_check_image(self):
+        '''
+        check whether the storage will keep image data consistent
+        '''
+        print 'check image'
+        tag = "layer1/check/image1"
+        image_writer = self.writer.image(tag, 10, 1)
+
+        image = Image.open("./dog.jpg")
+        shape = [image.size[1], image.size[0], 3]
+        origin_data = np.array(image.getdata()).flatten()
+
+        self.reader = storage.StorageReader(self.dir).as_mode("train")
+
+        image_writer.start_sampling()
+        index = image_writer.is_sample_taken()
+        image_writer.set_sample(index, shape, list(origin_data))
+        image_writer.finish_sampling()
+
+        # read and check whether the original image will be displayed
+
+        image_reader = self.reader.image(tag)
+        image_record = image_reader.record(0, 0)
+        data = image_record.data()
+        shape = image_record.shape()
+
+        PIL_image_shape = (shape[0]*shape[1], shape[2])
+        data = np.array(data, dtype='uint8').reshape(PIL_image_shape)
+        print 'origin', origin_data.flatten()
+        print 'data', data.flatten()
+        image = Image.fromarray(data.reshape(shape))
+
+        self.assertTrue(np.equal(origin_data.reshape(PIL_image_shape), data).all())
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
