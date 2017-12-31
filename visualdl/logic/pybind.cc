@@ -93,7 +93,10 @@ PYBIND11_PLUGIN(core) {
 
   py::class_<cp::ImageReader::ImageRecord>(m, "ImageRecord")
       // TODO(ChunweiYan) make these copyless.
-      .def("data", [](cp::ImageReader::ImageRecord& self) { return self.data; })
+      .def("data",
+           [](cp::ImageReader::ImageRecord& self) {
+             return self.data;
+           })
       .def("shape",
            [](cp::ImageReader::ImageRecord& self) { return self.shape; })
       .def("step_id",
