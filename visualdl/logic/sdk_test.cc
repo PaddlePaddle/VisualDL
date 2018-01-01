@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace std;
+
 namespace visualdl {
 
 TEST(Scalar, write) {
@@ -38,6 +40,43 @@ TEST(Scalar, write) {
   components::ScalarReader<float> scalar_reader1(
       reader.tablet("model/layer/min"));
   ASSERT_EQ(scalar_reader1.caption(), "customized caption");
+}
+
+TEST(Image, test) {
+  const auto dir = "./tmp/sdk_test.image";
+  Writer writer__(dir, 4);
+  auto writer = writer__.AsMode("train");
+
+  auto tablet = writer.AddTablet("image0");
+  components::Image image(tablet, 3, 1);
+  const int num_steps = 10;
+
+  LOG(INFO) << "write images";
+  image.SetCaption("this is an image");
+  for (int step = 0; step < num_steps; step++) {
+    image.StartSampling();
+    for (int i = 0; i < 7; i++) {
+      vector<int64_t> shape({5, 5, 3});
+      vector<float> data;
+      for (int j = 0; j < 3 * 5 * 5; j++) {
+        data.push_back(float(rand()) / RAND_MAX);
+      }
+      int index = image.IsSampleTaken();
+      if (index != -1) {
+        image.SetSample(index, shape, data);
+      }
+    }
+    image.FinishSampling();
+  }
+
+  LOG(INFO) << "read images";
+  // read it
+  Reader reader__(dir);
+  auto reader = reader__.AsMode("train");
+  auto tablet2read = reader.tablet("image0");
+  components::ImageReader image2read("train", tablet2read);
+  CHECK_EQ(image2read.caption(), "this is an image");
+  CHECK_EQ(image2read.num_records(), num_steps);
 }
 
 }  // namespace visualdl
