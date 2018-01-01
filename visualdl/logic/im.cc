@@ -37,7 +37,6 @@ template class SimpleWriteSyncGuard<Entry<double>>;
 template class SimpleWriteSyncGuard<Entry<bool>>;
 template class SimpleWriteSyncGuard<Entry<long>>;
 template class SimpleWriteSyncGuard<Entry<std::string>>;
-template class SimpleWriteSyncGuard<Entry<std::vector<byte_t>>>;
 template class SimpleWriteSyncGuard<Entry<int>>;
 
 }  // namespace visualdl
