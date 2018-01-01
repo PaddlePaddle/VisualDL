@@ -30,9 +30,7 @@ struct Record {
 
   DECL_GUARD(Record)
 
-  Record() {}
   Record(storage::Record* x, Storage* parent) : data_(x), x_(parent) {}
-  Record(const Record& other) : data_(other.data_), x_(other.x_) {}
 
   // write operations
   void SetTimeStamp(int64_t x) {
@@ -59,12 +57,6 @@ struct Record {
   Entry<T> AddData() {
     WRITE_GUARD
     return Entry<T>(data_->add_data(), parent());
-  }
-
-  template <typename T>
-  Entry<T> MutableData(int i) {
-    WRITE_GUARD
-    return Entry<T>(data_->mutable_data(i), parent());
   }
 
   Storage* parent() { return x_; }

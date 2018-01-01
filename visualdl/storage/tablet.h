@@ -10,8 +10,6 @@
 
 namespace visualdl {
 
-struct TabletReader;
-
 /*
  * Tablet is a helper for operations on storage::Tablet.
  */
@@ -81,8 +79,6 @@ struct Tablet {
     data_->set_total_records(data_->total_records() + 1);
     WRITE_GUARD
   }
-
-  TabletReader reader();
 
   Storage* parent() const { return x_; }
 
