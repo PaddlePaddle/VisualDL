@@ -95,7 +95,7 @@ class StorageTest(unittest.TestCase):
         print 'data', data.flatten()
         image = Image.fromarray(data.reshape(shape))
         # manully check the image and found that nothing wrong with the image storage.
-        image.show()
+        # image.show()
 
         # after scale, elements are changed.
         # self.assertTrue(
