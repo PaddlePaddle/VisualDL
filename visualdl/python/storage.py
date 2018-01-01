@@ -31,6 +31,9 @@ class StorageReader(object):
         }
         return type2scalar[type](tag)
 
+    def image(self, tag):
+        return self.reader.get_image(tag)
+
 
 class StorageWriter(object):
 
@@ -50,3 +53,6 @@ class StorageWriter(object):
             'int': self.writer.new_scalar_int,
         }
         return type2scalar[type](tag)
+
+    def image(self, tag, num_samples, step_cycle):
+        return self.writer.new_image(tag, num_samples, step_cycle)

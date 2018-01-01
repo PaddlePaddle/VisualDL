@@ -1,27 +1,27 @@
-""" entry point of visual_dl
-"""
 import json
 import os
+import re
 import sys
 from optparse import OptionParser
 
-from flask import Flask, redirect
-from flask import request
-from flask import send_from_directory
-from flask import Response
+from flask import (Flask, Response, redirect, request, send_file,
+                   send_from_directory)
 
-from visualdl.log import logger
+import lib
+import storage
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
+from visualdl.log import logger
 import storage
 import graph
 
 app = Flask(__name__, static_url_path="")
+# set static expires in a short time to reduce browser's memory usage.
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
 
 def option_parser():
     """
-
     :return:
     """
     parser = OptionParser(usage="usage: visual_dl visual_dl.py "\
@@ -88,29 +88,29 @@ def logdir():
 
 @app.route('/data/runs')
 def runs():
-    is_debug = bool(request.args.get('debug'))
-    result = gen_result(0, "", ["train", "test"])
+    modes = storage.modes()
+    result = gen_result(0, "", lib.get_modes())
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/scalars/tags")
-def tags():
+def scalar_tags():
+    mode = request.args.get('mode')
     is_debug = bool(request.args.get('debug'))
-    tag = request.args.get('tag')
     if is_debug:
         result = mock_tags.data()
     else:
-        result = {}
-        print 'modes', storage.modes()
-        for mode in storage.modes():
-            result[mode] = {}
-            reader = storage.as_mode(mode)
-            for tag in reader.tags("scalar"):
-                result[mode][tag] = {
-                    'displayName': reader.scalar(tag).caption(),
-                    'description': ""
-                }
-    print 'tags', result
+        result = lib.get_scalar_tags(storage, mode)
+    print 'scalar tags (mode: %s)' % mode, result
+    result = gen_result(0, "", result)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route("/data/plugin/images/tags")
+def image_tags():
+    mode = request.args.get('run')
+    result = lib.get_image_tags(storage)
+    print 'image tags (mode: %s)'%mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -121,19 +121,38 @@ def scalars():
     tag = request.args.get('tag')
     is_debug = bool(request.args.get('debug'))
     if is_debug:
-        result = gen_result(0, "", mock_data.sequence_data())
+        result = mock_data.sequence_data()
     else:
-        reader = storage.as_mode(run)
-        scalar = reader.scalar(tag)
+        result = lib.get_scalar(storage, run, tag)
 
-        records = scalar.records()
-        ids = scalar.ids()
-        timestamps = scalar.timestamps()
+    result = gen_result(0, "", result)
+    return Response(json.dumps(result), mimetype='application/json')
 
-        result = zip(timestamps, ids, records)
-        result = gen_result(0, "", result)
+
+@app.route('/data/plugin/images/images')
+def images():
+    mode = request.args.get('run')
+    # TODO(ChunweiYan) update this when frontend fix the field name
+    #tag = request.args.get('tag')
+    tag = request.args.get('displayName')
+
+    result = lib.get_image_tag_steps(storage, mode, tag)
+    result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/images/individualImage')
+def individual_image():
+    mode = request.args.get('run')
+    tag = request.args.get('tag')  # include a index
+    step_index = int(request.args.get('index'))  # index of step
+    offset = 0
+
+    imagefile = lib.get_invididual_image(storage, mode, tag, step_index)
+    response = send_file(
+        imagefile, as_attachment=True, attachment_filename='img.png')
+    return response
 
 
 @app.route('/data/plugin/graphs/graph')
@@ -144,4 +163,4 @@ def graph():
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
-    app.run(debug=False, host=options.host, port=options.port)
+    app.run(debug=True, host=options.host, port=options.port)
