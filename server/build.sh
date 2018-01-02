@@ -1,8 +1,10 @@
+#!/bin/bash
+
 script=$(readlink -f "$0")
 script_path=$(dirname "$script")
 
 pushd $script_path
-  protoc visualdl/onnx/onnx.proto --python_out .
+  protoc3/bin/protoc visualdl/onnx/onnx.proto --python_out .
   pb_file="visualdl/onnx/onnx_pb2.py"
   if [ -f "$pb_file" ]
   then

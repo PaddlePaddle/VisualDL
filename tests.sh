@@ -28,14 +28,15 @@ frontend_test() {
 
 server_test() {
     sudo pip install google
-    sudo pip install protobuf==3.1.0
+#    sudo pip install protobuf==3.1.0
 
+    cd $cur/server
     curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
     unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
     export PATH=$PATH:protoc3/bin
+    sudo chmod +x protoc3/bin/protoc
     sudo chown `whoami` protoc3/bin/protoc
 
-    cd $cur/server
     bash build.sh
 
     cd visualdl
