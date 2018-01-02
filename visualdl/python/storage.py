@@ -16,8 +16,8 @@ class LogReader(object):
         self.reader = reader if reader else core.LogReader(dir)
 
     def mode(self, mode):
-        LogReader.cur_mode = self.as_mode(mode)
-        return LogReader.cur_mode
+        self.reader.set_mode(mode)
+        return self
 
     def as_mode(self, mode):
         tmp = LogReader(dir, self.reader.as_mode(mode))
@@ -41,10 +41,10 @@ class LogReader(object):
         return self.reader.get_image(tag)
 
     def __enter__(self):
-        return LogReader.cur_mode
+        return self
 
     def __exit__(self, type, value, traceback):
-        pass
+        self.reader.set_mode("default")
 
 
 class LogWriter(object):
