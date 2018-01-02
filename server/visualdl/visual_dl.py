@@ -133,7 +133,7 @@ def images():
     mode = request.args.get('run')
     # TODO(ChunweiYan) update this when frontend fix the field name
     #tag = request.args.get('tag')
-    tag = request.args.get('displayName')
+    tag = request.args.get('tag')
 
     result = lib.get_image_tag_steps(storage, mode, tag)
     result = gen_result(0, "", result)
