@@ -10,14 +10,17 @@ const static std::string kDefaultMode{"default"};
 
 class LogWriter {
 public:
-  LogWriter(const std::string& dir, int sync_cycle) {
+  LogWriter(const std::string& dir, int sync_cycle)  {
     storage_.SetDir(dir);
     storage_.meta.cycle = sync_cycle;
   }
+
   LogWriter(const LogWriter& other) {
-    storage_ = other.storage_;
     mode_ = other.mode_;
+    storage_ = other.storage_;
   }
+
+  void SetMode(const std::string& mode) { mode_ = mode; }
 
   LogWriter AsMode(const std::string& mode) {
     LogWriter writer = *this;
@@ -46,6 +49,8 @@ private:
 class LogReader {
 public:
   LogReader(const std::string& dir) : reader_(dir) {}
+
+  void SetMode(const std::string& mode) { mode_ = mode; }
 
   LogReader AsMode(const std::string& mode) {
     auto tmp = *this;

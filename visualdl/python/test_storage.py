@@ -115,6 +115,22 @@ class StorageTest(unittest.TestCase):
             scalar = reader.scalar("model/scalar/average")
             self.assertEqual(scalar.caption(), "train")
 
+    def test_modes(self):
+        dir = "./tmp/storagetest0"
+        store = storage.LogWriter(
+            self.dir, sync_cycle=1)
+
+        scalars = []
+
+        for i in range(10):
+            with store.mode("mode-%d" % i) as writer:
+                scalar = writer.scalar("add/scalar0")
+                scalars.append(scalar)
+
+        for scalar in scalars[:-1]:
+            for i in range(10):
+                scalar.add_record(i, float(i))
+
 
 
 if __name__ == '__main__':
