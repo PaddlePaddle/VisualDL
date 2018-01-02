@@ -28,7 +28,7 @@ frontend_test() {
 
 server_test() {
     sudo pip install google
-#    sudo pip install protobuf==3.1.0
+    sudo pip install protobuf==3.1.0
 
     cd $cur/server
     curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip

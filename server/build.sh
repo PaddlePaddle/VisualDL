@@ -11,7 +11,6 @@ pushd $script_path
     echo 'exist!!'
     ls $pb_file
     echo '$$CORE_PATH'
-    cp $pb_file $CORE_PATH
   else
     echo 'no!!'
   fi
