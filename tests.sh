@@ -34,8 +34,8 @@ server_test() {
     unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
     sudo mv protoc3/bin/* /usr/local/bin/
     sudo mv protoc3/include/* /usr/local/include/
-    sudo chwon [user] /usr/local/bin/protoc
-    sudo chwon -R [user] /usr/local/include/google
+    sudo chown [user] /usr/local/bin/protoc
+    sudo chown -R [user] /usr/local/include/google
 
     cd $cur/server
     bash build.sh $core_path
