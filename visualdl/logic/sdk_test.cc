@@ -8,7 +8,7 @@ namespace visualdl {
 
 TEST(Scalar, write) {
   const auto dir = "./tmp/sdk_test";
-  Writer writer__(dir, 1);
+  LogWriter writer__(dir, 1);
   auto writer = writer__.AsMode("train");
   // write disk every time
   auto tablet = writer.AddTablet("scalar0");
@@ -19,7 +19,7 @@ TEST(Scalar, write) {
   scalar1.SetCaption("customized caption");
 
   // read from disk
-  Reader reader_(dir);
+  LogReader reader_(dir);
   auto reader = reader_.AsMode("train");
   auto tablet_reader = reader.tablet("scalar0");
   auto scalar_reader = components::ScalarReader<int>(std::move(tablet_reader));
@@ -44,7 +44,7 @@ TEST(Scalar, write) {
 
 TEST(Image, test) {
   const auto dir = "./tmp/sdk_test.image";
-  Writer writer__(dir, 4);
+  LogWriter writer__(dir, 4);
   auto writer = writer__.AsMode("train");
 
   auto tablet = writer.AddTablet("image0");
@@ -71,7 +71,7 @@ TEST(Image, test) {
 
   LOG(INFO) << "read images";
   // read it
-  Reader reader__(dir);
+  LogReader reader__(dir);
   auto reader = reader__.AsMode("train");
   auto tablet2read = reader.tablet("image0");
   components::ImageReader image2read("train", tablet2read);
