@@ -12,48 +12,48 @@ PYBIND11_PLUGIN(core) {
   py::module m("core", "C++ core of VisualDL");
 
 #define READER_ADD_SCALAR(T)                                            \
-  .def("get_scalar_" #T, [](vs::Reader& self, const std::string& tag) { \
+  .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
     auto tablet = self.tablet(tag);                                     \
     return vs::components::ScalarReader<T>(std::move(tablet));          \
   })
-  py::class_<vs::Reader>(m, "Reader")
+  py::class_<vs::LogReader>(m, "LogReader")
       .def("__init__",
-           [](vs::Reader& instance, const std::string& dir) {
-             new (&instance) vs::Reader(dir);
+           [](vs::LogReader& instance, const std::string& dir) {
+             new (&instance) vs::LogReader(dir);
            })
-      .def("as_mode", &vs::Reader::AsMode)
-      .def("modes", [](vs::Reader& self) { return self.storage().modes(); })
-      .def("tags", &vs::Reader::tags)
+      .def("as_mode", &vs::LogReader::AsMode)
+      .def("modes", [](vs::LogReader& self) { return self.storage().modes(); })
+      .def("tags", &vs::LogReader::tags)
       // clang-format off
       READER_ADD_SCALAR(float)
       READER_ADD_SCALAR(double)
       READER_ADD_SCALAR(int)
       // clang-format on
-      .def("get_image", [](vs::Reader& self, const std::string& tag) {
+      .def("get_image", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
         return vs::components::ImageReader(self.mode(), tablet);
       });
 #undef READER_ADD_SCALAR
 
 #define WRITER_ADD_SCALAR(T)                                            \
-  .def("new_scalar_" #T, [](vs::Writer& self, const std::string& tag) { \
+  .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
     auto tablet = self.AddTablet(tag);                                  \
     return cp::Scalar<T>(tablet);                                       \
   })
 
-  py::class_<vs::Writer>(m, "Writer")
+  py::class_<vs::LogWriter>(m, "LogWriter")
       .def("__init__",
-           [](vs::Writer& instance, const std::string& dir, int sync_cycle) {
-             new (&instance) vs::Writer(dir, sync_cycle);
+           [](vs::LogWriter& instance, const std::string& dir, int sync_cycle) {
+             new (&instance) vs::LogWriter(dir, sync_cycle);
            })
-      .def("as_mode", &vs::Writer::AsMode)
+      .def("as_mode", &vs::LogWriter::AsMode)
       // clang-format off
       WRITER_ADD_SCALAR(float)
       WRITER_ADD_SCALAR(double)
       WRITER_ADD_SCALAR(int)
       // clang-format on
       .def("new_image",
-           [](vs::Writer& self,
+           [](vs::LogWriter& self,
               const std::string& tag,
               int num_samples,
               int step_cycle) {
