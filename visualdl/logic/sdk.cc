@@ -139,8 +139,8 @@ void Image::SetSample(int index,
 std::string ImageReader::caption() {
   CHECK_EQ(reader_.captions().size(), 1);
   auto caption = reader_.captions().front();
-  if (Reader::TagMatchMode(caption, mode_)) {
-    return Reader::GenReadableTag(mode_, caption);
+  if (LogReader::TagMatchMode(caption, mode_)) {
+    return LogReader::GenReadableTag(mode_, caption);
   }
   string::TagDecode(caption);
   return caption;

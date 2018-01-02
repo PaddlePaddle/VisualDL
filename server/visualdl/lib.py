@@ -114,7 +114,7 @@ def get_invididual_image(storage, mode, tag, step_index):
 
 
 if __name__ == '__main__':
-    reader = storage.StorageReader('./tmp/mock')
+    reader = storage.LogReader('./tmp/mock')
     tags = get_image_tags(reader)
 
     tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
