@@ -57,8 +57,8 @@ class LogWriter(object):
         self.writer = writer if writer else core.LogWriter(dir, sync_cycle)
 
     def mode(self, mode):
-        LogWriter.cur_mode = self.as_mode(mode)
-        return LogWriter.cur_mode
+        self.writer.set_mode(mode)
+        return self
 
     def as_mode(self, mode):
         LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle, self.writer.as_mode(mode))
@@ -76,7 +76,7 @@ class LogWriter(object):
         return self.writer.new_image(tag, num_samples, step_cycle)
 
     def __enter__(self):
-        return LogWriter.cur_mode
+        return self
 
     def __exit__(self, type, value, traceback):
-        pass
+        self.writer.set_mode("default")
