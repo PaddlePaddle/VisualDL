@@ -11,10 +11,10 @@ namespace cp = visualdl::components;
 PYBIND11_PLUGIN(core) {
   py::module m("core", "C++ core of VisualDL");
 
-#define READER_ADD_SCALAR(T)                                            \
+#define READER_ADD_SCALAR(T)                                               \
   .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
-    auto tablet = self.tablet(tag);                                     \
-    return vs::components::ScalarReader<T>(std::move(tablet));          \
+    auto tablet = self.tablet(tag);                                        \
+    return vs::components::ScalarReader<T>(std::move(tablet));             \
   })
   py::class_<vs::LogReader>(m, "LogReader")
       .def("__init__",
@@ -35,10 +35,10 @@ PYBIND11_PLUGIN(core) {
       });
 #undef READER_ADD_SCALAR
 
-#define WRITER_ADD_SCALAR(T)                                            \
+#define WRITER_ADD_SCALAR(T)                                               \
   .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
-    auto tablet = self.AddTablet(tag);                                  \
-    return cp::Scalar<T>(tablet);                                       \
+    auto tablet = self.AddTablet(tag);                                     \
+    return cp::Scalar<T>(tablet);                                          \
   })
 
   py::class_<vs::LogWriter>(m, "LogWriter")
@@ -93,10 +93,7 @@ PYBIND11_PLUGIN(core) {
 
   py::class_<cp::ImageReader::ImageRecord>(m, "ImageRecord")
       // TODO(ChunweiYan) make these copyless.
-      .def("data",
-           [](cp::ImageReader::ImageRecord& self) {
-             return self.data;
-           })
+      .def("data", [](cp::ImageReader::ImageRecord& self) { return self.data; })
       .def("shape",
            [](cp::ImageReader::ImageRecord& self) { return self.shape; })
       .def("step_id",
