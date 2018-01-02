@@ -1,6 +1,8 @@
-import onnx
 import json
+
 from google.protobuf.json_format import MessageToJson
+
+import onnx
 
 
 def reorganize_inout(json_obj, key):
