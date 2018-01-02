@@ -28,7 +28,7 @@ def get_scalar_tags(storage, mode):
     return result
 
 
-def get_scalar(storage, mode, tag):
+def get_scalar(storage, mode, tag, num_records=100):
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
 
@@ -36,7 +36,16 @@ def get_scalar(storage, mode, tag):
         ids = scalar.ids()
         timestamps = scalar.timestamps()
 
-        result = zip(timestamps, ids, records)
+        data = zip(timestamps, ids, records)
+
+        result = []
+        # sample some records to reduce data size
+        if len(result) > num_records:
+            span = len(result) / num_records
+            id = 0
+            while id <= num_records:
+                result.append(data[id])
+                id += span
         return result
 
 
@@ -96,7 +105,7 @@ def get_image_tag_steps(storage, mode, tag):
     return res
 
 
-def get_invididual_image(storage, mode, tag, step_index):
+def get_invididual_image(storage, mode, tag, step_index, max_size=80):
     with storage.mode(mode) as reader:
         res = re.search(r".*/([0-9]+$)", tag)
         # remove suffix '/x'
@@ -110,6 +119,10 @@ def get_invididual_image(storage, mode, tag, step_index):
         data = np.array(record.data(), dtype='uint8').reshape(record.shape())
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
+            size = max(record.shape[0], record.shape[1])
+            if size > max_size:
+                scale = max_size * 1. / size
+                im = im.resize(shape[:2])
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
