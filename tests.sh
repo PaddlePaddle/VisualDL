@@ -33,9 +33,9 @@ server_test() {
 
     cd $cur/server
     bash build.sh
+    bash graph_test.sh
     cd $cur/server/visualdl
     python lib_test.py
-    bash graph_test.sh
 }
 
 echo "mode" $mode
