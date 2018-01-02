@@ -31,6 +31,8 @@ TEST(Scalar, write) {
   // check the first entry of first record
   ASSERT_EQ(record.front(), 12);
 
+  ASSERT_TRUE(!reader.storage().modes().empty());
+
   // check tags
   ASSERT_EQ(reader.all_tags().size(), 1);
   auto tags = reader.tags("scalar");
