@@ -27,6 +27,11 @@ frontend_test() {
 }
 
 server_test() {
+    sudo pip install google
+    sudo pip install protobuf
+    sudo pip install onnx
+    sudo apt-get install protobuf-compiler
+
     cd $cur/server
     bash build.sh
     cd $cur/server/visualdl
