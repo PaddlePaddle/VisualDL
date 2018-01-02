@@ -30,6 +30,13 @@ server_test() {
     sudo pip install google
     sudo pip install protobuf==3.1.0
 
+    curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
+    unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
+    sudo mv protoc3/bin/* /usr/local/bin/
+    sudo mv protoc3/include/* /usr/local/include/
+    sudo chwon [user] /usr/local/bin/protoc
+    sudo chwon -R [user] /usr/local/include/google
+
     cd $cur/server
     bash build.sh $core_path
     cd visualdl
@@ -45,7 +52,7 @@ if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
 #    frontend_test
-    backend_test
+#    backend_test
     server_test
 else
     frontend_test
