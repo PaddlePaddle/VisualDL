@@ -126,7 +126,8 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
             size = max(shape[0], shape[1])
             if size > max_size:
                 scale = max_size * 1. / size
-                im = im.resize(shape[:2])
+                scaled_shape = (shape[0]*scale, shape[1]*scale)
+                im = im.resize(scaled_shape)
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
