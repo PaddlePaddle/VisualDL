@@ -22,7 +22,7 @@ def get_scalar_tags(storage, mode):
                 result[mode] = {}
                 for tag in tags:
                     result[mode][tag] = {
-                        'displayName': reader.scalar(tag).caption(),
+                        'displayName': tag,
                         'description': "",
                     }
     return result
