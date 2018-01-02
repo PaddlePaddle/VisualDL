@@ -31,6 +31,7 @@ server_test() {
     bash build.sh
     cd $cur/server/visualdl
     python lib_test.py
+    bash graph_test.sh
 }
 
 echo "mode" $mode
