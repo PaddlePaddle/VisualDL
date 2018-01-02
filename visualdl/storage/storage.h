@@ -74,22 +74,17 @@ struct Storage {
     return Tablet(&(*tablets_)[x], this);
   }
 
-  void SetDir(const std::string& dir) {
-    *dir_ = dir;
-  }
+  void SetDir(const std::string& dir) { *dir_ = dir; }
   std::string dir() const { return *dir_; }
   void PersistToDisk() {
     CHECK(!dir_->empty()) << "dir should be set.";
-    try {
-      fs::TryRecurMkdir(*dir_);
+    fs::TryRecurMkdir(*dir_);
 
-      fs::SerializeToFile(*data_, meta_path(*dir_));
-      for (auto tag : data_->tags()) {
-        auto it = tablets_->find(tag);
-        CHECK(it != tablets_->end()) << "tag " << tag << " not exist.";
-        fs::SerializeToFile(it->second, tablet_path(*dir_, tag));
-      }
-    } catch (...) {
+    fs::SerializeToFile(*data_, meta_path(*dir_));
+    for (auto tag : data_->tags()) {
+      auto it = tablets_->find(tag);
+      CHECK(it != tablets_->end()) << "tag " << tag << " not exist.";
+      fs::SerializeToFile(it->second, tablet_path(*dir_, tag));
     }
   }
   /*
