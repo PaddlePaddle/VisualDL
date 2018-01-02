@@ -32,7 +32,7 @@ server_test() {
 
     curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
     unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
-    export PAHT=$PATH:protoc3/bin
+    export PATH=$PATH:protoc3/bin
     sudo chown `whoami` protoc3/bin/protoc
 
     cd $cur/server
