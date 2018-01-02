@@ -30,7 +30,12 @@ server_test() {
     sudo pip install google
     sudo pip install protobuf
     sudo apt-get install protobuf-compiler libprotoc-dev
-    sudo pip install onnx
+
+    # install onnx
+    onnx_dir="./onnx"
+    git clone "https://github.com/onnx/onnx.git" "$onnx_dir" --recursive
+    pip install -e "$onnx_dir"
+    pip install pytest-cov psutil tabulate
 
     cd $cur/server
     bash build.sh
