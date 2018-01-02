@@ -29,8 +29,8 @@ frontend_test() {
 server_test() {
     sudo pip install google
     sudo pip install protobuf
-    sudo pip install onnx
     sudo apt-get install protobuf-compiler
+    sudo pip install onnx
 
     cd $cur/server
     bash build.sh
