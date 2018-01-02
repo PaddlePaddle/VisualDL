@@ -35,8 +35,8 @@ server_test() {
     cd visualdl
 
     bash graph_test.sh $core_path
-    cd $cur/server/visualdl
-    python lib_test.py
+#    cd $cur/server/visualdl
+#    python lib_test.py
 }
 
 echo "mode" $mode
@@ -44,8 +44,8 @@ echo "mode" $mode
 if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
-    frontend_test
-    backend_test
+#    frontend_test
+#    backend_test
     server_test
 else
     frontend_test
