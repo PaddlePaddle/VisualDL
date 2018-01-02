@@ -1,7 +1,7 @@
 import pprint
+import random
 import re
 import urllib
-import random
 from tempfile import NamedTemporaryFile
 
 import numpy as np
