@@ -33,9 +33,6 @@ server_test() {
     cd $cur/server
     bash build.sh
     cd visualdl
-    ls -alt
-    echo "where is onnx_pb2.py"
-    ls -alt onnx/
     bash graph_test.sh
     cd $cur/server/visualdl
     python lib_test.py
