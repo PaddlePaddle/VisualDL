@@ -40,11 +40,11 @@ def get_scalar(storage, mode, tag, num_records=100):
 
         result = []
         # sample some records to reduce data size
-        if len(result) > num_records:
-            span = len(result) / num_records
+        if len(data) > num_records:
+            span = len(result) * 1. / num_records
             id = 0
             while id <= num_records:
-                result.append(data[id])
+                result.append(data[int(id)])
                 id += span
         else:
             result = data
