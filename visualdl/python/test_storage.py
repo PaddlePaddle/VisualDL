@@ -101,6 +101,18 @@ class StorageTest(unittest.TestCase):
         # self.assertTrue(
         #     np.equal(origin_data.reshape(PIL_image_shape), data).all())
 
+    def test_with_syntax(self):
+        with self.writer.mode("train") as writer:
+            scalar = writer.scalar("model/scalar/average")
+            for i in range(10):
+                scalar.add_record(i, float(i))
+
+        self.reader = storage.StorageReader(self.dir)
+        with self.reader.mode("train") as reader:
+            scalar = reader.scalar("model/scalar/average")
+            self.assertEqual(scalar.caption(), "train")
+
+
 
 if __name__ == '__main__':
     unittest.main()
