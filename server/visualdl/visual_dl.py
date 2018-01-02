@@ -51,7 +51,7 @@ server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = "./frontend/dist/"
 mock_data_path = "./mock_data/"
 
-storage = storage.StorageReader(options.logdir)
+storage = storage.LogReader(options.logdir)
 
 
 # return data
@@ -160,4 +160,4 @@ def graph():
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
-    app.run(debug=True, host=options.host, port=options.port)
+    app.run(debug=False, host=options.host, port=options.port)

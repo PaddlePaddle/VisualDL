@@ -1,6 +1,7 @@
 import pprint
 import re
 import urllib
+import random
 from tempfile import NamedTemporaryFile
 
 import numpy as np
@@ -37,18 +38,11 @@ def get_scalar(storage, mode, tag, num_records=100):
         timestamps = scalar.timestamps()
 
         data = zip(timestamps, ids, records)
+        if len(data) <= num_records:
+            return data
 
-        result = []
-        # sample some records to reduce data size
-        if len(data) > num_records:
-            span = len(result) * 1. / num_records
-            id = 0
-            while id <= num_records:
-                result.append(data[int(id)])
-                id += span
-        else:
-            result = data
-        return result
+        samples = sorted(random.sample(xrange(len(data)), num_records))
+        return [data[i] for i in samples]
 
 
 def get_image_tags(storage):
