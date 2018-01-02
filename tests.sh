@@ -45,7 +45,7 @@ if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
 #    frontend_test
-#    backend_test
+    backend_test
     server_test
 else
     frontend_test
