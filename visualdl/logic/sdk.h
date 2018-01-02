@@ -8,19 +8,19 @@ namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
 
-class Writer {
+class LogWriter {
 public:
-  Writer(const std::string& dir, int sync_cycle) {
+  LogWriter(const std::string& dir, int sync_cycle) {
     storage_.SetDir(dir);
     storage_.meta.cycle = sync_cycle;
   }
-  Writer(const Writer& other) {
+  LogWriter(const LogWriter& other) {
     storage_ = other.storage_;
     mode_ = other.mode_;
   }
 
-  Writer AsMode(const std::string& mode) {
-    Writer writer = *this;
+  LogWriter AsMode(const std::string& mode) {
+    LogWriter writer = *this;
     storage_.AddMode(mode);
     writer.mode_ = mode;
     return writer;
@@ -43,11 +43,11 @@ private:
   std::string mode_{kDefaultMode};
 };
 
-class Reader {
+class LogReader {
 public:
-  Reader(const std::string& dir) : reader_(dir) {}
+  LogReader(const std::string& dir) : reader_(dir) {}
 
-  Reader AsMode(const std::string& mode) {
+  LogReader AsMode(const std::string& mode) {
     auto tmp = *this;
     tmp.mode_ = mode;
     return tmp;
