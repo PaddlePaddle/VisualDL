@@ -89,7 +89,7 @@ def get_image_tag_steps(storage, mode, tag):
         record = image.record(step_index, sample_index)
         shape = record.shape()
         # TODO(ChunweiYan) remove this trick, some shape will be empty
-        # if not shape: continue
+        if not shape: continue
         # assert shape, "%s,%s" % (mode, tag)
         query = urllib.urlencode({
             'sample': 0,
