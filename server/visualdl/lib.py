@@ -46,6 +46,8 @@ def get_scalar(storage, mode, tag, num_records=100):
             while id <= num_records:
                 result.append(data[id])
                 id += span
+        else:
+            result = data
         return result
 
 
