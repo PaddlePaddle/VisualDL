@@ -8,7 +8,7 @@ from storage_mock import add_scalar, add_image
 class LibTest(unittest.TestCase):
     def setUp(self):
         dir = "./tmp/mock"
-        writer = storage.StorageWriter(dir, sync_cycle=20)
+        writer = storage.LogWriter(dir, sync_cycle=20)
 
         add_scalar(writer, "train", "layer/scalar0/min", 1000, 1)
         add_scalar(writer, "test", "layer/scalar0/min", 1000, 10)
@@ -24,7 +24,7 @@ class LibTest(unittest.TestCase):
         add_image(writer, "train", "layer/image1", 7, 10, 1, shape=[30,30,2])
         add_image(writer, "test", "layer/image1", 7, 10, 1, shape=[30,30,2])
 
-        self.reader = storage.StorageReader(dir)
+        self.reader = storage.LogReader(dir)
 
     def test_modes(self):
         modes = lib.get_modes(self.reader)
