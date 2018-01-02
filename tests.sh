@@ -31,9 +31,10 @@ server_test() {
     sudo pip install protobuf==3.1.0
 
     cd $cur/server
-    bash build.sh
+    bash build.sh $core_path
     cd visualdl
-    bash graph_test.sh
+
+    bash graph_test.sh $core_path
     cd $cur/server/visualdl
     python lib_test.py
 }

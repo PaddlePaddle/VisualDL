@@ -1,7 +1,14 @@
+CORE_PATH=$1
+
 script=$(readlink -f "$0")
 script_path=$(dirname "$script")
 
 pushd $script_path
   protoc visualdl/onnx/onnx.proto --python_out .
+  pb_file="visualdl/onnx/onnx_pb2.py"
+  if [ -f "$pb_file" ]
+  then
+    cp $pb_file $CORE_PATH
+  fi
   python setup.py bdist_wheel
 popd
