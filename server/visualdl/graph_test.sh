@@ -9,3 +9,4 @@ cd ..
 python graph_test.py
 
 rm ./mock/*.pb
+
