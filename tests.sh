@@ -32,7 +32,6 @@ server_test() {
 
     cd $cur/server
     bash build.sh
-    protoc visualdl/onnx/onnx.proto --python_out .
     cd visualdl
 
     bash graph_test.sh
