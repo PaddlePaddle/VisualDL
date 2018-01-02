@@ -29,10 +29,12 @@ frontend_test() {
 server_test() {
     sudo pip install google
     sudo pip install protobuf==3.1.0
-    sudo apt-get install protobuf-compiler libprotoc-dev
 
     cd $cur/server
     bash build.sh
+    protoc visualdl/onnx/onnx.proto --python_out .
+    cd visualdl
+
     bash graph_test.sh
     cd $cur/server/visualdl
     python lib_test.py
