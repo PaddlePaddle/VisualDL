@@ -16,47 +16,47 @@ def get_modes(storage):
 def get_scalar_tags(storage, mode):
     result = {}
     for mode in storage.modes():
-        reader = storage.as_mode(mode)
-        tags = reader.tags('scalar')
-        if tags:
-            result[mode] = {}
-            for tag in tags:
-                result[mode][tag] = {
-                    'displayName': reader.scalar(tag).caption(),
-                    'description': "",
-                }
+        with storage.mode(mode) as reader:
+            tags = reader.tags('scalar')
+            if tags:
+                result[mode] = {}
+                for tag in tags:
+                    result[mode][tag] = {
+                        'displayName': reader.scalar(tag).caption(),
+                        'description': "",
+                    }
     return result
 
 
 def get_scalar(storage, mode, tag):
-    reader = storage.as_mode(mode)
-    scalar = reader.scalar(tag)
+    with storage.mode(mode) as reader:
+        scalar = reader.scalar(tag)
 
-    records = scalar.records()
-    ids = scalar.ids()
-    timestamps = scalar.timestamps()
+        records = scalar.records()
+        ids = scalar.ids()
+        timestamps = scalar.timestamps()
 
-    result = zip(timestamps, ids, records)
-    return result
+        result = zip(timestamps, ids, records)
+        return result
 
 
 def get_image_tags(storage):
     result = {}
 
     for mode in storage.modes():
-        reader = storage.as_mode(mode)
-        tags = reader.tags('image')
-        if tags:
-            result[mode] = {}
-            for tag in tags:
-                image = reader.image(tag)
-                for i in xrange(max(1, image.num_samples())):
-                    caption = tag if image.num_samples() <= 1 else '%s/%d'%(tag, i)
-                    result[mode][caption] = {
-                        'displayName': caption,
-                        'description': "",
-                        'samples': 1,
-                    }
+        with storage.mode(mode) as reader:
+            tags = reader.tags('image')
+            if tags:
+                result[mode] = {}
+                for tag in tags:
+                    image = reader.image(tag)
+                    for i in xrange(max(1, image.num_samples())):
+                        caption = tag if image.num_samples() <= 1 else '%s/%d'%(tag, i)
+                        result[mode][caption] = {
+                            'displayName': caption,
+                            'description': "",
+                            'samples': 1,
+                        }
     return result
 
 
@@ -70,9 +70,9 @@ def get_image_tag_steps(storage, mode, tag):
         tag = tag[:tag.rfind('/')]
         sample_index = int(res.groups()[0])
 
-    reader = storage.as_mode(mode)
-    image = reader.image(tag)
-    res = []
+    with storage.mode(mode) as reader:
+        image = reader.image(tag)
+        res = []
 
     for step_index in range(image.num_records()):
         record = image.record(step_index, sample_index)
@@ -95,26 +95,26 @@ def get_image_tag_steps(storage, mode, tag):
 
 
 def get_invididual_image(storage, mode, tag, step_index):
-    reader = storage.as_mode(mode)
-    res = re.search(r".*/([0-9]+$)", tag)
-    # remove suffix '/x'
-    if res:
-        offset = int(res.groups()[0])
-        tag = tag[:tag.rfind('/')]
+    with storage.mode(mode) as reader:
+        res = re.search(r".*/([0-9]+$)", tag)
+        # remove suffix '/x'
+        if res:
+            offset = int(res.groups()[0])
+            tag = tag[:tag.rfind('/')]
 
-    image = reader.image(tag)
-    record = image.record(step_index, offset)
+        image = reader.image(tag)
+        record = image.record(step_index, offset)
 
-    data = np.array(record.data(), dtype='uint8').reshape(record.shape())
-    tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
-    with Image.fromarray(data) as im:
-        im.save(tempfile)
-    tempfile.seek(0, 0)
-    return tempfile
+        data = np.array(record.data(), dtype='uint8').reshape(record.shape())
+        tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
+        with Image.fromarray(data) as im:
+            im.save(tempfile)
+        tempfile.seek(0, 0)
+        return tempfile
 
 
 if __name__ == '__main__':
-    reader = storage.StorageReader('./tmp/mock')
+    reader = storage.LogReader('./tmp/mock')
     tags = get_image_tags(reader)
 
     tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
