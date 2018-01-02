@@ -42,11 +42,11 @@ server_test() {
     cd visualdl
     bash graph_test.sh
 
-    cd $cur/server/visualdl
-    python lib_test.py
-
     rm protoc-3.1.0-linux-x86_64.zip
     rm -rf protoc3
+
+    cd $cur/server/visualdl
+    python lib_test.py
 }
 
 echo "mode" $mode
