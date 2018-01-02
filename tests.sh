@@ -32,18 +32,20 @@ server_test() {
 
     curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
     unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
-    sudo mv protoc3/bin/* /usr/local/bin/
-    sudo mv protoc3/include/* /usr/local/include/
-    sudo chown `whoami` /usr/local/bin/protoc
-    sudo chown -R `whoami` /usr/local/include/google
+    export PAHT=$PATH:protoc3/bin
+    sudo chown `whoami` protoc3/bin/protoc
 
     cd $cur/server
-    bash build.sh $core_path
-    cd visualdl
+    bash build.sh
 
-    bash graph_test.sh $core_path
-#    cd $cur/server/visualdl
-#    python lib_test.py
+    cd visualdl
+    bash graph_test.sh
+
+    cd $cur/server/visualdl
+    python lib_test.py
+
+    rm protoc-3.1.0-linux-x86_64.zip
+    rm -rf protoc3
 }
 
 echo "mode" $mode
@@ -51,8 +53,8 @@ echo "mode" $mode
 if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
-#    frontend_test
-#    backend_test
+    frontend_test
+    backend_test
     server_test
 else
     frontend_test
