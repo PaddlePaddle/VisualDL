@@ -1,8 +1,9 @@
-import lib
-import unittest
-import storage
 import pprint
-from storage_mock import add_scalar, add_image
+import unittest
+
+import lib
+import storage
+from storage_mock import add_image, add_scalar
 
 
 class LibTest(unittest.TestCase):
