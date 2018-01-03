@@ -106,7 +106,35 @@ PYBIND11_PLUGIN(core) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
-  // .def("data", &cp::ImageReader::data)
-  // .def("shape", &cp::ImageReader::shape);
+#define ADD_HISTOGRAM_WRITER(T)                           \
+  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T) \
+      .def("add_record", &cp::Histogram<T>::AddRecord);
+  ADD_HISTOGRAM_WRITER(int);
+  ADD_HISTOGRAM_WRITER(float);
+  ADD_HISTOGRAM_WRITER(double);
+#undef ADD_HISTOGRAM_WRITER
+
+#define ADD_HISTOGRAM_RECORD(T)                                            \
+  py::class_<cp::HistogramReader<T>::Record>(m, "HistogramRecord__" #T)    \
+      .def("left",                                                         \
+           [](cp::HistogramReader<T>::Record& self) { return self.left; }) \
+      .def("right",                                                        \
+           [](cp::HistogramReader<T>::Record& self) { return self.left; }) \
+      .def("frequency", [](cp::HistogramReader<T>::Record& self) {         \
+        return self.frequency;                                             \
+      });
+  ADD_HISTOGRAM_RECORD(int);
+  ADD_HISTOGRAM_RECORD(float);
+  ADD_HISTOGRAM_RECORD(double);
+#undef ADD_HISTOGRAM_RECORD
+
+#define ADD_HISTOGRAM_READER(T)                                 \
+  py::class_<cp::HistogramReader<T>>(m, "HistogramReader__" #T) \
+      .def("num_records", &cp::HistogramReader<T>::num_records) \
+      .def("record", &cp::HistogramReader<T>::record);
+  ADD_HISTOGRAM_READER(int);
+  ADD_HISTOGRAM_READER(float);
+  ADD_HISTOGRAM_READER(double);
+#undef ADD_HISTOGRAM_READER
 
 }  // end pybind
