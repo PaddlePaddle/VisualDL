@@ -263,6 +263,24 @@ private:
   Tablet writer_;
 };
 
+template <typename T>
+struct HistogramReader {
+  struct Record {
+    T left;
+    T right;
+    std::vector<int32_t> frequency;
+  };
+
+  HistogramReader(TabletReader tablet) : reader_(tablet) {}
+
+  size_t num_records() { return reader_.total_records(); }
+
+  Record record(int i);
+
+private:
+  TabletReader reader_;
+};
+
 }  // namespace components
 }  // namespace visualdl
 

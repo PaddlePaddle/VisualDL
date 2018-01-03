@@ -79,4 +79,20 @@ TEST(Image, test) {
   CHECK_EQ(image2read.num_records(), num_steps);
 }
 
+TEST(Histogram, AddRecord) {
+  const auto dir = "./tmp/sdk_test.histogram";
+  LogWriter writer__(dir, 1);
+  auto writer = writer__.AsMode("train");
+
+  auto tablet = writer.AddTablet("histogram0");
+  components::Histogram<float> histogram(tablet, 10);
+
+  std::vector<float> data(1000);
+  for (auto& v : data) {
+    v = (float)rand() / RAND_MAX;
+  }
+
+  histogram.AddRecord(10, data);
+}
+
 }  // namespace visualdl

@@ -2,6 +2,7 @@
 
 #include "visualdl/logic/histogram.h"
 #include "visualdl/utils/image.h"
+#include "visualdl/utils/macro.h"
 
 namespace visualdl {
 
@@ -44,11 +45,6 @@ template <typename T>
 size_t ScalarReader<T>::size() const {
   return reader_.total_records();
 }
-
-template class ScalarReader<int>;
-template class ScalarReader<int64_t>;
-template class ScalarReader<float>;
-template class ScalarReader<double>;
 
 void Image::StartSampling() {
   if (!ToSampleThisStep()) return;
@@ -167,7 +163,7 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
 template <typename T>
 void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
   HistogramBuilder<T> builder(num_buckets_);
-  builder(&data.front(), &data.back());
+  builder(data);
 
   auto record = writer_.AddRecord();
   record.SetId(step);
@@ -181,6 +177,21 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
                                std::to_string(builder.right_boundary);
   entry.SetRaw(boundaries_str);
 }
+
+template <typename T>
+typename HistogramReader<T>::Record HistogramReader<T>::record(int i) {
+  Record res;
+  auto r = reader_.record(i);
+  auto d = r.data(0);
+  auto boundaries_str = d.GetRaw();
+  std::stringstream ss(boundaries_str);
+  ss >> res.left >> res.right;
+  res.frequency = d.GetMulti<int32_t>();
+}
+
+DECL_BASIC_TYPES_CLASS_IMPL(class, ScalarReader)
+DECL_BASIC_TYPES_CLASS_IMPL(struct, Histogram)
+DECL_BASIC_TYPES_CLASS_IMPL(struct, HistogramReader)
 
 }  // namespace components
 
