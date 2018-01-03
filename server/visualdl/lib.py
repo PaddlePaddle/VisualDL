@@ -1,4 +1,5 @@
 import pprint
+import random
 import re
 import urllib
 from tempfile import NamedTemporaryFile
@@ -22,13 +23,13 @@ def get_scalar_tags(storage, mode):
                 result[mode] = {}
                 for tag in tags:
                     result[mode][tag] = {
-                        'displayName': reader.scalar(tag).caption(),
+                        'displayName': tag,
                         'description': "",
                     }
     return result
 
 
-def get_scalar(storage, mode, tag):
+def get_scalar(storage, mode, tag, num_records=100):
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
 
@@ -36,8 +37,12 @@ def get_scalar(storage, mode, tag):
         ids = scalar.ids()
         timestamps = scalar.timestamps()
 
-        result = zip(timestamps, ids, records)
-        return result
+        data = zip(timestamps, ids, records)
+        if len(data) <= num_records:
+            return data
+
+        samples = sorted(random.sample(xrange(len(data)), num_records))
+        return [data[i] for i in samples]
 
 
 def get_image_tags(storage):
@@ -77,7 +82,9 @@ def get_image_tag_steps(storage, mode, tag):
     for step_index in range(image.num_records()):
         record = image.record(step_index, sample_index)
         shape = record.shape()
-        assert shape, "%s,%s" % (mode, tag)
+        # TODO(ChunweiYan) remove this trick, some shape will be empty
+        if not shape: continue
+        # assert shape, "%s,%s" % (mode, tag)
         query = urllib.urlencode({
             'sample': 0,
             'index': step_index,
@@ -94,7 +101,7 @@ def get_image_tag_steps(storage, mode, tag):
     return res
 
 
-def get_invididual_image(storage, mode, tag, step_index):
+def get_invididual_image(storage, mode, tag, step_index, max_size=80):
     with storage.mode(mode) as reader:
         res = re.search(r".*/([0-9]+$)", tag)
         # remove suffix '/x'
@@ -105,9 +112,16 @@ def get_invididual_image(storage, mode, tag, step_index):
         image = reader.image(tag)
         record = image.record(step_index, offset)
 
+        shape = record.shape()
+
         data = np.array(record.data(), dtype='uint8').reshape(record.shape())
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
+            size = max(shape[0], shape[1])
+            if size > max_size:
+                scale = max_size * 1. / size
+                scaled_shape = (int(shape[0]*scale), int(shape[1]*scale))
+                im = im.resize(scaled_shape)
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
