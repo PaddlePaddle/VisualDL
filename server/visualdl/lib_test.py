@@ -29,7 +29,7 @@ class LibTest(unittest.TestCase):
 
     def test_modes(self):
         modes = lib.get_modes(self.reader)
-        self.assertEqual(sorted(modes), sorted(["train", "test", "valid"]))
+        self.assertEqual(sorted(modes), sorted(["default", "train", "test", "valid"]))
 
     def test_scalar(self):
 
