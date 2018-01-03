@@ -38,7 +38,7 @@ export default {
         filteredRunsList() {
             let tagList = this.data.get('tagList') || [];
             let runs = this.data.get('config.runs') || [];
-            let list = cloneDeep(tagList)
+            let list = cloneDeep(tagList);
             return list.slice().map(item => {
                 item.tagList = item.tagList.filter(one => runs.includes(one.run));
                 return item;
@@ -47,14 +47,12 @@ export default {
 
         filteredPageList() {
             let list = this.data.get('filteredRunsList');
-            let runs = this.data.get('config.runs') || [];
             let currentPage = this.data.get('currentPage');
             let pageSize = this.data.get('pageSize');
             return list.slice((currentPage - 1) * pageSize, currentPage * pageSize);
         },
         total() {
             let list = this.data.get('filteredRunsList') || [];
-            console.log(list);
             return list.reduce((num, item) => {
                 let length = item.tagList.length;
                 return length ? num + 1 : num;
@@ -64,7 +62,7 @@ export default {
             let list = this.data.get('filteredRunsList') || [];
             return list.reduce((num, item) => {
                 let length = item.tagList.length;
-                return length + num ;
+                return length + num;
             }, 0);
         }
     },

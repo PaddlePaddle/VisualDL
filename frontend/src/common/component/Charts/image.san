@@ -41,13 +41,11 @@ export default {
             if (isActualImageSize) {
                 width = this.data.get('imgData.width');
                 height = this.data.get('imgData.height');
-                console.log('1111', width, height);
             }
             else {
                 width = defaultImgWidth;
                 height = defaultImgHight;
             }
-            // console.log('width:' + width + 'px;height:' + height + 'px');
             return 'width:' + width + 'px;height:' + height + 'px';
         }
     },
@@ -101,17 +99,6 @@ export default {
             });
             /* eslint-enable fecs-camelcase */
         });
-
-        // isActualImageSize change event
-        this.watch('isActualImageSize', isActualImageSize => {
-            console.log(isActualImageSize);
-        });
-
-        // isActualImageSize change event
-        this.watch('runs', runs => {
-            console.log(runs);
-        });
-
     },
     handleSlideChange(val) {
         this.data.set('currentIndex', val);
