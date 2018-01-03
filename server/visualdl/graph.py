@@ -1,6 +1,8 @@
-import onnx
 import json
+
 from google.protobuf.json_format import MessageToJson
+
+import onnx
 
 
 def reorganize_inout(json_obj, key):
@@ -29,6 +31,8 @@ def reorganize_inout(json_obj, key):
 
 
 def add_edges(json_obj):
+    # TODO(daming-lu): should try to de-duplicate node's out-edge
+    # Currently it is counted twice: 1 as out-edge, 1 as in-edge
     json_obj['edges'] = []
     label_incrementer = 0
 
