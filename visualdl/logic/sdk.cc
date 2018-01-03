@@ -1,5 +1,6 @@
 #include "visualdl/logic/sdk.h"
 
+#include "visualdl/logic/histogram.h"
 #include "visualdl/utils/image.h"
 
 namespace visualdl {
@@ -159,6 +160,14 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   res.shape = shape_entry.GetMulti();
   res.step_id = record.id();
   return res;
+}
+
+template <typename T>
+Histogram::AddRecord(int step, const std::vector<T>& data) {
+  auto record = writer_.AddRecord();
+  record.set_id(step);
+  time_t time = std::time(nullptr);
+  record.SetTimeStamp(time);
 }
 
 }  // namespace components

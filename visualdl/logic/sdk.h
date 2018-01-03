@@ -251,6 +251,18 @@ private:
   std::string mode_;
 };
 
+template <typename T>
+struct Histogram {
+  Histogram(Tablet tablet, int num_buckets)
+      : writer_(tablet), num_buckets_(num_buckets) {}
+
+  void AddRecord(int step, const std::vector<T>& data);
+
+private:
+  int num_buckets_;
+  Tablet writer_;
+};
+
 }  // namespace components
 }  // namespace visualdl
 
