@@ -2,11 +2,16 @@
 set -ex
 
 mode=$1
-cur=$(pwd)
+readonly cur=$(pwd)
+readonly core_path=$cur/build/visualdl/logic
+readonly python_path=$cur/visualdl/python
+
+export PYTHONPATH="${core_path}:${python_path}"
 
 backend_test() {
     cd $cur
     sudo pip install numpy
+    sudo pip install Pillow
     mkdir -p build
     cd build
     cmake ..
@@ -21,6 +26,13 @@ frontend_test() {
     npm run build
 }
 
+server_test() {
+    cd $cur/server
+    bash build.sh
+    cd $cur/server/visualdl
+    python lib_test.py
+}
+
 echo "mode" $mode
 
 if [ $mode = "backend" ]; then
@@ -28,6 +40,7 @@ if [ $mode = "backend" ]; then
 elif [ $mode = "all" ]; then
     frontend_test
     backend_test
+    server_test
 else
     frontend_test
 fi
