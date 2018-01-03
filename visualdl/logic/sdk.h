@@ -132,7 +132,7 @@ struct Scalar {
     record.SetId(id);
     time_t time = std::time(nullptr);
     record.SetTimeStamp(time);
-    auto entry = record.AddData<T>();
+    auto entry = record.template AddData<T>();
     entry.Set(value);
   }
 
