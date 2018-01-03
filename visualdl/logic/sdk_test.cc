@@ -31,6 +31,8 @@ TEST(Scalar, write) {
   // check the first entry of first record
   ASSERT_EQ(record.front(), 12);
 
+  ASSERT_TRUE(!reader.storage().modes().empty());
+
   // check tags
   ASSERT_EQ(reader_.all_tags().size(), 1);
   auto tags = reader.tags("scalar");
@@ -77,6 +79,33 @@ TEST(Image, test) {
   components::ImageReader image2read("train", tablet2read);
   CHECK_EQ(image2read.caption(), "this is an image");
   CHECK_EQ(image2read.num_records(), num_steps);
+}
+
+TEST(Scalar, more_than_one_mode) {
+  const auto dir = "./tmp/sdk_multi_mode";
+  LogWriter log(dir, 20);
+
+  std::vector<components::Scalar<float>> scalars;
+
+  for (int i = 0; i < 1; i++) {
+    std::stringstream ss;
+    ss << "mode-" << i;
+    auto mode = ss.str();
+    auto writer = log.AsMode(mode);
+    ASSERT_EQ(writer.storage().dir(), dir);
+    LOG(INFO) << "origin dir: " << dir;
+    LOG(INFO) << "changed dir: " << writer.storage().dir();
+    auto tablet = writer.AddTablet("add/scalar0");
+    scalars.emplace_back(tablet);
+  }
+
+  for (int i = 0; i < 1; i++) {
+    auto& scalar = scalars[i];
+
+    for (int j = 0; j < 100; j++) {
+      scalar.AddRecord(j, (float)j);
+    }
+  }
 }
 
 }  // namespace visualdl
