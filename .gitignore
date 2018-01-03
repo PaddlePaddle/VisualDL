@@ -106,3 +106,7 @@ ENV/
 node_modules
 /.vscode
 package-lock.json
+
+# PyCharm IDE
+.idea/
+
