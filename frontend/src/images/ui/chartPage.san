@@ -1,8 +1,9 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel info="{{itemsLength}}" title="{{title}}">
-            <div san-for="tag in filteredPageList" class="visual-dl-chart-box">
+        <ui-expand-panel isShow="{{expand}}" info="{{itemsLength}}" title="{{title}}">
+            <div san-for="tag in filteredPageList" class="visual-dl-image-chart-box">
                 <ui-image
+                    class="visual-dl-chart-image"
                     san-for="tag in tag.tagList"
                     tagInfo="{{tag}}"
                     isActualImageSize="{{config.isActualImageSize}}"
@@ -11,6 +12,7 @@
                 ></ui-image>
             </div>
             <ui-pagination
+                class="visual-dl-sm-pagination"
                 san-if="total > pageSize"
                 on-pageChange="handlePageChange($event)"
                 current="{{currentPage}}"
@@ -85,12 +87,19 @@ export default {
 
 +prefix-classes('visual-dl-')
     .chart-page
-        .chart-box
+        .image-chart-box
+            overflow hidden
             float left
-        .chart-box:after
-            content: "";
-            clear: both;
-            display: block;
+            .visual-dl-chart-image
+                float left
+        .image-chart-box:after
+            content ""
+            clear both
+            display block
+        .sm-pagination
+            height 50px
+            float left
+            width 100%
 </style>
 
 
