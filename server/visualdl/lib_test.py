@@ -1,8 +1,9 @@
-import lib
-import unittest
-import storage
 import pprint
-from storage_mock import add_scalar, add_image
+import unittest
+
+import lib
+import storage
+from storage_mock import add_image, add_scalar
 
 
 class LibTest(unittest.TestCase):
@@ -28,7 +29,7 @@ class LibTest(unittest.TestCase):
 
     def test_modes(self):
         modes = lib.get_modes(self.reader)
-        self.assertEqual(sorted(modes), sorted(["train", "test", "valid"]))
+        self.assertEqual(sorted(modes), sorted(["default", "train", "test", "valid"]))
 
     def test_scalar(self):
 
