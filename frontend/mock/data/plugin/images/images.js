@@ -20,8 +20,7 @@ module.exports = function (path, queryParam, postParam) {
                 {
                     "wall_time": 1512549785.061623,
                     "step": 60,
-                    "query":
-                    "sample=0&index=0&tag=input_reshape%2Finput%2Fimage%2F0&run=test",
+                    "query": "sample=0&index=0&tag=input_reshape%2Finput%2Fimage%2F0&run=test",
                     "width": 28,
                     "height": 28
                 },

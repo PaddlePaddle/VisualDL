@@ -1,0 +1,104 @@
+<template>
+    <div class="visual-dl-scalar-config-com">
+        <san-text-field
+            hintText="input a tag group name to search"
+            label="Group name RegExp"
+            inputValue="{=config.groupNameReg=}"
+        />
+        <ui-radio-group
+            label="Histogram mode"
+            value="{=config.chartType=}"
+            items="{{charTypeItems}}"
+        />
+        <ui-radio-group
+            label="Horizontal"
+            value="{=config.horizontal=}"
+            items="{{horizontalItems}}"
+        />
+        <ui-checkbox-group
+            value="{=config.runs=}"
+            label="Runs"
+            items="{{runsItems}}"
+        />
+        <san-button
+            class="visual-dl-scalar-run-toggle"
+            variants="raised {{config.running ? 'secondery' : 'primary'}}"
+            on-click="toggleAllRuns"
+        >
+            {{config.running ? 'Running' : 'Stopped'}}
+        </san-button>
+    </div>
+</template>
+<script>
+import TextField from 'san-mui/TextField';
+import Slider from '../../common/component/Slider';
+import RadioGroup from '../../common/component/RadioGroup';
+import DropDownMenu from '../../common/component/DropDownMenu';
+import CheckBoxGroup from '../../common/component/CheckBoxGroup';
+import Button from 'san-mui/Button';
+export default {
+    components: {
+        'san-text-field': TextField,
+        'ui-slider': Slider,
+        'ui-radio-group': RadioGroup,
+        'ui-dropdown-menu': DropDownMenu,
+        'ui-checkbox-group': CheckBoxGroup,
+        'san-button': Button
+    },
+    initData() {
+        return {
+            config: {
+                groupNameReg: '.*',
+                smoothing: '0.6',
+                horizontal: 'step',
+                sortingMethod: 'default',
+                downloadLink: [],
+                outlier: [],
+                running: true
+            },
+            horizontalItems: [
+                {
+                    name: 'Step',
+                    value: 'step'
+                },
+                {
+                    name: 'Relative',
+                    value: 'relative'
+                },
+                {
+                    name: 'Wall',
+                    value: 'wall'
+                }
+            ],
+            runsItems: [],
+            charTypeItems: [
+                {
+                    name: 'Overlay',
+                    value: 'overlay'
+                },
+                {
+                    name: 'Offset',
+                    value: 'offset'
+                }
+            ]
+        };
+    },
+    toggleAllRuns() {
+        let running = this.data.get('config.running');
+        this.data.set('config.running', !running);
+        this.fire('runningChange', running);
+    }
+};
+</script>
+<style lang="stylus">
+@import '../../style/variables';
++prefix-classes('visual-dl-scalar-')
+    .config-com
+        width 90%
+        margin 0 auto
+        .run-toggle
+            width 100%
+            margin-top 20px
+</style>
+
+

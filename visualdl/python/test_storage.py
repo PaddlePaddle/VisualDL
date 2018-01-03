@@ -1,9 +1,9 @@
 import random
 import time
 import unittest
-from PIL import Image
 
 import numpy as np
+from PIL import Image
 
 import storage
 
@@ -114,6 +114,22 @@ class StorageTest(unittest.TestCase):
         with self.reader.mode("train") as reader:
             scalar = reader.scalar("model/scalar/average")
             self.assertEqual(scalar.caption(), "train")
+
+    def test_modes(self):
+        dir = "./tmp/storagetest0"
+        store = storage.LogWriter(
+            self.dir, sync_cycle=1)
+
+        scalars = []
+
+        for i in range(10):
+            with store.mode("mode-%d" % i) as writer:
+                scalar = writer.scalar("add/scalar0")
+                scalars.append(scalar)
+
+        for scalar in scalars[:-1]:
+            for i in range(10):
+                scalar.add_record(i, float(i))
 
 
 

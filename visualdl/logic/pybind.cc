@@ -23,6 +23,7 @@ PYBIND11_PLUGIN(core) {
              new (&instance) vs::LogReader(dir);
            })
       .def("as_mode", &vs::LogReader::AsMode)
+      .def("set_mode", &vs::LogReader::SetMode)
       .def("modes", [](vs::LogReader& self) { return self.storage().modes(); })
       .def("tags", &vs::LogReader::tags)
 
@@ -59,6 +60,7 @@ PYBIND11_PLUGIN(core) {
            [](vs::LogWriter& instance, const std::string& dir, int sync_cycle) {
              new (&instance) vs::LogWriter(dir, sync_cycle);
            })
+      .def("set_mode", &vs::LogWriter::SetMode)
       .def("as_mode", &vs::LogWriter::AsMode)
 // clang-format off
       #define WRITER_ADD_SCALAR(T)                                               \

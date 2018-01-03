@@ -1,6 +1,9 @@
-import lib
+import pprint
 import unittest
+
+import lib
 import storage
+
 import pprint
 from storage_mock import add_scalar, add_image, add_histogram
 
@@ -31,7 +34,7 @@ class LibTest(unittest.TestCase):
 
     def test_modes(self):
         modes = lib.get_modes(self.reader)
-        self.assertEqual(sorted(modes), sorted(["train", "test", "valid"]))
+        self.assertEqual(sorted(modes), sorted(["default", "train", "test", "valid"]))
 
     def test_scalar(self):
         tags = lib.get_scalar_tags(self.reader)
