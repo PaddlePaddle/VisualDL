@@ -24,7 +24,7 @@ import {format, precisionRound} from 'd3-format';
 import {getPluginHistogramsHistograms} from '../../service';
 
 const highlightLineColor = '#2f4554';
-const defaultLineColor = '#fec42c';
+const defaultLineColor = '#d14a61';
 const lineWidth = 1;
 // the time to refresh chart data
 const intervalTime = 30;
@@ -181,7 +181,7 @@ export default {
         let maxX = max;
         let minZ = Infinity;
         let maxZ = -Infinity;
-        grid.top = '60%';
+        grid.top = '50%';
         chartData.forEach(({items}) => {
             let lineData = [];
             items.forEach(([time, step, x, y]) => {
@@ -194,7 +194,7 @@ export default {
             rawData.push(lineData);
         });
         // Max height in z axis.
-        let Z_HEIGHT = 100;
+        let Z_HEIGHT = 130;
         let option = {
             title,
             visualMap: {
