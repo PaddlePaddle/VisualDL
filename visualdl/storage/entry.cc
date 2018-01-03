@@ -4,7 +4,7 @@ namespace visualdl {
 
 #define IMPL_ENTRY_SET_OR_ADD(method__, ctype__, dtype__, opr__) \
   template <>                                                    \
-  void Entry<ctype__>::method__(ctype__ v) {                     \
+  void Entry::method__<ctype__>(ctype__ v) {                     \
     entry->set_dtype(storage::DataType::dtype__);                \
     entry->opr__(v);                                             \
     WRITE_GUARD                                                  \
@@ -12,7 +12,7 @@ namespace visualdl {
 
 #define IMPL_ENTRY_SETMUL(ctype__, dtype__, field__)              \
   template <>                                                     \
-  void Entry<ctype__>::SetMulti(const std::vector<ctype__>& vs) { \
+  void Entry::SetMulti<ctype__>(const std::vector<ctype__>& vs) { \
     entry->set_dtype(storage::DataType::dtype__);                 \
     entry->clear_##field__();                                     \
     for (auto v : vs) {                                           \
@@ -22,14 +22,14 @@ namespace visualdl {
   }
 
 template <>
-void Entry<std::vector<byte_t>>::Set(std::vector<byte_t> v) {
+void Entry::Set<std::vector<byte_t>>(std::vector<byte_t> v) {
   entry->set_dtype(storage::DataType::kBytes);
   entry->set_y(std::string(v.begin(), v.end()));
   WRITE_GUARD
 }
 
 template <>
-void Entry<std::vector<byte_t>>::Add(std::vector<byte_t> v) {
+void Entry::Add<std::vector<byte_t>>(std::vector<byte_t> v) {
   entry->set_dtype(storage::DataType::kBytess);
   *entry->add_ys() = std::string(v.begin(), v.end());
   WRITE_GUARD
@@ -56,7 +56,7 @@ IMPL_ENTRY_SETMUL(bool, kBool, bs);
 
 #define IMPL_ENTRY_GET(T, fieldname__) \
   template <>                          \
-  T EntryReader<T>::Get() const {      \
+  T EntryReader::Get<T>() const {      \
     return data_.fieldname__();        \
   }
 
@@ -68,14 +68,14 @@ IMPL_ENTRY_GET(std::string, s);
 IMPL_ENTRY_GET(bool, b);
 
 template <>
-std::vector<uint8_t> EntryReader<std::vector<byte_t>>::Get() const {
+std::vector<uint8_t> EntryReader::Get<std::vector<byte_t>>() const {
   const auto& y = data_.y();
   return std::vector<byte_t>(y.begin(), y.end());
 }
 
 #define IMPL_ENTRY_GET_MULTI(T, fieldname__)           \
   template <>                                          \
-  std::vector<T> EntryReader<T>::GetMulti() const {    \
+  std::vector<T> EntryReader::GetMulti<T>() const {    \
     return std::vector<T>(data_.fieldname__().begin(), \
                           data_.fieldname__().end());  \
   }
@@ -86,17 +86,5 @@ IMPL_ENTRY_GET_MULTI(float, fs);
 IMPL_ENTRY_GET_MULTI(double, ds);
 IMPL_ENTRY_GET_MULTI(std::string, ss);
 IMPL_ENTRY_GET_MULTI(bool, bs);
-
-template class Entry<int>;
-template class Entry<float>;
-template class Entry<double>;
-template class Entry<bool>;
-template class Entry<std::vector<byte_t>>;
-
-template class EntryReader<int>;
-template class EntryReader<float>;
-template class EntryReader<double>;
-template class EntryReader<bool>;
-template class EntryReader<std::vector<byte_t>>;
 
 }  // namespace visualdl

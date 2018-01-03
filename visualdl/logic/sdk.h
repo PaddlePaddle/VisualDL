@@ -8,19 +8,19 @@ namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
 
-class Writer {
+class LogWriter {
 public:
-  Writer(const std::string& dir, int sync_cycle) {
+  LogWriter(const std::string& dir, int sync_cycle) {
     storage_.SetDir(dir);
     storage_.meta.cycle = sync_cycle;
   }
-  Writer(const Writer& other) {
+  LogWriter(const LogWriter& other) {
     storage_ = other.storage_;
     mode_ = other.mode_;
   }
 
-  Writer AsMode(const std::string& mode) {
-    Writer writer = *this;
+  LogWriter AsMode(const std::string& mode) {
+    LogWriter writer = *this;
     storage_.AddMode(mode);
     writer.mode_ = mode;
     return writer;
@@ -43,11 +43,11 @@ private:
   std::string mode_{kDefaultMode};
 };
 
-class Reader {
+class LogReader {
 public:
-  Reader(const std::string& dir) : reader_(dir) {}
+  LogReader(const std::string& dir) : reader_(dir) {}
 
-  Reader AsMode(const std::string& mode) {
+  LogReader AsMode(const std::string& mode) {
     auto tmp = *this;
     tmp.mode_ = mode;
     return tmp;
@@ -122,7 +122,7 @@ struct Scalar {
   void AddRecord(int id, T value) {
     auto record = tablet_.AddRecord();
     record.SetId(id);
-    auto entry = record.AddData<T>();
+    auto entry = record.template AddData<T>();
     entry.Set(value);
   }
 
@@ -249,6 +249,18 @@ struct ImageReader {
 private:
   TabletReader reader_;
   std::string mode_;
+};
+
+template <typename T>
+struct Histogram {
+  Histogram(Tablet tablet, int num_buckets)
+      : writer_(tablet), num_buckets_(num_buckets) {}
+
+  void AddRecord(int step, const std::vector<T>& data);
+
+private:
+  int num_buckets_;
+  Tablet writer_;
 };
 
 }  // namespace components

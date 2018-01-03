@@ -10,36 +10,49 @@ namespace visualdl {
 // The buckets cover the range from min to max.
 template <typename T>
 struct HistogramBuilder {
-  HistogramBuilder(T* begin, T* end, int num_buckets)
-      : begin_(begin), end_(end), num_buckets_(num_buckets) {
-        CHECK_GE(end - begin, num_buckets);
-      }
+  HistogramBuilder(int num_buckets) : num_buckets_(num_buckets) {}
 
-  void operator()() {}
+  void operator()(T* begin, T* end) {
+    begin_ = begin;
+    end_ = end;
+    CHECK_GE(end - begin, num_buckets_);
+  }
 
   T left_boundary{std::numeric_limits<T>::max()};
   T right_boundary{std::numeric_limits<T>::min()};
   std::vector<int> buckets;
+
+  void Get(size_t n, T* left, T* right, int* frequency) {
+    CHECK(!buckets.empty()) << "need to CreateBuckets first.";
+    CHECK_LT(n, num_buckets_) << "n out of range.";
+    *left = left_boundary + span_ * n;
+    *right = *left + span_;
+    *frequency = buckets[n];
+  }
 
 private:
   // Get the left and right boundaries.
   void UpdateBoundary() {
     CHECK(begin_);
     CHECK(end_);
-    for (T* s = begin_; s!=end_; s++) {
-      if (*s > max_) max_ = *s;
-      if (*s < min_) min_ = *s;
+    for (T* s = begin_; s != end_; s++) {
+      if (*s > right_boundary) right_boundary = *s;
+      if (*s < left_boundary) left_boundary = *s;
     }
   }
 
   // Create `num_buckets` buckets.
   void CreateBuckets() {
-    float span = max_ / num_buckets - min_ / num_buckets;
-
-    for (int i = 0; i < num_buckets_; i++) {
+    span_ = (float)right_boundary / num_buckets_ -
+            (float)left_boundary / num_buckets_;
+    buckets.resize(num_buckets_);
+    for (auto* v = begin_; v != end_; v++) {
+      int offset = int(*v / span_);
+      buckets[offset]++;
     }
   }
 
+  float span_;
   T* begin_{nullptr};
   T* end_{nullptr};
   int num_buckets_;
