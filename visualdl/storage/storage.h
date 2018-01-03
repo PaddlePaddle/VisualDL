@@ -41,66 +41,22 @@ struct Storage {
 
   mutable SimpleSyncMeta meta;
 
-  Storage() {
-    dir_ = std::make_shared<std::string>();
-    data_ = std::make_shared<storage::Storage>();
-    tablets_ = std::make_shared<std::map<std::string, storage::Tablet>>();
-    modes_ = std::make_shared<std::set<std::string>>();
-    time_t t;
-    time(&t);
-    data_->set_timestamp(t);
-  }
-  Storage(const Storage& other)
-      : data_(other.data_), tablets_(other.tablets_), modes_(other.modes_) {
-    dir_ = other.dir_;
-  }
+  Storage();
+  Storage(const Storage& other);
 
-  // write operations
-  void AddMode(const std::string& x) {
-    // avoid duplicate modes.
-    if (modes_->count(x) != 0) return;
-    *data_->add_modes() = x;
-    modes_->insert(x);
-    WRITE_GUARD
-  }
+  void AddMode(const std::string& x);
 
-  Tablet AddTablet(const std::string& x) {
-    CHECK(tablets_->count(x) == 0) << "tablet [" << x << "] has existed";
-    (*tablets_)[x] = storage::Tablet();
-    AddTag(x);
-    LOG(INFO) << "really add tag " << x;
-    // WRITE_GUARD
-    PersistToDisk();
-    return Tablet(&(*tablets_)[x], this);
-  }
+  Tablet AddTablet(const std::string& x);
 
   void SetDir(const std::string& dir) { *dir_ = dir; }
   std::string dir() const { return *dir_; }
-  void PersistToDisk() {
-    CHECK(!dir_->empty()) << "dir should be set.";
-    fs::TryRecurMkdir(*dir_);
 
-    fs::SerializeToFile(*data_, meta_path(*dir_));
-    for (auto tag : data_->tags()) {
-      auto it = tablets_->find(tag);
-      CHECK(it != tablets_->end()) << "tag " << tag << " not exist.";
-      fs::SerializeToFile(it->second, tablet_path(*dir_, tag));
-    }
-  }
+  void PersistToDisk();
+
   /*
    * Save memory to disk.
    */
-  void PersistToDisk(const std::string& dir) {
-    CHECK(!dir.empty()) << "dir should be set.";
-    fs::TryRecurMkdir(dir);
-
-    fs::SerializeToFile(*data_, meta_path(dir));
-    for (auto tag : data_->tags()) {
-      auto it = tablets_->find(tag);
-      CHECK(it != tablets_->end()) << "tag " << tag << " not exist.";
-      fs::SerializeToFile(it->second, tablet_path(dir, tag));
-    }
-  }
+  void PersistToDisk(const std::string& dir);
 
   Storage* parent() { return this; }
 
@@ -124,35 +80,13 @@ struct StorageReader {
   StorageReader(const std::string& dir) : dir_(dir) {}
 
   // read operations
-  std::vector<std::string> all_tags() {
-    storage::Storage storage;
-    Reload(storage);
-    return std::vector<std::string>(storage.tags().begin(),
-                                    storage.tags().end());
-  }
-  std::vector<std::string> tags(Tablet::Type component) {
-    auto tags = all_tags();
-    auto it =
-        std::remove_if(tags.begin(), tags.end(), [&](const std::string& tag) {
-          auto tb = tablet(tag);
-          return tb.type() != component;
-        });
-    tags.resize(it - tags.begin());
-    return tags;
-  }
-  std::vector<std::string> modes() {
-    storage::Storage storage;
-    Reload(storage);
-    return std::vector<std::string>(storage.modes().begin(),
-                                    storage.modes().end());
-  }
+  std::vector<std::string> all_tags();
 
-  TabletReader tablet(const std::string& tag) const {
-    auto path = tablet_path(dir_, tag);
-    storage::Tablet tablet;
-    fs::DeSerializeFromFile(&tablet, path);
-    return TabletReader(tablet);
-  }
+  std::vector<std::string> tags(Tablet::Type component);
+
+  std::vector<std::string> modes();
+
+  TabletReader tablet(const std::string& tag) const;
 
 protected:
   void Reload(storage::Storage& storage) {
