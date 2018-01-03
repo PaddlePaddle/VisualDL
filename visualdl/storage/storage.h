@@ -20,7 +20,7 @@ static std::string meta_path(const std::string& dir) {
   return dir + "/" + meta_file_name;
 }
 static std::string tablet_path(const std::string& dir, const std::string& tag) {
-  CHECK(!dir.empty()) << "dir should be set first";
+  CHECK(!dir.empty()) << "dir is empty";
   return dir + "/" + tag;
 }
 
