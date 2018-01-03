@@ -40,6 +40,14 @@ class LogReader(object):
     def image(self, tag):
         return self.reader.get_image(tag)
 
+    def histogram(self, tag, type='float'):
+        type2scalar = {
+            'float': self.reader.get_histogram_float,
+            'double': self.reader.get_histogram_double,
+            'int': self.reader.get_histogram_int,
+        }
+        return type2scalar[type](tag)
+
     def __enter__(self):
         return LogReader.cur_mode
 

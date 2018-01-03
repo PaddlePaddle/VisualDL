@@ -1,10 +1,10 @@
 #ifndef VISUALDL_LOGIC_SDK_H
 #define VISUALDL_LOGIC_SDK_H
 
+#include "visualdl/logic/histogram.h"
 #include "visualdl/storage/storage.h"
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/string.h"
-#include "visualdl/logic/histogram.h"
 
 namespace visualdl {
 
@@ -76,7 +76,8 @@ public:
   std::vector<std::string> tags(const std::string& component) {
     auto type = Tablet::type(component);
     auto tags = reader_.tags(type);
-    CHECK(!tags.empty());
+    CHECK(!tags.empty()) << "component " << component
+                         << " has no taged records";
     std::vector<std::string> res;
     for (const auto& tag : tags) {
       if (TagMatchMode(tag, mode_)) {
@@ -256,7 +257,9 @@ private:
 template <typename T>
 struct Histogram {
   Histogram(Tablet tablet, int num_buckets)
-      : writer_(tablet), num_buckets_(num_buckets) {}
+      : writer_(tablet), num_buckets_(num_buckets) {
+    writer_.SetType(Tablet::Type::kHistogram);
+  }
 
   void AddRecord(int step, const std::vector<T>& data);
 

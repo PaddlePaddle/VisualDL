@@ -35,15 +35,9 @@ def add_image(writer,
                     image_writer.set_sample(index, shape, list(data))
             image_writer.finish_sampling()
 
-
-if __name__ == '__main__':
-    add_scalar("train", "layer/scalar0/min", 1000, 1)
-    add_scalar("test", "layer/scalar0/min", 1000, 10)
-    add_scalar("valid", "layer/scalar0/min", 1000, 10)
-
-    add_scalar("train", "layer/scalar0/max", 1000, 1)
-    add_scalar("test", "layer/scalar0/max", 1000, 10)
-    add_scalar("valid", "layer/scalar0/max", 1000, 10)
-
-    add_image("train", "layer/image0", 7, 10, 1)
-    add_image("test", "layer/image0", 7, 10, 3)
+def add_histogram(writer, mode, tag, num_buckets):
+    with writer.mode(mode) as writer:
+        histogram = writer.histogram(tag, num_buckets)
+        histogram.add_record(10, np.random.random(1000))
+        histogram.add_record(20, np.random.random(1000))
+        histogram.add_record(30, np.random.random(1000))

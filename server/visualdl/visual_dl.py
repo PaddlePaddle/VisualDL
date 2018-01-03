@@ -100,7 +100,7 @@ def scalar_tags():
     if is_debug:
         result = mock_tags.data()
     else:
-        result = lib.get_scalar_tags(storage, mode)
+        result = lib.get_scalar_tags(storage)
     print 'scalar tags (mode: %s)' % mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')

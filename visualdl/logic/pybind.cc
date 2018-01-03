@@ -8,16 +8,15 @@ namespace py = pybind11;
 namespace vs = visualdl;
 namespace cp = visualdl::components;
 
+#define ADD_FULL_TYPE_IMPL(CODE) \
+  CODE(int32_t);                 \
+  CODE(int64_t);                 \
+  CODE(float);                   \
+  CODE(double);
+
 PYBIND11_PLUGIN(core) {
   py::module m("core", "C++ core of VisualDL");
 
-// clang-format off
-  #define READER_ADD_SCALAR(T)                                               \
-    .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
-      auto tablet = self.tablet(tag);                                        \
-      return vs::components::ScalarReader<T>(std::move(tablet));             \
-    })
-  // clang-format on
   py::class_<vs::LogReader>(m, "LogReader")
       .def("__init__",
            [](vs::LogReader& instance, const std::string& dir) {
@@ -26,16 +25,33 @@ PYBIND11_PLUGIN(core) {
       .def("as_mode", &vs::LogReader::AsMode)
       .def("modes", [](vs::LogReader& self) { return self.storage().modes(); })
       .def("tags", &vs::LogReader::tags)
-      // clang-format off
+
+// clang-format off
+      #define READER_ADD_SCALAR(T)                                               \
+      .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
+        auto tablet = self.tablet(tag);                                        \
+        return vs::components::ScalarReader<T>(std::move(tablet));             \
+      })
       READER_ADD_SCALAR(float)
       READER_ADD_SCALAR(double)
       READER_ADD_SCALAR(int)
+      #undef READER_ADD_SCALAR
+
+      #define READER_ADD_HISTOGRAM(T)                                            \
+      .def("get_histogram_" #T, [](vs::LogReader& self, const std::string& tag) { \
+          auto tablet = self.tablet(tag);                               \
+          return vs::components::HistogramReader<T>(std::move(tablet));    \
+        })
+      READER_ADD_HISTOGRAM(float)
+      READER_ADD_HISTOGRAM(double)
+      READER_ADD_HISTOGRAM(int)
+      #undef READER_ADD_HISTOGRAM
+
       // clang-format on
       .def("get_image", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
         return vs::components::ImageReader(self.mode(), tablet);
       });
-#undef READER_ADD_SCALAR
 
 // clang-format off
   #define WRITER_ADD_SCALAR(T)                                               \
@@ -119,11 +135,6 @@ PYBIND11_PLUGIN(core) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
-#define ADD_FULL_TYPE_IMPL(CODE) \
-  CODE(int);                     \
-  CODE(float);                   \
-  CODE(double);
-
 #define ADD_HISTOGRAM_WRITER(T)                           \
   py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T) \
       .def("add_record", &cp::Histogram<T>::AddRecord);
@@ -147,9 +158,13 @@ PYBIND11_PLUGIN(core) {
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_RECORD_INSTANCE)
 #undef ADD_HISTOGRAM_RECORD_INSTANCE
 
-#define ADD_HISTOGRAM_RECORD(T)                                 \
-  py::class_<vs::HistogramRecord<T>>(m, "HistogramRecord__" #T) \
-      .def("instance", &vs::HistogramRecord<T>::instance);
+#define ADD_HISTOGRAM_RECORD(T)                                            \
+  py::class_<vs::HistogramRecord<T>>(m, "HistogramRecord__" #T)            \
+      .def("step", [](vs::HistogramRecord<T>& self) { return self.step; }) \
+      .def("timestamp",                                                    \
+           [](vs::HistogramRecord<T>& self) { return self.timestamp; })    \
+      .def("instance", &vs::HistogramRecord<T>::instance)                  \
+      .def("num_instances", &vs::HistogramRecord<T>::num_instances);
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_RECORD)
 #undef ADD_HISTOGRAM_RECORD
 

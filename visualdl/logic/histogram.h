@@ -8,8 +8,15 @@
 
 namespace visualdl {
 
+// An interface to retrieve records of a histogram.
 template <typename T>
 struct HistogramRecord {
+  struct Instance {
+    T left;
+    T right;
+    int32_t frequency;
+  };
+
   uint64_t timestamp;
   int step;
 
@@ -25,13 +32,7 @@ struct HistogramRecord {
         frequency(frequency),
         span_(float(right - left) / frequency.size()) {}
 
-  struct Instance {
-    T left;
-    T right;
-    int32_t frequency;
-  };
-
-  Instance instance(int i) {
+  Instance instance(int i) const {
     CHECK_LT(i, frequency.size());
     Instance res;
     res.left = left + span_ * i;
@@ -39,6 +40,8 @@ struct HistogramRecord {
     res.frequency = frequency[i];
     return res;
   }
+
+  size_t num_instances() const { return frequency.size(); }
 
 private:
   T span_;

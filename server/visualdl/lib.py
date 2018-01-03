@@ -121,6 +121,7 @@ def get_invididual_image(storage, mode, tag, step_index):
 def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')
 
+
 def get_histogram(storage, mode, tag):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
@@ -128,8 +129,15 @@ def get_histogram(storage, mode, tag):
 
         for i in xrange(histogram.num_records()):
             record = histogram.record(i)
+            res.append([record.timestamp(), record.step()])
 
-
+            for j in xrange(record.num_instances()):
+                instance = record.instance(j)
+                res.append(
+                    [instance.left(),
+                     instance.right(),
+                     instance.frequency()])
+        return res
 
 
 if __name__ == '__main__':
