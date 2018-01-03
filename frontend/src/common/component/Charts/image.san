@@ -1,7 +1,7 @@
 <template>
     <div class="visual-dl-image">
-        <h3>{{tagInfo.tag.displayName}}
-            <span>{{tagInfo.run}}</span>
+        <h3 class="visual-dl-image-title">{{tagInfo.tag.displayName}}
+            <span class="visual-dl-image-run-icon">{{tagInfo.run}}</span>
         </h3>
         <p>
             <span>Step:</span>
@@ -111,7 +111,18 @@ export default {
         font-size 12px
         width 400px
         float left
-
+        .visual-dl-image-title
+            font-size 14px
+            line-height 30px
+            .visual-dl-image-run-icon
+                background #e4e4e4
+                float right
+                margin-right 10px
+                padding 0 10px
+                border solid 1px #e4e4e4
+                border-radius 6px
+                line-height 20px
+                margin-top 4px
         .visual-dl-chart-actions
             .sm-form-item
                 width 300px
