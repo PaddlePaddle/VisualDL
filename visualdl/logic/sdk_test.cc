@@ -32,7 +32,7 @@ TEST(Scalar, write) {
   ASSERT_EQ(record.front(), 12);
 
   // check tags
-  ASSERT_EQ(reader.all_tags().size(), 1);
+  ASSERT_EQ(reader_.all_tags().size(), 1);
   auto tags = reader.tags("scalar");
   ASSERT_EQ(tags.size(), 2);
   ASSERT_EQ(tags.front(), "scalar0");
