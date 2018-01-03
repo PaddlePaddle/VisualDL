@@ -9,15 +9,16 @@ enum DataType {
   kDouble = 3;
   kString = 4;
   kBool = 5;
+  kBytes = 6;
   // entrys
-  kInt64s = 6;
-  kFloats = 7;
-  kDoubles = 8;
-  kStrings = 9;
-  kInt32s = 10;
-  kBools = 11;
-
-  kUnknown = 12;
+  kInt64s = 7;
+  kFloats = 8;
+  kDoubles = 9;
+  kStrings = 10;
+  kInt32s = 11;
+  kBools = 12;
+  kBytess = 13;
+  kUnknown = 14;
 }
 
 // A data array, which type is `type`.
@@ -29,16 +30,18 @@ message Entry {
   int32 i32 = 2;
   int64 i64 = 3;
   string s = 4;
-  float f = 5;
-  double d = 6;
-  bool b = 7;
+  bytes y = 5;
+  float f = 6;
+  double d = 7;
+  bool b = 8;
   // array
-  repeated int64 i64s = 8;
-  repeated float fs = 9;
-  repeated double ds = 10;
-  repeated int32 i32s = 11;
-  repeated string ss = 12;
-  repeated bool bs = 13;
+  repeated int64 i64s = 9;
+  repeated float fs = 10;
+  repeated double ds = 11;
+  repeated int32 i32s = 12;
+  repeated string ss = 13;
+  repeated bool bs = 14;
+  repeated bytes ys = 15;
 }
 
 /*
