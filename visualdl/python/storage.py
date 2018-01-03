@@ -65,6 +65,9 @@ class LogWriter(object):
         return LogWriter.cur_mode
 
     def scalar(self, tag, type='float'):
+        '''
+        Create a scalar component.
+        '''
         type2scalar = {
             'float': self.writer.new_scalar_float,
             'double': self.writer.new_scalar_double,
@@ -73,7 +76,21 @@ class LogWriter(object):
         return type2scalar[type](tag)
 
     def image(self, tag, num_samples, step_cycle):
+        '''
+        Create an image component.
+        '''
         return self.writer.new_image(tag, num_samples, step_cycle)
+
+    def histogram(self, tag, num_buckets, type='float'):
+        '''
+        Create a histogram component.
+        '''
+        types = {
+            'float': self.writer.new_histogram_float,
+            'double': self.writer.new_histogram_double,
+            'int': self.writer.new_histogram_int,
+        }
+        return types[type](tag, num_buckets)
 
     def __enter__(self):
         return LogWriter.cur_mode

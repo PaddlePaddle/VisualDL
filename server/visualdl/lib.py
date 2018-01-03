@@ -13,11 +13,11 @@ def get_modes(storage):
     return storage.modes()
 
 
-def get_scalar_tags(storage, mode):
+def get_tags(storage, component):
     result = {}
     for mode in storage.modes():
         with storage.mode(mode) as reader:
-            tags = reader.tags('scalar')
+            tags = reader.tags(component)
             if tags:
                 result[mode] = {}
                 for tag in tags:
@@ -26,6 +26,10 @@ def get_scalar_tags(storage, mode):
                         'description': "",
                     }
     return result
+
+
+def get_scalar_tags(storage):
+    return get_tags(storage, 'scalar')
 
 
 def get_scalar(storage, mode, tag):
@@ -51,7 +55,8 @@ def get_image_tags(storage):
                 for tag in tags:
                     image = reader.image(tag)
                     for i in xrange(max(1, image.num_samples())):
-                        caption = tag if image.num_samples() <= 1 else '%s/%d'%(tag, i)
+                        caption = tag if image.num_samples(
+                        ) <= 1 else '%s/%d' % (tag, i)
                         result[mode][caption] = {
                             'displayName': caption,
                             'description': "",
@@ -111,6 +116,20 @@ def get_invididual_image(storage, mode, tag, step_index):
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
+
+
+def get_histogram_tags(storage):
+    return get_tags(storage, 'histogram')
+
+def get_histogram(storage, mode, tag):
+    with storage.mode(mode) as reader:
+        histogram = reader.histogram(tag)
+        res = []
+
+        for i in xrange(histogram.num_records()):
+            record = histogram.record(i)
+
+
 
 
 if __name__ == '__main__':

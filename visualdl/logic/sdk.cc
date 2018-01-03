@@ -179,14 +179,19 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
 }
 
 template <typename T>
-typename HistogramReader<T>::Record HistogramReader<T>::record(int i) {
-  Record res;
+HistogramRecord<T> HistogramReader<T>::record(int i) {
   auto r = reader_.record(i);
   auto d = r.data(0);
   auto boundaries_str = d.GetRaw();
   std::stringstream ss(boundaries_str);
-  ss >> res.left >> res.right;
-  res.frequency = d.GetMulti<int32_t>();
+  T left, right;
+  ss >> left >> right;
+
+  auto frequency = d.GetMulti<int32_t>();
+  auto timestamp = r.timestamp();
+  auto step = r.id();
+
+  return HistogramRecord<T>(timestamp, step, left, right, std::move(frequency));
 }
 
 DECL_BASIC_TYPES_CLASS_IMPL(class, ScalarReader)

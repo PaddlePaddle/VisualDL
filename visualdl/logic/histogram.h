@@ -8,6 +8,45 @@
 
 namespace visualdl {
 
+template <typename T>
+struct HistogramRecord {
+  uint64_t timestamp;
+  int step;
+
+  HistogramRecord(uint64_t timestamp,
+                  int step,
+                  T left,
+                  T right,
+                  std::vector<int32_t>&& frequency)
+      : timestamp(timestamp),
+        step(step),
+        left(left),
+        right(right),
+        frequency(frequency),
+        span_(float(right - left) / frequency.size()) {}
+
+  struct Instance {
+    T left;
+    T right;
+    int32_t frequency;
+  };
+
+  Instance instance(int i) {
+    CHECK_LT(i, frequency.size());
+    Instance res;
+    res.left = left + span_ * i;
+    res.right = res.left + span_;
+    res.frequency = frequency[i];
+    return res;
+  }
+
+private:
+  T span_;
+  T left;
+  T right;
+  std::vector<int32_t> frequency;
+};
+
 // Create a histogram with default(10%) set of bucket boundaries.
 // The buckets cover the range from min to max.
 template <typename T>

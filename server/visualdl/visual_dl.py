@@ -115,6 +115,15 @@ def image_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
+@app.route("/data/plugin/histogram/tags")
+def histogram_tags():
+    mode = request.args.get('run')
+    result = lib.get_histogram_tags(storage)
+    print 'image tags (mode: %s)'%mode, result
+    result = gen_result(0, "", result)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
 @app.route('/data/plugin/scalars/scalars')
 def scalars():
     run = request.args.get('run')

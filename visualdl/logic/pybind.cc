@@ -11,11 +11,13 @@ namespace cp = visualdl::components;
 PYBIND11_PLUGIN(core) {
   py::module m("core", "C++ core of VisualDL");
 
-#define READER_ADD_SCALAR(T)                                               \
-  .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
-    auto tablet = self.tablet(tag);                                        \
-    return vs::components::ScalarReader<T>(std::move(tablet));             \
-  })
+// clang-format off
+  #define READER_ADD_SCALAR(T)                                               \
+    .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
+      auto tablet = self.tablet(tag);                                        \
+      return vs::components::ScalarReader<T>(std::move(tablet));             \
+    })
+  // clang-format on
   py::class_<vs::LogReader>(m, "LogReader")
       .def("__init__",
            [](vs::LogReader& instance, const std::string& dir) {
@@ -35,12 +37,20 @@ PYBIND11_PLUGIN(core) {
       });
 #undef READER_ADD_SCALAR
 
-#define WRITER_ADD_SCALAR(T)                                               \
-  .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
-    auto tablet = self.AddTablet(tag);                                     \
-    return cp::Scalar<T>(tablet);                                          \
-  })
+// clang-format off
+  #define WRITER_ADD_SCALAR(T)                                               \
+    .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
+      auto tablet = self.AddTablet(tag);                                     \
+      return cp::Scalar<T>(tablet);                                          \
+    })
+  #define WRITER_ADD_HISTOGRAM(T)                                           \
+    .def("new_histogram_" #T,                                               \
+        [](vs::LogWriter& self, const std::string& tag, int num_buckets) { \
+          auto tablet = self.AddTablet(tag);                               \
+          return cp::Histogram<T>(tablet, num_buckets);                    \
+        })
 
+  // clang-format on
   py::class_<vs::LogWriter>(m, "LogWriter")
       .def("__init__",
            [](vs::LogWriter& instance, const std::string& dir, int sync_cycle) {
@@ -51,6 +61,9 @@ PYBIND11_PLUGIN(core) {
       WRITER_ADD_SCALAR(float)
       WRITER_ADD_SCALAR(double)
       WRITER_ADD_SCALAR(int)
+      WRITER_ADD_HISTOGRAM(float)
+      WRITER_ADD_HISTOGRAM(double)
+      WRITER_ADD_HISTOGRAM(int)
       // clang-format on
       .def("new_image",
            [](vs::LogWriter& self,
@@ -106,35 +119,45 @@ PYBIND11_PLUGIN(core) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
+#define ADD_FULL_TYPE_IMPL(CODE) \
+  CODE(int);                     \
+  CODE(float);                   \
+  CODE(double);
+
 #define ADD_HISTOGRAM_WRITER(T)                           \
   py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T) \
       .def("add_record", &cp::Histogram<T>::AddRecord);
-  ADD_HISTOGRAM_WRITER(int);
-  ADD_HISTOGRAM_WRITER(float);
-  ADD_HISTOGRAM_WRITER(double);
+  ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_WRITER)
 #undef ADD_HISTOGRAM_WRITER
 
-#define ADD_HISTOGRAM_RECORD(T)                                            \
-  py::class_<cp::HistogramReader<T>::Record>(m, "HistogramRecord__" #T)    \
-      .def("left",                                                         \
-           [](cp::HistogramReader<T>::Record& self) { return self.left; }) \
-      .def("right",                                                        \
-           [](cp::HistogramReader<T>::Record& self) { return self.left; }) \
-      .def("frequency", [](cp::HistogramReader<T>::Record& self) {         \
-        return self.frequency;                                             \
+#define ADD_HISTOGRAM_RECORD_INSTANCE(T)                                      \
+  py::class_<vs::HistogramRecord<T>::Instance>(m, "HistogramInstance__" #T)   \
+      .def("left",                                                            \
+           [](typename vs::HistogramRecord<T>::Instance& self) {              \
+             return self.left;                                                \
+           })                                                                 \
+      .def("right",                                                           \
+           [](typename vs::HistogramRecord<T>::Instance& self) {              \
+             return self.right;                                               \
+           })                                                                 \
+      .def("frequency", [](typename vs::HistogramRecord<T>::Instance& self) { \
+        return self.frequency;                                                \
       });
-  ADD_HISTOGRAM_RECORD(int);
-  ADD_HISTOGRAM_RECORD(float);
-  ADD_HISTOGRAM_RECORD(double);
+
+  ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_RECORD_INSTANCE)
+#undef ADD_HISTOGRAM_RECORD_INSTANCE
+
+#define ADD_HISTOGRAM_RECORD(T)                                 \
+  py::class_<vs::HistogramRecord<T>>(m, "HistogramRecord__" #T) \
+      .def("instance", &vs::HistogramRecord<T>::instance);
+  ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_RECORD)
 #undef ADD_HISTOGRAM_RECORD
 
 #define ADD_HISTOGRAM_READER(T)                                 \
   py::class_<cp::HistogramReader<T>>(m, "HistogramReader__" #T) \
       .def("num_records", &cp::HistogramReader<T>::num_records) \
       .def("record", &cp::HistogramReader<T>::record);
-  ADD_HISTOGRAM_READER(int);
-  ADD_HISTOGRAM_READER(float);
-  ADD_HISTOGRAM_READER(double);
+  ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_READER)
 #undef ADD_HISTOGRAM_READER
 
 }  // end pybind

@@ -4,6 +4,8 @@
 #include "visualdl/storage/storage.h"
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/string.h"
+#include "visualdl/logic/histogram.h"
+
 namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
@@ -265,17 +267,11 @@ private:
 
 template <typename T>
 struct HistogramReader {
-  struct Record {
-    T left;
-    T right;
-    std::vector<int32_t> frequency;
-  };
-
   HistogramReader(TabletReader tablet) : reader_(tablet) {}
 
   size_t num_records() { return reader_.total_records(); }
 
-  Record record(int i);
+  HistogramRecord<T> record(int i);
 
 private:
   TabletReader reader_;
