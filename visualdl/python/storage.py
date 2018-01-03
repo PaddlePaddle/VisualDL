@@ -7,14 +7,20 @@ import core
 dtypes = ("float", "double", "int32", "int64")
 
 
-class StorageReader(object):
+class LogReader(object):
+
+    cur_mode = None
 
     def __init__(self, dir, reader=None):
         self.dir = dir
-        self.reader = reader if reader else core.Reader(dir)
+        self.reader = reader if reader else core.LogReader(dir)
+
+    def mode(self, mode):
+        LogReader.cur_mode = self.as_mode(mode)
+        return LogReader.cur_mode
 
     def as_mode(self, mode):
-        tmp = StorageReader(dir, self.reader.as_mode(mode))
+        tmp = LogReader(dir, self.reader.as_mode(mode))
         return tmp
 
     def modes(self):
@@ -34,17 +40,29 @@ class StorageReader(object):
     def image(self, tag):
         return self.reader.get_image(tag)
 
+    def __enter__(self):
+        return LogReader.cur_mode
 
-class StorageWriter(object):
+    def __exit__(self, type, value, traceback):
+        pass
+
+
+class LogWriter(object):
+
+    cur_mode = None
 
     def __init__(self, dir, sync_cycle, writer=None):
         self.dir = dir
         self.sync_cycle = sync_cycle
-        self.writer = writer if writer else core.Writer(dir, sync_cycle)
+        self.writer = writer if writer else core.LogWriter(dir, sync_cycle)
+
+    def mode(self, mode):
+        LogWriter.cur_mode = self.as_mode(mode)
+        return LogWriter.cur_mode
 
     def as_mode(self, mode):
-        tmp = StorageWriter(self.dir, self.sync_cycle, self.writer.as_mode(mode))
-        return tmp
+        LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle, self.writer.as_mode(mode))
+        return LogWriter.cur_mode
 
     def scalar(self, tag, type='float'):
         type2scalar = {
@@ -56,3 +74,9 @@ class StorageWriter(object):
 
     def image(self, tag, num_samples, step_cycle):
         return self.writer.new_image(tag, num_samples, step_cycle)
+
+    def __enter__(self):
+        return LogWriter.cur_mode
+
+    def __exit__(self, type, value, traceback):
+        pass
