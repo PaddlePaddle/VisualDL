@@ -13,7 +13,6 @@
 #include "visualdl/utils/guard.h"
 
 namespace visualdl {
-
 static const std::string meta_file_name = "storage.meta";
 
 static std::string meta_path(const std::string& dir) {
@@ -43,6 +42,7 @@ struct Storage {
   mutable SimpleSyncMeta meta;
 
   Storage() {
+    dir_ = std::make_shared<std::string>();
     data_ = std::make_shared<storage::Storage>();
     tablets_ = std::make_shared<std::map<std::string, storage::Tablet>>();
     modes_ = std::make_shared<std::set<std::string>>();
@@ -51,7 +51,9 @@ struct Storage {
     data_->set_timestamp(t);
   }
   Storage(const Storage& other)
-      : data_(other.data_), tablets_(other.tablets_), modes_(other.modes_) {}
+      : data_(other.data_), tablets_(other.tablets_), modes_(other.modes_) {
+    dir_ = other.dir_;
+  }
 
   // write operations
   void AddMode(const std::string& x) {
@@ -72,13 +74,23 @@ struct Storage {
     return Tablet(&(*tablets_)[x], this);
   }
 
-  void SetDir(const std::string& dir) { dir_ = dir; }
-  void PersistToDisk() { PersistToDisk(dir_); }
+  void SetDir(const std::string& dir) { *dir_ = dir; }
+  std::string dir() const { return *dir_; }
+  void PersistToDisk() {
+    CHECK(!dir_->empty()) << "dir should be set.";
+    fs::TryRecurMkdir(*dir_);
+
+    fs::SerializeToFile(*data_, meta_path(*dir_));
+    for (auto tag : data_->tags()) {
+      auto it = tablets_->find(tag);
+      CHECK(it != tablets_->end()) << "tag " << tag << " not exist.";
+      fs::SerializeToFile(it->second, tablet_path(*dir_, tag));
+    }
+  }
   /*
    * Save memory to disk.
    */
   void PersistToDisk(const std::string& dir) {
-    // LOG(INFO) << "persist to disk " << dir;
     CHECK(!dir.empty()) << "dir should be set.";
     fs::TryRecurMkdir(dir);
 
@@ -95,13 +107,11 @@ struct Storage {
 protected:
   void AddTag(const std::string& x) {
     *data_->add_tags() = x;
-    LOG(INFO) << "add tag " << x;
-    LOG(INFO) << "tag.size " << data_->tags_size();
     WRITE_GUARD
   }
 
 private:
-  std::string dir_;
+  std::shared_ptr<std::string> dir_;
   std::shared_ptr<std::map<std::string, storage::Tablet>> tablets_;
   std::shared_ptr<storage::Storage> data_;
   std::shared_ptr<std::set<std::string>> modes_;
