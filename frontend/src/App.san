@@ -1,6 +1,7 @@
 <template>
     <div id="app">
         <ui-app-menu
+            selected="{{route}}"
             on-item-click="menuChange($event)"
         ></ui-app-menu>
         <div id="content-container" class="visual-dl-content-container">
@@ -21,10 +22,20 @@ export default {
         'ui-app-menu': AppMenu
     },
     initData() {
-        return {};
+        return {
+            route: 'scalars'
+        };
     },
     attached() {
         router.start();
+        let route;
+        if (location.hash) {
+            route = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
+            this.data.set('route', route);
+        }
+        else {
+            location.hash = '#/scalars';
+        }
     },
     menuChange({value, url, title}) {
         routeTo(url);

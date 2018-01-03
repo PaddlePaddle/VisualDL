@@ -10,15 +10,14 @@
         </div>
         <div class="visual-dl-scalar-right">
             <ui-chart-page
-                expand="{{true}}"
-                config="{{filteredConfig}}"
+                config="{{config}}"
                 runsItems="{{runsItems}}"
                 tagList="{{filteredTagsList}}"
                 title="Tags matching {{config.groupNameReg}}"
             ></ui-chart-page>
             <ui-chart-page
                 san-for="item in groupedTags"
-                config="{{filteredConfig}}"
+                config="{{config}}"
                 runsItems="{{runsItems}}"
                 tagList="{{item.tags}}"
                 title="{{item.group}}"
@@ -28,10 +27,10 @@
 </template>
 
 <script>
-import {getPluginScalarsTags, getRuns} from '../service';
+import {getPluginHistogramsTags, getRuns} from '../service';
 import config from './ui/config';
 import chartPage from './ui/chartPage';
-import {debounce, flatten, uniq, isArray} from 'lodash';
+import {debounce, flatten, uniq} from 'lodash';
 export default {
     components: {
         'ui-config': config,
@@ -61,7 +60,7 @@ export default {
                         run,
                         tag: tags[run][tag]
                     };
-                }).filter(item => item.tag !== undefined);
+                });
                 return {
                     tagList,
                     tag,
@@ -92,22 +91,17 @@ export default {
                     tags: groupData[group]
                 };
             });
-        },
-        filteredConfig() {
-            let tansformArr = ['downloadLink', 'outlier'];
-            let config = this.data.get('config') || {};
-            let filteredConfig = {};
-            Object.keys(config).forEach(key => {
-                let val = config[key];
-                if (tansformArr.indexOf(key) > -1) {
-                    filteredConfig[key] = isArray(val) && val[0] === 'yes';
-                }
-                else {
-                    filteredConfig[key] = val;
-                }
-            });
-            return filteredConfig;
         }
+        // ,
+        // filteredConfig() {
+        //     let config = this.data.get('config') || {};
+        //     let filteredConfig = {};
+        //     Object.keys(config).forEach(key => {
+        //         let val = config[key];
+        //         filteredConfig[key] = val;
+        //     });
+        //     return filteredConfig;
+        // }
     },
     initData() {
         return {
@@ -115,18 +109,15 @@ export default {
             tags: [],
             config: {
                 groupNameReg: '.*',
-                smoothing: 0.6,
                 horizontal: 'step',
-                sortingMethod: 'default',
-                downloadLink: [],
-                outlier: ['yes'],
+                chartType: 'offset',
                 runs: [],
                 running: true
             }
         };
     },
     inited() {
-        getPluginScalarsTags().then(({errno, data}) => {
+        getPluginHistogramsTags().then(({errno, data}) => {
             this.data.set('tags', data);
 
             // filter when inited
