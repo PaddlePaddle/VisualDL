@@ -46,7 +46,7 @@ add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
         ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
         )
-target_link_libraries(vl_test sdk storage entry tablet im gtest glog protobuf gflags pthread)
+target_link_libraries(vl_test sdk storage entry tablet im gtest glog protobuf gflags pthread eigen3)
 
 enable_testing ()
 
