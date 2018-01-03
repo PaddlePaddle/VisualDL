@@ -4,7 +4,7 @@
             <san-menu slot="right">
                 <san-menu-item
                     san-for="item in items"
-                    class="{{selected === item.value ? 'sm-menu-item-selected' : ''}}"
+                    class="{{selected === item.name ? 'sm-menu-item-selected' : ''}}"
                     on-click="handleItemClick(item)"
                     title="{{item.title}}" />
             </san-menu>
@@ -23,23 +23,28 @@ export default {
     },
     initData() {
         return {
-            selected: '1',
+            selected: 'scalars',
             items: [
                 {
-                    value: '1',
                     url: '/scalars',
-                    title: 'SCALARS'
+                    title: 'SCALARS',
+                    name: 'scalars'
                 },
                 {
-                    value: '2',
                     url: '/images',
-                    title: 'IMAGES'
+                    title: 'IMAGES',
+                    name: 'images'
+                },
+                {
+                    url: '/histograms',
+                    title: 'HISTOGRAMS',
+                    name: 'histograms'
                 }
             ]
         };
     },
     handleItemClick(item) {
-        this.data.set('selected', item.value);
+        this.data.set('selected', item.name);
         this.fire('item-click', item);
     }
 };
@@ -61,7 +66,16 @@ export default {
             height 100%
             display flex
             flex-direction row
+            .sm-menu-item
+                .sm-menu-item-content
+                    color #fff
+                    opacity 0.6
+            .sm-menu-item:hover
+                background none
+                opacity 1
             .sm-menu-item-selected
-                background #e4e4e4
+                .sm-menu-item-content
+                    color #fff
+                    opacity 1
 </style>
 

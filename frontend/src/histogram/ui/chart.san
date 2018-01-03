@@ -1,0 +1,358 @@
+<template>
+    <div class="visual-dl-charts">
+        <div class="visual-dl-chart-box">
+        </div>
+        <div class="visual-dl-chart-actions">
+            <san-button on-click="expandArea">
+                <san-icon size="20">settings_overscan</san-icon>
+            </san-button>
+        </div>
+    </div>
+</template>
+<script>
+
+// components
+import Button from 'san-mui/Button';
+import Icon from 'san-mui/Icon';
+
+// libs
+import echarts from 'echarts';
+import {originDataToChartData} from '../histogramHelper';
+import {format, precisionRound} from 'd3-format';
+
+// service
+import {getPluginHistogramsHistograms} from '../../service';
+
+const highlightLineColor = '#2f4554';
+const defaultLineColor = '#d14a61';
+const lineWidth = 1;
+// the time to refresh chart data
+const intervalTime = 30;
+
+const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
+const yValueFormat = format('.' + p + 'e');
+
+export default {
+    components: {
+        'san-button': Button,
+        'san-icon': Icon
+    },
+    computed: {
+
+    },
+    initData() {
+        return {
+            width: 400,
+            height: 300,
+            data: [
+                {
+                    name: 'train',
+                    value: []
+                }
+            ]
+        };
+    },
+    inited() {
+        this.watch('originData', data => {
+            this.initChartChartOption();
+        });
+
+        this.watch('chartType', chartType => {
+            this.initChartChartOption();
+        });
+    },
+
+    attached() {
+        let tagInfo = this.data.get('tagInfo');
+        this.initCharts(tagInfo);
+
+        this.initeChartsEvent();
+        if (this.data.get('running')) {
+            this.startInterval();
+        }
+        this.watch('running', running => {
+            running ? this.startInterval() : this.stopInterval();
+        });
+    },
+
+    detached() {
+        this.stopInterval();
+    },
+
+    initCharts(tagInfo) {
+        this.createChart();
+        // this.setChartsOptions(tagInfo);
+        this.getOriginChartsData(tagInfo);
+    },
+
+    createChart() {
+        let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+        this.myChart = echarts.init(el);
+    },
+
+    initChartChartOption() {
+        this.myChart.clear();
+        let data = this.data.get('originData');
+        let chartData = originDataToChartData(data);
+        let tagInfo = this.data.get('tagInfo');
+        let title = tagInfo.tag.displayName + '(' + tagInfo.run + ')';
+        let chartType = this.data.get('chartType');
+        this.setChartOptions(chartData, title, chartType);
+    },
+    setChartOptions(chartData, tag, chartType) {
+        let grid = {
+            left: '15%',
+            top: '20%',
+            right: '10%',
+            bottom: '20%'
+        };
+
+        let title = {
+            text: tag,
+            textStyle: {
+                fontSize: '12'
+            }
+        };
+        if (chartType === 'overlay') {
+            this.setOverlayChartOption(chartData, title, grid);
+        }
+        else if (chartType === 'offset') {
+            this.setOffsetChartOption(chartData, title, grid);
+        }
+    },
+
+    setOverlayChartOption({chartData, min, max}, title, grid) {
+        let seriesOption = chartData.map(({time, step, items}) => ({
+                name: 'step' + step,
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                z: 0,
+                data: items,
+                animationDuration: 100,
+                lineStyle: {
+                    normal: {
+                        // opacity: originLinesOpacity,
+                        width: lineWidth,
+                        color: defaultLineColor
+                    }
+                },
+                encode: {
+                    x: [2],
+                    y: [3]
+                }
+            })
+        );
+        let option = {
+            title: title,
+            axisPointer: {
+                link: {xAxisIndex: 'all'},
+                show: true,
+                snap: true,
+                triggerTooltip: true
+            },
+            grid: grid,
+            xAxis: {
+                type: 'value'
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter(value, index) {
+                        return yValueFormat(value);
+                    }
+                },
+                axisPointer: {
+                    label: {
+                        formatter({value}) {
+                            return yValueFormat(value);
+                        }
+                    }
+                }
+            },
+            series: seriesOption
+        };
+        this.myChart.setOption(option);
+    },
+
+    setOffsetChartOption({chartData, min, max}, title, grid) {
+        let rawData = [];
+        let minX = min;
+        let maxX = max;
+        let minZ = Infinity;
+        let maxZ = -Infinity;
+        grid.top = '50%';
+        chartData.forEach(({items}) => {
+            let lineData = [];
+            items.forEach(([time, step, x, y]) => {
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x);
+                minZ = Math.min(minZ, y);
+                maxZ = Math.max(maxZ, y);
+                lineData.push(x, step, y);
+            });
+            rawData.push(lineData);
+        });
+        // Max height in z axis.
+        let Z_HEIGHT = 130;
+        let option = {
+            title,
+            visualMap: {
+                type: 'continuous',
+                show: false,
+                min: 0,
+                max: 1000,
+                dimension: 1,
+                inRange: {
+                    colorLightness: [0.3, 0.7]
+                }
+            },
+            xAxis: {
+                // min: minX - (maxX - minX) * 0.3,
+                // max: maxX + (maxX - minX) * 0.3,
+                min: minX,
+                max: maxX,
+                axisLine: {
+                    onZero: false
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                position: 'right',
+                inverse: true,
+                splitLine: {
+                    show: false
+                }
+            },
+            grid,
+            series: [{
+                type: 'custom',
+                dimensions: ['x', 'y'],
+                renderItem(params, api) {
+                    let points = [];
+                    for (let i = 0; i < rawData[params.dataIndex].length;) {
+                        let x = api.value(i++);
+                        let y = api.value(i++);
+                        let z = api.value(i++);
+
+                        let pt = api.coord([x, y]);
+                        // Linear map in z axis
+                        pt[1] -= (z - minZ) / (maxZ - minZ) * Z_HEIGHT;
+                        points.push(pt);
+                    }
+                    return {
+                        type: 'polygon',
+                        shape: {
+                            points
+                        },
+                        style: api.style({
+                            stroke: '#bbb',
+                            lineWidth: 1
+                        })
+                    };
+                },
+                data: rawData
+            }]
+        };
+        this.myChart.setOption(option);
+    },
+
+    // get origin data per 60 seconds
+    startInterval() {
+        this.getOringDataInterval = setInterval(() => {
+            let tagInfo = this.data.get('tagInfo');
+            this.getOriginChartsData(tagInfo);
+        }, intervalTime * 1000);
+    },
+
+    stopInterval() {
+        clearInterval(this.getOringDataInterval);
+    },
+
+    getOriginChartsData({run, tag}) {
+        let params = {
+            run,
+            tag: tag.displayName
+        };
+        getPluginHistogramsHistograms(params).then(({data}) => {
+            this.data.set('originData', data);
+        });
+    },
+    lightHoveredLine({seriesIndex}) {
+        let series = this.myChart.getOption().series;
+        let newSeries = series.map((item, index) => {
+            if (seriesIndex === index) {
+                item.lineStyle.normal.color = highlightLineColor;
+                item.zlevel = 1;
+            }
+            else {
+                item.lineStyle.normal.color = defaultLineColor;
+                item.zlevel = 0;
+            }
+            return item;
+        });
+        this.myChart.setOption({
+            series: newSeries
+        });
+    },
+    initeChartsEvent() {
+        this.myChart.on('mousemove', params => {
+            let chartType = this.data.get('chartType');
+            if (chartType === 'overlay') {
+                this.lightHoveredLine(params);
+            }
+        });
+    },
+
+    expandArea() {
+        let isExpand = this.data.get('isExpand');
+        if (!isExpand) {
+            let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+            el.style.width = '800px';
+            el.style.height = '600px';
+            this.data.set('isExpand', true);
+            this.myChart.resize({
+                width: 800,
+                height: 600
+            });
+        }
+        else {
+            let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+            el.style.width = '400px';
+            el.style.height = '300px';
+            this.data.set('isExpand', false);
+            this.myChart.resize({
+                width: 400,
+                height: 300
+            });
+        }
+    }
+
+};
+</script>
+<style lang="stylus">
+    .visual-dl-charts
+        float left
+        margin-bottom 20px
+        .visual-dl-chart-box
+            width 400px;
+            height 300px;
+        .visual-dl-chart-actions
+            height 50px
+            margin-left 10%
+            .sm-form-item
+                float left
+                width 100px
+                margin-top 0px
+                display block
+            .sm-button
+                float left
+                display block
+                height 20px
+                line-height 20px
+                margin-top 10px
+                padding 0 10px
+</style>
+
