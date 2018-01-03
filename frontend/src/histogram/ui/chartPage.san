@@ -1,18 +1,12 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel isShow="{{expand}}" info="{{tagList.length}}" title="{{title}}">
-            <div class="visual-dl-chart-box">
+        <ui-expand-panel info="{{itemsLength}}" title="{{title}}">
+            <div san-for="tag in filteredPageList" class="visual-dl-chart-box">
                 <ui-chart
-                    san-for="tag in filteredTagList"
+                    san-for="tag in tag.tagList"
                     tagInfo="{{tag}}"
-                    groupNameReg="{{config.groupNameReg}}"
-                    smoothing="{{config.smoothing}}"
-                    horizontal="{{config.horizontal}}"
-                    sortingMethod="{{config.sortingMethod}}"
-                    downloadLink="{{config.downloadLink}}"
-                    outlier="{{config.outlier}}"
                     runs="{{config.runs}}"
-                    running="{{config.running}}"
+                    chartType="{{config.chartType}}"
                     runsItems="{{runsItems}}"
                 ></ui-chart>
             </div>
@@ -29,25 +23,47 @@
 </template>
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
-import chart from '../../common/component/Charts/chart';
+import Chart from './chart';
 import Pagination from 'san-mui/Pagination';
+
+import {cloneDeep} from 'lodash';
 
 export default {
     components: {
-        'ui-chart': chart,
+        'ui-chart': Chart,
         'ui-expand-panel': ExpandPanel,
         'ui-pagination': Pagination
     },
     computed: {
-        filteredTagList() {
+        filteredRunsList() {
             let tagList = this.data.get('tagList') || [];
+            let runs = this.data.get('config.runs') || [];
+            let list = cloneDeep(tagList);
+            return list.slice().map(item => {
+                item.tagList = item.tagList.filter(one => runs.includes(one.run));
+                return item;
+            });
+        },
+
+        filteredPageList() {
+            let list = this.data.get('filteredRunsList');
             let currentPage = this.data.get('currentPage');
             let pageSize = this.data.get('pageSize');
-            return tagList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+            return list.slice((currentPage - 1) * pageSize, currentPage * pageSize);
         },
         total() {
-            let tagList = this.data.get('tagList') || [];
-            return tagList.length;
+            let list = this.data.get('filteredRunsList') || [];
+            return list.reduce((num, item) => {
+                let length = item.tagList.length;
+                return length ? num + 1 : num;
+            }, 0);
+        },
+        itemsLength() {
+            let list = this.data.get('filteredRunsList') || [];
+            return list.reduce((num, item) => {
+                let length = item.tagList.length;
+                return length + num;
+            }, 0);
         }
     },
     initData() {
@@ -55,7 +71,7 @@ export default {
             // current page
             currentPage: 1,
             // item per page
-            pageSize: 8
+            pageSize: 4
         };
     },
 
@@ -69,10 +85,10 @@ export default {
 
 +prefix-classes('visual-dl-')
     .chart-page
+        .chart-box
+            float left
         .chart-box:after
             content: "";
             clear: both;
             display: block;
 </style>
-
-
