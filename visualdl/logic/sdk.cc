@@ -11,7 +11,7 @@ template <typename T>
 std::vector<T> ScalarReader<T>::records() const {
   std::vector<T> res;
   for (int i = 0; i < reader_.total_records(); i++) {
-    res.push_back(reader_.record(i).template data<T>(0).Get());
+    res.push_back(reader_.record(i).data(0).template Get<T>());
   }
   return res;
 }
@@ -130,11 +130,14 @@ void Image::SetSample(int index,
       !is_same_type<value_t, shape_t>::value,
       "value_t should not use int64_t field, this type is used to store shape");
 
-  // set meta with hack
-  Entry<shape_t> meta;
-  meta.set_parent(entry.parent());
-  meta.entry = entry.entry;
-  meta.SetMulti(shape);
+  // set meta.
+  entry.SetMulti(shape);
+
+  // // set meta with hack
+  // Entry<shape_t> meta;
+  // meta.set_parent(entry.parent());
+  // meta.entry = entry.entry;
+  // meta.SetMulti(shape);
 }
 
 std::string ImageReader::caption() {
@@ -150,22 +153,21 @@ std::string ImageReader::caption() {
 ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   ImageRecord res;
   auto record = reader_.record(offset);
-  auto data_entry = record.data<std::vector<byte_t>>(index);
-  auto shape_entry = record.data<shape_t>(index);
-  auto data_str = data_entry.GetRaw();
+  auto entry = record.data(index);
+  auto data_str = entry.GetRaw();
   std::transform(data_str.begin(),
                  data_str.end(),
                  std::back_inserter(res.data),
                  [](byte_t i) { return (int)(i); });
-  res.shape = shape_entry.GetMulti();
+  res.shape = entry.GetMulti<shape_t>();
   res.step_id = record.id();
   return res;
 }
 
 template <typename T>
-Histogram::AddRecord(int step, const std::vector<T>& data) {
+void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
   auto record = writer_.AddRecord();
-  record.set_id(step);
+  record.SetId(step);
   time_t time = std::time(nullptr);
   record.SetTimeStamp(time);
 }

@@ -15,7 +15,7 @@ struct HistogramBuilder {
   void operator()(T* begin, T* end) {
     begin_ = begin;
     end_ = end;
-    CHECK_GE(end - begin, num_buckets);
+    CHECK_GE(end - begin, num_buckets_);
   }
 
   T left_boundary{std::numeric_limits<T>::max()};
@@ -25,7 +25,7 @@ struct HistogramBuilder {
   void Get(size_t n, T* left, T* right, int* frequency) {
     CHECK(!buckets.empty()) << "need to CreateBuckets first.";
     CHECK_LT(n, num_buckets_) << "n out of range.";
-    *left = left_boundary_ + span_ * n;
+    *left = left_boundary + span_ * n;
     *right = *left + span_;
     *frequency = buckets[n];
   }
@@ -36,18 +36,18 @@ private:
     CHECK(begin_);
     CHECK(end_);
     for (T* s = begin_; s != end_; s++) {
-      if (*s > right_boundary_) right_boundary_ = *s;
-      if (*s < left_boundary_) left_boundary_ = *s;
+      if (*s > right_boundary) right_boundary = *s;
+      if (*s < left_boundary) left_boundary = *s;
     }
   }
 
   // Create `num_buckets` buckets.
   void CreateBuckets() {
-    span_ = (float)right_boundary_ / num_buckets_ -
-            (float)left_boundary_ / num_buckets_;
+    span_ = (float)right_boundary / num_buckets_ -
+            (float)left_boundary / num_buckets_;
     buckets.resize(num_buckets_);
     for (auto* v = begin_; v != end_; v++) {
-      int offset = int(*v / span);
+      int offset = int(*v / span_);
       buckets[offset]++;
     }
   }
