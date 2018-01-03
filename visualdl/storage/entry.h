@@ -9,6 +9,8 @@ namespace visualdl {
 
 struct Storage;
 
+using byte_t = unsigned char;
+
 /*
  * Utility helper for storage::Entry.
  */
@@ -19,8 +21,9 @@ struct Entry {
   storage::Entry* entry{nullptr};
 
   Entry() {}
-  explicit Entry(storage::Entry* entry, Storage* parent)
-      : entry(entry), x_(parent) {}
+  Entry(storage::Entry* entry, Storage* parent) : entry(entry), x_(parent) {}
+  Entry(const Entry<T>& other) : entry(other.entry), x_(other.x_) {}
+
   void operator()(storage::Entry* entry, Storage* parent) {
     this->entry = entry;
     x_ = parent;
@@ -29,10 +32,15 @@ struct Entry {
   // Set a single value.
   void Set(T v);
 
+  void SetRaw(const std::string& bytes) { entry->set_y(bytes); }
+
   // Add a value to repeated message field.
   void Add(T v);
 
+  void SetMulti(const std::vector<T>& v);
+
   Storage* parent() { return x_; }
+  void set_parent(Storage* x) { x_ = x; }
 
 private:
   Storage* x_;
@@ -45,6 +53,8 @@ struct EntryReader {
   T Get() const;
   // Get repeated field.
   std::vector<T> GetMulti() const;
+
+  std::string GetRaw() { return data_.y(); }
 
 private:
   storage::Entry data_;

@@ -8,19 +8,19 @@ namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
 
-class Writer {
+class LogWriter {
 public:
-  Writer(const std::string& dir, int sync_cycle) {
+  LogWriter(const std::string& dir, int sync_cycle) {
     storage_.SetDir(dir);
     storage_.meta.cycle = sync_cycle;
   }
-  Writer(const Writer& other) {
+  LogWriter(const LogWriter& other) {
     storage_ = other.storage_;
     mode_ = other.mode_;
   }
 
-  Writer AsMode(const std::string& mode) {
-    Writer writer = *this;
+  LogWriter AsMode(const std::string& mode) {
+    LogWriter writer = *this;
     storage_.AddMode(mode);
     writer.mode_ = mode;
     return writer;
@@ -32,6 +32,7 @@ public:
     string::TagEncode(tmp);
     auto res = storage_.AddTablet(tmp);
     res.SetCaptions(std::vector<std::string>({mode_}));
+    res.SetTag(mode_, tag);
     return res;
   }
 
@@ -42,15 +43,17 @@ private:
   std::string mode_{kDefaultMode};
 };
 
-class Reader {
+class LogReader {
 public:
-  Reader(const std::string& dir) : reader_(dir) {}
+  LogReader(const std::string& dir) : reader_(dir) {}
 
-  Reader AsMode(const std::string& mode) {
+  LogReader AsMode(const std::string& mode) {
     auto tmp = *this;
     tmp.mode_ = mode;
     return tmp;
   }
+
+  const std::string& mode() { return mode_; }
 
   TabletReader tablet(const std::string& tag) {
     auto tmp = mode_ + "/" + tag;
@@ -62,7 +65,7 @@ public:
     auto tags = reader_.all_tags();
     auto it =
         std::remove_if(tags.begin(), tags.end(), [&](const std::string& tag) {
-          return !TagMatchMode(tag);
+          return !TagMatchMode(tag, mode_);
         });
     tags.erase(it + 1);
     return tags;
@@ -74,8 +77,8 @@ public:
     CHECK(!tags.empty());
     std::vector<std::string> res;
     for (const auto& tag : tags) {
-      if (TagMatchMode(tag)) {
-        res.push_back(GenReadableTag(tag));
+      if (TagMatchMode(tag, mode_)) {
+        res.push_back(GenReadableTag(mode_, tag));
       }
     }
     return res;
@@ -83,17 +86,19 @@ public:
 
   StorageReader& storage() { return reader_; }
 
-protected:
-  bool TagMatchMode(const std::string& tag) {
-    if (tag.size() <= mode_.size()) return false;
-    return tag.substr(0, mode_.size()) == mode_;
-  }
-  std::string GenReadableTag(const std::string& tag) {
+  static std::string GenReadableTag(const std::string& mode,
+                                    const std::string& tag) {
     auto tmp = tag;
     string::TagDecode(tmp);
-    return tmp.substr(mode_.size() + 1);  // including `/`
+    return tmp.substr(mode.size() + 1);  // including `/`
   }
 
+  static bool TagMatchMode(const std::string& tag, const std::string& mode) {
+    if (tag.size() <= mode.size()) return false;
+    return tag.substr(0, mode.size()) == mode;
+  }
+
+protected:
 private:
   StorageReader reader_;
   std::string mode_{kDefaultMode};
@@ -117,7 +122,7 @@ struct Scalar {
   void AddRecord(int id, T value) {
     auto record = tablet_.AddRecord();
     record.SetId(id);
-    auto entry = record.AddData<T>();
+    auto entry = record.template AddData<T>();
     entry.Set(value);
   }
 
@@ -138,6 +143,112 @@ struct ScalarReader {
 
 private:
   TabletReader reader_;
+};
+
+/*
+ * Image component writer.
+ */
+struct Image {
+  using value_t = float;
+  using shape_t = int64_t;
+
+  /*
+   * step_cycle: store every `step_cycle` as a record.
+   * num_samples: how many samples to take in a step.
+   */
+  Image(Tablet tablet, int num_samples, int step_cycle)
+      : writer_(tablet), num_samples_(num_samples), step_cycle_(step_cycle) {
+    CHECK_GT(step_cycle, 0);
+    CHECK_GT(num_samples, 0);
+
+    writer_.SetType(Tablet::Type::kImage);
+    // make image's tag as the default caption.
+    writer_.SetNumSamples(num_samples);
+    SetCaption(tablet.reader().tag());
+  }
+  void SetCaption(const std::string& c) {
+    writer_.SetCaptions(std::vector<std::string>({c}));
+  }
+  /*
+   * Start a sample period.
+   */
+  void StartSampling();
+  /*
+   * Will this sample will be taken.
+   */
+  int IsSampleTaken();
+  /*
+   * End a sample period.
+   */
+  void FinishSampling();
+
+  /*
+   * Just store a tensor with nothing to do with image format.
+   */
+  void SetSample(int index,
+                 const std::vector<shape_t>& shape,
+                 const std::vector<value_t>& data);
+
+protected:
+  bool ToSampleThisStep() { return step_id_ % step_cycle_ == 0; }
+
+private:
+  Tablet writer_;
+  Record step_;
+  int num_records_{0};
+  int num_samples_{0};
+  int step_id_{0};
+  int step_cycle_;
+};
+
+/*
+ * Image reader.
+ */
+struct ImageReader {
+  using value_t = typename Image::value_t;
+  using shape_t = typename Image::shape_t;
+
+  struct ImageRecord {
+    int step_id;
+    std::vector<int> data;
+    std::vector<shape_t> shape;
+  };
+
+  ImageReader(const std::string& mode, TabletReader tablet)
+      : reader_(tablet), mode_{mode} {}
+
+  std::string caption();
+
+  // number of steps.
+  int num_records() { return reader_.total_records(); }
+
+  int num_samples() { return reader_.num_samples(); }
+
+  int64_t timestamp(int step) { return reader_.record(step).timestamp(); }
+
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  ImageRecord record(int offset, int index);
+
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  std::vector<value_t> data(int offset, int index);
+
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  std::vector<shape_t> shape(int offset, int index);
+
+  int stepid(int offset, int index);
+
+private:
+  TabletReader reader_;
+  std::string mode_;
 };
 
 }  // namespace components
