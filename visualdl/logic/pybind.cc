@@ -53,19 +53,6 @@ PYBIND11_PLUGIN(core) {
         return vs::components::ImageReader(self.mode(), tablet);
       });
 
-// clang-format off
-  #define WRITER_ADD_SCALAR(T)                                               \
-    .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
-      auto tablet = self.AddTablet(tag);                                     \
-      return cp::Scalar<T>(tablet);                                          \
-    })
-  #define WRITER_ADD_HISTOGRAM(T)                                           \
-    .def("new_histogram_" #T,                                               \
-        [](vs::LogWriter& self, const std::string& tag, int num_buckets) { \
-          auto tablet = self.AddTablet(tag);                               \
-          return cp::Histogram<T>(tablet, num_buckets);                    \
-        })
-
   // clang-format on
   py::class_<vs::LogWriter>(m, "LogWriter")
       .def("__init__",
@@ -73,7 +60,18 @@ PYBIND11_PLUGIN(core) {
              new (&instance) vs::LogWriter(dir, sync_cycle);
            })
       .def("as_mode", &vs::LogWriter::AsMode)
-      // clang-format off
+// clang-format off
+      #define WRITER_ADD_SCALAR(T)                                               \
+      .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
+        auto tablet = self.AddTablet(tag);                                     \
+        return cp::Scalar<T>(tablet);                                          \
+      })
+      #define WRITER_ADD_HISTOGRAM(T)                                           \
+      .def("new_histogram_" #T,                                               \
+          [](vs::LogWriter& self, const std::string& tag, int num_buckets) { \
+            auto tablet = self.AddTablet(tag);                               \
+            return cp::Histogram<T>(tablet, num_buckets);                    \
+          })
       WRITER_ADD_SCALAR(float)
       WRITER_ADD_SCALAR(double)
       WRITER_ADD_SCALAR(int)
