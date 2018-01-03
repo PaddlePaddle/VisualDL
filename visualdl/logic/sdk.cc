@@ -11,7 +11,7 @@ template <typename T>
 std::vector<T> ScalarReader<T>::records() const {
   std::vector<T> res;
   for (int i = 0; i < reader_.total_records(); i++) {
-    res.push_back(reader_.record(i).data<T>(0).Get());
+    res.push_back(reader_.record(i).template data<T>(0).Get());
   }
   return res;
 }
