@@ -122,7 +122,7 @@ struct Scalar {
   void AddRecord(int id, T value) {
     auto record = tablet_.AddRecord();
     record.SetId(id);
-    auto entry = record.template AddData<T>();
+    auto entry = record.AddData();
     entry.Set(value);
   }
 

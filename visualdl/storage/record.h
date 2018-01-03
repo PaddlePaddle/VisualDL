@@ -55,7 +55,6 @@ struct Record {
     return Entry(data_->mutable_meta(), parent());
   }
 
-  template <typename T>
   Entry AddData() {
     WRITE_GUARD
     return Entry(data_->add_data(), parent());
@@ -80,17 +79,13 @@ struct RecordReader {
   // read operations
   size_t data_size() const { return data_.data_size(); }
 
-  EntryReader data(int i) {
-    return EntryReader(data_.data(i));
-  }
+  EntryReader data(int i) { return EntryReader(data_.data(i)); }
   int64_t timestamp() const { return data_.timestamp(); }
   int64_t id() const { return data_.id(); }
 
   Record::Dtype dtype() const { return (Record::Dtype)data_.dtype(); }
 
-  EntryReader meta() const {
-    return data_.meta();
-  }
+  EntryReader meta() const { return data_.meta(); }
 
 private:
   storage::Record data_;

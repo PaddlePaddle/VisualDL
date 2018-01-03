@@ -61,7 +61,7 @@ void Image::StartSampling() {
 
   // resize record
   for (int i = 0; i < num_samples_; i++) {
-    step_.AddData<value_t>();
+    step_.AddData();
   }
   num_records_ = 0;
 }
@@ -166,10 +166,20 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
 
 template <typename T>
 void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
+  HistogramBuilder<T> builder(num_buckets_);
+  builder(&data.front(), &data.back());
+
   auto record = writer_.AddRecord();
   record.SetId(step);
   time_t time = std::time(nullptr);
   record.SetTimeStamp(time);
+  // set frequencies.
+  auto entry = record.AddData();
+  entry.SetMulti<int32_t>(builder.buckets);
+  // Serialize left and right boundaries.
+  std::string boundaries_str = std::to_string(builder.left_boundary) + " " +
+                               std::to_string(builder.right_boundary);
+  entry.SetRaw(boundaries_str);
 }
 
 }  // namespace components
