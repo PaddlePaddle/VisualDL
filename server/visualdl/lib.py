@@ -29,7 +29,7 @@ def get_scalar_tags(storage, mode):
     return result
 
 
-def get_scalar(storage, mode, tag, num_records=100):
+def get_scalar(storage, mode, tag, num_records=300):
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
 
@@ -41,8 +41,13 @@ def get_scalar(storage, mode, tag, num_records=100):
         if len(data) <= num_records:
             return data
 
-        samples = sorted(random.sample(xrange(len(data)), num_records))
-        return [data[i] for i in samples]
+        span = float(len(data) / num_records)
+        end_idx = len(data) - 1
+        res = []
+        for i in xrange(num_records):
+            id = int(end_idx - i * span)
+            res.append(data[id])
+        return [v for v in reversed(res)]
 
 
 def get_image_tags(storage):
@@ -56,7 +61,8 @@ def get_image_tags(storage):
                 for tag in tags:
                     image = reader.image(tag)
                     for i in xrange(max(1, image.num_samples())):
-                        caption = tag if image.num_samples() <= 1 else '%s/%d'%(tag, i)
+                        caption = tag if image.num_samples(
+                        ) <= 1 else '%s/%d' % (tag, i)
                         result[mode][caption] = {
                             'displayName': caption,
                             'description': "",
@@ -120,7 +126,7 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
             size = max(shape[0], shape[1])
             if size > max_size:
                 scale = max_size * 1. / size
-                scaled_shape = (int(shape[0]*scale), int(shape[1]*scale))
+                scaled_shape = (int(shape[0] * scale), int(shape[1] * scale))
                 im = im.resize(scaled_shape)
             im.save(tempfile)
         tempfile.seek(0, 0)
