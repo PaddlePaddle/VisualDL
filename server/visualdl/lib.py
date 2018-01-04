@@ -7,8 +7,6 @@ from tempfile import NamedTemporaryFile
 import numpy as np
 from PIL import Image
 
-import storage
-
 
 def get_modes(storage):
     return storage.modes()
@@ -142,12 +140,22 @@ def get_histogram(storage, mode, tag):
         res = []
 
         for i in xrange(histogram.num_records()):
-            record = histogram.record(i)
-            res.append([record.timestamp(), record.step()])
+            try:
+                # some bug with protobuf, some times may overflow
+                record = histogram.record(i)
+            except:
+                continue
 
+            res.append([])
+            py_record = res[-1]
+            py_record.append(record.timestamp())
+            py_record.append(record.step())
+            py_record.append([])
+
+            data = py_record[-1]
             for j in xrange(record.num_instances()):
                 instance = record.instance(j)
-                res.append(
+                data.append(
                     [instance.left(),
                      instance.right(),
                      instance.frequency()])

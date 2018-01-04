@@ -38,6 +38,5 @@ def add_image(writer,
 def add_histogram(writer, mode, tag, num_buckets):
     with writer.mode(mode) as writer:
         histogram = writer.histogram(tag, num_buckets)
-        histogram.add_record(10, np.random.random(1000))
-        histogram.add_record(20, np.random.random(1000))
-        histogram.add_record(30, np.random.random(1000))
+        for i in range(10):
+            histogram.add_record(i, np.random.normal(0.1 + i * 0.01, size=1000))

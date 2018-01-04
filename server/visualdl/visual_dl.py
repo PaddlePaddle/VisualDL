@@ -99,7 +99,6 @@ def scalar_tags():
         result = mock_tags.data()
     else:
         result = lib.get_scalar_tags(log_reader)
-    print 'scalar tags (mode: %s)' % mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -108,16 +107,14 @@ def scalar_tags():
 def image_tags():
     mode = request.args.get('run')
     result = lib.get_image_tags(log_reader)
-    print 'image tags (mode: %s)'%mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/data/plugin/histogram/tags")
+@app.route("/data/plugin/histograms/tags")
 def histogram_tags():
     mode = request.args.get('run')
-    result = lib.get_histogram_tags(storage)
-    print 'image tags (mode: %s)'%mode, result
+    result = lib.get_histogram_tags(log_reader)
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -158,6 +155,15 @@ def individual_image():
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
+
+
+@app.route('/data/plugin/histograms/histograms')
+def histogram():
+    run = request.args.get('run')
+    tag = request.args.get('tag')
+    result = lib.get_histogram(log_reader, run, tag)
+    result = gen_result(0, "", result)
+    return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route('/data/plugin/graphs/graph')

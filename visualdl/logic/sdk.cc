@@ -180,6 +180,7 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
 
 template <typename T>
 HistogramRecord<T> HistogramReader<T>::record(int i) {
+  CHECK_LT(i, reader_.total_records());
   auto r = reader_.record(i);
   auto d = r.data(0);
   auto boundaries_str = d.GetRaw();
