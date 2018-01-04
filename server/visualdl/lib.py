@@ -32,6 +32,8 @@ def get_scalar_tags(storage):
 
 
 def get_scalar(storage, mode, tag, num_records=300):
+    assert num_records > 1
+
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
 
@@ -40,16 +42,24 @@ def get_scalar(storage, mode, tag, num_records=300):
         timestamps = scalar.timestamps()
 
         data = zip(timestamps, ids, records)
-        if len(data) <= num_records:
+        data_size = len(data)
+
+        if data_size <= num_records:
             return data
 
-        span = float(len(data) / num_records)
-        end_idx = len(data) - 1
-        res = []
-        for i in xrange(num_records):
-            id = int(end_idx - i * span)
-            res.append(data[id])
-        return [v for v in reversed(res)]
+        span = float(data_size) / (num_records - 1)
+        span_offset = 0
+
+        data_idx = int(span_offset * span)
+        sampled_data = []
+
+        while data_idx < data_size:
+            sampled_data.append(data[data_size - data_idx - 1])
+            span_offset += 1
+            data_idx = int(span_offset * span)
+
+        sampled_data.append(data[0])
+        return sampled_data[::-1]
 
 
 def get_image_tags(storage):
