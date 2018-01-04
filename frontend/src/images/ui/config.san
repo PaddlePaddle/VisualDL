@@ -6,15 +6,14 @@
             inputValue="{=config.groupNameReg=}"
         />
         <ui-checkbox-group
-            value="{=config.imageSize=}"
+            value="{=config.isActualImageSize=}"
             items="{{imageSizeItems}}"
         />
         <ui-checkbox-group
-            value="{=config.run=}"
+            value="{=config.runs=}"
             label="Runs"
             items="{{runsItems}}"
         />
-        <san-button class="visual-dl-scalar-run-toggle" variants="raised secondery">Toggle All Runs</san-button>
     </div>
 </template>
 <script>
@@ -29,13 +28,13 @@ export default {
         return {
             config: {
                 groupName: 'aa',
-                imageSize: '0.5',
-                run: ''
+                isActualImageSize: [],
+                runs: []
             },
             runsItems: [],
             imageSizeItems: [
                 {
-                    value: '1',
+                    value: 'yes',
                     name: 'Show actual image size'
                 }
             ]

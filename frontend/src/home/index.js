@@ -4,6 +4,6 @@ import HomePage from './Home';
 
 router.add({
     target: '#content',
-    rule: '/',
+    rule: '/welcome',
     Component: HomePage
 });

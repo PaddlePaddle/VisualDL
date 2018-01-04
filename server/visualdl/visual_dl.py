@@ -7,13 +7,12 @@ from optparse import OptionParser
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
+import graph
 import lib
 import storage
 import visualdl.mock.data as mock_data
 import visualdl.mock.tags as mock_tags
 from visualdl.log import logger
-import storage
-import graph
 
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
@@ -51,7 +50,7 @@ server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = "./frontend/dist/"
 mock_data_path = "./mock_data/"
 
-storage = storage.StorageReader(options.logdir)
+log_reader = storage.LogReader(options.logdir)
 
 
 # return data
@@ -88,8 +87,7 @@ def logdir():
 
 @app.route('/data/runs')
 def runs():
-    modes = storage.modes()
-    result = gen_result(0, "", lib.get_modes())
+    result = gen_result(0, "", lib.get_modes(log_reader))
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -100,7 +98,7 @@ def scalar_tags():
     if is_debug:
         result = mock_tags.data()
     else:
-        result = lib.get_scalar_tags(storage, mode)
+        result = lib.get_scalar_tags(log_reader, mode)
     print 'scalar tags (mode: %s)' % mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
@@ -109,7 +107,7 @@ def scalar_tags():
 @app.route("/data/plugin/images/tags")
 def image_tags():
     mode = request.args.get('run')
-    result = lib.get_image_tags(storage)
+    result = lib.get_image_tags(log_reader)
     print 'image tags (mode: %s)'%mode, result
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
@@ -123,7 +121,7 @@ def scalars():
     if is_debug:
         result = mock_data.sequence_data()
     else:
-        result = lib.get_scalar(storage, run, tag)
+        result = lib.get_scalar(log_reader, run, tag)
 
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
@@ -132,11 +130,9 @@ def scalars():
 @app.route('/data/plugin/images/images')
 def images():
     mode = request.args.get('run')
-    # TODO(ChunweiYan) update this when frontend fix the field name
-    #tag = request.args.get('tag')
-    tag = request.args.get('displayName')
+    tag = request.args.get('tag')
 
-    result = lib.get_image_tag_steps(storage, mode, tag)
+    result = lib.get_image_tag_steps(log_reader, mode, tag)
     result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')
@@ -149,7 +145,7 @@ def individual_image():
     step_index = int(request.args.get('index'))  # index of step
     offset = 0
 
-    imagefile = lib.get_invididual_image(storage, mode, tag, step_index)
+    imagefile = lib.get_invididual_image(log_reader, mode, tag, step_index)
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
@@ -163,4 +159,4 @@ def graph():
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
-    app.run(debug=True, host=options.host, port=options.port)
+    app.run(debug=False, host=options.host, port=options.port)

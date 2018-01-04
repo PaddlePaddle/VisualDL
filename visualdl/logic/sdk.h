@@ -14,9 +14,15 @@ public:
     storage_.SetDir(dir);
     storage_.meta.cycle = sync_cycle;
   }
+
   LogWriter(const LogWriter& other) {
-    storage_ = other.storage_;
     mode_ = other.mode_;
+    storage_ = other.storage_;
+  }
+
+  void SetMode(const std::string& mode) {
+    mode_ = mode;
+    storage_.AddMode(mode);
   }
 
   LogWriter AsMode(const std::string& mode) {
@@ -46,6 +52,8 @@ private:
 class LogReader {
 public:
   LogReader(const std::string& dir) : reader_(dir) {}
+
+  void SetMode(const std::string& mode) { mode_ = mode; }
 
   LogReader AsMode(const std::string& mode) {
     auto tmp = *this;
@@ -122,6 +130,9 @@ struct Scalar {
   void AddRecord(int id, T value) {
     auto record = tablet_.AddRecord();
     record.SetId(id);
+
+    time_t time = std::time(nullptr);
+    record.SetTimeStamp(time);
     auto entry = record.template AddData<T>();
     entry.Set(value);
   }

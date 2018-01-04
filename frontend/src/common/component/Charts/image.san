@@ -1,7 +1,7 @@
 <template>
     <div class="visual-dl-image">
-        <h3>{{tagInfo.tag.displayName}}
-            <span>{{tagInfo.run}}</span>
+        <h3 class="visual-dl-image-title">{{tagInfo.tag.displayName}}
+            <span class="visual-dl-image-run-icon">{{tagInfo.run}}</span>
         </h3>
         <p>
             <span>Step:</span>
@@ -15,12 +15,15 @@
             max="{{steps}}"
             step="{{1}}"
         />
-        <img src="{{imgData.imgSrc}}" width="{{imgData.width}}" height="{{imgData.height}}"/>
+        <img style="{{computedImgStyle}}" src="{{imgData.imgSrc}}" />
     </div>
 </template>
 <script>
 import Slider from 'san-mui/Slider';
 import {getPluginImagesImages} from '../../../service';
+
+const defaultImgWidth = 400;
+const defaultImgHight = 300;
 
 export default {
     components: {
@@ -30,6 +33,20 @@ export default {
         steps() {
             let data = this.data.get('data') || [];
             return data.length - 1;
+        },
+        computedImgStyle() {
+            let isActualImageSize = this.data.get('isActualImageSize');
+            let width;
+            let height;
+            if (isActualImageSize) {
+                width = this.data.get('imgData.width');
+                height = this.data.get('imgData.height');
+            }
+            else {
+                width = defaultImgWidth;
+                height = defaultImgHight;
+            }
+            return 'width:' + width + 'px;height:' + height + 'px';
         }
     },
     filters: {
@@ -44,13 +61,13 @@ export default {
     },
     initData() {
         return {
+            currentIndex: 0,
             slider: {
                 value: '0',
                 label: '',
                 min: 0,
                 step: 1
-            },
-            currentIndex: 0
+            }
         };
     },
     inited() {
@@ -58,7 +75,7 @@ export default {
         let {displayName, samples} = tag;
         let params = {
             run,
-            displayName,
+            tag: displayName,
             samples
         };
         getPluginImagesImages(params).then(({data}) => {
@@ -90,9 +107,22 @@ export default {
 </script>
 <style lang="stylus">
     .visual-dl-image
-        float left
         padding 10px
         font-size 12px
+        width 400px
+        float left
+        .visual-dl-image-title
+            font-size 14px
+            line-height 30px
+            .visual-dl-image-run-icon
+                background #e4e4e4
+                float right
+                margin-right 10px
+                padding 0 10px
+                border solid 1px #e4e4e4
+                border-radius 6px
+                line-height 20px
+                margin-top 4px
         .visual-dl-chart-actions
             .sm-form-item
                 width 300px
