@@ -51,6 +51,8 @@ server_test() {
 # reject PR that has some big data included.
 bigfile_reject() {
     cd $cur
+    # it failed to exclude .git, remove it first.
+    rm -rf .git
     local largest_file=$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | head -n1)
     local size=$(echo $largest_file | awk '{print $1}')
     if [ "$size" -ge "$max_file_size" ]; then
