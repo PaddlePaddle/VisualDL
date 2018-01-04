@@ -28,3 +28,4 @@
     sha: da21f6dac1aa20aa53598b145c5c0013cdd40d65
     hooks:
     -   id: reject-large-files
+        args: [--max-filesize=1000000]

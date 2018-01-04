@@ -5,6 +5,7 @@ mode=$1
 readonly cur=$(pwd)
 readonly core_path=$cur/build/visualdl/logic
 readonly python_path=$cur/visualdl/python
+readonly max_file_size=1000000 # 1MB
 
 export PYTHONPATH="${core_path}:${python_path}"
 
@@ -46,11 +47,25 @@ server_test() {
     python lib_test.py
 }
 
+# check the size of files in the repo.
+# reject PR that has some big data included.
+bigfile_reject() {
+    local largest_file=$(find . -printf '%s %p\n' | sort -nr | head -n1)
+    local size=$(echo $largest_file | awk '{print $1}')
+    if [ "$size" -ge "$max_file_size" ]; then
+        echo $largest_file
+        echo "file size exceed $max_file_size"
+        echo "Should not add large data or binary file."
+        exit -1
+    fi
+}
+
 echo "mode" $mode
 
 if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
+    bigfile_reject
     frontend_test
     backend_test
     server_test
