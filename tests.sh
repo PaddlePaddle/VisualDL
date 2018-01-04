@@ -50,7 +50,7 @@ server_test() {
 # check the size of files in the repo.
 # reject PR that has some big data included.
 bigfile_reject() {
-    local largest_file=$(find . -printf '%s %p\n' | sort -nr | head -n1)
+    local largest_file=$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | head -n1)
     local size=$(echo $largest_file | awk '{print $1}')
     if [ "$size" -ge "$max_file_size" ]; then
         echo $largest_file
