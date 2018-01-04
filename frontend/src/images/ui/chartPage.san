@@ -1,15 +1,18 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel title="{{title}}">
-            <div san-for="tag in filteredTagList" class="visual-dl-chart-box">
+        <ui-expand-panel isShow="{{expand}}" info="{{itemsLength}}" title="{{title}}">
+            <div san-for="tag in filteredPageList" class="visual-dl-image-chart-box">
                 <ui-image
+                    class="visual-dl-chart-image"
                     san-for="tag in tag.tagList"
                     tagInfo="{{tag}}"
-                    config="{{config}}"
+                    isActualImageSize="{{config.isActualImageSize}}"
+                    runs="{{config.runs}}"
                     runsItems="{{runsItems}}"
                 ></ui-image>
             </div>
             <ui-pagination
+                class="visual-dl-sm-pagination"
                 san-if="total > pageSize"
                 on-pageChange="handlePageChange($event)"
                 current="{{currentPage}}"
@@ -25,6 +28,8 @@ import ExpandPanel from '../../common/component/ExpandPanel';
 import image from '../../common/component/Charts/image';
 import Pagination from 'san-mui/Pagination';
 
+import {cloneDeep} from 'lodash';
+
 export default {
     components: {
         'ui-image': image,
@@ -32,15 +37,35 @@ export default {
         'ui-pagination': Pagination
     },
     computed: {
-        filteredTagList() {
+        filteredRunsList() {
             let tagList = this.data.get('tagList') || [];
+            let runs = this.data.get('config.runs') || [];
+            let list = cloneDeep(tagList);
+            return list.slice().map(item => {
+                item.tagList = item.tagList.filter(one => runs.includes(one.run));
+                return item;
+            });
+        },
+
+        filteredPageList() {
+            let list = this.data.get('filteredRunsList');
             let currentPage = this.data.get('currentPage');
             let pageSize = this.data.get('pageSize');
-            return tagList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+            return list.slice((currentPage - 1) * pageSize, currentPage * pageSize);
         },
         total() {
-            let tagList = this.data.get('tagList') || [];
-            return tagList.length;
+            let list = this.data.get('filteredRunsList') || [];
+            return list.reduce((num, item) => {
+                let length = item.tagList.length;
+                return length ? num + 1 : num;
+            }, 0);
+        },
+        itemsLength() {
+            let list = this.data.get('filteredRunsList') || [];
+            return list.reduce((num, item) => {
+                let length = item.tagList.length;
+                return length + num;
+            }, 0);
         }
     },
     initData() {
@@ -48,7 +73,7 @@ export default {
             // current page
             currentPage: 1,
             // item per page
-            pageSize: 8
+            pageSize: 4
         };
     },
 
@@ -62,10 +87,19 @@ export default {
 
 +prefix-classes('visual-dl-')
     .chart-page
-        .chart-box:after
-            content: "";
-            clear: both;
-            display: block;
+        .image-chart-box
+            overflow hidden
+            float left
+            .visual-dl-chart-image
+                float left
+        .image-chart-box:after
+            content ""
+            clear both
+            display block
+        .sm-pagination
+            height 50px
+            float left
+            width 100%
 </style>
 
 

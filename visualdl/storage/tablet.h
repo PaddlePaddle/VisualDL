@@ -100,7 +100,7 @@ struct TabletReader {
   // read operations.
   std::string tag() const { return data_.tag(); }
   Tablet::Type type() const { return Tablet::Type(data_.component()); }
-  int64_t total_records() const { return data_.total_records(); }
+  int64_t total_records() const { return data_.records_size(); }
   int32_t num_samples() const { return data_.num_samples(); }
   RecordReader record(int i) const { return RecordReader(data_.records(i)); }
   template <typename T>

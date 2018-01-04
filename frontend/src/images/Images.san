@@ -10,14 +10,15 @@
         </div>
         <div class="visual-dl-scalar-right">
             <ui-chart-page
-                config="{{config}}"
+                expand="{{true}}"
+                config="{{filteredConfig}}"
                 runsItems="{{runsItems}}"
                 tagList="{{filteredTagsList}}"
                 title="Tags matching {{config.groupNameReg}}"
             ></ui-chart-page>
             <ui-chart-page
                 san-for="item in groupedTags"
-                config="{{config}}"
+                config="{{filteredConfig}}"
                 runsItems="{{runsItems}}"
                 tagList="{{item.tags}}"
                 title="{{item.group}}"
@@ -30,7 +31,7 @@
 import {getPluginImagesTags, getRuns} from '../service';
 import config from './ui/config';
 import chartPage from './ui/chartPage';
-import {debounce, flatten, uniq} from 'lodash';
+import {debounce, flatten, uniq, isArray} from 'lodash';
 export default {
     components: {
         'ui-config': config,
@@ -60,7 +61,7 @@ export default {
                         run,
                         tag: tags[run][tag]
                     };
-                });
+                }).filter(item => item.tag !== undefined);
                 return {
                     tagList,
                     tag,
@@ -91,6 +92,21 @@ export default {
                     tags: groupData[group]
                 };
             });
+        },
+        filteredConfig() {
+            let tansformArr = ['isActualImageSize'];
+            let config = this.data.get('config') || {};
+            let filteredConfig = {};
+            Object.keys(config).forEach(key => {
+                let val = config[key];
+                if (tansformArr.indexOf(key) > -1) {
+                    filteredConfig[key] = isArray(val) && val[0] === 'yes';
+                }
+                else {
+                    filteredConfig[key] = val;
+                }
+            });
+            return filteredConfig;
         }
     },
     initData() {
@@ -99,11 +115,8 @@ export default {
             tags: [],
             config: {
                 groupNameReg: '.*',
-                smoothing: '0.5',
-                horizontal: '1',
-                sortingMethod: '2',
-                link: [],
-                chart: []
+                isActualImageSize: [],
+                runs: []
             }
         };
     },
@@ -117,6 +130,7 @@ export default {
         });
         getRuns().then(({errno, data}) => {
             this.data.set('runsArray', data);
+            this.data.set('config.runs', data);
         });
 
         // need debounce， can't use computed
