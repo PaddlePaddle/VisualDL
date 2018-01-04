@@ -30,9 +30,7 @@ def get_scalar_tags(storage, mode):
 
 
 def get_scalar(storage, mode, tag, num_records=300):
-    # if sample amount is negative, 0 or 1, use default
-    if num_records <= 1:
-        num_records = 300
+    assert num_records > 1
 
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
@@ -45,23 +43,19 @@ def get_scalar(storage, mode, tag, num_records=300):
         if len(data) <= num_records:
             return data
 
-        # if sample amount is larger than actual data amount, then choose all data
-        if num_records > len(data):
-            num_records = len(data)
-
         span = float(len(data)) / (num_records - 1)
-        span_multiply = 0
+        span_offset = 0
 
-        data_idx = int(span_multiply * span)
+        data_idx = int(span_offset * span)
         sampled_data = []
 
         while data_idx < len(data):
-            sampled_data.append(data[data_idx])
-            span_multiply += 1
-            data_idx = int(span_multiply * span)
+            sampled_data.append(data[len(data) - data_idx - 1])
+            span_offset += 1
+            data_idx = int(span_offset * span)
 
-        sampled_data.append(data[-1])
-        return sampled_data
+        sampled_data.append(data[0])
+        return sampled_data[::-1]
 
 
 def get_image_tags(storage):
