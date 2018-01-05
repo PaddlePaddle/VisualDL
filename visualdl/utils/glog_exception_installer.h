@@ -8,14 +8,15 @@ namespace visualdl {
 
 struct __GlogExceptionInstaller {
   __GlogExceptionInstaller() {
-    exception_thrown = true;
     google::InstallFailureFunction(
         &__GlogExceptionInstaller::MyFailureFunction);
   }
 
   static void MyFailureFunction() {
     if (!exception_thrown) {
+      exception_thrown = true;
       throw std::exception();
+      exit(1);
     }
   }
 
