@@ -29,7 +29,9 @@ def get_scalar_tags(storage, mode):
     return result
 
 
-def get_scalar(storage, mode, tag, num_records=100):
+def get_scalar(storage, mode, tag, num_records=300):
+    assert num_records > 1
+
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
 
@@ -38,11 +40,24 @@ def get_scalar(storage, mode, tag, num_records=100):
         timestamps = scalar.timestamps()
 
         data = zip(timestamps, ids, records)
-        if len(data) <= num_records:
+        data_size = len(data)
+
+        if data_size <= num_records:
             return data
 
-        samples = sorted(random.sample(xrange(len(data)), num_records))
-        return [data[i] for i in samples]
+        span = float(data_size) / (num_records - 1)
+        span_offset = 0
+
+        data_idx = int(span_offset * span)
+        sampled_data = []
+
+        while data_idx < data_size:
+            sampled_data.append(data[data_size - data_idx - 1])
+            span_offset += 1
+            data_idx = int(span_offset * span)
+
+        sampled_data.append(data[0])
+        return sampled_data[::-1]
 
 
 def get_image_tags(storage):
@@ -56,7 +71,8 @@ def get_image_tags(storage):
                 for tag in tags:
                     image = reader.image(tag)
                     for i in xrange(max(1, image.num_samples())):
-                        caption = tag if image.num_samples() <= 1 else '%s/%d'%(tag, i)
+                        caption = tag if image.num_samples(
+                        ) <= 1 else '%s/%d' % (tag, i)
                         result[mode][caption] = {
                             'displayName': caption,
                             'description': "",
@@ -120,7 +136,7 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
             size = max(shape[0], shape[1])
             if size > max_size:
                 scale = max_size * 1. / size
-                scaled_shape = (int(shape[0]*scale), int(shape[1]*scale))
+                scaled_shape = (int(shape[0] * scale), int(shape[1] * scale))
                 im = im.resize(scaled_shape)
             im.save(tempfile)
         tempfile.seek(0, 0)
