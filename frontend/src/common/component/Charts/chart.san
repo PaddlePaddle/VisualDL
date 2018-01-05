@@ -492,7 +492,8 @@ export default {
                         break;
                     }
                     if (item[1] > step) {
-                        nearestItem = series[i - 1];
+                        let index = i - 1;
+                        nearestItem = series[index >= 0 ? index : 0];
                         break;
                     }
                     if (!nearestItem) {
