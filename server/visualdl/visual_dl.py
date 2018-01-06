@@ -170,7 +170,8 @@ def histogram():
 def graph():
     # run = request.args.get('run')
     # model_json = graph.load_model("")
-    model_json = mock_data.graph_data()
+    model_json_str = mock_data.graph_data()
+    model_json = json.loads(model_json_str)
     result = gen_result(0, "", model_json)
     return Response(json.dumps(result), mimetype='application/json')
 
