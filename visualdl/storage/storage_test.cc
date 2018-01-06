@@ -21,7 +21,7 @@ TEST_F(StorageTest, main) {
   auto tag0 = storage.AddTablet("tag0");
   auto tag1 = storage.AddTablet("tag1");
   auto record = tag0.AddRecord();
-  auto entry = record.AddData<int>();
+  auto entry = record.AddData();
   entry.Set(12);
 
   StorageReader reader("./tmp/storage_test");

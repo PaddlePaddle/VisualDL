@@ -67,6 +67,7 @@ static void NormalizeImage(Uint8Image* image,
     scale = (image_max < kZeroThreshold ? 0.0f : 255.0f) / image_max;
     offset = 0.0f;
   }
+
   // Transform image, turning nonfinite values to bad_color
   for (int i = 0; i < depth; i++) {
     auto tmp = scale * values.row(i).array() + offset;
