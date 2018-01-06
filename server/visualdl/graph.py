@@ -57,6 +57,70 @@ def add_edges(json_obj):
         label_incrementer += 1
 
 
+def transform_for_echars(json_obj, title=None):
+    opItemStyle = {
+        "normal": {
+            "color": '#d95f02'
+        }
+    }
+
+    paraterItemStyle = {
+        "normal": {
+            "color": '#1b9e77'
+        }
+    };
+
+    paraSymbolSize = [95, 45];
+    paraSymbol = 'rect';
+    opSymbolSize = [50, 50];
+
+    new_json = {
+        "title": {
+            "text": 'Default Graph Name'
+        },
+        "tooltip": {
+            "show": False
+        },
+        "animationDurationUpdate": 1500,
+        "animationEasingUpdate": 'quinticInOut',
+        "series": []
+    }
+
+    if title is not None:
+        new_json['title']['text'] = title
+
+    series0 = {
+        "type": "graph",
+        "layout": "none",
+        "symbolSize": 50,
+        "roam": True,
+        "label": {
+            "normal": {
+                "show": True,
+                "color": 'black'
+            }
+        },
+        "edgeSymbol": ['none', 'arrow'],
+        "edgeSymbolSize": [0, 10],
+        "edgeLabel": {
+            "normal": {
+                "textStyle": {
+                    "fontSize": 20
+                }
+            }
+        },
+        "lineStyle": {
+             "normal": {
+                 "opacity": 0.9,
+                 "width": 2,
+                 "curveness": 0
+             }
+         },
+        "data": [],
+        "links": []
+    }
+
+
 def load_model(model_pb_path):
     model = onnx.load(model_pb_path)
     graph = model.graph
