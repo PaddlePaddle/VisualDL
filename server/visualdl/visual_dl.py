@@ -168,7 +168,7 @@ def histogram():
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
-    run = request.args.get('run')
+    # run = request.args.get('run')
     # model_json = graph.load_model("")
     model_json = mock_data.graph_data()
     result = gen_result(0, "", model_json)
