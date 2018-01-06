@@ -130,7 +130,7 @@ export default {
 +prefix-classes('visual-dl-scalar-')
     .config-com
         width 90%
-        margin 0 auto
+        margin 20px auto
         .run-toggle
             width 100%
             margin-top 20px
