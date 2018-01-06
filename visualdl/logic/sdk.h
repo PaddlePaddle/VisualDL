@@ -1,9 +1,11 @@
 #ifndef VISUALDL_LOGIC_SDK_H
 #define VISUALDL_LOGIC_SDK_H
 
+#include "visualdl/logic/histogram.h"
 #include "visualdl/storage/storage.h"
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/string.h"
+
 namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
@@ -82,7 +84,8 @@ public:
   std::vector<std::string> tags(const std::string& component) {
     auto type = Tablet::type(component);
     auto tags = reader_.tags(type);
-    CHECK(!tags.empty());
+    CHECK(!tags.empty()) << "component " << component
+                         << " has no taged records";
     std::vector<std::string> res;
     for (const auto& tag : tags) {
       if (TagMatchMode(tag, mode_)) {
@@ -130,10 +133,10 @@ struct Scalar {
   void AddRecord(int id, T value) {
     auto record = tablet_.AddRecord();
     record.SetId(id);
+    auto entry = record.AddData();
 
     time_t time = std::time(nullptr);
     record.SetTimeStamp(time);
-    auto entry = record.template AddData<T>();
     entry.Set(value);
   }
 
@@ -260,6 +263,32 @@ struct ImageReader {
 private:
   TabletReader reader_;
   std::string mode_;
+};
+
+template <typename T>
+struct Histogram {
+  Histogram(Tablet tablet, int num_buckets)
+      : writer_(tablet), num_buckets_(num_buckets) {
+    writer_.SetType(Tablet::Type::kHistogram);
+  }
+
+  void AddRecord(int step, const std::vector<T>& data);
+
+private:
+  int num_buckets_;
+  Tablet writer_;
+};
+
+template <typename T>
+struct HistogramReader {
+  HistogramReader(TabletReader tablet) : reader_(tablet) {}
+
+  size_t num_records() { return reader_.total_records(); }
+
+  HistogramRecord<T> record(int i);
+
+private:
+  TabletReader reader_;
 };
 
 }  // namespace components
