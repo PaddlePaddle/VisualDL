@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import json
 import os
 import re
@@ -7,12 +9,12 @@ from optparse import OptionParser
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
-import graph
-import lib
+from . import graph
+from . import lib
 import storage
-import visualdl.mock.data as mock_data
-import visualdl.mock.tags as mock_tags
-from visualdl.log import logger
+from .mock import data as mock_data
+from .mock import tags as mock_tags
+from .log import logger
 
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
