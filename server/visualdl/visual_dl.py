@@ -166,7 +166,7 @@ def histogram():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/graphs/graph')
+@app.route('/data/plugin/graphs/graphs')
 def graph():
     # run = request.args.get('run')
     # model_json = graph.load_model("")
