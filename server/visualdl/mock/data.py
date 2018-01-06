@@ -99,3 +99,130 @@ def sequence_data():
             ], [1465980671.173917, 108, 0.7400000095367432], [
                 1465980671.205898, 109, 0.8799999952316284
             ], [1465980671.833723, 111, 0.9100000262260437]]
+
+
+def graph_data():
+        return """{
+    "title": {
+        "text": "MLP"
+    },
+    "tooltip": {},
+    "animationDurationUpdate": 1500,
+    "animationEasingUpdate": "quinticInOut",
+    "series": [
+        {
+            "type": "graph",
+            "layout": "none",
+            "symbolSize": 50,
+            "roam": true,
+            "label": {
+                "normal": {
+                    "show": true
+                }
+            },
+            "edgeSymbol": [
+                "circle",
+                "arrow"
+            ],
+            "edgeSymbolSize": [
+                4,
+                10
+            ],
+            "edgeLabel": {
+                "normal": {
+                    "textStyle": {
+                        "fontSize": 20
+                    }
+                }
+            },
+            "data": [
+                {
+                    "name": "X",
+                    "x": 450,
+                    "y": 600
+                },
+                {
+                    "name": "W1",
+                    "x": 750,
+                    "y": 600
+                },
+                {
+                    "name": "B1",
+                    "x": 650,
+                    "y": 600
+                },
+                {
+                    "name": "W2",
+                    "x": 650,
+                    "y": 800
+                },
+                {
+                    "name": "B2",
+                    "x": 750,
+                    "y": 800
+                },
+                {
+                    "name": "FC1",
+                    "x": 550,
+                    "y": 700
+                },
+                {
+                    "name": "RELU",
+                    "x": 550,
+                    "y": 800
+                },
+                {
+                    "name": "FC2",
+                    "x": 550,
+                    "y": 900
+                },
+                {
+                    "name": "Y",
+                    "x": 550,
+                    "y": 1000
+                }
+            ],
+            "links": [
+                {
+                    "source": "X",
+                    "target": "FC1"
+                },
+                {
+                    "source": "W1",
+                    "target": "FC1"
+                },
+                {
+                    "source": "B1",
+                    "target": "FC1"
+                },
+                {
+                    "source": "FC1",
+                    "target": "RELU"
+                },
+                {
+                    "source": "RELU",
+                    "target": "FC2"
+                },
+                {
+                    "source": "W2",
+                    "target": "FC2"
+                },
+                {
+                    "source": "B2",
+                    "target": "FC2"
+                },
+                {
+                    "source": "FC2",
+                    "target": "Y"
+                }
+            ],
+            "lineStyle": {
+                "normal": {
+                    "opacity": 0.9,
+                    "width": 2,
+                    "curveness": 0
+                }
+            }
+        }
+    ]
+}"""
