@@ -1,0 +1,68 @@
+<template>
+    <div class="visual-dl-graph-config-com">
+        <ui-button
+            on-click="handleFitScreen"
+            variants="raised info">
+            <ui-icon style="margin-right: 6px">fullscreen</ui-icon>
+            Fit to screen
+        </ui-button>
+        <!--
+        <ui-dropdown-menu
+            label="Session runs"
+            items="{{sessionItems}}"
+            value="{=config.session=}"
+        />
+        -->
+    </div>
+</template>
+<script>
+import Button from 'san-mui/Button';
+import Icon from 'san-mui/Icon';
+import DropDownMenu from '../../common/component/DropDownMenu';
+export default {
+    components: {
+        'ui-dropdown-menu': DropDownMenu,
+        'ui-button': Button,
+        'ui-icon': Icon
+    },
+    initData() {
+        return {
+            config: {
+                groupName: 'aa',
+                isActualImageSize: [],
+                runs: []
+            },
+            sessionItems: [
+                {
+                    name: 'step1',
+                    value: 'step1'
+                },
+                {
+                    name: 'step2',
+                    value: 'step2'
+                },
+                {
+                    name: 'step3',
+                    value: 'step3'
+                }
+            ]
+        };
+    },
+    handleFitScreen() {
+        this.fire('fitScreen');
+    }
+};
+</script>
+<style lang="stylus">
+@import '../../style/variables';
++prefix-classes('visual-dl-graph-')
+    .config-com
+        width 90%
+        margin 20px auto
+.visual-dl-graph-config-com
+    .sm-button
+        width 100%
+    .sm-icon
+        width 36px
+        height 26px
+</style>

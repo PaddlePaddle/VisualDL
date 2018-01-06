@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-scalar-config-com">
+    <div class="visual-dl-image-config-com">
         <san-text-field
             hintText="input a tag group name to search"
             label="Group name RegExp"
@@ -44,10 +44,10 @@ export default {
 </script>
 <style lang="stylus">
 @import '../../style/variables';
-+prefix-classes('visual-dl-scalar-')
++prefix-classes('visual-dl-image-')
     .config-com
         width 90%
-        margin 0 auto
+        margin 20px auto
         .run-toggle
             width 100%
             margin-top 20px
