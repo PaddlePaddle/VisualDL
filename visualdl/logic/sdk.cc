@@ -1,6 +1,8 @@
 #include "visualdl/logic/sdk.h"
 
+#include "visualdl/logic/histogram.h"
 #include "visualdl/utils/image.h"
+#include "visualdl/utils/macro.h"
 
 namespace visualdl {
 
@@ -10,7 +12,7 @@ template <typename T>
 std::vector<T> ScalarReader<T>::records() const {
   std::vector<T> res;
   for (int i = 0; i < reader_.total_records(); i++) {
-    res.push_back(reader_.record(i).template data<T>(0).Get());
+    res.push_back(reader_.record(i).data(0).template Get<T>());
   }
   return res;
 }
@@ -44,11 +46,6 @@ size_t ScalarReader<T>::size() const {
   return reader_.total_records();
 }
 
-template class ScalarReader<int>;
-template class ScalarReader<int64_t>;
-template class ScalarReader<float>;
-template class ScalarReader<double>;
-
 void Image::StartSampling() {
   if (!ToSampleThisStep()) return;
 
@@ -60,7 +57,7 @@ void Image::StartSampling() {
 
   // resize record
   for (int i = 0; i < num_samples_; i++) {
-    step_.AddData<value_t>();
+    step_.AddData();
   }
   num_records_ = 0;
 }
@@ -129,11 +126,14 @@ void Image::SetSample(int index,
       !is_same_type<value_t, shape_t>::value,
       "value_t should not use int64_t field, this type is used to store shape");
 
-  // set meta with hack
-  Entry<shape_t> meta;
-  meta.set_parent(entry.parent());
-  meta.entry = entry.entry;
-  meta.SetMulti(shape);
+  // set meta.
+  entry.SetMulti(shape);
+
+  // // set meta with hack
+  // Entry<shape_t> meta;
+  // meta.set_parent(entry.parent());
+  // meta.entry = entry.entry;
+  // meta.SetMulti(shape);
 }
 
 std::string ImageReader::caption() {
@@ -149,17 +149,55 @@ std::string ImageReader::caption() {
 ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   ImageRecord res;
   auto record = reader_.record(offset);
-  auto data_entry = record.data<std::vector<byte_t>>(index);
-  auto shape_entry = record.data<shape_t>(index);
-  auto data_str = data_entry.GetRaw();
+  auto entry = record.data(index);
+  auto data_str = entry.GetRaw();
   std::transform(data_str.begin(),
                  data_str.end(),
                  std::back_inserter(res.data),
                  [](byte_t i) { return (int)(i); });
-  res.shape = shape_entry.GetMulti();
+  res.shape = entry.GetMulti<shape_t>();
   res.step_id = record.id();
   return res;
 }
+
+template <typename T>
+void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
+  HistogramBuilder<T> builder(num_buckets_);
+  builder(data);
+
+  auto record = writer_.AddRecord();
+  record.SetId(step);
+  time_t time = std::time(nullptr);
+  record.SetTimeStamp(time);
+  // set frequencies.
+  auto entry = record.AddData();
+  entry.template SetMulti<int32_t>(builder.buckets);
+  // Serialize left and right boundaries.
+  std::string boundaries_str = std::to_string(builder.left_boundary) + " " +
+                               std::to_string(builder.right_boundary);
+  entry.SetRaw(boundaries_str);
+}
+
+template <typename T>
+HistogramRecord<T> HistogramReader<T>::record(int i) {
+  CHECK_LT(i, reader_.total_records());
+  auto r = reader_.record(i);
+  auto d = r.data(0);
+  auto boundaries_str = d.GetRaw();
+  std::stringstream ss(boundaries_str);
+  T left, right;
+  ss >> left >> right;
+
+  auto frequency = d.template GetMulti<int32_t>();
+  auto timestamp = r.timestamp();
+  auto step = r.id();
+
+  return HistogramRecord<T>(timestamp, step, left, right, std::move(frequency));
+}
+
+DECL_BASIC_TYPES_CLASS_IMPL(class, ScalarReader)
+DECL_BASIC_TYPES_CLASS_IMPL(struct, Histogram)
+DECL_BASIC_TYPES_CLASS_IMPL(struct, HistogramReader)
 
 }  // namespace components
 

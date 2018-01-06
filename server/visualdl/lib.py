@@ -7,18 +7,16 @@ from tempfile import NamedTemporaryFile
 import numpy as np
 from PIL import Image
 
-import storage
-
 
 def get_modes(storage):
     return storage.modes()
 
 
-def get_scalar_tags(storage, mode):
+def get_tags(storage, component):
     result = {}
     for mode in storage.modes():
         with storage.mode(mode) as reader:
-            tags = reader.tags('scalar')
+            tags = reader.tags(component)
             if tags:
                 result[mode] = {}
                 for tag in tags:
@@ -27,6 +25,10 @@ def get_scalar_tags(storage, mode):
                         'description': "",
                     }
     return result
+
+
+def get_scalar_tags(storage):
+    return get_tags(storage, 'scalar')
 
 
 def get_scalar(storage, mode, tag, num_records=300):
@@ -141,6 +143,38 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
+
+
+def get_histogram_tags(storage):
+    return get_tags(storage, 'histogram')
+
+
+def get_histogram(storage, mode, tag):
+    with storage.mode(mode) as reader:
+        histogram = reader.histogram(tag)
+        res = []
+
+        for i in xrange(histogram.num_records()):
+            try:
+                # some bug with protobuf, some times may overflow
+                record = histogram.record(i)
+            except:
+                continue
+
+            res.append([])
+            py_record = res[-1]
+            py_record.append(record.timestamp())
+            py_record.append(record.step())
+            py_record.append([])
+
+            data = py_record[-1]
+            for j in xrange(record.num_instances()):
+                instance = record.instance(j)
+                data.append(
+                    [instance.left(),
+                     instance.right(),
+                     instance.frequency()])
+        return res
 
 
 if __name__ == '__main__':
