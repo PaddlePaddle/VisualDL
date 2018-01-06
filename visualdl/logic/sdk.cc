@@ -171,7 +171,7 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
   record.SetTimeStamp(time);
   // set frequencies.
   auto entry = record.AddData();
-  entry.SetMulti<int32_t>(builder.buckets);
+  entry.template SetMulti<int32_t>(builder.buckets);
   // Serialize left and right boundaries.
   std::string boundaries_str = std::to_string(builder.left_boundary) + " " +
                                std::to_string(builder.right_boundary);
@@ -188,7 +188,7 @@ HistogramRecord<T> HistogramReader<T>::record(int i) {
   T left, right;
   ss >> left >> right;
 
-  auto frequency = d.GetMulti<int32_t>();
+  auto frequency = d.template GetMulti<int32_t>();
   auto timestamp = r.timestamp();
   auto step = r.id();
 
