@@ -60,8 +60,8 @@ struct Tablet {
   }
 
   template <typename T>
-  Entry<T> MutableMeta() {
-    Entry<T> x(data_->mutable_meta(), parent());
+  Entry MutableMeta() {
+    Entry x(data_->mutable_meta(), parent());
   }
 
   void SetCaptions(const std::vector<std::string>& xs) {
@@ -104,8 +104,8 @@ struct TabletReader {
   int32_t num_samples() const { return data_.num_samples(); }
   RecordReader record(int i) const { return RecordReader(data_.records(i)); }
   template <typename T>
-  EntryReader<T> meta() const {
-    return EntryReader<T>(data_.meta());
+  EntryReader meta() const {
+    return EntryReader(data_.meta());
   }
   std::vector<std::string> captions() const {
     std::vector<std::string> x(data_.captions().begin(),
