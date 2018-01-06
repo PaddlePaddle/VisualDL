@@ -104,7 +104,7 @@ def sequence_data():
 def graph_data():
         return """option = {
     title: {
-        text: 'Demo Graph'
+        text: 'MLP'
     },
     tooltip: {},
     animationDurationUpdate: 1500,
@@ -130,61 +130,67 @@ def graph_data():
                 }
             },
             data: [{
-                name: 'Node1',
-                x: 300,
-                y: 300
+                name: 'X',
+                x: 450,
+                y: 600
             }, {
-                name: 'Node2',
-                x: 800,
-                y: 300
+                name: 'W1',
+                x: 750,
+                y: 600
             }, {
-                name: 'Node3',
+                name: 'B1',
+                x: 650,
+                y: 600
+            }, {
+                name: 'W2',
+                x: 650,
+                y: 800
+            }, {
+                name: 'B2',
+                x: 750,
+                y: 800
+            }, {
+                name: 'FC1',
                 x: 550,
-                y: 100
+                y: 700
             }, {
-                name: 'Node4',
+                name: 'RELU',
                 x: 550,
-                y: 500
+                y: 800
+            }, {
+                name: 'FC2',
+                x: 550,
+                y: 900
+            }, {
+                name: 'Y',
+                x: 550,
+                y: 1000
             }],
             // links: [],
             links: [{
-                source: 0,
-                target: 1,
-                symbolSize: [5, 20],
-                label: {
-                    normal: {
-                        show: true
-                    }
-                },
-                lineStyle: {
-                    normal: {
-                        width: 5,
-                        curveness: 0.2
-                    }
-                }
+                source: "X",
+                target: "FC1"
             }, {
-                source: 'Node2',
-                target: 'Node1',
-                label: {
-                    normal: {
-                        show: true
-                    }
-                },
-                lineStyle: {
-                    normal: { curveness: 0.2 }
-                }
+                source: 'W1',
+                target: 'FC1'
             }, {
-                source: 'Node1',
-                target: 'Node3'
+                source: 'B1',
+                target: 'FC1'
             }, {
-                source: 'Node2',
-                target: 'Node3'
+                source: 'FC1',
+                target: 'RELU'
             }, {
-                source: 'Node2',
-                target: 'Node4'
+                source: 'RELU',
+                target: 'FC2'
             }, {
-                source: 'Node1',
-                target: 'Node4'
+                source: 'W2',
+                target: 'FC2'
+            }, {
+                source: 'B2',
+                target: 'FC2'
+            }, {
+                source: 'FC2',
+                target: 'Y'
             }],
             lineStyle: {
                 normal: {
