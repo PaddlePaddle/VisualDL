@@ -2,7 +2,8 @@ __all__ = [
     'StorageReader',
     'StorageWriter',
 ]
-import core
+
+import visualdl.core
 
 dtypes = ("float", "double", "int32", "int64")
 

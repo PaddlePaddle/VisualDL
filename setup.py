@@ -6,7 +6,7 @@ from distutils.spawn import find_executable
 from distutils import sysconfig, dep_util, log
 import setuptools.command.build_py
 import setuptools
-from setuptools import setup
+from setuptools import setup, find_packages
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -64,11 +64,8 @@ cmdclass = {
 }
 
 packages = [
-    'pip_package',
-    'pip_package.server',
+    '',
 ]
-
-print 'packages', packages
 
 setup(
     name="visualdl",
@@ -79,5 +76,11 @@ setup(
     keywords="visualization deeplearning",
     long_description=read('README.md'),
     install_requires=install_requires,
+    package_data={'frontend.dist': ['*', 'fonts/*'],
+                  'visualdl':['core.so']},
     packages=packages,
+    package_dir={'': 'pip_package/visualdl',
+                 'server': 'pip_package/visualdl/server'},
+    scripts=['visualdl/server/visualdl.py'],
+    include_package_data=True,
     cmdclass=cmdclass)
