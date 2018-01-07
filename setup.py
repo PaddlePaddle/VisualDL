@@ -22,7 +22,7 @@ def readlines(name):
     return read(name).split('\n')
 
 
-VERSION_NUMBER = open(os.path.join(TOP_DIR, 'VERSION_NUMBER'))
+VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf']
@@ -53,24 +53,25 @@ class BaseCommand(setuptools.Command):
         pass
 
 
-class build(BaseCommand):
-    def run(self):
-        subprocess.check_call(['bash', 'build.sh'])
-
-
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
-        self.run_command('build')
+        subprocess.check_call(['bash', 'build.sh'])
         return setuptools.command.build_py.build_py.run(self)
 
 
 cmdclass = {
-    'build': build,
     'build_py': build_py,
 }
 
+packages = [
+    'pip_package',
+    'pip_package.server',
+]
+
+print 'packages', packages
+
 setup(
-    name="VisualDL",
+    name="visualdl",
     version=VERSION_NUMBER,
     author="PaddlePaddle and Echarts team.",
     description="Visualize Deep Learning.",
@@ -78,4 +79,5 @@ setup(
     keywords="visualization deeplearning",
     long_description=read('README.md'),
     install_requires=install_requires,
+    packages=packages,
     cmdclass=cmdclass)

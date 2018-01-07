@@ -21,9 +21,9 @@ build_backend() {
 }
 
 package() {
-    cd $BUILD_DIR
-    mkdir -p pip_package/visualdl
-    cd pip_package/visualdl
+    cd $TOP_DIR
+    mkdir -p pip_package
+    cd pip_package
     touch __init__.py
     cp -rf $BACKEND_DIR/python/*.py .
     cp -rf $BACKEND_DIR/server .
