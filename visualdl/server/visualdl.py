@@ -170,8 +170,12 @@ def histogram():
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
-    model_json = graph.load_model("")
-    return Response(model_json, mimetype='application/json')
+    # run = request.args.get('run')
+    # model_json = graph.load_model("")
+    model_json_str = mock_data.graph_data()
+    model_json = json.loads(model_json_str)
+    result = gen_result(0, "", model_json)
+    return Response(json.dumps(result), mimetype='application/json')
 
 
 if __name__ == '__main__':
