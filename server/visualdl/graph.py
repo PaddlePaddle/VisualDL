@@ -68,7 +68,7 @@ def rename_model(model_json):
         all_nodes[idx]['name'] = new_name
 
 
-def add_links(model_json):
+def get_links(model_json):
     links = []
 
     for input in model_json['input']:
@@ -76,18 +76,22 @@ def add_links(model_json):
         for node in model_json['node']:
             if name in node['input']:
                 links.append({'source': name,
-                              "target": node['name'],
-                              "label": name})
+                              "target": node['name']})
+                # links.append({'source': name,
+                #               "target": node['name'],
+                #               "label": name})
 
     for source_node in model_json['node']:
         for output in source_node['output']:
             for target_node in model_json['node']:
                 if output in target_node['input']:
                     links.append({'source': source_node['name'],
-                                  'target': target_node['name'],
-                                  'label': output})
+                                  'target': target_node['name']})
+                    # links.append({'source': source_node['name'],
+                    #               'target': target_node['name'],
+                    #               'label': output})
 
-    model_json['links'] = links
+    return links
 
 
 def get_node_links(model_json):
@@ -174,6 +178,18 @@ def add_level_to_node_links(node_links):
 def get_level_to_all(node_links, model_json):
     """
     level_to_nodes {level -> [node_1, node_2]}
+    output:
+    {
+        "35": {
+        "inputs": [
+            38,
+            39
+        ],
+        "nodes": [
+            46
+        ],
+        "outputs": []
+    }, {}
     """
     level_to_nodes = dict()
     for idx in node_links:
@@ -249,9 +265,46 @@ def get_level_to_all(node_links, model_json):
         init_level(level)
         level_to_all[level]['outputs'] = level_to_outputs[level]
 
-    debug_print(level_to_all)
+    # debug_print(level_to_all)
 
     return level_to_all
+
+
+def level_to_coordinate(level_to_all):
+    default_x = 100
+    x_step = 100
+    default_y = 10
+    y_step = 100
+
+    node_to_coordinate = dict()
+    input_to_coordinate = dict()
+    output_to_coordinate = dict()
+
+    def get_coordinate(x_idx, y_idx):
+        x = default_x + x_idx * x_step
+        y = default_y + y_idx * y_step
+        return {"x": int(x), "y": int(y)}
+
+    for level in level_to_all:
+        nodes = level_to_all[level]['nodes']
+        inputs = level_to_all[level]['inputs']
+        outputs = level_to_all[level]['outputs']
+        x_idx = 0
+        for node_idx in nodes:
+            node_to_coordinate[node_idx] = get_coordinate(x_idx, level)
+            x_idx += 1
+        for in_idx in inputs:
+            input_to_coordinate[in_idx] = get_coordinate(x_idx, level)
+            x_idx += 1
+        for out_idx in outputs:
+            output_to_coordinate[out_idx] = get_coordinate(x_idx, level)
+            x_idx += 1
+
+    # debug_print(node_to_coordinate)
+    # debug_print(input_to_coordinate)
+    # debug_print(output_to_coordinate)
+    return node_to_coordinate, input_to_coordinate, output_to_coordinate
+
 
 
 def add_edges(json_obj):
@@ -295,9 +348,9 @@ def transform_for_echars(model_json):
         }
     };
 
-    paraSymbolSize = [95, 45];
-    paraSymbol = 'rect';
-    opSymbolSize = [50, 50];
+    paraSymbolSize = [95, 45]
+    paraSymbol = 'rect'
+    opSymbolSize = [50, 50]
 
     option = {
         "title": {
@@ -312,7 +365,7 @@ def transform_for_echars(model_json):
             {
                 "type": "graph",
                 "layout": "none",
-                "symbolSize": 50,
+                "symbolSize": 8,
                 "roam": True,
                 "label": {
                     "normal": {
@@ -343,8 +396,42 @@ def transform_for_echars(model_json):
     }
 
     option['title']['text'] = model_json['name']
-    nodes = model_json['node']
 
+    node_links = get_node_links(model_json)
+    add_level_to_node_links(node_links)
+    level_to_all = get_level_to_all(node_links, model_json)
+    node_to_coordinate, input_to_coordinate, output_to_coordinate = level_to_coordinate(level_to_all)
+
+    inputs = model_json['input']
+    nodes = model_json['node']
+    outputs = model_json['output']
+
+    echars_data = list()
+
+    for in_idx in range(len(inputs)):
+        input = inputs[in_idx]
+        data = dict()
+        data['name'] = input['name']
+        data['x'] = input_to_coordinate[in_idx]['x']
+        data['y'] = input_to_coordinate[in_idx]['y']
+        echars_data.append(data)
+    for node_idx in range(len(nodes)):
+        node = nodes[node_idx]
+        data = dict()
+        data['name'] = node['name']
+        data['x'] = node_to_coordinate[node_idx]['x']
+        data['y'] = node_to_coordinate[node_idx]['y']
+        echars_data.append(data)
+    for out_idx in range(len(outputs)):
+        output = outputs[out_idx]
+        data = dict()
+        data['name'] = output['name']
+        data['x'] = output_to_coordinate[out_idx]['x']
+        data['y'] = output_to_coordinate[out_idx]['y']
+        echars_data.append(data)
+
+    option['series'][0]['data'] = echars_data
+    option['series'][0]['links'] = get_links(model_json)
 
     return option
 
@@ -360,12 +447,10 @@ def load_model(model_pb_path):
     reorganize_inout(model_json, 'input')
     reorganize_inout(model_json, 'output')
     rename_model(model_json)
-    add_links(model_json)
-    debug_print(model_json)
-    node_links = get_node_links(model_json)
-    add_level_to_node_links(node_links)
-    get_level_to_all(node_links, model_json)
-    return json.dumps(model_json, sort_keys=True, indent=4, separators=(',', ': '))
+    # debug_print(model_json)
+    options = transform_for_echars(model_json)
+    # debug_print(options)
+    return json.dumps(options, sort_keys=True, indent=4, separators=(',', ': '))
 
 
 if __name__ == '__main__':
@@ -374,4 +459,4 @@ if __name__ == '__main__':
     current_path = os.path.abspath(os.path.dirname(sys.argv[0]))
     # json_str = load_model(current_path + "/mock/inception_v1_model.pb")
     json_str = load_model(current_path + "/mock/squeezenet_model.pb")
-    # print(json_str)
+    print(json_str)
