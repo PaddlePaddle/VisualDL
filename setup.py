@@ -64,7 +64,9 @@ cmdclass = {
 }
 
 packages = [
-    '',
+    'visualdl',
+    'visualdl.python',
+    'visualdl.server',
 ]
 
 setup(
@@ -76,11 +78,11 @@ setup(
     keywords="visualization deeplearning",
     long_description=read('README.md'),
     install_requires=install_requires,
-    package_data={'frontend.dist': ['*', 'fonts/*'],
+    package_data={'visualdl.server': ['dist/*', 'dist/fonts/*'],
                   'visualdl':['core.so']},
     packages=packages,
-    package_dir={'': 'pip_package/visualdl',
-                 'server': 'pip_package/visualdl/server'},
+    # package_dir={'pip_package': 'visualdl',
+    #              'frontend.dist': '../frontend/dist'},
     scripts=['visualdl/server/visualdl.py'],
-    include_package_data=True,
+    # include_package_data=True,
     cmdclass=cmdclass)
