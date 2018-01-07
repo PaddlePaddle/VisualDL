@@ -67,6 +67,8 @@ packages = [
     'visualdl',
     'visualdl.python',
     'visualdl.server',
+    'visualdl.server.mock',
+    'visualdl.server.onnx',
 ]
 
 setup(
@@ -79,10 +81,9 @@ setup(
     long_description=read('README.md'),
     install_requires=install_requires,
     package_data={'visualdl.server': ['dist/*', 'dist/fonts/*'],
-                  'visualdl':['core.so']},
+                  'visualdl':['core.so'],
+                  'visualdl.python':['core.so']},
     packages=packages,
-    # package_dir={'pip_package': 'visualdl',
-    #              'frontend.dist': '../frontend/dist'},
-    scripts=['visualdl/server/visualdl.py'],
+    scripts=['visualdl/server/visualdl_bin'],
     # include_package_data=True,
     cmdclass=cmdclass)

@@ -20,9 +20,15 @@ build_backend() {
     make -j2
 }
 
+build_onnx_graph() {
+    cd $TOP_DIR/visualdl/server/onnx
+    protoc onnx.proto --python_out .
+}
+
 package() {
     cp -rf $FRONTEND_DIR/dist $TOP_DIR/visualdl/server/
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
+    cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }
 
 # package() {
@@ -40,4 +46,5 @@ package() {
 
 #build_frontend
 build_backend
+build_onnx_graph
 package
