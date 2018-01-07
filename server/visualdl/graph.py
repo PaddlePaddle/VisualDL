@@ -348,9 +348,9 @@ def transform_for_echars(model_json):
         }
     };
 
-    paraSymbolSize = [95, 45]
+    paraSymbolSize = [12, 6]
     paraSymbol = 'rect'
-    opSymbolSize = [50, 50]
+    opSymbolSize = [5, 5]
 
     option = {
         "title": {
@@ -414,6 +414,9 @@ def transform_for_echars(model_json):
         data['name'] = input['name']
         data['x'] = input_to_coordinate[in_idx]['x']
         data['y'] = input_to_coordinate[in_idx]['y']
+        data['symbol'] = paraSymbol
+        data['itemStyle'] = paraterItemStyle
+        data['symbolSize'] = paraSymbolSize
         echars_data.append(data)
     for node_idx in range(len(nodes)):
         node = nodes[node_idx]
@@ -421,6 +424,8 @@ def transform_for_echars(model_json):
         data['name'] = node['name']
         data['x'] = node_to_coordinate[node_idx]['x']
         data['y'] = node_to_coordinate[node_idx]['y']
+        data['itemStyle'] = opItemStyle
+        data['symbolSize'] = opSymbolSize
         echars_data.append(data)
     for out_idx in range(len(outputs)):
         output = outputs[out_idx]
@@ -428,6 +433,9 @@ def transform_for_echars(model_json):
         data['name'] = output['name']
         data['x'] = output_to_coordinate[out_idx]['x']
         data['y'] = output_to_coordinate[out_idx]['y']
+        data['symbol'] = paraSymbol
+        data['itemStyle'] = paraterItemStyle
+        data['symbolSize'] = paraSymbolSize
         echars_data.append(data)
 
     option['series'][0]['data'] = echars_data
