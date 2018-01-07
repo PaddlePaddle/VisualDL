@@ -7,7 +7,7 @@ from optparse import OptionParser
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
-import graph
+import graph as vdl_graph
 import lib
 import storage
 import visualdl.mock.data as mock_data
@@ -169,9 +169,9 @@ def histogram():
 @app.route('/data/plugin/graphs/graphs')
 def graph():
     # run = request.args.get('run')
-    # model_json = graph.load_model("")
-    model_json_str = mock_data.graph_data()
-    model_json = json.loads(model_json_str)
+    # model_json_str = mock_data.graph_data()
+    # model_json = json.loads(model_json_str)
+    model_json = vdl_graph.load_model(server_path + "/mock/squeezenet_model.pb")
     result = gen_result(0, "", model_json)
     return Response(json.dumps(result), mimetype='application/json')
 
