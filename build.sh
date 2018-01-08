@@ -39,6 +39,7 @@ package() {
 }
 
 ARG=$1
+echo "ARG: " $ARG
 
 
 if [ $ARG = "travis-CI" ]; then

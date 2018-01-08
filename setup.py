@@ -12,7 +12,7 @@ import subprocess
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
 PYTHON_SDK_DIR = os.path.join(TOP_DIR, 'visualdl/python')
 BUILD_DIR = os.path.join(TOP_DIR, 'build')
-MODE = os.environ.get('MODE', 'RELEASE')
+MODE = os.environ.get('VS_BUILD_MODE', 'RELEASE')
 
 
 def read(name):

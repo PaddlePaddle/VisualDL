@@ -11,6 +11,10 @@ export PYTHONPATH="${core_path}:${python_path}"
 
 # install the visualdl wheel first
 package() {
+    # some bug with frontend build
+    # a environment variable to skip frontend build
+    export VS_BUILD_MODE="travis-CI"
+
     sudo apt-get install protobuf-compiler
     cd $cur
     python setup.py bdist_wheel
