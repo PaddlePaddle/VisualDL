@@ -23,13 +23,13 @@ include(external/zlib)      # download, build, install zlib
 include(external/gflags)    # download, build, install gflags
 include(external/glog)      # download, build, install glog
 include(external/gtest)     # download, build, install gtest
+include(external/eigen)     # download eigen
 include(external/pybind11)  # download pybind11
 include(external/protobuf)  # download, build, install protobuf
 include(external/python)    # find python and set path
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/thirdparty/local/include)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
@@ -37,13 +37,15 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
-        ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/logic/histogram_test.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/storage/storage_test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/test_concurrency.cc
+        ${PROJECT_SOURCE_DIR}/visualdl/utils/test_image.cc
         ${PROJECT_SOURCE_DIR}/visualdl/utils/concurrency.h
         ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
         )
-target_link_libraries(vl_test sdk storage entry im gtest glog protobuf gflags pthread)
+target_link_libraries(vl_test sdk storage entry tablet im gtest glog protobuf gflags pthread eigen3)
 
 enable_testing ()
 

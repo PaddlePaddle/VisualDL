@@ -165,10 +165,6 @@ module.exports = function (path, queryParam, postParam) {
                     "layer1/biases/summaries/stddev_1": {
                         "displayName": "layer1/biases/summaries/stddev_1",
                         "description": ""
-                    },
-                    "layer1/biases/summaries/min": {
-                        "displayName": "layer1/biases/summaries/min",
-                        "description": ""
                     }
                 }
             }
