@@ -8,18 +8,20 @@ from optparse import OptionParser
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
+import visualdl
+import visualdl.server
 import visualdl.server.graph as vdl_graph
-import visualdl.server.mock.tags as mock_tags
-from visualdl.python.storage import LogReader
 from visualdl.server import lib
 from visualdl.server.log import logger
 from visualdl.server.mock import data as mock_data
 from visualdl.server.mock import data as mock_tags
+from visualdl.python.storage import (LogWriter, LogReader)
 
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
+SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
 def option_parser():
     """
@@ -49,8 +51,8 @@ def option_parser():
 
 options, args = option_parser()
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-static_file_path = "./frontend/dist/"
-mock_data_path = "./mock_data/"
+static_file_path = os.path.join(SERVER_DIR, "./dist")
+mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 log_reader = LogReader(options.logdir)
 
