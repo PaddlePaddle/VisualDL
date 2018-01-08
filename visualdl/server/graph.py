@@ -116,21 +116,16 @@ def get_node_links(model_json):
 
     # init all nodes
     for idx in range(len(nodes)):
-        node_links[idx] = {'input': set(), 'output': set()}
+        node_links[idx] = {'input': list(), 'output': list()}
 
     for src_idx in range(len(nodes)):
         for out_name in nodes[src_idx]['output']:
             for dst_idx in range(len(nodes)):
                 if out_name in nodes[dst_idx]['input']:
-                    node_links[src_idx]['output'].add(dst_idx)
-                    node_links[dst_idx]['input'].add(src_idx)
+                    node_links[src_idx]['output'].append(dst_idx)
+                    node_links[dst_idx]['input'].append(src_idx)
 
-    # change set to list for json can not serialize set
-    new_node_links = dict()
-    for key in node_links:
-        new_node_links[key] = {'input': list(node_links[key]['input']),
-                               'output': list(node_links[key]['output'])}
-    return new_node_links
+    return node_links
 
 
 def add_level_to_node_links(node_links):
