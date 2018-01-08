@@ -8,8 +8,7 @@ class GraphTest(unittest.TestCase):
         self.mock_dir = "./mock"
 
     def test_graph_edges_squeezenet(self):
-        json_str = graph.load_model(self.mock_dir + '/squeezenet_model.pb')
-        json_obj = json.loads(json_str)
+        json_obj = graph.to_IR_json(self.mock_dir + '/squeezenet_model.pb')
 
         # 126 edges + 66 nodes (out-edge of each node is counted twice)
         self.assertEqual(len(json_obj['edges']), 126 + 66)
