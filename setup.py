@@ -84,6 +84,6 @@ setup(
                   'visualdl':['core.so'],
                   'visualdl.python':['core.so']},
     packages=packages,
-    scripts=['visualdl/server/visualdl_bin'],
+    scripts=['visualdl/server/visualDL'],
     # include_package_data=True,
     cmdclass=cmdclass)
