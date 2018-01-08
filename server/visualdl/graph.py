@@ -60,7 +60,9 @@ def rename_model(model_json):
     # rename
     all_nodes = model_json['node']
     for idx in range(len(all_nodes)):
-        name = all_nodes[idx]['name']
+        name = ""
+        if "name" in all_nodes[idx]:
+            name = all_nodes[idx]['name']
         op_type = all_nodes[idx]['opType']
         new_name = str(idx) + '\n' + str(op_type)
         if name != "":
