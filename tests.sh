@@ -9,6 +9,13 @@ readonly max_file_size=1000000 # 1MB
 
 export PYTHONPATH="${core_path}:${python_path}"
 
+# install the visualdl wheel first
+package() {
+    cd $cur
+    python setup.py bdist_wheel
+    sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
+}
+
 backend_test() {
     cd $cur
     sudo pip install numpy
@@ -59,6 +66,7 @@ echo "mode" $mode
 if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
+    package
     bigfile_reject
     frontend_test
     backend_test
