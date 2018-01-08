@@ -2,9 +2,9 @@
 set -ex
 
 mode=$1
-readonly cur=$(pwd)
-readonly core_path=$cur/build/visualdl/logic
-readonly python_path=$cur/visualdl/python
+readonly TOP_DIR=$(pwd)
+readonly core_path=$TOP_DIR/build/visualdl/logic
+readonly python_path=$TOP_DIR/visualdl/python
 readonly max_file_size=1000000 # 1MB
 
 export PYTHONPATH="${core_path}:${python_path}"
@@ -15,19 +15,26 @@ package() {
     # a environment variable to skip frontend build
     export VS_BUILD_MODE="travis-CI"
 
+    cd $TOP_DIR/visualdl/server
+    # manully install protobuf3
+    curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
+    unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
+    export PATH="$PATH:$(pwd)/protoc3/bin"
+    chmod +x protoc3/bin/*
+
     sudo pip install numpy
     sudo pip install Flask
     sudo pip install Pillow
     sudo pip install protobuf
 
     #sudo apt-get install protobuf-compiler
-    cd $cur
+    cd $TOP_DIR
     python setup.py bdist_wheel
     sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
 }
 
 backend_test() {
-    cd $cur
+    cd $TOP_DIR
     sudo pip install numpy
     sudo pip install Pillow
     mkdir -p build
@@ -38,7 +45,7 @@ backend_test() {
 }
 
 frontend_test() {
-    cd $cur
+    cd $TOP_DIR
     cd frontend
     npm install
     npm run build
@@ -48,17 +55,17 @@ server_test() {
     sudo pip install google
     sudo pip install protobuf==3.1.0
 
-    cd $cur/visualdl/server
+    cd $TOP_DIR/visualdl/server
     bash graph_test.sh
 
-    cd $cur/visualdl/server
+    cd $TOP_DIR/visualdl/server
     python lib_test.py
 }
 
 # check the size of files in the repo.
 # reject PR that has some big data included.
 bigfile_reject() {
-    cd $cur
+    cd $TOP_DIR
     # it failed to exclude .git, remove it first.
     rm -rf .git
     local largest_file="$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | head -n1)"
