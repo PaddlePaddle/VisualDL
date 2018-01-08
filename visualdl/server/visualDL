@@ -175,7 +175,7 @@ def graph():
     # run = request.args.get('run')
     # model_json_str = mock_data.graph_data()
     # model_json = json.loads(model_json_str)
-    model_json = vdl_graph.load_model(server_path + "/mock/squeezenet_model.pb")
+    model_json = vdl_graph.load_model(options.logdir + "/model.pb")
     result = gen_result(0, "", model_json)
     return Response(json.dumps(result), mimetype='application/json')
 
