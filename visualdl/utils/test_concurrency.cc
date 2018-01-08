@@ -1,7 +1,8 @@
 #include "visualdl/utils/concurrency.h"
 
-#include <glog/logging.h>
 #include <gtest/gtest.h>
+
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 
