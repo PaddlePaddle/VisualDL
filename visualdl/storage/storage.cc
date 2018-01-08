@@ -1,5 +1,7 @@
 #include "visualdl/storage/storage.h"
 
+#include "visualdl/utils/glog_exception_installer.h"
+
 namespace visualdl {
 
 Storage::Storage() {
@@ -79,5 +81,7 @@ TabletReader StorageReader::tablet(const std::string& tag) const {
   fs::DeSerializeFromFile(&tablet, path);
   return TabletReader(tablet);
 }
+
+__GlogExceptionInstaller __installer;
 
 }  // namespace visualdl
