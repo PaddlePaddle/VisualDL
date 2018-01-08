@@ -1,3 +1,5 @@
+#! /user/bin/env python
+
 import json
 import os
 import re
@@ -7,12 +9,14 @@ from optparse import OptionParser
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
-import graph
-import lib
-import storage
-import visualdl.mock.data as mock_data
-import visualdl.mock.tags as mock_tags
-from visualdl.log import logger
+import visualdl.server
+from visualdl.server import graph, lib
+from visualdl.server import log as logger
+from visualdl.server.mock import data as mock_data
+from visualdl.server.mock import data as mock_tags
+from visualdl.python.storage import (LogWriter, LogReader)
+
+
 
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
@@ -50,7 +54,7 @@ server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = "./frontend/dist/"
 mock_data_path = "./mock_data/"
 
-log_reader = storage.LogReader(options.logdir)
+log_reader = LogReader(options.logdir)
 
 
 # return data
@@ -178,4 +182,8 @@ def graph():
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
+    if not options.logdir:
+        logger.error("should pass in logdir option")
+        sys.exit(-1)
+
     app.run(debug=False, host=options.host, port=options.port)
