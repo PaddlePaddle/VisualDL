@@ -28,6 +28,7 @@ build_backend() {
 }
 
 build_onnx_graph() {
+    # TODO(ChunweiYan) check protoc version here
     cd $TOP_DIR/visualdl/server/onnx
     protoc onnx.proto --python_out .
 }

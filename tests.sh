@@ -83,8 +83,9 @@ echo "mode" $mode
 if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
-    package
+    # bigfile_reject should be tested first, or some files downloaded may fail this test.
     bigfile_reject
+    package
     frontend_test
     backend_test
     server_test
