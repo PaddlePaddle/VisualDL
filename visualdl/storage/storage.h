@@ -1,7 +1,6 @@
 #ifndef VISUALDL_STORAGE_STORAGE_H
 #define VISUALDL_STORAGE_STORAGE_H
 
-#include <glog/logging.h>
 #include <algorithm>
 #include <set>
 #include <vector>
