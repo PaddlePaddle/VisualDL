@@ -182,4 +182,8 @@ def graph():
 
 if __name__ == '__main__':
     logger.info(" port=" + str(options.port))
+    if not options.logdir:
+        logger.error("should pass in logdir option")
+        sys.exit(-1)
+
     app.run(debug=False, host=options.host, port=options.port)
