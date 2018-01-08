@@ -1,8 +1,7 @@
-#! /user/bin/env python
+#!/user/bin/env python
 
 import json
 import os
-import re
 import sys
 from optparse import OptionParser
 
@@ -11,7 +10,8 @@ from flask import (Flask, Response, redirect, request, send_file,
 
 import visualdl
 import visualdl.server
-from visualdl.server import graph, lib
+import visualdl.server.graph as vdl_graph
+from visualdl.server import lib
 from visualdl.server.log import logger
 from visualdl.server.mock import data as mock_data
 from visualdl.server.mock import data as mock_tags
@@ -170,12 +170,12 @@ def histogram():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/graphs/graph')
+@app.route('/data/plugin/graphs/graphs')
 def graph():
     # run = request.args.get('run')
-    # model_json = graph.load_model("")
-    model_json_str = mock_data.graph_data()
-    model_json = json.loads(model_json_str)
+    # model_json_str = mock_data.graph_data()
+    # model_json = json.loads(model_json_str)
+    model_json = vdl_graph.load_model(options.logdir + "/model.pb")
     result = gen_result(0, "", model_json)
     return Response(json.dumps(result), mimetype='application/json')
 
