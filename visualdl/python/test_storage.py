@@ -5,13 +5,16 @@ import unittest
 import numpy as np
 from PIL import Image
 
-import storage
+import sys, pprint
+pprint.pprint(sys.path)
+
+from visualdl import LogWriter, LogReader
 
 
 class StorageTest(unittest.TestCase):
     def setUp(self):
         self.dir = "./tmp/storage_test"
-        self.writer = storage.LogWriter(
+        self.writer = LogWriter(
             self.dir, sync_cycle=1).as_mode("train")
 
     def test_scalar(self):
@@ -22,7 +25,7 @@ class StorageTest(unittest.TestCase):
             scalar.add_record(i, float(i))
 
         print 'test read'
-        self.reader = storage.LogReader(self.dir)
+        self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
             scalar = reader.scalar("model/scalar/min")
             self.assertEqual(scalar.caption(), "train")
@@ -50,7 +53,7 @@ class StorageTest(unittest.TestCase):
                     image_writer.set_sample(index, shape, list(data))
             image_writer.finish_sampling()
 
-        self.reader = storage.LogReader(self.dir)
+        self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
             image_reader = reader.image(tag)
             self.assertEqual(image_reader.caption(), tag)
@@ -77,7 +80,7 @@ class StorageTest(unittest.TestCase):
         shape = [image.size[1], image.size[0], 3]
         origin_data = np.array(image.getdata()).flatten()
 
-        self.reader = storage.LogReader(self.dir)
+        self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
 
             image_writer.start_sampling()
@@ -110,14 +113,14 @@ class StorageTest(unittest.TestCase):
             for i in range(10):
                 scalar.add_record(i, float(i))
 
-        self.reader = storage.LogReader(self.dir)
+        self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
             scalar = reader.scalar("model/scalar/average")
             self.assertEqual(scalar.caption(), "train")
 
     def test_modes(self):
         dir = "./tmp/storagetest0"
-        store = storage.LogWriter(
+        store = LogWriter(
             self.dir, sync_cycle=1)
 
         scalars = []
