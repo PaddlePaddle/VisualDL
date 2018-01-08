@@ -1,19 +1,18 @@
-#! /user/bin/env python
+#!/user/bin/env python
 
 import json
 import os
 import sys
 from optparse import OptionParser
 
-import visualdl.mock.data as mock_data
-import visualdl.mock.tags as mock_tags
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
 import visualdl.server.graph as vdl_graph
+import visualdl.server.mock.tags as mock_tags
 from visualdl.python.storage import LogReader
 from visualdl.server import lib
-from visualdl.server import log as logger
+from visualdl.server.log import logger
 from visualdl.server.mock import data as mock_data
 from visualdl.server.mock import data as mock_tags
 
