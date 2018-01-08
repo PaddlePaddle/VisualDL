@@ -15,6 +15,11 @@ package() {
     # a environment variable to skip frontend build
     export VS_BUILD_MODE="travis-CI"
 
+    sudo pip install numpy
+    sudo pip install Flask
+    sudo pip install Pillow
+    sudo pip install protobuf
+
     sudo apt-get install protobuf-compiler
     cd $cur
     python setup.py bdist_wheel
