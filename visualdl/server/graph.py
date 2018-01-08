@@ -54,6 +54,7 @@ def rename_model(model_json):
                        + '\nshape=' + str(new_shape)
             variable['name'] = new_name
             rename_edge(model, old_name, new_name)
+
     rename_variables(model_json, model_json['input'])
     rename_variables(model_json, model_json['output'])
 
@@ -79,9 +80,6 @@ def get_links(model_json):
             if name in node['input']:
                 links.append({'source': name,
                               "target": node['name']})
-                # links.append({'source': name,
-                #               "target": node['name'],
-                #               "label": name})
 
     for source_node in model_json['node']:
         for output in source_node['output']:
@@ -89,9 +87,6 @@ def get_links(model_json):
                 if output in target_node['input']:
                     links.append({'source': source_node['name'],
                                   'target': target_node['name']})
-                    # links.append({'source': source_node['name'],
-                    #               'target': target_node['name'],
-                    #               'label': output})
 
     return links
 
@@ -174,7 +169,6 @@ def add_level_to_node_links(node_links):
                 assert in_level is not None
                 if cur_level is None or in_level >= cur_level:
                     node_links[idx]['level'] = in_level + 1
-    # debug_print(node_links)
 
 
 def get_level_to_all(node_links, model_json):
@@ -249,7 +243,6 @@ def get_level_to_all(node_links, model_json):
         if level not in level_to_outputs:
             level_to_outputs[level] = list()
         level_to_outputs[level].append(out_idx)
-    # debug_print(level_to_outputs)
 
     level_to_all = dict()
 
@@ -302,11 +295,7 @@ def level_to_coordinate(level_to_all):
             output_to_coordinate[out_idx] = get_coordinate(x_idx, level)
             x_idx += 1
 
-    # debug_print(node_to_coordinate)
-    # debug_print(input_to_coordinate)
-    # debug_print(output_to_coordinate)
     return node_to_coordinate, input_to_coordinate, output_to_coordinate
-
 
 
 def add_edges(json_obj):
