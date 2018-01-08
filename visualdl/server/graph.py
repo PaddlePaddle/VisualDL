@@ -318,7 +318,7 @@ def add_edges(json_obj):
             'label': 'label_' + str(label_incrementer)
         })
         label_incrementer += 1
-        return json_obj
+    return json_obj
 
 
 def transform_for_echars(model_json):
