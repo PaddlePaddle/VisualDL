@@ -1,0 +1,73 @@
+<template>
+    <div class="visual-dl-charts">
+        <div class="visual-dl-chart-box">
+        </div>
+    </div>
+</template>
+<script>
+// libs
+import echarts from 'echarts';
+// service
+import {getPluginGraphsGraphs} from '../../service';
+
+export default {
+    initData() {
+        return {
+            width: 800,
+            height: 600,
+            data: [
+                {
+                    name: 'train',
+                    value: []
+                }
+            ]
+        };
+    },
+    inited() {
+        this.watch('originData', data => {
+            this.initChartChartOption(data);
+        });
+
+        this.watch('filtScreen', filtScreen => {
+            this.myChart.clear();
+            let data = this.data.get('originData');
+            this.initChartChartOption(data);
+        });
+    },
+
+    attached() {
+        this.initCharts();
+    },
+
+    initCharts(tagInfo) {
+        this.createChart();
+        this.getOriginChartsData();
+    },
+
+    createChart() {
+        let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+        this.myChart = echarts.init(el);
+    },
+
+    initChartChartOption(data) {
+        this.setChartOptions(data);
+    },
+    setChartOptions(data) {
+        this.myChart.setOption(data);
+    },
+
+    getOriginChartsData() {
+        getPluginGraphsGraphs().then(({data}) => {
+            this.data.set('originData', data);
+        });
+    }
+};
+</script>
+<style lang="stylus">
+    .visual-dl-charts
+        float left
+        margin-bottom 20px
+        .visual-dl-chart-box
+            width 800px
+            height 600px
+</style>

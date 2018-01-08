@@ -10,6 +10,7 @@
         </div>
         <div class="visual-dl-scalar-right">
             <ui-chart-page
+                expand="{{true}}"
                 config="{{filteredConfig}}"
                 runsItems="{{runsItems}}"
                 tagList="{{filteredTagsList}}"
@@ -60,7 +61,7 @@ export default {
                         run,
                         tag: tags[run][tag]
                     };
-                });
+                }).filter(item => item.tag !== undefined);
                 return {
                     tagList,
                     tag,
@@ -118,7 +119,7 @@ export default {
                 horizontal: 'step',
                 sortingMethod: 'default',
                 downloadLink: [],
-                outlier: [],
+                outlier: ['yes'],
                 runs: [],
                 running: true
             }

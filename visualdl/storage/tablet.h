@@ -10,6 +10,8 @@
 
 namespace visualdl {
 
+struct TabletReader;
+
 /*
  * Tablet is a helper for operations on storage::Tablet.
  */
@@ -58,8 +60,8 @@ struct Tablet {
   }
 
   template <typename T>
-  Entry<T> MutableMeta() {
-    Entry<T> x(data_->mutable_meta(), parent());
+  Entry MutableMeta() {
+    Entry x(data_->mutable_meta(), parent());
   }
 
   void SetCaptions(const std::vector<std::string>& xs) {
@@ -80,6 +82,8 @@ struct Tablet {
     WRITE_GUARD
   }
 
+  TabletReader reader();
+
   Storage* parent() const { return x_; }
 
 private:
@@ -96,12 +100,12 @@ struct TabletReader {
   // read operations.
   std::string tag() const { return data_.tag(); }
   Tablet::Type type() const { return Tablet::Type(data_.component()); }
-  int64_t total_records() const { return data_.total_records(); }
+  int64_t total_records() const { return data_.records_size(); }
   int32_t num_samples() const { return data_.num_samples(); }
   RecordReader record(int i) const { return RecordReader(data_.records(i)); }
   template <typename T>
-  EntryReader<T> meta() const {
-    return EntryReader<T>(data_.meta());
+  EntryReader meta() const {
+    return EntryReader(data_.meta());
   }
   std::vector<std::string> captions() const {
     std::vector<std::string> x(data_.captions().begin(),
