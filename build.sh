@@ -16,6 +16,11 @@ build_frontend() {
     fi
 }
 
+build_frontend_fake() {
+    cd $FRONTEND_DIR
+    mkdir -p dist
+}
+
 build_backend() {
     cd $BUILD_DIR
     cmake ..
@@ -33,7 +38,15 @@ package() {
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }
 
-build_frontend
+ARG=$1
+
+
+if [ $ARG = "travis-CI" ]; then
+    build_frontend_fake
+else
+    build_frontend
+fi
+
 build_backend
 build_onnx_graph
 package

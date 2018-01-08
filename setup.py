@@ -12,6 +12,7 @@ import subprocess
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
 PYTHON_SDK_DIR = os.path.join(TOP_DIR, 'visualdl/python')
 BUILD_DIR = os.path.join(TOP_DIR, 'build')
+MODE = os.environ.get('MODE', 'RELEASE')
 
 
 def read(name):
@@ -55,7 +56,10 @@ class BaseCommand(setuptools.Command):
 
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
-        subprocess.check_call(['bash', 'build.sh'])
+        cmd = ['bash', 'build.sh']
+        if MODE == "travis-CI":
+            cmd.append('travis-CI')
+        subprocess.check_call(cmd)
         return setuptools.command.build_py.build_py.run(self)
 
 
