@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-import visualdl
-
 from visualdl import core
 
 dtypes = ("float", "double", "int32", "int64")
