@@ -3,6 +3,7 @@ cache:
   - pip
   - ccache
   - yarn
+  - npm
 sudo: required
 dist: trusty
 os:

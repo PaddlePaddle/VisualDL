@@ -1,8 +1,6 @@
-__all__ = [
-    'StorageReader',
-    'StorageWriter',
-]
-import core
+from __future__ import absolute_import
+
+from visualdl import core
 
 dtypes = ("float", "double", "int32", "int64")
 
