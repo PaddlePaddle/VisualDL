@@ -458,7 +458,7 @@ def load_model(model_pb_path):
     # debug_print(model_json)
     options = transform_for_echars(model_json)
     # debug_print(options)
-    return json.dumps(options, sort_keys=True, indent=4, separators=(',', ': '))
+    return options
 
 
 if __name__ == '__main__':
