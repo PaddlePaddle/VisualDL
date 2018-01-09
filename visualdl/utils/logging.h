@@ -1,11 +1,11 @@
 #ifndef VISUALDL_UTILS_LOGGING_H
 #define VISUALDL_UTILS_LOGGING_H
 
+#include <csignal>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <csignal>
 
 #if defined(VISUALDL_WITH_GLOG)
 #include <glog/logging.h>
@@ -51,21 +51,43 @@ struct Error : public std::runtime_error {
 };
 
 // With exception.
-struct LogStreamFatal {
+struct LogStreamFatal : public std::basic_ostream<char, std::char_traits<char>> {
   LogStreamFatal(const char* file, int line) {
     ss << "[" << file << ":" << line << "] ";
+    throw Error(ss.str());
+  }
+
+  LogStreamFatal& operator<<(std::basic_streambuf<char, std::char_traits<char>>* sb) {
+    *this << sb;
+    if (sb->sgetc() == '\n') {
+      std::cout << "end get";
+    }
+    return *this;
+  }
+
+  friend LogStreamFatal& operator<<(LogStreamFatal& os,
+                                    const char* msg) {
+    std::cout << "msg: '" << msg << "'" << std::endl;
+    os.stream() << msg;
+    if (msg == "\n") {
+      os.has_throw_ = true;
+      throw Error(os.stream().str());
+    }
+    return os;
   }
 
   std::stringstream& stream() { return ss; }
 
   ~LogStreamFatal() {
-    std::cerr << "throw exception" << std::endl;
-    //throw Error(ss.str());
-    throw std::exception();
+    if (!has_throw_) {
+      std::cerr << "throw exception" << std::endl;
+      throw Error(ss.str());
+    }
   }
 
 private:
-  std::stringstream ss;
+  bool has_throw_{false};
+  mutable std::stringstream ss;
 };
 
 #endif  // VISUALDL_FATAL_ABORT
@@ -77,13 +99,13 @@ private:
 #define LOG_INFO visualdl::logging::LogStream(__FILE__, __LINE__).stream()
 #define LOG_WARNING LOG_INFO
 #define LOG_ERROR LOG_INFO
-#define LOG_FATAL visualdl::logging::LogStreamFatal(__FILE__, __LINE__).stream()
+#define LOG_FATAL visualdl::logging::LogStreamFatal(__FILE__, __LINE__)
 // basic version without support for debug level.
 #define VLOG(x) LOG_INFO
 
-#define CHECK(cond)                                              \
-  if (!(cond))                                                   \
-  visualdl::logging::LogStreamFatal(__FILE__, __LINE__).stream() \
+#define CHECK(cond)                                     \
+  if (!(cond))                                          \
+  visualdl::logging::LogStreamFatal(__FILE__, __LINE__) \
       << "Check failed: " << #cond << " "
 #define CHECK_EQ(v0, v1) CHECK_BINARY(v0, v1, ==)
 #define CHECK_GE(v0, v1) CHECK_BINARY(v0, v1, >=)
@@ -113,13 +135,8 @@ static void SignalHandler(int sig) {
 }
 
 struct __once_caller__ {
-  __once_caller__() {
-    std::signal(SIGINT, SignalHandler);
-  }
-  
+  __once_caller__() { std::signal(SIGINT, SignalHandler); }
 };
-
-
 
 }  // namespace log
 
