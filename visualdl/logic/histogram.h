@@ -1,11 +1,10 @@
 #ifndef VISUALDL_LOGIC_HISTOGRAM_H
 #define VISUALDL_LOGIC_HISTOGRAM_H
 
+#include <glog/logging.h>
 #include <cstdlib>
 #include <limits>
 #include <vector>
-
-#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 
