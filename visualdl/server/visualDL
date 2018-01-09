@@ -1,27 +1,27 @@
-#! /user/bin/env python
+#!/user/bin/env python
 
 import json
 import os
-import re
 import sys
 from optparse import OptionParser
 
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 
+import visualdl
 import visualdl.server
-from visualdl.server import graph, lib
-from visualdl.server import log as logger
+import visualdl.server.graph as vdl_graph
+from visualdl.server import lib
+from visualdl.server.log import logger
 from visualdl.server.mock import data as mock_data
 from visualdl.server.mock import data as mock_tags
 from visualdl.python.storage import (LogWriter, LogReader)
-
-
 
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
+SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
 def option_parser():
     """
@@ -51,8 +51,8 @@ def option_parser():
 
 options, args = option_parser()
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-static_file_path = "./frontend/dist/"
-mock_data_path = "./mock_data/"
+static_file_path = os.path.join(SERVER_DIR, "./dist")
+mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 log_reader = LogReader(options.logdir)
 
@@ -170,12 +170,12 @@ def histogram():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/graphs/graph')
+@app.route('/data/plugin/graphs/graphs')
 def graph():
     # run = request.args.get('run')
-    # model_json = graph.load_model("")
-    model_json_str = mock_data.graph_data()
-    model_json = json.loads(model_json_str)
+    # model_json_str = mock_data.graph_data()
+    # model_json = json.loads(model_json_str)
+    model_json = vdl_graph.load_model(options.logdir + "/model.pb")
     result = gen_result(0, "", model_json)
     return Response(json.dumps(result), mimetype='application/json')
 
