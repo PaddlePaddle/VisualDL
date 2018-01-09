@@ -18,6 +18,11 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 		python get-pip.py
 fi
 
+$sudo pip install numpy
+$sudo pip install Flask
+$sudo pip install Pillow
+$sudo pip install protobuf
+
 export PYTHONPATH="${core_path}:${python_path}"
 
 # install the visualdl wheel first
@@ -34,11 +39,6 @@ package() {
     chmod +x protoc3/bin/*
 
 
-    $sudo pip install numpy
-    $sudo pip install Flask
-    $sudo pip install Pillow
-    $sudo pip install protobuf
-
     cd $TOP_DIR
     python setup.py bdist_wheel
     $sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
@@ -46,8 +46,6 @@ package() {
 
 backend_test() {
     cd $TOP_DIR
-    $sudo pip install numpy
-    $sudo pip install Pillow
     mkdir -p build
     cd build
     cmake ..
