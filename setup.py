@@ -27,7 +27,7 @@ VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf']
-execute_requires = ['npm', 'node', 'protoc', 'bash']
+execute_requires = ['npm', 'node', 'bash']
 
 
 def die(msg):
