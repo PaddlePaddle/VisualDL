@@ -10,6 +10,7 @@ dist: trusty
 os:
   - linux
   - osx
+
 addons:
   apt:
     packages:
@@ -24,6 +25,10 @@ addons:
       - ccache
       - npm
       - nodejs
+
+before_install:
+  - if [[ "TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  - if [[ "TRAVIS_OS_NAME" == "osx" ]]; then brew install python; fi
 
 script:
   /bin/bash ./tests.sh all
