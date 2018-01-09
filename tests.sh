@@ -7,6 +7,10 @@ readonly core_path=$TOP_DIR/build/visualdl/logic
 readonly python_path=$TOP_DIR/visualdl/python
 readonly max_file_size=1000000 # 1MB
 
+sudo="sudo"
+
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
+
 export PYTHONPATH="${core_path}:${python_path}"
 
 # install the visualdl wheel first
@@ -22,20 +26,21 @@ package() {
     export PATH="$PATH:$(pwd)/protoc3/bin"
     chmod +x protoc3/bin/*
 
-    sudo pip install numpy
-    sudo pip install Flask
-    sudo pip install Pillow
-    sudo pip install protobuf
+
+    $sudo pip install numpy
+    $sudo pip install Flask
+    $sudo pip install Pillow
+    $sudo pip install protobuf
 
     cd $TOP_DIR
     python setup.py bdist_wheel
-    sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
+    $sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
 }
 
 backend_test() {
     cd $TOP_DIR
-    sudo pip install numpy
-    sudo pip install Pillow
+    $sudo pip install numpy
+    $sudo pip install Pillow
     mkdir -p build
     cd build
     cmake ..
@@ -51,8 +56,8 @@ frontend_test() {
 }
 
 server_test() {
-    sudo pip install google
-    sudo pip install protobuf==3.1.0
+    $sudo pip install google
+    $sudo pip install protobuf==3.1.0
 
     cd $TOP_DIR/visualdl/server
     bash graph_test.sh
