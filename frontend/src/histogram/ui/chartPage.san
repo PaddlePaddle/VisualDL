@@ -1,12 +1,13 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel info="{{itemsLength}}" title="{{title}}">
+        <ui-expand-panel isShow="{{expand}}" info="{{itemsLength}}" title="{{title}}">
             <div san-for="tag in filteredPageList" class="visual-dl-chart-box">
                 <ui-chart
                     san-for="tag in tag.tagList"
                     tagInfo="{{tag}}"
                     runs="{{config.runs}}"
                     chartType="{{config.chartType}}"
+                    running="{{config.running}}"
                     runsItems="{{runsItems}}"
                 ></ui-chart>
             </div>

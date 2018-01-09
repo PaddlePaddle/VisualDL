@@ -1,10 +1,18 @@
 <template>
     <div class="visual-dl-graph-config-com">
         <ui-button
+            class="visual-dl-graph-config-button"
             on-click="handleFitScreen"
             variants="raised info">
             <ui-icon style="margin-right: 6px">fullscreen</ui-icon>
-            Fit to screen
+            Fit &nbsp; to &nbsp; screen
+        </ui-button>
+        <ui-button
+            class="visual-dl-graph-config-button"
+            on-click="handleDownload"
+            variants="raised info">
+            <ui-icon style="margin-right: 6px">file_download</ui-icon>
+            Download image
         </ui-button>
         <!--
         <ui-dropdown-menu
@@ -13,24 +21,34 @@
             value="{=config.session=}"
         />
         -->
+        <ui-slider
+            label="Scale"
+            value="{=config.scale=}"
+            min="{{0.1}}"
+            max="{{1}}"
+            step="{{0.1}}"
+        />
     </div>
 </template>
 <script>
 import Button from 'san-mui/Button';
 import Icon from 'san-mui/Icon';
+import Slider from '../../common/component/Slider';
 import DropDownMenu from '../../common/component/DropDownMenu';
 export default {
     components: {
         'ui-dropdown-menu': DropDownMenu,
         'ui-button': Button,
-        'ui-icon': Icon
+        'ui-icon': Icon,
+        'ui-slider': Slider
     },
     initData() {
         return {
             config: {
                 groupName: 'aa',
                 isActualImageSize: [],
-                runs: []
+                runs: [],
+                scale: 0.5
             },
             sessionItems: [
                 {
@@ -50,6 +68,9 @@ export default {
     },
     handleFitScreen() {
         this.fire('fitScreen');
+    },
+    handleDownload() {
+        this.fire('download');
     }
 };
 </script>
@@ -59,9 +80,10 @@ export default {
     .config-com
         width 90%
         margin 20px auto
+        .config-button
+            width 200px
+            margin-top 20px
 .visual-dl-graph-config-com
-    .sm-button
-        width 100%
     .sm-icon
         width 36px
         height 26px

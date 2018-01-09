@@ -8,6 +8,7 @@
                     tagInfo="{{tag}}"
                     isActualImageSize="{{config.isActualImageSize}}"
                     runs="{{config.runs}}"
+                    running="{{config.running}}"
                     runsItems="{{runsItems}}"
                 ></ui-image>
             </div>
@@ -25,7 +26,7 @@
 </template>
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
-import image from '../../common/component/Charts/image';
+import image from './image';
 import Pagination from 'san-mui/Pagination';
 
 import {cloneDeep} from 'lodash';

@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-charts">
+    <div class="visual-dl-histogram-charts">
         <div class="visual-dl-chart-box">
         </div>
         <div class="visual-dl-chart-actions">
@@ -27,7 +27,7 @@ const highlightLineColor = '#2f4554';
 const defaultLineColor = '#d14a61';
 const lineWidth = 1;
 // the time to refresh chart data
-const intervalTime = 30;
+const intervalTime = 5;
 
 const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
@@ -37,13 +37,8 @@ export default {
         'san-button': Button,
         'san-icon': Icon
     },
-    computed: {
-
-    },
     initData() {
         return {
-            width: 400,
-            height: 300,
             data: [
                 {
                     name: 'train',
@@ -333,12 +328,12 @@ export default {
 };
 </script>
 <style lang="stylus">
-    .visual-dl-charts
+    .visual-dl-histogram-charts
         float left
         margin-bottom 20px
         .visual-dl-chart-box
-            width 400px;
-            height 300px;
+            width 400px
+            height 300px
         .visual-dl-chart-actions
             height 50px
             margin-left 10%

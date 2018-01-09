@@ -1,14 +1,14 @@
 <template>
-    <div class="visual-dl-scalar-container">
-        <div class="visual-dl-scalar-left">
-            <div class="visual-dl-scalar-config-container">
+    <div class="visual-dl-page-container">
+        <div class="visual-dl-page-left">
+            <div class="visual-dl-page-config-container">
                 <ui-config
                     runsItems="{{runsItems}}"
                     config="{=config=}"
                 ></ui-config>
             </div>
         </div>
-        <div class="visual-dl-scalar-right">
+        <div class="visual-dl-page-right">
             <ui-chart-page
                 expand="{{true}}"
                 config="{{filteredConfig}}"
@@ -154,21 +154,4 @@ export default {
 
 <style lang="stylus">
 
-@import '../style/variables';
-
-+prefix-classes('visual-dl-scalar-')
-    .container
-        padding-left 300px
-        position relative
-        .left
-            width 280px
-            min-height 300px
-            border solid 1px #e4e4e4
-            position absolute
-            left 0
-        .right
-            width 100%
-            border solid 1px #e4e4e4
-            min-height 300px
-            padding 20px
 </style>

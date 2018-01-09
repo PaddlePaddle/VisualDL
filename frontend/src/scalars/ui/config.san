@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-scalar-config-com">
+    <div class="visual-dl-page-config-com">
         <san-text-field
             hintText="input a tag group name to search"
             label="Group name RegExp"
@@ -36,7 +36,7 @@
             items="{{runsItems}}"
         />
         <san-button
-            class="visual-dl-scalar-run-toggle"
+            class="visual-dl-page-run-toggle"
             variants="raised {{config.running ? 'secondery' : 'primary'}}"
             on-click="toggleAllRuns"
         >
@@ -127,7 +127,7 @@ export default {
 </script>
 <style lang="stylus">
 @import '../../style/variables';
-+prefix-classes('visual-dl-scalar-')
++prefix-classes('visual-dl-page-')
     .config-com
         width 90%
         margin 20px auto

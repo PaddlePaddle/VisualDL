@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-charts">
+    <div class="visual-dl-page-charts">
         <div class="visual-dl-chart-box" style="{{computedStyle}}">
         </div>
         <div class="visual-dl-chart-actions">
@@ -26,18 +26,18 @@
 // components
 import Button from 'san-mui/Button';
 import Icon from 'san-mui/Icon';
-import DropDownMenu from '../../../common/component/DropDownMenu';
+import DropDownMenu from '../../common/component/DropDownMenu';
 
 // libs
 import echarts from 'echarts';
 import axios from 'axios';
 import {isFinite, flatten, maxBy, minBy, sortBy, max, min} from 'lodash';
-import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
-import {quantile} from '../../../common/util/index';
+import {generateJsonAndDownload} from '../../common/util/downLoadFile';
+import {quantile} from '../../common/util/index';
 import moment from 'moment';
 
 // service
-import {getPluginScalarsScalars} from '../../../service';
+import {getPluginScalarsScalars} from '../../service';
 
 const originLinesOpacity = 0.3;
 const defaultSmoothWeight = 0.6;
@@ -595,7 +595,7 @@ export default {
 };
 </script>
 <style lang="stylus">
-    .visual-dl-charts
+    .visual-dl-page-charts
         float left
         margin-bottom 20px
         .visual-dl-chart-actions

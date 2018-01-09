@@ -10,18 +10,20 @@
             value="{=config.chartType=}"
             items="{{charTypeItems}}"
         />
+        <!--
         <ui-radio-group
             label="Horizontal"
             value="{=config.horizontal=}"
             items="{{horizontalItems}}"
         />
+        -->
         <ui-checkbox-group
             value="{=config.runs=}"
             label="Runs"
             items="{{runsItems}}"
         />
         <san-button
-            class="visual-dl-scalar-run-toggle"
+            class="visual-dl-histogram-run-toggle"
             variants="raised {{config.running ? 'secondery' : 'primary'}}"
             on-click="toggleAllRuns"
         >

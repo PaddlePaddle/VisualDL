@@ -46,8 +46,23 @@ export default {
 
 <style lang="stylus">
 
-// @import './style/variables';
+@import './style/variables';
 
-// +prefix-classes(prefix)
++prefix-classes('visual-dl-page-')
+    .container
+        padding-left 300px
+        position relative
+        .left
+            width 280px
+            min-height 300px
+            border solid 1px #e4e4e4
+            position absolute
+            left 0
+        .right
+            width 94%
+            overflow hidden
+            border solid 1px #e4e4e4
+            min-height 300px
+            padding 20px
 
 </style>
