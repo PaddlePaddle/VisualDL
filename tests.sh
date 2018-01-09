@@ -27,7 +27,6 @@ package() {
     sudo pip install Pillow
     sudo pip install protobuf
 
-    #sudo apt-get install protobuf-compiler
     cd $TOP_DIR
     python setup.py bdist_wheel
     sudo pip install dist/visualdl-0.0.1-py2-none-any.whl

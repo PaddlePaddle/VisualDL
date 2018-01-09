@@ -51,29 +51,10 @@ struct Error : public std::runtime_error {
 };
 
 // With exception.
-struct LogStreamFatal : public std::basic_ostream<char, std::char_traits<char>> {
+struct LogStreamFatal {
   LogStreamFatal(const char* file, int line) {
     ss << "[" << file << ":" << line << "] ";
     throw Error(ss.str());
-  }
-
-  LogStreamFatal& operator<<(std::basic_streambuf<char, std::char_traits<char>>* sb) {
-    *this << sb;
-    if (sb->sgetc() == '\n') {
-      std::cout << "end get";
-    }
-    return *this;
-  }
-
-  friend LogStreamFatal& operator<<(LogStreamFatal& os,
-                                    const char* msg) {
-    std::cout << "msg: '" << msg << "'" << std::endl;
-    os.stream() << msg;
-    if (msg == "\n") {
-      os.has_throw_ = true;
-      throw Error(os.stream().str());
-    }
-    return os;
   }
 
   std::stringstream& stream() { return ss; }
@@ -99,13 +80,13 @@ private:
 #define LOG_INFO visualdl::logging::LogStream(__FILE__, __LINE__).stream()
 #define LOG_WARNING LOG_INFO
 #define LOG_ERROR LOG_INFO
-#define LOG_FATAL visualdl::logging::LogStreamFatal(__FILE__, __LINE__)
+#define LOG_FATAL visualdl::logging::LogStreamFatal(__FILE__, __LINE__).stream()
 // basic version without support for debug level.
 #define VLOG(x) LOG_INFO
 
-#define CHECK(cond)                                     \
-  if (!(cond))                                          \
-  visualdl::logging::LogStreamFatal(__FILE__, __LINE__) \
+#define CHECK(cond)                                              \
+  if (!(cond))                                                   \
+  visualdl::logging::LogStreamFatal(__FILE__, __LINE__).stream() \
       << "Check failed: " << #cond << " "
 #define CHECK_EQ(v0, v1) CHECK_BINARY(v0, v1, ==)
 #define CHECK_GE(v0, v1) CHECK_BINARY(v0, v1, >=)

@@ -6,8 +6,10 @@ cache:
   - npm
 sudo: required
 dist: trusty
+
 os:
   - linux
+  - osx
 addons:
   apt:
     packages:

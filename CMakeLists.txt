@@ -17,6 +17,7 @@ set(THIRD_PARTY_PATH "${CMAKE_BINARY_DIR}/third_party" CACHE STRING
 
 ################################ Configurations #######################################
 option(WITH_TESTING     "Compile VisualDL with unit testing"        ON)
+option(ON_RELEASE       "RELEASE mode" ON)
 
 
 include(external/zlib)      # download, build, install zlib
@@ -28,6 +29,12 @@ include(external/pybind11)  # download pybind11
 include(external/protobuf)  # download, build, install protobuf
 include(external/python)    # find python and set path
 
+
+if (NOT ON_RELEASE)
+  message(STATUS "build on debug mode")
+  add_compile_options(-DVISUALDL_WITH_GLOG)
+endif(NOT ON_RELEASE)
+
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -35,6 +42,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
+if (NOT ON_RELEASE)
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
@@ -47,8 +55,6 @@ add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/utils/filesystem.h
         )
 target_link_libraries(vl_test sdk storage entry tablet im gtest glog protobuf gflags pthread eigen3)
-
 enable_testing ()
-
-add_custom_target(test_init COMMAND $CMAKE_BINARY_DIR)
 add_test(NAME vstest COMMAND ./vl_test)
+endif(NOT ON_RELEASE)
