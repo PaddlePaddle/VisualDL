@@ -9,7 +9,9 @@ dist: trusty
 
 os:
   - linux
-  - osx
+    # much bug with osx environment
+    # TODO(ChunweiYan) support osx in the future
+    #- osx
 
 addons:
   apt:
