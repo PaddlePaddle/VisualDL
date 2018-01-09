@@ -1,4 +1,3 @@
-#include <glog/logging.h>
 #include <ctime>
 
 #include "visualdl/logic/im.h"
