@@ -11,6 +11,13 @@ sudo="sudo"
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+		curl -O http://python-distribute.org/distribute_setup.py
+		python distribute_setup.py
+		curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+		python get-pip.py
+fi
+
 export PYTHONPATH="${core_path}:${python_path}"
 
 # install the visualdl wheel first
