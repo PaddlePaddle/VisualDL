@@ -25,6 +25,7 @@ SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 success_code = 0
 failure_code = 1
 
+
 def option_parser():
     """
     :return:
@@ -61,7 +62,6 @@ log_reader = LogReader(options.logdir)
 log_image_dir = os.path.join(options.logdir, "tmpimages")
 if not os.path.isdir(log_image_dir):
     os.mkdir(log_image_dir)
-
 
 
 # return data
@@ -174,7 +174,8 @@ def individual_image():
     step_index = int(request.args.get('index'))  # index of step
     offset = 0
 
-    imagefile = lib.get_invididual_image(log_reader, log_image_dir, mode, tag, step_index)
+    imagefile = lib.get_invididual_image(log_reader, log_image_dir, mode, tag,
+                                         step_index)
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
