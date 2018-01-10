@@ -1,4 +1,4 @@
-#include <glog/logging.h>
+#include "visualdl/utils/logging.h"
 #include <ctime>
 
 #include "visualdl/logic/im.h"
