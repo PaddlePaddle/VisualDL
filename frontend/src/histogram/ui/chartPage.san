@@ -1,7 +1,7 @@
 <template>
     <div class="visual-dl-chart-page">
         <ui-expand-panel isShow="{{expand}}" info="{{itemsLength}}" title="{{title}}">
-            <div san-for="tag in filteredPageList" class="visual-dl-chart-box">
+            <div san-for="tag in filteredPageList" class="visual-dl-chart-page-box">
                 <ui-chart
                     san-for="tag in tag.tagList"
                     tagInfo="{{tag}}"
@@ -88,7 +88,7 @@ export default {
     .chart-page
         .chart-box
             float left
-        .chart-box:after
+        .chart-page-box:after
             content: "";
             clear: both;
             display: block;

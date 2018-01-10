@@ -119,7 +119,7 @@ export default {
                 horizontal: 'step',
                 sortingMethod: 'default',
                 downloadLink: [],
-                outlier: ['yes'],
+                outlier: [],
                 runs: [],
                 running: true
             }

@@ -265,6 +265,7 @@ export default {
             return getPluginScalarsScalars(params);
         });
         axios.all(requestList).then(resArray => {
+            console.log(resArray);
             this.data.set('originData', resArray.map(res => res.data));
         });
     },
@@ -449,13 +450,14 @@ export default {
 
     expandArea() {
         let isExpand = this.data.get('isExpand');
+        let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
         if (!isExpand) {
             let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
-            el.style.width = '800px';
+            el.style.width = pageBoxWidth + 'px';
             el.style.height = '600px';
             this.data.set('isExpand', true);
             this.myChart.resize({
-                width: 800,
+                width: pageBoxWidth,
                 height: 600
             });
         }
