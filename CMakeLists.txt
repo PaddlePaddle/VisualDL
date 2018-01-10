@@ -21,8 +21,10 @@ option(ON_RELEASE       "RELEASE mode" ON)
 
 
 include(external/zlib)      # download, build, install zlib
-include(external/gflags)    # download, build, install gflags
-include(external/glog)      # download, build, install glog
+if (NOT ON_RELEASE)
+  include(external/gflags)    # download, build, install gflags
+  include(external/glog)      # download, build, install glog
+endif(NOT ON_RELEASE)
 include(external/gtest)     # download, build, install gtest
 include(external/eigen)     # download eigen
 include(external/pybind11)  # download pybind11
@@ -32,7 +34,7 @@ include(external/python)    # find python and set path
 
 if (NOT ON_RELEASE)
   message(STATUS "build on debug mode")
-  add_compile_options(-DVISUALDL_WITH_GLOG)
+  add_definitions(-DVISUALDL_WITH_GLOG)
 endif(NOT ON_RELEASE)
 
 include_directories(${PROJECT_SOURCE_DIR})
