@@ -99,11 +99,17 @@ def get_image_tag_steps(storage, mode, tag):
         res = []
 
     for step_index in range(image.num_records()):
-        record = image.record(step_index, sample_index)
+        try:
+            # the latest step may have less samples than `num_samples`, and this
+            # operation should fail in that situation.
+            record = image.record(step_index, sample_index)
+        except:
+            # just break it, because if no more than `num_samples`, only the preceding
+            # records are valid.
+            break
         shape = record.shape()
         # TODO(ChunweiYan) remove this trick, some shape will be empty
-        if not shape: continue
-        # assert shape, "%s,%s" % (mode, tag)
+        # if not shape: continue
         query = urllib.urlencode({
             'sample': 0,
             'index': step_index,
