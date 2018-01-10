@@ -8,7 +8,7 @@
 #include <string>
 
 #if defined(VISUALDL_WITH_GLOG)
-#include <glog/logging.h>
+#include "visualdl/utils/logging.h"
 #endif
 
 namespace visualdl {
