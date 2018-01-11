@@ -45,7 +45,6 @@ export default {
 
         filteredPageList() {
             let list = this.data.get('filteredRunsList');
-            console.log(list);
             let currentPage = this.data.get('currentPage');
             let pageSize = this.data.get('pageSize');
             return list.slice((currentPage - 1) * pageSize, currentPage * pageSize);

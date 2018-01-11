@@ -1,7 +1,6 @@
 export default function autoAdjustHeight() {
     // compute the container height
     let containerHeight = window.innerHeight - 64;
-    console.log(containerHeight);
     let containerLeftEl = document.getElementsByClassName('visual-dl-page-left')[0];
     let containerRightEl = document.getElementsByClassName('visual-dl-page-right')[0];
     containerLeftEl.style.height = containerHeight + 'px';
