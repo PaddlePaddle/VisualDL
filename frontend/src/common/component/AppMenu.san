@@ -63,7 +63,9 @@ export default {
 
 .visual-dl-app-menu
     .sm-appbar-title
+        font-size 24px
         flex none
+        margin-right 50px
     .sm-appbar-right
         width 100%
         .sm-menu
@@ -72,6 +74,7 @@ export default {
             display flex
             flex-direction row
             .sm-menu-item
+                padding 0 30px
                 .sm-menu-item-content
                     color #fff
                     opacity 0.6
