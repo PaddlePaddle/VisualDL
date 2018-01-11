@@ -1,6 +1,13 @@
 <template>
     <div class="visual-dl-page-container">
         <div class="visual-dl-page-left">
+            <ui-chart
+                filtScreen="{{filtScreen}}"
+                download="{{download}}"
+                scale="{{config.scale}}"
+            ></ui-chart>
+        </div>
+        <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
                 <ui-config
                     runsItems="{{runsItems}}"
@@ -10,18 +17,12 @@
                 ></ui-config>
             </div>
         </div>
-        <div class="visual-dl-page-right">
-            <ui-chart
-                filtScreen="{{filtScreen}}"
-                download="{{download}}"
-                scale="{{config.scale}}"
-            ></ui-chart>
-        </div>
     </div>
 </template>
 
 <script>
 import {getPluginHistogramsTags, getRuns} from '../service';
+import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import config from './ui/config';
 import chart from './ui/chart';
 export default {
@@ -55,6 +56,10 @@ export default {
             this.data.set('runsArray', data);
             this.data.set('config.runs', data);
         });
+    },
+
+    attached() {
+        autoAdjustHeight();
     },
 
     filterTagsList(groupNameReg) {

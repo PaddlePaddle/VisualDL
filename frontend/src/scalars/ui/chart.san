@@ -265,8 +265,9 @@ export default {
             return getPluginScalarsScalars(params);
         });
         axios.all(requestList).then(resArray => {
-            console.log(resArray);
-            this.data.set('originData', resArray.map(res => res.data));
+            if (resArray.every(res => res.status === 0)) {
+                this.data.set('originData', resArray.map(res => res.data));
+            }
         });
     },
 
@@ -599,7 +600,9 @@ export default {
 <style lang="stylus">
     .visual-dl-page-charts
         float left
-        margin-bottom 20px
+        margin 20px 30px 10px 0
+        background: #fff;
+        padding: 10px;
         .visual-dl-chart-actions
             height 50px
             margin-left 10%

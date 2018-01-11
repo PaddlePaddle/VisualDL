@@ -48,21 +48,32 @@ export default {
 
 @import './style/variables';
 
+// modify component style for custom theme
+.sm-appbar
+    background $-theme-color
+
+.sm-pagination .page-selector span.current
+    background $-theme-color
+
 +prefix-classes('visual-dl-page-')
     .container
-        padding-left 300px
+        padding-right 250px
         position relative
+        background $-left-background-color
         .left
-            width 280px
+            width 100%
+            overflow scroll
+            border solid 1px #e9e9e9
+            background #e9e9e9
             min-height 300px
-            border solid 1px #e4e4e4
-            position absolute
-            left 0
+            padding 2%
+            box-sizing border-box
         .right
-            width 94%
-            overflow hidden
-            border solid 1px #e4e4e4
+            overflow scroll
+            width 250px
             min-height 300px
-            padding 20px
-
+            position absolute
+            right 0
+            top 0
+            box-sizing border-box
 </style>

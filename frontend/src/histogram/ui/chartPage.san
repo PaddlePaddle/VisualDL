@@ -1,16 +1,14 @@
 <template>
     <div class="visual-dl-chart-page">
-        <ui-expand-panel isShow="{{expand}}" info="{{itemsLength}}" title="{{title}}">
-            <div san-for="tag in filteredPageList" class="visual-dl-chart-page-box">
-                <ui-chart
-                    san-for="tag in tag.tagList"
-                    tagInfo="{{tag}}"
-                    runs="{{config.runs}}"
-                    chartType="{{config.chartType}}"
-                    running="{{config.running}}"
-                    runsItems="{{runsItems}}"
-                ></ui-chart>
-            </div>
+        <ui-expand-panel isShow="{{expand}}" info="{{total}}" title="{{title}}">
+            <ui-chart
+                san-for="tag in filteredPageList"
+                tagInfo="{{tag}}"
+                runs="{{config.runs}}"
+                chartType="{{config.chartType}}"
+                running="{{config.running}}"
+                runsItems="{{runsItems}}"
+            ></ui-chart>
             <ui-pagination
                 san-if="total > pageSize"
                 on-pageChange="handlePageChange($event)"
@@ -27,7 +25,7 @@ import ExpandPanel from '../../common/component/ExpandPanel';
 import Chart from './chart';
 import Pagination from 'san-mui/Pagination';
 
-import {cloneDeep} from 'lodash';
+import {cloneDeep, flatten} from 'lodash';
 
 export default {
     components: {
@@ -40,31 +38,21 @@ export default {
             let tagList = this.data.get('tagList') || [];
             let runs = this.data.get('config.runs') || [];
             let list = cloneDeep(tagList);
-            return list.slice().map(item => {
-                item.tagList = item.tagList.filter(one => runs.includes(one.run));
-                return item;
-            });
+            return flatten(list.slice().map(item => {
+                return item.tagList.filter(one => runs.includes(one.run));
+            }));
         },
 
         filteredPageList() {
             let list = this.data.get('filteredRunsList');
+            console.log(list);
             let currentPage = this.data.get('currentPage');
             let pageSize = this.data.get('pageSize');
             return list.slice((currentPage - 1) * pageSize, currentPage * pageSize);
         },
         total() {
             let list = this.data.get('filteredRunsList') || [];
-            return list.reduce((num, item) => {
-                let length = item.tagList.length;
-                return length ? num + 1 : num;
-            }, 0);
-        },
-        itemsLength() {
-            let list = this.data.get('filteredRunsList') || [];
-            return list.reduce((num, item) => {
-                let length = item.tagList.length;
-                return length + num;
-            }, 0);
+            return list.length;
         }
     },
     initData() {

@@ -271,8 +271,10 @@ export default {
             run,
             tag: tag.displayName
         };
-        getPluginHistogramsHistograms(params).then(({data}) => {
-            this.data.set('originData', data);
+        getPluginHistogramsHistograms(params).then(({status, data}) => {
+            if (status === 0) {
+                this.data.set('originData', data);
+            }
         });
     },
     lightHoveredLine({seriesIndex}) {
@@ -332,6 +334,9 @@ export default {
     .visual-dl-histogram-charts
         float left
         margin-bottom 20px
+        margin 20px 30px 10px 0
+        background #fff
+        padding 10px
         .visual-dl-chart-box
             width 400px
             height 300px

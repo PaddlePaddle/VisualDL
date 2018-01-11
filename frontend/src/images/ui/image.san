@@ -128,19 +128,23 @@ export default {
             tag: displayName,
             samples
         };
-        getPluginImagesImages(params).then(({data}) => {
-            this.data.set('data', data);
-            this.data.set('currentIndex', data.length - 1);
+        getPluginImagesImages(params).then(({status, data}) => {
+            if (status === 0) {
+                this.data.set('data', data);
+                this.data.set('currentIndex', data.length - 1);
+            }
         });
     }
 };
 </script>
 <style lang="stylus">
     .visual-dl-image
-        padding 10px
         font-size 12px
         width 400px
         float left
+        margin 20px 30px 10px 0
+        background #fff
+        padding 10px
         .visual-dl-image-title
             font-size 14px
             line-height 30px
