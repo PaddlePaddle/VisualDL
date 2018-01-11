@@ -18,8 +18,9 @@ with logwriter.mode("test") as writer:
     # loss_scalar = writer.scalar("loss")
     acc_scalar = writer.scalar("loss")
 
+num_samples = 4
 with logwriter.mode("train") as writer:
-    train_image = writer.image("input_image", 10, 1)
+    train_image = writer.image("input_image", num_samples, 1)
 
 # with logwriter.mode("train") as writer:
 #     train_image = writer.histogram("input_image", 10, 1)
@@ -157,7 +158,7 @@ for pass_id in range(PASS_NUM):
             # print(image_data.flatten())
             train_image.set_sample(idx, image_data.shape, image_data.flatten())
             sample_num += 1
-            if sample_num % 10 == 0:
+            if sample_num % num_samples == 0:
                 print("finish")
                 train_image.finish_sampling()
                 sample_num = 0
