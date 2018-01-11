@@ -14,15 +14,24 @@
             label="Runs"
             items="{{runsItems}}"
         />
+        <san-button
+            class="visual-dl-image-run-toggle"
+            variants="raised {{config.running ? 'secondery' : 'primary'}}"
+            on-click="toggleAllRuns"
+        >
+            {{config.running ? 'Running' : 'Stopped'}}
+        </san-button>
     </div>
 </template>
 <script>
 import TextField from 'san-mui/TextField';
 import CheckBoxGroup from '../../common/component/CheckBoxGroup';
+import Button from 'san-mui/Button';
 export default {
     components: {
         'san-text-field': TextField,
-        'ui-checkbox-group': CheckBoxGroup
+        'ui-checkbox-group': CheckBoxGroup,
+        'san-button': Button
     },
     initData() {
         return {
@@ -39,6 +48,11 @@ export default {
                 }
             ]
         };
+    },
+    toggleAllRuns() {
+        let running = this.data.get('config.running');
+        this.data.set('config.running', !running);
+        this.fire('runningChange', running);
     }
 };
 </script>
