@@ -55,6 +55,50 @@ export default {
 .sm-pagination .page-selector span.current
     background $-theme-color
 
+.sm-text-field.has-label .sm-text-field-label
+    color $-right-font-color
+
+.sm-text-field-input
+    color $-right-font-color
+
+.sm-text-field-hint.state-show
+    color $-right-font-color
+
+.sm-text-field
+        .sm-text-field-line
+            background $-right-font-color
+        .sm-text-field-focus-line
+            background $-theme-color
+
+.sm-form-item .label
+    color $-right-font-color
+
+.sm-slider-bg
+    background $-right-font-color
+
+.sm-slider-fill,
+.sm-slider-thumb
+    background $-theme-color
+
+.sm-radio-icon-checked,
+.sm-checkbox-icon-checked
+    color $-theme-color
+
+.sm-radio .sm-radio-wrapper .sm-radio-label,
+.sm-checkbox .sm-radio-wrapper .sm-radio-label,
+.sm-radio .sm-checkbox-wrapper .sm-radio-label,
+.sm-checkbox .sm-checkbox-wrapper .sm-radio-label,
+.sm-radio .sm-radio-wrapper .sm-checkbox-label,
+.sm-checkbox .sm-radio-wrapper .sm-checkbox-label,
+.sm-radio .sm-checkbox-wrapper .sm-checkbox-label,
+.sm-checkbox .sm-checkbox-wrapper .sm-checkbox-label
+    color $-right-font-color
+
+.sm-button.variant-secondery.variant-raised,
+.sm-button.variant-secondery.variant-floating
+    background $-theme-color
+
+
 +prefix-classes('visual-dl-page-')
     .container
         padding-right 250px
@@ -63,8 +107,8 @@ export default {
         .left
             width 100%
             overflow scroll
-            border solid 1px #e9e9e9
-            background #e9e9e9
+            border solid 1px $-left-border-clor
+            background $-left-border-clor
             min-height 300px
             padding 2%
             box-sizing border-box
@@ -76,4 +120,6 @@ export default {
             right 0
             top 0
             box-sizing border-box
+            .config-com
+                color $-right-font-color
 </style>

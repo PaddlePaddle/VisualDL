@@ -1,7 +1,7 @@
 <template>
     <div class="visual-dl-page-config-com">
         <san-text-field
-            hintText="input a tag group name to search"
+            hintText="input a tag group name"
             label="Group name RegExp"
             inputValue="{=config.groupNameReg=}"
         />

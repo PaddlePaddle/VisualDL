@@ -182,7 +182,7 @@ export default {
         let maxStep = -Infinity;
         let minStep = Infinity;
         grid.top = '50%';
-        chartData.forEach((dataItem) => {
+        chartData.forEach(dataItem => {
             let lineData = [];
             maxStep = Math.max(dataItem.step, maxStep);
             minStep = Math.min(dataItem.step, minStep);
@@ -239,15 +239,15 @@ export default {
                         api.coord
                     );
                     return {
-                            type: 'polygon',
-                            silent: true,
-                            shape: {
-                                points
-                            },
-                            style: api.style({
-                                stroke: '#bbb',
-                                lineWidth: 1
-                            })
+                        type: 'polygon',
+                        silent: true,
+                        shape: {
+                            points
+                        },
+                        style: api.style({
+                            stroke: '#bbb',
+                            lineWidth: 1
+                        })
                     };
                 },
                 data: rawData
@@ -280,7 +280,7 @@ export default {
 
         let zr = ecChart.getZr();
 
-        function removeTooltip(){
+        function removeTooltip() {
             if (hoverLine) {
                 zr.remove(hoverLine);
                 zr.remove(tooltip);
@@ -299,7 +299,7 @@ export default {
             removeTooltip();
             let nearestIndex = findNearestValue(e.offsetX, e.offsetY);
             if (nearestIndex) {
-                let getCoord = function(pt) {
+                let getCoord = function (pt) {
                     return ecChart.convertToPixel('grid', pt);
                 };
                 let linePoints = makePolyPoints(
