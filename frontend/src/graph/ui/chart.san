@@ -77,7 +77,7 @@ export default {
         this.myChart = echarts.init(el);
     },
 
-    initChartChartOption(data) {
+    initChartOption(data) {
         this.setChartOptions(data);
     },
     setChartOptions(data) {

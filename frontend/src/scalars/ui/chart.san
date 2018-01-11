@@ -107,7 +107,7 @@ export default {
 
     attached() {
         let tagInfo = this.data.get('tagInfo');
-        this.initCharts(tagInfo);
+        this.initChart(tagInfo);
 
         if (this.data.get('running')) {
             this.startInterval();
@@ -129,10 +129,10 @@ export default {
         this.data.set('downloadType', runsItems.find((item, index) => index === 0).value);
     },
 
-    initCharts(tagInfo) {
+    initChart(tagInfo) {
         this.createChart();
         this.setChartsOptions(tagInfo);
-        this.getOriginChartsData(tagInfo);
+        this.getOriginChartData(tagInfo);
     },
 
     createChart() {
@@ -248,7 +248,7 @@ export default {
     startInterval() {
         this.getOringDataInterval = setInterval(() => {
             let tagInfo = this.data.get('tagInfo');
-            this.getOriginChartsData(tagInfo);
+            this.getOriginChartData(tagInfo);
         }, intervalTime * 1000);
     },
 
@@ -256,7 +256,7 @@ export default {
         clearInterval(this.getOringDataInterval);
     },
 
-    getOriginChartsData({tagList, tag}) {
+    getOriginChartData({tagList, tag}) {
         let requestList = tagList.map(item => {
             let params = {
                 run: item.run,
