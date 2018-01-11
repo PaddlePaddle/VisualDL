@@ -1,24 +1,28 @@
 <template>
-    <div class="visual-dl-scalar-container">
-        <div class="visual-dl-scalar-left">
-            <div class="visual-dl-scalar-config-container">
+    <div class="visual-dl-page-container">
+        <div class="visual-dl-page-left">
+            <ui-chart
+                filtScreen="{{filtScreen}}"
+                download="{{download}}"
+                scale="{{config.scale}}"
+            ></ui-chart>
+        </div>
+        <div class="visual-dl-page-right">
+            <div class="visual-dl-page-config-container">
                 <ui-config
                     runsItems="{{runsItems}}"
                     config="{=config=}"
                     on-fitScreen="handleFitScreen"
+                    on-download="handleDownload"
                 ></ui-config>
             </div>
-        </div>
-        <div class="visual-dl-scalar-right">
-            <ui-chart
-                filtScreen="{{filtScreen}}"
-            ></ui-chart>
         </div>
     </div>
 </template>
 
 <script>
 import {getPluginHistogramsTags, getRuns} from '../service';
+import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import config from './ui/config';
 import chart from './ui/chart';
 export default {
@@ -35,7 +39,8 @@ export default {
                 horizontal: 'step',
                 chartType: 'offset',
                 runs: [],
-                running: true
+                running: true,
+                scale: 0.5
             }
         };
     },
@@ -53,6 +58,10 @@ export default {
         });
     },
 
+    attached() {
+        autoAdjustHeight();
+    },
+
     filterTagsList(groupNameReg) {
         let tagsList = this.data.get('tagsList') || [];
         let regExp = new RegExp(groupNameReg);
@@ -64,6 +73,12 @@ export default {
         this.data.set('filtScreen', {
             filtScreen: true
         });
+        this.data.set('config.scale', 0.5);
+    },
+    handleDownload() {
+        this.data.set('download', {
+            filtScreen: true
+        });
     }
 };
 
@@ -71,22 +86,4 @@ export default {
 
 <style lang="stylus">
 
-@import '../style/variables';
-
-+prefix-classes('visual-dl-scalar-')
-    .container
-        padding-left 300px
-        position relative
-        .left
-            width 280px
-            min-height 300px
-            border solid 1px #e4e4e4
-            position absolute
-            left 0
-        .right
-            width 100%
-            overflow hidden
-            border solid 1px #e4e4e4
-            min-height 300px
-            padding 20px
 </style>
