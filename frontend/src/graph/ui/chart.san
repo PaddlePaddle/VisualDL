@@ -25,23 +25,23 @@ export default {
     },
     inited() {
         this.watch('originData', data => {
-            this.initChartChartOption(data);
+            this.initChartOption(data);
         });
 
         this.watch('filtScreen', filtScreen => {
             this.myChart.clear();
             let data = this.data.get('originData');
-            this.initChartChartOption(data);
+            this.initChartOption(data);
         });
     },
 
     attached() {
-        this.initCharts();
+        this.initChart();
     },
 
-    initCharts(tagInfo) {
+    initChart(tagInfo) {
         this.createChart();
-        this.getOriginChartsData();
+        this.getOriginChartData();
     },
 
     createChart() {
@@ -49,14 +49,14 @@ export default {
         this.myChart = echarts.init(el);
     },
 
-    initChartChartOption(data) {
+    initChartOption(data) {
         this.setChartOptions(data);
     },
     setChartOptions(data) {
         this.myChart.setOption(data);
     },
 
-    getOriginChartsData() {
+    getOriginChartData() {
         getPluginGraphsGraphs().then(({data}) => {
             this.data.set('originData', data);
         });

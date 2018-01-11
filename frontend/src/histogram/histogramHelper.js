@@ -1,7 +1,7 @@
 import {min, max, range} from 'lodash';
 
-export const tansformHistogramData = hitogramData => {
-    let [time, step, items] = hitogramData;
+export const tansformBackendData = histogramData => {
+    let [time, step, items] = histogramData;
     return {
         time,
         step,
@@ -11,57 +11,54 @@ export const tansformHistogramData = hitogramData => {
     };
 };
 
-export const computeTempDatas = (histogram, min, max, numbers = 30) => {
+export const computeNewHistogram = (histogram, min, max, binsNum = 30) => {
     if (max === min) {
         // Create bins even if all the data has a single value.
         max = min * 1.1 + 1;
         min = min / 1.1 - 1;
     }
-    let stepWidth = (max - min) / numbers;
-    let index = 0;
-    return range(min, max, stepWidth).map(left => {
-        let right = left + stepWidth;
+    let stepWidth = (max - min) / binsNum;
+    let itemIndex = 0;
+    return range(min, max, stepWidth).map(binLeft => {
+        let binRight = binLeft + stepWidth;
         let yValue = 0;
-        while (index < histogram.items.length) {
-            let itemRight = Math.min(max, histogram.items[index].right);
-            let itemLeft = Math.max(min, histogram.items[index].left);
-            let intersect = Math.min(itemRight, right) - Math.max(itemLeft, left);
-            let count = (intersect / (itemRight - itemLeft))
-            * histogram.items[index].count;
-
-            yValue += intersect > 0 ? count : 0;
-
-            // If `bucketRight` is bigger than `binRight`, then this bin is
-            // finished and there is data for the next bin, so don't increment
-            // `index`.
-            if (itemRight > right) {
+        while (itemIndex < histogram.items.length) {
+            let itemRight = Math.min(max, histogram.items[itemIndex].right);
+            let itemLeft = Math.max(min, histogram.items[itemIndex].left);
+            let overlap = Math.min(itemRight, binRight) - Math.max(itemLeft, binLeft);
+            let count = (overlap / (itemRight - itemLeft)) * histogram.items[itemIndex].count;
+            yValue += overlap > 0 ? count : 0;
+            // If `itemRight` is bigger than `binRight`, then this bin is
+            // finished and there also has data for the next bin, so don't increment
+            // `itemIndex`.
+            if (itemRight > binRight) {
                 break;
             }
-            index++;
+            itemIndex++;
         }
-        return {x: left, dx: stepWidth, y: yValue};
+        return {x: binLeft, dx: stepWidth, y: yValue};
     });
 };
 
-export const tansformToChartData
+export const tansformToVisData
 = (tempData, time, step) => tempData.map(({x, dx, y}) => [time, step, x + dx / 2, Math.floor(y)]);
 
 export const originDataToChartData = originData => {
-    let tempDatas = originData.map(tansformHistogramData);
-    let finalMin = min(tempDatas.map(({min}) => min));
-    let finalMax = max(tempDatas.map(({max}) => max));
+    let tempDatas = originData.map(tansformBackendData);
+    let globalMin = min(tempDatas.map(({min}) => min));
+    let globalMax = max(tempDatas.map(({max}) => max));
     let chartData = tempDatas.map(item => {
-        let computedTempDatas = computeTempDatas(item, finalMin, finalMax);
+        let histoBins = computeNewHistogram(item, globalMin, globalMax);
         let {time, step} = item;
         return {
             time,
             step,
-            items: tansformToChartData(computedTempDatas, time, step)
+            items: tansformToVisData(histoBins, time, step)
         };
     });
     return {
-        min: finalMin,
-        max: finalMax,
+        min: globalMin,
+        max: globalMax,
         chartData
     };
 };
