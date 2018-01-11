@@ -3,14 +3,14 @@
         <ui-button
             class="visual-dl-graph-config-button"
             on-click="handleFitScreen"
-            variants="raised info">
+            variants="raised secondery">
             <ui-icon style="margin-right: 6px">fullscreen</ui-icon>
             Fit &nbsp; to &nbsp; screen
         </ui-button>
         <ui-button
             class="visual-dl-graph-config-button"
             on-click="handleDownload"
-            variants="raised info">
+            variants="raised secondery">
             <ui-icon style="margin-right: 6px">file_download</ui-icon>
             Download image
         </ui-button>
