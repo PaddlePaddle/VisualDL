@@ -1,7 +1,7 @@
 #ifndef VISUALDL_UTILS_CONCURRENCY_H
 #define VISUALDL_UTILS_CONCURRENCY_H
 
-#include <glog/logging.h>
+#include "visualdl/utils/logging.h"
 #include <chrono>
 #include <memory>
 #include <thread>
