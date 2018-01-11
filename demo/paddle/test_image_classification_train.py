@@ -4,6 +4,25 @@ import sys
 
 import paddle.v2 as paddle
 import paddle.v2.fluid as fluid
+from visualdl import LogWriter
+import numpy as np
+
+logdir = "./tmp"
+logwriter = LogWriter(logdir, sync_cycle=10)
+
+with logwriter.mode("train") as writer:
+    loss_scalar = writer.scalar("loss")
+    # acc_scalar = writer.scalar("acc")
+
+with logwriter.mode("test") as writer:
+    # loss_scalar = writer.scalar("loss")
+    acc_scalar = writer.scalar("loss")
+
+with logwriter.mode("train") as writer:
+    train_image = writer.image("input_image", 10, 1)
+
+# with logwriter.mode("train") as writer:
+#     train_image = writer.histogram("input_image", 10, 1)
 
 
 def resnet_cifar10(input, depth=32):
@@ -103,7 +122,7 @@ opts = optimizer.minimize(avg_cost)
 
 accuracy = fluid.evaluator.Accuracy(input=predict, label=label)
 
-BATCH_SIZE = 128
+BATCH_SIZE = 16
 PASS_NUM = 1
 
 train_reader = paddle.batch(
@@ -116,6 +135,9 @@ exe = fluid.Executor(place)
 feeder = fluid.DataFeeder(place=place, feed_list=[images, label])
 exe.run(fluid.default_startup_program())
 
+step = 0
+sample_num = 0
+
 for pass_id in range(PASS_NUM):
     accuracy.reset(exe)
     for data in train_reader():
@@ -123,8 +145,27 @@ for pass_id in range(PASS_NUM):
                             feed=feeder.feed(data),
                             fetch_list=[avg_cost] + accuracy.metrics)
         pass_acc = accuracy.eval(exe)
+
+        if sample_num == 0:
+            print("start")
+            train_image.start_sampling()
+        idx = train_image.is_sample_taken()
+        if idx != -1:
+            image_data = data[0][0]
+            image_data = np.transpose(image_data.reshape(data_shape), axes=[1, 2, 0])
+            # print(image_data.shape)
+            # print(image_data.flatten())
+            train_image.set_sample(idx, image_data.shape, image_data.flatten())
+            sample_num += 1
+            if sample_num % 10 == 0:
+                print("finish")
+                train_image.finish_sampling()
+                sample_num = 0
+        loss_scalar.add_record(step, loss)
+        acc_scalar.add_record(step, acc)
         print("loss:" + str(loss) + " acc:" + str(acc) + " pass_acc:" + str(
             pass_acc))
+        step += 1
         # this model is slow, so if we can train two mini batch, we think it works properly.
-        exit(0)
+        # exit(0)
 exit(1)
