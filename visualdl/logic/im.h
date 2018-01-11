@@ -1,7 +1,7 @@
 #ifndef VISUALDL_LOGIC_IM_H
 #define VISUALDL_LOGIC_IM_H
 
-#include <glog/logging.h>
+#include "visualdl/utils/logging.h"
 #include <memory>
 #include <mutex>
 #include <string>
