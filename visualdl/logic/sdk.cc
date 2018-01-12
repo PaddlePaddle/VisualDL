@@ -98,14 +98,18 @@ struct is_same_type<T, T> {
 void Image::SetSample(int index,
                       const std::vector<shape_t>& shape,
                       const std::vector<value_t>& data) {
+  std::vector<shape_t> new_shape = shape;
+  if (shape.size() == 2) {
+    new_shape.emplace_back(1);
+  }
   // production
   int size = std::accumulate(
-      shape.begin(), shape.end(), 1., [](int a, int b) { return a * b; });
+          new_shape.begin(), new_shape.end(), 1., [](int a, int b) { return a * b; });
   CHECK_GT(size, 0);
-  CHECK_EQ(shape.size(), 3)
+  CHECK_LE(new_shape.size(), 3)
       << "shape should be something like (width, height, num_channel)";
-  CHECK_LE(shape.back(), 3);
-  CHECK_GE(shape.back(), 2);
+  CHECK_LE(new_shape.back(), 3);
+  CHECK_GE(new_shape.back(), 1);
   CHECK_EQ(size, data.size()) << "image's shape not match data";
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
@@ -116,8 +120,8 @@ void Image::SetSample(int index,
   for (int i = 0; i < data.size(); i++) {
     data_str[i] = data[i];
   }
-  Uint8Image image(shape[2], shape[0] * shape[1]);
-  NormalizeImage(&image, &data[0], shape[0] * shape[1], shape[2]);
+  Uint8Image image(new_shape[2], new_shape[0] * new_shape[1]);
+  NormalizeImage(&image, &data[0], new_shape[0] * new_shape[1], new_shape[2]);
   // entry.SetRaw(std::string(data_str.begin(), data_str.end()));
   entry.SetRaw(
       std::string(image.data(), image.data() + image.rows() * image.cols()));
@@ -127,7 +131,7 @@ void Image::SetSample(int index,
       "value_t should not use int64_t field, this type is used to store shape");
 
   // set meta.
-  entry.SetMulti(shape);
+  entry.SetMulti(new_shape);
 
   // // set meta with hack
   // Entry<shape_t> meta;
