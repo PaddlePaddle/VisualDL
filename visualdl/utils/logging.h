@@ -8,7 +8,7 @@
 #include <string>
 
 #if defined(VISUALDL_WITH_GLOG)
-#include "visualdl/utils/logging.h"
+#include <glog/logging.h>
 #endif
 
 namespace visualdl {
@@ -108,15 +108,6 @@ namespace log {
 class NotImplementedException : public std::logic_error {
 public:
   NotImplementedException() : std::logic_error{"Function not implemented"} {}
-};
-
-static void SignalHandler(int sig) {
-  LOG(INFO) << "get signal " << sig;
-  exit(sig);
-}
-
-struct __once_caller__ {
-  __once_caller__() { std::signal(SIGINT, SignalHandler); }
 };
 
 }  // namespace log
