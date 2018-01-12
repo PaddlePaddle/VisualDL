@@ -14,6 +14,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 export PYTHONPATH="${core_path}:${python_path}"
 
 ./dev/_init_build_env.sh "$TOP_DIR"
+export PATH="$PATH:$TOP_DIR/visualdl/server/proto3"
 
 # install the visualdl wheel first
 package() {

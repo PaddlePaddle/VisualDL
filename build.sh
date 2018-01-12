@@ -9,6 +9,7 @@ BUILD_DIR=$TOP_DIR/build
 mkdir -p $BUILD_DIR
 
 ./dev/_init_build_env.sh "$TOP_DIR"
+export PATH="$PATH:$TOP_DIR/visualdl/server/proto3"
 
 build_frontend() {
     cd $FRONTEND_DIR
