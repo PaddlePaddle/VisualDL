@@ -203,15 +203,7 @@ def histogram():
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
-    global graph_image_path
     # TODO(ChunweiYan) need to add a config for whether have graph.
-
-    image_dir = os.path.join(options.logdir, "graphs")
-    if not os.path.isdir(image_dir):
-        os.mkdir(image_dir)
-    image_path = vdl_graph.draw_graph(options.model_pb, image_dir)
-    graph_image_path = image_path
-    print 'image_path', image_path
     data = {'url': '/graphs/image'}
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
@@ -222,5 +214,11 @@ if __name__ == '__main__':
     if not options.logdir:
         logger.error("should pass in logdir option")
         sys.exit(-1)
+
+    # draw graph
+    image_dir = os.path.join(options.logdir, "graphs")
+    if not os.path.isdir(image_dir):
+        os.mkdir(image_dir)
+    graph_image_path = vdl_graph.draw_graph(options.model_pb, image_dir)
 
     app.run(debug=False, host=options.host, port=options.port)

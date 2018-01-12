@@ -4,6 +4,7 @@ import random
 import re
 import urllib
 from tempfile import NamedTemporaryFile
+from log import logger
 
 import numpy as np
 from PIL import Image
@@ -143,6 +144,8 @@ def get_invididual_image(storage, imagedir, mode, tag, step_index,
         try:
             record = image.record(step_index, offset)
             shape = record.shape()
+            if shape[2] == 1:
+                shape = shape[0], shape[1]
             data = np.array(
                 record.data(), dtype='uint8').reshape(record.shape())
 
@@ -158,6 +161,8 @@ def get_invididual_image(storage, imagedir, mode, tag, step_index,
                 im.save(tempfile)
             tempfile.seek(0, 0)
         except:
+            logger.info("failed to get image record, step:%d, offset:%d" %
+                        (step_index, offset))
             tempfile = open(image_path, mode='r+b')
         return tempfile
 
