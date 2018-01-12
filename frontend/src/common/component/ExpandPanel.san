@@ -47,7 +47,7 @@ export default {
 <style lang="stylus">
     .visaul-dl-expand-panel
         .visaul-dl-expand-head
-            border solid 1px #e4e4e4
+            border solid 1px #ccc
             line-height 50px
             height 50px
             padding 0 20px

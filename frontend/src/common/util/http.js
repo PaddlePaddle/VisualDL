@@ -10,17 +10,19 @@ const instance = axios.create({
     timeout: 30000
 });
 
+// for better ux, don't send the error msg because there will be too mutch error
 const responseErrorStatus = response => {
     const data = response.data;
-    if (data[STATUS] !== 0) {
-        Notification.error(data[STATUSINFO]);
-        return Promise.reject(data);
-    }
+    // if (data[STATUS] !== 0) {
+    //     Notification.error(data[STATUSINFO]);
+    //     return Promise.reject(data);
+    // }
     return data;
 };
 
+// for better ux, don't send the error msg because there will be too mutch error
 const responseNetError = error => {
-    Notification.error('net error');
+    // Notification.error('net error');
     return Promise.reject(error);
 };
 
@@ -34,6 +36,7 @@ const formInstance = axios.create({
         'Accept': 'application/json,application/vnd.ms-excel'
     }
 });
+
 
 formInstance.interceptors.response.use(responseErrorStatus, responseNetError);
 
