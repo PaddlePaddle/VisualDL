@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-charts">
+    <div class="visual-dl-histogram-charts">
         <div class="visual-dl-chart-box">
         </div>
         <div class="visual-dl-chart-actions">
@@ -28,7 +28,7 @@ const highlightLineColor = '#2f4554';
 const defaultLineColor = '#d14a61';
 const lineWidth = 1;
 // the time to refresh chart data
-const intervalTime = 30;
+const intervalTime = 5;
 
 const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
@@ -38,15 +38,8 @@ export default {
         'san-button': Button,
         'san-icon': Icon
     },
-
-    computed: {
-
-    },
-
     initData() {
         return {
-            width: 400,
-            height: 300,
             data: [
                 {
                     name: 'train',
@@ -252,21 +245,16 @@ var ob = this.myChart.getOption();
                         api.value,
                         api.coord
                     );
-
-                    // maxValuePoints.push(maxBy(points, function(point) {
-                    //     return point[1];
-                    // }));
-
                     return {
-                            type: 'polygon',
-                            silent: true,
-                            shape: {
-                                points
-                            },
-                            style: api.style({
-                                stroke: '#999999',
-                                lineWidth: 1
-                            })
+                        type: 'polygon',
+                        silent: true,
+                        shape: {
+                            points
+                        },
+                        style: api.style({
+                            stroke: '#bbb',
+                            lineWidth: 1
+                        })
                     };
                 },
                 data: rawData
@@ -288,7 +276,7 @@ var ob = this.myChart.getOption();
             for (let i = 0; i < rawData[dataIndex].length;) {
                 let x = getValue(i++);
                 let y = getValue(i++);
-                let z = getValue(i++); 
+                let z = getValue(i++);
                 points.push(getPoint(x, y, z, getCoord));
             }
             return points;
@@ -495,8 +483,10 @@ console.log(gridRect);
             run,
             tag: tag.displayName
         };
-        getPluginHistogramsHistograms(params).then(({data}) => {
-            this.data.set('originData', data);
+        getPluginHistogramsHistograms(params).then(({status, data}) => {
+            if (status === 0) {
+                this.data.set('originData', data);
+            }
         });
     },
 
@@ -529,13 +519,14 @@ console.log(gridRect);
 
     expandArea() {
         let isExpand = this.data.get('isExpand');
+        let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
         if (!isExpand) {
             let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
-            el.style.width = '800px';
+            el.style.width = pageBoxWidth + 'px';
             el.style.height = '600px';
             this.data.set('isExpand', true);
             this.myChart.resize({
-                width: 800,
+                width: pageBoxWidth,
                 height: 600
             });
         }
@@ -553,12 +544,15 @@ console.log(gridRect);
 };
 </script>
 <style lang="stylus">
-    .visual-dl-charts
+    .visual-dl-histogram-charts
         float left
         margin-bottom 20px
+        margin 20px 30px 10px 0
+        background #fff
+        padding 10px
         .visual-dl-chart-box
-            width 400px;
-            height 300px;
+            width 400px
+            height 300px
         .visual-dl-chart-actions
             height 50px
             margin-left 10%
