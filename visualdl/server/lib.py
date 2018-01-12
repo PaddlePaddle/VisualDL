@@ -132,7 +132,9 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
 
         shape = record.shape()
 
-        data = np.array(record.data(), dtype='uint8').reshape(record.shape())
+        if shape[2] == 1:
+          shape = [shape[0], shape[1]]
+        data = np.array(record.data(), dtype='uint8').reshape(shape)
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
             size = max(shape[0], shape[1])

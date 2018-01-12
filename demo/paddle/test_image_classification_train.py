@@ -12,18 +12,14 @@ logwriter = LogWriter(logdir, sync_cycle=10)
 
 with logwriter.mode("train") as writer:
     loss_scalar = writer.scalar("loss")
-    # acc_scalar = writer.scalar("acc")
 
-with logwriter.mode("test") as writer:
-    # loss_scalar = writer.scalar("loss")
-    acc_scalar = writer.scalar("loss")
+with logwriter.mode("train") as writer:
+    acc_scalar = writer.scalar("acc")
 
 num_samples = 4
 with logwriter.mode("train") as writer:
-    train_image = writer.image("input_image", num_samples, 1)
-
-# with logwriter.mode("train") as writer:
-#     train_image = writer.histogram("input_image", 10, 1)
+    conv_image = writer.image("conv_image", num_samples, 1)
+    input_image = writer.image("input_image", num_samples, 1)
 
 
 def resnet_cifar10(input, depth=32):
@@ -92,7 +88,7 @@ def vgg16_bn_drop(input):
     bn = fluid.layers.batch_norm(input=fc1, act='relu')
     drop2 = fluid.layers.dropout(x=bn, dropout_prob=0.5)
     fc2 = fluid.layers.fc(input=drop2, size=512, act=None)
-    return fc2
+    return fc2, conv1
 
 
 classdim = 10
@@ -107,7 +103,7 @@ if len(sys.argv) >= 2:
 
 if net_type == "vgg":
     print("train vgg net")
-    net = vgg16_bn_drop(images)
+    net, conv1 = vgg16_bn_drop(images)
 elif net_type == "resnet":
     print("train resnet")
     net = resnet_cifar10(images, 32)
@@ -142,26 +138,33 @@ sample_num = 0
 for pass_id in range(PASS_NUM):
     accuracy.reset(exe)
     for data in train_reader():
-        loss, acc = exe.run(fluid.default_main_program(),
+        loss, conv1_out, acc = exe.run(fluid.default_main_program(),
                             feed=feeder.feed(data),
-                            fetch_list=[avg_cost] + accuracy.metrics)
+                            fetch_list=[avg_cost, conv1] + accuracy.metrics)
         pass_acc = accuracy.eval(exe)
 
         if sample_num == 0:
-            print("start")
-            train_image.start_sampling()
-        idx = train_image.is_sample_taken()
+            input_image.start_sampling()
+            conv_image.start_sampling()
+
+        idx1 = input_image.is_sample_taken()
+        idx2 = conv_image.is_sample_taken()
+        assert idx1 == idx2
+        idx = idx1
         if idx != -1:
             image_data = data[0][0]
-            image_data = np.transpose(image_data.reshape(data_shape), axes=[1, 2, 0])
-            # print(image_data.shape)
-            # print(image_data.flatten())
-            train_image.set_sample(idx, image_data.shape, image_data.flatten())
+            input_image_data = np.transpose(image_data.reshape(data_shape), axes=[1, 2, 0])
+            input_image.set_sample(idx, input_image_data.shape, input_image_data.flatten())
+
+            conv_image_data = conv1_out[0][0]
+            conv_image.set_sample(idx, conv_image_data.shape, conv_image_data.flatten())
+
             sample_num += 1
             if sample_num % num_samples == 0:
-                print("finish")
-                train_image.finish_sampling()
+                input_image.finish_sampling()
+                conv_image.finish_sampling()
                 sample_num = 0
+
         loss_scalar.add_record(step, loss)
         acc_scalar.add_record(step, acc)
         print("loss:" + str(loss) + " acc:" + str(acc) + " pass_acc:" + str(
