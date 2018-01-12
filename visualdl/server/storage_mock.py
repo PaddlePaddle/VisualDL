@@ -35,6 +35,7 @@ def add_image(writer,
                     image_writer.set_sample(index, shape, list(data))
             image_writer.finish_sampling()
 
+
 def add_histogram(writer, mode, tag, num_buckets):
     with writer.mode(mode) as writer:
         histogram = writer.histogram(tag, num_buckets)
