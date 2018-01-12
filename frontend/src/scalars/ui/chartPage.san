@@ -1,7 +1,7 @@
 <template>
     <div class="visual-dl-chart-page">
         <ui-expand-panel isShow="{{expand}}" info="{{tagList.length}}" title="{{title}}">
-            <div class="visual-dl-chart-box">
+            <div class="visual-dl-chart-page-box">
                 <ui-chart
                     san-for="tag in filteredTagList"
                     tagInfo="{{tag}}"
@@ -29,8 +29,10 @@
 </template>
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
-import chart from '../../common/component/Charts/chart';
+import chart from './chart';
 import Pagination from 'san-mui/Pagination';
+
+import {cloneDeep} from 'lodash';
 
 export default {
     components: {
@@ -39,8 +41,17 @@ export default {
         'ui-pagination': Pagination
     },
     computed: {
-        filteredTagList() {
+        filteredRunsList() {
             let tagList = this.data.get('tagList') || [];
+            let runs = this.data.get('config.runs') || [];
+            let list = cloneDeep(tagList);
+            return list.slice().map(item => {
+                item.tagList = item.tagList.filter(one => runs.includes(one.run));
+                return item;
+            });
+        },
+        filteredTagList() {
+            let tagList = this.data.get('filteredRunsList') || [];
             let currentPage = this.data.get('currentPage');
             let pageSize = this.data.get('pageSize');
             return tagList.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -69,7 +80,7 @@ export default {
 
 +prefix-classes('visual-dl-')
     .chart-page
-        .chart-box:after
+        .chart-page-box:after
             content: "";
             clear: both;
             display: block;

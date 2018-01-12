@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-charts">
+    <div class="visual-dl-page-charts">
         <div class="visual-dl-chart-box" style="{{computedStyle}}">
         </div>
         <div class="visual-dl-chart-actions">
@@ -26,18 +26,18 @@
 // components
 import Button from 'san-mui/Button';
 import Icon from 'san-mui/Icon';
-import DropDownMenu from '../../../common/component/DropDownMenu';
+import DropDownMenu from '../../common/component/DropDownMenu';
 
 // libs
 import echarts from 'echarts';
 import axios from 'axios';
 import {isFinite, flatten, maxBy, minBy, sortBy, max, min} from 'lodash';
-import {generateJsonAndDownload} from '../../../common/util/downLoadFile';
-import {quantile} from '../../../common/util/index';
+import {generateJsonAndDownload} from '../../common/util/downLoadFile';
+import {quantile} from '../../common/util/index';
 import moment from 'moment';
 
 // service
-import {getPluginScalarsScalars} from '../../../service';
+import {getPluginScalarsScalars} from '../../service';
 
 const originLinesOpacity = 0.3;
 const defaultSmoothWeight = 0.6;
@@ -107,7 +107,7 @@ export default {
 
     attached() {
         let tagInfo = this.data.get('tagInfo');
-        this.initCharts(tagInfo);
+        this.initChart(tagInfo);
 
         if (this.data.get('running')) {
             this.startInterval();
@@ -129,10 +129,10 @@ export default {
         this.data.set('downloadType', runsItems.find((item, index) => index === 0).value);
     },
 
-    initCharts(tagInfo) {
+    initChart(tagInfo) {
         this.createChart();
         this.setChartsOptions(tagInfo);
-        this.getOriginChartsData(tagInfo);
+        this.getOriginChartData(tagInfo);
     },
 
     createChart() {
@@ -248,7 +248,7 @@ export default {
     startInterval() {
         this.getOringDataInterval = setInterval(() => {
             let tagInfo = this.data.get('tagInfo');
-            this.getOriginChartsData(tagInfo);
+            this.getOriginChartData(tagInfo);
         }, intervalTime * 1000);
     },
 
@@ -256,7 +256,7 @@ export default {
         clearInterval(this.getOringDataInterval);
     },
 
-    getOriginChartsData({tagList, tag}) {
+    getOriginChartData({tagList, tag}) {
         let requestList = tagList.map(item => {
             let params = {
                 run: item.run,
@@ -265,7 +265,9 @@ export default {
             return getPluginScalarsScalars(params);
         });
         axios.all(requestList).then(resArray => {
-            this.data.set('originData', resArray.map(res => res.data));
+            if (resArray.every(res => res.status === 0)) {
+                this.data.set('originData', resArray.map(res => res.data));
+            }
         });
     },
 
@@ -449,13 +451,14 @@ export default {
 
     expandArea() {
         let isExpand = this.data.get('isExpand');
+        let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
         if (!isExpand) {
             let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
-            el.style.width = '800px';
+            el.style.width = pageBoxWidth + 'px';
             el.style.height = '600px';
             this.data.set('isExpand', true);
             this.myChart.resize({
-                width: 800,
+                width: pageBoxWidth,
                 height: 600
             });
         }
@@ -595,9 +598,11 @@ export default {
 };
 </script>
 <style lang="stylus">
-    .visual-dl-charts
+    .visual-dl-page-charts
         float left
-        margin-bottom 20px
+        margin 20px 30px 10px 0
+        background: #fff;
+        padding: 10px;
         .visual-dl-chart-actions
             height 50px
             margin-left 10%

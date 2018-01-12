@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-charts">
+    <div class="visual-dl-histogram-charts">
         <div class="visual-dl-chart-box">
         </div>
         <div class="visual-dl-chart-actions">
@@ -17,6 +17,7 @@ import Icon from 'san-mui/Icon';
 
 // libs
 import echarts from 'echarts';
+import {min, max} from 'lodash';
 import {originDataToChartData} from '../histogramHelper';
 import {format, precisionRound} from 'd3-format';
 
@@ -27,7 +28,7 @@ const highlightLineColor = '#2f4554';
 const defaultLineColor = '#d14a61';
 const lineWidth = 1;
 // the time to refresh chart data
-const intervalTime = 30;
+const intervalTime = 5;
 
 const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
@@ -37,13 +38,8 @@ export default {
         'san-button': Button,
         'san-icon': Icon
     },
-    computed: {
-
-    },
     initData() {
         return {
-            width: 400,
-            height: 300,
             data: [
                 {
                     name: 'train',
@@ -52,21 +48,22 @@ export default {
             ]
         };
     },
+
     inited() {
         this.watch('originData', data => {
-            this.initChartChartOption();
+            this.initChartOption();
         });
 
         this.watch('chartType', chartType => {
-            this.initChartChartOption();
+            this.initChartOption();
         });
     },
 
     attached() {
         let tagInfo = this.data.get('tagInfo');
-        this.initCharts(tagInfo);
+        this.initChart(tagInfo);
 
-        this.initeChartsEvent();
+        this.initChartEvent();
         if (this.data.get('running')) {
             this.startInterval();
         }
@@ -79,10 +76,9 @@ export default {
         this.stopInterval();
     },
 
-    initCharts(tagInfo) {
+    initChart(tagInfo) {
         this.createChart();
-        // this.setChartsOptions(tagInfo);
-        this.getOriginChartsData(tagInfo);
+        this.getOriginChartData(tagInfo);
     },
 
     createChart() {
@@ -90,16 +86,17 @@ export default {
         this.myChart = echarts.init(el);
     },
 
-    initChartChartOption() {
+    initChartOption() {
         this.myChart.clear();
         let data = this.data.get('originData');
-        let chartData = originDataToChartData(data);
+        let visData = originDataToChartData(data);
         let tagInfo = this.data.get('tagInfo');
         let title = tagInfo.tag.displayName + '(' + tagInfo.run + ')';
         let chartType = this.data.get('chartType');
-        this.setChartOptions(chartData, title, chartType);
+        this.setChartOptions(visData, title, chartType);
     },
-    setChartOptions(chartData, tag, chartType) {
+
+    setChartOptions(visData, tag, chartType) {
         let grid = {
             left: '15%',
             top: '20%',
@@ -114,10 +111,10 @@ export default {
             }
         };
         if (chartType === 'overlay') {
-            this.setOverlayChartOption(chartData, title, grid);
+            this.setOverlayChartOption(visData, title, grid);
         }
         else if (chartType === 'offset') {
-            this.setOffsetChartOption(chartData, title, grid);
+            this.setOffsetChartOption(visData, title, grid);
         }
     },
 
@@ -181,12 +178,15 @@ export default {
         let maxX = max;
         let minZ = Infinity;
         let maxZ = -Infinity;
+        let ecChart = this.myChart;
+        let maxStep = -Infinity;
+        let minStep = Infinity;
         grid.top = '50%';
-        chartData.forEach(({items}) => {
+        chartData.forEach(dataItem => {
             let lineData = [];
-            items.forEach(([time, step, x, y]) => {
-                minX = Math.min(minX, x);
-                maxX = Math.max(maxX, x);
+            maxStep = Math.max(dataItem.step, maxStep);
+            minStep = Math.min(dataItem.step, minStep);
+            dataItem.items.forEach(([time, step, x, y]) => {
                 minZ = Math.min(minZ, y);
                 maxZ = Math.max(maxZ, y);
                 lineData.push(x, step, y);
@@ -194,22 +194,21 @@ export default {
             rawData.push(lineData);
         });
         // Max height in z axis.
-        let Z_HEIGHT = 130;
+        let Z_HEIGHT = 200;
         let option = {
             title,
+            color: ['#008c99'],
             visualMap: {
                 type: 'continuous',
                 show: false,
-                min: 0,
-                max: 1000,
+                min: minStep,
+                max: maxStep,
                 dimension: 1,
                 inRange: {
                     colorLightness: [0.3, 0.7]
                 }
             },
             xAxis: {
-                // min: minX - (maxX - minX) * 0.3,
-                // max: maxX + (maxX - minX) * 0.3,
                 min: minX,
                 max: maxX,
                 axisLine: {
@@ -221,6 +220,9 @@ export default {
             },
             yAxis: {
                 position: 'right',
+                axisLine: {
+                    onZero: false
+                },
                 inverse: true,
                 splitLine: {
                     show: false
@@ -230,20 +232,15 @@ export default {
             series: [{
                 type: 'custom',
                 dimensions: ['x', 'y'],
-                renderItem(params, api) {
-                    let points = [];
-                    for (let i = 0; i < rawData[params.dataIndex].length;) {
-                        let x = api.value(i++);
-                        let y = api.value(i++);
-                        let z = api.value(i++);
-
-                        let pt = api.coord([x, y]);
-                        // Linear map in z axis
-                        pt[1] -= (z - minZ) / (maxZ - minZ) * Z_HEIGHT;
-                        points.push(pt);
-                    }
+                renderItem: function (params, api) {
+                    let points = makePolyPoints(
+                        params.dataIndex,
+                        api.value,
+                        api.coord
+                    );
                     return {
                         type: 'polygon',
+                        silent: true,
                         shape: {
                             points
                         },
@@ -256,14 +253,200 @@ export default {
                 data: rawData
             }]
         };
-        this.myChart.setOption(option);
+
+        function makePolyPoints(dataIndex, getValue, getCoord) {
+            let points = [];
+            for (let i = 0; i < rawData[dataIndex].length;) {
+                let x = getValue(i++);
+                let y = getValue(i++);
+                let z = getValue(i++);
+                points.push(getPoint(x, y, z, getCoord));
+            }
+            return points;
+        }
+
+        function getPoint(x, y, z, getCoord) {
+            let pt = getCoord([x, y]);
+            // linear map in z axis
+            pt[1] -= (z - minZ) / (maxZ - minZ) * Z_HEIGHT;
+            return pt;
+        }
+
+        let hoverLine;
+        let hoverDots = [];
+        let tooltip;
+        let tooltipX;
+        let tooltipY;
+
+        let zr = ecChart.getZr();
+
+        function removeTooltip() {
+            if (hoverLine) {
+                zr.remove(hoverLine);
+                zr.remove(tooltip);
+                hoverDots.forEach(dot => zr.remove(dot));
+                hoverDots.length = 0;
+                zr.remove(tooltipX);
+                zr.remove(tooltipY);
+            }
+        }
+
+        zr.on('mouseout', e => {
+            removeTooltip();
+        });
+
+        zr.on('mousemove', e => {
+            removeTooltip();
+            let nearestIndex = findNearestValue(e.offsetX, e.offsetY);
+            if (nearestIndex) {
+                let getCoord = function (pt) {
+                    return ecChart.convertToPixel('grid', pt);
+                };
+                let linePoints = makePolyPoints(
+                    nearestIndex.itemIndex,
+                    function (i) {
+                        return rawData[nearestIndex.itemIndex][i];
+                    },
+                    getCoord
+                );
+
+                zr.add(hoverLine = new echarts.graphic.Polyline({
+                    silent: true,
+                    shape: {
+                        points: linePoints
+                    },
+                    style: {
+                        stroke: '#9b9a9a',
+                        lineWidth: 2
+                    },
+                    z: 999
+                }));
+
+                let itemX;
+                rawData.forEach(dataItem => {
+                    let binIndex = nearestIndex.binIndex;
+                    let x = dataItem[binIndex * 3];
+                    let y = dataItem[binIndex * 3 + 1];
+                    let z = dataItem[binIndex * 3 + 2];
+                    let pt = getPoint(x, y, z, getCoord);
+                    itemX = pt[0];
+                    let dot = new echarts.graphic.Circle({
+                        shape: {
+                            cx: pt[0],
+                            cy: pt[1],
+                            r: 3
+                        },
+                        style: {
+                            fill: '#000',
+                            stroke: '#ccc',
+                            lineWidth: 1
+                        },
+                        z: 1000
+                    });
+                    zr.add(dot);
+                    hoverDots.push(dot);
+                });
+
+                let hoveredItem = chartData[nearestIndex.itemIndex];
+                tooltip = new echarts.graphic.Text({
+                    position: [e.offsetX + 30, e.offsetY - 50],
+                    style: {
+                        text: hoveredItem.items[nearestIndex.binIndex][3],
+                        textFill: '#000',
+                        fontSize: 14,
+                        textBackgroundColor: '#eee',
+                        textBorderColor: '#008c99',
+                        textBorderWidth: 2,
+                        textBorderRadius: 5,
+                        textPadding: 10,
+                        rich: {}
+                    },
+                    z: 2000
+                });
+                zr.add(tooltip);
+
+                let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
+
+                tooltipX = new echarts.graphic.Text({
+                    position: [
+                        itemX,
+                        gridRect.y + gridRect.height
+                    ],
+                    style: {
+                        text: Math.round(hoveredItem.items[nearestIndex.binIndex][2] * 1000) / 1000,
+                        textFill: '#fff',
+                        textAlign: 'center',
+                        fontSize: 12,
+                        textBackgroundColor: '#333',
+                        textBorderWidth: 2,
+                        textPadding: [5, 7],
+                        rich: {}
+                    },
+                    z: 2000
+                });
+                zr.add(tooltipX);
+
+                tooltipY = new echarts.graphic.Text({
+                    position: [
+                        gridRect.x + gridRect.width,
+                        linePoints[linePoints.length - 1][1]
+                    ],
+                    style: {
+                        text: hoveredItem.step,
+                        textFill: '#fff',
+                        textVerticalAlign: 'middle',
+                        fontSize: 12,
+                        textBackgroundColor: '#333',
+                        textBorderWidth: 2,
+                        textPadding: [5, 7],
+                        rich: {}
+                    },
+                    z: 2000
+                });
+                zr.add(tooltipY);
+            }
+        });
+
+        function findNearestValue(px, py) {
+            let value = ecChart.convertFromPixel('grid', [px, py]);
+            let itemIndex;
+            let nearestY = Infinity;
+            let binIndex;
+            chartData.forEach((item, index) => {
+                let dist = Math.abs(value[1] - item.step);
+                if (dist < nearestY) {
+                    nearestY = dist;
+                    itemIndex = index;
+                }
+            });
+            if (itemIndex != null) {
+                let dataItem = chartData[itemIndex];
+                let nearestX = Infinity;
+                dataItem.items.forEach((item, index) => {
+                    let dist = Math.abs(item[2] - value[0]);
+                    if (dist < nearestX) {
+                        nearestX = dist;
+                        binIndex = index;
+                    }
+                });
+                if (binIndex != null) {
+                    return {
+                        itemIndex: itemIndex,
+                        binIndex: binIndex
+                    };
+                }
+            }
+        }
+
+        ecChart.setOption(option);
+
     },
 
     // get origin data per 60 seconds
     startInterval() {
         this.getOringDataInterval = setInterval(() => {
             let tagInfo = this.data.get('tagInfo');
-            this.getOriginChartsData(tagInfo);
+            this.getOriginChartData(tagInfo);
         }, intervalTime * 1000);
     },
 
@@ -271,15 +454,18 @@ export default {
         clearInterval(this.getOringDataInterval);
     },
 
-    getOriginChartsData({run, tag}) {
+    getOriginChartData({run, tag}) {
         let params = {
             run,
             tag: tag.displayName
         };
-        getPluginHistogramsHistograms(params).then(({data}) => {
-            this.data.set('originData', data);
+        getPluginHistogramsHistograms(params).then(({status, data}) => {
+            if (status === 0) {
+                this.data.set('originData', data);
+            }
         });
     },
+
     lightHoveredLine({seriesIndex}) {
         let series = this.myChart.getOption().series;
         let newSeries = series.map((item, index) => {
@@ -297,7 +483,8 @@ export default {
             series: newSeries
         });
     },
-    initeChartsEvent() {
+
+    initChartEvent() {
         this.myChart.on('mousemove', params => {
             let chartType = this.data.get('chartType');
             if (chartType === 'overlay') {
@@ -308,13 +495,14 @@ export default {
 
     expandArea() {
         let isExpand = this.data.get('isExpand');
+        let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
         if (!isExpand) {
             let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
-            el.style.width = '800px';
+            el.style.width = pageBoxWidth + 'px';
             el.style.height = '600px';
             this.data.set('isExpand', true);
             this.myChart.resize({
-                width: 800,
+                width: pageBoxWidth,
                 height: 600
             });
         }
@@ -329,16 +517,18 @@ export default {
             });
         }
     }
-
 };
 </script>
 <style lang="stylus">
-    .visual-dl-charts
+    .visual-dl-histogram-charts
         float left
         margin-bottom 20px
+        margin 20px 30px 10px 0
+        background #fff
+        padding 10px
         .visual-dl-chart-box
-            width 400px;
-            height 300px;
+            width 400px
+            height 300px
         .visual-dl-chart-actions
             height 50px
             margin-left 10%

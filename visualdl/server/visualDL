@@ -26,12 +26,12 @@ success_code = 0
 failure_code = 1
 
 
+
 def option_parser():
     """
     :return:
     """
-    parser = OptionParser(usage="usage: visual_dl visual_dl.py "\
-                          "-p port [options]")
+    parser = OptionParser(usage="usage: visualDL -p port [options]")
     parser.add_option(
         "-p",
         "--port",
@@ -48,6 +48,12 @@ def option_parser():
         action="store",
         help="api service ip")
     parser.add_option(
+        "-m",
+        "--model_pb",
+        type=str,
+        action="store",
+        help="model proto in ONNX format")
+    parser.add_option(
         "--logdir", action="store", dest="logdir", help="log file directory")
     return parser.parse_args()
 
@@ -63,6 +69,7 @@ log_image_dir = os.path.join(options.logdir, "tmpimages")
 if not os.path.isdir(log_image_dir):
     os.mkdir(log_image_dir)
 
+graph_image_path = None
 
 # return data
 # status, msg, data
@@ -89,6 +96,10 @@ def serve_static(filename):
     return send_from_directory(
         os.path.join(server_path, static_file_path), filename)
 
+@app.route('/graphs/image')
+def serve_graph():
+    print 'send file', graph_image_path
+    return send_file(graph_image_path)
 
 @app.route('/data/logdir')
 def logdir():
@@ -190,13 +201,19 @@ def histogram():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/graphs/graphs')
+@app.route('/data/plugin/graphs/graph')
 def graph():
-    # run = request.args.get('run')
-    # model_json_str = mock_data.graph_data()
-    # model_json = json.loads(model_json_str)
-    model_json = vdl_graph.load_model(options.logdir + "/model.pb")
-    result = gen_result(0, "", model_json)
+    global graph_image_path
+    # TODO(ChunweiYan) need to add a config for whether have graph.
+
+    image_dir = os.path.join(options.logdir, "graphs")
+    if not os.path.isdir(image_dir):
+        os.mkdir(image_dir)
+    image_path = vdl_graph.draw_graph(options.model_pb, image_dir)
+    graph_image_path = image_path
+    print 'image_path', image_path
+    data = {'url': '/graphs/image'}
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
