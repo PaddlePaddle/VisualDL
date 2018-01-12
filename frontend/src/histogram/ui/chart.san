@@ -28,7 +28,7 @@ const highlightLineColor = '#2f4554';
 const defaultLineColor = '#d14a61';
 const lineWidth = 1;
 // the time to refresh chart data
-const intervalTime = 5;
+const intervalTime = 15;
 
 const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
@@ -104,7 +104,7 @@ export default {
             left: '15%',
             top: '15%',
             right: '10%',
-            bottom: '10%'
+            bottom: '8%'
         };
 
         let title = {
@@ -184,7 +184,7 @@ export default {
         let ecChart = this.myChart;
         let maxStep = -Infinity;
         let minStep = Infinity;
-        grid.top = '50%';
+        grid.top = '42%';
         grid.left = '4%';
         grid.right = '15%';
         chartData.forEach((dataItem) => {
@@ -203,7 +203,7 @@ export default {
         // let maxValuePoints = [];
         let option = {
             title,
-            color: ['#008c99'],
+            color: ['#006069'],
             visualMap: {
                 type: 'continuous',
                 show: false,
@@ -211,7 +211,7 @@ export default {
                 max: maxStep,
                 dimension: 1,
                 inRange: {
-                    colorLightness: [0.3, 0.7]
+                    colorLightness: [0.2, 0.4]
                 }
             },
             xAxis: {
@@ -243,7 +243,7 @@ export default {
                         params.dataIndex,
                         api.value,
                         api.coord,
-                        params.coordSys.y - 10
+                        params.coordSys.y - 5
                     );
                     return {
                         type: 'polygon',
