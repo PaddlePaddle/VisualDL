@@ -45,7 +45,7 @@ const lineWidth = 1.5;
 const minQuantile = 0.05;
 const maxQuantile = 0.95;
 // the time to refresh chart data
-const intervalTime = 30;
+const intervalTime = 15;
 
 export default {
 
