@@ -44,6 +44,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
+# compile test only in release mode
 if (NOT ON_RELEASE)
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
