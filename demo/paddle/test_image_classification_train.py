@@ -4,6 +4,9 @@ import sys
 
 import paddle.v2 as paddle
 import paddle.v2.fluid as fluid
+import paddle.v2.fluid.framework as framework
+from paddle.v2.fluid.param_attr import ParamAttr
+from paddle.v2.fluid.initializer import NormalInitializer
 from visualdl import LogWriter
 import numpy as np
 
@@ -20,6 +23,9 @@ num_samples = 4
 with logwriter.mode("train") as writer:
     conv_image = writer.image("conv_image", num_samples, 1)
     input_image = writer.image("input_image", num_samples, 1)
+
+with logwriter.mode("train") as writer:
+    param1_histgram = writer.histogram("param1", 100)
 
 
 def resnet_cifar10(input, depth=32):
@@ -110,7 +116,8 @@ elif net_type == "resnet":
 else:
     raise ValueError("%s network is not supported" % net_type)
 
-predict = fluid.layers.fc(input=net, size=classdim, act='softmax')
+predict = fluid.layers.fc(input=net, size=classdim, act='softmax',
+                          param_attr=ParamAttr(name="param1", initializer=NormalInitializer()))
 cost = fluid.layers.cross_entropy(input=predict, label=label)
 avg_cost = fluid.layers.mean(x=cost)
 
@@ -135,12 +142,16 @@ exe.run(fluid.default_startup_program())
 step = 0
 sample_num = 0
 
+start_up_program = framework.default_startup_program()
+
+param1_var = start_up_program.global_block().var("param1")
+
 for pass_id in range(PASS_NUM):
     accuracy.reset(exe)
     for data in train_reader():
-        loss, conv1_out, acc = exe.run(fluid.default_main_program(),
+        loss, conv1_out, param1, acc = exe.run(fluid.default_main_program(),
                             feed=feeder.feed(data),
-                            fetch_list=[avg_cost, conv1] + accuracy.metrics)
+                            fetch_list=[avg_cost, conv1, param1_var] + accuracy.metrics)
         pass_acc = accuracy.eval(exe)
 
         if sample_num == 0:
@@ -167,6 +178,8 @@ for pass_id in range(PASS_NUM):
 
         loss_scalar.add_record(step, loss)
         acc_scalar.add_record(step, acc)
+        param1_histgram.add_record(step, param1.flatten())
+
         print("loss:" + str(loss) + " acc:" + str(acc) + " pass_acc:" + str(
             pass_acc))
         step += 1
