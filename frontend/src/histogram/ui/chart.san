@@ -89,7 +89,7 @@ export default {
     initChartOption() {
         this.myChart.clear();
 
-var ob = this.myChart.getOption();
+// var ob = this.myChart.getOption();
 
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
@@ -198,10 +198,9 @@ var ob = this.myChart.getOption();
             });
             rawData.push(lineData);
         });
-        // Max height in z axis.
-        let Z_HEIGHT = 100;
+       
         // Max point in every polygon.
-        let maxValuePoints = [];
+        // let maxValuePoints = [];
         let option = {
             title,
             color: ['#008c99'],
@@ -243,7 +242,8 @@ var ob = this.myChart.getOption();
                     let points = makePolyPoints(
                         params.dataIndex,
                         api.value,
-                        api.coord
+                        api.coord,
+                        params.coordSys.y - 10
                     );
                     return {
                         type: 'polygon',
@@ -271,23 +271,21 @@ var ob = this.myChart.getOption();
             ]
         };
 
-        function makePolyPoints(dataIndex, getValue, getCoord) {
+        function makePolyPoints(dataIndex, getValue, getCoord, yValueMapHeight) {
             let points = [];
             for (let i = 0; i < rawData[dataIndex].length;) {
                 let x = getValue(i++);
                 let y = getValue(i++);
                 let z = getValue(i++);
-                points.push(getPoint(x, y, z, getCoord));
+                points.push(getPoint(x, y, z, getCoord, yValueMapHeight));
             }
             return points;
         }
 
-        // let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
-
-        function getPoint(x, y, z, getCoord) {
+        function getPoint(x, y, z, getCoord, yValueMapHeight) {
             let pt = getCoord([x, y]);
             // linear map in z axis
-            pt[1] -= (z - minZ) / (maxZ - minZ) * Z_HEIGHT;
+            pt[1] -= (z - minZ) / (maxZ - minZ) * yValueMapHeight;
             return pt;
         }
 
@@ -386,10 +384,6 @@ var ob = this.myChart.getOption();
                 zr.add(tooltip);
 
                 let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
-
-console.log(ecChart.getHeight());
-console.log(gridRect);
-
 
                 tooltipX = new echarts.graphic.Text({
                     position: [
