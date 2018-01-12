@@ -80,7 +80,7 @@ data_root = os.path.join(TOP_DIR, 'visualdl/server/dist')
 for root, dirs, files in os.walk(data_root):
     for filename in files:
         path = os.path.join(root, filename)[len(data_root)+1:]
-        datas.append(path)
+        datas.append('dist/' + path)
 
 setup(
     name="visualdl",
