@@ -10,6 +10,10 @@ namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
 
+/**
+ * LogWriter is common Data Structure used to write data
+ * into a low level storage data structure.
+ */
 class LogWriter {
 public:
   LogWriter(const std::string& dir, int sync_cycle) {
@@ -51,6 +55,10 @@ private:
   std::string mode_{kDefaultMode};
 };
 
+/**
+ * LogReader is common Data Structure used to read data
+ * from a low level storage data structure.
+ */
 class LogReader {
 public:
   LogReader(const std::string& dir) : reader_(dir) {}
