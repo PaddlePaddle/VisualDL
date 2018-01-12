@@ -1,13 +1,13 @@
 #ifndef VISUALDL_LOGIC_IM_H
 #define VISUALDL_LOGIC_IM_H
 
-#include "visualdl/utils/logging.h"
 #include <memory>
 #include <mutex>
 #include <string>
 
 #include "visualdl/utils/concurrency.h"
 #include "visualdl/utils/guard.h"
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 
