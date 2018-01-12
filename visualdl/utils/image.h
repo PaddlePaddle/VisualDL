@@ -1,9 +1,9 @@
 #ifndef VISUALDL_UTILS_IMAGE_H
 #define VISUALDL_UTILS_IMAGE_H
 
-#include "visualdl/utils/logging.h"
 #include <Eigen/Core>
 #include <unsupported/Eigen/CXX11/Tensor>
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 
@@ -16,6 +16,26 @@ template <typename T>
 using ImageDT =
     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using Uint8Image = ImageDT<uint8_t>;
+
+/*
+ * Rescale image's size.
+ */
+static void RescaleImage(Uint8Image* image,
+                         std::vector<float>* buffer,
+                         int width,
+                         int height,
+                         int depth,
+                         int target_width,
+                         int target_height) {
+  CHECK_LE(target_width, 600) << "too large width to rescale image";
+  CHECK_LE(target_height, 800) << "too large height to rescale image";
+  buffer->resize(target_width * target_height);
+
+  float width_scale = (float)target_width / width;
+  float height_scale = (float)target_height / height;
+  for (int cn = 0; cn < depth; cn++) {
+  }
+}
 
 /*
  * hw: height*width
