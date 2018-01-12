@@ -26,7 +26,6 @@ success_code = 0
 failure_code = 1
 
 
-
 def option_parser():
     """
     :return:
@@ -65,11 +64,8 @@ mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 log_reader = LogReader(options.logdir)
 
-log_image_dir = os.path.join(options.logdir, "tmpimages")
-if not os.path.isdir(log_image_dir):
-    os.mkdir(log_image_dir)
-
 graph_image_path = None
+
 
 # return data
 # status, msg, data
@@ -96,10 +92,12 @@ def serve_static(filename):
     return send_from_directory(
         os.path.join(server_path, static_file_path), filename)
 
+
 @app.route('/graphs/image')
 def serve_graph():
     print 'send file', graph_image_path
     return send_file(graph_image_path)
+
 
 @app.route('/data/logdir')
 def logdir():
@@ -215,7 +213,12 @@ if __name__ == '__main__':
         logger.error("should pass in logdir option")
         sys.exit(-1)
 
-    # draw graph
+    # create temp directory to cache images for image components
+    log_image_dir = os.path.join(options.logdir, "tmpimages")
+    if not os.path.isdir(log_image_dir):
+        os.mkdir(log_image_dir)
+
+    # create temp directory to cache images for graph components
     image_dir = os.path.join(options.logdir, "graphs")
     if not os.path.isdir(image_dir):
         os.mkdir(image_dir)
