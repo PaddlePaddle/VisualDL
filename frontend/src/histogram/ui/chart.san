@@ -17,7 +17,7 @@ import Icon from 'san-mui/Icon';
 
 // libs
 import echarts from 'echarts';
-import {min, max} from 'lodash';
+import {maxBy} from 'lodash';
 import {originDataToChartData} from '../histogramHelper';
 import {format, precisionRound} from 'd3-format';
 
@@ -95,6 +95,9 @@ export default {
 
     initChartOption() {
         this.myChart.clear();
+
+var ob = this.myChart.getOption();
+
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
         let tagInfo = this.data.get('tagInfo');
@@ -106,9 +109,9 @@ export default {
     setChartOptions(visData, tag, chartType) {
         let grid = {
             left: '15%',
-            top: '20%',
+            top: '15%',
             right: '10%',
-            bottom: '20%'
+            bottom: '10%'
         };
 
         let title = {
@@ -189,6 +192,8 @@ export default {
         let maxStep = -Infinity;
         let minStep = Infinity;
         grid.top = '50%';
+        grid.left = '4%';
+        grid.right = '15%';
         chartData.forEach((dataItem) => {
             let lineData = [];
             maxStep = Math.max(dataItem.step, maxStep);
@@ -201,7 +206,9 @@ export default {
             rawData.push(lineData);
         });
         // Max height in z axis.
-        let Z_HEIGHT = 200;
+        let Z_HEIGHT = 100;
+        // Max point in every polygon.
+        let maxValuePoints = [];
         let option = {
             title,
             color: ['#008c99'],
@@ -245,6 +252,11 @@ export default {
                         api.value,
                         api.coord
                     );
+
+                    // maxValuePoints.push(maxBy(points, function(point) {
+                    //     return point[1];
+                    // }));
+
                     return {
                             type: 'polygon',
                             silent: true,
@@ -252,13 +264,23 @@ export default {
                                 points
                             },
                             style: api.style({
-                                stroke: '#bbb',
+                                stroke: '#999999',
                                 lineWidth: 1
                             })
                     };
                 },
                 data: rawData
-            }]
+            }
+            // {
+            //     type: 'custom',
+            //     dimension: ['x', 'y'],
+            //     renderItem: function (params, api) {
+
+
+            //     },
+            //     data: rawData
+            // }
+            ]
         };
 
         function makePolyPoints(dataIndex, getValue, getCoord) {
@@ -272,6 +294,8 @@ export default {
             return points;
         }
 
+        // let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
+
         function getPoint(x, y, z, getCoord) {
             let pt = getCoord([x, y]);
             // linear map in z axis
@@ -280,6 +304,7 @@ export default {
         }
 
         let hoverLine;
+        let maxLine;
         let hoverDots = [];
         let tooltip;
         let tooltipX;
@@ -323,7 +348,7 @@ export default {
                         points: linePoints
                     },
                     style: {
-                        stroke: '#9b9a9a',
+                        stroke: '#5c5c5c',
                         lineWidth: 2
                     },
                     z: 999
@@ -373,6 +398,10 @@ export default {
                 zr.add(tooltip);
 
                 let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
+
+console.log(ecChart.getHeight());
+console.log(gridRect);
+
 
                 tooltipX = new echarts.graphic.Text({
                     position: [
