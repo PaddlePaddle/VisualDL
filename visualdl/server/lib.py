@@ -1,8 +1,10 @@
 import pprint
+import os
 import random
 import re
 import urllib
 from tempfile import NamedTemporaryFile
+from log import logger
 
 import numpy as np
 from PIL import Image
@@ -98,11 +100,17 @@ def get_image_tag_steps(storage, mode, tag):
         res = []
 
     for step_index in range(image.num_records()):
-        record = image.record(step_index, sample_index)
+        try:
+            # the latest step may have less samples than `num_samples`, and this
+            # operation should fail in that situation.
+            record = image.record(step_index, sample_index)
+        except:
+            # just break it, because if no more than `num_samples`, only the preceding
+            # records are valid.
+            break
         shape = record.shape()
         # TODO(ChunweiYan) remove this trick, some shape will be empty
-        if not shape: continue
-        # assert shape, "%s,%s" % (mode, tag)
+        # if not shape: continue
         query = urllib.urlencode({
             'sample': 0,
             'index': step_index,
@@ -119,8 +127,12 @@ def get_image_tag_steps(storage, mode, tag):
     return res
 
 
-def get_invididual_image(storage, mode, tag, step_index, max_size=80):
+def get_invididual_image(storage, imagedir, mode, tag, step_index,
+                         max_size=80):
     with storage.mode(mode) as reader:
+        image_name = (mode + "/" + tag + '.png').replace('/', '__')
+        image_path = os.path.join(imagedir, image_name)
+
         res = re.search(r".*/([0-9]+$)", tag)
         # remove suffix '/x'
         if res:
@@ -128,22 +140,30 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
             tag = tag[:tag.rfind('/')]
 
         image = reader.image(tag)
-        record = image.record(step_index, offset)
 
-        shape = record.shape()
+        try:
+            record = image.record(step_index, offset)
+            shape = record.shape()
+            if shape[2] == 1:
+                shape = shape[0], shape[1]
+            data = np.array(
+                record.data(), dtype='uint8').reshape(record.shape())
 
-        if shape[2] == 1:
-          shape = [shape[0], shape[1]]
-        data = np.array(record.data(), dtype='uint8').reshape(shape)
-        tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
-        with Image.fromarray(data) as im:
-            size = max(shape[0], shape[1])
-            if size > max_size:
-                scale = max_size * 1. / size
-                scaled_shape = (int(shape[0] * scale), int(shape[1] * scale))
-                im = im.resize(scaled_shape)
-            im.save(tempfile)
-        tempfile.seek(0, 0)
+            tempfile = open(image_path, mode='w+b')
+            #tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
+            with Image.fromarray(data) as im:
+                size = max(shape[0], shape[1])
+                if size > max_size:
+                    scale = max_size * 1. / size
+                    scaled_shape = (int(shape[0] * scale), int(
+                        shape[1] * scale))
+                    im = im.resize(scaled_shape)
+                im.save(tempfile)
+            tempfile.seek(0, 0)
+        except:
+            logger.info("failed to get image record, step:%d, offset:%d" %
+                        (step_index, offset))
+            tempfile = open(image_path, mode='r+b')
         return tempfile
 
 
