@@ -1,4 +1,5 @@
 <template>
+    <!-- className visual-dl-chart-page used in chart.san, change they all if you need!-->
     <div class="visual-dl-chart-page">
         <ui-expand-panel isShow="{{expand}}" info="{{total}}" title="{{title}}">
             <ui-chart
