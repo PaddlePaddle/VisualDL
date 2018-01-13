@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <fstream>
 
+#include "visualdl/utils/logging.h"
+
 namespace visualdl {
 
 namespace fs {
@@ -44,7 +46,6 @@ bool DeSerializeFromFile(T* proto, const std::string& path) {
 }
 
 static void TryMkdir(const std::string& dir) {
-//  VLOG(1) << "try to mkdir " << dir;
   struct stat st = {0};
   if (stat(dir.c_str(), &st) == -1) {
     ::mkdir(dir.c_str(), 0700);
@@ -67,7 +68,6 @@ static void TryRecurMkdir(const std::string& path) {
 inline void Write(const std::string& path,
                   const std::string& buffer,
                   std::ios::openmode open_mode = std::ios::binary) {
-  VLOG(1) << "write to path " << path;
   std::ofstream file(path, open_mode);
   CHECK(file.is_open()) << "failed to open " << path;
   file.write(buffer.c_str(), buffer.size());
@@ -76,7 +76,6 @@ inline void Write(const std::string& path,
 
 inline std::string Read(const std::string& path,
                         std::ios::openmode open_mode = std::ios::binary) {
-  VLOG(1) << "read from path " << path;
   std::string buffer;
   std::ifstream file(path, open_mode | std::ios::ate);
   CHECK(file.is_open()) << "failed to open " << path;
