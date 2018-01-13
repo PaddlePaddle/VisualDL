@@ -195,10 +195,11 @@ if __name__ == '__main__':
         logger.error("should pass in logdir option")
         sys.exit(-1)
 
-    # draw graph
-    image_dir = os.path.join(options.logdir, "graphs")
-    if not os.path.isdir(image_dir):
-        os.mkdir(image_dir)
-    graph_image_path = vdl_graph.draw_graph(options.model_pb, image_dir)
+    if options.model_pb:
+        # draw graph
+        image_dir = os.path.join(options.logdir, "graphs")
+        if not os.path.isdir(image_dir):
+            os.mkdir(image_dir)
+        graph_image_path = vdl_graph.draw_graph(options.model_pb, image_dir)
 
     app.run(debug=False, host=options.host, port=options.port)
