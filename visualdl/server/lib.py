@@ -137,11 +137,6 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
         data = np.array(record.data(), dtype='uint8').reshape(shape)
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
-            size = max(shape[0], shape[1])
-            if size > max_size:
-                scale = max_size * 1. / size
-                scaled_shape = (int(shape[0] * scale), int(shape[1] * scale))
-                im = im.resize(scaled_shape)
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
