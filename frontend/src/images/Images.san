@@ -142,6 +142,10 @@ export default {
         autoAdjustHeight();
     },
     filterTagsList(groupNameReg) {
+        if (!groupNameReg) {
+            this.data.set('filteredTagsList', []);
+            return;
+        }
         let tagsList = this.data.get('tagsList') || [];
         let regExp = new RegExp(groupNameReg);
         let filtedTagsList = tagsList.filter(item => regExp.test(item.tag));
