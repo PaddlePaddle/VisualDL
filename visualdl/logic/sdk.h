@@ -10,6 +10,10 @@ namespace visualdl {
 
 const static std::string kDefaultMode{"default"};
 
+/**
+ * LogWriter is common Data Structure used to write data
+ * into a low level storage data structure.
+ */
 class LogWriter {
 public:
   LogWriter(const std::string& dir, int sync_cycle) {
@@ -38,6 +42,10 @@ private:
   std::string mode_{kDefaultMode};
 };
 
+/**
+ * LogReader is common Data Structure used to read data
+ * from a low level storage data structure.
+ */
 class LogReader {
 public:
   LogReader(const std::string& dir);
@@ -132,19 +140,21 @@ struct Image {
     writer_.SetNumSamples(num_samples);
     SetCaption(tablet.reader().tag());
   }
+
   void SetCaption(const std::string& c) {
     writer_.SetCaptions(std::vector<std::string>({c}));
   }
+
   /*
-   * Start a sample period.
+   * Start a sampling period.
    */
   void StartSampling();
   /*
-   * Will this sample will be taken.
+   * Will this sample be taken.
    */
   int IsSampleTaken();
   /*
-   * End a sample period.
+   * End a sampling period.
    */
   void FinishSampling();
 
@@ -217,6 +227,9 @@ private:
   std::string mode_;
 };
 
+/*
+ * Histogram component writer.
+ */
 template <typename T>
 struct Histogram {
   Histogram(Tablet tablet, int num_buckets)
@@ -231,6 +244,9 @@ private:
   Tablet writer_;
 };
 
+/*
+ * Histogram reader.
+ */
 template <typename T>
 struct HistogramReader {
   HistogramReader(TabletReader tablet) : reader_(tablet) {}
