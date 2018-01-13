@@ -13,8 +13,10 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 
 export PYTHONPATH="${core_path}:${python_path}"
 
-./dev/_init_build_env.sh "$TOP_DIR"
-export PATH="$PATH:$TOP_DIR/visualdl/server/proto3"
+env_init() {
+    ./dev/_init_build_env.sh "$TOP_DIR"
+    export PATH="$PATH:$TOP_DIR/visualdl/server/proto3"
+}
 
 # install the visualdl wheel first
 package() {
@@ -74,12 +76,14 @@ if [ $mode = "backend" ]; then
 elif [ $mode = "all" ]; then
     # bigfile_reject should be tested first, or some files downloaded may fail this test.
     bigfile_reject
+    env_init
     package
     frontend_test
     backend_test
     server_test
 elif [ $mode = "local" ]; then
     #frontend_test
+    env_init
     backend_test
     server_test
 else
