@@ -22,6 +22,8 @@ app = Flask(__name__, static_url_path="")
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
+success_code = 0
+failure_code = 1
 
 
 def option_parser():
@@ -64,6 +66,7 @@ log_reader = LogReader(options.logdir)
 
 graph_image_path = None
 
+
 # return data
 # status, msg, data
 def gen_result(status, msg, data):
@@ -89,10 +92,12 @@ def serve_static(filename):
     return send_from_directory(
         os.path.join(server_path, static_file_path), filename)
 
+
 @app.route('/graphs/image')
 def serve_graph():
     print 'send file', graph_image_path
     return send_file(graph_image_path)
+
 
 @app.route('/data/logdir')
 def logdir():
@@ -102,7 +107,11 @@ def logdir():
 
 @app.route('/data/runs')
 def runs():
-    result = gen_result(0, "", lib.get_modes(log_reader))
+    try:
+        data = lib.get_modes(log_reader)
+        result = gen_result(success_code, "", data)
+    except:
+        result = gen_result(failure_code, "", [])
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -110,27 +119,33 @@ def runs():
 def scalar_tags():
     mode = request.args.get('mode')
     is_debug = bool(request.args.get('debug'))
-    if is_debug:
-        result = mock_tags.data()
-    else:
+    try:
         result = lib.get_scalar_tags(log_reader)
-    result = gen_result(0, "", result)
+        result = gen_result(success_code, "", result)
+    except:
+        result = gen_result(failure_code, "", [])
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/images/tags")
 def image_tags():
     mode = request.args.get('run')
-    result = lib.get_image_tags(log_reader)
-    result = gen_result(0, "", result)
+    try:
+        result = lib.get_image_tags(log_reader)
+    except:
+        result = []
+    result = gen_result(success_code if result else failure_code, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/histograms/tags")
 def histogram_tags():
     mode = request.args.get('run')
-    result = lib.get_histogram_tags(log_reader)
-    result = gen_result(0, "", result)
+    try:
+        result = lib.get_histogram_tags(log_reader)
+    except:
+        result = []
+    result = gen_result(success_code if result else failure_code, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -138,13 +153,12 @@ def histogram_tags():
 def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
-    is_debug = bool(request.args.get('debug'))
-    if is_debug:
-        result = mock_data.sequence_data()
-    else:
+    try:
         result = lib.get_scalar(log_reader, run, tag)
+    except:
+        result = []
 
-    result = gen_result(0, "", result)
+    result = gen_result(success_code if result else failure_code, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -153,9 +167,12 @@ def images():
     mode = request.args.get('run')
     tag = request.args.get('tag')
 
-    result = lib.get_image_tag_steps(log_reader, mode, tag)
-    result = gen_result(0, "", result)
+    try:
+        result = lib.get_image_tag_steps(log_reader, mode, tag)
+    except:
+        result = []
 
+    result = gen_result(success_code if result else failure_code, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -166,7 +183,8 @@ def individual_image():
     step_index = int(request.args.get('index'))  # index of step
     offset = 0
 
-    imagefile = lib.get_invididual_image(log_reader, mode, tag, step_index)
+    imagefile = lib.get_invididual_image(log_reader, log_image_dir, mode, tag,
+                                         step_index)
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
@@ -195,7 +213,12 @@ if __name__ == '__main__':
         logger.error("should pass in logdir option")
         sys.exit(-1)
 
-    # draw graph
+    # create temp directory to cache images for image components
+    log_image_dir = os.path.join(options.logdir, "tmpimages")
+    if not os.path.isdir(log_image_dir):
+        os.mkdir(log_image_dir)
+
+    # create temp directory to cache images for graph components
     image_dir = os.path.join(options.logdir, "graphs")
     if not os.path.isdir(image_dir):
         os.mkdir(image_dir)

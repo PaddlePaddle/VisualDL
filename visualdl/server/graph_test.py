@@ -1,14 +1,16 @@
 import unittest
 import graph
 import json
+import os
 
 
 class GraphTest(unittest.TestCase):
     def setUp(self):
         self.mock_dir = "./mock"
+        self.model_pb_path = os.path.join(self.mock_dir, 'squeezenet_model.pb')
 
     def test_graph_edges_squeezenet(self):
-        json_obj = graph.to_IR_json(self.mock_dir + '/squeezenet_model.pb')
+        json_obj = graph.to_IR_json(self.model_pb_path)
         json_obj = graph.add_edges(json_obj)
 
         # 126 edges + 66 nodes (out-edge of each node is counted twice)
@@ -39,7 +41,7 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(json_obj['edges'][111]['label'], 'label_111')
 
     def test_graph_edges_inception_v1(self):
-        json_obj = graph.to_IR_json(self.mock_dir + '/inception_v1_model.pb')
+        json_obj = graph.to_IR_json(self.model_pb_path)
         json_obj = graph.add_edges(json_obj)
 
         # 286 edges + 143 nodes (out-edge of each node is counted twice)
@@ -68,6 +70,10 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(json_obj['edges'][420]['source'], 'node_139')
         self.assertEqual(json_obj['edges'][420]['target'], 'pool5/7x7_s1_2')
         self.assertEqual(json_obj['edges'][420]['label'], 'label_420')
+
+    def test_graphviz(self):
+        best_image_path = graph.draw_graph(self.model_pb_path, './graph_temp')
+        self.assertTrue(best_image_path)
 
 
 if __name__ == '__main__':
