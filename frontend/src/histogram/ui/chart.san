@@ -17,7 +17,7 @@ import Icon from 'san-mui/Icon';
 
 // libs
 import echarts from 'echarts';
-import {min, max} from 'lodash';
+import {maxBy} from 'lodash';
 import {originDataToChartData} from '../histogramHelper';
 import {format, precisionRound} from 'd3-format';
 
@@ -28,7 +28,7 @@ const highlightLineColor = '#2f4554';
 const defaultLineColor = '#d14a61';
 const lineWidth = 1;
 // the time to refresh chart data
-const intervalTime = 5;
+const intervalTime = 15;
 
 const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
@@ -88,6 +88,9 @@ export default {
 
     initChartOption() {
         this.myChart.clear();
+
+// var ob = this.myChart.getOption();
+
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
         let tagInfo = this.data.get('tagInfo');
@@ -99,9 +102,9 @@ export default {
     setChartOptions(visData, tag, chartType) {
         let grid = {
             left: '15%',
-            top: '20%',
+            top: '15%',
             right: '10%',
-            bottom: '20%'
+            bottom: '8%'
         };
 
         let title = {
@@ -181,8 +184,10 @@ export default {
         let ecChart = this.myChart;
         let maxStep = -Infinity;
         let minStep = Infinity;
-        grid.top = '50%';
-        chartData.forEach(dataItem => {
+        grid.top = '42%';
+        grid.left = '4%';
+        grid.right = '15%';
+        chartData.forEach((dataItem) => {
             let lineData = [];
             maxStep = Math.max(dataItem.step, maxStep);
             minStep = Math.min(dataItem.step, minStep);
@@ -193,11 +198,12 @@ export default {
             });
             rawData.push(lineData);
         });
-        // Max height in z axis.
-        let Z_HEIGHT = 200;
+       
+        // Max point in every polygon.
+        // let maxValuePoints = [];
         let option = {
             title,
-            color: ['#008c99'],
+            color: ['#006069'],
             visualMap: {
                 type: 'continuous',
                 show: false,
@@ -205,7 +211,7 @@ export default {
                 max: maxStep,
                 dimension: 1,
                 inRange: {
-                    colorLightness: [0.3, 0.7]
+                    colorLightness: [0.2, 0.4]
                 }
             },
             xAxis: {
@@ -236,7 +242,8 @@ export default {
                     let points = makePolyPoints(
                         params.dataIndex,
                         api.value,
-                        api.coord
+                        api.coord,
+                        params.coordSys.y - 5
                     );
                     return {
                         type: 'polygon',
@@ -251,28 +258,39 @@ export default {
                     };
                 },
                 data: rawData
-            }]
+            }
+            // {
+            //     type: 'custom',
+            //     dimension: ['x', 'y'],
+            //     renderItem: function (params, api) {
+
+
+            //     },
+            //     data: rawData
+            // }
+            ]
         };
 
-        function makePolyPoints(dataIndex, getValue, getCoord) {
+        function makePolyPoints(dataIndex, getValue, getCoord, yValueMapHeight) {
             let points = [];
             for (let i = 0; i < rawData[dataIndex].length;) {
                 let x = getValue(i++);
                 let y = getValue(i++);
                 let z = getValue(i++);
-                points.push(getPoint(x, y, z, getCoord));
+                points.push(getPoint(x, y, z, getCoord, yValueMapHeight));
             }
             return points;
         }
 
-        function getPoint(x, y, z, getCoord) {
+        function getPoint(x, y, z, getCoord, yValueMapHeight) {
             let pt = getCoord([x, y]);
             // linear map in z axis
-            pt[1] -= (z - minZ) / (maxZ - minZ) * Z_HEIGHT;
+            pt[1] -= (z - minZ) / (maxZ - minZ) * yValueMapHeight;
             return pt;
         }
 
         let hoverLine;
+        let maxLine;
         let hoverDots = [];
         let tooltip;
         let tooltipX;
@@ -280,7 +298,7 @@ export default {
 
         let zr = ecChart.getZr();
 
-        function removeTooltip() {
+        function removeTooltip(){
             if (hoverLine) {
                 zr.remove(hoverLine);
                 zr.remove(tooltip);
@@ -293,13 +311,13 @@ export default {
 
         zr.on('mouseout', e => {
             removeTooltip();
-        });
+        }); 
 
         zr.on('mousemove', e => {
             removeTooltip();
             let nearestIndex = findNearestValue(e.offsetX, e.offsetY);
             if (nearestIndex) {
-                let getCoord = function (pt) {
+                let getCoord = function(pt) {
                     return ecChart.convertToPixel('grid', pt);
                 };
                 let linePoints = makePolyPoints(
@@ -316,7 +334,7 @@ export default {
                         points: linePoints
                     },
                     style: {
-                        stroke: '#9b9a9a',
+                        stroke: '#5c5c5c',
                         lineWidth: 2
                     },
                     z: 999
@@ -388,7 +406,7 @@ export default {
 
                 tooltipY = new echarts.graphic.Text({
                     position: [
-                        gridRect.x + gridRect.width,
+                        gridRect.x + gridRect.width, 
                         linePoints[linePoints.length - 1][1]
                     ],
                     style: {

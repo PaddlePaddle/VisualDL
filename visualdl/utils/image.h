@@ -1,9 +1,9 @@
 #ifndef VISUALDL_UTILS_IMAGE_H
 #define VISUALDL_UTILS_IMAGE_H
 
-#include "visualdl/utils/logging.h"
 #include <Eigen/Core>
 #include <unsupported/Eigen/CXX11/Tensor>
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 
