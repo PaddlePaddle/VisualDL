@@ -53,13 +53,13 @@ val_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'], batch_size
 
 data = mx.sym.var('data')
 # first conv layer
-conv1 = mx.sym.Convolution(data=data, kernel=(5,5), num_filter=20)
+conv1 = mx.sym.Convolution(data=data, kernel=(5, 5), num_filter=20)
 tanh1 = mx.sym.Activation(data=conv1, act_type="tanh")
-pool1 = mx.sym.Pooling(data=tanh1, pool_type="max", kernel=(2,2), stride=(2,2))
+pool1 = mx.sym.Pooling(data=tanh1, pool_type="max", kernel=(2, 2), stride=(2, 2))
 # second conv layer
-conv2 = mx.sym.Convolution(data=pool1, kernel=(5,5), num_filter=50)
+conv2 = mx.sym.Convolution(data=pool1, kernel=(5, 5), num_filter=50)
 tanh2 = mx.sym.Activation(data=conv2, act_type="tanh")
-pool2 = mx.sym.Pooling(data=tanh2, pool_type="max", kernel=(2,2), stride=(2,2))
+pool2 = mx.sym.Pooling(data=tanh2, pool_type="max", kernel=(2, 2), stride=(2, 2))
 # first fullc layer
 flatten = mx.sym.flatten(data=pool2)
 fc1 = mx.symbol.FullyConnected(data=flatten, num_hidden=500)
@@ -77,7 +77,7 @@ lenet_model = mx.mod.Module(symbol=lenet, context=mx.cpu())
 lenet_model.fit(train_iter,
                 eval_data=val_iter,
                 optimizer='sgd',
-                optimizer_params={'learning_rate':0.1},
+                optimizer_params={'learning_rate': 0.1},
                 eval_metric='acc',
                 # integrate our customized callback method
                 batch_end_callback=[add_scalar()],
@@ -91,5 +91,3 @@ test_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'], batch_siz
 acc = mx.metric.Accuracy()
 lenet_model.score(test_iter, acc)
 print(acc)
-
-

@@ -28,13 +28,13 @@ pip install --upgrade dist/visualdl-0.0.1-py2-none-any.whl
 ## 开始编写训练MNIST的程序
 
 我们为您提供了一个演示程序 [mxnet_demo.py](./mxnet_demo.py)。里面展示了如何下载MNIST数据集以及编写MXNet程序来进行CNN的训练。MXNet的部分借鉴了MXNet[官方入门文件](https://mxnet.incubator.apache.org/tutorials/python/mnist.html)
-为了嵌入VisualDL程序，以便在MXNet训练时进行检测，我们需要声明一个logger实例：
+为了嵌入VisualDL程序，以便在MXNet训练时进行检测，我们需要声明一个LogWriter实例：
 
 ```
 logger = LogWriter(logdir, sync_cycle=10)
 ```
 
-logger实例里面包含VisualDL的四个功能模块 Scalar， Image， Graph 以及 Histogram。这里我们使用 Scalar 模块：
+logger实例里面包含VisualDL的四个功能模块 Scalar， Image 以及 Histogram。这里我们使用 Scalar 模块：
 
 ```
 scalar0 = logger.scalar("scalars/scalar0")
