@@ -2,9 +2,9 @@
 
 下面我们演示一下如何在MXNet中使用VisualDL，从而可以把MXNet的训练过程以及最后的模型可视化出来。我们将以MXNet用卷积神经网络(CNN, Convolutional Neural Network)来训练[MNIST](http://yann.lecun.com/exdb/mnist/)数据集作为例子。
 
-- [安装MXNet](#%E5%AE%89%E8%A3%85MXNet)
-- [安装VisualDL](#%E5%AE%89%E8%A3%85VisualDL)
-- [开始编写训练MNIST的程序](#%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E8%AE%AD%E7%BB%83MNIST%E7%9A%84%E7%A8%8B%E5%BA%8F)
+- [安装MXNet](#%E5%AE%89%E8%A3%85mxnet)
+- [安装VisualDL](#%E5%AE%89%E8%A3%85visualdl)
+- [开始编写训练MNIST的程序](#%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E8%AE%AD%E7%BB%83mnist%E7%9A%84%E7%A8%8B%E5%BA%8F)
 
 ## 安装MXNet
 请按照MXNet的[官方网站](https://mxnet.incubator.apache.org/get_started/install.html)来安装MXNet，并验证安装成功。
