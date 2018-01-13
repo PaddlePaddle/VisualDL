@@ -1,36 +1,39 @@
 import mxnet as mx
-import numpy
 
-# 引入VisualDL
+# Here we import LogWriter so that we can write log data while MXNet is training
 from visualdl import LogWriter
 
-# 下载MNIST数据集
+# Download MNIST data
 mnist = mx.test_utils.get_mnist()
 batch_size = 100
 
 
-# 给VisualDL指定一个文件夹，用来存储日志，模型，图片等数据，供可视化使用
+# Provide a folder to store data for log, model, image, etc. VisualDL's visualization will be
+# based on this folder.
 logdir = "./tmp"
 
-# 创建一个logger实例，sync_cycle是读取内存的频率，意思是每十次内存操作，会读取一次数据
+# Initialize a logger instance. Parameter 'sync_cycle' means write a log every 10 operations on
+# memory.
 logger = LogWriter(logdir, sync_cycle=10)
 
 # mark the components with 'train' label.
 with logger.mode("train"):
-    # 这里scalar0 用来记录MXNet训练过程中的数值信息。我们将记录随着训练的进行，我们的准确率会不断降低
+    # scalar0 is used to record scalar metrics while MXNet is training. We will record accuracy.
+    # In the visualization, we can see the accuracy is increasing as more training steps happen.
     scalar0 = logger.scalar("scalars/scalar0")
 
-# 记录训练步数
+# Record training steps
 cnt_step = 0
 
 
-# MXNet提供了许多回调函数的接口，这里我们定义我们自己的回调函数，在每个训练批次（batch）结束时调用
+# MXNet provides many callback interface. Here we define our own callback method and it is called
+# after every batch.
 # https://mxnet.incubator.apache.org/api/python/callback/callback.html
 def add_scalar():
     def _callback(param):
         with logger.mode("train"):
             global cnt_step
-            # 这里的value是我们要记录的准确率accuracy
+            # Here the value is the accuracy we want to record
             # https://mxnet.incubator.apache.org/_modules/mxnet/callback.html
             name_value = param.eval_metric.get_name_value()
             for name, value in name_value:
@@ -39,7 +42,7 @@ def add_scalar():
     return _callback
 
 
-# 开始用MXNet建立CNN，训练MNIST数据集，详情请参见MXNet官方网站
+# Start to build CNN in MXNet, train MNIST dataset. For more info, check MXNet's official website:
 # https://mxnet.incubator.apache.org/tutorials/python/mnist.html
 
 import logging
@@ -76,7 +79,7 @@ lenet_model.fit(train_iter,
                 optimizer='sgd',
                 optimizer_params={'learning_rate':0.1},
                 eval_metric='acc',
-                # 在此嵌入我们自定义的回调函数
+                # integrate our customized callback method
                 batch_end_callback=[add_scalar()],
                 num_epoch=2)
 
