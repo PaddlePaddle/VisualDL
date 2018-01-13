@@ -514,7 +514,7 @@ export default {
 
     expandArea() {
         let isExpand = this.data.get('isExpand');
-        let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
+        let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page')[0].offsetWidth;
         if (!isExpand) {
             let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
             el.style.width = pageBoxWidth + 'px';

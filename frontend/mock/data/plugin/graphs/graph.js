@@ -17,7 +17,7 @@ module.exports = function (path, queryParam, postParam) {
             status: 0,
             msg: 'SUCCESS',
             data: {
-                url: 'someurl'
+                url: ''
             }
         }
     };

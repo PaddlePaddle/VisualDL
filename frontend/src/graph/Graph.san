@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import {getPluginHistogramsTags, getRuns} from '../service';
+import {getPluginGraphsGraph} from '../service';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import config from './ui/config';
 import chart from './ui/chart';
@@ -44,41 +44,9 @@ export default {
             }
         };
     },
-    inited() {
-        getPluginHistogramsTags().then(({errno, data}) => {
-            this.data.set('tags', data);
-
-            // filter when inited
-            let groupNameReg = this.data.get('config.groupNameReg');
-            this.filterTagsList(groupNameReg);
-        });
-        getRuns().then(({errno, data}) => {
-            this.data.set('runsArray', data);
-            this.data.set('config.runs', data);
-        });
-    },
 
     attached() {
         autoAdjustHeight();
-    },
-
-    filterTagsList(groupNameReg) {
-        let tagsList = this.data.get('tagsList') || [];
-        let regExp = new RegExp(groupNameReg);
-        let filtedTagsList = tagsList.filter(item => regExp.test(item.tag));
-        this.data.set('filteredTagsList', filtedTagsList);
-    },
-
-    handleFitScreen() {
-        this.data.set('filtScreen', {
-            filtScreen: true
-        });
-        this.data.set('config.scale', 0.5);
-    },
-    handleDownload() {
-        this.data.set('download', {
-            filtScreen: true
-        });
     }
 };
 
