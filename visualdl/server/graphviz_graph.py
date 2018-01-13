@@ -77,7 +77,7 @@ class Graph(object):
         file = open(dot_path, 'w')
         file.write(self.__str__())
         image_path = dot_path[:-3] + "jpg"
-        cmd = ["dot", "-Tjpg", dot_path, "-o", image_path]
+        cmd = ["/usr/bin/dot", "-Tjpg", dot_path, "-o", image_path]
         # cmd = "./preview.sh \"%s\"" % cmd
         print 'cmd', cmd
         # subprocess.call(cmd, shell=True)

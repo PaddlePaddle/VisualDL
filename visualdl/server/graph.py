@@ -1,6 +1,7 @@
 import os
 import json
 
+from log import logger
 from google.protobuf.json_format import MessageToJson
 
 import onnx
@@ -470,6 +471,10 @@ def draw_graph(model_pb_path, image_dir):
     json_str = load_model(model_pb_path)
     best_image = None
     min_width = None
+    if not os.path.isdir(image_dir):
+        logger.warning("create graph tempory directory: %s" % image_dir)
+        os.mkdir(image_dir)
+
     for i in range(10):
         # randomly generate dot images and select the one with minimum width.
         g = GraphPreviewGenerator(json_str)

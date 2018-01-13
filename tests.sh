@@ -11,33 +11,16 @@ sudo="sudo"
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-		curl -O http://python-distribute.org/distribute_setup.py
-		python distribute_setup.py
-		curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-		python get-pip.py
-fi
-
-$sudo pip install numpy
-$sudo pip install Flask
-$sudo pip install Pillow
-$sudo pip install protobuf
-
 export PYTHONPATH="${core_path}:${python_path}"
+
+./dev/_init_build_env.sh "$TOP_DIR"
+export PATH="$PATH:$TOP_DIR/visualdl/server/proto3"
 
 # install the visualdl wheel first
 package() {
     # some bug with frontend build
     # a environment variable to skip frontend build
     export VS_BUILD_MODE="travis-CI"
-
-    cd $TOP_DIR/visualdl/server
-    # manully install protobuf3
-    curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
-    unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
-    export PATH="$PATH:$(pwd)/protoc3/bin"
-    chmod +x protoc3/bin/*
-
 
     cd $TOP_DIR
     python setup.py bdist_wheel
@@ -61,9 +44,6 @@ frontend_test() {
 }
 
 server_test() {
-    $sudo pip install google
-    $sudo pip install protobuf==3.1.0
-
     cd $TOP_DIR/visualdl/server
     bash graph_test.sh
 
