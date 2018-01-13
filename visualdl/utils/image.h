@@ -18,6 +18,35 @@ using ImageDT =
 using Uint8Image = ImageDT<uint8_t>;
 
 /*
+ * Rescale image's size.
+ */
+static void RescaleImage(const float* source,
+                         std::vector<float>* target,
+                         int width,
+                         int height,
+                         int depth,
+                         int target_width,
+                         int target_height) {
+  CHECK_LE(target_width, 600) << "too large width to rescale image";
+  CHECK_LE(target_height, 800) << "too large height to rescale image";
+  target->resize(target_width * target_height);
+
+  float width_scale = (float)target_width / width;
+  float height_scale = (float)target_height / height;
+  for (int cn = 0; cn < depth; cn++) {
+    for (int x = 0; x < target_width; x++) {
+      for (int y = 0; y < target_height; y++) {
+        int sx = x * width_scale;
+        int sy = y * height_scale;
+        int sid = cn * width * height + sx * height + sy;
+        int tid = cn * target_width * target_height + x * target_height + y;
+        target->at(tid) = source[sid];
+      }
+    }
+  }
+}
+
+/*
  * hw: height*width
  * depth: number of channels
  */

@@ -67,7 +67,8 @@ class LogWriter(object):
         return self
 
     def as_mode(self, mode):
-        LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle, self.writer.as_mode(mode))
+        LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle,
+                                       self.writer.as_mode(mode))
         return LogWriter.cur_mode
 
     def scalar(self, tag, type='float'):
@@ -81,11 +82,17 @@ class LogWriter(object):
         }
         return type2scalar[type](tag)
 
-    def image(self, tag, num_samples, step_cycle):
+    def image(self,
+              tag,
+              num_samples,
+              step_cycle=1,
+              max_width=-1,
+              max_height=-1):
         '''
         Create an image component.
         '''
-        return self.writer.new_image(tag, num_samples, step_cycle)
+        return self.writer.new_image(tag, num_samples, step_cycle, max_width,
+                                     max_height)
 
     def histogram(self, tag, num_buckets, type='float'):
         '''

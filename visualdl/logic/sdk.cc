@@ -103,8 +103,10 @@ void Image::SetSample(int index,
     new_shape.emplace_back(1);
   }
   // production
-  int size = std::accumulate(
-          new_shape.begin(), new_shape.end(), 1., [](int a, int b) { return a * b; });
+  int size =
+      std::accumulate(new_shape.begin(), new_shape.end(), 1., [](int a, int b) {
+        return a * b;
+      });
   CHECK_GT(size, 0);
   CHECK_LE(new_shape.size(), 3)
       << "shape should be something like (width, height, num_channel)";
@@ -114,15 +116,41 @@ void Image::SetSample(int index,
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
 
-  auto entry = step_.MutableData<std::vector<byte_t>>(index);
-  // trick to store int8 to protobuf
-  std::vector<byte_t> data_str(data.size());
-  for (int i = 0; i < data.size(); i++) {
-    data_str[i] = data[i];
+  // process image
+  int width = shape[0], height = shape[1];
+  int target_width = width, target_height = height;
+  float scale = (float)height / width;
+  if (max_width_ > 0) {
+    target_width = std::min(target_width, max_width_);
+    target_height = scale * target_width;
   }
-  Uint8Image image(new_shape[2], new_shape[0] * new_shape[1]);
-  NormalizeImage(&image, &data[0], new_shape[0] * new_shape[1], new_shape[2]);
-  // entry.SetRaw(std::string(data_str.begin(), data_str.end()));
+  if (max_height_ > 0 && target_height > max_height_) {
+    target_height = max_height_;
+    target_width = target_height / scale;
+  }
+
+  std::vector<float> target;
+  if (width != target_width) {
+    RescaleImage(data.data(),
+                 &target,
+                 width,
+                 height,
+                 new_shape[2],
+                 target_width,
+                 target_height);
+  }
+
+  // Uint8Image image(new_shape[2], new_shape[0] * new_shape[1]);
+  Uint8Image image(new_shape[2], target_width * target_height);
+  if (target.empty()) {
+    NormalizeImage(
+        &image, &data[0], target_width * target_height, new_shape[2]);
+  } else {
+    NormalizeImage(
+        &image, &target[0], target_height * target_width, new_shape[2]);
+  }
+
+  auto entry = step_.MutableData<std::vector<byte_t>>(index);
   entry.SetRaw(
       std::string(image.data(), image.data() + image.rows() * image.cols()));
 
@@ -132,12 +160,6 @@ void Image::SetSample(int index,
 
   // set meta.
   entry.SetMulti(new_shape);
-
-  // // set meta with hack
-  // Entry<shape_t> meta;
-  // meta.set_parent(entry.parent());
-  // meta.entry = entry.entry;
-  // meta.SetMulti(shape);
 }
 
 std::string ImageReader::caption() {

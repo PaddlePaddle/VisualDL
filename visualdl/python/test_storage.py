@@ -74,7 +74,7 @@ class StorageTest(unittest.TestCase):
         '''
         print 'check image'
         tag = "layer1/check/image1"
-        image_writer = self.writer.image(tag, 10, 1)
+        image_writer = self.writer.image(tag, 10, 1, 10, 10)
 
         image = Image.open("./dog.jpg")
         shape = [image.size[1], image.size[0], 3]
@@ -101,7 +101,7 @@ class StorageTest(unittest.TestCase):
             print 'data', data.flatten()
             image = Image.fromarray(data.reshape(shape))
             # manully check the image and found that nothing wrong with the image storage.
-            # image.show()
+            image.show()
 
             # after scale, elements are changed.
             # self.assertTrue(

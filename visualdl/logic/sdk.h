@@ -170,8 +170,16 @@ struct Image {
    * step_cycle: store every `step_cycle` as a record.
    * num_samples: how many samples to take in a step.
    */
-  Image(Tablet tablet, int num_samples, int step_cycle)
-      : writer_(tablet), num_samples_(num_samples), step_cycle_(step_cycle) {
+  Image(Tablet tablet,
+        int num_samples,
+        int step_cycle,
+        int max_width = -1,
+        int max_height = -1)
+      : writer_(tablet),
+        num_samples_(num_samples),
+        step_cycle_(step_cycle),
+        max_width_(max_width),
+        max_height_(max_height) {
     CHECK_GT(step_cycle, 0);
     CHECK_GT(num_samples, 0);
 
@@ -213,6 +221,8 @@ private:
   int num_samples_{0};
   int step_id_{0};
   int step_cycle_;
+  int max_width_;
+  int max_height_;
 };
 
 /*

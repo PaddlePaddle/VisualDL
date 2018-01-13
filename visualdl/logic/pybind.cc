@@ -85,9 +85,12 @@ PYBIND11_PLUGIN(core) {
            [](vs::LogWriter& self,
               const std::string& tag,
               int num_samples,
-              int step_cycle) {
+              int step_cycle,
+              int max_width,
+              int max_height) {
              auto tablet = self.AddTablet(tag);
-             return vs::components::Image(tablet, num_samples, step_cycle);
+             return vs::components::Image(
+                 tablet, num_samples, step_cycle, max_width, max_height);
            });
 
 //------------------- components --------------------
