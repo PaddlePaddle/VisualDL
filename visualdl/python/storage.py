@@ -7,8 +7,9 @@ dtypes = ("float", "double", "int32", "int64")
 
 class LogReader(object):
     """LogReader is a Python wrapper to read and analysis the data that
-    saved with data format defined in storage.proto. Scalar/Image/Histogram
-    are all read by this module.
+    saved with data format defined in storage.proto. user can get
+    Scalar Reader/Image Reader/Histogram Reader from this module and use
+    them to reade the data you need.
     """
 
     def __init__(self, dir, reader=None):
@@ -92,8 +93,8 @@ class LogReader(object):
 
 class LogWriter(object):
     """LogWriter is a Python wrapper to write data to log file with the data
-    format defined in storage.proto. It support to write Scalar/Image/Histogram
-    data
+    format defined in storage.proto. user can get Scalar Reader/Image Reader/
+    Histogram Reader from this module and use them to write the data to log file.
     """
 
     cur_mode = None
