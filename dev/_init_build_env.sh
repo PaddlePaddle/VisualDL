@@ -41,4 +41,3 @@ if [ ! -d protoc3 ]; then
     unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
     chmod +x protoc3/bin/*
 fi
--
