@@ -69,7 +69,7 @@ fc2 = mx.sym.FullyConnected(data=tanh3, num_hidden=10)
 # softmax loss
 lenet = mx.sym.SoftmaxOutput(data=fc2, name='softmax')
 
-# create a trainable module on GPU 0
+# create a trainable module on CPU
 lenet_model = mx.mod.Module(symbol=lenet, context=mx.cpu())
 
 
