@@ -1,6 +1,6 @@
 import pprint
-import random
 import re
+import time
 import urllib
 from tempfile import NamedTemporaryFile
 
@@ -178,12 +178,13 @@ def get_histogram(storage, mode, tag):
         return res
 
 
-if __name__ == '__main__':
-    reader = storage.LogReader('./tmp/mock')
-    tags = get_image_tags(reader)
-
-    tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
-    pprint.pprint(tags)
-
-    image = get_invididual_image(reader, "train", 'layer1/layer2/image0/0', 2)
-    print image
+def retry(ntimes, function, time2sleep, *args, **kwargs):
+    '''
+    try to execute `function` `ntimes`, if exception catched, the thread will
+    sleep `time2sleep` seconds.
+    '''
+    for i in xrange(ntimes):
+        try:
+            return function(*args, **kwargs)
+        except:
+            time.sleep(time2sleep)
