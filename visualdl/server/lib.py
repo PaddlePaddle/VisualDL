@@ -180,8 +180,9 @@ def get_histogram(storage, mode, tag, num_samples=200):
         data_idx = 0
 
         sampled_data = []
-        while data_idx < num_samples:
-            sampled_data.append(res[len(res) - data_idx - 1])
+        data_size = len(res)
+        while data_idx < data_size:
+            sampled_data.append(res[data_size - data_idx - 1])
             span_offset += 1
             data_idx = int(span_offset * span)
         sampled_data.append(res[0])
