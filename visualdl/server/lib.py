@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 
 import numpy as np
 from PIL import Image
+from log import logger
 
 
 def get_modes(storage):
@@ -101,21 +102,24 @@ def get_image_tag_steps(storage, mode, tag):
         record = image.record(step_index, sample_index)
         shape = record.shape()
         # TODO(ChunweiYan) remove this trick, some shape will be empty
-        if not shape: continue
-        # assert shape, "%s,%s" % (mode, tag)
-        query = urllib.urlencode({
-            'sample': 0,
-            'index': step_index,
-            'tag': origin_tag,
-            'run': mode,
-        })
-        res.append({
-            'height': shape[0],
-            'width': shape[1],
-            'step': record.step_id(),
-            'wall_time': image.timestamp(step_index),
-            'query': query,
-        })
+        try:
+            if not shape: continue
+            query = urllib.urlencode({
+                'sample': 0,
+                'index': step_index,
+                'tag': origin_tag,
+                'run': mode,
+            })
+            res.append({
+                'height': shape[0],
+                'width': shape[1],
+                'step': record.step_id(),
+                'wall_time': image.timestamp(step_index),
+                'query': query,
+            })
+        except:
+            logger.error("image sample out of range")
+
     return res
 
 
@@ -133,7 +137,7 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
         shape = record.shape()
 
         if shape[2] == 1:
-          shape = [shape[0], shape[1]]
+            shape = [shape[0], shape[1]]
         data = np.array(record.data(), dtype='uint8').reshape(shape)
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
