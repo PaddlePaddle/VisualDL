@@ -1,17 +1,17 @@
 import pprint
 import unittest
 
-import lib
 from visualdl import LogReader, LogWriter
 
-import pprint
-from storage_mock import add_scalar, add_image, add_histogram
+import lib
+from storage_mock import add_histogram, add_image, add_scalar
 
+_retry_counter = 0
 
 class LibTest(unittest.TestCase):
     def setUp(self):
         dir = "./tmp/mock"
-        writer = LogWriter(dir, sync_cycle=10)
+        writer = LogWriter(dir, sync_cycle=30)
 
         add_scalar(writer, "train", "layer/scalar0/min", 1000, 1)
         add_scalar(writer, "test", "layer/scalar0/min", 1000, 10)
@@ -31,6 +31,21 @@ class LibTest(unittest.TestCase):
         add_histogram(writer, "test", "layer/histogram0", 100)
 
         self.reader = LogReader(dir)
+
+    def test_retry(self):
+        ntimes = 7
+        time2sleep = 1
+
+        def func():
+            global _retry_counter
+            if _retry_counter < 5:
+                _retry_counter += 1
+                raise
+            return _retry_counter
+
+        lib.retry(ntimes, func, time2sleep)
+
+        self.assertEqual(_retry_counter, 5)
 
     def test_modes(self):
         modes = lib.get_modes(self.reader)

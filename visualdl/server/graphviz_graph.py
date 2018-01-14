@@ -1,9 +1,8 @@
-import subprocess
-import tempfile
-import sys
+import os
 import random
 import subprocess
-import os
+import sys
+import tempfile
 
 
 def crepr(v):
