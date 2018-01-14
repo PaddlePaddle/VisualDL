@@ -1,11 +1,11 @@
-import os
 import json
+import os
 
 from google.protobuf.json_format import MessageToJson
-
-import onnx
-import graphviz_graph as gg
 from PIL import Image
+
+import graphviz_graph as gg
+import onnx
 
 
 def debug_print(json_obj):

@@ -3,9 +3,7 @@ import unittest
 
 import lib
 import storage
-
-import pprint
-from storage_mock import add_scalar, add_image, add_histogram
+from storage_mock import add_histogram, add_image, add_scalar
 
 
 class LibTest(unittest.TestCase):
