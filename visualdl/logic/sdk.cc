@@ -78,7 +78,8 @@ std::string LogReader::GenReadableTag(const std::string& mode,
 
 bool LogReader::TagMatchMode(const std::string& tag, const std::string& mode) {
   if (tag.size() <= mode.size()) return false;
-  return tag.substr(0, mode.size()) == mode;
+  return tag.substr(0, mode.size()) == mode &&
+         (tag[mode.size()] == '/' || tag[mode.size()] == '%');
 }
 
 namespace components {
