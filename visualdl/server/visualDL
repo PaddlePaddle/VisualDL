@@ -30,7 +30,7 @@ SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
 
 def try_call(function, *args, **kwargs):
-    res = lib.retry(error_retry_times, error_sleep_time, function, *args,
+    res = lib.retry(error_retry_times, function, error_sleep_time, *args,
                     **kwargs)
     if not res:
         raise exceptions.IOError("server IO error, will retry latter.")
