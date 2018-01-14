@@ -1,8 +1,11 @@
 #include "visualdl/logic/sdk.h"
 
+#include <cstdio>
+
 #include "visualdl/logic/histogram.h"
 #include "visualdl/storage/binary_record.h"
 #include "visualdl/utils/image.h"
+#include "visualdl/utils/logging.h"
 #include "visualdl/utils/macro.h"
 
 namespace visualdl {
@@ -202,6 +205,14 @@ void Image::SetSample(int index,
   brcd.tofile();
 
   auto entry = step_.MutableData<std::vector<byte_t>>(index);
+  // update record
+  auto old_hash = entry.reader().GetRaw();
+  if (!old_hash.empty()) {
+    std::string old_path =
+        GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
+    CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
+                                               << old_path << " failed";
+  }
   entry.SetRaw(brcd.hash());
 
   static_assert(
