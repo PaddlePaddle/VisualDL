@@ -17,7 +17,7 @@ import Icon from 'san-mui/Icon';
 
 // libs
 import echarts from 'echarts';
-import {maxBy} from 'lodash';
+// import {maxBy} from 'lodash';
 import {originDataToChartData} from '../histogramHelper';
 import {format, precisionRound} from 'd3-format';
 
@@ -86,6 +86,16 @@ export default {
 
     initChartOption() {
         this.myChart.clear();
+        let zr = this.myChart.getZr();
+        let hoverDots = zrDrawElement.hoverDots;
+        if (hoverDots != null && hoverDots.length !== 0) {
+            hoverDots.forEach(dot => zr.remove(dot));
+        }
+
+        
+
+// console.log(this.myChart.getZr());
+
         let chartType = this.data.get('chartType');
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
@@ -263,17 +273,7 @@ export default {
                     };
                 },
                 data: rawData
-            }
-            // {
-            //     type: 'custom',
-            //     dimension: ['x', 'y'],
-            //     renderItem: function (params, api) {
-
-
-            //     },
-            //     data: rawData
-            // }
-            ]
+            }]
         };
 
         function makePolyPoints(dataIndex, getValue, getCoord, yValueMapHeight) {
@@ -349,7 +349,7 @@ export default {
                     let x = dataItem[binIndex * 3];
                     let y = dataItem[binIndex * 3 + 1];
                     let z = dataItem[binIndex * 3 + 2];
-                    let pt = getPoint(x, y, z, getCoord);
+                    let pt = getPoint(x, y, z, getCoord, gridRect.y - 10);
                     itemX = pt[0];
                     let dot = new echarts.graphic.Circle({
                         shape: {
@@ -366,6 +366,8 @@ export default {
                     });
                     zr.add(dot);
                     zrDrawElement.hoverDots.push(dot);
+// console.log(zrDrawElement.hoverDots.length);
+    
                 });
 
                 let hoveredItem = chartData[nearestIndex.itemIndex];
