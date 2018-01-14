@@ -133,7 +133,7 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
         shape = record.shape()
 
         if shape[2] == 1:
-          shape = [shape[0], shape[1]]
+            shape = [shape[0], shape[1]]
         data = np.array(record.data(), dtype='uint8').reshape(shape)
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
@@ -146,7 +146,7 @@ def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')
 
 
-def get_histogram(storage, mode, tag):
+def get_histogram(storage, mode, tag, num_samples=200):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
         res = []
@@ -171,7 +171,21 @@ def get_histogram(storage, mode, tag):
                     [instance.left(),
                      instance.right(),
                      instance.frequency()])
-        return res
+        if len(res) < num_samples:
+            return res
+
+        # sample some steps
+        span = float(len(res)) / (num_samples - 1)
+        span_offset = 0
+        data_idx = 0
+
+        sampled_data = []
+        while data_idx < num_samples:
+            sampled_data.append(res[len(res) - data_idx - 1])
+            span_offset += 1
+            data_idx = int(span_offset * span)
+        sampled_data.append(res[0])
+        return sampled_data[::-1]
 
 
 if __name__ == '__main__':
