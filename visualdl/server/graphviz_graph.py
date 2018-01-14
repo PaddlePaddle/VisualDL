@@ -28,13 +28,8 @@ class Rank(object):
         if not self.nodes:
             return ''
 
-        # repr = []
-        # for node in self.nodes:
-        #     repr.append(str(node))
         return '{' + 'rank={};'.format(self.kind) + \
                 ','.join([node.name for node in self.nodes]) + '}'
-
-        # return '\n'.join(repr)
 
 
 # the python package graphviz is too poor.
@@ -78,14 +73,21 @@ class Graph(object):
         file.write(self.__str__())
         image_path = dot_path[:-3] + "jpg"
         cmd = ["dot", "-Tjpg", dot_path, "-o", image_path]
-        # cmd = "./preview.sh \"%s\"" % cmd
-        print 'cmd', cmd
-        # subprocess.call(cmd, shell=True)
-        subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+        subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        return image_path
 
-        # os.system(' '.join(cmd))
-        # assert os.path.isfile(image_path), "no image generated"
+    def show(self, dot_path):
+        image = self.display(dot_path)
+        cmd = ["feh", image]
+        subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
 
     def _rank_repr(self):
         ranks = sorted(
