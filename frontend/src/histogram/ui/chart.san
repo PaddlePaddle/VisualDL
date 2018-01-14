@@ -17,7 +17,6 @@ import Icon from 'san-mui/Icon';
 
 // libs
 import echarts from 'echarts';
-// import {maxBy} from 'lodash';
 import {originDataToChartData} from '../histogramHelper';
 import {format, precisionRound} from 'd3-format';
 
@@ -60,8 +59,6 @@ export default {
     attached() {
         let tagInfo = this.data.get('tagInfo');
         this.initChart(tagInfo);
-
-        // this.initChartEvent();
         if (this.data.get('running')) {
             this.startInterval();
         }
@@ -91,11 +88,6 @@ export default {
         if (hoverDots != null && hoverDots.length !== 0) {
             hoverDots.forEach(dot => zr.remove(dot));
         }
-
-        
-
-// console.log(this.myChart.getZr());
-
         let chartType = this.data.get('chartType');
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
@@ -136,7 +128,6 @@ export default {
                 animationDuration: 100,
                 lineStyle: {
                     normal: {
-                        // opacity: originLinesOpacity,
                         width: 1,
                         color: '#008c99'
                     }
@@ -214,8 +205,6 @@ export default {
             rawData.push(lineData);
         });
 
-        // Max point in every polygon.
-        // let maxValuePoints = [];
         let option = {
             title,
             color: ['#006069'],
@@ -366,8 +355,6 @@ export default {
                     });
                     zr.add(dot);
                     zrDrawElement.hoverDots.push(dot);
-// console.log(zrDrawElement.hoverDots.length);
-    
                 });
 
                 let hoveredItem = chartData[nearestIndex.itemIndex];
@@ -458,9 +445,7 @@ export default {
                 }
             }
         }
-
         ecChart.setOption(option, {notMerge: true});
-
     },
 
     // get origin data per 60 seconds
@@ -486,33 +471,6 @@ export default {
             }
         });
     },
-
-    // lightHoveredLine({seriesIndex}) {
-    //     let series = this.myChart.getOption().series;
-    //     let newSeries = series.map((item, index) => {
-    //         if (seriesIndex === index) {
-    //             item.lineStyle.normal.color = highlightLineColor;
-    //             item.zlevel = 1;
-    //         }
-    //         else {
-    //             item.lineStyle.normal.color = defaultLineColor;
-    //             item.zlevel = 0;
-    //         }
-    //         return item;
-    //     });
-    //     this.myChart.setOption({
-    //         series: newSeries
-    //     });
-    // },
-
-    // initChartEvent() {
-    //     this.myChart.on('mousemove', params => {
-    //         let chartType = this.data.get('chartType');
-    //         if (chartType === 'overlay') {
-    //             this.lightHoveredLine(params);
-    //         }
-    //     });
-    // },
 
     expandArea() {
         let isExpand = this.data.get('isExpand');
