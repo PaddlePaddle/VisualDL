@@ -1,15 +1,16 @@
 import pprint
 import unittest
 
+from visualdl import LogReader, LogWriter
+
 import lib
-import storage
 from storage_mock import add_histogram, add_image, add_scalar
 
 
 class LibTest(unittest.TestCase):
     def setUp(self):
         dir = "./tmp/mock"
-        writer = storage.LogWriter(dir, sync_cycle=10)
+        writer = LogWriter(dir, sync_cycle=10)
 
         add_scalar(writer, "train", "layer/scalar0/min", 1000, 1)
         add_scalar(writer, "test", "layer/scalar0/min", 1000, 10)
@@ -28,7 +29,7 @@ class LibTest(unittest.TestCase):
         add_histogram(writer, "train", "layer/histogram0", 100)
         add_histogram(writer, "test", "layer/histogram0", 100)
 
-        self.reader = storage.LogReader(dir)
+        self.reader = LogReader(dir)
 
     def test_modes(self):
         modes = lib.get_modes(self.reader)
