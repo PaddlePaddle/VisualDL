@@ -26,7 +26,7 @@ def readlines(name):
 VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
-install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf']
+install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
 execute_requires = ['npm', 'node', 'bash']
 
 
