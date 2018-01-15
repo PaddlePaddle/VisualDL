@@ -11,7 +11,7 @@
             </span>
         </h3>
         <div
-            san-if="{{isShow}}"
+            s-if="{{isShow}}"
             class="visaul-dl-expand-panel-content"
         >
             <slot></slot>
