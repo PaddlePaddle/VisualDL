@@ -78,7 +78,8 @@ std::string LogReader::GenReadableTag(const std::string& mode,
 
 bool LogReader::TagMatchMode(const std::string& tag, const std::string& mode) {
   if (tag.size() <= mode.size()) return false;
-  return tag.substr(0, mode.size()) == mode;
+  return tag.substr(0, mode.size()) == mode &&
+         (tag[mode.size()] == '/' || tag[mode.size()] == '%');
 }
 
 namespace components {
@@ -169,6 +170,14 @@ template <typename T>
 struct is_same_type<T, T> {
   static const bool value = true;
 };
+
+void Image::AddSample(const std::vector<shape_t>& shape,
+                      const std::vector<value_t>& data) {
+  auto idx = IsSampleTaken();
+  if (idx >= 0) {
+    SetSample(idx, shape, data);
+  }
+}
 
 void Image::SetSample(int index,
                       const std::vector<shape_t>& shape,

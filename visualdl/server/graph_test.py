@@ -1,6 +1,7 @@
-import unittest
-import graph
 import json
+import unittest
+
+import graph
 
 
 class GraphTest(unittest.TestCase):
