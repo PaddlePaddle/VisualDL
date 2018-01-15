@@ -64,7 +64,7 @@ def add_image_histogram():
 import logging
 logging.getLogger().setLevel(logging.DEBUG)  # logging to stdout
 
-train_iter = mx.io.NDArrayIter(mnist['train_data'][:100], mnist['train_label'], batch_size, shuffle=True)
+train_iter = mx.io.NDArrayIter(mnist['train_data'], mnist['train_label'], batch_size, shuffle=True)
 val_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'], batch_size)
 
 data = mx.sym.var('data')
