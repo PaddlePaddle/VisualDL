@@ -13,8 +13,7 @@ from visualdl import LogWriter, LogReader
 class StorageTest(unittest.TestCase):
     def setUp(self):
         self.dir = "./tmp/storage_test"
-        self.writer = LogWriter(
-            self.dir, sync_cycle=1).as_mode("train")
+        self.writer = LogWriter(self.dir, sync_cycle=1).as_mode("train")
 
     def test_scalar(self):
         print 'test write'
@@ -30,7 +29,8 @@ class StorageTest(unittest.TestCase):
             self.assertEqual(scalar.caption(), "train")
             records = scalar.records()
             ids = scalar.ids()
-            self.assertTrue(np.equal(records, [float(i) for i in range(10)]).all())
+            self.assertTrue(
+                np.equal(records, [float(i) for i in range(10)]).all())
             self.assertTrue(np.equal(ids, [float(i) for i in range(10)]).all())
             print 'records', records
             print 'ids', ids
@@ -45,11 +45,9 @@ class StorageTest(unittest.TestCase):
         for pass_ in xrange(num_passes):
             image_writer.start_sampling()
             for ins in xrange(num_samples):
-                index = image_writer.is_sample_taken()
-                if index != -1:
-                    data = np.random.random(shape) * 256
-                    data = np.ndarray.flatten(data)
-                    image_writer.set_sample(index, shape, list(data))
+                data = np.random.random(shape) * 256
+                data = np.ndarray.flatten(data)
+                image_writer.add_sample(shape, list(data))
             image_writer.finish_sampling()
 
         self.reader = LogReader(self.dir)
@@ -86,7 +84,6 @@ class StorageTest(unittest.TestCase):
             image_writer.add_sample(shape, list(origin_data))
 
             # read and check whether the original image will be displayed
-
             image_reader = reader.image(tag)
             image_record = image_reader.record(0, 0)
             data = image_record.data()
@@ -100,10 +97,6 @@ class StorageTest(unittest.TestCase):
             # manully check the image and found that nothing wrong with the image storage.
             # image.show()
 
-            # after scale, elements are changed.
-            # self.assertTrue(
-            #     np.equal(origin_data.reshape(PIL_image_shape), data).all())
-
     def test_with_syntax(self):
         with self.writer.mode("train") as writer:
             scalar = writer.scalar("model/scalar/average")
@@ -116,8 +109,7 @@ class StorageTest(unittest.TestCase):
             self.assertEqual(scalar.caption(), "train")
 
     def test_modes(self):
-        store = LogWriter(
-            self.dir, sync_cycle=1)
+        store = LogWriter(self.dir, sync_cycle=1)
 
         scalars = []
 
@@ -129,7 +121,6 @@ class StorageTest(unittest.TestCase):
         for scalar in scalars[:-1]:
             for i in range(10):
                 scalar.add_record(i, float(i))
-
 
 
 if __name__ == '__main__':
