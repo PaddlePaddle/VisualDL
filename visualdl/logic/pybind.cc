@@ -118,7 +118,8 @@ PYBIND11_PLUGIN(core) {
       .def("start_sampling", &cp::Image::StartSampling)
       .def("is_sample_taken", &cp::Image::IsSampleTaken)
       .def("finish_sampling", &cp::Image::FinishSampling)
-      .def("set_sample", &cp::Image::SetSample);
+      .def("set_sample", &cp::Image::SetSample)
+      .def("add_sample", &cp::Image::AddSample);
 
   py::class_<cp::ImageReader::ImageRecord>(m, "ImageRecord")
       // TODO(ChunweiYan) make these copyless.
