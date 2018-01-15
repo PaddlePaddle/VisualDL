@@ -94,7 +94,7 @@ setup(
     install_requires=install_requires,
     package_data={'visualdl.server': datas,
                   'visualdl':['core.so'],
-                  'visualdl.python':['core.so']},
+                  'visualdl.python':['core.so', 'dog.jpg']},
     packages=packages,
-    scripts=['visualdl/server/visualDL'],
+    scripts=['visualdl/server/visualDL', 'demo/vdl_scratch.py'],
     cmdclass=cmdclass)
