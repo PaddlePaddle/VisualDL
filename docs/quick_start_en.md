@@ -37,8 +37,8 @@ with logw.mode("train") as logger:
     pass
 ```
 
-
-接着是创建一个 `Scalar` 组件，每个组件需要一个tag，tag可以是任何长度的字符串，比如 `layer/classification/error`。
+Next we create a `Scalar` component. Each component needs a tag. A tag can be a string of any length.
+For example, `layer/classification/error`.
 
 ```
 # create scalars in mode train and test.
@@ -54,20 +54,20 @@ for step in range(200):
     scalar1.add_record(step, 1. - step * 1. / 200)
 ```
 
-上述例子生成了一段随机日志，接下来可以打开board页面：
+The example above randomly generated some logs. Next we can open the board page:
 
 ```
 visualDL --logdir ./random_log --port 8080
 ```
 
-之后用浏览器打开地址 `http://0.0.0.0:8080`，就可以看到scalar下的可视化结果
+Point your browser to `http://0.0.0.0:8080`, you can see the scalar as follows:
 
 <p align="center">
 <img src="./images/scratch_scalar.png"/>
 </p>
 
-## scalar的C++ 示例
-VisualDL 的 C++ SDK 与 Python 的基本一致，上面Python示例对应的C++代码如下
+## Scalar Demo in C++
+VisualDL's C++ SDK is very similar to its Python SDK. The Python demo above can be writen in C++ as follows:
 
 ```c++
   const auto dir = "./randomlog";
@@ -83,13 +83,18 @@ VisualDL 的 C++ SDK 与 Python 的基本一致，上面Python示例对应的C++
   }
 ```
 
-## 基于 ONNX 的模型结构可视化
-VisualDL 支持开源的 [ONNX](https://github.com/onnx/onnx)模型结构的可视化，目前ONNX支持包括 `pytorch`, `Caffe2`, `Caffe`, `MxNet` 在内的多种深度学习平台的模型结构的转化。
+## Visualization Based on ONNX Model Structure
+VisualDL supports the visualization for the format in [ONNX](https://github.com/onnx/onnx). 
+Currently, ONNX supports format conversion among various deep learning frameworks such as `MXNet`, `PyTorch`, `Caffe2`, `Caffe`.
 
 ```
 visualDL --logdir somedir --model_pb <path_to_model>
 ```
 
-比如mnist，会得到如下graph
+For example, for the MNIST dataset, Graph component can render model graph as below:
 
-IMG
+<p align=center>
+<img width="70%" src="https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/mxnet_graph.gif" />
+</p>
+
+
