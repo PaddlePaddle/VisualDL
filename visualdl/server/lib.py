@@ -1,5 +1,6 @@
 import pprint
 import re
+import sys
 import time
 import urllib
 from tempfile import NamedTemporaryFile
@@ -203,4 +204,6 @@ def retry(ntimes, function, time2sleep, *args, **kwargs):
         try:
             return function(*args, **kwargs)
         except:
+            error_info = '\n'.join(map(str, sys.exc_info()))
+            logger.error("Unexpected error: %s" % error_info)
             time.sleep(time2sleep)
