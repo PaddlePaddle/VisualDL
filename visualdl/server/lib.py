@@ -127,6 +127,7 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
     with storage.mode(mode) as reader:
         res = re.search(r".*/([0-9]+$)", tag)
         # remove suffix '/x'
+        offset = 0
         if res:
             offset = int(res.groups()[0])
             tag = tag[:tag.rfind('/')]
