@@ -140,7 +140,7 @@ class LogWriter(object):
         }
         return type2scalar[type](tag)
 
-    def image(self, tag, num_samples, step_cycle):
+    def image(self, tag, num_samples, step_cycle=1):
         """
         Create an image writer that used to write image data.
         """
