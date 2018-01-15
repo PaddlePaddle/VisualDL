@@ -59,9 +59,12 @@ def get_scalar(storage, mode, tag, num_records=300):
             span_offset += 1
             data_idx = int(span_offset * span)
 
-        if data[0] != 0.:
-            sampled_data.append(data[0])
-        return sampled_data[::-1]
+        sampled_data.append(data[0])
+        res = sampled_data[::-1]
+        # TODO(Superjomn) some bug here, sometimes there are zero here.
+        if res[-1] == 0.:
+            res = res[:-1]
+        return res
 
 
 def get_image_tags(storage):
