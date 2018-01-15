@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="70%" />
+</p>
+
 # VisualDL (Visualize the Deep Learning)
 
 ## Introduction
@@ -36,21 +40,21 @@ Scalar can be used to show the trends of error during training.
 
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="600"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="70%"/>
 </p>
 
 ### Image
 Image can be used to visualize any tensor or intermediate generated image.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="600"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="70%"/>
 </p>
 
 ### Histogram
 Histogram can be used to visualize parameter distribution and trends for any tensor.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="600"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="70%"/>
 </p>
 
 ## SDK

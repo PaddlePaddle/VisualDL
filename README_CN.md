@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="70%" />
+</p>
+
 # VisualDL (Visualize the Deep Learning)
 
 ## 介绍
