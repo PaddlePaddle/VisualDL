@@ -10,13 +10,6 @@
             value="{=config.chartType=}"
             items="{{charTypeItems}}"
         />
-        <!--
-        <ui-radio-group
-            label="Horizontal"
-            value="{=config.horizontal=}"
-            items="{{horizontalItems}}"
-        />
-        -->
         <ui-checkbox-group
             value="{=config.runs=}"
             label="Runs"

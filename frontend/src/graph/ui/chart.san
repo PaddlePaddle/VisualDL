@@ -1,10 +1,6 @@
 <template>
     <div class="visual-dl-graph-charts">
-        <!--
-        <div class="visual-dl-chart-box">
-        </div>
-        -->
-        <div san-if="graphUrl" class="visual-dl-img-box">
+        <div s-if="graphUrl" class="visual-dl-img-box">
             <div class="small-img-box">
                 <img class="small-img" width="30" src="{{graphUrl}}" />
                 <div class="screen-handler"></div>
@@ -48,9 +44,6 @@ export default {
     },
     inited() {
         this.watch('filtScreen', filtScreen => {
-            // this.myChart.clear();
-            // let data = this.data.get('originData');
-            // this.initChartChartOption(data);
             this.clearDragedTransform(this.getBigImgEl());
             this.clearDragedTransform(this.getSmallImgDragHandler());
         });
@@ -66,11 +59,6 @@ export default {
     attached() {
         this.getOriginChartsData();
     },
-
-    // initCharts(tagInfo) {
-    //     this.createChart();
-    //     this.getOriginChartsData();
-    // },
 
     createChart() {
         let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
@@ -113,8 +101,6 @@ export default {
 
     addDragEventForImg() {
         let that = this;
-        // this.initCharts();
-
         // target elements with the "draggable" class
         interact('.draggable').draggable({
             // enable inertial throwing

@@ -3,7 +3,7 @@
         <ui-expand-panel isShow="{{expand}}" info="{{tagList.length}}" title="{{title}}">
             <div class="visual-dl-chart-page-box">
                 <ui-chart
-                    san-for="tag in filteredTagList"
+                    s-for="tag in filteredTagList"
                     tagInfo="{{tag}}"
                     groupNameReg="{{config.groupNameReg}}"
                     smoothing="{{config.smoothing}}"
@@ -17,7 +17,7 @@
                 ></ui-chart>
             </div>
             <ui-pagination
-                san-if="total > pageSize"
+                s-if="total > pageSize"
                 on-pageChange="handlePageChange($event)"
                 current="{{currentPage}}"
                 pageSize="{{pageSize}}"

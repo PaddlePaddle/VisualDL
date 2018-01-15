@@ -4,7 +4,7 @@
         </div>
         <div class="visual-dl-chart-actions">
             <san-button on-click="expandArea">
-                <san-icon size="20">settings_overscan</san-icon>
+                <san-icon size="20">settings_overscan</s-icon>
             </san-button>
         </div>
     </div>
@@ -17,7 +17,6 @@ import Icon from 'san-mui/Icon';
 
 // libs
 import echarts from 'echarts';
-import {maxBy} from 'lodash';
 import {originDataToChartData} from '../histogramHelper';
 import {format, precisionRound} from 'd3-format';
 
@@ -60,8 +59,6 @@ export default {
     attached() {
         let tagInfo = this.data.get('tagInfo');
         this.initChart(tagInfo);
-
-        // this.initChartEvent();
         if (this.data.get('running')) {
             this.startInterval();
         }
@@ -86,6 +83,11 @@ export default {
 
     initChartOption() {
         this.myChart.clear();
+        let zr = this.myChart.getZr();
+        let hoverDots = zrDrawElement.hoverDots;
+        if (hoverDots != null && hoverDots.length !== 0) {
+            hoverDots.forEach(dot => zr.remove(dot));
+        }
         let chartType = this.data.get('chartType');
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
@@ -126,7 +128,6 @@ export default {
                 animationDuration: 100,
                 lineStyle: {
                     normal: {
-                        // opacity: originLinesOpacity,
                         width: 1,
                         color: '#008c99'
                     }
@@ -204,8 +205,6 @@ export default {
             rawData.push(lineData);
         });
 
-        // Max point in every polygon.
-        // let maxValuePoints = [];
         let option = {
             title,
             color: ['#006069'],
@@ -263,17 +262,7 @@ export default {
                     };
                 },
                 data: rawData
-            }
-            // {
-            //     type: 'custom',
-            //     dimension: ['x', 'y'],
-            //     renderItem: function (params, api) {
-
-
-            //     },
-            //     data: rawData
-            // }
-            ]
+            }]
         };
 
         function makePolyPoints(dataIndex, getValue, getCoord, yValueMapHeight) {
@@ -349,7 +338,7 @@ export default {
                     let x = dataItem[binIndex * 3];
                     let y = dataItem[binIndex * 3 + 1];
                     let z = dataItem[binIndex * 3 + 2];
-                    let pt = getPoint(x, y, z, getCoord);
+                    let pt = getPoint(x, y, z, getCoord, gridRect.y - 10);
                     itemX = pt[0];
                     let dot = new echarts.graphic.Circle({
                         shape: {
@@ -456,9 +445,7 @@ export default {
                 }
             }
         }
-
         ecChart.setOption(option, {notMerge: true});
-
     },
 
     // get origin data per 60 seconds
@@ -484,33 +471,6 @@ export default {
             }
         });
     },
-
-    // lightHoveredLine({seriesIndex}) {
-    //     let series = this.myChart.getOption().series;
-    //     let newSeries = series.map((item, index) => {
-    //         if (seriesIndex === index) {
-    //             item.lineStyle.normal.color = highlightLineColor;
-    //             item.zlevel = 1;
-    //         }
-    //         else {
-    //             item.lineStyle.normal.color = defaultLineColor;
-    //             item.zlevel = 0;
-    //         }
-    //         return item;
-    //     });
-    //     this.myChart.setOption({
-    //         series: newSeries
-    //     });
-    // },
-
-    // initChartEvent() {
-    //     this.myChart.on('mousemove', params => {
-    //         let chartType = this.data.get('chartType');
-    //         if (chartType === 'overlay') {
-    //             this.lightHoveredLine(params);
-    //         }
-    //     });
-    // },
 
     expandArea() {
         let isExpand = this.data.get('isExpand');

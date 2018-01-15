@@ -16,15 +16,15 @@ export default class NotificationItem extends Component {
         on-mouseenter="clearTimer"
         on-mouseleave="startTimer"
         on-click="handleClick">
-        <san-icon
-            san-if="type"
+        <s-icon
+            s-if="type"
             class="sm-notification-type type-{{type}}"
-            size="50">{{iconType}}</san-icon>
+            size="50">{{iconType}}</s-icon>
         <div class="sm-notification-group" >
             <p class="sm-notification-title">{{title}}</p>
             <div class="sm-notification-content">{{message}}</div>
             <div on-click="close($event)" class="sm-notification-close">
-                <san-icon size="20" class="sm-notification-close-btn">close</san-icon>
+                <s-icon size="20" class="sm-notification-close-btn">close</s-icon>
             </div>
         </div>
     </div>
