@@ -2,14 +2,14 @@
     <div class="sm-form-item">
         <label class="label">{{label}}</label>
         <div class="group-box">
-            <s-radio
+            <san-radio
                 on-change="handleChange($event)"
                 s-for="item in items"
                 label="{{item.name}}"
                 value="{{item.value}}"
                 disabled="{{item.disabled}}"
                 checked="{=value=}"
-            ></s-radio>
+            ></san-radio>
         </div>
     </div>
 </template>

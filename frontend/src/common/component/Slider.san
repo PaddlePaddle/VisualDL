@@ -2,7 +2,7 @@
     <div class="sm-form-item">
         <label class="label">{{label}}</label>
         <div class="input-box">
-            <s-slider
+            <san-slider
                 on-change="handleSlideChange($event)"
                 value="{{value}}"
                 min="{{min}}"

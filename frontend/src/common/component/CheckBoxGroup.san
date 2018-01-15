@@ -2,23 +2,23 @@
     <div class="sm-form-item">
         <label class="label">{{label}}</label>
         <div class="group-box">
-            <s-checkbox
+            <san-checkbox
                 s-if="showAll"
                 class="checkbox-all"
                 label="全选"
                 value="all"
                 on-change="handleAllChange($event)"
                 checked="{{All}}"
-            ></s-checkbox>
+            ></san-checkbox>
             <div class="san-form-check-group">
-                <s-checkbox
+                <san-checkbox
                     s-for="item in items"
                     label="{{item.name}}"
                     value="{{item.value}}"
                     disabled="{{item.disabled}}"
                     checked="{{value}}"
                     on-change="handleChange($event, item)"
-                ></s-checkbox>
+                ></san-checkbox>
             </div>
         </div>
     </div>

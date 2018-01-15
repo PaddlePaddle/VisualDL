@@ -3,9 +3,9 @@
         <div class="visual-dl-chart-box" style="{{computedStyle}}">
         </div>
         <div class="visual-dl-chart-actions">
-            <s-button on-click="expandArea">
-                <s-icon size="20">settings_overscan</s-icon>
-            </s-button>
+            <san-button on-click="expandArea">
+                <san-icon size="20">settings_overscan</san-icon>
+            </san-button>
             <ui-dropdown-menu
                 s-if="downloadLink"
                 stlye="width:100px;"
@@ -13,11 +13,11 @@
                 items="{{runsItems}}"
                 value="{=downloadType=}"
             />
-            <s-button
+            <san-button
                 s-if="downloadLink"
                 on-click="handleDownLoad">
-                <s-icon size="20">file_download</s-icon>
-            </s-button>
+                <san-icon size="20">file_download</san-icon>
+            </san-button>
         </div>
     </div>
 </template>

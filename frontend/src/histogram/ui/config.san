@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-histogram-config-com">
-        <s-text-field
+        <san-text-field
             hintText="input a tag group name to search"
             label="Group name RegExp"
             inputValue="{=config.groupNameReg=}"
@@ -15,13 +15,13 @@
             label="Runs"
             items="{{runsItems}}"
         />
-        <s-button
+        <san-button
             class="visual-dl-histogram-run-toggle"
             variants="raised {{config.running ? 'secondery' : 'primary'}}"
             on-click="toggleAllRuns"
         >
             {{config.running ? 'Running' : 'Stopped'}}
-        </s-button>
+        </san-button>
     </div>
 </template>
 <script>
