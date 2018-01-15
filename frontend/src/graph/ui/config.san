@@ -14,13 +14,6 @@
             <ui-icon style="margin-right: 6px">file_download</ui-icon>
             Download image
         </ui-button>
-        <!--
-        <ui-dropdown-menu
-            label="Session runs"
-            items="{{sessionItems}}"
-            value="{=config.session=}"
-        />
-        -->
         <ui-slider
             label="Scale"
             value="{=config.scale=}"
@@ -80,6 +73,7 @@ export default {
     .config-com
         width 90%
         margin 20px auto
+        color $-right-font-color
         .config-button
             width 200px
             margin-top 20px

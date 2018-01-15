@@ -1,12 +1,13 @@
 #!/user/bin/env python
-import os
-from visualdl import LogWriter, ROOT
-import subprocess
 import math
-from scipy.stats import norm
-import numpy as np
+import os
 import random
+import subprocess
+
+import numpy as np
 from PIL import Image
+from scipy.stats import norm
+from visualdl import ROOT, LogWriter
 
 logdir = './scratch_log'
 
@@ -37,7 +38,6 @@ with logw.mode('train') as logger:
                                  0.1 + step * 0.001,
                                  200. / (100 + step),
                                  size=1000))
-
 # create image
 with logw.mode("train") as logger:
     image = logger.image("scratch/dog", 4,

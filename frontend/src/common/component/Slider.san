@@ -10,16 +10,6 @@
                 step="{{step}}"
             />
             <span>{{value}}</span>
-            <!--
-            <san-input-number
-                min="{{min}}"
-                max="{{max}}"
-                step="{{step}}"
-                value="{=value=}"
-                on-change="handlerChange($event)"
-                size="small">
-            </san-input-number>
-            -->
         </div>
     </div>
 </template>

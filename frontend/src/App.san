@@ -37,8 +37,8 @@ export default {
             location.hash = '#/scalars';
         }
     },
-    menuChange({value, url, title}) {
-        routeTo(url);
+    menuChange(dataItem) {
+        routeTo(dataItem.url);
     }
 };
 
@@ -65,10 +65,10 @@ export default {
     color $-right-font-color
 
 .sm-text-field
-        .sm-text-field-line
-            background $-right-font-color
-        .sm-text-field-focus-line
-            background $-theme-color
+    .sm-text-field-line
+        background $-right-font-color
+    .sm-text-field-focus-line
+        background $-theme-color
 
 .sm-form-item .label
     color $-right-font-color

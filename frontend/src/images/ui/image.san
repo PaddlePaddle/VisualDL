@@ -8,7 +8,7 @@
             <span>{{imgData.step}};</span>
             <span>{{imgData.wall_time | formatTime}}</span>
         </p>
-        <san-slider
+        <s-slider
             on-change="handleSlideChange($event)"
             value="{{currentIndex}}"
             min="{{slider.min}}"
@@ -109,7 +109,7 @@ export default {
         clearInterval(this.getOringDataInterval);
     },
 
-        // get origin data per {{intervalTime}} seconds
+    // get origin data per {{intervalTime}} seconds
     startInterval() {
         this.getOringDataInterval = setInterval(() => {
             this.getOriginChartsData();
