@@ -3,9 +3,9 @@
         <div class="visual-dl-chart-box">
         </div>
         <div class="visual-dl-chart-actions">
-            <san-button on-click="expandArea">
-                <san-icon size="20">settings_overscan</san-icon>
-            </san-button>
+            <s-button on-click="expandArea">
+                <s-icon size="20">settings_overscan</s-icon>
+            </s-button>
         </div>
     </div>
 </template>

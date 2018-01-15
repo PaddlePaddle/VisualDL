@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-histogram-config-com">
-        <san-text-field
+        <s-text-field
             hintText="input a tag group name to search"
             label="Group name RegExp"
             inputValue="{=config.groupNameReg=}"
@@ -10,25 +10,18 @@
             value="{=config.chartType=}"
             items="{{charTypeItems}}"
         />
-        <!--
-        <ui-radio-group
-            label="Horizontal"
-            value="{=config.horizontal=}"
-            items="{{horizontalItems}}"
-        />
-        -->
         <ui-checkbox-group
             value="{=config.runs=}"
             label="Runs"
             items="{{runsItems}}"
         />
-        <san-button
+        <s-button
             class="visual-dl-histogram-run-toggle"
             variants="raised {{config.running ? 'secondery' : 'primary'}}"
             on-click="toggleAllRuns"
         >
             {{config.running ? 'Running' : 'Stopped'}}
-        </san-button>
+        </s-button>
     </div>
 </template>
 <script>

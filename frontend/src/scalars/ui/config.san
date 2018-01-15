@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-page-config-com">
-        <san-text-field
+        <s-text-field
             hintText="input a tag group name"
             label="Group name RegExp"
             inputValue="{=config.groupNameReg=}"
@@ -35,13 +35,13 @@
             label="Runs"
             items="{{runsItems}}"
         />
-        <san-button
+        <s-button
             class="visual-dl-page-run-toggle"
             variants="raised {{config.running ? 'secondery' : 'primary'}}"
             on-click="toggleAllRuns"
         >
             {{config.running ? 'Running' : 'Stopped'}}
-        </san-button>
+        </s-button>
     </div>
 </template>
 <script>

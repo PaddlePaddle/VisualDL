@@ -37,8 +37,8 @@ export default {
             location.hash = '#/scalars';
         }
     },
-    menuChange({value, url, title}) {
-        routeTo(url);
+    menuChange(dataItem) {
+        routeTo(dataItem.url);
     }
 };
 

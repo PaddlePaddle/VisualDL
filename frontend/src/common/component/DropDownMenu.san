@@ -1,13 +1,13 @@
 <template>
     <div class="sm-form-item">
         <label class="label">{{label}}</label>
-        <san-drop-down-menu
+        <s-drop-down-menu
             error="{{error}}"
             disabled="{{disabled}}"
             value="{=value=}"
             maxHeight="{{200}}"
             autoWidth="{{false}}">
-            <san-menu-item
+            <s-menu-item
                 s-for="item in items"
                 on-change="menuItemChange(item)"
                 value="{{item.value}}"

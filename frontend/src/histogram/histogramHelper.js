@@ -1,6 +1,6 @@
 import {min, max, range} from 'lodash';
 
-export const tansformBackendData = histogramData => {
+export function tansformBackendData(histogramData) {
     let [time, step, items] = histogramData;
     return {
         time,
@@ -11,7 +11,7 @@ export const tansformBackendData = histogramData => {
     };
 };
 
-export const computeNewHistogram = (histogram, min, max, binsNum = 30) => {
+export function computeNewHistogram(histogram, min, max, binsNum = 30) {
     if (max === min) {
         // Create bins even if all the data has a single value.
         max = min * 1.1 + 1;
@@ -43,11 +43,11 @@ export const computeNewHistogram = (histogram, min, max, binsNum = 30) => {
 export const tansformToVisData
 = (tempData, time, step) => tempData.map(({x, dx, y}) => [time, step, x + dx / 2, Math.floor(y)]);
 
-export const originDataToChartData = originData => {
+export function originDataToChartData(originData) {
     let tempDatas = originData.map(tansformBackendData);
     let globalMin = min(tempDatas.map(({min}) => min));
     let globalMax = max(tempDatas.map(({max}) => max));
-    let chartData = tempDatas.map(item => {
+    let chartData = tempDatas.map(function (item) {
         let histoBins = computeNewHistogram(item, globalMin, globalMax);
         let {time, step} = item;
         return {
