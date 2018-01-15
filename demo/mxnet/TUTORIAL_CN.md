@@ -22,7 +22,7 @@
 ## 安装VisualDL
 VisualDL的安装很简单。请按照VisualDL的[官方网站](https://github.com/PaddlePaddle/VisualDL)进行安装。具体只需要两步
 
-```
+```python
 python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-0.0.1-py2-none-any.whl
 ```
@@ -32,13 +32,13 @@ pip install --upgrade dist/visualdl-0.0.1-py2-none-any.whl
 我们为您提供了一个演示程序 [mxnet_demo.py](./mxnet_demo.py)。里面展示了如何下载MNIST数据集以及编写MXNet程序来进行CNN的训练。MXNet的部分借鉴了MXNet[官方入门文件](https://mxnet.incubator.apache.org/tutorials/python/mnist.html)
 为了嵌入VisualDL程序，以便在MXNet训练时进行检测，我们需要声明一个LogWriter实例：
 
-```
-logger = LogWriter(logdir, sync_cycle=10)
+```python
+logger = LogWriter(logdir, sync_cycle=30)
 ```
 
 logger实例里面包含VisualDL的四个功能模块 Scalar， Image 以及 Histogram。这里我们使用 Scalar 模块：
 
-```
+```python
 scalar0 = logger.scalar("scalars/scalar0")
 ```
 
@@ -46,7 +46,7 @@ scalar0 = logger.scalar("scalars/scalar0")
 
 MXNet在fit函数中提供了很多[API](https://mxnet.incubator.apache.org/api/python/index.html)。我们把自己编写好的回调函数 add_scalar 插入到相应的 API中
 
-```
+```python
 lenet_model.fit(train_iter,
                 eval_data=val_iter,
                 optimizer='sgd',
@@ -68,7 +68,7 @@ VisualDL的一个优点是能可视化深度学习模型，帮助用户更直观
 
 VisualDL的使用很简单，在完成安装后只需要把模型文件（protobuf格式）用参数 -m 提供给VisualDL即可。
 
-```
+```bash
 visualDL --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=8888
 ```
 
