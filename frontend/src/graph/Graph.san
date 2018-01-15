@@ -46,6 +46,19 @@ export default {
 
     attached() {
         autoAdjustHeight();
+    },
+
+    handleFitScreen() {
+        this.data.set('filtScreen', {
+            filtScreen: true
+        });
+        this.data.set('config.scale', 0.5);
+    },
+
+    handleDownload() {
+        this.data.set('download', {
+            filtScreen: true
+        });
     }
 };
 
