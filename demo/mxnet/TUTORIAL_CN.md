@@ -22,7 +22,7 @@
 ## 安装VisualDL
 VisualDL的安装很简单。请按照VisualDL的[官方网站](https://github.com/PaddlePaddle/VisualDL)进行安装。具体只需要两步
 
-```python
+```
 python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-0.0.1-py2-none-any.whl
 ```
