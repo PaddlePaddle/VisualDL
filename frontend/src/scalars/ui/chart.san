@@ -187,7 +187,7 @@ export default {
                 '#5FAE7C',
                 '#54957D',
                 '#458C8D',
-                '#4B7C8A', 
+                '#4B7C8A',
                 '#3E7586',
                 '#42638E',
                 '#405288',
@@ -297,7 +297,7 @@ export default {
                     encode: {
                         // Map 1 dimension to xAixs.
                         x: [1],
-                        // Map 3 dimension to yAixs, 
+                        // Map 3 dimension to yAixs,
                         // the third number is smoothed value.
                         y: [3]
                     }
