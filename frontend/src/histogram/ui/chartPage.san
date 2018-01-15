@@ -1,9 +1,9 @@
 <template>
-    <!-- className visual-dl-chart-page used in chart.san, change they all if you need!-->
+    <!-- ClassName visual-dl-chart-page used in chart.san, change they all if you need!-->
     <div class="visual-dl-chart-page">
         <ui-expand-panel isShow="{{expand}}" info="{{total}}" title="{{title}}">
             <ui-chart
-                san-for="tag in filteredPageList"
+                s-for="tag in filteredPageList"
                 tagInfo="{{tag}}"
                 runs="{{config.runs}}"
                 chartType="{{config.chartType}}"
@@ -11,7 +11,7 @@
                 runsItems="{{runsItems}}"
             ></ui-chart>
             <ui-pagination
-                san-if="total > pageSize"
+                s-if="total > pageSize"
                 on-pageChange="handlePageChange($event)"
                 current="{{currentPage}}"
                 pageSize="{{pageSize}}"

@@ -3,7 +3,7 @@
         <ui-expand-panel isShow="{{expand}}" info="{{total}}" title="{{title}}">
             <ui-image
                 class="visual-dl-chart-image"
-                san-for="tag in filteredPageList"
+                s-for="tag in filteredPageList"
                 tagInfo="{{tag}}"
                 isActualImageSize="{{config.isActualImageSize}}"
                 runs="{{config.runs}}"
@@ -12,7 +12,7 @@
             ></ui-image>
             <ui-pagination
                 class="visual-dl-sm-pagination"
-                san-if="total > pageSize"
+                s-if="total > pageSize"
                 on-pageChange="handlePageChange($event)"
                 current="{{currentPage}}"
                 pageSize="{{pageSize}}"

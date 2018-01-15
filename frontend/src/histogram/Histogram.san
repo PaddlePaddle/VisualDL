@@ -9,7 +9,7 @@
                 title="Tags matching {{config.groupNameReg}}"
             ></ui-chart-page>
             <ui-chart-page
-                san-for="item in groupedTags"
+                s-for="item in groupedTags"
                 config="{{config}}"
                 runsItems="{{runsItems}}"
                 tagList="{{item.tags}}"
@@ -94,16 +94,6 @@ export default {
                 };
             });
         }
-        // ,
-        // filteredConfig() {
-        //     let config = this.data.get('config') || {};
-        //     let filteredConfig = {};
-        //     Object.keys(config).forEach(key => {
-        //         let val = config[key];
-        //         filteredConfig[key] = val;
-        //     });
-        //     return filteredConfig;
-        // }
     },
     initData() {
         return {
@@ -131,7 +121,7 @@ export default {
             this.data.set('config.runs', data);
         });
 
-        // need debounce， can't use computed
+        // Need debounce, can't use computed
         this.watch('config.groupNameReg', debounce(this.filterTagsList, 300));
     },
 

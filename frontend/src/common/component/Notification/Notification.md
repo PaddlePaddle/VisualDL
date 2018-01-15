@@ -6,16 +6,16 @@
 ```san Notification
    <template>
     <div>
-        <san-button
+        <s-button
             variants="raised info"
             on-click="handleClick01">
             auto close
-        </san-button>
-        <san-button
+        </s-button>
+        <s-button
             variants="raised info"
             on-click="handleClick02">
             no auto close
-        </san-button>
+        </s-button>
     </div>
 </template>
 
@@ -53,31 +53,31 @@ export default {
 ```san Notification
 <template>
     <div>
-        <san-button
+        <s-button
             variants="raised info"
             on-click="handleClick01">
             success
-        </san-button>
-        <san-button
+        </s-button>
+        <s-button
             variants="raised info"
             on-click="handleClick02">
             warning
-        </san-button>
-        <san-button
+        </s-button>
+        <s-button
             variants="raised info"
             on-click="handleClick03">
             info
-        </san-button>
-        <san-button
+        </s-button>
+        <s-button
             variants="raised info"
             on-click="handleClick04">
             error
-        </san-button>
-        <san-button
+        </s-button>
+        <s-button
             variants="raised info"
             on-click="handleClick05">
             simplify
-        </san-button>
+        </s-button>
     </div>
 </template>
 
@@ -130,11 +130,11 @@ export default {
 ```san Notification
 <template>
     <div>
-        <san-button
+        <s-button
             variants="raised info"
             on-click="handleClick01">
             width offset
-        </san-button>
+        </s-button>
     </div>
 </template>
 
