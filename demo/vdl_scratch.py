@@ -67,8 +67,8 @@ with logw.mode("train") as logger:
             right_y = left_y + target_shape[0]
 
             # a more efficient way to sample images
-            idx = image.is_sample_taken(
-            )  # check whether this image will be taken by reservoir sampling
+            # check whether this image will be taken by reservoir sampling
+            idx = image.is_sample_taken() 
             if idx >= 0:
                 data = np.array(
                     dog_jpg.crop((left_x, left_y, right_x,
