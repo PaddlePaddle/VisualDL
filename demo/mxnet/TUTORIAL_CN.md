@@ -74,4 +74,4 @@ visualDL --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=88
 
 模型图的效果如下：
 
-<p align=center><img width="50%" src="./mxnet_graph.gif" /></p>
+<p align=center><img width="90%" src="./super_resolution_graph.png" /></p>
