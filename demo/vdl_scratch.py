@@ -56,12 +56,13 @@ with logw.mode("train") as logger:
             right_x = left_x + target_shape[1]
             right_y = left_y + target_shape[0]
 
-            idx = image.is_sample_taken()
-            # a more efficient way to sample images is
+            # a more efficient way to sample images
+            idx = image.is_sample_taken() # check whether this image will be taken by reservoir sampling
             if idx >= 0:
                 data = np.array(
                     dog_jpg.crop((left_x, left_y, right_x,
                                   right_y))).flatten()
+                # add this image to log
                 image.set_sample(idx, target_shape, data)
             # you can also just write followig codes, it is more clear, but need to
             # process image even if it will not be sampled.
