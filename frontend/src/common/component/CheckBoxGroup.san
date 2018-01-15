@@ -3,7 +3,7 @@
         <label class="label">{{label}}</label>
         <div class="group-box">
             <san-checkbox
-                san-if="showAll"
+                s-if="showAll"
                 class="checkbox-all"
                 label="全选"
                 value="all"
@@ -12,7 +12,7 @@
             ></san-checkbox>
             <div class="san-form-check-group">
                 <san-checkbox
-                    san-for="item in items"
+                    s-for="item in items"
                     label="{{item.name}}"
                     value="{{item.value}}"
                     disabled="{{item.disabled}}"

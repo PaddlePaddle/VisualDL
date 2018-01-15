@@ -9,7 +9,7 @@
                 title="Tags matching {{config.groupNameReg}}"
             ></ui-chart-page>
             <ui-chart-page
-                san-for="item in groupedTags"
+                s-for="item in groupedTags"
                 config="{{filteredConfig}}"
                 runsItems="{{runsItems}}"
                 tagList="{{item.tags}}"

@@ -150,7 +150,7 @@ def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')
 
 
-def get_histogram(storage, mode, tag, num_samples=200):
+def get_histogram(storage, mode, tag, num_samples=100):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
         res = []

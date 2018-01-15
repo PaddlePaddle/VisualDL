@@ -1,5 +1,5 @@
 {
-  "name": "front",
+  "name": "VisualDL",
   "version": "1.0.0",
   "description": "Visualization toolkit for deep learning",
   "scripts": {
