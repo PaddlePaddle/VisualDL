@@ -1,5 +1,6 @@
 import pprint
 import re
+import sys
 import time
 import urllib
 from tempfile import NamedTemporaryFile
@@ -131,6 +132,7 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
     with storage.mode(mode) as reader:
         res = re.search(r".*/([0-9]+$)", tag)
         # remove suffix '/x'
+        offset = 0
         if res:
             offset = int(res.groups()[0])
             tag = tag[:tag.rfind('/')]
@@ -206,4 +208,6 @@ def retry(ntimes, function, time2sleep, *args, **kwargs):
         try:
             return function(*args, **kwargs)
         except:
+            error_info = '\n'.join(map(str, sys.exc_info()))
+            logger.error("Unexpected error: %s" % error_info)
             time.sleep(time2sleep)
