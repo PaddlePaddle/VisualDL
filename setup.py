@@ -6,7 +6,7 @@ from distutils.spawn import find_executable
 from distutils import sysconfig, dep_util, log
 import setuptools.command.build_py
 import setuptools
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Distribution, Extension
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
