@@ -21,7 +21,7 @@ VisualDL 目前支持4种组件：
 兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
 
 <p align="center">
-  <img src="demo/mxnet/mxnet_graph.gif"/>
+  <img src="../demo/mxnet/mxnet_graph.gif"/>
 </p>
 
 ### scalar
