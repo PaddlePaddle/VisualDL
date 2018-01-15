@@ -5,6 +5,8 @@
 - [安装MXNet](#%E5%AE%89%E8%A3%85mxnet)
 - [安装VisualDL](#%E5%AE%89%E8%A3%85visualdl)
 - [开始编写训练MNIST的程序](#%E5%BC%80%E5%A7%8B%E7%BC%96%E5%86%99%E8%AE%AD%E7%BB%83mnist%E7%9A%84%E7%A8%8B%E5%BA%8F)
+- [用VisualDL展示模型图](#%E7%94%A8visualdl%E5%B1%95%E7%A4%BA%E6%A8%A1%E5%9E%8B%E5%9B%BE)
+
 
 ## 安装MXNet
 请按照MXNet的[官方网站](https://mxnet.incubator.apache.org/get_started/install.html)来安装MXNet，并验证安装成功。
@@ -57,4 +59,19 @@ lenet_model.fit(train_iter,
 
 这样就好了。在MXNet的训练过程中，每一个批次（batch）训练完后，都会调用我们的回调函数来对准确率进行记录。如您所料，随着训练的进行，准确率会不断上升直到95%以上。以下是两个epoch训练过后的准确率走向：
 
-<p align=center><img width="80%" src="./epoch2_small.png" /></p>
+<p align=center><img width="50%" src="./epoch2_small.png" /></p>
+
+## 用VisualDL展示模型图
+
+VisualDL的一个优点是能可视化深度学习模型，帮助用户更直观的了解模型的构成，都有哪些操作，哪些输入等等。VisualDL的模型图支持原生态的PaddlePaddle格式以及普遍适用的ONNX格式。在这里用户可以使用MXNet训练模型，然后用 [ONNX-MXNet] (https://github.com/onnx/onnx-mxnet) 工具将其转换成 ONNX 格式，然后进行可视化。
+我们这里使用已经从MXNet转换到ONNX的现成模型 [Super_Resolution model](https://s3.amazonaws.com/onnx-mxnet/examples/super_resolution.onnx)
+
+VisualDL的使用很简单，在完成安装后只需要把模型文件（protobuf格式）用参数 -m 提供给VisualDL即可。
+
+```
+visualDL --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=8888
+```
+
+模型图的效果如下：
+
+<p align=center><img width="50%" src="./mxnet_graph.gif" /></p>
