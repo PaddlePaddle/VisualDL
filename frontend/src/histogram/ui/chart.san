@@ -292,8 +292,6 @@ export default {
             return pt;
         }
 
-        
-
         let zr = ecChart.getZr();
 
         function removeTooltip() {
@@ -341,8 +339,6 @@ export default {
                     z: 999
                 }));
 
-
-
                 let itemX;
                 rawData.forEach(dataItem => {
                     let binIndex = nearestIndex.binIndex;
@@ -366,8 +362,6 @@ export default {
                     });
                     zr.add(dot);
                     zrDrawElement.hoverDots.push(dot);
-console.log(zr);
-console.log(zrDrawElement.hoverDots.length);
                 });
 
                 let hoveredItem = chartData[nearestIndex.itemIndex];
