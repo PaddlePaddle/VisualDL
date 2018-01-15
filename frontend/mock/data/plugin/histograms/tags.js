@@ -22,6 +22,11 @@ module.exports = function (path, queryParam, postParam) {
                     {
                         "displayName": "layer1/Wx_plus_b/pre_activations",
                         "description": ""
+                    },
+                    "layer1/Wx_plus_b/pre_activations_1":
+                    {
+                        "displayName": "layer1/Wx_plus_b/pre_activations_1",
+                        "description": ""
                     }
                 }
             }
