@@ -5,7 +5,7 @@ import os
 import exceptions
 import time
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
@@ -37,12 +37,13 @@ def try_call(function, *args, **kwargs):
     return res
 
 
-def option_parser():
+def parse_args():
     """
     :return:
     """
-    parser = OptionParser(usage="usage: visualDL -p port [options]")
-    parser.add_option(
+    parser = ArgumentParser(
+        description="VisualDL, a tool to visualize deep learning.")
+    parser.add_argument(
         "-p",
         "--port",
         type=int,
@@ -50,33 +51,41 @@ def option_parser():
         action="store",
         dest="port",
         help="api service port")
-    parser.add_option(
+    parser.add_argument(
         "-t",
         "--host",
         type=str,
         default="0.0.0.0",
         action="store",
         help="api service ip")
-    parser.add_option(
+    parser.add_argument(
         "-m",
         "--model_pb",
         type=str,
         action="store",
         help="model proto in ONNX format")
-    parser.add_option(
-        "--logdir", action="store", dest="logdir", help="log file directory")
-    return parser.parse_args()
+    parser.add_argument(
+        "--logdir",
+        required=True,
+        action="store",
+        dest="logdir",
+        help="log file directory")
+    args = parser.parse_args()
+    if not args.logdir:
+        parser.print_help()
+        sys.exit(-1)
+    return args
 
 
-options, args = option_parser()
+args = parse_args()
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 static_file_path = os.path.join(SERVER_DIR, "./dist")
 mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
-log_reader = LogReader(options.logdir)
+log_reader = LogReader(args.logdir)
 
-graph_image_path = None
-
+# mannully put graph's image on this path also works.
+graph_image_path = os.path.join(args.logdir, 'graph.jpg')
 
 # return data
 # status, msg, data
@@ -112,7 +121,7 @@ def serve_graph():
 
 @app.route('/data/logdir')
 def logdir():
-    result = gen_result(0, "", {"logdir": options.logdir})
+    result = gen_result(0, "", {"logdir": args.logdir})
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -194,7 +203,7 @@ def histogram():
 @app.route('/data/plugin/graphs/graph')
 def graph():
     # TODO(ChunweiYan) need to add a config for whether have graph.
-    if graph_image_path is None:
+    if graph_image_path is None or not os.path.isfile(graph_image_path):
         data = {'url': ''}
     else:
         data = {'url': '/graphs/image'}
@@ -203,16 +212,12 @@ def graph():
 
 
 if __name__ == '__main__':
-    logger.info(" port=" + str(options.port))
-    if not options.logdir:
-        logger.error("should pass in logdir option")
-        sys.exit(-1)
-
-    if options.model_pb:
+    logger.info(" port=" + str(args.port))
+    if args.model_pb:
         # draw graph
-        image_dir = os.path.join(options.logdir, "graphs")
+        image_dir = os.path.join(args.logdir, "graphs")
         if not os.path.isdir(image_dir):
             os.mkdir(image_dir)
-        graph_image_path = vdl_graph.draw_graph(options.model_pb, image_dir)
+        graph_image_path = vdl_graph.draw_graph(args.model_pb, image_dir)
 
-    app.run(debug=False, host=options.host, port=options.port)
+    app.run(debug=False, host=args.host, port=args.port)
