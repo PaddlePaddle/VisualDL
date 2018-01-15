@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="70%" />
+  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="60%" />
 </p>
 
 # VisualDL (Visualize the Deep Learning)
@@ -32,7 +32,7 @@ Cooperated with Python SDK, VisualDL can be compatible with most major DNN frame
 PaddlePaddle, PyTorch and MXNet.
 
 <p align="center">
-  <img src="https://github.com/daming-lu/large_files/blob/master/graph_demo.gif" width="600" />
+  <img src="https://github.com/daming-lu/large_files/blob/master/graph_demo.gif" width="60%" />
 </p>
 
 ### Scalar
@@ -40,21 +40,21 @@ Scalar can be used to show the trends of error during training.
 
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="70%"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="60%"/>
 </p>
 
 ### Image
 Image can be used to visualize any tensor or intermediate generated image.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="70%"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="60%"/>
 </p>
 
 ### Histogram
 Histogram can be used to visualize parameter distribution and trends for any tensor.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="70%"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
 </p>
 
 ## SDK
