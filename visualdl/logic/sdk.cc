@@ -1,10 +1,86 @@
 #include "visualdl/logic/sdk.h"
 
+#include <cstdio>
+
 #include "visualdl/logic/histogram.h"
+#include "visualdl/storage/binary_record.h"
 #include "visualdl/utils/image.h"
+#include "visualdl/utils/logging.h"
 #include "visualdl/utils/macro.h"
 
 namespace visualdl {
+
+// global log dir, a hack solution to pass accross all the components.
+// One process of VDL backend can only process a single logdir, so this
+// is OK.
+std::string g_log_dir;
+
+LogWriter LogWriter::AsMode(const std::string& mode) {
+  LogWriter writer = *this;
+  storage_.AddMode(mode);
+  writer.mode_ = mode;
+  return writer;
+}
+
+Tablet LogWriter::AddTablet(const std::string& tag) {
+  // TODO(ChunweiYan) add string check here.
+  auto tmp = mode_ + "/" + tag;
+  string::TagEncode(tmp);
+  auto res = storage_.AddTablet(tmp);
+  res.SetCaptions(std::vector<std::string>({mode_}));
+  res.SetTag(mode_, tag);
+  return res;
+}
+
+LogReader::LogReader(const std::string& dir) : reader_(dir) { g_log_dir = dir; }
+
+LogReader LogReader::AsMode(const std::string& mode) {
+  auto tmp = *this;
+  tmp.mode_ = mode;
+  return tmp;
+}
+
+TabletReader LogReader::tablet(const std::string& tag) {
+  auto tmp = mode_ + "/" + tag;
+  string::TagEncode(tmp);
+  return reader_.tablet(tmp);
+}
+
+std::vector<std::string> LogReader::all_tags() {
+  auto tags = reader_.all_tags();
+  auto it =
+      std::remove_if(tags.begin(), tags.end(), [&](const std::string& tag) {
+        return !TagMatchMode(tag, mode_);
+      });
+  tags.erase(it + 1);
+  return tags;
+}
+
+std::vector<std::string> LogReader::tags(const std::string& component) {
+  auto type = Tablet::type(component);
+  auto tags = reader_.tags(type);
+  CHECK(!tags.empty()) << "component " << component << " has no taged records";
+  std::vector<std::string> res;
+  for (const auto& tag : tags) {
+    if (TagMatchMode(tag, mode_)) {
+      res.push_back(GenReadableTag(mode_, tag));
+    }
+  }
+  return res;
+}
+
+std::string LogReader::GenReadableTag(const std::string& mode,
+                                      const std::string& tag) {
+  auto tmp = tag;
+  string::TagDecode(tmp);
+  return tmp.substr(mode.size() + 1);  // including `/`
+}
+
+bool LogReader::TagMatchMode(const std::string& tag, const std::string& mode) {
+  if (tag.size() <= mode.size()) return false;
+  return tag.substr(0, mode.size()) == mode &&
+         (tag[mode.size()] == '/' || tag[mode.size()] == '%');
+}
 
 namespace components {
 
@@ -103,8 +179,10 @@ void Image::SetSample(int index,
     new_shape.emplace_back(1);
   }
   // production
-  int size = std::accumulate(
-          new_shape.begin(), new_shape.end(), 1., [](int a, int b) { return a * b; });
+  int size =
+      std::accumulate(new_shape.begin(), new_shape.end(), 1., [](int a, int b) {
+        return a * b;
+      });
   CHECK_GT(size, 0);
   CHECK_LE(new_shape.size(), 3)
       << "shape should be something like (width, height, num_channel)";
@@ -114,7 +192,6 @@ void Image::SetSample(int index,
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
 
-  auto entry = step_.MutableData<std::vector<byte_t>>(index);
   // trick to store int8 to protobuf
   std::vector<byte_t> data_str(data.size());
   for (int i = 0; i < data.size(); i++) {
@@ -122,9 +199,22 @@ void Image::SetSample(int index,
   }
   Uint8Image image(new_shape[2], new_shape[0] * new_shape[1]);
   NormalizeImage(&image, &data[0], new_shape[0] * new_shape[1], new_shape[2]);
-  // entry.SetRaw(std::string(data_str.begin(), data_str.end()));
-  entry.SetRaw(
+
+  BinaryRecord brcd(
+      GenBinaryRecordDir(step_.parent()->dir()),
       std::string(image.data(), image.data() + image.rows() * image.cols()));
+  brcd.tofile();
+
+  auto entry = step_.MutableData<std::vector<byte_t>>(index);
+  // update record
+  auto old_hash = entry.reader().GetRaw();
+  if (!old_hash.empty()) {
+    std::string old_path =
+        GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
+    CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
+                                               << old_path << " failed";
+  }
+  entry.SetRaw(brcd.hash());
 
   static_assert(
       !is_same_type<value_t, shape_t>::value,
@@ -132,12 +222,6 @@ void Image::SetSample(int index,
 
   // set meta.
   entry.SetMulti(new_shape);
-
-  // // set meta with hack
-  // Entry<shape_t> meta;
-  // meta.set_parent(entry.parent());
-  // meta.entry = entry.entry;
-  // meta.SetMulti(shape);
 }
 
 std::string ImageReader::caption() {
@@ -154,9 +238,13 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   ImageRecord res;
   auto record = reader_.record(offset);
   auto entry = record.data(index);
-  auto data_str = entry.GetRaw();
-  std::transform(data_str.begin(),
-                 data_str.end(),
+  auto data_hash = entry.GetRaw();
+  CHECK(!g_log_dir.empty())
+      << "g_log_dir should be set in LogReader construction";
+  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), data_hash);
+
+  std::transform(brcd.data.begin(),
+                 brcd.data.end(),
                  std::back_inserter(res.data),
                  [](byte_t i) { return (int)(i); });
   res.shape = entry.GetMulti<shape_t>();

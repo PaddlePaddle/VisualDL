@@ -1,11 +1,10 @@
-import random
-import time
+import pprint
+import sys
 import unittest
 
 import numpy as np
 from PIL import Image
 
-import sys, pprint
 pprint.pprint(sys.path)
 
 from visualdl import LogWriter, LogReader
@@ -119,7 +118,6 @@ class StorageTest(unittest.TestCase):
             self.assertEqual(scalar.caption(), "train")
 
     def test_modes(self):
-        dir = "./tmp/storagetest0"
         store = LogWriter(
             self.dir, sync_cycle=1)
 

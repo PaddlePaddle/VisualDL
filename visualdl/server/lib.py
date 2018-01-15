@@ -1,11 +1,12 @@
 import pprint
-import random
 import re
+import time
 import urllib
 from tempfile import NamedTemporaryFile
 
 import numpy as np
 from PIL import Image
+from log import logger
 
 
 def get_modes(storage):
@@ -102,20 +103,23 @@ def get_image_tag_steps(storage, mode, tag):
         shape = record.shape()
         # TODO(ChunweiYan) remove this trick, some shape will be empty
         if not shape: continue
-        # assert shape, "%s,%s" % (mode, tag)
-        query = urllib.urlencode({
-            'sample': 0,
-            'index': step_index,
-            'tag': origin_tag,
-            'run': mode,
-        })
-        res.append({
-            'height': shape[0],
-            'width': shape[1],
-            'step': record.step_id(),
-            'wall_time': image.timestamp(step_index),
-            'query': query,
-        })
+        try:
+            query = urllib.urlencode({
+                'sample': 0,
+                'index': step_index,
+                'tag': origin_tag,
+                'run': mode,
+            })
+            res.append({
+                'height': shape[0],
+                'width': shape[1],
+                'step': record.step_id(),
+                'wall_time': image.timestamp(step_index),
+                'query': query,
+            })
+        except:
+            logger.error("image sample out of range")
+
     return res
 
 
@@ -133,15 +137,10 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
         shape = record.shape()
 
         if shape[2] == 1:
-          shape = [shape[0], shape[1]]
+            shape = [shape[0], shape[1]]
         data = np.array(record.data(), dtype='uint8').reshape(shape)
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.png')
         with Image.fromarray(data) as im:
-            size = max(shape[0], shape[1])
-            if size > max_size:
-                scale = max_size * 1. / size
-                scaled_shape = (int(shape[0] * scale), int(shape[1] * scale))
-                im = im.resize(scaled_shape)
             im.save(tempfile)
         tempfile.seek(0, 0)
         return tempfile
@@ -151,7 +150,7 @@ def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')
 
 
-def get_histogram(storage, mode, tag):
+def get_histogram(storage, mode, tag, num_samples=200):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
         res = []
@@ -176,15 +175,31 @@ def get_histogram(storage, mode, tag):
                     [instance.left(),
                      instance.right(),
                      instance.frequency()])
-        return res
+        if len(res) < num_samples:
+            return res
+
+        # sample some steps
+        span = float(len(res)) / (num_samples - 1)
+        span_offset = 0
+        data_idx = 0
+
+        sampled_data = []
+        data_size = len(res)
+        while data_idx < data_size:
+            sampled_data.append(res[data_size - data_idx - 1])
+            span_offset += 1
+            data_idx = int(span_offset * span)
+        sampled_data.append(res[0])
+        return sampled_data[::-1]
 
 
-if __name__ == '__main__':
-    reader = storage.LogReader('./tmp/mock')
-    tags = get_image_tags(reader)
-
-    tags = get_image_tag_steps(reader, 'train', 'layer1/layer2/image0/0')
-    pprint.pprint(tags)
-
-    image = get_invididual_image(reader, "train", 'layer1/layer2/image0/0', 2)
-    print image
+def retry(ntimes, function, time2sleep, *args, **kwargs):
+    '''
+    try to execute `function` `ntimes`, if exception catched, the thread will
+    sleep `time2sleep` seconds.
+    '''
+    for i in xrange(ntimes):
+        try:
+            return function(*args, **kwargs)
+        except:
+            time.sleep(time2sleep)

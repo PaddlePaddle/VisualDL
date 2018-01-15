@@ -24,9 +24,7 @@ import {format, precisionRound} from 'd3-format';
 // service
 import {getPluginHistogramsHistograms} from '../../service';
 
-const highlightLineColor = '#2f4554';
-const defaultLineColor = '#d14a61';
-const lineWidth = 1;
+let zrDrawElement = {};
 // the time to refresh chart data
 const intervalTime = 15;
 
@@ -63,7 +61,7 @@ export default {
         let tagInfo = this.data.get('tagInfo');
         this.initChart(tagInfo);
 
-        this.initChartEvent();
+        // this.initChartEvent();
         if (this.data.get('running')) {
             this.startInterval();
         }
@@ -88,14 +86,11 @@ export default {
 
     initChartOption() {
         this.myChart.clear();
-
-// var ob = this.myChart.getOption();
-
+        let chartType = this.data.get('chartType');
         let data = this.data.get('originData');
         let visData = originDataToChartData(data);
         let tagInfo = this.data.get('tagInfo');
         let title = tagInfo.tag.displayName + '(' + tagInfo.run + ')';
-        let chartType = this.data.get('chartType');
         this.setChartOptions(visData, title, chartType);
     },
 
@@ -106,7 +101,6 @@ export default {
             right: '10%',
             bottom: '8%'
         };
-
         let title = {
             text: tag,
             textStyle: {
@@ -133,8 +127,8 @@ export default {
                 lineStyle: {
                     normal: {
                         // opacity: originLinesOpacity,
-                        width: lineWidth,
-                        color: defaultLineColor
+                        width: 1,
+                        color: '#008c99'
                     }
                 },
                 encode: {
@@ -172,7 +166,18 @@ export default {
             },
             series: seriesOption
         };
-        this.myChart.setOption(option);
+
+        let zr1 = this.myChart.getZr();
+        zr1.on('mousemove', function (e) {
+            zr1.remove(zrDrawElement.hoverLine);
+            zr1.remove(zrDrawElement.tooltip);
+            zr1.remove(zrDrawElement.tooltipX);
+            zr1.remove(zrDrawElement.tooltipY);
+            zrDrawElement.hoverDots.forEach(dot => zr1.remove(dot));
+            zrDrawElement.hoverDots.length = 0;
+        });
+
+        this.myChart.setOption(option, {notMerge: true});
     },
 
     setOffsetChartOption({chartData, min, max}, title, grid) {
@@ -187,7 +192,7 @@ export default {
         grid.top = '42%';
         grid.left = '4%';
         grid.right = '15%';
-        chartData.forEach((dataItem) => {
+        chartData.forEach(function (dataItem) {
             let lineData = [];
             maxStep = Math.max(dataItem.step, maxStep);
             minStep = Math.min(dataItem.step, minStep);
@@ -243,7 +248,7 @@ export default {
                         params.dataIndex,
                         api.value,
                         api.coord,
-                        params.coordSys.y - 5
+                        params.coordSys.y - 10
                     );
                     return {
                         type: 'polygon',
@@ -289,23 +294,18 @@ export default {
             return pt;
         }
 
-        let hoverLine;
-        let maxLine;
-        let hoverDots = [];
-        let tooltip;
-        let tooltipX;
-        let tooltipY;
+        zrDrawElement.hoverDots = [];
 
         let zr = ecChart.getZr();
 
-        function removeTooltip(){
-            if (hoverLine) {
-                zr.remove(hoverLine);
-                zr.remove(tooltip);
-                hoverDots.forEach(dot => zr.remove(dot));
-                hoverDots.length = 0;
-                zr.remove(tooltipX);
-                zr.remove(tooltipY);
+        function removeTooltip() {
+            if (zrDrawElement.hoverLine) {
+                zr.remove(zrDrawElement.hoverLine);
+                zr.remove(zrDrawElement.tooltip);
+                zrDrawElement.hoverDots.forEach(dot => zr.remove(dot));
+                zrDrawElement.hoverDots.length = 0;
+                zr.remove(zrDrawElement.tooltipX);
+                zr.remove(zrDrawElement.tooltipY);
             }
         }
 
@@ -317,18 +317,21 @@ export default {
             removeTooltip();
             let nearestIndex = findNearestValue(e.offsetX, e.offsetY);
             if (nearestIndex) {
-                let getCoord = function(pt) {
+                let getCoord = function (pt) {
                     return ecChart.convertToPixel('grid', pt);
                 };
+                let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
+
                 let linePoints = makePolyPoints(
                     nearestIndex.itemIndex,
                     function (i) {
                         return rawData[nearestIndex.itemIndex][i];
                     },
-                    getCoord
+                    getCoord,
+                    gridRect.y - 10
                 );
 
-                zr.add(hoverLine = new echarts.graphic.Polyline({
+                zr.add(zrDrawElement.hoverLine = new echarts.graphic.Polyline({
                     silent: true,
                     shape: {
                         points: linePoints
@@ -362,11 +365,11 @@ export default {
                         z: 1000
                     });
                     zr.add(dot);
-                    hoverDots.push(dot);
+                    zrDrawElement.hoverDots.push(dot);
                 });
 
                 let hoveredItem = chartData[nearestIndex.itemIndex];
-                tooltip = new echarts.graphic.Text({
+                zrDrawElement.tooltip = new echarts.graphic.Text({
                     position: [e.offsetX + 30, e.offsetY - 50],
                     style: {
                         text: hoveredItem.items[nearestIndex.binIndex][3],
@@ -381,11 +384,9 @@ export default {
                     },
                     z: 2000
                 });
-                zr.add(tooltip);
+                zr.add(zrDrawElement.tooltip);
 
-                let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
-
-                tooltipX = new echarts.graphic.Text({
+                zrDrawElement.tooltipX = new echarts.graphic.Text({
                     position: [
                         itemX,
                         gridRect.y + gridRect.height
@@ -402,9 +403,9 @@ export default {
                     },
                     z: 2000
                 });
-                zr.add(tooltipX);
+                zr.add(zrDrawElement.tooltipX);
 
-                tooltipY = new echarts.graphic.Text({
+                zrDrawElement.tooltipY = new echarts.graphic.Text({
                     position: [
                         gridRect.x + gridRect.width,
                         linePoints[linePoints.length - 1][1]
@@ -421,7 +422,7 @@ export default {
                     },
                     z: 2000
                 });
-                zr.add(tooltipY);
+                zr.add(zrDrawElement.tooltipY);
             }
         });
 
@@ -456,7 +457,7 @@ export default {
             }
         }
 
-        ecChart.setOption(option);
+        ecChart.setOption(option, {notMerge: true});
 
     },
 
@@ -484,32 +485,32 @@ export default {
         });
     },
 
-    lightHoveredLine({seriesIndex}) {
-        let series = this.myChart.getOption().series;
-        let newSeries = series.map((item, index) => {
-            if (seriesIndex === index) {
-                item.lineStyle.normal.color = highlightLineColor;
-                item.zlevel = 1;
-            }
-            else {
-                item.lineStyle.normal.color = defaultLineColor;
-                item.zlevel = 0;
-            }
-            return item;
-        });
-        this.myChart.setOption({
-            series: newSeries
-        });
-    },
+    // lightHoveredLine({seriesIndex}) {
+    //     let series = this.myChart.getOption().series;
+    //     let newSeries = series.map((item, index) => {
+    //         if (seriesIndex === index) {
+    //             item.lineStyle.normal.color = highlightLineColor;
+    //             item.zlevel = 1;
+    //         }
+    //         else {
+    //             item.lineStyle.normal.color = defaultLineColor;
+    //             item.zlevel = 0;
+    //         }
+    //         return item;
+    //     });
+    //     this.myChart.setOption({
+    //         series: newSeries
+    //     });
+    // },
 
-    initChartEvent() {
-        this.myChart.on('mousemove', params => {
-            let chartType = this.data.get('chartType');
-            if (chartType === 'overlay') {
-                this.lightHoveredLine(params);
-            }
-        });
-    },
+    // initChartEvent() {
+    //     this.myChart.on('mousemove', params => {
+    //         let chartType = this.data.get('chartType');
+    //         if (chartType === 'overlay') {
+    //             this.lightHoveredLine(params);
+    //         }
+    //     });
+    // },
 
     expandArea() {
         let isExpand = this.data.get('isExpand');

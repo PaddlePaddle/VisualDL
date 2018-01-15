@@ -2,6 +2,8 @@
 
 import json
 import os
+import exceptions
+import time
 import sys
 from optparse import OptionParser
 
@@ -21,7 +23,18 @@ app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
+error_retry_times = 3
+error_sleep_time = 2  # seconds
+
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
+
+
+def try_call(function, *args, **kwargs):
+    res = lib.retry(error_retry_times, function, error_sleep_time, *args,
+                    **kwargs)
+    if not res:
+        raise exceptions.IOError("server IO error, will retry latter.")
+    return res
 
 
 def option_parser():
@@ -64,6 +77,7 @@ log_reader = LogReader(options.logdir)
 
 graph_image_path = None
 
+
 # return data
 # status, msg, data
 def gen_result(status, msg, data):
@@ -89,10 +103,11 @@ def serve_static(filename):
     return send_from_directory(
         os.path.join(server_path, static_file_path), filename)
 
+
 @app.route('/graphs/image')
 def serve_graph():
-    print 'send file', graph_image_path
     return send_file(graph_image_path)
+
 
 @app.route('/data/logdir')
 def logdir():
@@ -110,10 +125,7 @@ def runs():
 def scalar_tags():
     mode = request.args.get('mode')
     is_debug = bool(request.args.get('debug'))
-    if is_debug:
-        result = mock_tags.data()
-    else:
-        result = lib.get_scalar_tags(log_reader)
+    result = try_call(lib.get_scalar_tags, log_reader)
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -121,7 +133,7 @@ def scalar_tags():
 @app.route("/data/plugin/images/tags")
 def image_tags():
     mode = request.args.get('run')
-    result = lib.get_image_tags(log_reader)
+    result = try_call(lib.get_image_tags, log_reader)
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -129,7 +141,8 @@ def image_tags():
 @app.route("/data/plugin/histograms/tags")
 def histogram_tags():
     mode = request.args.get('run')
-    result = lib.get_histogram_tags(log_reader)
+    # hack to avlid IO conflicts
+    result = try_call(lib.get_histogram_tags, log_reader)
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -138,12 +151,7 @@ def histogram_tags():
 def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
-    is_debug = bool(request.args.get('debug'))
-    if is_debug:
-        result = mock_data.sequence_data()
-    else:
-        result = lib.get_scalar(log_reader, run, tag)
-
+    result = try_call(lib.get_scalar, log_reader, run, tag)
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -153,7 +161,7 @@ def images():
     mode = request.args.get('run')
     tag = request.args.get('tag')
 
-    result = lib.get_image_tag_steps(log_reader, mode, tag)
+    result = try_call(lib.get_image_tag_steps, log_reader, mode, tag)
     result = gen_result(0, "", result)
 
     return Response(json.dumps(result), mimetype='application/json')
@@ -166,7 +174,8 @@ def individual_image():
     step_index = int(request.args.get('index'))  # index of step
     offset = 0
 
-    imagefile = lib.get_invididual_image(log_reader, mode, tag, step_index)
+    imagefile = try_call(lib.get_invididual_image, log_reader, mode, tag,
+                         step_index)
     response = send_file(
         imagefile, as_attachment=True, attachment_filename='img.png')
     return response
@@ -176,7 +185,7 @@ def individual_image():
 def histogram():
     run = request.args.get('run')
     tag = request.args.get('tag')
-    result = lib.get_histogram(log_reader, run, tag)
+    result = try_call(lib.get_histogram, log_reader, run, tag)
     result = gen_result(0, "", result)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -184,7 +193,10 @@ def histogram():
 @app.route('/data/plugin/graphs/graph')
 def graph():
     # TODO(ChunweiYan) need to add a config for whether have graph.
-    data = {'url': '/graphs/image'}
+    if graph_image_path is None:
+        data = {'url': ''}
+    else:
+        data = {'url': '/graphs/image'}
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 

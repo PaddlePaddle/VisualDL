@@ -11,6 +11,21 @@ struct Storage;
 
 using byte_t = unsigned char;
 
+struct EntryReader {
+  EntryReader(storage::Entry x) : data_(x) {}
+  // Get a single value.
+  template <typename T>
+  T Get() const;
+  // Get repeated field.
+  template <typename T>
+  std::vector<T> GetMulti() const;
+
+  std::string GetRaw() { return data_.y(); }
+
+private:
+  storage::Entry data_;
+};
+
 /*
  * Utility helper for storage::Entry.
  */
@@ -44,23 +59,11 @@ struct Entry {
   Storage* parent() { return x_; }
   void set_parent(Storage* x) { x_ = x; }
 
+  // TODO(ChunweiYan) avoid copy.
+  EntryReader reader() { return EntryReader(*entry); }
+
 private:
   Storage* x_;
-};
-
-struct EntryReader {
-  EntryReader(storage::Entry x) : data_(x) {}
-  // Get a single value.
-  template <typename T>
-  T Get() const;
-  // Get repeated field.
-  template <typename T>
-  std::vector<T> GetMulti() const;
-
-  std::string GetRaw() { return data_.y(); }
-
-private:
-  storage::Entry data_;
 };
 
 }  // namespace visualdl
