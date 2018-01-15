@@ -14,13 +14,6 @@
             <ui-icon style="margin-right: 6px">file_download</ui-icon>
             Download image
         </ui-button>
-        <!--
-        <ui-dropdown-menu
-            label="Session runs"
-            items="{{sessionItems}}"
-            value="{=config.session=}"
-        />
-        -->
         <ui-slider
             label="Scale"
             value="{=config.scale=}"

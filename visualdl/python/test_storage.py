@@ -81,9 +81,7 @@ class StorageTest(unittest.TestCase):
         with self.reader.mode("train") as reader:
 
             image_writer.start_sampling()
-            index = image_writer.is_sample_taken()
-            image_writer.set_sample(index, shape, list(origin_data))
-            image_writer.finish_sampling()
+            image_writer.add_sample(shape, list(origin_data))
 
             # read and check whether the original image will be displayed
             image_reader = reader.image(tag)
