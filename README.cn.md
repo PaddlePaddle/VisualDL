@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="60%" />
+</p>
+
 # VisualDL (Visualize the Deep Learning)
 
 ## 介绍
@@ -21,21 +25,21 @@ VisualDL 目前支持4种组件：
 兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
 
 <p align="center">
-  <img src="../demo/mxnet/mxnet_graph.gif" width="600" />
+  <img src="https://github.com/daming-lu/large_files/blob/master/graph_demo.gif" width="60%" />
 </p>
 
 ### scalar
 可以用于展示训练测试的误差趋势
 
 <p align="center">
-<img src="./images/scalar_demo.png" width="600"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="60%"/>
 </p>
 
 ### image
 可以用于可视化任何tensor，或模型生成的图片
 
 <p align="center">
-<img src="./images/image_demo.png" width="600"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="60%"/>
 </p>
 
 ### histogram
@@ -43,7 +47,7 @@ VisualDL 目前支持4种组件：
 用于可视化任何tensor中元素分布的变化趋势
 
 <p align="center">
-<img src="./images/histogram_demo.png" width="600"/>
+<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
 </p>
 
 ## SDK
@@ -110,3 +114,9 @@ board 还支持一下参数来实现远程的访问：
 - `--host` 设定IP
 - `--port` 设定端口
 - `--model_pb` 指定 ONNX 格式的模型文件
+
+
+### 贡献
+
+VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和 
+[ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。 
