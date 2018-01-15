@@ -2,13 +2,14 @@ from __future__ import print_function
 
 import sys
 
+import numpy as np
+from visualdl import LogWriter
+
 import paddle.v2 as paddle
 import paddle.v2.fluid as fluid
 import paddle.v2.fluid.framework as framework
-from paddle.v2.fluid.param_attr import ParamAttr
 from paddle.v2.fluid.initializer import NormalInitializer
-from visualdl import LogWriter
-import numpy as np
+from paddle.v2.fluid.param_attr import ParamAttr
 
 logdir = "./tmp"
 logwriter = LogWriter(logdir, sync_cycle=10)
