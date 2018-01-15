@@ -146,18 +146,29 @@ struct Image {
   }
 
   /*
-   * Start a sampling period.
+   * Start a sampling period, this interface will start a new reservior sampling
+   * phase.
    */
   void StartSampling();
   /*
-   * Will this sample be taken.
-   */
-  int IsSampleTaken();
-  /*
-   * End a sampling period.
+   * End a sampling period, it will clear all states for reservior sampling.
    */
   void FinishSampling();
 
+  /*
+   * A combined interface for IsSampleTaken and SetSample, simpler but might be
+   * low effience.
+   */
+  void AddSample(const std::vector<shape_t>& shape,
+                 const std::vector<value_t>& data);
+
+  /*
+   * Will this sample be taken, this interface is introduced to reduce the cost
+   * of copy image data, by testing whether this image will be sampled, and only
+   * copy data when it should be sampled. In that way, most of unsampled image
+   * data need not be copied or processed at all.
+   */
+  int IsSampleTaken();
   /*
    * Just store a tensor with nothing to do with image format.
    */

@@ -4,7 +4,7 @@
         <div class="group-box">
             <san-radio
                 on-change="handleChange($event)"
-                san-for="item in items"
+                s-for="item in items"
                 label="{{item.name}}"
                 value="{{item.value}}"
                 disabled="{{item.disabled}}"
