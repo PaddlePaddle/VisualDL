@@ -40,8 +40,9 @@ export function computeNewHistogram(histogram, min, max, binsNum = 30) {
     });
 };
 
-export const tansformToVisData
-= (tempData, time, step) => tempData.map(({x, dx, y}) => [time, step, x + dx / 2, Math.floor(y)]);
+export function tansformToVisData(tempData, time, step){
+    tempData.map(({x, dx, y}) => [time, step, x + dx / 2, Math.floor(y)]);
+}
 
 export function originDataToChartData(originData) {
     let tempDatas = originData.map(tansformBackendData);
