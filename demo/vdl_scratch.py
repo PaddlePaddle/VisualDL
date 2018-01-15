@@ -32,24 +32,34 @@ for step in range(1, 100):
 # create histogram
 with logw.mode('train') as logger:
     histogram = logger.histogram("scratch/histogram", num_buckets=200)
+    histogram0 = logger.histogram("scratch/histogram0", num_buckets=200)
     for step in range(1, 100):
         histogram.add_record(step,
                              np.random.normal(
                                  0.1 + step * 0.001,
                                  200. / (100 + step),
                                  size=1000))
+
+    for step in range(1, 50):
+        histogram0.add_record(step,
+                             np.random.normal(
+                                 0.1 + step * 0.003,
+                                 200. / (120 + step),
+                                 size=1000))
 # create image
 with logw.mode("train") as logger:
-    image = logger.image("scratch/dog", 4,
-                         1)  # randomly sample 4 images one pass
+    image = logger.image("scratch/dog", 4)  # randomly sample 4 images one pass
+    image0 = logger.image("scratch/random", 4)
+
     dog_jpg = Image.open(os.path.join(ROOT, 'python/dog.jpg'))
     dog_jpg = dog_jpg.resize(np.array(dog_jpg.size) / 2)
     shape = [dog_jpg.size[1], dog_jpg.size[0], 3]
 
+    # add dog's image
     for pass_ in xrange(4):
         image.start_sampling()
         for sample in xrange(10):
-            # randomly crop a demo image.
+            # randomly crop a dog's image.
             target_shape = [100, 100, 3]  # width, height, channels(3 for RGB)
             left_x = random.randint(0, shape[1] - target_shape[1])
             left_y = random.randint(0, shape[0] - target_shape[0])
@@ -57,7 +67,8 @@ with logw.mode("train") as logger:
             right_y = left_y + target_shape[0]
 
             # a more efficient way to sample images
-            idx = image.is_sample_taken() # check whether this image will be taken by reservoir sampling
+            idx = image.is_sample_taken(
+            )  # check whether this image will be taken by reservoir sampling
             if idx >= 0:
                 data = np.array(
                     dog_jpg.crop((left_x, left_y, right_x,
@@ -72,3 +83,12 @@ with logw.mode("train") as logger:
             # image.add_sample(shape, data)
 
         image.finish_sampling()
+
+    # add randomly generated image
+    for pass_ in xrange(4):
+        image0.start_sampling()
+        for sample in xrange(10):
+            shape = [40, 30, 3]
+            data = np.random.random(shape).flatten()
+            image0.add_sample(shape, list(data))
+        image0.finish_sampling()
