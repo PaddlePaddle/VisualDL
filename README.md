@@ -140,5 +140,6 @@ that will start a server locally.
 
 ### Contribute
 
-Visual DL is initially created by PaddlePaddle and ECharts. 
+VisualDL is initially created by [PaddlePaddle](http://www.paddlepaddle.org/) and 
+[ECharts](http://echarts.baidu.com/). 
 We welcome everyone to use, comment and contribute to Visual DL :)

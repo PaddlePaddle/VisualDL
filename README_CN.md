@@ -110,3 +110,9 @@ board 还支持一下参数来实现远程的访问：
 - `--host` 设定IP
 - `--port` 设定端口
 - `--model_pb` 指定 ONNX 格式的模型文件
+
+
+### 贡献
+
+VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和 
+[ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。 
