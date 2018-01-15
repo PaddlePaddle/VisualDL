@@ -79,7 +79,7 @@ datas = []
 data_root = os.path.join(TOP_DIR, 'visualdl/server/dist')
 for root, dirs, files in os.walk(data_root):
     for filename in files:
-        path = 'dist/'+os.path.join(root, filename)[len(data_root)+1:]
+        path = 'dist/' + os.path.join(root, filename)[len(data_root) + 1:]
         datas.append(path)
 print datas
 
@@ -92,9 +92,12 @@ setup(
     keywords="visualization deeplearning",
     long_description=read('README.md'),
     install_requires=install_requires,
-    package_data={'visualdl.server': datas,
-                  'visualdl':['core.so'],
-                  'visualdl.python':['core.so', 'dog.jpg']},
+    package_data={
+        'visualdl.server': datas,
+        'visualdl': ['core.so'],
+        'visualdl.python': ['core.so', 'dog.jpg']
+    },
     packages=packages,
+    ext_modules=[Extension('_foo', ['stub.cc'])],
     scripts=['visualdl/server/visualDL', 'demo/vdl_scratch.py'],
     cmdclass=cmdclass)
