@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-app-menu">
-        <san-appbar title="VisualDL">
+        <san-appbar title=" ">
             <san-menu slot="right">
                 <san-menu-item
                     s-for="item in items"
@@ -66,6 +66,11 @@ export default {
         font-size 24px
         flex none
         margin-right 50px
+    .sm-appbar-title
+        background url('./visualdl-logo.png') no-repeat
+        background-size cover
+        width 120px
+        height 50px
     .sm-appbar-right
         width 100%
         .sm-menu

@@ -73,6 +73,7 @@ export default {
     .config-com
         width 90%
         margin 20px auto
+        color $-right-font-color
         .config-button
             width 200px
             margin-top 20px
