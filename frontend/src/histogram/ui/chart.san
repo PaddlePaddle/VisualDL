@@ -24,6 +24,7 @@ import {format, precisionRound} from 'd3-format';
 import {getPluginHistogramsHistograms} from '../../service';
 
 let zrDrawElement = {};
+zrDrawElement.hoverDots = [];
 // the time to refresh chart data
 const intervalTime = 15;
 
@@ -152,6 +153,9 @@ export default {
             },
             yAxis: {
                 type: 'value',
+                axisLine: {
+                    onZero: false
+                },
                 axisLabel: {
                     formatter(value, index) {
                         return yValueFormat(value);
@@ -224,6 +228,11 @@ export default {
                 axisLine: {
                     onZero: false
                 },
+                axisLabel: {
+                    formatter: function (value) {
+                        return Math.round(value * 100) / 100;
+                    }
+                },
                 splitLine: {
                     show: false
                 }
@@ -282,8 +291,6 @@ export default {
             pt[1] -= (z - minZ) / (maxZ - minZ) * yValueMapHeight;
             return pt;
         }
-
-        zrDrawElement.hoverDots = [];
 
         let zr = ecChart.getZr();
 
@@ -361,7 +368,7 @@ export default {
                 zrDrawElement.tooltip = new echarts.graphic.Text({
                     position: [e.offsetX + 30, e.offsetY - 50],
                     style: {
-                        text: hoveredItem.items[nearestIndex.binIndex][3],
+                        text: yValueFormat(hoveredItem.items[nearestIndex.binIndex][3]),
                         textFill: '#000',
                         fontSize: 14,
                         textBackgroundColor: '#eee',
