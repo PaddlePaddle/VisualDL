@@ -106,16 +106,6 @@ export default {
             // enable inertial throwing
             inertia: true,
             autoScroll: true,
-            restrict: {
-                restriction: 'parent',
-                endOnly: true,
-                elementRect: {
-                    top: 0,
-                    left: 0,
-                    bottom: 1,
-                    right: 1
-                }
-            },
             // call this function on every dragmove event
             onmove(event) {
                 dragMovelHandler(event, (target, x, y) => {
