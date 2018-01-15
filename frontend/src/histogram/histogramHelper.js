@@ -1,6 +1,6 @@
 import {min, max, range} from 'lodash';
 
-export const tansformBackendData = histogramData => {
+export function tansformBackendData(histogramData) {
     let [time, step, items] = histogramData;
     return {
         time,
@@ -9,9 +9,9 @@ export const tansformBackendData = histogramData => {
         max: max(items.map(([left, right, count]) => right)),
         items: items.map(([left, right, count]) => ({left, right, count}))
     };
-};
+}
 
-export const computeNewHistogram = (histogram, min, max, binsNum = 30) => {
+export function computeNewHistogram(histogram, min, max, binsNum = 30) {
     if (max === min) {
         // Create bins even if all the data has a single value.
         max = min * 1.1 + 1;
@@ -38,16 +38,19 @@ export const computeNewHistogram = (histogram, min, max, binsNum = 30) => {
         }
         return {x: binLeft, dx: stepWidth, y: yValue};
     });
-};
+}
 
-export const tansformToVisData
-= (tempData, time, step) => tempData.map(({x, dx, y}) => [time, step, x + dx / 2, Math.floor(y)]);
+export function tansformToVisData(tempData, time, step) {
+    return tempData.map(function (dataItem) {
+        return [time, step, dataItem.x + dataItem.dx / 2, Math.floor(dataItem.y)];
+    });
+}
 
-export const originDataToChartData = originData => {
-    let tempDatas = originData.map(tansformBackendData);
-    let globalMin = min(tempDatas.map(({min}) => min));
-    let globalMax = max(tempDatas.map(({max}) => max));
-    let chartData = tempDatas.map(item => {
+export function originDataToChartData(originData) {
+    let tempData = originData.map(tansformBackendData);
+    let globalMin = min(tempData.map(({min}) => min));
+    let globalMax = max(tempData.map(({max}) => max));
+    let chartData = tempData.map(function (item) {
         let histoBins = computeNewHistogram(item, globalMin, globalMax);
         let {time, step} = item;
         return {
@@ -61,4 +64,4 @@ export const originDataToChartData = originData => {
         max: globalMax,
         chartData
     };
-};
+}

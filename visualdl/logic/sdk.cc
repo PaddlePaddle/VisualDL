@@ -171,6 +171,14 @@ struct is_same_type<T, T> {
   static const bool value = true;
 };
 
+void Image::AddSample(const std::vector<shape_t>& shape,
+                      const std::vector<value_t>& data) {
+  auto idx = IsSampleTaken();
+  if (idx >= 0) {
+    SetSample(idx, shape, data);
+  }
+}
+
 void Image::SetSample(int index,
                       const std::vector<shape_t>& shape,
                       const std::vector<value_t>& data) {

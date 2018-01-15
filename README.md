@@ -7,8 +7,9 @@ python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-0.0.1-py2-none-any.whl
 ```
 
-
-### Step 3: run
+### Run a demo from scratch
 ```
-visualDL --logdir=<some log> --port=8888
+vdl_scratch.py
+visualDL --logdir=scratch_log
 ```
+that will start a server locally.
