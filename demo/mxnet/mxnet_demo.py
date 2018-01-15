@@ -1,5 +1,6 @@
-import mxnet as mx
+import logging
 
+import mxnet as mx
 # Here we import LogWriter so that we can write log data while MXNet is training
 from visualdl import LogWriter
 
@@ -45,7 +46,6 @@ def add_scalar():
 # Start to build CNN in MXNet, train MNIST dataset. For more info, check MXNet's official website:
 # https://mxnet.incubator.apache.org/tutorials/python/mnist.html
 
-import logging
 logging.getLogger().setLevel(logging.DEBUG)  # logging to stdout
 
 train_iter = mx.io.NDArrayIter(mnist['train_data'], mnist['train_label'], batch_size, shuffle=True)
