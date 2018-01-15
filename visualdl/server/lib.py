@@ -59,7 +59,8 @@ def get_scalar(storage, mode, tag, num_records=300):
             span_offset += 1
             data_idx = int(span_offset * span)
 
-        sampled_data.append(data[0])
+        if data[0] != 0.:
+            sampled_data.append(data[0])
         return sampled_data[::-1]
 
 
