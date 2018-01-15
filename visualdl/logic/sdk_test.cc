@@ -81,6 +81,40 @@ TEST(Image, test) {
   CHECK_EQ(image2read.num_records(), num_steps);
 }
 
+TEST(Image, add_sample_test) {
+  const auto dir = "./tmp/sdk_test.image";
+  LogWriter writer__(dir, 4);
+  auto writer = writer__.AsMode("train");
+
+  auto tablet = writer.AddTablet("image0");
+  components::Image image(tablet, 3, 1);
+  const int num_steps = 10;
+
+  LOG(INFO) << "write images";
+  image.SetCaption("this is an image");
+  for (int step = 0; step < num_steps; step++) {
+    image.StartSampling();
+    for (int i = 0; i < 7; i++) {
+      vector<int64_t> shape({5, 5, 3});
+      vector<float> data;
+      for (int j = 0; j < 3 * 5 * 5; j++) {
+        data.push_back(float(rand()) / RAND_MAX);
+      }
+      image.AddSample(shape, data);
+    }
+    image.FinishSampling();
+  }
+
+  LOG(INFO) << "read images";
+  // read it
+  LogReader reader__(dir);
+  auto reader = reader__.AsMode("train");
+  auto tablet2read = reader.tablet("image0");
+  components::ImageReader image2read("train", tablet2read);
+  CHECK_EQ(image2read.caption(), "this is an image");
+  CHECK_EQ(image2read.num_records(), num_steps);
+}
+
 TEST(Histogram, AddRecord) {
   const auto dir = "./tmp/sdk_test.histogram";
   LogWriter writer__(dir, 1);
