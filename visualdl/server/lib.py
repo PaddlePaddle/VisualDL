@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 
 import numpy as np
 from PIL import Image
+
 from log import logger
 
 
@@ -219,4 +220,3 @@ def cache_get(cache):
             return data
         return data
     return _handler
-

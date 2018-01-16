@@ -1,5 +1,6 @@
 import time
 
+
 class MemCache(object):
     class Record:
         def __init__(self, value):
