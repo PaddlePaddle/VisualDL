@@ -24,7 +24,7 @@ VisualDL的安装很简单。请按照VisualDL的[官方网站](https://github.c
 
 ```
 python setup.py bdist_wheel
-pip install --upgrade dist/visualdl-0.0.1-py2-none-any.whl
+pip install --upgrade dist/visualdl-*.whl
 ```
 
 ## 开始编写训练MNIST的程序
