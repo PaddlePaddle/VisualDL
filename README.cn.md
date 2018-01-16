@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="60%" />
+  <img src="./docs/images/vs-logo.png" width="60%" />
 </p>
-
-# VisualDL (Visualize the Deep Learning)
 
 ## 介绍
 VisualDL是一个面向深度学习任务设计的可视化工具，包含了scalar、参数分布、模型结构、图像可视化等功能，项目正处于高速迭代中，新的组件会不断加入。

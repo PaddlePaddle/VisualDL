@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="https://github.com/daming-lu/large_files/blob/master/visualdl-readme.png" width="60%" />
+  <img src="./docs/images/vs-logo.png" width="60%" />
 </p>
-
-# VisualDL (Visualize the Deep Learning)
 
 ## Introduction
 VisualDL is a deep learning visualization tool that can help design deep learning jobs.
