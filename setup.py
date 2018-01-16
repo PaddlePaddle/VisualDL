@@ -86,8 +86,8 @@ print datas
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
-    author="PaddlePaddle and Echarts team.",
-    description="Visualize Deep Learning.",
+    author="PaddlePaddle and Echarts team",
+    description="Visualize Deep Learning",
     license=LICENSE,
     keywords="visualization deeplearning",
     long_description=read('README.md'),
