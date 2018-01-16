@@ -6,7 +6,8 @@ readonly TOP_DIR=$(pwd)
 readonly core_path=$TOP_DIR/build/visualdl/logic
 readonly python_path=$TOP_DIR/visualdl/python
 readonly max_file_size=1000000 # 1MB
-readonly version_number=`cat VERSION_NUMBER | sed 's/\([0-9].[0-9].[0-9]*\).*/\1/g'`
+# version number follow the rule of https://semver.org/
+readonly version_number=`cat VERSION_NUMBER | sed 's/\([0-9]*.[0-9]*.[0-9]*\).*/\1/g'`
 
 sudo="sudo"
 
