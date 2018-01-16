@@ -26,6 +26,7 @@ def readlines(name):
 VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
+# use memcache to reduce disk read frequency.
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
 execute_requires = ['npm', 'node', 'bash']
 
