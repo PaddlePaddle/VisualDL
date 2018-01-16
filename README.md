@@ -125,9 +125,16 @@ Board also supports the parameters below for remote access:
 - `--port` set port
 - `--model_pb` specify ONNX format for model file
 
-
-### How to install
+### How to install from pypi
 ```
+pip install --upgrade visualdl
+```
+
+### How to build and install locally
+```
+git clone https://github.com/PaddlePaddle/VisualDL.git
+cd VisualDL
+
 python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-*.whl
 ```
@@ -135,9 +142,10 @@ pip install --upgrade dist/visualdl-*.whl
 ### Run a demo from scratch
 ```
 vdl_scratch.py
-visualDL --logdir=scratch_log
+visualDL --logdir=scratch_log --port=8080
 ```
-that will start a server locally.
+that will start a server locally on port 8080, then
+you can visit http://127.0.0.1:8080 the see the visualdl board.
 
 
 ### Contribute
