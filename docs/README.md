@@ -23,28 +23,28 @@ VisualDL supports four componments：
 Compatible with ONNX (Open Neural Network Exchange) [https://github.com/onnx/onnx]. VisualDL is compatible with the mainstream DNN platforms such as PaddlePaddle, Pytorch, and MXNet through Python SDK.
 
 <p align="center">
-<img src="./introduction/graph.png"/>
+<img src="./introduction/graph.png" width="60%"/>
 </p>
 
 ### scalar
 Show the error trend throughout the training. 
 
 <p align="center">
-<img src="./introduction/scalar.png"/>
+<img src="./introduction/scalar.png" width="60%"/>
 </p>
 
 ### image
 To visualize any tensor, or model generated images
 
 <p align="center">
-<img src="./introduction/image-gan.png"/>
+<img src="./introduction/image-gan.png" width="60%"/>
 </p>
 
 ### histogram
 To visualize the distribution of elements in any tensor
 
 <p align="center">
-<img src="./introduction/histogram.png"/>
+<img src="./introduction/histogram.png" width="60%"/>
 </p>
 
 ## SDK
