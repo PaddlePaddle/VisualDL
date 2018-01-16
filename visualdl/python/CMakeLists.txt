@@ -25,3 +25,4 @@ function(py_test TARGET_NAME)
 endfunction()
 
 py_test(test_summary SRCS test_storage.py)
+py_test(test_cache SRCS cache.py)

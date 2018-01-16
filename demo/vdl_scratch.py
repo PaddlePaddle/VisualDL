@@ -4,10 +4,12 @@ import os
 import random
 import subprocess
 
+
 import numpy as np
 from PIL import Image
 from scipy.stats import norm
 from visualdl import ROOT, LogWriter
+from visualdl.server.log import logger as log
 
 logdir = './scratch_log'
 
@@ -92,3 +94,20 @@ with logw.mode("train") as logger:
             data = np.random.random(shape).flatten()
             image0.add_sample(shape, list(data))
         image0.finish_sampling()
+
+def download_graph_image():
+    '''
+    This is a scratch demo, it do not generate a ONNX proto, but just download an image
+    that generated before to show how the graph frontend works.
+
+    For real cases, just refer to README.
+    '''
+    import urllib
+    image_url = "https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/super_resolution_graph.png?raw=true"
+    log.warning('download graph demo from {}'.format(image_url))
+    graph_image = urllib.urlopen(image_url).read()
+    with open(os.path.join(logdir, 'graph.jpg'), 'wb') as f:
+        f.write(graph_image)
+    log.warning('graph ready!')
+
+download_graph_image()
