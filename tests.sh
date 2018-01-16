@@ -6,12 +6,13 @@ readonly TOP_DIR=$(pwd)
 readonly core_path=$TOP_DIR/build/visualdl/logic
 readonly python_path=$TOP_DIR/visualdl/python
 readonly max_file_size=1000000 # 1MB
+readonly version_number=`cat VERSION_NUMBER`
 
 sudo="sudo"
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 		curl -O http://python-distribute.org/distribute_setup.py
 		python distribute_setup.py
 		curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
@@ -41,7 +42,7 @@ package() {
 
     cd $TOP_DIR
     python setup.py bdist_wheel
-    $sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
+    $sudo pip install dist/visualdl-${version_number}-*.whl
 }
 
 backend_test() {
