@@ -214,7 +214,8 @@ def retry(ntimes, function, time2sleep, *args, **kwargs):
 def cache_get(cache):
     def _handler(key, func, *args, **kwargs):
         data = cache.get(key)
-        if not data:
+        if data is None:
+            logger.warning('update cache %s' % key)
             data = func(*args, **kwargs)
             cache.set(key, data)
             return data

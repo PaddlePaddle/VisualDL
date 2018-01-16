@@ -11,7 +11,7 @@ class MemCache(object):
             self.value = None
 
         def expired(self, timeout):
-            return time.time() - self.time >= timeout
+            return timeout > 0 and time.time() - self.time >= timeout
     '''
     A global dict to help cache some temporary data.
     '''
@@ -36,12 +36,19 @@ if __name__ == '__main__':
 
     class TestMemCacheTest(unittest.TestCase):
         def setUp(self):
-            self.cache = MemCache(timeout=2)
+            self.cache = MemCache(timeout=1)
+
+        def expire(self):
+            self.cache.set("message", "hello")
+            self.assertFalse(self.cache.expired(1))
+            time.sleep(4)
+            self.assertTrue(self.cache.expired(1))
 
         def test_have_key(self):
             self.cache.set('message', 'hello')
             self.assertTrue(self.cache.get('message'))
-            time.sleep(3)
+            time.sleep(1.1)
             self.assertFalse(self.cache.get('message'))
+            self.assertTrue(self.cache.get("message") is None)
 
     unittest.main()
