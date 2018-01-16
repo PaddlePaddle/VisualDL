@@ -144,7 +144,8 @@ pip install --upgrade dist/visualdl-*.whl
 vdl_scratch.py
 visualDL --logdir=scratch_log --port=8080
 ```
-that will start a server locally on port 8080.
+that will start a server locally on port 8080, then
+you can visit http://127.0.0.1:8080 the see the visualdl board.
 
 
 ### Contribute
