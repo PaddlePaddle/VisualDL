@@ -142,9 +142,9 @@ pip install --upgrade dist/visualdl-*.whl
 ### Run a demo from scratch
 ```
 vdl_scratch.py
-visualDL --logdir=scratch_log
+visualDL --logdir=scratch_log --port=8080
 ```
-that will start a server locally.
+that will start a server locally on port 8080.
 
 
 ### Contribute
