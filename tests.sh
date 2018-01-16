@@ -43,7 +43,7 @@ package() {
 
     cd $TOP_DIR
     python setup.py bdist_wheel
-    $sudo pip install dist/visualdl-${version_number}-*.whl
+    $sudo pip install dist/visualdl-${version_number}*.whl
 }
 
 backend_test() {
