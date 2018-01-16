@@ -23,7 +23,7 @@ build_frontend_fake() {
 
 build_backend() {
     cd $BUILD_DIR
-    cmake ..
+    cmake .. ${PYTHON_FLAGS}
     make -j2
 }
 

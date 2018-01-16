@@ -7,7 +7,7 @@ add_dependencies(sdk entry storage storage_proto eigen3)
 set(OPTIONAL_LINK_FLAGS)
 
 if(NOT APPLE)
-  set(OPTIONAL_LINK_FLAGS "${OPTIONAL_LINK_FLAGS} rt")
+  set(OPTIONAL_LINK_FLAGS "rt")
 endif()
 
 add_library(core SHARED ${PROJECT_SOURCE_DIR}/visualdl/logic/pybind.cc)
