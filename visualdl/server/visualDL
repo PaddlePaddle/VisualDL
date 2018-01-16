@@ -17,6 +17,7 @@ from visualdl.server import lib
 from visualdl.server.log import logger
 from visualdl.server.mock import data as mock_data
 from visualdl.server.mock import data as mock_tags
+from visualdl.python.cache import MemCache
 from visualdl.python.storage import (LogWriter, LogReader)
 
 app = Flask(__name__, static_url_path="")
@@ -33,7 +34,7 @@ def try_call(function, *args, **kwargs):
     res = lib.retry(error_retry_times, function, error_sleep_time, *args,
                     **kwargs)
     if not res:
-        raise exceptions.IOError("server IO error, will retry latter.")
+        logger.error("server temporary error, will retry latter.")
     return res
 
 
@@ -70,6 +71,13 @@ def parse_args():
         action="store",
         dest="logdir",
         help="log file directory")
+    parser.add_argument(
+        "--cache_timeout",
+        action="store",
+        dest="cache_timeout",
+        default=20,
+        help="memory cache timeout duration in seconds, default 20",
+    )
     args = parser.parse_args()
     if not args.logdir:
         parser.print_help()
@@ -86,8 +94,11 @@ log_reader = LogReader(args.logdir)
 
 # mannully put graph's image on this path also works.
 graph_image_path = os.path.join(args.logdir, 'graph.jpg')
+# use a memory cache to reduce disk reading frequency.
+CACHE = MemCache(timeout=args.cache_timeout)
+cache_get = lib.cache_get(CACHE)
 
-# return data
+
 # status, msg, data
 def gen_result(status, msg, data):
     """
@@ -126,33 +137,32 @@ def logdir():
 
 @app.route('/data/runs')
 def runs():
-    result = gen_result(0, "", lib.get_modes(log_reader))
+    data = cache_get('/data/runs', lib.get_modes, log_reader)
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/scalars/tags")
 def scalar_tags():
-    mode = request.args.get('mode')
-    is_debug = bool(request.args.get('debug'))
-    result = try_call(lib.get_scalar_tags, log_reader)
-    result = gen_result(0, "", result)
+    data = cache_get("/data/plugin/scalars/tags", try_call,
+                     lib.get_scalar_tags, log_reader)
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/images/tags")
 def image_tags():
-    mode = request.args.get('run')
-    result = try_call(lib.get_image_tags, log_reader)
-    result = gen_result(0, "", result)
+    data = cache_get("/data/plugin/images/tags", try_call, lib.get_image_tags,
+                     log_reader)
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
 @app.route("/data/plugin/histograms/tags")
 def histogram_tags():
-    mode = request.args.get('run')
-    # hack to avlid IO conflicts
-    result = try_call(lib.get_histogram_tags, log_reader)
-    result = gen_result(0, "", result)
+    data = cache_get("/data/plugin/histograms/tags", try_call,
+                     lib.get_histogram_tags, log_reader)
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -160,8 +170,9 @@ def histogram_tags():
 def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
-    result = try_call(lib.get_scalar, log_reader, run, tag)
-    result = gen_result(0, "", result)
+    key = os.path.join('/data/plugin/scalars/scalars', run, tag)
+    data = cache_get(key, try_call, lib.get_scalar, log_reader, run, tag)
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
@@ -169,9 +180,11 @@ def scalars():
 def images():
     mode = request.args.get('run')
     tag = request.args.get('tag')
+    key = os.path.join('/data/plugin/images/images', mode, tag)
 
-    result = try_call(lib.get_image_tag_steps, log_reader, mode, tag)
-    result = gen_result(0, "", result)
+    data = cache_get(key, try_call, lib.get_image_tag_steps, log_reader, mode,
+                     tag)
+    result = gen_result(0, "", data)
 
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -181,12 +194,13 @@ def individual_image():
     mode = request.args.get('run')
     tag = request.args.get('tag')  # include a index
     step_index = int(request.args.get('index'))  # index of step
-    offset = 0
 
-    imagefile = try_call(lib.get_invididual_image, log_reader, mode, tag,
-                         step_index)
+    key = os.path.join('/data/plugin/images/individualImage', mode, tag,
+                       str(step_index))
+    data = cache_get(key, try_call, lib.get_invididual_image, log_reader, mode,
+                     tag, step_index)
     response = send_file(
-        imagefile, as_attachment=True, attachment_filename='img.png')
+        data, as_attachment=True, attachment_filename='img.png')
     return response
 
 
@@ -194,8 +208,9 @@ def individual_image():
 def histogram():
     run = request.args.get('run')
     tag = request.args.get('tag')
-    result = try_call(lib.get_histogram, log_reader, run, tag)
-    result = gen_result(0, "", result)
+    key = os.path.join('/data/plugin/histograms/histograms', run, tag)
+    data = cache_get(key, try_call, lib.get_histogram, log_reader, run, tag)
+    result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 

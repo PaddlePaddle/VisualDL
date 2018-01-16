@@ -211,3 +211,14 @@ def retry(ntimes, function, time2sleep, *args, **kwargs):
             error_info = '\n'.join(map(str, sys.exc_info()))
             logger.error("Unexpected error: %s" % error_info)
             time.sleep(time2sleep)
+
+def cache_get(cache):
+    def _handler(key, func, *args, **kwargs):
+        data = cache.get(key)
+        if not data:
+            data = func(*args, **kwargs)
+            cache.set(key, data)
+            return data
+        return data
+    return _handler
+
