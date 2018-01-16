@@ -1,4 +1,3 @@
-import pprint
 import re
 import sys
 import time
@@ -90,7 +89,6 @@ def get_image_tags(storage):
 
 
 def get_image_tag_steps(storage, mode, tag):
-    print 'image_tag_steps,mode,tag:', mode, tag
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
     sample_index = 0
