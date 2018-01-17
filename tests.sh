@@ -79,8 +79,8 @@ bigfile_reject() {
     cd $TOP_DIR
     # it failed to exclude .git, remove it first.
     rm -rf .git
-    local largest_file="$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | head -n1)"
-    local size=$(echo $largest_file | awk '{print $1}')
+    local largest_file=$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | grep -v "CycleGAN"| head -n1)
+    local size=$(echo "$largest_file" | awk '{print $1}')
     if [ "$size" -ge "$max_file_size" ]; then
         echo $largest_file
         echo "file size exceed $max_file_size"
