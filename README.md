@@ -74,12 +74,9 @@ with logger.mode("train"):
     # create a scalar component called 'scalars/scalar0'
     scalar0 = logger.scalar("scalars/scalar0")
 
-
-# add some records during DL model running, lets start from another block.
-with logger.mode("train"):
-    # add scalars
-    for step in range(100):
-        scalar0.add_record(step, random.random())
+# add some records during DL model running.
+for step in range(100):
+    scalar0.add_record(step, random.random())
 ```
 
 ### C++ SDK
