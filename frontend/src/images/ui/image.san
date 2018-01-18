@@ -8,7 +8,7 @@
             <span>{{imgData.step}};</span>
             <span>{{imgData.wall_time | formatTime}}</span>
         </p>
-        <s-slider
+        <san-slider
             on-change="handleSlideChange($event)"
             value="{{currentIndex}}"
             min="{{slider.min}}"

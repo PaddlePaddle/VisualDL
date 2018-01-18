@@ -4,7 +4,7 @@
         </div>
         <div class="visual-dl-chart-actions">
             <san-button on-click="expandArea">
-                <san-icon size="20">settings_overscan</s-icon>
+                <san-icon size="20">settings_overscan</san-icon>
             </san-button>
         </div>
     </div>
