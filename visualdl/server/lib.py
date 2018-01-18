@@ -1,4 +1,3 @@
-import pprint
 import re
 import sys
 import time
@@ -7,6 +6,7 @@ from tempfile import NamedTemporaryFile
 
 import numpy as np
 from PIL import Image
+
 from log import logger
 
 
@@ -90,7 +90,6 @@ def get_image_tags(storage):
 
 
 def get_image_tag_steps(storage, mode, tag):
-    print 'image_tag_steps,mode,tag:', mode, tag
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
     sample_index = 0
@@ -211,3 +210,14 @@ def retry(ntimes, function, time2sleep, *args, **kwargs):
             error_info = '\n'.join(map(str, sys.exc_info()))
             logger.error("Unexpected error: %s" % error_info)
             time.sleep(time2sleep)
+
+def cache_get(cache):
+    def _handler(key, func, *args, **kwargs):
+        data = cache.get(key)
+        if data is None:
+            logger.warning('update cache %s' % key)
+            data = func(*args, **kwargs)
+            cache.set(key, data)
+            return data
+        return data
+    return _handler
