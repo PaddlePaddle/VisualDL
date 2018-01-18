@@ -6,7 +6,7 @@ from distutils.spawn import find_executable
 from distutils import sysconfig, dep_util, log
 import setuptools.command.build_py
 import setuptools
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Distribution, Extension
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -26,6 +26,7 @@ def readlines(name):
 VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
+# use memcache to reduce disk read frequency.
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
 execute_requires = ['npm', 'node', 'bash']
 
@@ -79,22 +80,25 @@ datas = []
 data_root = os.path.join(TOP_DIR, 'visualdl/server/dist')
 for root, dirs, files in os.walk(data_root):
     for filename in files:
-        path = 'dist/'+os.path.join(root, filename)[len(data_root)+1:]
+        path = 'dist/' + os.path.join(root, filename)[len(data_root) + 1:]
         datas.append(path)
 print datas
 
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
-    author="PaddlePaddle and Echarts team.",
-    description="Visualize Deep Learning.",
+    author="PaddlePaddle and Echarts team",
+    description="Visualize Deep Learning",
     license=LICENSE,
     keywords="visualization deeplearning",
     long_description=read('README.md'),
     install_requires=install_requires,
-    package_data={'visualdl.server': datas,
-                  'visualdl':['core.so'],
-                  'visualdl.python':['core.so', 'dog.jpg']},
+    package_data={
+        'visualdl.server': datas,
+        'visualdl': ['core.so'],
+        'visualdl.python': ['core.so', 'dog.jpg']
+    },
     packages=packages,
+    ext_modules=[Extension('_foo', ['stub.cc'])],
     scripts=['visualdl/server/visualDL', 'demo/vdl_scratch.py'],
     cmdclass=cmdclass)

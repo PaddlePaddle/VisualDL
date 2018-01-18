@@ -1,5 +1,8 @@
+import numpy as np
 import mxnet as mx
+import logging
 
+import mxnet as mx
 # Here we import LogWriter so that we can write log data while MXNet is training
 from visualdl import LogWriter
 
@@ -21,6 +24,8 @@ with logger.mode("train"):
     # scalar0 is used to record scalar metrics while MXNet is training. We will record accuracy.
     # In the visualization, we can see the accuracy is increasing as more training steps happen.
     scalar0 = logger.scalar("scalars/scalar0")
+    image0 = logger.image("images/image0", 1)
+    histogram0 = logger.histogram("histogram/histogram0", num_buckets=100)
 
 # Record training steps
 cnt_step = 0
@@ -41,11 +46,23 @@ def add_scalar():
                 cnt_step += 1
     return _callback
 
+def add_image_histogram():
+    def _callback(iter_no, sym, arg, aux):
+        image0.start_sampling()
+        weight = arg['fullyconnected1_weight'].asnumpy()
+        shape = [100, 50]
+        data = weight.flatten()
+
+        image0.add_sample(shape, list(data))
+        histogram0.add_record(iter_no, list(data))
+
+        image0.finish_sampling()
+    return _callback
+
 
 # Start to build CNN in MXNet, train MNIST dataset. For more info, check MXNet's official website:
 # https://mxnet.incubator.apache.org/tutorials/python/mnist.html
 
-import logging
 logging.getLogger().setLevel(logging.DEBUG)  # logging to stdout
 
 train_iter = mx.io.NDArrayIter(mnist['train_data'], mnist['train_label'], batch_size, shuffle=True)
@@ -81,7 +98,8 @@ lenet_model.fit(train_iter,
                 eval_metric='acc',
                 # integrate our customized callback method
                 batch_end_callback=[add_scalar()],
-                num_epoch=2)
+                epoch_end_callback=[add_image_histogram()],
+                num_epoch=5)
 
 test_iter = mx.io.NDArrayIter(mnist['test_data'], None, batch_size)
 prob = lenet_model.predict(test_iter)

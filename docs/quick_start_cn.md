@@ -32,7 +32,7 @@ with logw.mode("train") as logger:
 
 接着是创建一个 `Scalar` 组件，每个组件需要一个tag，tag可以是任何长度的字符串，比如 `layer/classification/error`。
 
-```
+```python
 # create scalars in mode train and test.
 with logw.mode('train') as logger:
     scalar0 = logger.scalar("scratch/scalar")

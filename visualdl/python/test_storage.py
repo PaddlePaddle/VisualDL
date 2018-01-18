@@ -4,10 +4,10 @@ import unittest
 
 import numpy as np
 from PIL import Image
+from visualdl import LogReader, LogWriter
 
 pprint.pprint(sys.path)
 
-from visualdl import LogWriter, LogReader
 
 
 class StorageTest(unittest.TestCase):

@@ -6,12 +6,14 @@ readonly TOP_DIR=$(pwd)
 readonly core_path=$TOP_DIR/build/visualdl/logic
 readonly python_path=$TOP_DIR/visualdl/python
 readonly max_file_size=1000000 # 1MB
+# version number follow the rule of https://semver.org/
+readonly version_number=`cat VERSION_NUMBER | sed 's/\([0-9]*.[0-9]*.[0-9]*\).*/\1/g'`
 
 sudo="sudo"
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 
-if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 		curl -O http://python-distribute.org/distribute_setup.py
 		python distribute_setup.py
 		curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
@@ -41,7 +43,7 @@ package() {
 
     cd $TOP_DIR
     python setup.py bdist_wheel
-    $sudo pip install dist/visualdl-0.0.1-py2-none-any.whl
+    $sudo pip install dist/visualdl-${version_number}*.whl
 }
 
 backend_test() {
@@ -77,8 +79,8 @@ bigfile_reject() {
     cd $TOP_DIR
     # it failed to exclude .git, remove it first.
     rm -rf .git
-    local largest_file="$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | head -n1)"
-    local size=$(echo $largest_file | awk '{print $1}')
+    local largest_file=$(find . -path .git -prune -o -printf '%s %p\n' | sort -nr | grep -v "CycleGAN"| head -n1)
+    local size=$(echo "$largest_file" | awk '{print $1}')
     if [ "$size" -ge "$max_file_size" ]; then
         echo $largest_file
         echo "file size exceed $max_file_size"
