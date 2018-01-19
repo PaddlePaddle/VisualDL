@@ -8,19 +8,25 @@ BUILD_DIR=$TOP_DIR/build
 
 mkdir -p $BUILD_DIR
 
+check_duplicated() {
+    filename_format=$1
+    file_num=`ls dist/${filename_format} | wc -l | awk '{$1=$1;print}'`
+    if [ "$file_num" != "1" ]; then
+      echo "dist have duplicate file for $file_num, please clean and rerun"
+      exit 1
+    fi
+}
+
 build_frontend() {
     cd $FRONTEND_DIR
     if [ ! -d "dist" ]; then
       npm install
       npm run build
     fi
-    manifest_num=`ls dist/manifest.*.js | wc -l | awk '{$1=$1;print}'`
-    echo "manifest_num"
-    echo manifest_num
-    if [ "$manifest_num" != "1" ]; then
-      echo "dist have duplicate file, please clean and rerun"
-      exit 1
-    fi
+    for file_name in "manifest.*.js" "index.*.js" "vendor.*.js"; do
+        echo $file_name
+        check_duplicated $file_name
+    done
 }
 
 build_frontend_fake() {
