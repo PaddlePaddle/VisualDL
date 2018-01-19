@@ -55,6 +55,18 @@ Histogram can be used to visualize parameter distribution and trends for any ten
 <img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
 </p>
 
+## Quick Start
+```
+# install
+pip install --upgrade visualdl
+
+# run a demo
+vdl_scratch.py
+visualDL --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
+```
+
 ## SDK
 VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.
 
