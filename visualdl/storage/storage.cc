@@ -43,7 +43,6 @@ Tablet Storage::AddTablet(const std::string& x) {
   CHECK(tablets_->count(x) == 0) << "tablet [" << x << "] has existed";
   (*tablets_)[x] = storage::Tablet();
   AddTag(x);
-  LOG(INFO) << "really add tag " << x;
   // WRITE_GUARD
   PersistToDisk();
   return Tablet(&(*tablets_)[x], this);
