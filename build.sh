@@ -14,6 +14,13 @@ build_frontend() {
       npm install
       npm run build
     fi
+    manifest_num=`ls dist/manifest.*.js | wc -l | awk '{$1=$1;print}'`
+    echo "manifest_num"
+    echo manifest_num
+    if [ "$manifest_num" != "1" ]; then
+      echo "dist have duplicate file, please clean and rerun"
+      exit 1
+    fi
 }
 
 build_frontend_fake() {
@@ -43,6 +50,14 @@ build_onnx_graph() {
     protoc onnx.proto --python_out .
 }
 
+clean_env() {
+    rm -rf $TOP_DIR/visualdl/server/dist
+    rm -rf $BUILD_DIR/bdist*
+    rm -rf $BUILD_DIR/lib*
+    rm -rf $BUILD_DIR/temp*
+    rm -rf $BUILD_DIR/scripts*
+}
+
 package() {
     cp -rf $FRONTEND_DIR/dist $TOP_DIR/visualdl/server/
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
@@ -53,12 +68,13 @@ ARG=$1
 echo "ARG: " $ARG
 
 
-if [ $ARG = "travis-CI" ]; then
+if [ "$ARG" = "travis-CI" ]; then
     build_frontend_fake
 else
     build_frontend
 fi
 
+clean_env
 build_backend
 build_onnx_graph
 package
