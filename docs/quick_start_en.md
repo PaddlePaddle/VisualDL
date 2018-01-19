@@ -40,7 +40,7 @@ with logw.mode("train") as logger:
 Next we create a `Scalar` component. Each component needs a tag. A tag can be a string of any length.
 For example, `layer/classification/error`.
 
-```
+```python
 # create scalars in mode train and test.
 with logw.mode('train') as logger:
     scalar0 = logger.scalar("scratch/scalar")
