@@ -86,7 +86,8 @@ setup(
     long_description=read('README.md'),
     install_requires=install_requires,
     package_data={
-        'visualdl.server': ['dist/*', 'dist/fonts/*', 'dist/images/*'],
+        'visualdl.server':
+        ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/images/*'],
         'visualdl': ['core.so'],
         'visualdl.python': ['core.so', 'dog.jpg']
     },
