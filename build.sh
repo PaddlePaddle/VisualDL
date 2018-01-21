@@ -41,17 +41,7 @@ build_backend() {
 }
 
 build_onnx_graph() {
-
-    cd $TOP_DIR/visualdl/server
-    if [ ! -d protoc3 ]; then
-        # manully install protobuf3
-        curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
-        unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
-        chmod +x protoc3/bin/*
-    fi
-
-    export PATH="$PATH:$(pwd)/protoc3/bin"
-    # TODO(ChunweiYan) check protoc version here
+    export PATH="$BUILD_DIR/third_party/protobuf/src/extern_protobuf-build/:$PATH"
     cd $TOP_DIR/visualdl/server/onnx
     protoc onnx.proto --python_out .
 }
