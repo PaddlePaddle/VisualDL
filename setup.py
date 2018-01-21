@@ -28,7 +28,7 @@ LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
-execute_requires = ['npm', 'node', 'bash']
+execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
 
 
 def die(msg):

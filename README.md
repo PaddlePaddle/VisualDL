@@ -30,7 +30,7 @@ VisualDL now provides 4 components:
 - histogram
 
 ### Graph
-Graph is compatible with ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx],
+Graph is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
 Cooperated with Python SDK, VisualDL can be compatible with most major DNN frameworks, including
 PaddlePaddle, PyTorch and MXNet.
 
