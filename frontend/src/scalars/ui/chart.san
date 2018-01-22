@@ -556,7 +556,7 @@ export default {
                 Smoothed: data[indexPropMap.Smoothed].toString().slice(0, 6),
                 Value: data[indexPropMap.Value].toString().slice(0, 6),
                 Step: data[indexPropMap.Step],
-                Time: moment(Math.floor(data[indexPropMap.Time] * 1000), 'X').format('YYYY-MM-DD HH:mm:ss'),
+                Time: moment(Math.floor(data[indexPropMap.Time] * 1000), 'x').format('YYYY-MM-DD HH:mm:ss'),
                 // Relative display value should take easy-read into consideration.
                 // Better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
                 Relative: Math.floor(data[indexPropMap.Relative] * 60 * 60) + 's'

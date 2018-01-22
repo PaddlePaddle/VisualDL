@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/PaddlePaddle/VisualDL.svg?branch=develop)](https://travis-ci.org/PaddlePaddle/VisualDL)
+[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs)
+[![Release](https://img.shields.io/github/release/PaddlePaddle/VisualDL.svg)](https://github.com/PaddlePaddle/VisualDL/releases)
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
+
 <p align="center">
   <img src="./docs/images/vs-logo.png" width="60%" />
 </p>
@@ -48,6 +53,18 @@ VisualDL 目前支持4种组件：
 <img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
 </p>
 
+## 快速尝试
+```
+# 安装
+pip install --upgrade visualdl
+
+# 运行一个例子
+vdl_scratch.py
+visualDL --logdir=scratch_log --port=8080
+
+# 访问 http://127.0.0.1:8080
+```
+
 ## SDK
 VisualDL 同时提供了python SDK 和 C++ SDK 来实现不同方式的使用。
 ### Python SDK
@@ -64,7 +81,7 @@ logger = LogWriter(dir, sync_cycle=10)
 with logger.mode("train"):
     # create a scalar component called 'scalars/scalar0'
     scalar0 = logger.scalar("scalars/scalar0")
-    
+
 # add some records during DL model running.
 for step in range(100):
     scalar0.add_record(step, random.random())
@@ -83,12 +100,12 @@ namepsace cp = visualdl::components;
 int main() {
   const std::string dir = "./tmp";
   vs::LogWriter logger(dir, 10);
-  
+
   logger.SetMode("train");
   auto tablet = logger.NewTablet("scalars/scalar0");
-  
+
   cp::Scalar<float> scalar0(tablet);
-  
+
   for (int step = 0; step < 1000; step++) {
     float v = (float)std::rand() / RAND_MAX;
     scalar0.AddRecord(step, v);
@@ -113,5 +130,5 @@ board 还支持一下参数来实现远程的访问：
 
 ### 贡献
 
-VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和 
-[ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。 
+VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和
+[ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。

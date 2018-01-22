@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/PaddlePaddle/VisualDL.svg?branch=develop)](https://travis-ci.org/PaddlePaddle/VisualDL)
+[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs)
+[![Release](https://img.shields.io/github/release/PaddlePaddle/VisualDL.svg)](https://github.com/PaddlePaddle/VisualDL/releases)
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
+
 <p align="center">
   <img src="./docs/images/vs-logo.png" width="60%" />
 </p>
@@ -25,7 +30,7 @@ VisualDL now provides 4 components:
 - histogram
 
 ### Graph
-Graph is compatible with ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx],
+Graph is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
 Cooperated with Python SDK, VisualDL can be compatible with most major DNN frameworks, including
 PaddlePaddle, PyTorch and MXNet.
 
@@ -54,6 +59,18 @@ Histogram can be used to visualize parameter distribution and trends for any ten
 <p align="center">
 <img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
 </p>
+
+## Quick Start
+```
+# install
+pip install --upgrade visualdl
+
+# run a demo
+vdl_scratch.py
+visualDL --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
+```
 
 ## SDK
 VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.

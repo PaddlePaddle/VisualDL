@@ -28,7 +28,7 @@ LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
-execute_requires = ['npm', 'node', 'bash']
+execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
 
 
 def die(msg):
@@ -76,14 +76,6 @@ packages = [
     'visualdl.server.onnx',
 ]
 
-datas = []
-data_root = os.path.join(TOP_DIR, 'visualdl/server/dist')
-for root, dirs, files in os.walk(data_root):
-    for filename in files:
-        path = 'dist/' + os.path.join(root, filename)[len(data_root) + 1:]
-        datas.append(path)
-print datas
-
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
@@ -94,7 +86,8 @@ setup(
     long_description=read('README.md'),
     install_requires=install_requires,
     package_data={
-        'visualdl.server': datas,
+        'visualdl.server':
+        ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/images/*'],
         'visualdl': ['core.so'],
         'visualdl.python': ['core.so', 'dog.jpg']
     },
