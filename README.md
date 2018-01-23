@@ -102,17 +102,17 @@ Here is the C++ SDK identical to the Python SDK example above:
 ```c++
 #include <cstdlib>
 #include <string>
-#include "visualdl/sdk.h"
+#include "visualdl/logic/sdk.h"
 
 namespace vs = visualdl;
-namepsace cp = visualdl::components;
+namespace cp = visualdl::components;
 
 int main() {
   const std::string dir = "./tmp";
   vs::LogWriter logger(dir, 10);
 
   logger.SetMode("train");
-  auto tablet = logger.NewTablet("scalars/scalar0");
+  auto tablet = logger.AddTablet("scalars/scalar0");
 
   cp::Scalar<float> scalar0(tablet);
 
