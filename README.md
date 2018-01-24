@@ -84,7 +84,7 @@ import random
 from visualdl import LogWriter
 
 logdir = "./tmp"
-logger = LogWriter(dir, sync_cycle=10)
+logger = LogWriter(logdir, sync_cycle=10)
 
 # mark the components with 'train' label.
 with logger.mode("train"):
