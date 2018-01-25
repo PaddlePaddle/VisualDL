@@ -30,4 +30,3 @@ TEST(image, NormalizeImage) {
 
   NormalizeImage(&image, arr, 3, 128);
 }
-

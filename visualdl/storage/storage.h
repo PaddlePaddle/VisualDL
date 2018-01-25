@@ -15,10 +15,10 @@ limitations under the License. */
 #ifndef VISUALDL_STORAGE_STORAGE_H
 #define VISUALDL_STORAGE_STORAGE_H
 
-#include "visualdl/utils/logging.h"
 #include <algorithm>
 #include <set>
 #include <vector>
+#include "visualdl/utils/logging.h"
 
 #include "visualdl/logic/im.h"
 #include "visualdl/storage/storage.pb.h"

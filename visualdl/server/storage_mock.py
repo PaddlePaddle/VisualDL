@@ -1,6 +1,4 @@
 import random
-import time
-import unittest
 
 import numpy as np
 
@@ -36,4 +34,5 @@ def add_histogram(writer, mode, tag, num_buckets):
     with writer.mode(mode) as writer:
         histogram = writer.histogram(tag, num_buckets)
         for i in range(10):
-            histogram.add_record(i, np.random.normal(0.1 + i * 0.01, size=1000))
+            histogram.add_record(i, np.random.normal(
+                0.1 + i * 0.01, size=1000))

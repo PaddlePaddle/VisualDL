@@ -1,7 +1,7 @@
 ## Visual DL
 `Visual DL`: makes your deep learning jobs more alive via visualization.
 
-At present, most deep learning frameworks are using Python. The status of training process is recorded 
+At present, most deep learning frameworks are using Python. The status of training process is recorded
 by logs. A sample log is as follow:
 
 
@@ -22,7 +22,7 @@ Visual DL can help you visualize the whole training process and construct plots 
 
 The above is just one of Visual DL's many features. Visual DL has the following advantages:
 
-### Comprehensive Usability 
+### Comprehensive Usability
 
 1. Scalar: support scalar line/dot data visualization, like the figure above.
     - can show metrics such as loss, accuracy, etc via lines and dots and let user see trends easily
@@ -40,22 +40,22 @@ The above is just one of Visual DL's many features. Visual DL has the following 
 <img src="image-gan.png" height="300" width="300"/>
 </p>
 
-3. Histogram: display of parameter distribution, easy to check distribution curves in each tensor, 
+3. Histogram: display of parameter distribution, easy to check distribution curves in each tensor,
 show the trend of parameter distribution.
 
 	- help users understand the training process and the underneath reason for the change from one parameter distribution to another
-	- help users judge if the training is on the track. For example, if parameter change rate becomes close to 0 or grows rapidly, 
-	then exploding and vanishing gradients might happen 
+	- help users judge if the training is on the track. For example, if parameter change rate becomes close to 0 or grows rapidly,
+	then exploding and vanishing gradients might happen
 <p align="center">
 <img src="histogram.png" />
 </p>
 
 4. Graph: visualize the model structure of deep learning networks.
-    - Graph supports the preview of [ONNX](http://onnx.ai/) model. Since models of MXNet, Caffe2, PyTorch and CNTK can be converted to ONNX models easily, 
+    - Graph supports the preview of [ONNX](http://onnx.ai/) model. Since models of MXNet, Caffe2, PyTorch and CNTK can be converted to ONNX models easily,
     Visual DL can also support these models indirectly
     - easy to see wrong configuration of a network
     - help understand network structure
-    
+
 
 <p align="center">
 <img src="graph.png" height="250" width="400"/>
@@ -63,8 +63,8 @@ show the trend of parameter distribution.
 
 ### Easy to Integrate
 
-Visual DL provides independent Python SDK. If the training task is based on Python, user can simply 
-use Visual DL by installing the Visual DL wheel package and importing it into her/his own project. 
+Visual DL provides independent Python SDK. If the training task is based on Python, user can simply
+use Visual DL by installing the Visual DL wheel package and importing it into her/his own project.
 
 
 a. Install Visual DL package.
@@ -100,7 +100,7 @@ visualDL --logdir ./log --port 8080
 ```
 
 ### Purely Open Source
-As a deep learning visualization tool, Visual DL support most deep learning frameworks. On the SDK perspective, 
+As a deep learning visualization tool, Visual DL support most deep learning frameworks. On the SDK perspective,
 it is easy to integrate into Python and C++ projects. Through ONNX, Visual DL's Graph component can support
 many popular frameworks such as PaddlePaddle, MXNet, PyTorch and  Caffe2.
 

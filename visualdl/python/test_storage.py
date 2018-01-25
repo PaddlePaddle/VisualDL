@@ -9,7 +9,6 @@ from visualdl import LogReader, LogWriter
 pprint.pprint(sys.path)
 
 
-
 class StorageTest(unittest.TestCase):
     def setUp(self):
         self.dir = "./tmp/storage_test"

@@ -106,7 +106,8 @@ def get_image_tag_steps(storage, mode, tag):
         record = image.record(step_index, sample_index)
         shape = record.shape()
         # TODO(ChunweiYan) remove this trick, some shape will be empty
-        if not shape: continue
+        if not shape:
+            continue
         try:
             query = urllib.urlencode({
                 'sample': 0,
@@ -121,7 +122,7 @@ def get_image_tag_steps(storage, mode, tag):
                 'wall_time': image.timestamp(step_index),
                 'query': query,
             })
-        except:
+        except Exception:
             logger.error("image sample out of range")
 
     return res
@@ -164,7 +165,7 @@ def get_histogram(storage, mode, tag, num_samples=100):
             try:
                 # some bug with protobuf, some times may overflow
                 record = histogram.record(i)
-            except:
+            except Exception:
                 continue
 
             res.append([])
@@ -177,9 +178,7 @@ def get_histogram(storage, mode, tag, num_samples=100):
             for j in xrange(record.num_instances()):
                 instance = record.instance(j)
                 data.append(
-                    [instance.left(),
-                     instance.right(),
-                     instance.frequency()])
+                    [instance.left(), instance.right(), instance.frequency()])
         if len(res) < num_samples:
             return res
 
@@ -206,10 +205,11 @@ def retry(ntimes, function, time2sleep, *args, **kwargs):
     for i in xrange(ntimes):
         try:
             return function(*args, **kwargs)
-        except:
+        except Exception:
             error_info = '\n'.join(map(str, sys.exc_info()))
             logger.error("Unexpected error: %s" % error_info)
             time.sleep(time2sleep)
+
 
 def cache_get(cache):
     def _handler(key, func, *args, **kwargs):
@@ -220,4 +220,5 @@ def cache_get(cache):
             cache.set(key, data)
             return data
         return data
+
     return _handler

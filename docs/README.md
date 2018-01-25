@@ -9,7 +9,7 @@ Most of the DNN platforms are using Python. VisualDL supports Python out of the 
 By just adding a few lines of configuration to the code, VisualDL can provide a rich visual support for the training process.
 
 In addition to Python SDK, the underlying VisualDL is written in C++, and its exposed C++ SDK can be integrated into other platforms.
-Users can access the original features and monitor customized matrix. 
+Users can access the original features and monitor customized matrix.
 
 ## Components
 VisualDL supports four componments：
@@ -27,7 +27,7 @@ Compatible with ONNX (Open Neural Network Exchange) [https://github.com/onnx/onn
 </p>
 
 ### scalar
-Show the error trend throughout the training. 
+Show the error trend throughout the training.
 
 <p align="center">
 <img src="./introduction/scalar.png" width="60%"/>
@@ -64,7 +64,7 @@ logger = LogWriter(dir, sync_cycle=10)
 with logger.mode("train"):
     # create a scalar component called 'scalars/scalar0'
     scalar0 = logger.scalar("scalars/scalar0")
-    
+
 
 # add some records during DL model running, lets start from another block.
 with logger.mode("train"):
@@ -86,12 +86,12 @@ namepsace cp = visualdl::components;
 int main() {
   const std::string dir = "./tmp";
   vs::LogWriter logger(dir, 10);
-  
+
   logger.SetMode("train");
   auto tablet = logger.NewTablet("scalars/scalar0");
-  
+
   cp::Scalar<float> scalar0(tablet);
-  
+
   for (int step = 0; step < 1000; step++) {
     float v = (float)std::rand() / RAND_MAX;
     scalar0.AddRecord(step, v);

@@ -102,7 +102,7 @@ def sequence_data():
 
 
 def graph_data():
-        return """{
+    return """{
     "title": {
         "text": "MLP"
     },

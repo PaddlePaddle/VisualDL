@@ -1,8 +1,9 @@
 import sys
+
 import unittest
 import numpy as np
 
-sys.path.append('../../build')
+sys.path.append('../../build')  # noqa: E402
 import core
 
 im = core.im()
@@ -62,7 +63,7 @@ class TabletTester(unittest.TestCase):
 class ImTester(unittest.TestCase):
     def test_persist(self):
         im.clear_tablets()
-        tablet = im.add_tablet("tab0", 111)
+        im.add_tablet("tab0", 111)
         self.assertEqual(im.storage().tablets_size(), 1)
         im.storage().set_dir("./1")
         im.persist_to_disk()

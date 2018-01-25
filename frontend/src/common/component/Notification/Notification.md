@@ -174,6 +174,3 @@ export default {
 | onClose | Function |  | on-close callback |
 | duration | Number | 3000 | duration |
 | type | String | | include success,error,warning,info, others not use |
-
-
-

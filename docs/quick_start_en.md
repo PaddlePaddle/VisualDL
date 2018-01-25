@@ -8,8 +8,8 @@ Currently, VisualDL supports visualization features as follows:
 - Histogram: can be used to show parameter distribution and trend.
 - Graph: can be used to visualize model structure.
 
-VisualDL provides both Python SDK and C++ SDK in nature. It can support various frameworks. 
-Users can retrieve visualization data by simply adding a few lines of code using Pythong SDK. 
+VisualDL provides both Python SDK and C++ SDK in nature. It can support various frameworks.
+Users can retrieve visualization data by simply adding a few lines of code using Pythong SDK.
 In addition, users can also have a deep integration by using the C++ SDK at a lower level.
 
 ## A Simple Python Demo on Scalar
@@ -25,8 +25,8 @@ from random import random
 logw = LogWriter("./random_log", sync_cycle=30)
 ```
 
-The first parameter points to a folder; the second parameter `sync_cycle` specifies out of how memory operations should be 
-store the data into hard drive. 
+The first parameter points to a folder; the second parameter `sync_cycle` specifies out of how memory operations should be
+store the data into hard drive.
 
 There are different modes for model training, such as training, validating and testing. All these correspond to `mode' in VisualDL.
 We can use the following pattern to specify mode:
@@ -84,7 +84,7 @@ VisualDL's C++ SDK is very similar to its Python SDK. The Python demo above can 
 ```
 
 ## Visualization Based on ONNX Model Structure
-VisualDL supports the visualization for the format in [ONNX](https://github.com/onnx/onnx). 
+VisualDL supports the visualization for the format in [ONNX](https://github.com/onnx/onnx).
 Currently, ONNX supports format conversion among various deep learning frameworks such as `MXNet`, `PyTorch`, `Caffe2`, `Caffe`.
 
 ```
@@ -96,5 +96,3 @@ For example, for the MNIST dataset, Graph component can render model graph as be
 <p align=center>
 <img width="70%" src="https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/mxnet_graph.gif" />
 </p>
-
-
