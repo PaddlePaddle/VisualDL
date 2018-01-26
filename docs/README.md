@@ -81,14 +81,14 @@ The same code for C++ SDK in the above Python SDK is as follows
 #include "visualdl/sdk.h"
 
 namespace vs = visualdl;
-namepsace cp = visualdl::components;
+namespace cp = visualdl::components;
 
 int main() {
   const std::string dir = "./tmp";
   vs::LogWriter logger(dir, 10);
   
   logger.SetMode("train");
-  auto tablet = logger.NewTablet("scalars/scalar0");
+  auto tablet = logger.AddTablet("scalars/scalar0");
   
   cp::Scalar<float> scalar0(tablet);
   
