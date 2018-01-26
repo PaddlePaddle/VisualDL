@@ -15,11 +15,10 @@ limitations under the License. */
 #ifndef VISUALDL_TABLET_H
 #define VISUALDL_TABLET_H
 
-#include "visualdl/utils/logging.h"
-
 #include "visualdl/logic/im.h"
 #include "visualdl/storage/record.h"
 #include "visualdl/storage/storage.pb.h"
+#include "visualdl/utils/logging.h"
 #include "visualdl/utils/string.h"
 
 namespace visualdl {
