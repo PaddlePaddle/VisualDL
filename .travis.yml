@@ -13,6 +13,10 @@ os:
     # TODO(ChunweiYan) support osx in the future
     #- osx
 
+env:
+  - JOB=check_style
+  - JOB=test
+
 addons:
   apt:
     packages:
@@ -29,14 +33,15 @@ addons:
       - nodejs
 
 before_install:
+  - if [[ "$JOB" == "check_style" ]]; then sudo ln -s /usr/bin/clang-format-3.8 /usr/bin/clang-format; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install brew-pip; fi
   - sudo pip install pre-commit flake8
 
 script:
-  - ./travis/check_style.sh
-  - ./tests.sh all
+  - if [[ "$JOB" == "check_style" ]]; then ./travis/check_style.sh; fi
+  - if [[ "$JOB" == "test" ]]; then ./tests.sh all; fi
 
 notifications:
   email:
