@@ -13,13 +13,6 @@ os:
     # TODO(ChunweiYan) support osx in the future
     #- osx
 
-jobs:
-  include:
-    - stage: check_style
-      - script: ./travis/check_style.sh
-    - stage: test
-      - script: ./tests.sh all
-
 addons:
   apt:
     packages:
@@ -40,6 +33,10 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install brew-pip; fi
   - sudo pip install pre-commit flake8
+
+script:
+  - ./travis/check_style.sh
+  - ./tests.sh all
 
 notifications:
   email:
