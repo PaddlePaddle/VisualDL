@@ -58,8 +58,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
 
-# compile test only in release mode
-if (NOT ON_RELEASE)
+# Add test executable: vl_test
 add_executable(vl_test
         ${PROJECT_SOURCE_DIR}/visualdl/test.cc
         ${PROJECT_SOURCE_DIR}/visualdl/logic/sdk_test.cc
@@ -74,4 +73,3 @@ add_executable(vl_test
 target_link_libraries(vl_test sdk storage entry tablet im gtest glog protobuf gflags pthread eigen3)
 enable_testing ()
 add_test(NAME vstest COMMAND ./vl_test)
-endif(NOT ON_RELEASE)
