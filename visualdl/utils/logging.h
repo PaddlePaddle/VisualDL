@@ -64,24 +64,22 @@ struct Error : public std::runtime_error {
   explicit Error(const std::string& s) : std::runtime_error(s) {}
 };
 
-// With exception.
+// With exception. The throw occurs in the destructor.
+// Please follow the pattern: LogStreamFatal(__FILE__, __LINE__).stream()
+// so the destructor will immediately execute.
 struct LogStreamFatal {
   LogStreamFatal(const char* file, int line) {
     ss << "[" << file << ":" << line << "] ";
-    throw Error(ss.str());
   }
 
   std::stringstream& stream() { return ss; }
 
   ~LogStreamFatal() {
-    if (!has_throw_) {
-      std::cerr << "throw exception" << std::endl;
-      throw Error(ss.str());
-    }
+    std::cerr << "throw exception" << std::endl;
+    throw Error(ss.str());
   }
 
 private:
-  bool has_throw_{false};
   mutable std::stringstream ss;
 };
 
