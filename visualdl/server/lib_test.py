@@ -8,6 +8,7 @@ from storage_mock import add_histogram, add_image, add_scalar
 
 _retry_counter = 0
 
+
 class LibTest(unittest.TestCase):
     def setUp(self):
         dir = "./tmp/mock"

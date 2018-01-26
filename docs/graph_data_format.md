@@ -8,7 +8,7 @@ Facebook has an open-source project called [ONNX](http://onnx.ai/)(Open Neural N
 ## IR of ONNX
 The description of ONNX IR can be found [here](https://github.com/onnx/onnx/blob/master/docs/IR.md). The most important part is the definition of [Graph](https://github.com/onnx/onnx/blob/master/docs/IR.md#graphs).
 
-Each computation data flow graph is structured as a list of nodes that form the graph. Each node is called an operator. Nodes have zero or more inputs, one or more outputs, and zero or more attribute-value pairs. 
+Each computation data flow graph is structured as a list of nodes that form the graph. Each node is called an operator. Nodes have zero or more inputs, one or more outputs, and zero or more attribute-value pairs.
 
 ## Rest API data format
 Frontend uses rest API to get data from the server. The data format will be JSON. The data structure of a Graph is as below. Each Graph has three vectors:
@@ -112,6 +112,3 @@ Frontend uses rest API to get data from the server. The data format will be JSON
     ]
 }
 ```
-
-
-

@@ -4,12 +4,15 @@ from visualdl import core
 
 dtypes = ("float", "double", "int32", "int64")
 
+
 def check_tag_name_valid(tag):
     assert '%' not in tag, "character % is a reserved word, it is not allowed in tag."
+
 
 def check_mode_name_valid(tag):
     for char in ['%', '/']:
         assert char not in tag, "character %s is a reserved word, it is not allowed in mode." % char
+
 
 class LogReader(object):
     """LogReader is a Python wrapper to read and analysis the data that
@@ -125,7 +128,8 @@ class LogWriter(object):
         create a new LogWriter with mode and return it.
         """
         check_mode_name_valid(mode)
-        LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle, self.writer.as_mode(mode))
+        LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle,
+                                       self.writer.as_mode(mode))
         return LogWriter.cur_mode
 
     def scalar(self, tag, type='float'):

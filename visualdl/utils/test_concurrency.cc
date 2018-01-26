@@ -14,8 +14,8 @@ limitations under the License. */
 
 #include "visualdl/utils/concurrency.h"
 
-#include "visualdl/utils/logging.h"
 #include <gtest/gtest.h>
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 

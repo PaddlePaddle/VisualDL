@@ -6,4 +6,3 @@ cp squeezenet/model.pb squeezenet_model.pb
 
 rm -rf squeezenet
 rm squeezenet.tar.gz
-

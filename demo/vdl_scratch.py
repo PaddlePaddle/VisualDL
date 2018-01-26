@@ -1,13 +1,9 @@
 #!/user/bin/env python
-import math
 import os
 import random
-import subprocess
-
 
 import numpy as np
 from PIL import Image
-from scipy.stats import norm
 from visualdl import ROOT, LogWriter
 from visualdl.server.log import logger as log
 
@@ -44,10 +40,10 @@ with logw.mode('train') as logger:
 
     for step in range(1, 50):
         histogram0.add_record(step,
-                             np.random.normal(
-                                 0.1 + step * 0.003,
-                                 200. / (120 + step),
-                                 size=1000))
+                              np.random.normal(
+                                  0.1 + step * 0.003,
+                                  200. / (120 + step),
+                                  size=1000))
 # create image
 with logw.mode("train") as logger:
     image = logger.image("scratch/dog", 4)  # randomly sample 4 images one pass
@@ -70,11 +66,10 @@ with logw.mode("train") as logger:
 
             # a more efficient way to sample images
             # check whether this image will be taken by reservoir sampling
-            idx = image.is_sample_taken() 
+            idx = image.is_sample_taken()
             if idx >= 0:
                 data = np.array(
-                    dog_jpg.crop((left_x, left_y, right_x,
-                                  right_y))).flatten()
+                    dog_jpg.crop((left_x, left_y, right_x, right_y))).flatten()
                 # add this image to log
                 image.set_sample(idx, target_shape, data)
             # you can also just write followig codes, it is more clear, but need to
@@ -95,6 +90,7 @@ with logw.mode("train") as logger:
             image0.add_sample(shape, list(data))
         image0.finish_sampling()
 
+
 def download_graph_image():
     '''
     This is a scratch demo, it do not generate a ONNX proto, but just download an image
@@ -109,5 +105,6 @@ def download_graph_image():
     with open(os.path.join(logdir, 'graph.jpg'), 'wb') as f:
         f.write(graph_image)
     log.warning('graph ready!')
+
 
 download_graph_image()

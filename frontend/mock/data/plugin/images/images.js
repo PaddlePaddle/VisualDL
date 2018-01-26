@@ -37,5 +37,3 @@ module.exports = function (path, queryParam, postParam) {
         }
     };
 };
-
-

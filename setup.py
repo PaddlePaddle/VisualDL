@@ -3,10 +3,10 @@ from __future__ import absolute_import
 import os
 import sys
 from distutils.spawn import find_executable
-from distutils import sysconfig, dep_util, log
+from distutils import log
 import setuptools.command.build_py
 import setuptools
-from setuptools import setup, find_packages, Distribution, Extension
+from setuptools import setup, Extension
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))

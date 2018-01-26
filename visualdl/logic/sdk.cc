@@ -32,7 +32,8 @@ std::string g_log_dir;
 LogWriter LogWriter::AsMode(const std::string& mode) {
   for (auto ch : "%/") {
     CHECK(mode.find(ch) == std::string::npos)
-      << "character "<< ch << " is a reserved word, it is not allowed in mode.";
+        << "character " << ch
+        << " is a reserved word, it is not allowed in mode.";
   }
 
   LogWriter writer = *this;

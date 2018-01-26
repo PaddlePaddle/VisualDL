@@ -12,9 +12,11 @@ class MemCache(object):
 
         def expired(self, timeout):
             return timeout > 0 and time.time() - self.time >= timeout
+
     '''
     A global dict to help cache some temporary data.
     '''
+
     def __init__(self, timeout=-1):
         self._timeout = timeout
         self._data = {}
@@ -24,12 +26,14 @@ class MemCache(object):
 
     def get(self, key):
         rcd = self._data.get(key, None)
-        if not rcd: return None
+        if not rcd:
+            return None
         # do not delete the key to accelerate speed
         if rcd.expired(self._timeout):
             rcd.clear()
             return None
         return rcd.value
+
 
 if __name__ == '__main__':
     import unittest

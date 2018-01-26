@@ -1,5 +1,3 @@
-import numpy as np
-import mxnet as mx
 import logging
 
 import mxnet as mx
@@ -9,7 +7,6 @@ from visualdl import LogWriter
 # Download MNIST data
 mnist = mx.test_utils.get_mnist()
 batch_size = 100
-
 
 # Provide a folder to store data for log, model, image, etc. VisualDL's visualization will be
 # based on this folder.
@@ -44,7 +41,9 @@ def add_scalar():
             for name, value in name_value:
                 scalar0.add_record(cnt_step, value)
                 cnt_step += 1
+
     return _callback
+
 
 def add_image_histogram():
     def _callback(iter_no, sym, arg, aux):
@@ -57,6 +56,7 @@ def add_image_histogram():
         histogram0.add_record(iter_no, list(data))
 
         image0.finish_sampling()
+
     return _callback
 
 
@@ -65,18 +65,22 @@ def add_image_histogram():
 
 logging.getLogger().setLevel(logging.DEBUG)  # logging to stdout
 
-train_iter = mx.io.NDArrayIter(mnist['train_data'], mnist['train_label'], batch_size, shuffle=True)
-val_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'], batch_size)
+train_iter = mx.io.NDArrayIter(
+    mnist['train_data'], mnist['train_label'], batch_size, shuffle=True)
+val_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'],
+                             batch_size)
 
 data = mx.sym.var('data')
 # first conv layer
 conv1 = mx.sym.Convolution(data=data, kernel=(5, 5), num_filter=20)
 tanh1 = mx.sym.Activation(data=conv1, act_type="tanh")
-pool1 = mx.sym.Pooling(data=tanh1, pool_type="max", kernel=(2, 2), stride=(2, 2))
+pool1 = mx.sym.Pooling(
+    data=tanh1, pool_type="max", kernel=(2, 2), stride=(2, 2))
 # second conv layer
 conv2 = mx.sym.Convolution(data=pool1, kernel=(5, 5), num_filter=50)
 tanh2 = mx.sym.Activation(data=conv2, act_type="tanh")
-pool2 = mx.sym.Pooling(data=tanh2, pool_type="max", kernel=(2, 2), stride=(2, 2))
+pool2 = mx.sym.Pooling(
+    data=tanh2, pool_type="max", kernel=(2, 2), stride=(2, 2))
 # first fullc layer
 flatten = mx.sym.flatten(data=pool2)
 fc1 = mx.symbol.FullyConnected(data=flatten, num_hidden=500)
@@ -89,21 +93,22 @@ lenet = mx.sym.SoftmaxOutput(data=fc2, name='softmax')
 # create a trainable module on CPU
 lenet_model = mx.mod.Module(symbol=lenet, context=mx.cpu())
 
-
 # train with the same
-lenet_model.fit(train_iter,
-                eval_data=val_iter,
-                optimizer='sgd',
-                optimizer_params={'learning_rate': 0.1},
-                eval_metric='acc',
-                # integrate our customized callback method
-                batch_end_callback=[add_scalar()],
-                epoch_end_callback=[add_image_histogram()],
-                num_epoch=5)
+lenet_model.fit(
+    train_iter,
+    eval_data=val_iter,
+    optimizer='sgd',
+    optimizer_params={'learning_rate': 0.1},
+    eval_metric='acc',
+    # integrate our customized callback method
+    batch_end_callback=[add_scalar()],
+    epoch_end_callback=[add_image_histogram()],
+    num_epoch=5)
 
 test_iter = mx.io.NDArrayIter(mnist['test_data'], None, batch_size)
 prob = lenet_model.predict(test_iter)
-test_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'], batch_size)
+test_iter = mx.io.NDArrayIter(mnist['test_data'], mnist['test_label'],
+                              batch_size)
 
 # predict accuracy for lenet
 acc = mx.metric.Accuracy()

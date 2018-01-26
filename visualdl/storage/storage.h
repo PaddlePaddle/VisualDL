@@ -15,7 +15,6 @@ limitations under the License. */
 #ifndef VISUALDL_STORAGE_STORAGE_H
 #define VISUALDL_STORAGE_STORAGE_H
 
-#include "visualdl/utils/logging.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -25,6 +24,7 @@ limitations under the License. */
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/filesystem.h"
 #include "visualdl/utils/guard.h"
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 static const std::string meta_file_name = "storage.meta";
