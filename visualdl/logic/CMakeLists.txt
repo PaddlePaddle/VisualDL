@@ -34,3 +34,12 @@ else()
   target_link_libraries(core PRIVATE pybind entry python im tablet storage sdk protobuf ${OPTIONAL_LINK_FLAGS})
 endif()
 set_target_properties(core PROPERTIES PREFIX "" SUFFIX ".so")
+
+add_custom_command(TARGET core POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E copy
+     "${CMAKE_CURRENT_BINARY_DIR}/core.so"
+     "${VISUALDL_SOURCE_DIR}/visualdl/python/"
+  COMMAND "${CMAKE_COMMAND}" -E copy
+     "${CMAKE_CURRENT_BINARY_DIR}/core.so"
+     "${VISUALDL_SOURCE_DIR}/visualdl/"
+  COMMENT "Copying core.so to ${VISUALDL_SOURCE_DIR}/visualdl/python/")
