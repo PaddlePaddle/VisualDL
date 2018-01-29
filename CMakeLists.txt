@@ -24,12 +24,13 @@ endif(CCACHE_FOUND)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "-fPIC")
-
+set(VISUALDL_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(THIRD_PARTY_PATH "${CMAKE_BINARY_DIR}/third_party" CACHE STRING
         "A path setting third party libraries download & build directories.")
 
 ################################ Configurations #######################################
+option(WITH_DOC         "Compile VisualDL with documentation"       OFF)
 option(WITH_TESTING     "Compile VisualDL with unit testing"        ON)
 option(ON_RELEASE       "RELEASE mode" ON)
 
@@ -73,3 +74,7 @@ add_executable(vl_test
 target_link_libraries(vl_test sdk storage entry tablet im gtest glog protobuf gflags pthread eigen3)
 enable_testing ()
 add_test(NAME vstest COMMAND ./vl_test)
+
+if(WITH_DOC)
+    add_subdirectory(docs)
+endif()
