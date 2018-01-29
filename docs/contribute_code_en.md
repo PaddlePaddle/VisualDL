@@ -31,15 +31,15 @@ VisualDL uses this [Git branching model](http://nvie.com/posts/a-successful-git-
 
 1. Commit
 
-   Before issuing your first `git commit` command, please install [`pre-commit`](http://pre-commit.com/) by running the following commands:
+   Before issuing your first `git commit` command, please install [`pre-commit`](http://pre-commit.com/) and other requirements by running the following commands:
 
    ```bash
-   pip install pre-commit
+   pip install -r requirements.txt
    pre-commit install
    ```
 
-   Our pre-commit configuration requires [clang-format 3.8](http://releases.llvm.org/download.html) for auto-formating C/C++ code and yapf for Python.
-   Please download it and put it to ```/usr/local/bin```
+   Our pre-commit configuration requires [clang-format 3.8](http://releases.llvm.org/download.html) for auto-formating C/C++ code, yapf for auto-formating Python and flake8 for style checking Python.
+   Please make sure clang-format version 3.8 is available in your path. For example, under ```/usr/local/bin```
 
    Once installed, `pre-commit` checks the style of code and documentation in every commit.  We will see something like the following when you run `git commit`:
 

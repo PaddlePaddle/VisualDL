@@ -30,18 +30,17 @@ VisualDL 目前使用[Git流分支模型](http://nvie.com/posts/a-successful-git
 
 1. commit
 
-    在进行你的第一次之前，请先安装[pre-commit](http://pre-commit.com/) 工具。
-    VisualDL 开发人员使用 pre-commit 工具来管理 Git 预提交钩子。 它可以帮助我们格式化源代码（C++，Python），在提交（commit）前自动检查一些基本事宜。
-
-    pre-commit 测试是 Travis-CI 中单元测试的一部分，不满足钩子的 PR 不能被提交到 VisualDL，首先安装并在当前目录运行它：
+    在进行你的第一次之前，请先安装必要的工具，像是flake8, yapf 与 [pre-commit](http://pre-commit.com/) 工具。
+    VisualDL 开发人员使用 pre-commit, flake8, yapf 工具来管理 Git 预提交钩子。 它可以帮助我们格式化源代码（C++，Python），在提交（commit）前自动检查一些基本事宜。
+    不满足钩子的 PR 不能被提交到 VisualDL，首先安装并在当前目录运行它：
 
     ```bash
-    pip install pre-commit
+    pip install -r requirements.txt
     pre-commit install
     ```
 
     VisualDL 使用 `clang-format` 来调整 C/C++ 源代码格式，请确保 [clang-format 3.8](http://releases.llvm.org/download.html) 版本在 3.8 以上。
-    请下载且安装在 `/usr/local/bin`
+    请下载且安装在 path上. 例如 `/usr/local/bin`
 
     Git 每次提交代码，都需要写提交说明，这可以让其他人知道这次提交做了哪些改变，这可以通过`git commit` 完成。
 
