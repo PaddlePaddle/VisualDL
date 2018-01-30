@@ -30,6 +30,12 @@ namespace visualdl {
 std::string g_log_dir;
 
 LogWriter LogWriter::AsMode(const std::string& mode) {
+  for (auto ch : "%/") {
+    CHECK(mode.find(ch) == std::string::npos)
+        << "character " << ch
+        << " is a reserved word, it is not allowed in mode.";
+  }
+
   LogWriter writer = *this;
   storage_.AddMode(mode);
   writer.mode_ = mode;
@@ -37,7 +43,9 @@ LogWriter LogWriter::AsMode(const std::string& mode) {
 }
 
 Tablet LogWriter::AddTablet(const std::string& tag) {
-  // TODO(ChunweiYan) add string check here.
+  CHECK(tag.find("%") == std::string::npos)
+      << "character % is a reserved word, it is not allowed in tag.";
+
   auto tmp = mode_ + "/" + tag;
   string::TagEncode(tmp);
   auto res = storage_.AddTablet(tmp);

@@ -13,5 +13,3 @@ router.add({
     rule: '/scalars',
     Component: Scalar
 });
-
-

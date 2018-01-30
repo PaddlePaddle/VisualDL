@@ -1,4 +1,6 @@
-# Quick start
+快速入门
+===========
+
 VisualDL 是一个面向深度学习任务的可视化工具，可用于训练和生成任务里相关信息的展示。
 目前，VisualDL支持如下信息的可视化：
 
@@ -10,7 +12,7 @@ VisualDL 是一个面向深度学习任务的可视化工具，可用于训练�
 VisualDL提供原生的Python和C++ SDK，可以支持多种深度学习平台。用户可以在特定深度学习平台上利用Python SDK进行简单配置来支持可视化，也可以利用 C++ SDK深入嵌入到平台底层。
 
 ## 一个简单的Scalar的Python使用示例
-为了简单，我们先尝试使用Python SDK。 
+为了简单，我们先尝试使用Python SDK。
 
 使用VisualDL的第一步是创建一个 `LogWriter` 来存储用于可视化的数据
 

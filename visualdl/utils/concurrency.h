@@ -15,11 +15,11 @@ limitations under the License. */
 #ifndef VISUALDL_UTILS_CONCURRENCY_H
 #define VISUALDL_UTILS_CONCURRENCY_H
 
-#include "visualdl/utils/logging.h"
 #include <chrono>
 #include <memory>
 #include <thread>
 #include <vector>
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 namespace cc {

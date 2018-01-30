@@ -1,8 +1,5 @@
-import os
 import random
 import subprocess
-import sys
-import tempfile
 
 
 def crepr(v):
@@ -28,7 +25,7 @@ class Rank(object):
             return ''
 
         return '{' + 'rank={};'.format(self.kind) + \
-                ','.join([node.name for node in self.nodes]) + '}'
+               ','.join([node.name for node in self.nodes]) + '}'
 
 
 # the python package graphviz is too poor.

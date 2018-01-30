@@ -75,7 +75,7 @@ import random
 from visualdl import LogWriter
 
 logdir = "./tmp"
-logger = LogWriter(dir, sync_cycle=10)
+logger = LogWriter(logdir, sync_cycle=10)
 
 # mark the components with 'train' label.
 with logger.mode("train"):
@@ -95,14 +95,14 @@ for step in range(100):
 #include "visualdl/sdk.h"
 
 namespace vs = visualdl;
-namepsace cp = visualdl::components;
+namespace cp = visualdl::components;
 
 int main() {
   const std::string dir = "./tmp";
   vs::LogWriter logger(dir, 10);
 
   logger.SetMode("train");
-  auto tablet = logger.NewTablet("scalars/scalar0");
+  auto tablet = logger.AddTablet("scalars/scalar0");
 
   cp::Scalar<float> scalar0(tablet);
 

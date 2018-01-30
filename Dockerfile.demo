@@ -1,0 +1,8 @@
+FROM tatsushid/tinycore-python:2.7
+
+RUN pip install visualdl
+WORKDIR /
+COPY ./demo/vdl_scratch.py vdl_scratch.py
+RUN python /vdl_scratch.py
+
+ENTRYPOINT ["visualDL", "--logdir=/scratch_log"]

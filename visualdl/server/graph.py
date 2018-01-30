@@ -9,8 +9,8 @@ import onnx
 
 
 def debug_print(json_obj):
-    print(json.dumps(
-        json_obj, sort_keys=True, indent=4, separators=(',', ': ')))
+    print(
+        json.dumps(json_obj, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
 def reorganize_inout(json_obj, key):
@@ -54,8 +54,8 @@ def rename_model(model_json):
         for variable in variables:
             old_name = variable['name']
             new_shape = [int(dim) for dim in variable['shape']]
-            new_name = old_name + '\ndata_type=' + str(variable['data_type']) \
-                       + '\nshape=' + str(new_shape)
+            new_name = old_name + '\ndata_type=' + str(
+                variable['data_type']) + '\nshape=' + str(new_shape)
             variable['name'] = new_name
             rename_edge(model, old_name, new_name)
 
@@ -234,8 +234,8 @@ def get_level_to_all(node_links, model_json):
                 if out_level not in output_to_level:
                     output_to_level[out_idx] = out_level
                 else:
-                    raise Exception(
-                        "output " + out_name + "have multiple source")
+                    raise Exception("output " + out_name +
+                                    "have multiple source")
     level_to_outputs = dict()
     for out_idx in output_to_level:
         level = output_to_level[out_idx]
@@ -353,6 +353,7 @@ class GraphPreviewGenerator(object):
     '''
     Generate a graph image for ONNX proto.
     '''
+
     def __init__(self, model_json):
         self.model = model_json
         # init graphviz graph
@@ -360,8 +361,7 @@ class GraphPreviewGenerator(object):
             self.model['name'],
             layout="dot",
             concentrate="true",
-            rankdir="TB",
-        )
+            rankdir="TB", )
 
         self.op_rank = self.graph.rank_group('same', 2)
         self.param_rank = self.graph.rank_group('same', 1)
@@ -396,10 +396,9 @@ class GraphPreviewGenerator(object):
                 self.args.add(target)
 
             if source in self.args or target in self.args:
-                edge = self.add_edge(
-                    style="dashed,bold", color="#aaaaaa", **item)
+                self.add_edge(style="dashed,bold", color="#aaaaaa", **item)
             else:
-                edge = self.add_edge(style="bold", color="#aaaaaa", **item)
+                self.add_edge(style="bold", color="#aaaaaa", **item)
 
         if not show:
             self.graph.display(path)
@@ -448,8 +447,7 @@ class GraphPreviewGenerator(object):
             fontname="Arial",
             fontcolor="#ffffff",
             width="1.3",
-            height="0.84",
-        )
+            height="0.84", )
 
     def add_arg(self, name):
         return self.graph.node(
@@ -483,17 +481,16 @@ def draw_graph(model_pb_path, image_dir):
             if min_width is None or im.size[0] < min_width:
                 min_width = im.size
                 best_image = image_path
-        except:
+        except Exception:
             pass
     return best_image
 
 
 if __name__ == '__main__':
-    import os
     import sys
     current_path = os.path.abspath(os.path.dirname(sys.argv[0]))
     json_str = load_model(current_path + "/mock/inception_v1_model.pb")
-    #json_str = load_model(current_path + "/mock/squeezenet_model.pb")
+    # json_str = load_model(current_path + "/mock/squeezenet_model.pb")
     # json_str = load_model('./mock/shufflenet/model.pb')
     debug_print(json_str)
     assert json_str
