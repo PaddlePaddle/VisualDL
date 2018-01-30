@@ -1,7 +1,7 @@
 # 如何在PyTorch中使用VisualDL
 
-下面我们演示一下如何在PyTorch中使用VisualDL，从而可以把PyTorch的训练过程以及最后的模型可视化出来。我们将以PyTorch用卷积神经网络(CNN, Convolutional Neural Network)来训练 
-[Cifar10](https://www.cs.toronto.edu/~kriz/cifar.html) 数据集作为例子。 
+下面我们演示一下如何在PyTorch中使用VisualDL，从而可以把PyTorch的训练过程以及最后的模型可视化出来。我们将以PyTorch用卷积神经网络(CNN, Convolutional Neural Network)来训练
+[Cifar10](https://www.cs.toronto.edu/~kriz/cifar.html) 数据集作为例子。
 数据集作为例子。
 
 程序的主体来自PyTorch的 [Tutorial](http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html)

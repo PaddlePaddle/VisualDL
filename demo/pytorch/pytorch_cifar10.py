@@ -5,38 +5,36 @@ from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
+import torch.onnx
 import matplotlib
-matplotlib.use('Agg')
-
 from visualdl import LogWriter
-
-
-transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                        download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=500,
-                                          shuffle=True, num_workers=2)
-
-testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                       download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=500,
-                                         shuffle=False, num_workers=2)
-
-classes = ('plane', 'car', 'bird', 'cat',
-           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-
-
 import matplotlib.pyplot as plt
 import numpy as np
+
+matplotlib.use('Agg')
+
+transform = transforms.Compose([
+    transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5),
+                                                (0.5, 0.5, 0.5))
+])
+
+trainset = torchvision.datasets.CIFAR10(
+    root='./data', train=True, download=True, transform=transform)
+trainloader = torch.utils.data.DataLoader(
+    trainset, batch_size=500, shuffle=True, num_workers=2)
+
+testset = torchvision.datasets.CIFAR10(
+    root='./data', train=False, download=True, transform=transform)
+testloader = torch.utils.data.DataLoader(
+    testset, batch_size=500, shuffle=False, num_workers=2)
+
+classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse',
+           'ship', 'truck')
 
 
 # functions to show an image
 def imshow(img):
-    img = img / 2 + 0.5     # unnormalize
+    img = img / 2 + 0.5  # unnormalize
     npimg = img.numpy()
     fig, ax = plt.subplots()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
@@ -51,11 +49,11 @@ logger = LogWriter(logdir, sync_cycle=100)
 # mark the components with 'train' label.
 with logger.mode("train"):
     # create a scalar component called 'scalars/'
-    scalar_pytorch_train_loss = logger.scalar("scalars/scalar_pytorch_train_loss")
+    scalar_pytorch_train_loss = logger.scalar(
+        "scalars/scalar_pytorch_train_loss")
     image1 = logger.image("images/image1", 1)
     image2 = logger.image("images/image2", 1)
     histogram0 = logger.histogram("histogram/histogram0", num_buckets=100)
-
 
 # get some random training images
 dataiter = iter(trainloader)
@@ -65,6 +63,7 @@ images, labels = dataiter.next()
 imshow(torchvision.utils.make_grid(images))
 # print labels
 print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
+
 
 # Define a Convolution Neural Network
 class Net(nn.Module):
@@ -120,31 +119,29 @@ for epoch in range(5):  # loop over the dataset multiple times
         scalar_pytorch_train_loss.add_record(train_step, float(loss))
 
         # histogram
-        weight_list = net.conv1.weight.view(6*3*5*5, -1)
+        weight_list = net.conv1.weight.view(6 * 3 * 5 * 5, -1)
         histogram0.add_record(train_step, weight_list)
 
         # image
         image1.start_sampling()
-        image1.add_sample([96, 25], net.conv2.weight.view(16*6*5*5, -1))
+        image1.add_sample([96, 25], net.conv2.weight.view(16 * 6 * 5 * 5, -1))
         image1.finish_sampling()
 
         image2.start_sampling()
-        image2.add_sample([18, 25], net.conv1.weight.view(6*3*5*5, -1))
+        image2.add_sample([18, 25], net.conv1.weight.view(6 * 3 * 5 * 5, -1))
         image2.finish_sampling()
-
 
         train_step += 1
 
         # print statistics
         running_loss += loss.data[0]
-        if i % 2000 == 1999:    # print every 2000 mini-batches
+        if i % 2000 == 1999:  # print every 2000 mini-batches
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
 print('Finished Training')
 
-import torch.onnx
 dummy_input = Variable(torch.randn(4, 3, 32, 32))
 torch.onnx.export(net, dummy_input, "pytorch_cifar10.onnx")
 
