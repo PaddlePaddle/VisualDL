@@ -29,7 +29,7 @@ class StorageTest(unittest.TestCase):
             records = scalar.records()
             ids = scalar.ids()
             self.assertTrue(
-                np.equal(records, [float(i) for i in range(10)]).all())
+                np.equal(records, [float(i) for i in range(10-1)]).all())
             self.assertTrue(np.equal(ids, [float(i) for i in range(10)]).all())
             print 'records', records
             print 'ids', ids
@@ -70,7 +70,7 @@ class StorageTest(unittest.TestCase):
         '''
         print 'check image'
         tag = "layer1/check/image1"
-        image_writer = self.writer.image(tag, 10, 1)
+        image_writer = self.writer.image(tag, 10)
 
         image = Image.open("./dog.jpg")
         shape = [image.size[1], image.size[0], 3]
@@ -81,6 +81,7 @@ class StorageTest(unittest.TestCase):
 
             image_writer.start_sampling()
             image_writer.add_sample(shape, list(origin_data))
+            image_writer.finish_sampling()
 
             # read and check whether the original image will be displayed
             image_reader = reader.image(tag)

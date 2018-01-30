@@ -95,7 +95,7 @@ TEST(Image, test) {
   auto tablet2read = reader.tablet("image0");
   components::ImageReader image2read("train", tablet2read);
   CHECK_EQ(image2read.caption(), "this is an image");
-  CHECK_LE(num_steps - image2read.num_records(), 1);
+  CHECK_EQ(image2read.num_records(), num_steps);
 }
 
 TEST(Image, add_sample_test) {
@@ -129,8 +129,7 @@ TEST(Image, add_sample_test) {
   auto tablet2read = reader.tablet("image0");
   components::ImageReader image2read("train", tablet2read);
   CHECK_EQ(image2read.caption(), "this is an image");
-  // reference PR#225
-  CHECK_LE(num_steps - image2read.num_records(), 1);
+  CHECK_EQ(image2read.num_records(), num_steps);
 }
 
 TEST(Histogram, AddRecord) {
