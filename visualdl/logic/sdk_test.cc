@@ -28,6 +28,7 @@ TEST(Scalar, write) {
   auto tablet = writer.AddTablet("scalar0");
   components::Scalar<int> scalar(tablet);
   scalar.AddRecord(0, 12);
+  scalar.AddRecord(1, 13);
   auto tablet1 = writer.AddTablet("model/layer/min");
   components::Scalar<float> scalar1(tablet1);
   scalar1.SetCaption("customized caption");
@@ -39,9 +40,11 @@ TEST(Scalar, write) {
   auto scalar_reader = components::ScalarReader<int>(std::move(tablet_reader));
   auto captioin = scalar_reader.caption();
   ASSERT_EQ(captioin, "train");
-  ASSERT_EQ(scalar_reader.total_records(), 1);
+  // reference PR#225
+  ASSERT_EQ(scalar_reader.total_records(), 2-1);
   auto record = scalar_reader.records();
-  ASSERT_EQ(record.size(), 1);
+  // reference PR#225
+  ASSERT_EQ(record.size(), 2-1);
   // check the first entry of first record
   ASSERT_EQ(record.front(), 12);
 
@@ -92,7 +95,7 @@ TEST(Image, test) {
   auto tablet2read = reader.tablet("image0");
   components::ImageReader image2read("train", tablet2read);
   CHECK_EQ(image2read.caption(), "this is an image");
-  CHECK_EQ(image2read.num_records(), num_steps);
+  CHECK_LE(num_steps - image2read.num_records(), 1);
 }
 
 TEST(Image, add_sample_test) {
@@ -126,7 +129,8 @@ TEST(Image, add_sample_test) {
   auto tablet2read = reader.tablet("image0");
   components::ImageReader image2read("train", tablet2read);
   CHECK_EQ(image2read.caption(), "this is an image");
-  CHECK_EQ(image2read.num_records(), num_steps);
+  // reference PR#225
+  CHECK_LE(num_steps - image2read.num_records(), 1);
 }
 
 TEST(Histogram, AddRecord) {
