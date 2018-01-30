@@ -41,10 +41,10 @@ TEST(Scalar, write) {
   auto captioin = scalar_reader.caption();
   ASSERT_EQ(captioin, "train");
   // reference PR#225
-  ASSERT_EQ(scalar_reader.total_records(), 2-1);
+  ASSERT_EQ(scalar_reader.total_records(), 2 - 1);
   auto record = scalar_reader.records();
   // reference PR#225
-  ASSERT_EQ(record.size(), 2-1);
+  ASSERT_EQ(record.size(), 2 - 1);
   // check the first entry of first record
   ASSERT_EQ(record.front(), 12);
 
