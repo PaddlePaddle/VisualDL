@@ -29,7 +29,7 @@ class StorageTest(unittest.TestCase):
             records = scalar.records()
             ids = scalar.ids()
             self.assertTrue(
-                np.equal(records, [float(i) for i in range(10-1)]).all())
+                np.equal(records, [float(i) for i in range(10 - 1)]).all())
             self.assertTrue(np.equal(ids, [float(i) for i in range(10)]).all())
             print 'records', records
             print 'ids', ids
