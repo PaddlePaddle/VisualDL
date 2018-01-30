@@ -16,6 +16,7 @@ os:
 env:
   - JOB=check_style
   - JOB=test
+  - JOB=build_doc
 
 addons:
   apt:
@@ -41,6 +42,12 @@ before_install:
 script:
   - if [[ "$JOB" == "check_style" ]]; then ./travis/check_style.sh; fi
   - if [[ "$JOB" == "test" ]]; then /bin/bash ./tests.sh all; fi
+  - |
+    if [[ "$JOB" != "build_doc" ]]; then exit 0; fi;
+    export DEPLOY_DOCS_SH=https://raw.githubusercontent.com/PaddlePaddle/PaddlePaddle.org/develop/scripts/deploy/deploy_docs.sh
+    export DOCS_DIR=`pwd`
+    cd ..
+    curl $DEPLOY_DOCS_SH | bash -s $CONTENT_DEC_PASSWD $TRAVIS_BRANCH $DOCS_DIR
 
 notifications:
   email:
