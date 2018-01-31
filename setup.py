@@ -27,7 +27,9 @@ VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
-install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
+install_requires = [
+    'Flask', 'numpy', 'Pillow', 'protobuf', 'scipy', 'Flask-Cors'
+]
 execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
 
 

@@ -7,7 +7,9 @@ let webpack = require('webpack');
 let proxyMiddleware = require('http-proxy-middleware');
 let webpackConfig = require('./webpack.dev.config');
 let autoresponse = require('autoresponse');
+let syncRequest = require('sync-request');
 let path = require('path');
+let args = require('yargs').argv;
 
 let port = devPort;
 let autoOpenBrowser = false;
@@ -39,24 +41,41 @@ compiler.plugin('compilation', function (compilation) {
     });
 });
 
-// autoresponse
-let AutoresponseMatchs = ['data'];
-let matchsReg = new RegExp(AutoresponseMatchs.join('\|'));
-let excludeReg = /\.(html|js|map)$/;
-let isAutoresponseRequest = (path) => {
-    return !excludeReg.test(path) && matchsReg.test(path);
-}
-
-app.use(autoresponse({
-    logLevel: 'debug',
-    root: path.dirname(__dirname),
-    rules: [
-        {
-            match: isAutoresponseRequest,
-            method: ['get', 'post', , 'delete']
+if (args.backend) {
+    console.log("Using backend server at: " + args.backend)
+    var backendServerMiddleware = function(req, res, next) {
+        if (req.path.startsWith('/data/')) {
+            var url = args.backend + req.originalUrl;
+            var syncResponse = syncRequest(req.method, url);
+            res.status = syncResponse.status;
+            res.end(syncResponse.body);
+        } else {
+            next();
         }
-    ]
-}));
+    };
+
+    app.use(backendServerMiddleware);
+} else {
+    console.log("Using mock backend server");
+    // autoresponse
+    let AutoresponseMatchs = ['data'];
+    let matchsReg = new RegExp(AutoresponseMatchs.join('\|'));
+    let excludeReg = /\.(html|js|map)$/;
+    let isAutoresponseRequest = (path) => {
+        return !excludeReg.test(path) && matchsReg.test(path);
+    }
+
+    app.use(autoresponse({
+        logLevel: 'debug',
+        root: path.dirname(__dirname),
+        rules: [
+            {
+                match: isAutoresponseRequest,
+                method: ['get', 'post', , 'delete']
+            }
+        ]
+    }));
+}
 
 // serve webpack bundle output
 app.use(devMiddleware);
