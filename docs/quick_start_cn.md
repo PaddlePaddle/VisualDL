@@ -57,7 +57,7 @@ visualDL --logdir ./random_log --port 8080
 之后用浏览器打开地址 `http://0.0.0.0:8080`，就可以看到scalar下的可视化结果
 
 <p align="center">
-<img src="./images/scratch_scalar.png"/>
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/scratch_scalar.png"/>
 </p>
 
 ## scalar的C++ 示例
@@ -86,4 +86,6 @@ visualDL --logdir somedir --model_pb <path_to_model>
 
 比如mnist，会得到如下graph
 
-IMG
+<p align=center>
+    <img width="70%" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/mxnet/mxnet_graph.gif" />
+</p>

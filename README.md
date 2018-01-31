@@ -4,9 +4,10 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
 
 <p align="center">
-  <img src="./docs/images/vs-logo.png" width="60%" />
+  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/vs-logo.png" width="60%" />
 </p>
 
+#
 ## Introduction
 VisualDL is a deep learning visualization tool that can help design deep learning jobs.
 It includes features such as scalar, parameter distribution, model structure and image visualization.
@@ -35,7 +36,7 @@ Cooperated with Python SDK, VisualDL can be compatible with most major DNN frame
 PaddlePaddle, PyTorch and MXNet.
 
 <p align="center">
-  <img src="https://github.com/daming-lu/large_files/blob/master/graph_demo.gif" width="60%" />
+  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
 </p>
 
 ### Scalar
@@ -43,21 +44,21 @@ Scalar can be used to show the trends of error during training.
 
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
 </p>
 
 ### Image
 Image can be used to visualize any tensor or intermediate generated image.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
 </p>
 
 ### Histogram
 Histogram can be used to visualize parameter distribution and trends for any tensor.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
 </p>
 
 ## Quick Start
