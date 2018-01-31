@@ -7,4 +7,5 @@ VisualDL
     Home<README.md>
     quick_start_en.md
     contribute_code_en.md
+    how_to_dev_frontend_en.md
     api/visualdl.rst
