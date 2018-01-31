@@ -64,7 +64,7 @@ visualDL --logdir ./random_log --port 8080
 Point your browser to `http://0.0.0.0:8080`, you can see the scalar as follows:
 
 <p align="center">
-<img src="./images/scratch_scalar.png"/>
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/scratch_scalar.png"/>
 </p>
 
 ## Scalar Demo in C++
@@ -95,5 +95,5 @@ visualDL --logdir somedir --model_pb <path_to_model>
 For example, for the MNIST dataset, Graph component can render model graph as below:
 
 <p align=center>
-<img width="70%" src="https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/mxnet_graph.gif" />
+<img width="70%" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/mxnet/mxnet_graph.gif" />
 </p>
