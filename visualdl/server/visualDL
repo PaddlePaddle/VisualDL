@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
+from flask_cors import CORS
 
 import visualdl
 import visualdl.server
@@ -23,6 +24,7 @@ from visualdl.python.storage import (LogWriter, LogReader)
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
+CORS(app)
 
 error_retry_times = 3
 error_sleep_time = 2  # seconds
