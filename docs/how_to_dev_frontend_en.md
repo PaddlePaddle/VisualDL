@@ -15,6 +15,9 @@ The VisualDL web-app home page is constructed by three major Javascript files
 1. index.js: The index.js contains all the graph algorithms. All navigations, setting panels are implemented here.
 It finds the 'root' DOM in the index.html and attaches the web-app to it.
 
+The graph algorithms are defined in the `.san` files. san is the ECharts' graph framework. It can pilot charts and graphs with just a few lines of code.
+To learn more about ECharts's framework, please visit [ECharts](https://ecomfe.github.io/echarts-doc/public/en/index.html).
+
 ## npm package
 The VisualDL uses npm to manage the JavaScript files. npm is the package manager for JavaScript and is a great tool to manage multiple dependencies. To confirm that you have npm installed. Please run this command
 ``` bash
