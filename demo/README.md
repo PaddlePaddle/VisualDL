@@ -25,3 +25,10 @@ By adding VisualDL as callbacks to `model.fit`,
 we can use the Python SDK in MxNet,
 but it seems that only the outside program can only retrieve parameters in epoch callbacks,
 that limits the number of steps for visualization.
+
+## PyTorch CNN
+Locates in `./pytorch`.
+
+This shows how to use VisualDL in PyTorch for a CNN on `cifar10` dataset. We visualize the loss in Scalar,
+two convolutional layers in Image, the change trend of conv1 weights in Histogram and the final model graph
+in Graph.
