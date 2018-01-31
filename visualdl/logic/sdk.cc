@@ -109,7 +109,7 @@ namespace components {
 template <typename T>
 std::vector<T> ScalarReader<T>::records() const {
   std::vector<T> res;
-  for (int i = 0; i < reader_.total_records(); i++) {
+  for (int i = 0; i < total_records(); i++) {
     res.push_back(reader_.record(i).data(0).template Get<T>());
   }
   return res;
@@ -302,7 +302,7 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
 
 template <typename T>
 HistogramRecord<T> HistogramReader<T>::record(int i) {
-  CHECK_LT(i, reader_.total_records());
+  CHECK_LT(i, num_records());
   auto r = reader_.record(i);
   auto d = r.data(0);
   auto boundaries_str = d.GetRaw();
