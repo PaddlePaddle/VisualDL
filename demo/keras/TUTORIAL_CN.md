@@ -4,7 +4,8 @@
 [MNIST](http://yann.lecun.com/exdb/mnist/) 数据集作为例子。
 
 
-程序的主体来自Keras的官方GitHub [Example](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py)
+程序的主体来自Keras的官方GitHub [Example](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py).
+
 我们只需要在代码里面创建 VisualDL 的数据采集 loggers
 
 ```python
