@@ -1,17 +1,14 @@
 # VisualDL Web app Develop
 
-VisualDL has two three components.
+VisualDL has three components.
 1. The Python/C++ SDK that logs the data during training.
 1. The single page client side app that visualized training data.
 1. The server (powered on Flask) that reads the logs data and delivers it to the client side app for displaying graphs (scalars/histograms) and embeddings.
 
-The server provided the needed data and pass to the client side to draw scalars or histograms. The users can visualize the training progress and make a better network architecture evaluation.
-
 This article will go over the basic web-app architecture and development guide.
 
 ## TL;DR
-If you are not interested in the details of mobo jumbo and want to start development as soon as possible,
-please run the following commands.
+If you are not interested in the details of mumbo jumbo and want to start development as soon as possible, please run the following commands.
 
 To clone the repo and to prepare the environment
 ```bash
@@ -40,7 +37,7 @@ The VisualDL Web app uses multiple frameworks to help manage the project. They a
 ## Webpack
 webpack is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser.
 
-webpack is like a gospel to the web developers. For a long time, web developers need to worry about backward compatibility or how to support different versions of browsers.
+For a long time, web developers need to worry about backward compatibility or how to support different versions of browsers.
 webpack can help to transpile the Javascript files to the version where a browser can take. The developers don't need to implement version specific code anymore.
 It can also help to minify and uglify Javascript files. In a nutshell, webpack helps to manage all of your assets (.js, .css, .gif, .sass, etc) so you don't have to.
 
@@ -70,15 +67,12 @@ This command will go through `package.json` and install the dependencies in the 
 
 San is a JavaScript component framework that helps the developer to implement web component in MVVM architecture pattern.
 
-San allows you to define a self-content view model in a .san file and attach view model objects to DOM objects.
-By doing so, the view layer is much cleaner and easier to implement.
-View layer only needs to specify the layout of the page.
+San allows you to define a self-contained view model in a .san file and attach view model objects to DOM objects.
 
 To learn more about [san](https://github.com/ecomfe/san)
 
 ## ECharts
 
-To draw the graphs we use ECharts's framework. It can pilot charts and graphs with just a few lines of code.
-You can create a custom graph according to your needs. VisualDL's histogram is an example of a custom chart.
+We use ECharts javascript library to render our charts and graphs. ECharts is a leading open source charting library that supports numerous data visualization.
 
 To learn more about ECharts framework, please visit [ECharts](https://ecomfe.github.io/echarts-doc/public/en/index.html).
