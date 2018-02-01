@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+CURRENT_DIR=`pwd`
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $SCRIPT_DIR/../frontend
@@ -8,5 +10,5 @@ cd $SCRIPT_DIR/../frontend
 
 export PYTHON_PATH=$PYTHON_PATH:"$SCRIPT_DIR/.."
 
-cd $SCRIPT_DIR/../visualdl/server
-python visualDL "$@"
+cd $CURRENT_DIR
+python ${SCRIPT_DIR}/../visualdl/server/visualDL "$@"
