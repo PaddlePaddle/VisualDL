@@ -235,4 +235,4 @@ if __name__ == '__main__':
             os.mkdir(image_dir)
         graph_image_path = vdl_graph.draw_graph(args.model_pb, image_dir)
 
-    app.run(debug=False, host=args.host, port=args.port)
+    app.run(debug=False, host=args.host, port=args.port, threaded=True)
