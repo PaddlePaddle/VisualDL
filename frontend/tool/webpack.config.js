@@ -124,7 +124,8 @@ const config = {
         new CaseSensitivePathsPlugin(),
         new webpack.LoaderOptionsPlugin({
             test: /\.(styl|san)$/
-        })
+        }),
+        new ExtractTextPlugin({filename: '[name].css'})
     ]
 };
 
