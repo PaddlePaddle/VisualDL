@@ -63,6 +63,7 @@ logger = LogWriter(logdir, sync_cycle=100)
 with logger.mode("train"):
     # create a scalar component called 'scalars/'
     scalar_keras_train_loss = logger.scalar("scalars/scalar_keras_train_loss")
+    image_input = logger.image("images/input", 1)
     image0 = logger.image("images/image0", 1)
     image1 = logger.image("images/image1", 1)
     histogram0 = logger.histogram("histogram/histogram0", num_buckets=50)
@@ -72,9 +73,6 @@ train_step = 0
 
 
 class LossHistory(keras.callbacks.Callback):
-    def on_train_begin(self, logs={}):
-        self.losses = []
-
     def on_batch_end(self, batch, logs={}):
         global train_step
 
@@ -93,6 +91,10 @@ class LossHistory(keras.callbacks.Callback):
         histogram1.add_record(train_step, weight_array1)
 
         # image
+        image_input.start_sampling()
+        image_input.add_sample([28, 28], x_train[0].flatten())
+        image_input.finish_sampling()
+
         image0.start_sampling()
         image0.add_sample([9, 32], weight_array0)
         image0.finish_sampling()
@@ -102,7 +104,6 @@ class LossHistory(keras.callbacks.Callback):
         image1.finish_sampling()
 
         train_step += 1
-        self.losses.append(logs.get('loss'))
 
 
 history = LossHistory()

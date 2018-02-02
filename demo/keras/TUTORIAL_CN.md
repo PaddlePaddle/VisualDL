@@ -18,6 +18,7 @@ with logger.mode("train"):
     # create a scalar component called 'scalars/'
     scalar_keras_train_loss = logger.scalar(
         "scalars/scalar_keras_train_loss")
+    image_input = logger.image("images/input", 1)
     image0 = logger.image("images/image0", 1)
     image1 = logger.image("images/image1", 1)
     histogram0 = logger.histogram("histogram/histogram0", num_buckets=50)
@@ -52,6 +53,10 @@ class LossHistory(keras.callbacks.Callback):
         histogram1.add_record(train_step, weight_array1)
 
         # image
+        image_input.start_sampling()
+        image_input.add_sample([28, 28], x_train[0].flatten())
+        image_input.finish_sampling()
+
         image0.start_sampling()
         image0.add_sample([9, 32], weight_array0)
         image0.finish_sampling()
@@ -72,7 +77,7 @@ class LossHistory(keras.callbacks.Callback):
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_scalar.png?raw=true" />
 </p>
 
-训练过后的第一，第二层卷积权重图的如下：
+输入图片以及训练过后的第一，第二层卷积权重图的如下：
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_image.png?raw=true" />
