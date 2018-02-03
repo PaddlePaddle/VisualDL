@@ -16,7 +16,7 @@ def check_mode_name_valid(tag):
 
 class LogReader(object):
     """LogReader is a Python wrapper to read and analysis the data that
-    saved with data format defined in storage.proto. user can get
+    saved with data format defined in storage.proto. A User can get
     Scalar Reader/Image Reader/Histogram Reader from this module and use
     them to reade the data you need.
     """
@@ -34,11 +34,10 @@ class LogReader(object):
         """
         Set the current mode of reader.
 
-        :param mode: the mode is something like a scope, it's used to
-        put some related data together. for example: train or test.
-        data generated during training can be marked mode train, and data
-        generated during testing can be marked test.
-        :return: the reader itself
+        :param mode: The log reader will read the data grouped by mode.
+        :type mode: basestring
+        :return: the log reader itself
+        :rtype: LogReader
         """
         check_mode_name_valid(mode)
         self.reader.set_mode(mode)
@@ -47,6 +46,11 @@ class LogReader(object):
     def as_mode(self, mode):
         """
         create a new LogReader with mode and return it to user.
+
+        :param mode: The log reader will read the data grouped by mode.
+        :type mode: basestring
+        :return: a new log reader instance
+        :rtype: LogReader
         """
         check_mode_name_valid(mode)
         tmp = LogReader(dir, self.reader.as_mode(mode))
@@ -55,21 +59,28 @@ class LogReader(object):
     def modes(self):
         """
         Get all modes of the log file
-        :return:
+
+        :return: a list of all modes
+        :rtype: list
         """
         return self.reader.modes()
 
     def tags(self, component):
         """
         Get all tags from the current log file for one kind of component
-        :param component:  Scalar|Histogram|Images
+
+        :param component:  scalar|histogram|image
         :return: all the tags
+        :type: list
         """
         return self.reader.tags(component)
 
     def scalar(self, tag, type='float'):
         """
         Get a scalar reader with tag and data type
+
+        :param tag:  The reader will read the scalar data marked with tag
+        :type tag: basestring
         """
         check_tag_name_valid(tag)
         type2scalar = {
@@ -82,6 +93,9 @@ class LogReader(object):
     def image(self, tag):
         """
         Get a image reader with tag
+
+        :param tag:  The reader will read the image data marked with tag
+        :type tag: basestring
         """
         check_tag_name_valid(tag)
         return self.reader.get_image(tag)
@@ -89,6 +103,9 @@ class LogReader(object):
     def histogram(self, tag, type='float'):
         """
         Get a histogram reader with tag and data type
+
+        :param tag:  The reader will read the histogram data marked with tag
+        :type tag: basestring
         """
         type2scalar = {
             'float': self.reader.get_histogram_float,
@@ -107,7 +124,7 @@ class LogReader(object):
 
 class LogWriter(object):
     """LogWriter is a Python wrapper to write data to log file with the data
-    format defined in storage.proto. user can get Scalar Reader/Image Reader/
+    format defined in storage.proto. A User can get Scalar Reader/Image Reader/
     Histogram Reader from this module and use them to write the data to log file.
     """
 
@@ -119,6 +136,14 @@ class LogWriter(object):
         self.writer = writer if writer else core.LogWriter(dir, sync_cycle)
 
     def mode(self, mode):
+        """
+        Set the current mode of writer.
+
+        :param mode: The logger will group data under mode.
+        :type mode: basestring
+        :return: a new LogWriter instance with mode
+        :rtype: LogWriter
+        """
         check_mode_name_valid(mode)
         self.writer.set_mode(mode)
         return self
@@ -126,6 +151,11 @@ class LogWriter(object):
     def as_mode(self, mode):
         """
         create a new LogWriter with mode and return it.
+
+        :param mode: The logger will group data under mode.
+        :type mode: basestring
+        :return: the logWriter itself
+        :rtype: LogWriter
         """
         check_mode_name_valid(mode)
         LogWriter.cur_mode = LogWriter(self.dir, self.sync_cycle,
@@ -135,6 +165,9 @@ class LogWriter(object):
     def scalar(self, tag, type='float'):
         """
         Create a scalar writer with tag and type to write scalar data.
+
+        :param tag: The scalar writer will label the data with tag
+        :type tag: basestring
         """
         check_tag_name_valid(tag)
         type2scalar = {
@@ -147,6 +180,9 @@ class LogWriter(object):
     def image(self, tag, num_samples, step_cycle=1):
         """
         Create an image writer that used to write image data.
+
+        :param tag: The image writer will label the image with tag
+        :type tag: basestring
         """
         check_tag_name_valid(tag)
         return self.writer.new_image(tag, num_samples, step_cycle)
@@ -155,6 +191,9 @@ class LogWriter(object):
         """
         Create a histogram writer that used to write
         histogram related data.
+
+        :param tag: The histogram writer will label the data with tag
+        :type tag: basestring
         """
         check_tag_name_valid(tag)
         types = {
