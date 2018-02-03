@@ -129,6 +129,7 @@ export default {
         this.data.set('downloadType', runsItems[0].value);
     },
 
+    // Create a Scalar Chart, initialize it with default settings, then load datas
     initChart(tagInfo) {
         this.createChart();
         this.setChartsOptions(tagInfo);
@@ -141,6 +142,7 @@ export default {
     },
 
     setChartsOptions({tagList, tag}) {
+        // Create two lines, one line is original, the other line is for smoothing
         let seriesOption = tagList.map(item => [
                 {
                     name: item.run,
