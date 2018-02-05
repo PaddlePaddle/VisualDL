@@ -21,4 +21,4 @@ cd build
 cmake ..
 make -j $processors
 
-export PYTHON_PATH=$PYTHON_PATH:"$SCRIPT_DIR/.."
+export PYTHONPATH=$PYTHONPATH:"$SCRIPT_DIR/.."
