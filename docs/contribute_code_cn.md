@@ -27,6 +27,22 @@ VisualDL 目前使用[Git流分支模型](http://nvie.com/posts/a-successful-git
    ```bash
    git checkout -b my-cool-stuff
    ```
+1. Virtualenv
+
+   virtualenv是一个独立的Python虚拟环境。我们强烈建议您使用` virtualenv `来保持你的Python环境清洁。
+   要创建虚拟环境并激活它，请使用以下命令。
+
+   ```bash
+   pip install --upgrade virtualenv
+   virtualenv YOUR_VIRTUAL_EVN_FOLDER
+   source YOUR_VIRTUAL_EVN_FOLDER/bin/activate
+   ```
+
+   完成此工作后，可以通过操作来解除虚拟环境。
+   ```bash
+   deactivate
+   ```
+   要了解更多关于` virtualenv `，点击[这里]（https://virtualenv.pypa.io/en/stable/）
 
 1. commit
 

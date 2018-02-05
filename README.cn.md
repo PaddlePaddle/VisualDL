@@ -55,11 +55,15 @@ VisualDL 目前支持4种组件：
 </p>
 
 ## 快速尝试
+请使用下面的命令，来快速测试 VisualDL。
+我们强烈建议您使用` virtualenv `来保持你的 Python 环境清洁。
+要了解更多关于` virtualenv `，点击[这里]（https://virtualenv.pypa.io/en/stable/）
+
 ```
-# 安装
+# 安装，建議是在虛擬環境下。
 pip install --upgrade visualdl
 
-# 运行一个例子
+# 运行一个例子，vdl_scratch.py将创建测试日志
 vdl_scratch.py
 visualDL --logdir=scratch_log --port=8080
 

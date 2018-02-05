@@ -29,6 +29,24 @@ VisualDL uses this [Git branching model](http://nvie.com/posts/a-successful-git-
    git checkout -b my-cool-stuff
    ```
 
+1. Virtualenv
+
+   VirtualEnv is an isolated virtual environment for Python. We highly recommend using `virtualenv` to keep your python environment clean.
+
+   To create a virtual environment and activate it, please use the following commands.
+   ```bash
+   pip install --upgrade virtualenv
+   virtualenv YOUR_VIRTUAL_EVN_FOLDER
+   source YOUR_VIRTUAL_EVN_FOLDER/bin/activate
+   ```
+
+   When you are done with the work, you can deactivate the virtual environment by doing.
+   ```bash
+   deactivate
+   ```
+
+   To learn more about `virtualenv`, click [here](https://virtualenv.pypa.io/en/stable/)
+
 1. Commit
 
    Before issuing your first `git commit` command, please install [`pre-commit`](http://pre-commit.com/) and other requirements by running the following commands:

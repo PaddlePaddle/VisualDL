@@ -62,11 +62,14 @@ Histogram can be used to visualize parameter distribution and trends for any ten
 </p>
 
 ## Quick Start
+To give the VisualDL a quick test, please use the following commands.
+We highly recommend using `virtualenv` to keep your python environment clean. To learn more about `virtualenv`, click [here](https://virtualenv.pypa.io/en/stable/)
+
 ```
-# install
+# Install the VisualDL. Preferably under a virtual environment.
 pip install --upgrade visualdl
 
-# run a demo
+# run a demo, vdl_scratch.py will create logs for testing.
 vdl_scratch.py
 visualDL --logdir=scratch_log --port=8080
 
