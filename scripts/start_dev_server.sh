@@ -16,7 +16,8 @@ function finish {
     kill -9 $WEBPACKPID
 }
 
-trap finish EXIT
+trap finish EXIT HUP INT QUIT PIPE TERM
+
 cd $CURRENT_DIR
 
 #Run the visualDL with local PATH
