@@ -56,8 +56,6 @@ VisualDL 目前支持4种组件：
 
 ## 快速尝试
 请使用下面的命令，来快速测试 VisualDL。
-我们强烈建议您使用` virtualenv `来保持你的 Python 环境清洁。
-要了解更多关于` virtualenv `，点击[这里]（https://virtualenv.pypa.io/en/stable/）
 
 ```
 # 安装，建議是在虛擬環境下。
