@@ -93,5 +93,5 @@ setup(
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
-    scripts=['visualdl/server/visualDL', 'demo/vdl_scratch.py'],
+    scripts=['visualdl/server/visualDL', 'demo/vdl_create_scratch_log'],
     cmdclass=cmdclass)

@@ -61,8 +61,8 @@ VisualDL 目前支持4种组件：
 # 安装，建議是在虛擬環境下。
 pip install --upgrade visualdl
 
-# 运行一个例子，vdl_scratch.py将创建测试日志
-vdl_scratch.py
+# 运行一个例子，vdl_create_scratch_log 将创建测试日志
+vdl_create_scratch_log
 visualDL --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
