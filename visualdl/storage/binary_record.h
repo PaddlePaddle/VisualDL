@@ -80,15 +80,14 @@ struct BinaryRecordReader {
 protected:
   void fromfile() {
     // filename_ can be empty if a user stops training abruptly.  In that case,
-    // we shouldn't load the file.
-    // The server will hang if we try to load the empty file.  For now we don't
-    // throw an assert since it causes
-    // performance problems on the server.
+    // we shouldn't load the file. The server will hang if we try to load the
+    // empty file. For now we don't throw an assert since it causes performance
+    // problems on the server.
     // TODO(thuan): Update SDK.cc to not add image record if user stops training
     // abruptly and no filename_ is set.
     // TODO(thuan): Optimize visualDL server retry logic when a request fails.
-    // Currently if SDK call fails, server
-    //      will issue multiple retries, which impacts performance.
+    // Currently if SDK call fails, server will issue multiple retries,
+    // which impacts performance.
     if (!filename_.empty()) {
       std::string path = dir_ + "/" + filename_;
       std::cout << "READING FILE: " << path << std::endl;
