@@ -6,3 +6,5 @@ sphinx-rtd-theme==0.2.4
 flake8==3.5.0
 Pillow==5.0.0
 pre-commit==1.5.1
+flask==0.12.2
+protobuf==3.5.1

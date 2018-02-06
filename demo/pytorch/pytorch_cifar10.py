@@ -43,7 +43,7 @@ def imshow(img):
     fig.savefig('out' + str(np.random.randint(0, 10000)) + '.pdf')
 
 
-logdir = "/workspace"
+logdir = "./workspace"
 logger = LogWriter(logdir, sync_cycle=100)
 
 # mark the components with 'train' label.

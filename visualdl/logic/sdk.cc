@@ -244,7 +244,7 @@ void Image::SetSample(int index,
     CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
                                                << old_path << " failed";
   }
-  entry.SetRaw(brcd.hash());
+  entry.SetRaw(brcd.filename());
 
   static_assert(
       !is_same_type<value_t, shape_t>::value,
@@ -268,10 +268,10 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   ImageRecord res;
   auto record = reader_.record(offset);
   auto entry = record.data(index);
-  auto data_hash = entry.GetRaw();
+  auto filename = entry.GetRaw();
   CHECK(!g_log_dir.empty())
       << "g_log_dir should be set in LogReader construction";
-  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), data_hash);
+  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), filename);
 
   std::transform(brcd.data.begin(),
                  brcd.data.end(),
