@@ -14,16 +14,8 @@ limitations under the License. */
 
 #include "visualdl/storage/binary_record.h"
 
-#include <gtest/gtest.h>
+namespace visualdl {
 
-using namespace visualdl;
+int BinaryRecord::counter_ = 0;
 
-TEST(BinaryRecord, init) {
-  std::string message = "hello world";
-  BinaryRecord rcd("./", std::move(message));
-  rcd.tofile();
-
-  BinaryRecordReader reader("./", rcd.filename());
-  LOG(INFO) << reader.data;
-  ASSERT_EQ(reader.data, "hello world");
-}
+}  // namespace visualdl

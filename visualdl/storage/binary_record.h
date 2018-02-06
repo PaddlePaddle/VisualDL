@@ -17,6 +17,7 @@ limitations under the License. */
 
 #include <fstream>
 #include <functional>
+#include <sstream>
 
 #include "visualdl/utils/filesystem.h"
 
@@ -32,12 +33,10 @@ static std::string GenBinaryRecordDir(const std::string& dir) {
 // directly in protobuf. So a simple binary storage is used to serialize images
 // to disk.
 struct BinaryRecord {
-  std::hash<std::string> hasher;
-
   BinaryRecord(const std::string dir, std::string&& data)
       : data_(data), dir_(dir) {
-    hash_ = std::to_string(hasher(data));
-    path_ = dir + "/" + hash();
+    filename_ = GenerateFileName();
+    path_ = dir + "/" + filename_;
   }
 
   const std::string& path() { return path_; }
@@ -52,42 +51,58 @@ struct BinaryRecord {
     file.write(data_.data(), data_.size());
   }
 
-  const std::string& hash() { return hash_; }
+  static std::string GenerateFileName() {
+    std::stringstream ss;
+    ss << counter_++;
+    return ss.str();
+  }
+
+  const std::string& filename() { return filename_; }
 
 private:
   std::string dir_;
   std::string path_;
   std::string data_;
-  std::string hash_;
+  std::string filename_;
+  static int counter_;
 };
 
 struct BinaryRecordReader {
   std::string data;
-  std::hash<std::string> hasher;
 
-  BinaryRecordReader(const std::string& dir, const std::string& hash)
-      : dir_(dir), hash_(hash) {
+  BinaryRecordReader(const std::string& dir, const std::string& filename)
+      : dir_(dir), filename_(filename) {
     fromfile();
   }
-  std::string hash() { return std::to_string(hasher(data)); }
+
+  const std::string& filename() { return filename_; }
 
 protected:
   void fromfile() {
-    std::string path = dir_ + "/" + hash_;
-    std::ifstream file(path, file.binary);
-    CHECK(file.is_open()) << " failed to open file " << path;
+    // filename_ can be empty if a user stops training abruptly.  In that case,
+    // we shouldn't load the file. The server will hang if we try to load the
+    // empty file. For now we don't throw an assert since it causes performance
+    // problems on the server.
+    // TODO(thuan): Update SDK.cc to not add image record if user stops training
+    // abruptly and no filename_ is set.
+    // TODO(thuan): Optimize visualDL server retry logic when a request fails.
+    // Currently if SDK call fails, server will issue multiple retries,
+    // which impacts performance.
+    if (!filename_.empty()) {
+      std::string path = dir_ + "/" + filename_;
+      std::ifstream file(path, file.binary);
+      CHECK(file.is_open()) << " failed to open file " << path;
 
-    size_t size;
-    file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-    data.resize(size);
-    file.read(&data[0], size);
-
-    CHECK_EQ(hash(), hash_) << "data broken: " << path;
+      size_t size;
+      file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+      data.resize(size);
+      file.read(&data[0], size);
+    }
   }
 
 private:
   std::string dir_;
-  std::string hash_;
+  std::string filename_;
 };
 
 }  // namespace visualdl
