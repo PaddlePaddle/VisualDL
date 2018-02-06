@@ -68,8 +68,8 @@ To give the VisualDL a quick test, please use the following commands.
 # Install the VisualDL. Preferably under a virtual environment.
 pip install --upgrade visualdl
 
-# run a demo, vdl_scratch.py will create logs for testing.
-vdl_scratch.py
+# run a demo, vdl_create_scratch_log will create logs for testing.
+vdl_create_scratch_log
 visualDL --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
