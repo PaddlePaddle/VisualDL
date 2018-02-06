@@ -35,7 +35,7 @@ static std::string GenBinaryRecordDir(const std::string& dir) {
 struct BinaryRecord {
   BinaryRecord(const std::string dir, std::string&& data)
       : data_(data), dir_(dir) {
-    filename_ = generateFileName();
+    filename_ = GenerateFileName();
     path_ = dir + "/" + filename_;
   }
 
@@ -51,7 +51,7 @@ struct BinaryRecord {
     file.write(data_.data(), data_.size());
   }
 
-  static std::string generateFileName() {
+  static std::string GenerateFileName() {
     std::stringstream ss;
     ss << counter_++;
     return ss.str();
@@ -90,7 +90,6 @@ protected:
     // which impacts performance.
     if (!filename_.empty()) {
       std::string path = dir_ + "/" + filename_;
-      std::cout << "READING FILE: " << path << std::endl;
       std::ifstream file(path, file.binary);
       CHECK(file.is_open()) << " failed to open file " << path;
 
