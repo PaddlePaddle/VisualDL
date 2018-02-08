@@ -12,6 +12,8 @@
     "node": ">= 6.4.0"
   },
   "dependencies": {
+    "vue": "^2.5.2",
+    "vue-router": "^3.0.1",
     "axios": "^0.16.1",
     "csshint": "^0.3.3",
     "d3-format": "^1.2.1",
@@ -72,6 +74,10 @@
     "webpack-dev-server": "^2.4.2",
     "webpack-hot-middleware": "^2.19.1",
     "webpack-merge": "^4.1.0",
-    "yargs": "^8.0.2"
+    "yargs": "^8.0.2",
+    "vue-jest": "^1.0.2",
+    "vue-loader": "^13.3.0",
+    "vue-style-loader": "^3.0.1",
+    "vue-template-compiler": "^2.5.2"
   }
 }
