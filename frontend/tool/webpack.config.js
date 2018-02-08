@@ -46,11 +46,12 @@ const config = {
     resolve: {
 
         alias: {
-            'san-mui': 'san-mui/lib',
-            axios: 'axios/dist/axios.min.js'
+            axios: 'axios/dist/axios.min.js',
+            'vue$': 'vue/dist/vue.esm.js',
+            '@': path.resolve(projectPath, 'src'),
         },
 
-        extensions: ['.js', '.json', '.styl', '.css', '.html', '.san']
+        extensions: ['.js', '.json', '.styl', '.css', '.html', '.vue']
     },
 
     module: {
@@ -59,13 +60,8 @@ const config = {
         ],
         rules: [
             {
-                test: /\.san$/,
-                loader: 'san-loader',
-                options: {
-                    loaders: {
-                        stylus: getLoaders(isDev, 'stylus')
-                    }
-                }
+                test: /\.vue$/,
+                loader: 'vue-loader',
             },
             {
                 test: /\.js$/,
