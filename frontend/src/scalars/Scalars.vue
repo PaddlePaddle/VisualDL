@@ -1,0 +1,174 @@
+<template>
+    <div class="visual-dl-page-container">
+        <div>I AM SCALARS</div>
+
+        <div class="visual-dl-page-left">
+            <div>
+                <p>
+                    I am chart page, to show all matched tags
+                </p>
+                <p>
+                    tagList: {{ filteredConfig }}
+                </p>
+                <p>
+                    runsItems: {{ runsItems }}
+                </p>
+                <p>
+                    title="Tags matching {{config.groupNameReg}}"
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    I am also a chart page, but I should render groupedTags
+                </p>
+            </div>
+        </div>
+        <div class="visual-dl-page-right">
+            <div class="visual-dl-page-config-container">
+                <p>
+                    I should show all runs items and config
+                    {{ runsItems }}
+                </p>
+                <p>
+                    {{ config }}
+                </p>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import {getPluginScalarsTags, getRuns} from '../service';
+import {debounce, flatten, uniq, isArray} from 'lodash';
+import autoAdjustHeight from '../common/util/autoAdjustHeight';
+
+export default {
+    name: 'Scalars',
+    data () {
+        return {
+            runsArray: [],
+            tags: [],
+            config: {
+                groupNameReg: '.*',
+                smoothing: 0.6,
+                horizontal: 'step',
+                sortingMethod: 'default',
+                downloadLink: [],
+                outlier: [],
+                runs: [],
+                running: true
+            }
+        }
+    },
+    computed: {
+        runsItems() {
+            let runsArray = this.runsArray || [];
+            return runsArray.map(item => {
+                return {
+                    name: item,
+                    value: item
+                };
+            });
+        },
+        tagsList() {
+            let tags = this.tags;
+
+            let runs = Object.keys(tags);
+            let tagsArray = runs.map(run => Object.keys(tags[run]));
+            let allUniqTags = uniq(flatten(tagsArray));
+
+            // get the data for every chart
+            return allUniqTags.map(tag => {
+                let tagList = runs.map(run => {
+                    return {
+                        run,
+                        tag: tags[run][tag]
+                    };
+                }).filter(item => item.tag !== undefined);
+                return {
+                    tagList,
+                    tag,
+                    group: tag.split('/')[0]
+                };
+            });
+        },
+        groupedTags() {
+            let tagsList = this.tagsList || [];
+            // put data in group
+            let groupData = {};
+            tagsList.forEach(item => {
+                let group = item.group;
+                if (groupData[group] === undefined) {
+                    groupData[group] = [];
+                    groupData[group].push(item);
+                }
+                else {
+                    groupData[group].push(item);
+                }
+            });
+
+            // to array
+            let groups = Object.keys(groupData);
+            return groups.map(group => {
+                return {
+                    group,
+                    tags: groupData[group]
+                };
+            });
+        },
+        filteredConfig() {
+            let tansformArr = ['downloadLink', 'outlier'];
+            let config = this.config || {};
+            let filteredConfig = {};
+            Object.keys(config).forEach(key => {
+                let val = config[key];
+                if (tansformArr.indexOf(key) > -1) {
+                    filteredConfig[key] = isArray(val) && val[0] === 'yes';
+                }
+                else {
+                    filteredConfig[key] = val;
+                }
+            });
+            return filteredConfig;
+        },
+    },
+    created() {
+	    getPluginScalarsTags().then(({errno, data}) => {
+            this.tags = data;
+
+            // filter when inited
+            let groupNameReg = this.config.groupNameReg;
+            this.filterTagsList(groupNameReg);
+        });
+
+	    getRuns().then(({errno, data}) => {
+            this.runsArray = data
+            this.config.runs = data
+        });
+
+        // TODO: Migrate this line from San to Vue
+        //this.watch('config.groupNameReg', debounce(this.filterTagsList, 300));
+	},
+	mounted() {
+	    autoAdjustHeight();
+	},
+    methods: {
+        filterTagsList(groupNameReg) {
+            if (!groupNameReg) {
+                this.filteredTagsList = [];
+                return;
+            }
+            let tagsList = this.tagsList || [];
+            let regExp = new RegExp(groupNameReg);
+            let filtedTagsList = tagsList.filter(item => regExp.test(item.tag));
+            this.filteredTagsList = filtedTagsList;
+        }
+    }
+};
+
+</script>
+
+<style lang="stylus">
+
+</style>

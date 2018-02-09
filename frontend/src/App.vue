@@ -3,6 +3,7 @@
         <v-app>
             <AppMenu>
             </AppMenu>
+            <router-view></router-view>
         </v-app>
     </div>
 </template>

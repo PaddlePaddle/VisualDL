@@ -1,7 +1,9 @@
-import Notification from './Notification';
-import NotificationItem from './NotificationItem';
+//TODO: Migrate this part to Vue
 
-export {
-    NotificationItem,
-    Notification as default
-};
+//import Notification from './Notification';
+//import NotificationItem from './NotificationItem';
+//
+//export {
+//    NotificationItem,
+//    Notification as default
+//};
