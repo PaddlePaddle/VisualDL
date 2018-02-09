@@ -6,7 +6,7 @@
                 <v-spacer></v-spacer>
                 <v-btn v-for="item in items" :key="item.name"
                 :class="[{'menu-item-selected': selected === item.name}, 'menu-item']"
-                @click="handleItemClick(item.name)"
+                @click="handleItemClick(item)"
                 >{{ item.title}}</v-btn>
             </v-toolbar>
         </div>
@@ -44,8 +44,9 @@ export default {
         }
     },
     methods: {
-            handleItemClick: function (name) {
-            this.selected = name
+            handleItemClick: function (item) {
+            this.selected = item.name
+            this.$router.push(item.url)
         }
     }
 }
