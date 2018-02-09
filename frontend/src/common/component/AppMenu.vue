@@ -1,65 +1,83 @@
 <template>
     <div>
-        AppMenu goes here
-        <p>{{ msg }} </p>
-
         <div class="visual-dl-app-menu">
-        <!--<san-appbar title=" ">-->
-            <!--<san-menu slot="right">-->
-                <!--<san-menu-item-->
-                    <!--s-for="item in items"-->
-                    <!--class="{{selected === item.name ? 'sm-menu-item-selected' : ''}}"-->
-                    <!--on-click="handleItemClick(item)"-->
-                    <!--title="{{item.title}}" />-->
-            <!--</san-menu>-->
-        <!--</san-appbar>-->
+            <v-toolbar dark color="teal">
+                <v-toolbar-title class="appbar-menu-title"></v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn v-for="item in items" :key="item.title"
+                :class="[{'menu-item-selected': selected === item.name}, 'menu-item']"
+                @click="handleItemClick(item.name)"
+                >{{ item.title}}</v-btn>
+            </v-toolbar>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'AppMenu',
-  data () {
-    return {
-      msg: 'Welcome to Your App Menu'
+    name: 'AppMenu',
+    data () {
+        return {
+        selected: 'scalars',
+        items: [
+            {
+                url: '/scalars',
+                title: 'SCALARS',
+                name: 'scalars'
+            },
+            {
+                url: '/images',
+                title: 'IMAGES',
+                name: 'images'
+            },
+            {
+                url: '/histograms',
+                title: 'HISTOGRAMS',
+                name: 'histograms'
+            },
+            {
+                url: '/graphs',
+                title: 'GRAPHS',
+                name: 'graphs'
+            }
+            ]
+        }
+    },
+    methods: {
+            handleItemClick: function (name) {
+            this.selected = name
+        }
     }
-  }
 }
 </script>
 
-<style>
-+prefix-classes(prefix)
-    .app-menu
-        width 100%
+<style scoped>
+.appbar-menu-title {
+    font-size: 24px;
+    flex: none;
+    margin-right: 50px;
+    background: url('./visualdl-logo.png') no-repeat;
+    background-size: cover;
+    width: 120px;
+    height: 50px;
+}
 
-.visual-dl-app-menu
-    .sm-appbar-title
-        font-size 24px
-        flex none
-        margin-right 50px
-    .sm-appbar-title
-        background url('./visualdl-logo.png') no-repeat
-        background-size cover
-        width 120px
-        height 50px
-    .sm-appbar-right
-        width 100%
-        .sm-menu
-            width 100%
-            height 100%
-            display flex
-            flex-direction row
-            .sm-menu-item
-                padding 0 30px
-                .sm-menu-item-content
-                    color #fff
-                    opacity 0.6
-            .sm-menu-item:hover
-                background none
-                opacity 1
-            .sm-menu-item-selected
-                .sm-menu-item-content
-                    color #fff
-                    opacity 1
+.menu-item {
+    padding: 0 30px;
+    color: #fff;
+    opacity: 0.6;
+    display: flex;
+    flex-direction: row;
+}
+
+.menu-item:hover {
+    background: none;
+    opacity: 1;
+}
+
+.menu-item-selected {
+    color: #fff;
+    opacity: 1;
+}
+
 </style>
