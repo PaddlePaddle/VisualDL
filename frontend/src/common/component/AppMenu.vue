@@ -4,7 +4,7 @@
             <v-toolbar dark color="teal">
                 <v-toolbar-title class="appbar-menu-title"></v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn v-for="item in items" :key="item.title"
+                <v-btn v-for="item in items" :key="item.name"
                 :class="[{'menu-item-selected': selected === item.name}, 'menu-item']"
                 @click="handleItemClick(item.name)"
                 >{{ item.title}}</v-btn>
