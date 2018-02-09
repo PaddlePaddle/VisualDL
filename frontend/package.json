@@ -12,8 +12,6 @@
     "node": ">= 6.4.0"
   },
   "dependencies": {
-    "vue": "^2.5.2",
-    "vue-router": "^3.0.1",
     "axios": "^0.16.1",
     "csshint": "^0.3.3",
     "d3-format": "^1.2.1",
@@ -29,6 +27,9 @@
     "san-router": "^1.1.1",
     "san-store": "^1.0.1",
     "san-update": "^2.1.0",
+    "vue": "^2.5.2",
+    "vue-router": "^3.0.1",
+    "vuetify": "^0.17.7",
     "xlsx": "^0.11.3"
   },
   "devDependencies": {
