@@ -26,13 +26,9 @@
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
-                <p>
-                    I should show all runs items and config
-                    {{ runsItems }}
-                </p>
-                <p>
-                    {{ config }}
-                </p>
+                <Config :runsItems="config.runs"
+                        :config="config"
+                ></Config>
             </div>
         </div>
     </div>
@@ -43,7 +39,12 @@ import {getPluginScalarsTags, getRuns} from '../service';
 import {debounce, flatten, uniq, isArray} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
+import Config from './ui/config'
+
 export default {
+    components: {
+        Config
+    },
     name: 'Scalars',
     data () {
         return {
