@@ -62,10 +62,10 @@ import('vuetify/dist/vuetify.min.css')
 
 export default {
     name: 'config',
-    props: ['runsItems', 'config'],
-    data() {
-        return {
-            config: {
+    props: {
+        runsItems: Array,
+        config : {
+            default: {
                 groupNameReg: '.*',
                 smoothing: '0.6',
                 horizontal: 'step',
@@ -75,6 +75,11 @@ export default {
                 running: true,
                 runs: []
             },
+            type: Object
+        }
+    },
+    data: function() {
+        return {
             horizontalItems: [
                 {
                     name: 'Step',
@@ -91,8 +96,7 @@ export default {
             ],
             sortingMethodItems: [
                 'default', 'descending', 'ascending', 'nearest'
-            ],
-            runsItems: [],
+            ]
         };
     },
     toggleAllRuns() {
