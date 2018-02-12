@@ -26,9 +26,9 @@
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
-                <Config :runsItems="config.runs"
+                <ui-config :runsItems="config.runs"
                         :config="config"
-                ></Config>
+                ></ui-config>
             </div>
         </div>
     </div>
@@ -39,14 +39,13 @@ import {getPluginScalarsTags, getRuns} from '../service';
 import {debounce, flatten, uniq, isArray} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
-import Config from './ui/config'
+import Config from './ui/Config.vue'
 
 export default {
     components: {
-        Config
+        'ui-config': Config
     },
-    name: 'Scalars',
-    data () {
+    data() {
         return {
             runsArray: [],
             tags: [],
