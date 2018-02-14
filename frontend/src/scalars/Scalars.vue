@@ -26,7 +26,7 @@
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
-                <ui-config :runsItems="config.runs"
+                <ui-config :runsItems="runsItems"
                         :config="config"
                 ></ui-config>
             </div>
@@ -118,12 +118,12 @@ export default {
             });
         },
         filteredConfig() {
-            let tansformArr = ['downloadLink', 'outlier'];
+            let transformArr = ['downloadLink', 'outlier'];
             let config = this.config || {};
             let filteredConfig = {};
             Object.keys(config).forEach(key => {
                 let val = config[key];
-                if (tansformArr.indexOf(key) > -1) {
+                if (transformArr.indexOf(key) > -1) {
                     filteredConfig[key] = isArray(val) && val[0] === 'yes';
                 }
                 else {

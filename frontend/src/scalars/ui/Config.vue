@@ -7,7 +7,10 @@
                 dark
         ></v-text-field>
 
-        <v-slider label="Smoothing" :max="0.999" :min="0" :step="0.001" v-model="config.smoothing" dark></v-slider>
+        <div>
+            <v-slider label="Smoothing" :max="0.999" :min="0" :step="0.001" v-model="config.smoothing" dark></v-slider>
+            <span>{{config.smoothing}}</span>
+        </div>
 
         <v-radio-group label="Horizontal" v-model="config.horizontal" dark>
             <v-radio label="Step" value="step"></v-radio>
@@ -15,6 +18,7 @@
             <v-radio label="Wall" value="wall"></v-radio>
         </v-radio-group>
 
+        <label class="label">Tooltip sorting method</label>
         <v-select
                 :items="sortingMethodItems"
                 v-model="config.sortingMethod"
@@ -28,8 +32,8 @@
         <v-checkbox label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
 
         <v-checkbox v-for="item in runsItems"
-                    :label="item"
-                    :value="item"
+                    :label="item.name"
+                    :value="item.value"
                     v-model="config.runs"
                     dark
         ></v-checkbox>
