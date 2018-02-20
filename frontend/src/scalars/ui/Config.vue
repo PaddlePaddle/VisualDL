@@ -1,26 +1,26 @@
 <template>
     <div class="visual-dl-page-config-com">
         <v-text-field
-                name="Group name RegExp"
                 label="Group name RegExp"
                 hint="input a tag group name"
-                id="testing"
                 v-model="config.groupNameReg"
                 dark
         ></v-text-field>
 
-        <v-slider label="Smoothing" v-bind:max="100" v-bind:min="0" v-model="config.smoothing" dark></v-slider>
-        <v-text-field v-model="config.smoothing" type="number" dark></v-text-field>
+        <div>
+            <v-slider label="Smoothing" :max="0.999" :min="0" :step="0.001" v-model="config.smoothing" dark></v-slider>
+            <span>{{config.smoothing}}</span>
+        </div>
 
-        <p>{{ config.horizontal || 'null' }}</p>
-        <v-radio-group v-model="config.horizontal" dark>
+        <v-radio-group label="Horizontal" v-model="config.horizontal" dark>
             <v-radio label="Step" value="step"></v-radio>
             <v-radio label="Relative" value="relative"></v-radio>
             <v-radio label="Wall" value="wall"></v-radio>
         </v-radio-group>
 
+        <label class="label">Tooltip sorting method</label>
         <v-select
-                v-bind:items="sortingMethodItems"
+                :items="sortingMethodItems"
                 v-model="config.sortingMethod"
                 label="Tooltip sorting method"
                 single-line
@@ -31,20 +31,20 @@
         <v-checkbox label="Show data download links" v-model="config.downloadLink" dark></v-checkbox>
         <v-checkbox label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
 
-        <p>
-            RunItems{{ config.runs }}
-        </p>
         <v-checkbox v-for="item in runsItems"
-                    :label="item"
-                    :value="item"
+                    :label="item.name"
+                    :value="item.value"
                     v-model="config.runs"
                     dark
         ></v-checkbox>
 
-        <v-switch class="visual-dl-page-run-toggle"
-                  v-bind:label="`Running: ${config.running.toString()}`"
+        <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
-                  dark></v-switch>
+                  @click="toggleAllRuns"
+                  dark
+        >
+            {{config.running ? 'Running' : 'Stopped'}}
+        </v-btn>
     </div>
 </template>
 <script>
@@ -61,20 +61,12 @@ import('vuetify/dist/vuetify.min.css')
 //import Button from 'san-mui/Button';
 
 export default {
-    name: 'config',
-    props: ['runsItems', 'config'],
+    props: {
+        runsItems: Array,
+        config: Object
+    },
     data() {
         return {
-            config: {
-                groupNameReg: '.*',
-                smoothing: '0.6',
-                horizontal: 'step',
-                sortingMethod: 'default',
-                downloadLink: [],
-                outlier: [],
-                running: true,
-                runs: []
-            },
             horizontalItems: [
                 {
                     name: 'Step',
@@ -91,14 +83,13 @@ export default {
             ],
             sortingMethodItems: [
                 'default', 'descending', 'ascending', 'nearest'
-            ],
-            runsItems: [],
+            ]
         };
     },
-    toggleAllRuns() {
-        let running = this.data.get('config.running');
-        this.data.set('config.running', !running);
-        this.fire('runningChange', running);
+    methods: {
+        toggleAllRuns() {
+            this.config.running = !this.config.running;
+        }
     }
 };
 

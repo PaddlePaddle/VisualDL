@@ -1,34 +1,27 @@
 <template>
     <div class="visual-dl-page-container">
-        <div>I AM SCALARS</div>
-
         <div class="visual-dl-page-left">
-            <div>
-                <p>
-                    I am chart page, to show all matched tags
-                </p>
-                <p>
-                    tagList: {{ filteredConfig }}
-                </p>
-                <p>
-                    runsItems: {{ runsItems }}
-                </p>
-                <p>
-                    title="Tags matching {{config.groupNameReg}}"
-                </p>
-            </div>
-
-            <div>
-                <p>
-                    I am also a chart page, but I should render groupedTags
-                </p>
-            </div>
+            <ui-chart-page
+                    :expand="true"
+                    :config="filteredConfig"
+                    :runsItems="runsItems"
+                    :tagList="filteredTagsList"
+                    :title="'Tags matching' + config.groupNameReg"
+            ></ui-chart-page>
+            <ui-chart-page
+                    v-for="item in groupedTags"
+                    :config="filteredConfig"
+                    :runsItems="runsItems"
+                    :tagList="item.tags"
+                    :title="item.group"
+            ></ui-chart-page>
         </div>
+
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
-                <Config :runsItems="config.runs"
+                <ui-config :runsItems="runsItems"
                         :config="config"
-                ></Config>
+                ></ui-config>
             </div>
         </div>
     </div>
@@ -39,14 +32,15 @@ import {getPluginScalarsTags, getRuns} from '../service';
 import {debounce, flatten, uniq, isArray} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
-import Config from './ui/config'
+import Config from './ui/Config'
+import ChartPage from './ui/ChartPage';
 
 export default {
     components: {
-        Config
+        'ui-config': Config,
+        'ui-chart-page': ChartPage
     },
-    name: 'Scalars',
-    data () {
+    data() {
         return {
             runsArray: [],
             tags: [],
@@ -59,7 +53,8 @@ export default {
                 outlier: [],
                 runs: [],
                 running: true
-            }
+            },
+            filteredTagsList: []
         }
     },
     computed: {
@@ -119,12 +114,12 @@ export default {
             });
         },
         filteredConfig() {
-            let tansformArr = ['downloadLink', 'outlier'];
+            let transformArr = ['downloadLink', 'outlier'];
             let config = this.config || {};
             let filteredConfig = {};
             Object.keys(config).forEach(key => {
                 let val = config[key];
-                if (tansformArr.indexOf(key) > -1) {
+                if (transformArr.indexOf(key) > -1) {
                     filteredConfig[key] = isArray(val) && val[0] === 'yes';
                 }
                 else {
@@ -144,8 +139,8 @@ export default {
         });
 
 	    getRuns().then(({errno, data}) => {
-            this.runsArray = data
-            this.config.runs = data
+            this.runsArray = data;
+            this.config.runs = data;
         });
 
         // TODO: Migrate this line from San to Vue
@@ -162,8 +157,7 @@ export default {
             }
             let tagsList = this.tagsList || [];
             let regExp = new RegExp(groupNameReg);
-            let filtedTagsList = tagsList.filter(item => regExp.test(item.tag));
-            this.filteredTagsList = filtedTagsList;
+            this.filteredTagsList = tagsList.filter(item => regExp.test(item.tag));
         }
     }
 };
