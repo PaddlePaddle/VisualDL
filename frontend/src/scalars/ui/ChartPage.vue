@@ -1,7 +1,7 @@
 <template>
     <div class="visual-dl-chart-page">
         <!--<ui-expand-panel isShow="{{expand}}" info="{{tagList.length}}" title="{{title}}">-->
-            <div class="visual-dl-chart-page-box">
+            <div ref="chartPageBox" class="visual-dl-chart-page-box">
                 <ui-chart
                     v-for="tag in filteredTagList"
                     :tagInfo="tag"
@@ -27,7 +27,7 @@
 </template>
 <script>
 // import ExpandPanel from '../../common/component/ExpandPanel';
-import Chart from './Chart.vue';
+import Chart from './Chart';
 // import Pagination from 'san-mui/Pagination';
 
 import {cloneDeep} from 'lodash';

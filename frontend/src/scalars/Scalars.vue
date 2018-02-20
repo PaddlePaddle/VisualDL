@@ -32,7 +32,7 @@ import {getPluginScalarsTags, getRuns} from '../service';
 import {debounce, flatten, uniq, isArray} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
-import Config from './ui/Config.vue'
+import Config from './ui/Config'
 import ChartPage from './ui/ChartPage';
 
 export default {

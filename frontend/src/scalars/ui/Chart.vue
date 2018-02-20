@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-page-charts">
-        <div class="visual-dl-chart-box" :style="computedStyle">
+        <div ref="chartBox" class="visual-dl-chart-box" :style="computedStyle">
         </div>
         <div class="visual-dl-chart-actions">
             <v-btn @click="expandArea">
@@ -51,11 +51,6 @@ const maxQuantile = 0.95;
 const intervalTime = 15;
 
 export default {
-    components: {
-        // 'ui-dropdown-menu': DropDownMenu,
-        // 'san-button': Button,
-        // 'san-icon': Icon
-    },
     props: ['tagInfo', 'groupNameReg', 'smoothing', 'horizontal', 'sortingMethod', 'downloadLink', 'outlier', 'runs',
             'running', 'runsItems'],
     computed: {
@@ -133,7 +128,7 @@ export default {
         },
 
         createChart() {
-            let el = document.getElementsByClassName('visual-dl-chart-box')[0];
+            let el = this.$refs.chartBox;
             this.myChart = echarts.init(el);
         },
 
@@ -173,7 +168,6 @@ export default {
             );
             seriesOption = flatten(seriesOption);
             let legendOptions = tagList.map(item => item.run);
-            let that = this;
             let option = {
                 color: [
                     '#c23531',
@@ -200,9 +194,8 @@ export default {
                     },
                     position: ['10%', '90%'],
                     formatter(params, ticket, callback) {
-                        let data = that.getFormatterPoints(params[0].data);
-                        return that.transformFormatterData(data);
-
+                        let data = this.getFormatterPoints(params[0].data);
+                        return this.transformFormatterData(data);
                     }
                 },
                 toolbox: {
@@ -244,13 +237,13 @@ export default {
 
         // Get origin data per 60 seconds
         startInterval() {
-            this.getOringDataInterval = setInterval(() => {
+            this.getOriginDataInterval = setInterval(() => {
                 this.getOriginChartData(this.tagInfo);
             }, intervalTime * 1000);
         },
 
         stopInterval() {
-            clearInterval(this.getOringDataInterval);
+            clearInterval(this.getOriginDataInterval);
         },
 
         getOriginChartData({tagList, tag}) {
@@ -442,7 +435,7 @@ export default {
         expandArea() {
             let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
             if (!this.isExpand) {
-                let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+                let el = this.$refs.chartBox;
                 el.style.width = pageBoxWidth + 'px';
                 el.style.height = '600px';
                 this.isExpand = true;
@@ -452,7 +445,7 @@ export default {
                 });
             }
             else {
-                let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
+                let el = this.$refs.chartBox;
                 el.style.width = '400px';
                 el.style.height = '300px';
                 this.isExpand = false;
