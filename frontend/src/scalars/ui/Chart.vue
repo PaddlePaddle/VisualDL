@@ -93,6 +93,10 @@ export default {
         horizontal: function(val) {
             this.setChartHorizon();
         },
+        tagInfo: function(val) {
+            this.setChartsOptions(val);
+            this.getOriginChartData(val);
+        }
         // runs: function(val) {
         //     this.setChartsRuns();
         // }
@@ -168,6 +172,7 @@ export default {
             );
             seriesOption = flatten(seriesOption);
             let legendOptions = tagList.map(item => item.run);
+            let instance = this;
             let option = {
                 color: [
                     '#c23531',
@@ -194,8 +199,8 @@ export default {
                     },
                     position: ['10%', '90%'],
                     formatter(params, ticket, callback) {
-                        let data = this.getFormatterPoints(params[0].data);
-                        return this.transformFormatterData(data);
+                        let data = instance.getFormatterPoints(params[0].data);
+                        return instance.transformFormatterData(data);
                     }
                 },
                 toolbox: {
