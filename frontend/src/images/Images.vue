@@ -1,17 +1,21 @@
 <template>
     <div class="visual-dl-page-container">
         <div class="visual-dl-page-left">
-            <div>
-                <p>
-                    I am chart page, to show all matched tags
-                </p>
-            </div>
-
-            <div>
-                <p>
-                    I am also a chart page, but I should render groupedTags
-                </p>
-            </div>
+            <ui-chart-page
+                :expand="true"
+                :config="filteredConfig"
+                :runsItems="runsItems"
+                :tagList="filteredTagsList"
+                :title="'Tags matching' + config.groupNameReg"
+            ></ui-chart-page>
+            <ui-chart-page
+                v-for="item in groupedTags"
+                :key="item.group"
+                :config="filteredConfig"
+                :runsItems="runsItems"
+                :tagList="item.tags"
+                :title="item.group"
+            ></ui-chart-page>
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
@@ -29,11 +33,13 @@ import {debounce, flatten, uniq, isArray} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
 import Config from './ui/Config'
+import ChartPage from './ui/ChartPage';
 
 export default {
     name: 'Images',
     components: {
         'ui-config': Config,
+        'ui-chart-page': ChartPage
     },
     data () {
         return {
@@ -81,7 +87,7 @@ export default {
             });
         },
         groupedTags() {
-            let tagsList = this.data.get('tagsList') || [];
+            let tagsList = this.tagsList || [];
             // put data in group
             let groupData = {};
             tagsList.forEach(item => {
