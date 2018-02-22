@@ -10,6 +10,7 @@
             ></ui-chart-page>
             <ui-chart-page
                     v-for="item in groupedTags"
+                    :key="item.group"
                     :config="filteredConfig"
                     :runsItems="runsItems"
                     :tagList="item.tags"
