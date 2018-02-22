@@ -15,10 +15,11 @@
 
 <script>
 export default {
+    props: ['initialRoute'],
     name: 'AppMenu',
     data () {
         return {
-        selected: 'scalars',
+        selected: this.initialRoute,
         items: [
             {
                 url: '/scalars',
