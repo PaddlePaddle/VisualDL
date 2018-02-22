@@ -36,6 +36,8 @@ python visualdl/server/visualDL --logdir={LOG_DIR} --port=8080
 ```
 to restart flask server
 
+Notice if you install visualDL from pip install wheel, make sure resetting PYTHONPATH to get the command work.
+
 Any code changes in ```logic```, ```python```, ```storage```, ```utils``` is modified, need to rebuild core.so or sdk to get effect.
 
 Either run VisualDL/build.sh that builds everything or a target like this
@@ -112,7 +114,6 @@ make vl_test
 
 #### Information Container
 - Currently it just handles logic of sync cycle (when to write)
-- In future we may add logic of when to read
 
 #### Storage
 - Defines log data format as following:
@@ -121,4 +122,3 @@ make vl_test
   - ```Record``` : represent any data structure for any component
 - Handles the actual logic to serialized to disk and deserialized from disk
 - ```storage.proto```: protobuf file that defines the exact interface to be read/write
-
