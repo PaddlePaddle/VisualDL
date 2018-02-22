@@ -134,13 +134,14 @@ export default {
             this.runsArray = data;
             this.config.runs = data;
         });
-
-        // TODO: Migrate this line from San to Vue
-        // need debounce， can't use computed
-        //this.watch('config.groupNameReg', debounce(this.filterTagsList, 300));
     },
     mounted() {
 	    autoAdjustHeight();
+    },
+    watch: {
+        'config.groupNameReg': function(val) {
+            this.throttledFilterTagsList()
+        }
     },
     methods:{
         filterTagsList(groupNameReg) {
@@ -151,7 +152,12 @@ export default {
             let tagsList = this.tagsList || [];
             let regExp = new RegExp(groupNameReg);
             this.filteredTagsList = tagsList.filter(item => regExp.test(item.tag));
-        }
+        },
+        throttledFilterTagsList: _.debounce(
+            function() {
+                this.filterTagsList(this.config.groupNameReg)
+            }, 300
+        ),
     }
 };
 
