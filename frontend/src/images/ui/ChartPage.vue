@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-chart-page">
-        <!--<ui-expand-panel isShow="{{expand}}" info="{{total}}" title="{{title}}">-->
+        <ui-expand-panel :info="total" :title="title">
             <ui-image
                 class="visual-dl-chart-image"
                 v-for="tagInfo in filteredPageList"
@@ -16,11 +16,11 @@
                           :length="total"
                           :total-visible="pageSize"
             ></v-pagination>
-        <!--</ui-expand-panel>-->
+        </ui-expand-panel>
     </div>
 </template>
 <script>
-//import ExpandPanel from '../../common/component/ExpandPanel';
+import ExpandPanel from '../../common/component/ExpandPanel';
 import Image from './Image';
 //import Pagination from 'san-mui/Pagination';
 
@@ -30,7 +30,7 @@ export default {
     props: ['config', 'runsItems', 'tagList', 'title'],
     components: {
         'ui-image': Image,
-        //'ui-expand-panel': ExpandPanel,
+        'ui-expand-panel': ExpandPanel,
         //'ui-pagination': Pagination
     },
     computed: {

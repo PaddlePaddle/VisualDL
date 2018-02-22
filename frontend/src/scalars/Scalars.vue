@@ -2,7 +2,6 @@
     <div class="visual-dl-page-container">
         <div class="visual-dl-page-left">
             <ui-chart-page
-                    :expand="true"
                     :config="filteredConfig"
                     :runsItems="runsItems"
                     :tagList="filteredTagsList"
