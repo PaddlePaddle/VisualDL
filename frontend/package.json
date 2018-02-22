@@ -27,6 +27,9 @@
     "san-router": "^1.1.1",
     "san-store": "^1.0.1",
     "san-update": "^2.1.0",
+    "vue": "^2.5.2",
+    "vue-router": "^3.0.1",
+    "vuetify": "^0.17.7",
     "xlsx": "^0.11.3"
   },
   "devDependencies": {
@@ -72,6 +75,10 @@
     "webpack-dev-server": "^2.4.2",
     "webpack-hot-middleware": "^2.19.1",
     "webpack-merge": "^4.1.0",
-    "yargs": "^8.0.2"
+    "yargs": "^8.0.2",
+    "vue-jest": "^1.0.2",
+    "vue-loader": "^13.3.0",
+    "vue-style-loader": "^3.0.1",
+    "vue-template-compiler": "^2.5.2"
   }
 }
