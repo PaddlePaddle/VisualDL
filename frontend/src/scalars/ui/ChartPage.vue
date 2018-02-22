@@ -1,6 +1,6 @@
 <template>
     <div class="visual-dl-chart-page">
-        <!--<ui-expand-panel isShow="{{expand}}" info="{{tagList.length}}" title="{{title}}">-->
+        <ui-expand-panel :info="tagList.length" :title="title">
             <div ref="chartPageBox" class="visual-dl-chart-page-box">
                 <ui-chart
                     v-for="tag in filteredTagList"
@@ -22,11 +22,11 @@
                 :length="total"
                 :total-visible="pageSize"
             />
-        <!--</ui-expand-panel>-->
+        </ui-expand-panel>
     </div>
 </template>
 <script>
-// import ExpandPanel from '../../common/component/ExpandPanel';
+import ExpandPanel from '../../common/component/ExpandPanel';
 import Chart from './Chart';
 // import Pagination from 'san-mui/Pagination';
 
@@ -35,10 +35,10 @@ import {cloneDeep} from 'lodash';
 export default {
     components: {
         'ui-chart': Chart,
-        // 'ui-expand-panel': ExpandPanel,
+        'ui-expand-panel': ExpandPanel,
         // 'ui-pagination': Pagination
     },
-    props: ['expand', 'config', 'runsItems', 'tagList', 'title'],
+    props: ['config', 'runsItems', 'tagList', 'title'],
     computed: {
         filteredRunsList() {
             let tagList = this.tagList || [];
