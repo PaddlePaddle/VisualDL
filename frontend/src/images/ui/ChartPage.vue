@@ -11,10 +11,10 @@
                 :runsItems="runsItems"
             ></ui-image>
 
-            <v-pagination v-if="total > pageSize"
+            <v-pagination class="visual-dl-sm-pagination"
+                          v-if="total > pageSize"
                           v-model="currentPage"
-                          :length="total"
-                          :total-visible="pageSize"
+                          :length="pageLength"
             ></v-pagination>
         </ui-expand-panel>
     </div>
@@ -45,13 +45,14 @@ export default {
 
         filteredPageList() {
             let list = this.filteredRunsList || [];
-            let currentPage = this.currentPage;
-            let pageSize = this.pageSize;
-            return list.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+            return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
         },
         total() {
-            let list = this.tagList || [];
+            let list = this.filteredRunsList || [];
             return list.length;
+        },
+        pageLength() {
+            return Math.ceil(this.total / this.pageSize)
         }
     },
     data() {

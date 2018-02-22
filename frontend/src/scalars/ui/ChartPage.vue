@@ -19,8 +19,7 @@
             <v-pagination
                 v-if="total > pageSize"
                 v-model="currentPage"
-                :length="total"
-                :total-visible="pageSize"
+                :length="pageLength"
             />
         </ui-expand-panel>
     </div>
@@ -56,6 +55,9 @@ export default {
         total() {
             let tagList = this.tagList || [];
             return tagList.length;
+        },
+        pageLength() {
+            return Math.ceil(this.total / this.pageSize)
         }
     },
     data() {
