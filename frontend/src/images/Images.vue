@@ -47,7 +47,7 @@ export default {
             tags: [],
             config: {
                 groupNameReg: '.*',
-                isActualImageSize: [],
+                isActualImageSize: false,
                 runs: [],
                 running: true
             },
@@ -116,12 +116,7 @@ export default {
             let filteredConfig = {};
             Object.keys(config).forEach(key => {
                 let val = config[key];
-                if (tansformArr.indexOf(key) > -1) {
-                    filteredConfig[key] = isArray(val) && val[0] === 'yes';
-                }
-                else {
-                    filteredConfig[key] = val;
-                }
+                filteredConfig[key] = val;
             });
             return filteredConfig;
         }

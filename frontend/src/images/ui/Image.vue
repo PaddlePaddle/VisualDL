@@ -8,48 +8,36 @@
             <span>{{imgData.step}};</span>
             <span>{{imgData.wall_time | formatTime}}</span>
         </p>
-        <!--<san-slider-->
-            <!--on-change="handleSlideChange($event)"-->
-            <!--value="{{currentIndex}}"-->
-            <!--min="{{slider.min}}"-->
-            <!--max="{{steps}}"-->
-            <!--step="{{1}}"-->
-        <!--/>-->
-        <img :style="computedImgStyle" :src="imgData.imgSrc" />
+        <v-slider label="step"
+                  :max="steps"
+                  :min="slider.min"
+                  :step="1"
+                  v-model="currentIndex"
+                  dark></v-slider>
+
+        <img :width="imageWidth" :height="imageHeight" :src="imgData.imgSrc" />
     </div>
 </template>
 <script>
-//import Slider from 'san-mui/Slider';
 import {getPluginImagesImages} from '../../service';
 
 const defaultImgWidth = 400;
-const defaultImgHight = 300;
+const defaultImgHeight = 300;
 // the time to refresh chart data
 const intervalTime = 30;
 
 export default {
     props: ['tagInfo', 'isActualImageSize', 'runs', 'running', 'runsItems'],
-    components: {
-        //'san-slider': Slider
-    },
     computed: {
         steps() {
             let data = this.data || [];
             return data.length - 1;
         },
-        computedImgStyle() {
-            let isActualImageSize = this.isActualImageSize;
-            let width;
-            let height;
-            if (isActualImageSize) {
-                width = this.imgData.width;
-                height = this.imgData.height;
-            }
-            else {
-                width = defaultImgWidth;
-                height = defaultImgHight;
-            }
-            return 'width:' + width + 'px;height:' + height + 'px';
+        imageWidth() {
+            return this.isActualImageSize ? this.imgData.width : defaultImgWidth
+        },
+        imageHeight() {
+            return this.isActualImageSize ? this.imgData.height : defaultImgHeight
         }
     },
     filters: {
@@ -71,7 +59,10 @@ export default {
                 min: 0,
                 step: 1
             },
-            imgData: {}
+            imgData: {},
+            data: [],
+            height: defaultImgHeight,
+            weight: defaultImgWidth
         };
     },
     created() {
@@ -92,18 +83,19 @@ export default {
             val ? this.startInterval() : this.stopInterval();
         },
         currentIndex: function(index) {
-            console.log("askdhfsdfh")
             /* eslint-disable fecs-camelcase */
-            let currentImgInfo = this.data ? this.data[index] : {};
-            let {height, width, query, step, wall_time} = currentImgInfo;
-            let url = '/data/plugin/images/individualImage?ts=' + wall_time;
-            let imgSrc = [url, query].join('&');
-            this.imgData = {
-                imgSrc,
-                height,
-                width,
-                step,
-                wall_time
+            if (this.data && this.data[index]) {
+                let currentImgInfo = this.data ? this.data[index] : {};
+                let {height, width, query, step, wall_time} = currentImgInfo;
+                let url = '/data/plugin/images/individualImage?ts=' + wall_time;
+                let imgSrc = [url, query].join('&');
+                this.imgData = {
+                    imgSrc,
+                    height,
+                    width,
+                    step,
+                    wall_time
+                }
             }
             /* eslint-enable fecs-camelcase */
         }
@@ -117,9 +109,6 @@ export default {
             this.getOringDataInterval = setInterval(() => {
                 this.getOriginChartsData();
             }, intervalTime * 1000);
-        },
-        handleSlideChange(val) {
-            this.currentIndex = val;
         },
         getOriginChartsData() {
             //let {run, tag} = this.tagInfo;
@@ -144,7 +133,7 @@ export default {
 <style lang="stylus">
     .visual-dl-image
         font-size 12px
-        width 400px
+        width 420px
         float left
         margin 20px 30px 10px 0
         background #fff
