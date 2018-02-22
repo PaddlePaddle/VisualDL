@@ -32,6 +32,7 @@
         <v-checkbox label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
 
         <v-checkbox v-for="item in runsItems"
+                    :key="item.name"
                     :label="item.name"
                     :value="item.value"
                     v-model="config.runs"
