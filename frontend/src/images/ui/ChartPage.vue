@@ -4,6 +4,7 @@
             <ui-image
                 class="visual-dl-chart-image"
                 v-for="tagInfo in filteredPageList"
+                :key="tagInfo.run + tagInfo.tag.displayName"
                 :tagInfo="tagInfo"
                 :isActualImageSize="config.isActualImageSize"
                 :runs="config.runs"
