@@ -80,7 +80,6 @@ export default {
             getPluginGraphsGraph().then(({status, data}) => {
                 if (+status === 0 && data.url) {
                     this.graphUrl = data.url
-                    console.log("The url: " + this.graphUrl)
                     this.addDragEventForImg();
                 }
             });

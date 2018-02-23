@@ -94,6 +94,8 @@ export default {
             this.setChartHorizon();
         },
         tagInfo: function(val) {
+            // Should Clean up the chart before each use.
+            this.myChart.clear();
             this.setChartsOptions(val);
             this.getOriginChartData(val);
         }
