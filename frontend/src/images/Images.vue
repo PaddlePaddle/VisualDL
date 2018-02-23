@@ -6,7 +6,7 @@
                 :config="filteredConfig"
                 :runsItems="runsItems"
                 :tagList="filteredTagsList"
-                :title="'Tags matching' + config.groupNameReg"
+                :title="'Tags matching ' + config.groupNameReg"
             ></ui-chart-page>
             <ui-chart-page
                 v-for="item in groupedTags"
