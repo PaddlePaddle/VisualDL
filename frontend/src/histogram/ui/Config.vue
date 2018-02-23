@@ -1,0 +1,73 @@
+<template>
+    <div class="visual-dl-histogram-config-com">
+        <v-text-field
+            label="Group name RegExp"
+            hint="input a tag group name to search"
+            v-model="config.groupNameReg"
+            dark
+        ></v-text-field>
+
+        <v-radio-group label="Histogram mode" v-model="config.chartType" dark>
+            <v-radio v-for="mode in chartTypeItems"
+                     :label="mode.name" :value="mode.value"></v-radio>
+        </v-radio-group>
+
+        <label class="label">Runs</label>
+        <v-checkbox v-for="item in runsItems"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.value"
+                    v-model="config.runs"
+                    dark
+        ></v-checkbox>
+
+        <v-btn class="visual-dl-histogram-run-toggle"
+               :color="config.running ? 'primary' : 'error'"
+                  v-model="config.running"
+                  @click="toggleAllRuns"
+                  dark
+        >
+            {{config.running ? 'Running' : 'Stopped'}}
+        </v-btn>
+    </div>
+</template>
+<script>
+export default {
+    props: ['config', 'runsItems'],
+    data() {
+        return {
+            chartTypeItems: [
+                {
+                    name: 'Overlay',
+                    value: 'overlay'
+                },
+                {
+                    name: 'Offset',
+                    value: 'offset'
+                }
+            ]
+        };
+    },
+    methods: {
+        toggleAllRuns() {
+            let running = this.config.running;
+            this.config.running = !running;
+        }
+    }
+};
+</script>
+<style lang="stylus">
+@import '../../style/variables';
++prefix-classes('visual-dl-histogram-')
+    .config-com
+        width 90%
+        margin 20px auto
+        .run-toggle
+            width 100%
+            margin-top 20px
+
+.label
+    color white
+</style>
+
+
