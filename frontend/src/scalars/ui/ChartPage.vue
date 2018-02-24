@@ -72,7 +72,7 @@ export default {
 };
 </script>
 <style lang="stylus">
-@import '../../style/variables';
+@import '~style/variables';
 
 +prefix-classes('visual-dl-')
     .chart-page

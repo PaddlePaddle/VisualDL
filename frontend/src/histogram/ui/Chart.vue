@@ -3,7 +3,7 @@
         <div class="visual-dl-chart-box" ref="visual_dl_chart_box">
         </div>
         <div class="visual-dl-chart-actions">
-            <v-btn class="sm-button" @click="expandArea">
+            <v-btn flat class="sm-button" @click="expandArea">
                 <v-icon size="20">settings_overscan</v-icon>
             </v-btn>
         </div>

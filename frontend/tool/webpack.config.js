@@ -49,6 +49,7 @@ const config = {
             axios: 'axios/dist/axios.min.js',
             'vue$': 'vue/dist/vue.esm.js',
             '@': path.resolve(projectPath, 'src'),
+            style: path.resolve(__dirname, '../src/style')
         },
 
         extensions: ['.js', '.json', '.styl', '.css', '.html', '.vue']
