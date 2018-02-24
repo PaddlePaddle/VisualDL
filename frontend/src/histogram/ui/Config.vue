@@ -8,7 +8,7 @@
         ></v-text-field>
 
         <v-radio-group label="Histogram mode" v-model="config.chartType" dark>
-            <v-radio v-for="mode in chartTypeItems"
+            <v-radio v-for="mode in chartTypeItems" :key="mode.name"
                      :label="mode.name" :value="mode.value"></v-radio>
         </v-radio-group>
 
