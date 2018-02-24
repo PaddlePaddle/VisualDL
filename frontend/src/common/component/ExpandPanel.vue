@@ -46,7 +46,6 @@ export default {
 </script>
 <style lang="stylus">
     .visual-dl-expand-panel
-        text-align left
         .visual-dl-expand-head
             border solid 1px #ccc
             line-height 50px

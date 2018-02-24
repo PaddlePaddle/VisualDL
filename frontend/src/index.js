@@ -28,16 +28,20 @@ import Vue from 'vue'
 import App from './App'
 import Vuetify from 'vuetify'
 import('vuetify/dist/vuetify.min.css')
-import AppMenu from '@/common/component/AppMenu'
 import router from '@/router'
 Vue.config.productionTip = false
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+    theme: {
+        primary: '#008c99',
+        accent: '#008c99'
+    }
+})
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#root',
-  router,
-  components: { App },
-  template: '<App/>',
+    el: '#root',
+    router,
+    components: {App},
+    template: '<App/>',
 })

@@ -1,13 +1,14 @@
 <template>
     <div>
         <div class="visual-dl-app-menu">
-            <v-toolbar dark color="teal">
+            <v-toolbar color="primary" dark>
                 <v-toolbar-title class="appbar-menu-title"></v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn v-for="item in items" :key="item.name"
-                :class="[selected === item.name ? 'menu-item-selected': '', 'menu-item']"
-                @click="handleItemClick(item)"
-                >{{ item.title}}</v-btn>
+                <v-toolbar-items>
+                    <v-btn v-for="item in items" :key="item.name"
+                    flat dark :class="selected === item.name ? 'menu-item-selected': 'menu-item'"
+                    @click="handleItemClick(item)"
+                    >{{ item.title}}</v-btn>
+                </v-toolbar-items>
             </v-toolbar>
         </div>
     </div>
@@ -54,30 +55,31 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+@import '~style/variables';
 
 .visual-dl-app-menu
     .appbar-menu-title
-        font-size 24px
         flex none
         margin-right 50px
-    .appbar-menu-title
         background url('./visualdl-logo.png') no-repeat
         background-size cover
         width 120px
         height 50px
 
     .menu-item
-        padding 0 30px
+        font-size 16px
+        background none
+        padding 0 10px
         color #fff
         opacity 0.6
         display flex
         flex-direction row
+        font-weight bold
 
     .menu-item:hover
-        background none
         opacity 1
 
     .menu-item-selected
-        color #fff
+        @extends .visual-dl-app-menu .menu-item
         opacity 1
 </style>

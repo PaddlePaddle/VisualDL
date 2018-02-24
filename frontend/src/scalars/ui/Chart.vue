@@ -3,7 +3,7 @@
         <div ref="chartBox" class="visual-dl-chart-box" :style="computedStyle">
         </div>
         <div class="visual-dl-chart-actions">
-            <v-btn @click="expandArea">
+            <v-btn flat @click="expandArea">
                 <v-icon size="20">settings_overscan</v-icon>
             </v-btn>
             <v-select
@@ -191,7 +191,8 @@ export default {
                 title: {
                     text: tag,
                     textStyle: {
-                        fontSize: '12'
+                        fontSize: '12',
+                        fontFamily: 'Merriweather Sans'
                     }
                 },
                 tooltip: {
@@ -554,7 +555,7 @@ export default {
 
             let headerHtml = '<tr style="font-size:14px;">';
             headerHtml += Object.keys(transformedData[0]).map(key => {
-                return '<td style="padding: 0 4px; font-weight: bold; width:' + widthPropMap[key] + 'px;">' + key + '</td>';
+                return '<td style="padding: 0 4px; font-family: \'Merriweather Sans\'; font-weight: bold; width:' + widthPropMap[key] + 'px;">' + key + '</td>';
             }).join('');
             headerHtml += '</tr>';
 

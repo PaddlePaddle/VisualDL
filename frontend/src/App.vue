@@ -33,15 +33,18 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '~style/variables';
+@import '../style/main';
+@import url('https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700');
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Merriweather Sans', Helvetica, Arial, sans-serif;
+  font-weight: 700;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  color: $-content-text-color;
 }
 
-@import './style/variables';
 +prefix-classes('visual-dl-page-')
     .container
         padding-right 250px
@@ -50,8 +53,8 @@ export default {
         .left
             width 100%
             overflow scroll
-            border solid 1px $-left-border-clor
-            background $-left-border-clor
+            border solid 1px $-left-border-color
+            background $-left-border-color
             min-height 300px
             padding 2%
             box-sizing border-box
@@ -63,6 +66,7 @@ export default {
             right 0
             top 0
             box-sizing border-box
+            font-size 13px
             .config-com
                 color $-right-font-color
 
