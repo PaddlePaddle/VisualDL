@@ -3,8 +3,8 @@
         <ui-expand-panel :info="tagList.length" :title="title">
             <div ref="chartPageBox" class="visual-dl-chart-page-box">
                 <ui-chart
-                    v-for="tagInfo in filteredTagList"
-                    :key="tagInfo.tag"
+                    v-for="(tagInfo, index) in filteredTagList"
+                    :key="index"
                     :tagInfo="tagInfo"
                     :groupNameReg="config.groupNameReg"
                     :smoothing="config.smoothing"
