@@ -4,8 +4,8 @@
         <ui-expand-panel :info="total" :title="title">
             <div class="visual-dl-chart-page-box">
                 <ui-chart
-                    v-for="tagInfo in filteredPageList"
-                    :key="tagInfo.run + tagInfo.tag.displayName"
+                    v-for="(tagInfo, index) in filteredPageList"
+                    :key="index"
                     :tagInfo="tagInfo"
                     :runs="config.runs"
                     :chartType="config.chartType"

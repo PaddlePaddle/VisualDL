@@ -21,7 +21,8 @@
         <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
                   @click="toggleAllRuns"
-                  dark
+                  class="visual-dl-image-run-toggle"
+                  dark block
         >
             {{config.running ? 'Running' : 'Stopped'}}
         </v-btn>
@@ -52,10 +53,8 @@ export default {
 @import '../../style/variables';
 +prefix-classes('visual-dl-image-')
     .config-com
-        width 90%
-        margin 20px auto
+        padding 20px
         .run-toggle
-            width 100%
             margin-top 20px
 
 .label

@@ -7,8 +7,14 @@
                 dark
         ></v-text-field>
 
-        <div>
-            <v-slider label="Smoothing" :max="0.999" :min="0" :step="0.001" v-model="config.smoothing" dark></v-slider>
+        <div class="visual-dl-page-slider-block">
+            <v-slider label="Smoothing"
+                      :max="0.999"
+                      :min="0"
+                      :step="0.001"
+                      v-model="config.smoothing"
+                      class="visual-dl-page-smoothing-slider"
+                      dark></v-slider>
             <span>{{config.smoothing}}</span>
         </div>
 
@@ -18,18 +24,17 @@
             <v-radio label="Wall" value="wall"></v-radio>
         </v-radio-group>
 
-        <label class="label">Tooltip sorting method</label>
         <v-select
                 :items="sortingMethodItems"
                 v-model="config.sortingMethod"
                 label="Tooltip sorting method"
-                single-line
-                bottom
                 dark
         ></v-select>
 
         <v-checkbox label="Show data download links" v-model="config.downloadLink" dark></v-checkbox>
         <v-checkbox label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
+
+        <label>Runs</label>
 
         <v-checkbox v-for="item in runsItems"
                     :key="item.name"
@@ -37,12 +42,14 @@
                     :value="item.value"
                     v-model="config.runs"
                     dark
+                    class="visual-dl-page-config-checkbox"
         ></v-checkbox>
 
         <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
                   @click="toggleAllRuns"
-                  dark
+                  class="visual-dl-page-run-toggle"
+                  dark block
         >
             {{config.running ? 'Running' : 'Stopped'}}
         </v-btn>
@@ -100,10 +107,13 @@ export default {
 
 +prefix-classes('visual-dl-page-')
     .config-com
-        width 90%
-        margin 20px auto
+        padding 20px
+        .slider-block
+            display flex
+            align-items center
+        .smoothing-slider
+            display inline
         .run-toggle
-            width 100%
             margin-top 20px
 
 </style>

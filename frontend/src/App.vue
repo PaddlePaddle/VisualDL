@@ -47,7 +47,7 @@ export default {
 
 +prefix-classes('visual-dl-page-')
     .container
-        padding-right 250px
+        padding-right 300px
         position relative
         background $-left-background-color
         .left
@@ -60,7 +60,7 @@ export default {
             box-sizing border-box
         .right
             overflow scroll
-            width 250px
+            width 300px
             min-height 300px
             position absolute
             right 0

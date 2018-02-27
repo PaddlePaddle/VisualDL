@@ -3,8 +3,8 @@
         <ui-expand-panel :info="total" :title="title">
             <ui-image
                 class="visual-dl-chart-image"
-                v-for="tagInfo in filteredPageList"
-                :key="tagInfo.run + tagInfo.tag.displayName"
+                v-for="(tagInfo, index) in filteredPageList"
+                :key="index"
                 :tagInfo="tagInfo"
                 :isActualImageSize="config.isActualImageSize"
                 :runs="config.runs"
