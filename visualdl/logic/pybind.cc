@@ -28,8 +28,9 @@ namespace cp = visualdl::components;
   CODE(float);                   \
   CODE(double);
 
-PYBIND11_PLUGIN(core) {
-  py::module m("core", "C++ core of VisualDL");
+PYBIND11_MODULE(core, m) {
+
+  m.doc() = "C++ core of VisualDL";
 
   py::class_<vs::LogReader>(m, "LogReader")
       .def("__init__",

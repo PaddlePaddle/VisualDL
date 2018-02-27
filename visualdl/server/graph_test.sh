@@ -4,8 +4,8 @@ set -ex
 cd mock
 bash download_mock_models.sh
 
-cd ..
+cd ../../../
 
-python graph_test.py
+python -m visualdl.server.graph_test
 
-rm ./mock/*.pb
+rm visualdl/server/mock/*.pb
