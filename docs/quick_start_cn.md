@@ -90,6 +90,8 @@ visualDL --logdir somedir --model_pb <path_to_model>
     <img width="70%" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/mxnet/mxnet_graph.gif" />
 </p>
 
+请参阅 [ONNX教程](https://github.com/onnx/tutorials)如何出口ONNX格式模型。
+
 VisualDL的图形系统采用` GraphViz `来可视化ONNX格式模型。
 请安装` GraphViz `确保VisualDL图形系统可以启动
 

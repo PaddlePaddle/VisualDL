@@ -98,6 +98,8 @@ For example, for the MNIST dataset, Graph component can render model graph as be
 <img width="70%" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/mxnet/mxnet_graph.gif" />
 </p>
 
+Please consult [ONNX tutorials](https://github.com/onnx/tutorials) on how to export the ONNX format model.
+
 The VisualDL Graphing system uses `GraphViz` to visualize the ONNX model. To enable the VisualDL Graph feature,
 please install `GraphViz`.
 
