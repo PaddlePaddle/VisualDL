@@ -4,8 +4,8 @@
             <div ref="chartPageBox" class="visual-dl-chart-page-box">
                 <ui-chart
                     v-for="tagInfo in filteredTagList"
+                    :key="tagInfo.tag"
                     :tagInfo="tagInfo"
-                    :key="tagInfo.run + tagInfo.tag.displayName"
                     :groupNameReg="config.groupNameReg"
                     :smoothing="config.smoothing"
                     :horizontal="config.horizontal"

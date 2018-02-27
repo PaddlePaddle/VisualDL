@@ -3,18 +3,20 @@
         <div ref="chartBox" class="visual-dl-chart-box" :style="computedStyle">
         </div>
         <div class="visual-dl-chart-actions">
-            <v-btn flat @click="expandArea">
+            <v-btn flat @click="expandArea" class="chart-expand">
                 <v-icon size="20">settings_overscan</v-icon>
             </v-btn>
             <v-select
                 v-if="downloadLink"
-                style="width:100px;"
-                hint="download type"
+                class="download-selector"
                 :items="runsItems"
                 v-model="downloadType"
+                item-text="name"
+                item-value="value"
             />
-            <v-btn
+            <v-btn flat
                 v-if="downloadLink"
+                class="download-button"
                 @click="handleDownLoad">
                 <v-icon size="20">file_download</v-icon>
             </v-btn>
@@ -70,7 +72,7 @@ export default {
                 }
             ],
             // choose run type for download file
-            downloadType: '',
+            downloadType: {},
             isExpand: false,
             originData: []
         };
@@ -123,7 +125,7 @@ export default {
             if (this.runsItems.length === 0) {
                 return;
             }
-            this.downloadType = this.runsItems[0].value;
+            this.downloadType = this.runsItems[0];
         },
 
         // Create a Scalar Chart, initialize it with default settings, then load datas
@@ -581,19 +583,14 @@ export default {
         background: #fff;
         padding: 10px;
         .visual-dl-chart-actions
-            height 50px
-            margin-left 10%
-            .sm-form-item
+            vertical-align: middle
+            .chart-expand
+                float left
+            .download-selector
                 float left
                 width 100px
-                margin-top 0px
-                display block
-            .sm-button
+                margin-top -10px
+            .download-button
                 float left
-                display block
-                height 20px
-                line-height 20px
-                margin-top 10px
-                padding 0 10px
 </style>
 

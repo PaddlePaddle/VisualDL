@@ -2,7 +2,7 @@
     <div class="visual-dl-page-container">
         <div class="visual-dl-page-left">
             <ui-chart-page
-                    :config="filteredConfig"
+                    :config="config"
                     :runsItems="runsItems"
                     :tagList="filteredTagsList"
                     :title="'Tags matching' + config.groupNameReg"
@@ -10,7 +10,7 @@
             <ui-chart-page
                     v-for="item in groupedTags"
                     :key="item.group"
-                    :config="filteredConfig"
+                    :config="config"
                     :runsItems="runsItems"
                     :tagList="item.tags"
                     :title="item.group"
@@ -49,8 +49,8 @@ export default {
                 smoothing: 0.6,
                 horizontal: 'step',
                 sortingMethod: 'default',
-                downloadLink: [],
-                outlier: [],
+                downloadLink: false,
+                outlier: false,
                 runs: [],
                 running: true
             },
@@ -112,21 +112,6 @@ export default {
                     tags: groupData[group]
                 };
             });
-        },
-        filteredConfig() {
-            let transformArr = ['downloadLink', 'outlier'];
-            let config = this.config || {};
-            let filteredConfig = {};
-            Object.keys(config).forEach(key => {
-                let val = config[key];
-                if (transformArr.indexOf(key) > -1) {
-                    filteredConfig[key] = isArray(val) && val[0] === 'yes';
-                }
-                else {
-                    filteredConfig[key] = val;
-                }
-            });
-            return filteredConfig;
         },
     },
     created() {

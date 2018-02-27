@@ -5,7 +5,7 @@
             <div class="visual-dl-chart-page-box">
                 <ui-chart
                     v-for="tagInfo in filteredPageList"
-                    :key="tagInfo.run + tagInfo.tag.displayName"
+                    :key="tagInfo.tag"
                     :tagInfo="tagInfo"
                     :runs="config.runs"
                     :chartType="config.chartType"
