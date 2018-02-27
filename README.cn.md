@@ -131,11 +131,8 @@ board 还支持一下参数来实现远程的访问：
 - `--model_pb` 指定 ONNX 格式的模型文件
 
 VisualDL的图形系统采用` GraphViz `来可视化ONNX格式模型。
-请安装` GraphViz `确保VisualDL图形系统可以启动
+请安装 [GraphViz](https://www.graphviz.org/download/)确保VisualDL图形系统可以启动
 
-```bash
-brew install graphviz
-```
 ### 贡献
 
 VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和

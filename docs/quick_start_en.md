@@ -101,8 +101,4 @@ For example, for the MNIST dataset, Graph component can render model graph as be
 Please consult [ONNX tutorials](https://github.com/onnx/tutorials) on how to export the ONNX format model.
 
 The VisualDL Graphing system uses `GraphViz` to visualize the ONNX model. To enable the VisualDL Graph feature,
-please install `GraphViz`.
-
-```bash
-brew install graphviz
-```
+please install [GraphViz](https://www.graphviz.org/download/).
