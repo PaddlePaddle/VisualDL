@@ -142,6 +142,9 @@ Board also supports the parameters below for remote access:
 - `--port` set port
 - `--model_pb` specify ONNX format for model file
 
+The VisualDL Graphing system uses `GraphViz` to visualize the ONNX model. To enable the VisualDL Graph feature,
+please install [GraphViz](https://www.graphviz.org/download/)
+
 ### How to install from pypi
 ```
 pip install --upgrade visualdl
