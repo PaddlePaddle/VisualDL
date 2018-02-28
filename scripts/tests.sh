@@ -31,10 +31,10 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 		$python get-pip.py
 fi
 
-$sudo $pip install numpy -i https://pypi.tuna.tsinghua.edu.cn/simple 
-$sudo $pip install Flask -i https://pypi.tuna.tsinghua.edu.cn/simple 
-$sudo $pip install Pillow -i https://pypi.tuna.tsinghua.edu.cn/simple 
-$sudo $pip install protobuf -i https://pypi.tuna.tsinghua.edu.cn/simple 
+$sudo $pip install numpy 
+$sudo $pip install Flask
+$sudo $pip install Pillow
+$sudo $pip install protobuf 
 
 export PYTHONPATH="${core_path}:${python_path}"
 

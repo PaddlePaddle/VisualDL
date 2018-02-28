@@ -28,6 +28,9 @@ addons:
       - python-pip
       - python2.7-dev
       - python-wheel
+      - python3-pip
+      - python3-dev
+      - python3-wheel
       - clang-format-3.8
       - ccache
       - npm
