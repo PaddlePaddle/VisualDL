@@ -14,13 +14,13 @@
 
 INCLUDE(python_module)
 
-FIND_PACKAGE(PythonInterp 3)
-FIND_PACKAGE(PythonLibs 3)
-
-IF (NOT PYTHONINTERP_FOUND)
+IF(WITH_PYTHON3)
+    FIND_PACKAGE(PythonInterp 3)
+    FIND_PACKAGE(PythonLibs 3)
+ELSE()
     FIND_PACKAGE(PythonInterp 2.7)
     FIND_PACKAGE(PythonLibs 2.7)
-ENDIF()
+ENDIF(WITH_PYTHON3)
 
 # Fixme: Maybe find a static library. Get SHARED/STATIC by FIND_PACKAGE.
 ADD_LIBRARY(python SHARED IMPORTED GLOBAL)
