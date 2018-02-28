@@ -13,7 +13,7 @@ readonly max_file_size=1000000 # 1MB
 # version number follow the rule of https://semver.org/
 readonly version_number=`cat VERSION_NUMBER | sed 's/\([0-9]*.[0-9]*.[0-9]*\).*/\1/g'`
 
-sudo=""
+sudo="sudo"
 pip="pip"
 python="python2"
 
