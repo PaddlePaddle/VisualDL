@@ -42,7 +42,7 @@ before_install:
 
 script:
   - if [[ "$JOB" == "check_style" ]]; then ./scripts/check_style.sh; fi
-  - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; fi
+  - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; WITH_PYTHON3=ON ./scripts/tests.sh all; fi
   - |
     if [[ "$JOB" != "build_doc" ]]; then exit 0; fi;
     if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then exit 0; fi;
