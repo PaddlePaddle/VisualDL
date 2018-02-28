@@ -1,3 +1,4 @@
+from __future__ import print_function
 import random
 import subprocess
 
@@ -195,5 +196,5 @@ if __name__ == '__main__':
     add_edge(n0, n2)
     add_edge(n1, n2)
 
-    print g_graph.code()
+    print(g_graph.code())
     g_graph.display('./1.dot')

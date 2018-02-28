@@ -2,7 +2,6 @@
 
 import json
 import os
-import exceptions
 import time
 import sys
 from argparse import ArgumentParser
@@ -20,6 +19,11 @@ from visualdl.server.mock import data as mock_tags
 from visualdl.python.cache import MemCache
 from visualdl.python.storage import (LogWriter, LogReader)
 
+try:
+    import exceptions
+except:
+    pass
+    
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30

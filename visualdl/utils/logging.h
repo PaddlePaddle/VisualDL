@@ -20,6 +20,7 @@ limitations under the License. */
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <functional>
 
 #if defined(VISUALDL_WITH_GLOG)
 #include <glog/logging.h>

@@ -185,7 +185,7 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
         UPDATE_COMMAND  ""
         DEPENDS         zlib
         GIT_REPOSITORY  "https://github.com/google/protobuf.git"
-        GIT_TAG         "9f75c5aa851cd877fb0d93ccc31b8567a6706546"
+        GIT_TAG         "2761122b810fe8861004ae785cc3ab39f384d342"
         CONFIGURE_COMMAND
         ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
             ${OPTIONAL_ARGS}
@@ -203,7 +203,7 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
     )
 ENDFUNCTION()
 
-SET(PROTOBUF_VERSION 3.1)
+SET(PROTOBUF_VERSION 3.5)
 IF(CMAKE_CROSSCOMPILING)
     build_protobuf(protobuf_host TRUE)
     LIST(APPEND external_project_dependencies protobuf_host)
