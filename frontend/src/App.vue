@@ -39,7 +39,7 @@ export default {
 
 #app {
   font-family: 'Merriweather Sans', Helvetica, Arial, sans-serif;
-  font-weight: 700;
+  font-weight: bold;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $-content-text-color;
@@ -66,7 +66,8 @@ export default {
             right 0
             top 0
             box-sizing border-box
-            font-size 13px
+            font-size 14px
+            font-weight normal
             .config-com
                 color $-right-font-color
 

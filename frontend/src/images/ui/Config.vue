@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-image-config-com">
+    <div class="visual-dl-page-config-com">
         <v-text-field
             label="Group name RegExp"
             hint="input a tag group name to search"
@@ -9,7 +9,7 @@
 
         <v-checkbox label="Show actual image size" v-model="config.isActualImageSize" dark></v-checkbox>
         
-        <label class="label">Runs</label>
+        <label class="visual-dl-page-checkbox-group-label">Runs</label>
         <v-checkbox v-for="item in runsItems"
                     :key="item.name"
                     :label="item.name"
@@ -21,7 +21,7 @@
         <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
                   @click="toggleAllRuns"
-                  class="visual-dl-image-run-toggle"
+                  class="visual-dl-page-run-toggle"
                   dark block
         >
             {{config.running ? 'Running' : 'Stopped'}}
@@ -50,13 +50,13 @@ export default {
 
 </script>
 <style lang="stylus">
-@import '../../style/variables';
-+prefix-classes('visual-dl-image-')
++prefix-classes('visual-dl-page-')
     .config-com
         padding 20px
         .run-toggle
             margin-top 20px
-
-.label
-    color white
+        .checkbox-group-label
+            display flex
+            margin-top 20px
+            margin-bottom 10px
 </style>
