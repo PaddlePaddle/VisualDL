@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-histogram-config-com">
+    <div class="visual-dl-page-config-com">
         <v-text-field
             label="Group name RegExp"
             hint="input a tag group name to search"
@@ -12,7 +12,7 @@
                      :label="mode.name" :value="mode.value"></v-radio>
         </v-radio-group>
 
-        <label class="label">Runs</label>
+        <label class="visual-dl-page-checkbox-group-label">Runs</label>
         <v-checkbox v-for="item in runsItems"
                     :key="item.name"
                     :label="item.name"
@@ -21,7 +21,7 @@
                     dark
         ></v-checkbox>
 
-        <v-btn class="visual-dl-histogram-run-toggle"
+        <v-btn class="visual-dl-page-run-toggle"
                :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
                   @click="toggleAllRuns"
@@ -57,15 +57,15 @@ export default {
 };
 </script>
 <style lang="stylus">
-@import '../../style/variables';
-+prefix-classes('visual-dl-histogram-')
++prefix-classes('visual-dl-page-')
     .config-com
         padding 20px
         .run-toggle
             margin-top 20px
-
-.label
-    color white
+        .checkbox-group-label
+            display flex
+            margin-top 20px
+            margin-bottom 10px
 </style>
 
 

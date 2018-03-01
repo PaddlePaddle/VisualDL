@@ -9,13 +9,13 @@
 
         <div class="visual-dl-page-slider-block">
             <v-slider label="Smoothing"
-                      :max="0.999"
+                      :max="0.99"
                       :min="0"
-                      :step="0.001"
+                      :step="0.01"
                       v-model="config.smoothing"
                       class="visual-dl-page-smoothing-slider"
                       dark></v-slider>
-            <span>{{config.smoothing}}</span>
+            <span class="visual-dl-page-slider-span">{{config.smoothing}}</span>
         </div>
 
         <v-radio-group label="Horizontal" v-model="config.horizontal" dark>
@@ -28,13 +28,14 @@
                 :items="sortingMethodItems"
                 v-model="config.sortingMethod"
                 label="Tooltip sorting method"
+                class="visual-dl-page-config-selector"
                 dark
         ></v-select>
 
-        <v-checkbox label="Show data download links" v-model="config.downloadLink" dark></v-checkbox>
-        <v-checkbox label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
+        <v-checkbox class="visual-dl-page-config-checkbox" label="Show data download links" v-model="config.downloadLink" dark></v-checkbox>
+        <v-checkbox class="visual-dl-page-config-checkbox" label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
 
-        <label>Runs</label>
+        <label class="visual-dl-page-checkbox-group-label">Runs</label>
 
         <v-checkbox v-for="item in runsItems"
                     :key="item.name"
@@ -42,7 +43,7 @@
                     :value="item.value"
                     v-model="config.runs"
                     dark
-                    class="visual-dl-page-config-checkbox"
+                    class="visual-dl-page-runs-checkbox"
         ></v-checkbox>
 
         <v-btn :color="config.running ? 'primary' : 'error'"
@@ -56,7 +57,6 @@
     </div>
 </template>
 <script>
-import('vuetify/dist/vuetify.min.css')
 
 //import TextField from 'san-mui/TextField';
 
@@ -103,8 +103,6 @@ export default {
 
 </script>
 <style lang="stylus">
-@import '../../style/variables';
-
 +prefix-classes('visual-dl-page-')
     .config-com
         padding 20px
@@ -113,8 +111,19 @@ export default {
             align-items center
         .smoothing-slider
             display inline
+        .slider-span
+            width 40px
         .run-toggle
             margin-top 20px
+        .config-checkbox label
+            font-size 13px
+        .config-selector
+            margin-top 12px
+            margin-bottom 20px
+        .checkbox-group-label
+            display flex
+            margin-top 20px
+            margin-bottom 10px
 
 </style>
 

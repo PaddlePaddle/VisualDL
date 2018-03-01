@@ -24,7 +24,6 @@
     </div>
 </template>
 <script>
-import('vuetify/dist/vuetify.min.css')
 
 // TODO: Consider create Vue Components for these
 
