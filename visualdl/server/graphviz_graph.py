@@ -1,10 +1,11 @@
 from __future__ import print_function
 import random
 import subprocess
+import six
 
 
 def crepr(v):
-    if type(v) is str or type(v) is unicode:
+    if type(v) is six.text_type:
         return '"%s"' % v
     return str(v)
 
