@@ -47,13 +47,12 @@ script:
     if [[ "$JOB" != "build_doc" ]]; then exit 0; fi;
     if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then exit 0; fi;
     if [[ "$TRAVIS_BRANCH" != "develop" ]]; then exit 0; fi;
-
-#   The documentation build fails on Travis machine. Use paddlepaddle.org docker image to have a consistant build environment.
+    # The documentation build fails on Travis machine. Use paddlepaddle.org docker image to have a consistant build environment.
     docker run -it -v `pwd`:/visualdl --entrypoint "/bin/bash" paddlepaddle/paddlepaddle.org:latest -c 'cd /visualdl; mkdir build; cd build; cmake -DWITH_DOC=ON ..; make -j `nproc` visualdl_docs_en visualdl_docs_cn'
     export DEPLOY_DOCS_SH=https://raw.githubusercontent.com/PaddlePaddle/PaddlePaddle.org/master/scripts/deploy/deploy_docs.sh
     export DOCS_DIR=`pwd`
     cd ..
-#    When providing the $DOCS_DIR/build/docs to the script, it tells the script to use the local documentation built by docker
+    # When providing the $DOCS_DIR/build/docs to the script, it tells the script to use the local documentation built by docker
     curl $DEPLOY_DOCS_SH | bash -s $CONTENT_DEC_PASSWD $TRAVIS_BRANCH $DOCS_DIR $DOCS_DIR/build/docs
 
 notifications:
