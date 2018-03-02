@@ -9,8 +9,9 @@ from .log import logger
 
 try:
     from urllib.parse import urlencode
-except:
+except Exception:
     from urllib import urlencode
+
 
 def get_modes(storage):
     return storage.modes()

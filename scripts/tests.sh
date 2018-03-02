@@ -17,7 +17,7 @@ sudo="sudo"
 pip="pip"
 python="python2"
 
-if [[ "$WITH_PYTHON3" == "ON" ]]; then 
+if [[ "$WITH_PYTHON3" == "ON" ]]; then
     pip="pip3"
     python="python3"
     $sudo python3 -m pip install --upgrade pip
@@ -32,10 +32,10 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 		$python get-pip.py
 fi
 
-$sudo $pip install numpy 
+$sudo $pip install numpy
 $sudo $pip install Flask
 $sudo $pip install Pillow
-$sudo $pip install protobuf 
+$sudo $pip install protobuf
 
 export PYTHONPATH="${core_path}:${python_path}"
 
@@ -44,7 +44,7 @@ package() {
     # some bug with frontend build
     # a environment variable to skip frontend build
     export VS_BUILD_MODE="travis-CI"
-    
+
     cd $TOP_DIR/visualdl/server
     # manully install protobuf3
     curl -OL https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip
@@ -62,7 +62,7 @@ backend_test() {
     cd $TOP_DIR
     mkdir -p build
     cd build
-    if [[ "$WITH_PYTHON3" == "ON" ]]; then 
+    if [[ "$WITH_PYTHON3" == "ON" ]]; then
         cmake -DWITH_PYTHON3=ON ..
     else
         cmake ..

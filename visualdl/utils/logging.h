@@ -16,11 +16,11 @@ limitations under the License. */
 #define VISUALDL_UTILS_LOGGING_H
 
 #include <csignal>
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <functional>
 
 #if defined(VISUALDL_WITH_GLOG)
 #include <glog/logging.h>
