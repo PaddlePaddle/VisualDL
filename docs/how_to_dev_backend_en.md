@@ -7,7 +7,7 @@ VisualDL has three components.
 
 This doc will go over Backend / SDK structure with development guide.
 
-For front end architecture and development guide, looks [here](./how_to_dev_frontend_en.md)
+For front end architecture and development guide, looks [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/how_to_dev_frontend_en.md)
 
 
 ## Code structure
@@ -20,7 +20,7 @@ All backend and sdk logic is under visualdl sub directory
 ├── CMakeLists.txt
 ├── frontend
 ├── visualdl
-    ├── logic    - API for C++ SDK, information maintainer 
+    ├── logic    - API for C++ SDK, information maintainer
     ├── python   - API for Python SDK
     ├── server   - Flask server, provides front end APIs for read data
     ├── storage  - Data structure and protobuf
@@ -85,7 +85,7 @@ make vl_test
 ### Server
 
 - Implement a server using a lightweight framework Flask, provides two services:
-  - Host a main application with support of a front end web app 
+  - Host a main application with support of a front end web app
   - Provide a series of HTTP end points, using JSON for front end data communication
 - ```visualDL``` : main app entry point
   - defines server arguments and config
@@ -93,7 +93,7 @@ make vl_test
 - ```lib.py``` : delegate wrapper for function calls
   - read and caches log data
   - convert data to JSON
-  - retry mechanism 
+  - retry mechanism
 - ```graph.py``` and ```onnx```
   - graph.py defines the logic to read and parse onnx model file
   - create edges and nodes as JSON format for front end to read
@@ -118,7 +118,7 @@ make vl_test
 #### Storage
 - Defines log data format as following:
   - ```Storage``` : main set of data with different modes such as "train" or "test", contain multiple ```Tablet```
-  - ```Tablet``` : group a single type of data with ```tag```. One tablet will only represent one data type such as scalar, histogram, image and contains multiple ```Record```. For example one tablet represents a line in scalar chart. 
+  - ```Tablet``` : group a single type of data with ```tag```. One tablet will only represent one data type such as scalar, histogram, image and contains multiple ```Record```. For example one tablet represents a line in scalar chart.
   - ```Record``` : represent any data structure for any component
 - Handles the actual logic to serialized to disk and deserialized from disk
 - ```storage.proto```: protobuf file that defines the exact interface to be read/write
