@@ -30,10 +30,6 @@
 
 export default {
     props:['config'],
-    data() {
-        return {
-        };
-    },
     methods: {
         handleFitScreen() {
             this.$emit('fitScreen')

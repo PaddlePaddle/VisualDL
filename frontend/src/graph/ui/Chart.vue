@@ -78,7 +78,7 @@ export default {
 
         getOriginChartsData() {
             getPluginGraphsGraph().then(({status, data}) => {
-                if (+status === 0 && data.url) {
+                if (status === 0 && data.url) {
                     this.graphUrl = data.url
                     this.addDragEventForImg();
                 }

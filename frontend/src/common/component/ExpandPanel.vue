@@ -2,7 +2,7 @@
     <div class="visual-dl-expand-panel">
         <h3
             class="visual-dl-expand-head"
-            @click="handleHeadClick()"
+            @click="isShow = !isShow"
         >
             <span>{{title}}</span>
             <span class="visual-dl-expand-head-info">
@@ -33,14 +33,6 @@ export default {
         return {
             isShow: true
         };
-    },
-    methods: {
-        handleHeadClick() {
-            this.toogleShow();
-        },
-        toogleShow() {
-            this.isShow = !this.isShow;
-        }
     }
 };
 </script>
