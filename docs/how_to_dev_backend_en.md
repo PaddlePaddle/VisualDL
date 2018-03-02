@@ -7,7 +7,7 @@ VisualDL has three components.
 
 This doc will go over Backend / SDK structure with development guide.
 
-For front end architecture and development guide, looks [here](./how_to_dev_frontend_en.md)
+For front end architecture and development guide, looks [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/how_to_dev_frontend_en.md)
 
 
 ## Code structure
