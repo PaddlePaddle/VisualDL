@@ -241,8 +241,8 @@ void Image::SetSample(int index,
   if (!old_hash.empty()) {
     std::string old_path =
         GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
-    CHECK_EQ(std::remove(old_path.c_str()), 0)
-        << "delete old binary record " << old_path << " failed";
+    CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
+                                               << old_path << " failed";
   }
   entry.SetRaw(brcd.filename());
 

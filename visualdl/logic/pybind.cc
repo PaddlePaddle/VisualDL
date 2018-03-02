@@ -39,7 +39,7 @@ PYBIND11_MODULE(core, m) {
       .def("modes", [](vs::LogReader& self) { return self.storage().modes(); })
       .def("tags", &vs::LogReader::tags)
 
-  // clang-format off
+// clang-format off
       #define READER_ADD_SCALAR(T)                                               \
       .def("get_scalar_" #T, [](vs::LogReader& self, const std::string& tag) { \
         auto tablet = self.tablet(tag);                                        \
@@ -73,7 +73,7 @@ PYBIND11_MODULE(core, m) {
       }))
       .def("set_mode", &vs::LogWriter::SetMode)
       .def("as_mode", &vs::LogWriter::AsMode)
-  // clang-format off
+// clang-format off
       #define WRITER_ADD_SCALAR(T)                                               \
       .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
         auto tablet = self.AddTablet(tag);                                     \
