@@ -29,7 +29,21 @@ namespace cp = visualdl::components;
   CODE(double);
 
 PYBIND11_MODULE(core, m) {
-  m.doc() = "C++ core of VisualDL";
+  m.doc() = R"pbdoc(
+        PyBind wrapper Classes
+        -----------------------
+        They are not meant to access directly
+
+        .. autoclass:: ScalarWriter__float
+            :members:
+
+        .. autoclass:: HistogramWriter__float
+            :members:
+
+        .. autoclass:: ImageWriter
+            :members:
+
+    )pbdoc";
 
   py::class_<vs::LogReader>(m, "LogReader")
       .def(py::init(
@@ -115,7 +129,9 @@ PYBIND11_MODULE(core, m) {
 #undef ADD_SCALAR_READER
 
 #define ADD_SCALAR_WRITER(T)                          \
-  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T)   \
+  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T, R"pbdoc(
+        ScalarWriter
+      )pbdoc")                                        \
       .def("set_caption", &cp::Scalar<T>::SetCaption) \
       .def("add_record", &cp::Scalar<T>::AddRecord);
   ADD_SCALAR_WRITER(int);
@@ -124,7 +140,9 @@ PYBIND11_MODULE(core, m) {
 #undef ADD_SCALAR_WRITER
 
   // clang-format on
-  py::class_<cp::Image>(m, "ImageWriter")
+  py::class_<cp::Image>(m, "ImageWriter", R"pbdoc(
+        ImageWriter
+      )pbdoc")
       .def("set_caption", &cp::Image::SetCaption)
       .def("start_sampling", &cp::Image::StartSampling)
       .def("is_sample_taken", &cp::Image::IsSampleTaken)
@@ -147,8 +165,10 @@ PYBIND11_MODULE(core, m) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
-#define ADD_HISTOGRAM_WRITER(T)                           \
-  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T) \
+#define ADD_HISTOGRAM_WRITER(T) \
+  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, R"pbdoc(
+        HistogramWriter
+      )pbdoc")                  \
       .def("add_record", &cp::Histogram<T>::AddRecord);
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_WRITER)
 #undef ADD_HISTOGRAM_WRITER
