@@ -168,6 +168,8 @@ class LogWriter(object):
 
         :param tag: The scalar writer will label the data with tag
         :type tag: basestring
+        :return: A scalar writer to handle step and value records
+        :rtype: ScalarWriter
         """
         check_tag_name_valid(tag)
         type2scalar = {
@@ -183,6 +185,12 @@ class LogWriter(object):
 
         :param tag: The image writer will label the image with tag
         :type tag: basestring
+        :param num_samples: how many samples to take in a step.
+        :type num_samples: integer
+        :param step_cycle: store every `step_cycle` as a record.
+        :type step_cycle: integer
+        :return: A image writer to sample images
+        :rtype: ImageWriter
         """
         check_tag_name_valid(tag)
         return self.writer.new_image(tag, num_samples, step_cycle)
@@ -194,6 +202,8 @@ class LogWriter(object):
 
         :param tag: The histogram writer will label the data with tag
         :type tag: basestring
+        :return: A histogram writer to record distribution
+        :rtype: HistogramWriter
         """
         check_tag_name_valid(tag)
         types = {
