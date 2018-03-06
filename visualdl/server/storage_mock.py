@@ -21,9 +21,9 @@ def add_image(writer,
     with writer.mode(mode) as writer_:
         image_writer = writer_.image(tag, num_samples, step_cycle)
 
-        for pass_ in xrange(num_passes):
+        for pass_ in range(num_passes):
             image_writer.start_sampling()
-            for ins in xrange(2 * num_samples):
+            for ins in range(2 * num_samples):
                 data = np.random.random(shape) * 256
                 data = np.ndarray.flatten(data)
                 image_writer.add_sample(shape, list(data))

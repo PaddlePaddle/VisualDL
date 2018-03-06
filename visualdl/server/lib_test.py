@@ -1,10 +1,11 @@
+from __future__ import print_function
 import pprint
 import unittest
 
 from visualdl import LogReader, LogWriter
 
-import lib
-from storage_mock import add_histogram, add_image, add_scalar
+from . import lib
+from .storage_mock import add_histogram, add_image, add_scalar
 
 _retry_counter = 0
 
@@ -55,7 +56,7 @@ class LibTest(unittest.TestCase):
 
     def test_scalar(self):
         tags = lib.get_scalar_tags(self.reader)
-        print 'scalar tags:'
+        print('scalar tags:')
         pprint.pprint(tags)
         self.assertEqual(len(tags), 3)
         self.assertEqual(
@@ -70,7 +71,7 @@ class LibTest(unittest.TestCase):
 
         image = lib.get_invididual_image(self.reader, "train",
                                          'layer/image0/0', 2)
-        print image
+        print(image)
 
     def test_histogram(self):
         tags = lib.get_histogram_tags(self.reader)

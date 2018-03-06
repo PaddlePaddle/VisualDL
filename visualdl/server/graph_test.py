@@ -1,11 +1,12 @@
+from __future__ import absolute_import
 import unittest
 
-import graph
+from . import graph
 
 
 class GraphTest(unittest.TestCase):
     def setUp(self):
-        self.mock_dir = "./mock"
+        self.mock_dir = "./visualdl/server/mock"
 
     def test_graph_edges_squeezenet(self):
         json_obj = graph.to_IR_json(self.mock_dir + '/squeezenet_model.pb')

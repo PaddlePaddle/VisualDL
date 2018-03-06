@@ -14,3 +14,5 @@ add_dependencies(entry storage_proto im)
 add_dependencies(record storage_proto entry)
 add_dependencies(tablet storage_proto)
 add_dependencies(storage storage_proto record binary_record tablet entry)
+
+target_link_libraries(storage storage_proto record binary_record tablet entry)
