@@ -4,8 +4,12 @@ set -ex
 cd mock
 bash download_mock_models.sh
 
-cd ..
+cd ../../../
 
-python graph_test.py
+if [[ "$WITH_PYTHON3" == "ON" ]]; then
+    python3 -m visualdl.server.graph_test
+else
+    python2 -m visualdl.server.graph_test
+fi
 
-rm ./mock/*.pb
+rm visualdl/server/mock/*.pb

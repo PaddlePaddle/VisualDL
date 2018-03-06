@@ -28,14 +28,12 @@ namespace cp = visualdl::components;
   CODE(float);                   \
   CODE(double);
 
-PYBIND11_PLUGIN(core) {
-  py::module m("core", "C++ core of VisualDL");
+PYBIND11_MODULE(core, m) {
+  m.doc() = "C++ core of VisualDL";
 
   py::class_<vs::LogReader>(m, "LogReader")
-      .def("__init__",
-           [](vs::LogReader& instance, const std::string& dir) {
-             new (&instance) vs::LogReader(dir);
-           })
+      .def(py::init(
+          [](const std::string& dir) { return new vs::LogReader(dir); }))
       .def("as_mode", &vs::LogReader::AsMode)
       .def("set_mode", &vs::LogReader::SetMode)
       .def("modes", [](vs::LogReader& self) { return self.storage().modes(); })
@@ -70,10 +68,9 @@ PYBIND11_PLUGIN(core) {
 
   // clang-format on
   py::class_<vs::LogWriter>(m, "LogWriter")
-      .def("__init__",
-           [](vs::LogWriter& instance, const std::string& dir, int sync_cycle) {
-             new (&instance) vs::LogWriter(dir, sync_cycle);
-           })
+      .def(py::init([](const std::string& dir, int sync_cycle) {
+        return new vs::LogWriter(dir, sync_cycle);
+      }))
       .def("set_mode", &vs::LogWriter::SetMode)
       .def("as_mode", &vs::LogWriter::AsMode)
 // clang-format off

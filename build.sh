@@ -36,7 +36,11 @@ build_frontend_fake() {
 
 build_backend() {
     cd $BUILD_DIR
-    cmake .. ${PYTHON_FLAGS}
+    if [[ $WITH_PYTHON3 ]]; then
+        cmake -DWITH_PYTHON3=ON .. ${PYTHON_FLAGS}
+    else
+        cmake .. ${PYTHON_FLAGS}
+    fi
     make -j2
 }
 

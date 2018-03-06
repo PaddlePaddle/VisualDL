@@ -24,7 +24,7 @@ class StorageTester(unittest.TestCase):
         self.assertEqual(self.storage.tablets_size(), 11)
 
     def test_timestamp(self):
-        print self.storage.timestamp()
+        print(self.storage.timestamp())
 
     def test_dir(self):
         dir = "./1.txt"
@@ -32,7 +32,7 @@ class StorageTester(unittest.TestCase):
         self.assertEqual(dir, self.storage.dir())
 
     def test_human_readable_buffer(self):
-        print self.storage.human_readable_buffer()
+        print(self.storage.human_readable_buffer())
 
 
 class TabletTester(unittest.TestCase):
@@ -41,7 +41,7 @@ class TabletTester(unittest.TestCase):
         self.tablet = im.add_tablet("tag101", 20)
 
     def test_human_readable_buffer(self):
-        print self.tablet.human_readable_buffer()
+        print(self.tablet.human_readable_buffer())
 
     def test_scalar(self):
         scalar = self.tablet.as_float_scalar()

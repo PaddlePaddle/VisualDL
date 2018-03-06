@@ -5,6 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR/..
 
 mode=$1
+
 readonly TOP_DIR=$(pwd)
 readonly core_path=$TOP_DIR/build/visualdl/logic
 readonly python_path=$TOP_DIR/visualdl/python
@@ -13,20 +14,28 @@ readonly max_file_size=1000000 # 1MB
 readonly version_number=`cat VERSION_NUMBER | sed 's/\([0-9]*.[0-9]*.[0-9]*\).*/\1/g'`
 
 sudo="sudo"
+pip="pip"
+python="python2"
+
+if [[ "$WITH_PYTHON3" == "ON" ]]; then
+    pip="pip3"
+    python="python3"
+    $sudo python3 -m pip install --upgrade pip
+fi
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo=""; fi
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 		curl -O http://python-distribute.org/distribute_setup.py
-		python distribute_setup.py
+		$python distribute_setup.py
 		curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-		python get-pip.py
+		$python get-pip.py
 fi
 
-$sudo pip install numpy
-$sudo pip install Flask
-$sudo pip install Pillow
-$sudo pip install protobuf
+$sudo $pip install numpy
+$sudo $pip install Flask
+$sudo $pip install Pillow
+$sudo $pip install protobuf
 
 export PYTHONPATH="${core_path}:${python_path}"
 
@@ -38,22 +47,26 @@ package() {
 
     cd $TOP_DIR/visualdl/server
     # manully install protobuf3
-    curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
-    unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
+    curl -OL https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip
+    unzip protoc-3.5.0-linux-x86_64.zip -d protoc3
     export PATH="$PATH:$(pwd)/protoc3/bin"
     chmod +x protoc3/bin/*
 
 
     cd $TOP_DIR
-    python setup.py bdist_wheel
-    $sudo pip install dist/visualdl-${version_number}*.whl
+    $python setup.py bdist_wheel
+    $sudo $pip install dist/visualdl-${version_number}*.whl
 }
 
 backend_test() {
     cd $TOP_DIR
     mkdir -p build
     cd build
-    cmake ..
+    if [[ "$WITH_PYTHON3" == "ON" ]]; then
+        cmake -DWITH_PYTHON3=ON ..
+    else
+        cmake ..
+    fi
     make
     make test
 }
@@ -66,14 +79,14 @@ frontend_test() {
 }
 
 server_test() {
-    $sudo pip install google
-    $sudo pip install protobuf==3.1.0
+    $sudo $pip install google
+    $sudo $pip install protobuf==3.5.1
 
     cd $TOP_DIR/visualdl/server
     bash graph_test.sh
 
-    cd $TOP_DIR/visualdl/server
-    python lib_test.py
+    cd $TOP_DIR/
+    $python -m visualdl.server.lib_test
 }
 
 # check the size of files in the repo.
@@ -92,11 +105,24 @@ bigfile_reject() {
     fi
 }
 
+clean_env() {
+    rm -rf $TOP_DIR/build
+    rm -rf $TOP_DIR/dist
+    rm -rf $TOP_DIR/frontend/node_modules
+    rm -rf $TOP_DIR/frontend/dist
+    rm -rf $TOP_DIR/visualdl/core.so
+    rm -rf $TOP_DIR/visualdl/python/core.so
+    rm -rf $TOP_DIR/visualdl/server/protoc3
+    rm -rf $TOP_DIR/visualdl/server/protoc*.zip
+}
+
 echo "mode" $mode
 
 if [ $mode = "backend" ]; then
     backend_test
 elif [ $mode = "all" ]; then
+    # Clean before test
+    clean_env
     # bigfile_reject should be tested first, or some files downloaded may fail this test.
     bigfile_reject
     package
