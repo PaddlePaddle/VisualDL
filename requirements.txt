@@ -8,3 +8,4 @@ Pillow==5.0.0
 pre-commit==1.5.1
 flask==0.12.2
 protobuf==3.5.1
+six==1.11.0

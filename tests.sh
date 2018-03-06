@@ -35,8 +35,8 @@ package() {
 
     cd $TOP_DIR/visualdl/server
     # manully install protobuf3
-    curl -OL https://github.com/google/protobuf/releases/download/v3.1.0/protoc-3.1.0-linux-x86_64.zip
-    unzip protoc-3.1.0-linux-x86_64.zip -d protoc3
+    curl -OL https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip
+    unzip protoc-3.5.0-linux-x86_64.zip -d protoc3
     export PATH="$PATH:$(pwd)/protoc3/bin"
     chmod +x protoc3/bin/*
 
@@ -64,13 +64,13 @@ frontend_test() {
 
 server_test() {
     $sudo pip install google
-    $sudo pip install protobuf==3.1.0
+    $sudo pip install protobuf==3.5.1
 
     cd $TOP_DIR/visualdl/server
     bash graph_test.sh
 
-    cd $TOP_DIR/visualdl/server
-    python lib_test.py
+    cd $TOP_DIR/
+    python -m visualdl.server.lib_test
 }
 
 # check the size of files in the repo.

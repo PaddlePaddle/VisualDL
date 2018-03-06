@@ -58,9 +58,12 @@ class BaseCommand(setuptools.Command):
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
         cmd = ['bash', 'build.sh']
+        env = dict(os.environ)
         if MODE == "travis-CI":
             cmd.append('travis-CI')
-        subprocess.check_call(cmd)
+        if sys.version_info[0] >= 3:
+            env["WITH_PYTHON3"] = "ON"
+        subprocess.check_call(cmd, env=env)
         return setuptools.command.build_py.build_py.run(self)
 
 
