@@ -7,15 +7,15 @@
                 <v-icon size="20">settings_overscan</v-icon>
             </v-btn>
             <v-select
-                v-if="downloadLink"
+                v-if="downloadLink && tagInfo.tagList.length > 0"
                 class="download-selector"
-                :items="runsItems"
-                v-model="downloadType"
-                item-text="name"
-                item-value="value"
+                :items="tagInfo.tagList"
+                v-model="runItemForDownload"
+                item-text="run"
+                item-value="run"
             />
             <v-btn flat
-                v-if="downloadLink"
+                v-if="downloadLink && tagInfo.tagList.length > 0"
                 class="download-button"
                 @click="handleDownLoad">
                 <v-icon size="20">file_download</v-icon>
@@ -71,14 +71,14 @@ export default {
                 }
             ],
             // choose run type for download file
-            downloadType: {},
+            runItemForDownload: {},
             isExpand: false,
             originData: []
         };
     },
     watch: {
         runsItems: function(val) {
-            this.initDownloadType();
+            this.initRunItemForDownload();
         },
         originData: function(val) {
             this.setChartData();
@@ -120,11 +120,11 @@ export default {
         this.stopInterval();
     },
     methods: {
-        initDownloadType() {
-            if (this.runsItems.length === 0) {
+        initRunItemForDownload() {
+            if (this.tagInfo.tagList.length === 0) {
                 return;
             }
-            this.downloadType = this.runsItems[0];
+            this.runItemForDownload = this.tagInfo.tagList[0].run;
         },
 
         // Create a Scalar Chart, initialize it with default settings, then load datas
@@ -307,7 +307,7 @@ export default {
         handleDownLoad() {
             let options = this.getChartOptions();
             let series = options.series || [];
-            let seriesItem = series.find(item => item.name === this.downloadType) || {};
+            let seriesItem = series.find(item => item.name === this.runItemForDownload) || {};
             let fileName = this.tagInfo.tag.replace(/\//g, '-');
             generateJsonAndDownload(seriesItem.data, fileName);
         },
