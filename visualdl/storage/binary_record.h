@@ -67,6 +67,9 @@ private:
   static int counter_;
 };
 
+// Initial static counter variable.
+int BinaryRecord::counter_ = 0;
+
 struct BinaryRecordReader {
   std::string data;
 

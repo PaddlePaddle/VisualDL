@@ -13,9 +13,3 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 #include "visualdl/storage/binary_record.h"
-
-namespace visualdl {
-
-int BinaryRecord::counter_ = 0;
-
-}  // namespace visualdl
