@@ -38,12 +38,6 @@ export default {
         return {
             width: 800,
             height: 600,
-            data: [
-                {
-                    name: 'train',
-                    value: []
-                }
-            ],
             graphUrl: '',
         };
     },
