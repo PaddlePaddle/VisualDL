@@ -3,12 +3,6 @@
 Here we will show you how to use VisualDL in MXNet so that you can visualize the training process of MXNet.
 We will use the MXNet Convolution Neural Network to train the [MNIST](http://yann.lecun.com/exdb/mnist/) dataset as an example.
 
-- [Install MXNet](#Install MXNet)
-- [Install VisualDL](#Install VisualDL)
-- [Start writing the program for training MNIST](#Start writing the program for training MNIST)
-- [Display the model graph with VisualDL](#Display the model graph with VisualDL)
-
-
 ## Install MXNet
 Please install MXNet according to MXNet's [official website](https://mxnet.incubator.apache.org/install/index.html) 
 and verify that the installation is successful.
