@@ -1,8 +1,8 @@
-Demos
-====
+Examples
+========
 
 VisualDL supports Python and C++ based DL frameworks,
-here are several demos for different platforms.
+here are some examples for different platforms.
 
 .. toctree::
     :maxdepth: 1
