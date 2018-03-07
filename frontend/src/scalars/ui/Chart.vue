@@ -64,12 +64,6 @@ export default {
         return {
             width: 400,
             height: 300,
-            data: [
-                {
-                    name: 'train',
-                    value: []
-                }
-            ],
             // choose run type for download file
             runItemForDownload: {},
             isExpand: false,
@@ -272,6 +266,7 @@ export default {
 
         setChartData() {
             let seriesData = this.originData.map(lineData => {
+                if (lineData.length == 0) return [];
                 // add the smoothed data
                 this.transformDataset(lineData);
                 return [
@@ -353,7 +348,7 @@ export default {
 
         // Chart outlier options methods and functions ---- start.
         // Compute Y domain from originData.
-        setChartsOutlier(seriesData) {
+        setChartsOutlier() {
             let domainRangeArray = this.originData.map(seriesData => this.computeDataRange(seriesData, this.outlier));
 
             // Compare, get the best Y domain.
@@ -373,6 +368,7 @@ export default {
         // Compute  max and min from array, if outlier is true, return quantile range.
         computeDataRange(arr, isQuantile) {
             // Get data range.
+            if (arr.length == 0) return [];
             let max;
             let min;
             if (!isQuantile) {

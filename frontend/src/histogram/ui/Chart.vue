@@ -30,12 +30,6 @@ export default {
     props: ['tagInfo', 'runs', 'chartType', 'running', 'runsItems'],
     data() {
         return {
-            data: [
-                {
-                    name: 'train',
-                    value: []
-                }
-            ],
             originData: [],
             isExpand: false
         };
@@ -99,7 +93,8 @@ export default {
             let title = {
                 text: tag,
                 textStyle: {
-                    fontSize: '12'
+                    fontSize: '12',
+                    fontFamily: 'Merriweather Sans'
                 }
             };
             if (chartType === 'overlay') {
