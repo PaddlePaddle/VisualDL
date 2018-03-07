@@ -1,4 +1,7 @@
 language: cpp
+
+compiler: clang
+
 cache:
   - pip
   - ccache
@@ -14,13 +17,16 @@ os:
     #- osx
 
 env:
-  - JOB=check_style
-  - JOB=test
-  - JOB=build_doc
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=check_style"
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=test"
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=build_doc"
 
 addons:
   apt:
+    sources:
+      - llvm-toolchain-trusty-5.0
     packages:
+      - clang-5.0
       - gcc-4.8
       - g++-4.8
       - git
@@ -38,6 +44,7 @@ addons:
   ssh_known_hosts: 52.76.173.135
 
 before_install:
+  - eval "${MATRIX_EVAL}"
   - if [[ "$JOB" == "check_style" ]]; then sudo ln -s /usr/bin/clang-format-3.8 /usr/bin/clang-format; sudo pip install pre-commit flake8; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
