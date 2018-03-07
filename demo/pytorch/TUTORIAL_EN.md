@@ -180,7 +180,7 @@ print('Done')
 
 After the training, the visual results of each component are as follows:
 
-The Scalar diagram of the error is as follows:
+The scalar diagram of the error is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/pytorch_demo_figs/sc_scalar.png?raw=true" />
@@ -193,18 +193,18 @@ The picture of the first, second layer convolution weight after the training are
 </p>
 
 
-The Histograms of the training parameters is as follows:
+The histograms of the training parameters is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/pytorch_demo_figs/sc_hist.png?raw=true" />
 </p>
 
 
-The model Graph is as follows:
+The model graph is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/pytorch_demo_figs/sc_graph.png?raw=true" />
 </p>
 
 
-You can download the full size Graph image [here](https://github.com/daming-lu/large_files/blob/master/pytorch_demo_figs/graph.png?Raw=true).
+You can download the full size image [here](https://github.com/daming-lu/large_files/blob/master/pytorch_demo_figs/graph.png?Raw=true).

@@ -69,7 +69,7 @@ class LossHistory(keras.callbacks.Callback):
 
 After the training, the visual results of each component are as follows:
 
-The Scalar diagram of the error is as follows:
+The scalar diagram of the error is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_scalar.png?raw=true" />
@@ -81,7 +81,7 @@ The input picture and the first, second layer convolution weight after the train
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_image.png?raw=true" />
 </p>
 
-The Histograms of the training parameters is as follows:
+The histograms of the training parameters is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_histogram.png?raw=true" />
