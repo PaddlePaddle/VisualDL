@@ -61,7 +61,7 @@ That's all. In the training process of MXNet, our callback function is called to
 The rate of accuracy will continue to rise until more than 95%. 
 The following is the accuracy of the two epochs:
 
-<p align=center><img width="50%" src="./epoch2_small.png" /></p>
+<p align=center><img width="50%" src="https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/epoch2_small.png?raw=true" /></p>
 
 ## Display the model graph with VisualDL
 

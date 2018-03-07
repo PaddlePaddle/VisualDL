@@ -87,4 +87,4 @@ The histograms of the training parameters is as follows:
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_histogram.png?raw=true" />
 </p>
 
-The full demonstration code can be downloaded in [here](./keras_mnist_demo.py).
+The full demonstration code can be downloaded in [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/keras/keras_mnist_demo.py).

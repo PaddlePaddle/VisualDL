@@ -92,4 +92,4 @@ class LossHistory(keras.callbacks.Callback):
 
 
 
-完整的演示程序可以在[这里](./keras_mnist_demo.py)下载。
+完整的演示程序可以在[这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/keras/keras_mnist_demo.py)下载。

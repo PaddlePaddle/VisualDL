@@ -59,7 +59,7 @@ lenet_model.fit(train_iter,
 
 这样就好了。在MXNet的训练过程中，每一个批次（batch）训练完后，都会调用我们的回调函数来对准确率进行记录。如您所料，随着训练的进行，准确率会不断上升直到95%以上。以下是两个epoch训练过后的准确率走向：
 
-<p align=center><img width="50%" src="./epoch2_small.png" /></p>
+<p align=center><img width="50%" src="https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/epoch2_small.png?raw=true" /></p>
 
 ## 用VisualDL展示模型图
 
