@@ -31,10 +31,7 @@ module.exports = merge(baseWebpackConfig, {
         }),
 
         new webpack.LoaderOptionsPlugin({
-            test: /\.(styl|san)$/,
-            san: {
-                autoprefixer: autoPrefixOptions
-            }
+            test: /\.(styl)$/,
         }),
 
         new webpack.optimize.CommonsChunkPlugin({
