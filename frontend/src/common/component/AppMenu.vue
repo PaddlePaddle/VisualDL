@@ -46,7 +46,7 @@ export default {
         }
     },
     methods: {
-            handleItemClick: function (item) {
+        handleItemClick: function (item) {
             this.selected = item.name
             this.$router.push(item.url)
         }

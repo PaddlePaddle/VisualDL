@@ -58,16 +58,6 @@
 </template>
 <script>
 
-//import TextField from 'san-mui/TextField';
-
-// TODO: Consider create Vue Components for these
-
-//import Slider from '../../common/component/Slider';
-//import RadioGroup from '../../common/component/RadioGroup';
-//import DropDownMenu from '../../common/component/DropDownMenu';
-//import CheckBoxGroup from '../../common/component/CheckBoxGroup';
-//import Button from 'san-mui/Button';
-
 export default {
     props: {
         runsItems: Array,

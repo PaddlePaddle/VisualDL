@@ -23,7 +23,6 @@
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
 import Image from './Image';
-//import Pagination from 'san-mui/Pagination';
 
 import {cloneDeep, flatten} from 'lodash';
 
@@ -32,7 +31,6 @@ export default {
     components: {
         'ui-image': Image,
         'ui-expand-panel': ExpandPanel,
-        //'ui-pagination': Pagination
     },
     computed: {
         filteredRunsList() {
