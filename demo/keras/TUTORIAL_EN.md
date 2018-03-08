@@ -1,12 +1,10 @@
-# 如何在Keras中使用VisualDL
+# How to use VisualDL in Keras
 
-下面我们演示一下如何在Keras中使用VisualDL，从而可以把Keras的训练过程可视化出来。我们将以Keras用卷积神经网络(CNN, Convolutional Neural Network)来训练
-[MNIST](http://yann.lecun.com/exdb/mnist/) 数据集作为例子。
+Here we will show you how to use VisualDL with Keras so that you can visualize the training process of Keras.
+We will use the Keras Convolution Neural Network to train the [MNIST](http://yann.lecun.com/exdb/mnist/) dataset as an example.
 
-
-程序的主体来自Keras的官方GitHub [Example](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py)。
-
-我们只需要在代码里面创建 VisualDL 的数据采集 loggers
+The training program comes from the official GitHub [Example](https://github.com/keras-team/keras/blob/master/examples/mnist_cnn.py) of Keras.
+We just need to create the VisualDL data collection loggers in the code
 
 ```python
 # create VisualDL logger
@@ -26,7 +24,7 @@ with logger.mode("train"):
 
 ```
 
-然后在Keras提供的回调函数（callback）中插入我们的数据采集代码就可以了。
+Then we can insert our data loggers in the callback function provided by Keras.
 
 ```python
 train_step = 0
@@ -69,27 +67,24 @@ class LossHistory(keras.callbacks.Callback):
         self.losses.append(logs.get('loss'))
 ```
 
-训练结束后，各个组件的可视化结果如下：
+After the training, the visual results of each component are as follows:
 
-关于误差的数值图的如下：
+The scalar diagram of the error is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_scalar.png?raw=true" />
 </p>
 
-输入图片以及训练过后的第一，第二层卷积权重图的如下：
+The input picture and the first, second layer convolution weight after the training are as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_image.png?raw=true" />
 </p>
 
-
-训练参数的柱状图的如下：
+The histograms of the training parameters is as follows:
 
 <p align=center>
 <img width="70%" src="https://github.com/daming-lu/large_files/blob/master/keras_demo_figs/keras_histogram.png?raw=true" />
 </p>
 
-
-
-完整的演示程序可以在[这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/keras/keras_mnist_demo.py)下载。
+The full demonstration code can be downloaded in [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/keras/keras_mnist_demo.py).
