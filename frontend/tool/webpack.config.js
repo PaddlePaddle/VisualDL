@@ -57,7 +57,7 @@ const config = {
 
     module: {
         noParse: [
-            /node_modules\/(san|axios)\//
+            /node_modules\/(axios)\//
         ],
         rules: [
             {
@@ -120,7 +120,7 @@ const config = {
 
         new CaseSensitivePathsPlugin(),
         new webpack.LoaderOptionsPlugin({
-            test: /\.(styl|san)$/
+            test: /\.(styl)$/
         }),
         new ExtractTextPlugin({filename: '[name].css'})
     ]

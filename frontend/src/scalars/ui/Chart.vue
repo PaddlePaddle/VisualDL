@@ -25,13 +25,6 @@
 </template>
 <script>
 
-// TODO: Consider create Vue Components for these
-
-// // components
-// import Button from 'san-mui/Button';
-// import Icon from 'san-mui/Icon';
-// import DropDownMenu from '../../common/component/DropDownMenu';
-
 // libs
 import echarts from 'echarts';
 import axios from 'axios';

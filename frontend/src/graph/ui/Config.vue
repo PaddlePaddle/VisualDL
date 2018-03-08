@@ -18,12 +18,13 @@
             Download image
         </v-btn>
 
-        <v-slider label="Scale"
-          max="1"
-          min="0.1"
-          step="0.1"
-          v-model="config.scale"
-          dark></v-slider>
+        <v-slider
+            label="Scale"
+            max="1"
+            min="0.1"
+            step="0.1"
+            v-model="config.scale"
+            dark></v-slider>
     </div>
 </template>
 <script>

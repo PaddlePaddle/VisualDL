@@ -29,8 +29,6 @@
     </div>
 </template>
 <script>
-// TODO: Maybe migrate the CheckBoxGroup from San to Vue
-//import CheckBoxGroup from '../../common/component/CheckBoxGroup';
 
 export default {
     props: {

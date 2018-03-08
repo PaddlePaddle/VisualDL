@@ -28,8 +28,6 @@
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
 import Chart from './Chart';
-// import Pagination from 'san-mui/Pagination';
-
 import {cloneDeep} from 'lodash';
 
 export default {
