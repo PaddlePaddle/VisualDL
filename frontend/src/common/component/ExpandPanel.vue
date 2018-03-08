@@ -43,6 +43,7 @@ export default {
             line-height 50px
             height 50px
             padding 0 20px
+            margin-right 2%
             cursor pointer
             position relative
             .visual-dl-expand-head-info
@@ -54,8 +55,6 @@ export default {
                     line-height 20px
                     font-size 12px
                     font-weight normal
-        .visual-dl-expand-panel-content
-            padding 0 20px
         .visual-dl-expand-panel-content:after
             content: "";
             clear: both;
