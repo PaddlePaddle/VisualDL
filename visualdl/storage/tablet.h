@@ -29,7 +29,7 @@ struct TabletReader;
  * Tablet is a helper for operations on storage::Tablet.
  */
 struct Tablet {
-  enum Type { kScalar = 0, kHistogram = 1, kImage = 2, kUnknown = 100};
+  enum Type { kScalar = 0, kHistogram = 1, kImage = 2, kUnknown = -1};
 
   DECL_GUARD(Tablet);
 
