@@ -58,7 +58,7 @@ struct Storage {
 
   Storage();
   Storage(const Storage& other);
-
+  ~Storage();
   // Add a mode. Mode is similar to TB's FileWriter, It can be "train" or "test"
   // or something else.
   void AddMode(const std::string& x);
@@ -90,7 +90,7 @@ private:
   std::shared_ptr<std::map<std::string, storage::Tablet>> tablets_;
   std::shared_ptr<storage::Storage> data_;
   std::shared_ptr<std::set<std::string>> modes_;
-  std::set<std::string> modified_tablet_set_;
+  std::unordered_set<std::string> modified_tablet_set_;
 };
 
 // Storage reader, each method will trigger a reading from disk.
