@@ -29,11 +29,11 @@ struct TabletReader;
  * Tablet is a helper for operations on storage::Tablet.
  */
 struct Tablet {
-  enum Type { kScalar = 0, kHistogram = 1, kImage = 2 };
+  enum Type { kScalar = 0, kHistogram = 1, kImage = 2, kUnknown = 100};
 
   DECL_GUARD(Tablet);
 
-  Tablet(storage::Tablet* x, Storage* parent) : data_(x), x_(parent) {}
+  Tablet(storage::Tablet* x, Storage* parent) : data_(x), x_(parent), internal_encoded_tag_("") {}
 
   static Type type(const std::string& name) {
     if (name == "scalar") {
@@ -46,6 +46,7 @@ struct Tablet {
       return kImage;
     }
     LOG(ERROR) << "unknown component: " << name;
+    return kUnknown;
   }
 
   // write operations.
@@ -59,18 +60,8 @@ struct Tablet {
     WRITE_GUARD
   }
 
-  void SetTag(const std::string& mode, const std::string& tag) {
-    auto internal_tag = mode + "/" + tag;
-    string::TagEncode(internal_tag);
-    data_->set_tag(internal_tag);
-    WRITE_GUARD
-  }
-
-  Record AddRecord() {
-    IncTotalRecords();
-    WRITE_GUARD
-    return Record(data_->add_records(), parent());
-  }
+  void SetTag(const std::string& mode, const std::string& tag);
+  Record AddRecord();
 
   template <typename T>
   Entry MutableMeta() {
@@ -102,6 +93,7 @@ struct Tablet {
 private:
   Storage* x_;
   storage::Tablet* data_{nullptr};
+  std::string internal_encoded_tag_;
 };
 
 /*
