@@ -164,9 +164,12 @@ export default {
             let legendOptions = tagList.map(item => item.run);
             let instance = this;
             let option = {
+                textStyle: {
+                    fontFamily: 'Merriweather Sans'
+                },
                 color: [
+                    '#008c99',
                     '#c23531',
-                    '#61a0a8',
                     '#d48265',
                     '#91c7ae',
                     '#749f83',
@@ -179,14 +182,20 @@ export default {
                 title: {
                     text: tag,
                     textStyle: {
-                        fontSize: '12',
-                        fontFamily: 'Merriweather Sans'
+                        fontSize: 13,
+                        fontWeight: 'normal'
                     }
                 },
+                dataZoom: [{
+                    type: 'inside'
+                }],
                 tooltip: {
                     trigger: 'axis',
                     axisPointer: {
                         animation: true
+                    },
+                    textStyle: {
+                        fontSize: '13',
                     },
                     position: ['10%', '90%'],
                     formatter(params, ticket, callback) {
@@ -201,26 +210,28 @@ export default {
                         dataZoom: {},
                         restore: {},
                         saveAsImage: {}
-                    },
-                    left: '10%',
-                    top: '90%'
+                    }
                 },
                 legend: {
                     data: legendOptions,
-                    top: '10%'
+                    top: '13%'
                 },
                 grid: {
-                    left: '10%',
-                    top: '20%',
+                    left: '12%',
+                    top: '25%',
                     right: '10%',
-                    bottom: '20%'
+                    bottom: '8%'
                 },
                 xAxis: {
-                    type: 'value'
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: '11'
+                    }
                 },
                 yAxis: {
                     type: 'value',
                     axisLabel: {
+                        fontSize: '11',
                         formatter(value) {
                             return value.toString().slice(0, 5);
                         }
@@ -522,11 +533,11 @@ export default {
             };
             let widthPropMap = {
                 Run: 40,
-                Time: 90,
+                Time: 120,
                 Step: 40,
                 Value: 50,
-                Smoothed: 50,
-                Relative: 40
+                Smoothed: 60,
+                Relative: 60
             };
             let transformedData = data.map(item => {
                 let data = item.item;
@@ -567,7 +578,7 @@ export default {
 <style lang="stylus">
     .visual-dl-page-charts
         float left
-        margin 20px 30px 10px 0
+        margin 2% 2% 0 0
         background: #fff;
         padding: 10px;
         .visual-dl-chart-actions

@@ -19,8 +19,9 @@
 
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
-                <ui-config :runsItems="runsItems"
-                        :config="config"
+                <ui-config
+                    :runsItems="runsItems"
+                    :config="config"
                 ></ui-config>
             </div>
         </div>

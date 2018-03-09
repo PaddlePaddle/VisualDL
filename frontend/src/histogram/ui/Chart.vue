@@ -2,8 +2,8 @@
     <div class="visual-dl-histogram-charts">
         <div class="visual-dl-chart-box" ref="visual_dl_chart_box">
         </div>
-        <div class="visual-dl-chart-actions">
-            <v-btn flat class="sm-button" @click="expandArea">
+        <div>
+            <v-btn flat @click="expandArea">
                 <v-icon size="20">settings_overscan</v-icon>
             </v-btn>
         </div>
@@ -94,7 +94,7 @@ export default {
                 text: tag,
                 textStyle: {
                     fontSize: '12',
-                    fontFamily: 'Merriweather Sans'
+                    fontWeight: 'normal'
                 }
             };
             if (chartType === 'overlay') {
@@ -183,7 +183,7 @@ export default {
             let minStep = Infinity;
             grid.top = '42%';
             grid.left = '4%';
-            grid.right = '15%';
+            grid.right = '10%';
             chartData.forEach(function (dataItem) {
                 let lineData = [];
                 maxStep = Math.max(dataItem.step, maxStep);
@@ -197,6 +197,9 @@ export default {
             });
 
             let option = {
+                textStyle: {
+                    fontFamily: 'Merriweather Sans'
+                },
                 title,
                 color: ['#006069'],
                 visualMap: {
@@ -216,6 +219,7 @@ export default {
                         onZero: false
                     },
                     axisLabel: {
+                        fontSize: '11',
                         formatter: function (value) {
                             return Math.round(value * 100) / 100;
                         }
@@ -232,6 +236,9 @@ export default {
                     inverse: true,
                     splitLine: {
                         show: false
+                    },
+                    axisLabel: {
+                        fontSize: '11'
                     }
                 },
                 grid,
@@ -355,6 +362,7 @@ export default {
                     zrDrawElement.tooltip = new echarts.graphic.Text({
                         position: [e.offsetX + 30, e.offsetY - 50],
                         style: {
+                            fontFamily: 'Merriweather Sans',
                             text: yValueFormat(hoveredItem.items[nearestIndex.binIndex][3]),
                             textFill: '#000',
                             fontSize: 14,
@@ -375,6 +383,7 @@ export default {
                             gridRect.y + gridRect.height
                         ],
                         style: {
+                            fontFamily: 'Merriweather Sans',
                             text: Math.round(hoveredItem.items[nearestIndex.binIndex][2] * 1000) / 1000,
                             textFill: '#fff',
                             textAlign: 'center',
@@ -394,6 +403,7 @@ export default {
                             linePoints[linePoints.length - 1][1]
                         ],
                         style: {
+                            fontFamily: 'Merriweather Sans',
                             text: hoveredItem.step,
                             textFill: '#fff',
                             textVerticalAlign: 'middle',
@@ -498,28 +508,12 @@ export default {
 <style lang="stylus">
     .visual-dl-histogram-charts
         float left
-        margin-bottom 20px
-        margin 20px 30px 10px 0
+        margin 2% 2% 0 0
         background #fff
         padding 10px
         .visual-dl-chart-box
             float left
             width 400px
             height 300px
-        .visual-dl-chart-actions
-            height 50px
-            margin-left 10%
-            .sm-form-item
-                float left
-                width 100px
-                margin-top 0px
-                display block
-            .sm-button
-                float left
-                display block
-                height 20px
-                line-height 20px
-                margin-top 10px
-                padding 0 10px
 </style>
 
