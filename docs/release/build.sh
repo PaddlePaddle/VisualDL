@@ -1,3 +1,5 @@
+#!/bin/bash
+
 PYTHON_FLAGS=""
 if [ "$1" != "" ]; then
     echo "using python abi: $1"
