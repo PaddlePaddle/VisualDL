@@ -1,6 +1,6 @@
-VisualDL uses the same manylinux environment docker image, the related wiki is <https://github.com/PaddlePaddle/Paddle/tree/develop/tools/manylinux1>.
+VisualDL uses the same manylinux environment docker image with PaddlePaddle, the related wiki is <https://github.com/PaddlePaddle/Paddle/tree/develop/tools/manylinux1>.
 
-We can use this [build file](https://github.com/PaddlePaddle/Paddle/blob/develop/tools/manylinux1/build_scripts/build.sh) to build a manylinux environment. But most of the time, we can directly use `paddlepaddle/paddle_manylinux_devel:cuda8.0_cudnn5`.
+We can use this [build file](https://github.com/PaddlePaddle/Paddle/blob/develop/tools/manylinux1/build_scripts/build.sh) to build this manylinux environment. But most of the time, we can directly use `paddlepaddle/paddle_manylinux_devel:cuda8.0_cudnn5`.
 
 You can use this [check script](https://github.com/PaddlePaddle/Paddle/blob/develop/tools/manylinux1/build_scripts/manylinux1-check.py) to check the build envrionment.
 
