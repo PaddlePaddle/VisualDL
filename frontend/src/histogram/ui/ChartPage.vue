@@ -85,4 +85,5 @@ export default {
             content: "";
             clear: both;
             display: block;
+            padding-bottom: 2%
 </style>

@@ -18,7 +18,6 @@
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
-                Config
                 <ui-config
                     :runsItems="runsItems"
                     :config="config"
