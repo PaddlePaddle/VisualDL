@@ -9,7 +9,8 @@ Vue.config.productionTip = false
 Vue.use(Vuetify, {
     theme: {
         primary: '#008c99',
-        accent: '#008c99'
+        accent: '#008c99',
+        toolbox_icon: '#999999'
     }
 })
 

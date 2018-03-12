@@ -10,7 +10,6 @@
                     :smoothing="config.smoothing"
                     :horizontal="config.horizontal"
                     :sortingMethod="config.sortingMethod"
-                    :downloadLink="config.downloadLink"
                     :outlier="config.outlier"
                     :runs="config.runs"
                     :running="config.running"
