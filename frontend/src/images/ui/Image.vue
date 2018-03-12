@@ -1,5 +1,5 @@
 <template>
-    <div class="visual-dl-image">
+    <v-card hover class="visual-dl-image">
         <h3 class="visual-dl-image-title">{{tagInfo.tag.displayName}}
             <span class="visual-dl-image-run-icon">{{tagInfo.run}}</span>
         </h3>
@@ -16,7 +16,7 @@
                   dark></v-slider>
 
         <img :width="imageWidth" :height="imageHeight" :src="imgData.imgSrc" />
-    </div>
+    </v-card>
 </template>
 <script>
 import {getPluginImagesImages} from '../../service';

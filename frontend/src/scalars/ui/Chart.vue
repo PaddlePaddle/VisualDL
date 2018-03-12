@@ -1,27 +1,45 @@
 <template>
-    <div class="visual-dl-page-charts">
+    <v-card hover class="visual-dl-page-charts">
         <div ref="chartBox" class="visual-dl-chart-box" :style="computedStyle">
         </div>
         <div class="visual-dl-chart-actions">
-            <v-btn flat @click="expandArea" class="chart-expand">
-                <v-icon size="20">settings_overscan</v-icon>
+            <v-btn color="toolbox_icon" flat icon @click="isSelectZoomEnable = !isSelectZoomEnable" class="chart-toolbox-icons">
+                <img v-if="!isSelectZoomEnable" src="../../assets/ic_zoom_select_off.svg"/>
+                <img v-if="isSelectZoomEnable" src="../../assets/ic_zoom_select_on.svg"/>
             </v-btn>
-            <v-select
-                v-if="downloadLink && tagInfo.tagList.length > 0"
-                class="download-selector"
-                :items="tagInfo.tagList"
-                v-model="runItemForDownload"
-                item-text="run"
-                item-value="run"
-            />
-            <v-btn flat
-                v-if="downloadLink && tagInfo.tagList.length > 0"
-                class="download-button"
-                @click="handleDownLoad">
-                <v-icon size="20">file_download</v-icon>
+            <v-btn color="toolbox_icon" flat icon @click="restoreChart" class="chart-toolbox-icons">
+                <img src="../../assets/ic_undo.svg"/>
             </v-btn>
+            <v-btn color="toolbox_icon" flat icon @click="isExpand = !isExpand" class="chart-toolbox-icons" >
+                <img v-if="!isExpand" src="../../assets/ic_fullscreen_off.svg"/>
+                <img v-if="isExpand" src="../../assets/ic_fullscreen_on.svg"/>
+            </v-btn>
+            <v-btn color="toolbox_icon" flat icon @click="saveChartAsImage" class="chart-toolbox-icons" >
+                <img src="../../assets/ic_download.svg"/>
+            </v-btn>
+            <v-menu v-if="tagInfo.tagList.length > 0">
+                <v-btn color="toolbox_icon" slot="activator" flat icon class="chart-toolbox-icons">
+                    <v-icon >more_vert</v-icon>
+                </v-btn>
+                <v-list dense>
+                        <v-list-tile>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Download data in JSON</v-list-tile-title>
+                            </v-list-tile-content>
+                            <v-list-tile-action>
+                                <v-icon>expand_more</v-icon>
+                            </v-list-tile-action>
+                        </v-list-tile>
+
+                        <v-list-tile v-for="subItem in tagInfo.tagList" :key="subItem.run" @click="handleDownLoad(subItem.run)">
+                            <v-list-tile-content>
+                                <v-list-tile-title>&nbsp;&nbsp;&nbsp;{{ subItem.run }}</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                </v-list>
+            </v-menu>
         </div>
-    </div>
+    </v-card>
 </template>
 <script>
 
@@ -45,7 +63,7 @@ const maxQuantile = 0.95;
 const intervalTime = 15;
 
 export default {
-    props: ['tagInfo', 'groupNameReg', 'smoothing', 'horizontal', 'sortingMethod', 'downloadLink', 'outlier', 'runs',
+    props: ['tagInfo', 'groupNameReg', 'smoothing', 'horizontal', 'sortingMethod', 'outlier', 'runs',
             'running', 'runsItems'],
     computed: {
         computedStyle() {
@@ -57,16 +75,12 @@ export default {
         return {
             width: 400,
             height: 300,
-            // choose run type for download file
-            runItemForDownload: {},
             isExpand: false,
+            isSelectZoomEnable: true,
             originData: []
         };
     },
     watch: {
-        runsItems: function(val) {
-            this.initRunItemForDownload();
-        },
         originData: function(val) {
             this.setChartData();
             this.setChartsOutlier();
@@ -86,13 +100,17 @@ export default {
             this.myChart.clear();
             this.setChartsOptions(val);
             this.getOriginChartData(val);
+        },
+        isExpand: function(val) {
+            this.expandArea(val);
+        },
+        isSelectZoomEnable: function(val) {
+            this.toggleSelectZoom(val);
         }
-        // runs: function(val) {
-        //     this.setChartsRuns();
-        // }
     },
     mounted() {
         this.initChart(this.tagInfo);
+        this.toggleSelectZoom(true);
 
         if (this.running) {
             this.startInterval();
@@ -107,13 +125,6 @@ export default {
         this.stopInterval();
     },
     methods: {
-        initRunItemForDownload() {
-            if (this.tagInfo.tagList.length === 0) {
-                return;
-            }
-            this.runItemForDownload = this.tagInfo.tagList[0].run;
-        },
-
         // Create a Scalar Chart, initialize it with default settings, then load datas
         initChart(tagInfo) {
             this.createChart();
@@ -186,9 +197,6 @@ export default {
                         fontWeight: 'normal'
                     }
                 },
-                dataZoom: [{
-                    type: 'inside'
-                }],
                 tooltip: {
                     trigger: 'axis',
                     axisPointer: {
@@ -205,12 +213,11 @@ export default {
                 },
                 toolbox: {
                     show: true,
-                    showTitle: true,
+                    showTitle: false,
+                    itemSize: 0,
                     feature: {
                         dataZoom: {},
-                        restore: {},
-                        saveAsImage: {}
-                    }
+                    },
                 },
                 legend: {
                     data: legendOptions,
@@ -220,7 +227,7 @@ export default {
                     left: '12%',
                     top: '25%',
                     right: '10%',
-                    bottom: '8%'
+                    bottom: '12%'
                 },
                 xAxis: {
                     type: 'value',
@@ -303,10 +310,10 @@ export default {
         getChartOptions() {
             return this.myChart.getOption() || {};
         },
-        handleDownLoad() {
+        handleDownLoad(runItemForDownload) {
             let options = this.getChartOptions();
             let series = options.series || [];
-            let seriesItem = series.find(item => item.name === this.runItemForDownload) || {};
+            let seriesItem = series.find(item => item.name === runItemForDownload) || {};
             let fileName = this.tagInfo.tag.replace(/\//g, '-');
             generateJsonAndDownload(seriesItem.data, fileName);
         },
@@ -441,15 +448,15 @@ export default {
             this.myChart.setOption(horizontalToxAxisOptions[this.horizontal]);
         },
 
-        expandArea() {
+        expandArea(expand) {
             let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page-box')[0].offsetWidth;
-            if (!this.isExpand) {
+            let width = pageBoxWidth * 0.96; //4% margin
+            if (expand) {
                 let el = this.$refs.chartBox;
-                el.style.width = pageBoxWidth + 'px';
+                el.style.width = width + 'px';
                 el.style.height = '600px';
-                this.isExpand = true;
                 this.myChart.resize({
-                    width: pageBoxWidth,
+                    width: width,
                     height: 600
                 });
             }
@@ -457,12 +464,42 @@ export default {
                 let el = this.$refs.chartBox;
                 el.style.width = '400px';
                 el.style.height = '300px';
-                this.isExpand = false;
                 this.myChart.resize({
                     width: 400,
                     height: 300
                 });
             }
+        },
+
+        toggleSelectZoom(enable) {
+            let instance = this;
+            setTimeout(function() {
+                instance.myChart.dispatchAction({
+                    type: 'takeGlobalCursor',
+                    key: 'dataZoomSelect',
+                    dataZoomSelectActive: enable
+                });
+            }, 0)
+        },
+
+        restoreChart() {
+            this.myChart.dispatchAction({
+                type: 'restore'
+            })
+        },
+
+        saveChartAsImage() {
+            let dataUrl = this.myChart.getDataURL({
+                pixelRatio: 1,
+                backgroundColor: '#fff'
+            });
+            let fileName = this.tagInfo.tag.replace(/\//g, '-');
+            let link = document.createElement("a");
+            link.download = fileName;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         },
 
         getFormatterPoints(data) {
@@ -579,17 +616,30 @@ export default {
     .visual-dl-page-charts
         float left
         margin 2% 2% 0 0
-        background: #fff;
-        padding: 10px;
+        padding 10px
+        position relative
         .visual-dl-chart-actions
-            vertical-align: middle
-            .chart-expand
-                float left
-            .download-selector
-                float left
-                width 100px
-                margin-top -10px
-            .download-button
-                float left
+            opacity 0
+            transition: opacity .3s ease-out;
+            position absolute
+            top 4px
+            right 10px
+            img
+                width 30px
+                height 30px
+                position absolute
+                top 0
+                bottom 0
+                margin auto
+            .chart-toolbox-icons
+                width 25px
+                height 25px
+                margin-left -4px
+                margin-right -4px
+
+    .visual-dl-page-charts:hover
+        .visual-dl-chart-actions
+            opacity 1
+
 </style>
 

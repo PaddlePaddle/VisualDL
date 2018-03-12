@@ -39,7 +39,7 @@ export default {
 
 #app {
   font-family: 'Merriweather Sans', Helvetica, Arial, sans-serif;
-  font-weight: bold;
+  font-weight: regular;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: $-content-text-color;

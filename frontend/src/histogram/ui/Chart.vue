@@ -1,13 +1,14 @@
 <template>
-    <div class="visual-dl-histogram-charts">
+    <v-card hover class="visual-dl-page-charts">
         <div class="visual-dl-chart-box" ref="visual_dl_chart_box">
         </div>
-        <div>
-            <v-btn flat @click="expandArea">
-                <v-icon size="20">settings_overscan</v-icon>
+        <div class="visual-dl-chart-actions">
+            <v-btn color="toolbox_icon" flat icon @click="isExpand = !isExpand" class="chart-toolbox-icons" >
+                <img v-if="!isExpand" src="../../assets/ic_fullscreen_off.svg"/>
+                <img v-if="isExpand" src="../../assets/ic_fullscreen_on.svg"/>
             </v-btn>
         </div>
-    </div>
+    </v-card>
 </template>
 <script>
 // libs
@@ -43,6 +44,9 @@ export default {
         },
         running: function(val) {
             val ? this.startInterval() : this.stopInterval();
+        },
+        isExpand: function(val) {
+            this.expandArea(val);
         }
     },
     mounted() {
@@ -478,16 +482,16 @@ export default {
             });
         },
 
-        expandArea() {
-            let isExpand = this.isExpand;
+        expandArea(expand) {
             let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page')[0].offsetWidth;
-            if (!isExpand) {
+            let width = pageBoxWidth * 0.96; //4% margin
+            if (expand) {
                 let el = this.$refs.visual_dl_chart_box;
-                el.style.width = pageBoxWidth + 'px';
+                el.style.width = width + 'px';
                 el.style.height = '600px';
                 this.isExpand = true;
                 this.myChart.resize({
-                    width: pageBoxWidth,
+                    width: width,
                     height: 600
                 });
             }
@@ -506,14 +510,36 @@ export default {
 };
 </script>
 <style lang="stylus">
-    .visual-dl-histogram-charts
+    .visual-dl-page-charts
         float left
         margin 2% 2% 0 0
         background #fff
         padding 10px
+        position relative
         .visual-dl-chart-box
-            float left
             width 400px
             height 300px
+        .visual-dl-chart-actions
+            opacity 0
+            transition: opacity .3s ease-out;
+            position absolute
+            top 4px
+            right 10px
+            img
+                width 30px
+                height 30px
+                position absolute
+                top 0
+                bottom 0
+                margin auto
+            .chart-toolbox-icons
+                width 25px
+                height 25px
+                margin-left -4px
+                margin-right -4px
+
+    .visual-dl-page-charts:hover
+        .visual-dl-chart-actions
+            opacity 1
 </style>
 

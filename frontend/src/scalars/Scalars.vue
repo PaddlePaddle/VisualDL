@@ -50,7 +50,6 @@ export default {
                 smoothing: 0.6,
                 horizontal: 'step',
                 sortingMethod: 'default',
-                downloadLink: false,
                 outlier: false,
                 runs: [],
                 running: true
