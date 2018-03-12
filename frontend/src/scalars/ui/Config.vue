@@ -29,10 +29,9 @@
                 v-model="config.sortingMethod"
                 label="Tooltip sorting method"
                 class="visual-dl-page-config-selector"
-                dark
+                dark dense
         ></v-select>
 
-        <v-checkbox class="visual-dl-page-config-checkbox" label="Show data download links" v-model="config.downloadLink" dark></v-checkbox>
         <v-checkbox class="visual-dl-page-config-checkbox" label="Ignore outliers in chart scaling" v-model="config.outlier" dark></v-checkbox>
 
         <label class="visual-dl-page-checkbox-group-label">Runs</label>
