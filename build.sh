@@ -19,10 +19,13 @@ check_duplicated() {
 
 build_frontend() {
     cd $FRONTEND_DIR
-    if [ ! -d "dist" ]; then
-      npm install
-      npm run build
-    fi
+#    # Should always rebuild the dist files.
+#    if [ ! -d "dist" ]; then
+#      npm install
+#      npm run build
+#    fi
+    npm install
+    npm run build
     for file_name in "manifest.*.js" "index.*.js" "vendor.*.js"; do
         echo $file_name
         check_duplicated $file_name
