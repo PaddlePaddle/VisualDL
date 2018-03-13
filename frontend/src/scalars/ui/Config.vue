@@ -12,10 +12,10 @@
                       :max="0.99"
                       :min="0"
                       :step="0.01"
-                      v-model="config.smoothing"
+                      v-model="smoothingValue"
                       class="visual-dl-page-smoothing-slider"
                       dark></v-slider>
-            <span class="visual-dl-page-slider-span">{{config.smoothing}}</span>
+            <span class="visual-dl-page-slider-span">{{smoothingValue}}</span>
         </div>
 
         <v-radio-group label="Horizontal" v-model="config.horizontal" dark>
@@ -80,8 +80,16 @@ export default {
             ],
             sortingMethodItems: [
                 'default', 'descending', 'ascending', 'nearest'
-            ]
+            ],
+            smoothingValue: this.config.smoothing
         };
+    },
+    watch: {
+        smoothingValue: _.debounce(
+            function() {
+                this.config.smoothing = this.smoothingValue;
+            }, 50
+        )
     },
     methods: {
         toggleAllRuns() {
