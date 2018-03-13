@@ -128,18 +128,9 @@ PYBIND11_MODULE(core, m) {
 #undef ADD_SCALAR_READER
 
 #define ADD_SCALAR_WRITER(T)                          \
-  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T, R"pbdoc(
-        PyBind class. Must instantiate through the LogWriter.
-      )pbdoc")                                        \
+  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T, R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc")                                        \
       .def("set_caption", &cp::Scalar<T>::SetCaption) \
-      .def("add_record", &cp::Scalar<T>::AddRecord, R"pbdoc(
-        add a record with the step and value
-
-        :param step: This value appears at this step in the run.
-        :type step: integer
-        :param value: The scalar value to be recorded.
-        :type value: float
-      )pbdoc");
+      .def("add_record", &cp::Scalar<T>::AddRecord, R"pbdoc(add a record with the step and value)pbdoc");
   ADD_SCALAR_WRITER(int);
   ADD_SCALAR_WRITER(float);
   ADD_SCALAR_WRITER(double);
@@ -202,18 +193,8 @@ PYBIND11_MODULE(core, m) {
       .def("timestamp", &cp::ImageReader::timestamp);
 
 #define ADD_HISTOGRAM_WRITER(T) \
-  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, R"pbdoc(
-        PyBind class. Must instantiate through the LogWriter.
-      )pbdoc")                  \
-      .def("add_record", &cp::Histogram<T>::AddRecord, R"pbdoc(
-        add a record with the step and histogram_value
-
-        :param step: This value appears at this step in the run.
-        :type step: integer
-        :param histogram_value: A flatten list of the distribution value. EX: [1, 2, 100, 2, 3, 200] will draw a histogram where
-         the value between 1~2 is 100 and the value between 2~3 is 200
-        :type histogram_value: list
-              )pbdoc");
+  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc")                  \
+      .def("add_record", &cp::Histogram<T>::AddRecord, R"pbdoc(add a record with the step and histogram_value)pbdoc");
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_WRITER)
 #undef ADD_HISTOGRAM_WRITER
 
