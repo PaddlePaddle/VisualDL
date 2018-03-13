@@ -126,6 +126,15 @@ class LogWriter(object):
     """LogWriter is a Python wrapper to write data to log file with the data
     format defined in storage.proto. A User can get Scalar Reader/Image Reader/
     Histogram Reader from this module and use them to write the data to log file.
+
+    :param dir: The directory path to the saved log files.
+    :type dir: basestring
+    :param sync_cycle: Specify how often should the system store data into the file system.
+        Typically adding a record requires 6 operations.
+        System will save the data into the file system once operations count reaches sync_cycle.
+    :type sync_cycle: integer
+    :return: a new LogWriter instance
+    :rtype: LogWriter
     """
 
     cur_mode = None
