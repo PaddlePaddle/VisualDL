@@ -9,7 +9,7 @@ from visualdl.server.log import logger as log
 
 logdir = './scratch_log'
 
-logw = LogWriter(logdir, sync_cycle=30)
+logw = LogWriter(logdir, sync_cycle=2000)
 
 # create scalars in mode train and test.
 with logw.mode('train') as logger:

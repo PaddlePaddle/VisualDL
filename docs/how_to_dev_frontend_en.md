@@ -31,7 +31,7 @@ The VisualDL Web app uses multiple frameworks to help manage the project. They a
 
 1. webpack: To manage all assets
 1. npm: To manage dependencies
-1. San: Javascript Component framework
+1. Vue: Javascript Component framework
 1. ECharts: To pilot charts
 
 ## Webpack
@@ -63,13 +63,13 @@ npm install
 
 This command will go through `package.json` and install the dependencies in the local node_modules folder.
 
-## San
+## Vue
 
-San is a JavaScript component framework that helps the developer to implement web component in MVVM architecture pattern.
+Vue is a JavaScript component framework that helps the developer to implement web component in MVVM architecture pattern.
 
-San allows you to define a self-contained view model in a .san file and attach view model objects to DOM objects.
+Vue allows you to define a self-contained view model in a .vue file and attach view model objects to DOM objects.
 
-To learn more about [san](https://github.com/ecomfe/san)
+To learn more about [Vue](https://vuejs.org/)
 
 ## ECharts
 

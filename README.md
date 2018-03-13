@@ -17,7 +17,6 @@ New features will be continuously added.
 At present, most DNN frameworks use Python as their primary language. VisualDL supports Python by nature.
 Users can get plentiful visualization results by simply add a few lines of Python code into their model before training.
 
-
 Besides Python SDK, VisualDL was writen in C++ on the low level. It also provides C++ SDK that
 can be integrated into other platforms.  
 
@@ -80,6 +79,7 @@ VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.
 
 
 ### Python SDK
+VisualDL now supports both Python 2 and Python 3. 
 Below is an example of creating a simple Scalar component and inserting data from different timestamps:
 
 ```python
@@ -87,7 +87,7 @@ import random
 from visualdl import LogWriter
 
 logdir = "./tmp"
-logger = LogWriter(logdir, sync_cycle=10)
+logger = LogWriter(logdir, sync_cycle=10000)
 
 # mark the components with 'train' label.
 with logger.mode("train"):
@@ -112,7 +112,7 @@ namespace cp = visualdl::components;
 
 int main() {
   const std::string dir = "./tmp";
-  vs::LogWriter logger(dir, 10);
+  vs::LogWriter logger(dir, 10000);
 
   logger.SetMode("train");
   auto tablet = logger.AddTablet("scalars/scalar0");
@@ -161,7 +161,8 @@ pip install --upgrade dist/visualdl-*.whl
 
 ### Run a demo from scratch
 ```
-vdl_scratch.py
+# vdl_create_scratch_log is a helper commend that creates mock data.
+vdl_create_scratch_log 
 visualDL --logdir=scratch_log --port=8080
 ```
 that will start a server locally on port 8080, then
