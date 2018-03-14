@@ -50,13 +50,13 @@ with logw.mode("train") as logger:
     image0 = logger.image("scratch/random", 4)
 
     dog_jpg = Image.open(os.path.join(ROOT, 'python/dog.jpg'))
-    dog_jpg = dog_jpg.resize(np.array(dog_jpg.size) / 2)
+    dog_jpg = dog_jpg.resize(np.floor_divide(np.array(dog_jpg.size), 2))
     shape = [dog_jpg.size[1], dog_jpg.size[0], 3]
 
     # add dog's image
-    for pass_ in xrange(4):
+    for pass_ in range(4):
         image.start_sampling()
-        for sample in xrange(10):
+        for sample in range(10):
             # randomly crop a dog's image.
             target_shape = [100, 100, 3]  # width, height, channels(3 for RGB)
             left_x = random.randint(0, shape[1] - target_shape[1])
@@ -82,9 +82,9 @@ with logw.mode("train") as logger:
         image.finish_sampling()
 
     # add randomly generated image
-    for pass_ in xrange(4):
+    for pass_ in range(4):
         image0.start_sampling()
-        for sample in xrange(10):
+        for sample in range(10):
             shape = [40, 30, 3]
             data = np.random.random(shape).flatten()
             image0.add_sample(shape, list(data))
@@ -98,10 +98,23 @@ def download_graph_image():
 
     For real cases, just refer to README.
     '''
-    import urllib
+
+    import sys
+
+    if sys.version_info[0] == 3:
+        import urllib.request as ur
+
+    else:
+        # Not Python 3 - today, it is most likely to be Python 2
+        import urllib as ur
+
+    import ssl
+    myssl = ssl.create_default_context()
+    myssl.check_hostname = False
+    myssl.verify_mode = ssl.CERT_NONE
     image_url = "https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/super_resolution_graph.png?raw=true"
     log.warning('download graph demo from {}'.format(image_url))
-    graph_image = urllib.urlopen(image_url).read()
+    graph_image = ur.urlopen(image_url, context=myssl).read()
     with open(os.path.join(logdir, 'graph.jpg'), 'wb') as f:
         f.write(graph_image)
     log.warning('graph ready!')
