@@ -23,11 +23,15 @@ The first step of using VisualDL is to create a `LogWriter' that can store visua
 from VisualDL import LogWriter
 from random import random
 
-logw = LogWriter("./random_log", sync_cycle=30)
+logw = LogWriter("./random_log", sync_cycle=10000)
 ```
 
 The first parameter points to a folder; the second parameter `sync_cycle` specifies out of how memory operations should be
-store the data into hard drive.
+store the data into hard drive. 
+
+### sync_cycle
+Writing is a heavy operation. Setting `sync_cycle` might slow down your training. 
+A good starting point is to set the `sync_cycle` to be at least twice the amount of data point your would like to capture.
 
 There are different modes for model training, such as training, validating and testing. All these correspond to `mode' in VisualDL.
 We can use the following pattern to specify mode:

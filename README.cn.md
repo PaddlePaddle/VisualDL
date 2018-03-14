@@ -70,7 +70,10 @@ visualDL --logdir=scratch_log --port=8080
 
 ## SDK
 VisualDL 同时提供了python SDK 和 C++ SDK 来实现不同方式的使用。
+
 ### Python SDK
+VisualDL 现在支持 Python 2和 Python 3。
+
 以最简单的Scalar组件为例，尝试创建一个scalar组件并插入多个时间步的数据：
 
 ```python
@@ -78,7 +81,7 @@ import random
 from visualdl import LogWriter
 
 logdir = "./tmp"
-logger = LogWriter(logdir, sync_cycle=10)
+logger = LogWriter(logdir, sync_cycle=10000)
 
 # mark the components with 'train' label.
 with logger.mode("train"):
@@ -102,7 +105,7 @@ namespace cp = visualdl::components;
 
 int main() {
   const std::string dir = "./tmp";
-  vs::LogWriter logger(dir, 10);
+  vs::LogWriter logger(dir, 10000);
 
   logger.SetMode("train");
   auto tablet = logger.AddTablet("scalars/scalar0");
