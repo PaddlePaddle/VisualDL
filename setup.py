@@ -90,7 +90,7 @@ setup(
     install_requires=install_requires,
     package_data={
         'visualdl.server':
-        ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/images/*'],
+        ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/assets/*'],
         'visualdl': ['core.so'],
         'visualdl.python': ['core.so', 'dog.jpg']
     },

@@ -20,10 +20,15 @@ VisualDL提供原生的Python和C++ SDK，可以支持多种深度学习平台�
 from VisualDL import LogWriter
 from random import random
 
-logw = LogWriter("./random_log", sync_cycle=30)
+logw = LogWriter("./random_log", sync_cycle=10000)
 ```
 
 其中， 第一个参数指定存储数据的目录；第二个参数 `sync_cycle` 指定多少次写操作执行一次内存到磁盘的数据持久化。
+
+### sync_cycle
+写IO是一项繁重的工作。设置` sync_cycle `太低可能会减慢你的训练。
+我们建议将 `sync_cycle` 设置为约要捕捉的数据点的两倍。
+
 
 模型训练会有不同的模式，比如训练、验证、测试等，这些对应到 VisualDL中就是 `mode`，可以用如下方式指定一个训练模式
 
