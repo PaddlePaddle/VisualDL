@@ -55,7 +55,6 @@ import moment from 'moment';
 import {getPluginScalarsScalars} from '../../service';
 
 const originLinesOpacity = 0.3;
-const defaultSmoothWeight = 0.6;
 const lineWidth = 1.5;
 const minQuantile = 0.05;
 const maxQuantile = 0.95;
@@ -320,7 +319,7 @@ export default {
 
         transformDataset(seriesData) {
             // smooth
-            this.transformData(seriesData, this.smoothing || defaultSmoothWeight);
+            this.transformData(seriesData, this.smoothing);
         },
 
         /**
@@ -543,11 +542,11 @@ export default {
             }
             let sortedPoints;
             switch (sortingMethod) {
-                case 'desc':
+                case 'descending':
                     sortedPoints = sortBy(points, one => one.item[3]);
                     sortedPoints.reverse();
                     break;
-                case 'asc':
+                case 'ascending':
                     sortedPoints = sortBy(points, one => one.item[3]);
                     break;
                 case 'nearest':
