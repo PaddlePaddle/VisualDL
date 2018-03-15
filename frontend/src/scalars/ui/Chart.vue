@@ -55,7 +55,6 @@ import moment from 'moment';
 import {getPluginScalarsScalars} from '../../service';
 
 const originLinesOpacity = 0.3;
-const defaultSmoothWeight = 0.6;
 const lineWidth = 1.5;
 const minQuantile = 0.05;
 const maxQuantile = 0.95;
@@ -181,14 +180,14 @@ export default {
                 color: [
                     '#008c99',
                     '#c23531',
-                    '#d48265',
-                    '#91c7ae',
-                    '#749f83',
-                    '#ca8622',
-                    '#bda29a',
-                    '#6e7074',
-                    '#546570',
-                    '#c4ccd3'
+                    '#FF9900',
+                    '#109618',
+                    '#990099',
+                    '#3B3EAC',
+                    '#DD4477',
+                    '#AAAA11',
+                    '#5574A6',
+                    '#8B0707'
                 ],
                 title: {
                     text: tag,
@@ -320,7 +319,7 @@ export default {
 
         transformDataset(seriesData) {
             // smooth
-            this.transformData(seriesData, this.smoothing || defaultSmoothWeight);
+            this.transformData(seriesData, this.smoothing);
         },
 
         /**
@@ -543,11 +542,11 @@ export default {
             }
             let sortedPoints;
             switch (sortingMethod) {
-                case 'desc':
+                case 'descending':
                     sortedPoints = sortBy(points, one => one.item[3]);
                     sortedPoints.reverse();
                     break;
-                case 'asc':
+                case 'ascending':
                     sortedPoints = sortBy(points, one => one.item[3]);
                     break;
                 case 'nearest':
