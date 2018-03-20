@@ -46,12 +46,12 @@ void SimpleWriteSyncGuard<T>::End() {
         time_t current_time = time(NULL);
         time_t interval = current_time - last_sync_time;
 
-        // If last sync happens more than 40 seconds ago, the system needs to make the sync-up faster
+        // If last sync happens more than 25 seconds ago, the system needs to make the sync-up faster
         if (interval > sync_period + period_range) {
             data_->parent()->meta.cycle = std::max(long(data_->parent()->meta.cycle * faster_multiplier), long(minimun_sync_cycle));
         }
         else if (interval < sync_period - period_range) {
-        // If the last sync happens less than 20 seconds ago, the system needs to make the sync-up slower.
+        // If the last sync happens less than 15 seconds ago, the system needs to make the sync-up slower.
             data_->parent()->meta.cycle = std::min(long(data_->parent()->meta.cycle * slower_multiplier), LONG_MAX);
         }
         last_sync_time = current_time;
