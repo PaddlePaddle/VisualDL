@@ -25,8 +25,8 @@ namespace visualdl {
 const int sync_period= 25;
 const int minimun_sync_cycle= 100;
 const int period_range = 10;
-const long slower_multiplier = 1.4;
-const long faster_multiplier = 0.5;
+const double slower_multiplier = 1.4;
+const double faster_multiplier = 0.5;
 
 static time_t last_sync_time = time(NULL);
 
