@@ -22,9 +22,10 @@ limitations under the License. */
 
 namespace visualdl {
 
-const int sync_period= 25;
 const int minimun_sync_cycle= 100;
-const int period_range = 10;
+// Expect sync happens every 15~25 seconds
+const int sync_period= 20;
+const int period_range = 5;
 const double slower_multiplier = 1.4;
 const double faster_multiplier = 0.5;
 
