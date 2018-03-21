@@ -167,7 +167,7 @@ for epoch in range(5):  # loop over the dataset multiple times
 print('Finished Training')
 ```
 
-PyTorch support ONNX standard and it can export its model into ONNX. 
+PyTorch support ONNX standard and it can export its model into ONNX.
 PyTorch runs a single round of inference to trace the graph. We use a dummy input to run the model to produce the ONNX model
 
 ```python
