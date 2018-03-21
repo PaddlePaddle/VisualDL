@@ -44,7 +44,7 @@ public:
     mode_ = mode;
     storage_.AddMode(mode);
   }
-
+  void Save() { storage_.PersistToDisk(); }
   LogWriter AsMode(const std::string& mode);
 
   Tablet AddTablet(const std::string& tag);

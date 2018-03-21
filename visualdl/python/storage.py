@@ -222,6 +222,9 @@ class LogWriter(object):
         }
         return types[type](tag, num_buckets)
 
+    def save(self):
+        self.writer.save()
+
     def __enter__(self):
         return self
 
