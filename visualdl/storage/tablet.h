@@ -29,11 +29,12 @@ struct TabletReader;
  * Tablet is a helper for operations on storage::Tablet.
  */
 struct Tablet {
-  enum Type { kScalar = 0, kHistogram = 1, kImage = 2, kUnknown = -1};
+  enum Type { kScalar = 0, kHistogram = 1, kImage = 2, kUnknown = -1 };
 
   DECL_GUARD(Tablet);
 
-  Tablet(storage::Tablet* x, Storage* parent) : data_(x), x_(parent), internal_encoded_tag_("") {}
+  Tablet(storage::Tablet* x, Storage* parent)
+      : data_(x), x_(parent), internal_encoded_tag_("") {}
 
   static Type type(const std::string& name) {
     if (name == "scalar") {
