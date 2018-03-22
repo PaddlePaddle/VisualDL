@@ -18,18 +18,18 @@ limitations under the License. */
 namespace visualdl {
 
 void Tablet::SetTag(const std::string& mode, const std::string& tag) {
-    auto internal_tag = mode + "/" + tag;
-    string::TagEncode(internal_tag);
-    internal_encoded_tag_ = internal_tag;
-    data_->set_tag(internal_tag);
-    WRITE_GUARD
+  auto internal_tag = mode + "/" + tag;
+  string::TagEncode(internal_tag);
+  internal_encoded_tag_ = internal_tag;
+  data_->set_tag(internal_tag);
+  WRITE_GUARD
 }
 
 Record Tablet::AddRecord() {
-    parent()->MarkTabletModified(internal_encoded_tag_);
-    IncTotalRecords();
-    WRITE_GUARD
-    return Record(data_->add_records(), parent());
+  parent()->MarkTabletModified(internal_encoded_tag_);
+  IncTotalRecords();
+  WRITE_GUARD
+  return Record(data_->add_records(), parent());
 }
 
 TabletReader Tablet::reader() { return TabletReader(*data_); }
