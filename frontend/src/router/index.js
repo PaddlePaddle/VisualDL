@@ -5,6 +5,7 @@ import Scalars from '@/scalars/Scalars'
 import Histogram from '@/histogram/Histogram'
 import Images from '@/images/Images'
 import Graph from '@/graph/Graph'
+import Texts from '@/texts/Texts'
 
 Vue.use(Router)
 
@@ -30,5 +31,10 @@ export default new Router({
       name: 'Graph',
       component: Graph
     },
+    {
+      path: '/texts',
+      name: 'Texts',
+      component: Texts
+    }
   ]
 })
