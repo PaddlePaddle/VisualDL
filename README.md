@@ -79,7 +79,7 @@ VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.
 
 
 ### Python SDK
-VisualDL now supports both Python 2 and Python 3. 
+VisualDL now supports both Python 2 and Python 3.
 Below is an example of creating a simple Scalar component and inserting data from different timestamps:
 
 ```python
@@ -162,7 +162,7 @@ pip install --upgrade dist/visualdl-*.whl
 ### Run a demo from scratch
 ```
 # vdl_create_scratch_log is a helper commend that creates mock data.
-vdl_create_scratch_log 
+vdl_create_scratch_log
 visualDL --logdir=scratch_log --port=8080
 ```
 that will start a server locally on port 8080, then

@@ -4,7 +4,7 @@ Here we will show you how to use VisualDL in MXNet so that you can visualize the
 We will use the MXNet Convolution Neural Network to train the [MNIST](http://yann.lecun.com/exdb/mnist/) dataset as an example.
 
 ## Install MXNet
-Please install MXNet according to MXNet's [official website](https://mxnet.incubator.apache.org/install/index.html) 
+Please install MXNet according to MXNet's [official website](https://mxnet.incubator.apache.org/install/index.html)
 and verify that the installation is successful.
 
     >>> import mxnet as mx
@@ -58,7 +58,7 @@ lenet_model.fit(train_iter,
 ```
 
 That's all. In the training process of MXNet, our callback function is called to record the accuracy at the end of each training batch.
-The rate of accuracy will continue to rise until more than 95%. 
+The rate of accuracy will continue to rise until more than 95%.
 The following is the accuracy of the two epochs:
 
 <p align=center><img width="50%" src="https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/epoch2_small.png?raw=true" /></p>
