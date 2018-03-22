@@ -86,6 +86,7 @@ PYBIND11_MODULE(core, m) {
       }))
       .def("set_mode", &vs::LogWriter::SetMode)
       .def("as_mode", &vs::LogWriter::AsMode)
+      .def("save", &vs::LogWriter::Save)
 // clang-format off
       #define WRITER_ADD_SCALAR(T)                                               \
       .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
@@ -127,10 +128,15 @@ PYBIND11_MODULE(core, m) {
   ADD_SCALAR_READER(int64_t);
 #undef ADD_SCALAR_READER
 
-#define ADD_SCALAR_WRITER(T)                          \
-  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T, R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc")                                        \
-      .def("set_caption", &cp::Scalar<T>::SetCaption) \
-      .def("add_record", &cp::Scalar<T>::AddRecord, R"pbdoc(add a record with the step and value)pbdoc");
+#define ADD_SCALAR_WRITER(T)                                                \
+  py::class_<cp::Scalar<T>>(                                                \
+      m,                                                                    \
+      "ScalarWriter__" #T,                                                  \
+      R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc") \
+      .def("set_caption", &cp::Scalar<T>::SetCaption)                       \
+      .def("add_record",                                                    \
+           &cp::Scalar<T>::AddRecord,                                       \
+           R"pbdoc(add a record with the step and value)pbdoc");
   ADD_SCALAR_WRITER(int);
   ADD_SCALAR_WRITER(float);
   ADD_SCALAR_WRITER(double);
@@ -192,9 +198,12 @@ PYBIND11_MODULE(core, m) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
-#define ADD_HISTOGRAM_WRITER(T) \
-  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc")                  \
-      .def("add_record", &cp::Histogram<T>::AddRecord, R"pbdoc(add a record with the step and histogram_value)pbdoc");
+#define ADD_HISTOGRAM_WRITER(T)                                          \
+  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, \ 
+   R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc") \
+      .def("add_record",                                                 \
+           &cp::Histogram<T>::AddRecord,                                 \
+           R"pbdoc(add a record with the step and histogram_value)pbdoc");
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_WRITER)
 #undef ADD_HISTOGRAM_WRITER
 
