@@ -23,6 +23,7 @@ class StorageTest(unittest.TestCase):
             scalar.add_record(i, float(i))
 
         print('test read')
+        self.writer.save()
         self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
             scalar = reader.scalar("model/scalar/min")
@@ -30,7 +31,7 @@ class StorageTest(unittest.TestCase):
             records = scalar.records()
             ids = scalar.ids()
             self.assertTrue(
-                np.equal(records, [float(i) for i in range(10 - 1)]).all())
+                np.equal(records, [float(i) for i in range(10)]).all())
             self.assertTrue(np.equal(ids, [float(i) for i in range(10)]).all())
             print('records', records)
             print('ids', ids)
@@ -49,6 +50,8 @@ class StorageTest(unittest.TestCase):
                 data = np.ndarray.flatten(data)
                 image_writer.add_sample(shape, list(data))
             image_writer.finish_sampling()
+
+        self.writer.save()
 
         self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
@@ -77,6 +80,8 @@ class StorageTest(unittest.TestCase):
         shape = [image.size[1], image.size[0], 3]
         origin_data = np.array(image.getdata()).flatten()
 
+        self.writer.save()
+
         self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
 
@@ -103,6 +108,8 @@ class StorageTest(unittest.TestCase):
             scalar = writer.scalar("model/scalar/average")
             for i in range(10):
                 scalar.add_record(i, float(i))
+
+        self.writer.save()
 
         self.reader = LogReader(self.dir)
         with self.reader.mode("train") as reader:
