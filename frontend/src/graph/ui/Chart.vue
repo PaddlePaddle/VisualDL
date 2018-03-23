@@ -55,10 +55,9 @@
             cytoscape.use( dagre );
             getPluginGraphsGraph().then(({errno, data}) => {
 
-                var real_data = data.data;
-                var data = real_data;
-                console.log('real_data:');
-                console.log(real_data);
+                var raw_data = data.data;
+                var data = raw_data;
+
                 var graph_data = {
                     nodes: [],
                     edges: []
@@ -67,7 +66,7 @@
                 var node_names = [];
                 for (var i = 0; i < data.input.length; ++i) {
                     graph_data.nodes.push({
-                        data: {id: data.input[i].name}
+                        data: {id: data.input[i].name, node_data: data.input[i].name}
                     });
                     node_names.push(data.input[i].name);
                 }
@@ -75,11 +74,8 @@
                 for (var i = 0; i < data.edges.length; ++i) {
                     var source = data.edges[i].source;
                     var target = data.edges[i].target;
-//                    console.log('data '+i);
-//                    console.log(data.edges[i]);
+
                     if (node_names.includes(source) === false) {
-                        console.log('source');
-                        console.log(source);
                         graph_data.nodes.push({
                             data: {id: source, node_data:source}
                         });
@@ -87,15 +83,10 @@
                     }
 
                     if (node_names.includes(target) === false) {
-                        console.log('\ntarget');
-                        console.log(target);
                         var node_data = target;
                         if (target.includes('node_')) {
-                            // it is a operator node
+                            // it is an operator node
                             var node_id = target.substring(5);
-//                            node_data = data.node
-                            console.log('>>>');
-                            console.log(data.node[node_id].opType);
                             node_data = data.node[node_id].opType;
                         }
                         graph_data.nodes.push({
@@ -103,11 +94,12 @@
                         });
                         node_names.push(target);
                     }
+
                     graph_data.edges.push({
                         data: {source: source, target: target}
                     });
                 }
-                console.log(graph_data);
+
                 // >> cy
                 var cy = cytoscape({
                     container: document.getElementById('container'),
@@ -123,8 +115,8 @@
                         {
                             selector: 'node',
                             style: {
-                                'width': 20,
-                                'height': 20,
+                                'width': 40,
+                                'height': 40,
                                 'content': 'data(node_data)',
                                 'text-opacity': 0.5,
                                 'text-valign': 'center',
@@ -136,7 +128,7 @@
                             selector: 'edge',
                             style: {
                                 'curve-style': 'bezier',
-                                'width': 2,
+                                'width': 6,
                                 'target-arrow-shape': 'triangle',
                                 'line-color': '#9dbaea',
                                 'target-arrow-color': '#9dbaea'
@@ -145,14 +137,18 @@
                     ],
                     elements: graph_data,
                 });
+
                 this.myCY = cy;
 
                 cy.nodes().forEach(function(node){
                     if (node.id().includes('node_')) {
-                        node.style('width', '40px');
-                        node.style('height', '40px');
-                        node.style('shape', 'rectangle');
-                        node.style('background-color', 'green');
+                        node.style('width', '80px');
+                        node.style('height', '36px');
+                        node.style('shape', 'roundrectangle');
+                        node.style('background-color', '#158c96');
+                        node.style('text-valign', 'center');
+                        node.style('text-halign', 'center');
+
                     }
 
                     let collapsed = true;
@@ -160,27 +156,15 @@
                         if (node.id().includes('node_')) {
                             collapsed = !collapsed;
                             if (!collapsed) {
-                                node.style('width', '60px');
-                                node.style('height', '60px');
-                                node.style('background-color', '#008c99');
+                                node.style('width', '120px');
+                                node.style('height', '54px');
                             } else {
-                                node.style('width', '40');
-                                node.style('height', '40px');
-                                node.style('background-color', 'green');
+                                node.style('width', '80px');
+                                node.style('height', '36px');
                             }
                         }
                     });
                 });
-                // << cy
-
-//                cy.$('#node_0').on('tap', function(evt){
-//                    this.hide();
-//                });
-//
-//                cy.$('#node_4').on('tap', function(evt){
-//                    that.$router.push('/scalars');
-//                });
-
             });
         },
 
