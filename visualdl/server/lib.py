@@ -159,6 +159,43 @@ def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')
 
 
+def get_texts_tags(storage):
+    return get_tags(storage, 'text')
+
+
+def get_texts(storage, mode, tag, num_records=100):
+    with storage.mode(mode) as reader:
+        texts = reader.text(tag)
+
+        records = texts.records()
+        ids = texts.ids()
+        timestamps = texts.timestamps()
+
+        data = list(zip(timestamps, ids, records))
+        data_size = len(data)
+
+        if data_size <= num_records:
+            return data
+
+        span = float(data_size) / (num_records - 1)
+        span_offset = 0
+
+        data_idx = int(span_offset * span)
+        sampled_data = []
+
+        while data_idx < data_size:
+            sampled_data.append(data[data_size - data_idx - 1])
+            span_offset += 1
+            data_idx = int(span_offset * span)
+
+        sampled_data.append(data[0])
+        res = sampled_data[::-1]
+        # TODO(Superjomn) some bug here, sometimes there are zero here.
+        if res[-1] == 0.:
+            res = res[:-1]
+        return res
+
+
 def get_histogram(storage, mode, tag, num_samples=100):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
