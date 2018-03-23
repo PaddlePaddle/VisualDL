@@ -220,19 +220,20 @@ export default {
                 },
                 legend: {
                     data: legendOptions,
-                    top: '13%'
+                    top: 39
                 },
                 grid: {
-                    left: '12%',
-                    top: '25%',
-                    right: '10%',
-                    bottom: '12%'
+                    left: 48,
+                    top: 75,
+                    right: 40,
+                    bottom: 36
                 },
                 xAxis: {
                     type: 'value',
                     axisLabel: {
                         fontSize: '11'
-                    }
+                    },
+                    splitNumber: this.isExpand ? 10 : 5
                 },
                 yAxis: {
                     type: 'value',
@@ -427,19 +428,30 @@ export default {
             let horizontalToxAxisOptions = {
                 step: {
                     xAxis: {
-                        type: 'value'
+                        type: 'value',
+                        axisLabel: {
+                            fontSize: '11'
+                        },
+                        splitNumber: this.isExpand ? 10 : 5
                     },
                     series: stepSeries
                 },
                 relative: {
                     xAxis: {
-                        type: 'value'
+                        type: 'value',
+                        axisLabel: {
+                            fontSize: '11'
+                        },
+                        splitNumber: this.isExpand ? 10 : 5
                     },
                     series: relativeSeries
                 },
                 wall: {
                     xAxis: {
-                        type: 'time'
+                        type: 'time',
+                        axisLabel: {
+                            fontSize: '11'
+                        },
                     },
                     series: wallSeries
                 }
@@ -468,6 +480,12 @@ export default {
                     height: 300
                 });
             }
+
+            this.myChart.setOption({
+                xAxis: {
+                    splitNumber: this.isExpand ? 10 : 5
+                }
+            });
         },
 
         toggleSelectZoom(enable) {
