@@ -41,6 +41,11 @@ export default {
                 url: '/graphs',
                 title: 'GRAPHS',
                 name: 'graphs'
+            },
+            {
+                url: '/texts',
+                title: 'TEXTS',
+                name: 'texts'
             }
             ]
         }

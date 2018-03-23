@@ -15,3 +15,7 @@ export const getPluginHistogramsTags = makeService('/data/plugin/histograms/tags
 export const getPluginHistogramsHistograms = makeService('/data/plugin/histograms/histograms');
 
 export const getPluginGraphsGraph = makeService('/data/plugin/graphs/graph');
+
+export const getPluginTextsTags = makeService('/data/plugin/texts/tags');
+
+export const getPluginTextsTexts = makeService('/data/plugin/texts/texts');
