@@ -321,6 +321,37 @@ DECL_BASIC_TYPES_CLASS_IMPL(class, ScalarReader)
 DECL_BASIC_TYPES_CLASS_IMPL(struct, Histogram)
 DECL_BASIC_TYPES_CLASS_IMPL(struct, HistogramReader)
 
+std::vector<std::string> TextReader::records() const {
+  std::vector<std::string> res;
+  for (int i = 0; i < total_records(); i++) {
+    res.push_back(reader_.record(i).data(0).template Get<std::string>());
+  }
+  return res;
+}
+
+std::vector<int> TextReader::ids() const {
+  std::vector<int> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).id());
+  }
+  return res;
+}
+
+std::vector<time_t> TextReader::timestamps() const {
+  std::vector<time_t> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).timestamp());
+  }
+  return res;
+}
+
+std::string TextReader::caption() const {
+  CHECK(!reader_.captions().empty()) << "no caption";
+  return reader_.captions().front();
+}
+
+size_t TextReader::size() const { return reader_.total_records(); }
+
 }  // namespace components
 
 }  // namespace visualdl
