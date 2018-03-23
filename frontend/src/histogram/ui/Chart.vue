@@ -89,10 +89,10 @@ export default {
 
         setChartOptions(visData, tag, chartType) {
             let grid = {
-                left: '15%',
-                top: '15%',
-                right: '10%',
-                bottom: '8%'
+                left: 45,
+                top: 60,
+                right: 40,
+                bottom: 36
             };
             let title = {
                 text: tag,
@@ -185,9 +185,9 @@ export default {
             let ecChart = this.myChart;
             let maxStep = -Infinity;
             let minStep = Infinity;
-            grid.top = '42%';
-            grid.left = '4%';
-            grid.right = '10%';
+            grid.top = 126;
+            grid.left = 16;
+            grid.right = 40;
             chartData.forEach(function (dataItem) {
                 let lineData = [];
                 maxStep = Math.max(dataItem.step, maxStep);
