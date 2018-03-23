@@ -284,6 +284,40 @@ private:
   TabletReader reader_;
 };
 
+struct Text {
+  Text(Tablet tablet) : tablet_(tablet) {}
+  void SetCaption(const std::string cap) {
+    tablet_.SetCaptions(std::vector<std::string>({cap}));
+  }
+
+  void AddRecord(int id, std::string value) {
+    auto record = tablet_.AddRecord();
+    record.SetId(id);
+    auto entry = record.AddData();
+
+    time_t time = std::time(nullptr);
+    record.SetTimeStamp(time);
+    entry.Set(value);
+  }
+
+private:
+  Tablet tablet_;
+};
+
+struct TextReader {
+  TextReader(TabletReader reader) : reader_(reader) {}
+
+  std::vector<std::string> records() const;
+  std::vector<int> ids() const;
+  std::vector<time_t> timestamps() const;
+  std::string caption() const;
+  size_t total_records() const { return reader_.total_records(); }
+  size_t size() const;
+
+private:
+  TabletReader reader_;
+};
+
 }  // namespace components
 }  // namespace visualdl
 

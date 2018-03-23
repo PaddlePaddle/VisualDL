@@ -74,9 +74,14 @@ PYBIND11_MODULE(core, m) {
       #undef READER_ADD_HISTOGRAM
 
       // clang-format on
-      .def("get_image", [](vs::LogReader& self, const std::string& tag) {
+      .def("get_image",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::ImageReader(self.mode(), tablet);
+           })
+      .def("get_text", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
-        return vs::components::ImageReader(self.mode(), tablet);
+        return vs::components::TextReader(tablet);
       });
 
   // clang-format on
@@ -113,7 +118,11 @@ PYBIND11_MODULE(core, m) {
               int step_cycle) {
              auto tablet = self.AddTablet(tag);
              return vs::components::Image(tablet, num_samples, step_cycle);
-           });
+           })
+      .def("new_text", [](vs::LogWriter& self, const std::string& tag) {
+        auto tablet = self.AddTablet(tag);
+        return vs::components::Text(tablet);
+      });
 
 //------------------- components --------------------
 #define ADD_SCALAR_READER(T)                               \
@@ -197,6 +206,18 @@ PYBIND11_MODULE(core, m) {
       .def("num_samples", &cp::ImageReader::num_samples)
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
+
+  py::class_<cp::Text>(m, "TextWriter")
+      .def("set_caption", &cp::Text::SetCaption)
+      .def("add_record", &cp::Text::AddRecord);
+
+  py::class_<cp::TextReader>(m, "TextReader")
+      .def("records", &cp::TextReader::records)
+      .def("ids", &cp::TextReader::ids)
+      .def("timestamps", &cp::TextReader::timestamps)
+      .def("caption", &cp::TextReader::caption)
+      .def("total_records", &cp::TextReader::total_records)
+      .def("size", &cp::TextReader::size);
 
 #define ADD_HISTOGRAM_WRITER(T)                                          \
   py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, \ 

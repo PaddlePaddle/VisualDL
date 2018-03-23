@@ -115,6 +115,10 @@ class LogReader(object):
         check_tag_name_valid(tag)
         return type2scalar[type](tag)
 
+    def text(self, tag):
+        check_tag_name_valid(tag)
+        return self.reader.get_text(tag)
+
     def __enter__(self):
         return self
 
@@ -221,6 +225,10 @@ class LogWriter(object):
             'int': self.writer.new_histogram_int,
         }
         return types[type](tag, num_buckets)
+
+    def text(self, tag):
+        check_tag_name_valid(tag)
+        return self.writer.new_text(tag)
 
     def save(self):
         self.writer.save()
