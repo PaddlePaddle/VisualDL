@@ -196,7 +196,7 @@ def get_texts(storage, mode, tag, num_records=100):
         return res
 
 
-def get_histogram(storage, mode, tag, num_samples=100):
+def get_histogram(storage, mode, tag):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
         res = []
@@ -219,6 +219,9 @@ def get_histogram(storage, mode, tag, num_samples=100):
                 instance = record.instance(j)
                 data.append(
                     [instance.left(), instance.right(), instance.frequency()])
+
+        # num_samples: We will only return 100 samples.
+        num_samples = 100
         if len(res) < num_samples:
             return res
 
