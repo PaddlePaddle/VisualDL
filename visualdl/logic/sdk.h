@@ -284,8 +284,13 @@ private:
   TabletReader reader_;
 };
 
+/*
+ * Text component writer
+ */
 struct Text {
-  Text(Tablet tablet) : tablet_(tablet) {}
+  Text(Tablet tablet) : tablet_(tablet) {
+    tablet_.SetType(Tablet::Type::kText);
+  }
   void SetCaption(const std::string cap) {
     tablet_.SetCaptions(std::vector<std::string>({cap}));
   }
@@ -304,6 +309,9 @@ private:
   Tablet tablet_;
 };
 
+/*
+ * Text reader.
+ */
 struct TextReader {
   TextReader(TabletReader reader) : reader_(reader) {}
 

@@ -129,7 +129,6 @@ export default {
         });
 
         getRuns().then(({errno, data}) => {
-            console.log(data);
             this.runsArray = data;
             this.config.runs = data;
         });
