@@ -44,12 +44,12 @@ export default {
             if (!value) {
                 return;
             }
-            let time = new Date();
+            // The value was made in seconds, must convert it to milliseconds
+            let time = new Date(value * 1000);
             var options = {
                 weekday: "short", year: "numeric", month: "short",
-                day: "numeric", hour: "2-digit", minute: "2-digit"
+                day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
             };
-            time.setTime(value.toString().split('.')[0]);
             return time.toLocaleDateString("en-US", options);
         }
     },
