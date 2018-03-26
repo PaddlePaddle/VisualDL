@@ -126,7 +126,7 @@ struct ScalarReader {
   std::vector<T> ids() const;
   std::vector<T> timestamps() const;
   std::string caption() const;
-  size_t total_records() const { return reader_.total_records() - 1; }
+  size_t total_records() const { return reader_.total_records(); }
   size_t size() const;
 
 private:

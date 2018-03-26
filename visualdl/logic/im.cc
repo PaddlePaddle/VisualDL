@@ -22,6 +22,15 @@ limitations under the License. */
 
 namespace visualdl {
 
+const long minimun_sync_cycle = 100;
+// Expect sync happens every 15~25 seconds
+const int sync_period = 20;
+const int period_range = 5;
+const double slower_multiplier = 1.4;
+const double faster_multiplier = 0.5;
+
+static time_t last_sync_time = time(NULL);
+
 template <typename T>
 void SimpleWriteSyncGuard<T>::Start() {
   CHECK(data_);
@@ -33,6 +42,25 @@ void SimpleWriteSyncGuard<T>::End() {
   CHECK(data_);
   if (data_->parent()->meta.ToSync()) {
     Sync();
+
+    time_t current_time = time(NULL);
+    time_t interval = current_time - last_sync_time;
+
+    // If last sync happens more than 25 seconds ago, the system needs to make
+    // the sync-up faster
+    if (interval > sync_period + period_range) {
+      data_->parent()->meta.cycle =
+          std::max(long(data_->parent()->meta.cycle * faster_multiplier),
+                   minimun_sync_cycle);
+    } else if (interval < sync_period - period_range) {
+      // If the last sync happens less than 15 seconds ago, the system needs to
+      // make the sync-up slower.
+      data_->parent()->meta.cycle = std::min(
+          std::max(long(data_->parent()->meta.cycle * slower_multiplier),
+                   minimun_sync_cycle),
+          LONG_MAX);
+    }
+    last_sync_time = current_time;
   }
 }
 
