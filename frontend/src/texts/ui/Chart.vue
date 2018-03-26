@@ -5,15 +5,14 @@
         </h3>
         <p>
             <span>Step:</span>
-            <span>{{textData.step}};</span>
-            <span>{{textData.wall_time | formatTime}}</span>
+            <span>{{textData.step}}</span>
+            <span class="visual-del-text-time">{{textData.wall_time | formatTime}}</span>
         </p>
-        <v-slider label="step"
-                  :max="steps"
+        <v-slider :max="steps"
                   :min="slider.min"
                   :step="1"
                   v-model="currentIndex"
-                  dark></v-slider>
+                  ></v-slider>
 
         <p> {{textData.message}} </p>
     </v-card>
@@ -38,9 +37,13 @@ export default {
             if (!value) {
                 return;
             }
-            let time = new Date();
-            time.setTime(value.toString().split('.')[0]);
-            return time;
+            // The value was made in seconds, must convert it to milliseconds
+            let time = new Date(value * 1000);
+            var options = {
+                weekday: "short", year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit",
+            };
+            return time.toLocaleDateString("en-US", options);
         }
     },
     data() {
@@ -142,5 +145,7 @@ export default {
             .sm-form-item
                 width 300px
                 display inline-block
+        .visual-del-text-time
+            float right
 </style>
 
