@@ -222,11 +222,6 @@ void Image::SetSample(int index,
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
 
-  // trick to store int8 to protobuf
-  std::vector<byte_t> data_str(data.size());
-  for (int i = 0; i < data.size(); i++) {
-    data_str[i] = data[i];
-  }
   Uint8Image image(new_shape[2], new_shape[0] * new_shape[1]);
   NormalizeImage(&image, &data[0], new_shape[0] * new_shape[1], new_shape[2]);
 
@@ -351,6 +346,112 @@ std::string TextReader::caption() const {
 }
 
 size_t TextReader::size() const { return reader_.total_records(); }
+
+
+void Audio::StartSampling() {
+  if (!ToSampleThisStep()) return;
+
+  step_ = writer_.AddRecord();
+  step_.SetId(step_id_);
+
+  time_t time = std::time(nullptr);
+  step_.SetTimeStamp(time);
+
+  // resize record
+  for (int i = 0; i < num_samples_; i++) {
+    step_.AddData();
+  }
+  num_records_ = 0;
+}
+
+int Audio::IsSampleTaken() {
+  if (!ToSampleThisStep()) return -1;
+  num_records_++;
+  if (num_records_ <= num_samples_) {
+    return num_records_ - 1;
+  }
+  float prob = float(num_samples_) / num_records_;
+  float randv = (float)rand() / RAND_MAX;
+  if (randv < prob) {
+    // take this sample
+    int index = rand() % num_samples_;
+    return index;
+  }
+  return -1;
+}
+
+void Audio::FinishSampling() {
+  step_id_++;
+  if (ToSampleThisStep()) {
+    writer_.parent()->PersistToDisk();
+  }
+}
+
+void Audio::AddSample(int sample_rate,
+                      const std::vector<value_t>& data) {
+  auto idx = IsSampleTaken();
+  if (idx >= 0) {
+    SetSample(idx, sample_rate, data);
+  }
+}
+
+void Audio::SetSample(int index,
+                      int sample_rate,
+                      const std::vector<value_t>& data) {
+  CHECK_GT(sample_rate, 0) << "sample rate should be something like 6000, 8000 or 44100";
+  CHECK_LT(index, num_samples_);
+  CHECK_LE(index, num_records_);
+
+    //convert float vector to char vector
+  std::vector<char> data_str(data.size());
+  for (int i = 0; i < data.size(); i++) {
+    data_str[i] = data[i];
+  }
+
+  BinaryRecord brcd(
+          GenBinaryRecordDir(step_.parent()->dir()), std::string(data_str.data()));
+  brcd.tofile();
+
+  auto entry = step_.MutableData<std::vector<byte_t>>(index);
+  // update record
+  auto old_hash = entry.reader().GetRaw();
+  if (!old_hash.empty()) {
+    std::string old_path =
+            GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
+    CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
+                                               << old_path << " failed";
+  }
+  entry.SetRaw(brcd.filename());
+}
+
+std::string AudioReader::caption() {
+  CHECK_EQ(reader_.captions().size(), 1);
+  auto caption = reader_.captions().front();
+  if (LogReader::TagMatchMode(caption, mode_)) {
+    return LogReader::GenReadableTag(mode_, caption);
+  }
+  string::TagDecode(caption);
+  return caption;
+}
+
+AudioReader::AudioRecord AudioReader::record(int offset, int index) {
+  AudioRecord res;
+  auto record = reader_.record(offset);
+  auto entry = record.data(index);
+  auto filename = entry.GetRaw();
+  CHECK(!g_log_dir.empty())
+          << "g_log_dir should be set in LogReader construction";
+  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), filename);
+
+  std::transform(brcd.data.begin(),
+                 brcd.data.end(),
+                 std::back_inserter(res.data),
+                 [](byte_t i) { return (int)(i); });
+  res.step_id = record.id();
+  return res;
+}
+
+
 
 }  // namespace components
 
