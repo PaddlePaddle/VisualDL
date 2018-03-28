@@ -108,7 +108,7 @@
                     autounselectify: true,
 
                     layout: {
-                        name: 'dagre'
+                        name: 'circle'
                     },
 
                     style: [

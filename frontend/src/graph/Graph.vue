@@ -2,11 +2,11 @@
     <div class="visual-dl-page-container">
         <div class="visual-dl-page-left">
             <ui-chart
-                :fitScreen="fitScreen"
-                :download="download"
-                :scale="config.scale"
-            ></ui-chart>
-        </div>
+                    :fitScreen="fitScreen"
+                    :download="download"
+                    :scale="config.scale"
+            ></ui-chart>        </div>
+
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
                 <ui-config
@@ -20,14 +20,28 @@
 </template>
 
 <script>
+/*
+ <ui-chart
+ :fitScreen="fitScreen"
+ :download="download"
+ :scale="config.scale"
+ ></ui-chart>
+
+ <div class="visual-dl-page-left">
+ <ui-dagred3></ui-dagred3>
+ </div>
+*/
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import Config from './ui/Config'
 import Chart from './ui/Chart';
 
+import DagreD3 from './ui/DagreD3'
+
 export default {
     components: {
         'ui-config': Config,
-        'ui-chart': Chart
+        'ui-chart': Chart,
+        'ui-dagred3': DagreD3
     },
     name: 'Graph',
     data () {
