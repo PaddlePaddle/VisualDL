@@ -403,14 +403,7 @@ void Audio::SetSample(int index,
   CHECK_LE(index, num_records_)
       << "index should be less than or equal to number of records";
 
-  // convert float vector to char vector
-  std::vector<char> data_str(data.size());
-  for (int i = 0; i < data.size(); i++) {
-    data_str[i] = data[i];
-  }
-
-  BinaryRecord brcd(GenBinaryRecordDir(step_.parent()->dir()),
-                    std::string(data_str.data()));
+  BinaryRecord brcd(GenBinaryRecordDir(step_.parent()->dir()), std::string(data.begin(),data.end()));
   brcd.tofile();
 
   auto entry = step_.MutableData<std::vector<byte_t>>(index);
@@ -447,7 +440,7 @@ AudioReader::AudioRecord AudioReader::record(int offset, int index) {
   std::transform(brcd.data.begin(),
                  brcd.data.end(),
                  std::back_inserter(res.data),
-                 [](byte_t i) { return (int)(i); });
+                 [](byte_t i) { return (int8_t)(i); });
   res.step_id = record.id();
   return res;
 }

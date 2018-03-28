@@ -400,7 +400,7 @@ struct AudioReader {
   struct AudioRecord {
     int step_id;
     int sample_rate;
-    std::vector<int> data;
+    std::vector<int8_t> data;
   };
 
   AudioReader(const std::string& mode, TabletReader tablet)
