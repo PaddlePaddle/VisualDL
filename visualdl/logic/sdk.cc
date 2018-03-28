@@ -347,7 +347,6 @@ std::string TextReader::caption() const {
 
 size_t TextReader::size() const { return reader_.total_records(); }
 
-
 void Audio::StartSampling() {
   if (!ToSampleThisStep()) return;
 
@@ -387,8 +386,7 @@ void Audio::FinishSampling() {
   }
 }
 
-void Audio::AddSample(int sample_rate,
-                      const std::vector<value_t>& data) {
+void Audio::AddSample(int sample_rate, const std::vector<value_t>& data) {
   auto idx = IsSampleTaken();
   if (idx >= 0) {
     SetSample(idx, sample_rate, data);
@@ -398,18 +396,21 @@ void Audio::AddSample(int sample_rate,
 void Audio::SetSample(int index,
                       int sample_rate,
                       const std::vector<value_t>& data) {
-  CHECK_GT(sample_rate, 0) << "sample rate should be something like 6000, 8000 or 44100";
-  CHECK_LT(index, num_samples_);
-  CHECK_LE(index, num_records_);
+  CHECK_GT(sample_rate, 0)
+      << "sample rate should be something like 6000, 8000 or 44100";
+  CHECK_LT(index, num_samples_)
+      << "index should be less than number of samples";
+  CHECK_LE(index, num_records_)
+      << "index should be less than or equal to number of records";
 
-    //convert float vector to char vector
+  // convert float vector to char vector
   std::vector<char> data_str(data.size());
   for (int i = 0; i < data.size(); i++) {
     data_str[i] = data[i];
   }
 
-  BinaryRecord brcd(
-          GenBinaryRecordDir(step_.parent()->dir()), std::string(data_str.data()));
+  BinaryRecord brcd(GenBinaryRecordDir(step_.parent()->dir()),
+                    std::string(data_str.data()));
   brcd.tofile();
 
   auto entry = step_.MutableData<std::vector<byte_t>>(index);
@@ -417,7 +418,7 @@ void Audio::SetSample(int index,
   auto old_hash = entry.reader().GetRaw();
   if (!old_hash.empty()) {
     std::string old_path =
-            GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
+        GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
     CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
                                                << old_path << " failed";
   }
@@ -440,7 +441,7 @@ AudioReader::AudioRecord AudioReader::record(int offset, int index) {
   auto entry = record.data(index);
   auto filename = entry.GetRaw();
   CHECK(!g_log_dir.empty())
-          << "g_log_dir should be set in LogReader construction";
+      << "g_log_dir should be set in LogReader construction";
   BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), filename);
 
   std::transform(brcd.data.begin(),
@@ -450,8 +451,6 @@ AudioReader::AudioRecord AudioReader::record(int offset, int index) {
   res.step_id = record.id();
   return res;
 }
-
-
 
 }  // namespace components
 

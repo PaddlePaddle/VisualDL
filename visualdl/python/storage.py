@@ -121,7 +121,7 @@ class LogReader(object):
 
     def audio(self, tag):
         """
-        Get a audio reader with tag
+        Get an audio reader with tag
 
         :param tag:  The reader will read the audio data marked with tag
         :type tag: basestring

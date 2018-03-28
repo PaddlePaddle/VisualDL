@@ -171,7 +171,7 @@ struct Image {
 
   /*
    * A combined interface for IsSampleTaken and SetSample, simpler but might be
-   * low effience.
+   * low efficiency.
    */
   void AddSample(const std::vector<shape_t>& shape,
                  const std::vector<value_t>& data);
@@ -326,122 +326,113 @@ private:
   TabletReader reader_;
 };
 
-
-
-
 /*
  * Image component writer.
  */
 struct Audio {
-    using value_t = float;
+  using value_t = float;
 
-    /*
-     * step_cycle: store every `step_cycle` as a record.
-     * num_samples: how many samples to take in a step.
-     */
-    Audio(Tablet tablet, int num_samples, int step_cycle)
-            : writer_(tablet), num_samples_(num_samples), step_cycle_(step_cycle) {
-      CHECK_GT(step_cycle, 0);
-      CHECK_GT(num_samples, 0);
+  /*
+   * step_cycle: store every `step_cycle` as a record.
+   * num_samples: how many samples to take in a step.
+   */
+  Audio(Tablet tablet, int num_samples, int step_cycle)
+      : writer_(tablet), num_samples_(num_samples), step_cycle_(step_cycle) {
+    CHECK_GT(step_cycle, 0);
+    CHECK_GT(num_samples, 0);
 
-      writer_.SetType(Tablet::Type::kAudio);
-      // make audio's tag as the default caption.
-      writer_.SetNumSamples(num_samples);
-      SetCaption(tablet.reader().tag());
-    }
+    writer_.SetType(Tablet::Type::kAudio);
+    // make audio's tag as the default caption.
+    writer_.SetNumSamples(num_samples);
+    SetCaption(tablet.reader().tag());
+  }
 
-    void SetCaption(const std::string& c) {
-      writer_.SetCaptions(std::vector<std::string>({c}));
-    }
+  void SetCaption(const std::string& c) {
+    writer_.SetCaptions(std::vector<std::string>({c}));
+  }
 
-    /*
-     * Start a sampling period, this interface will start a new reservior sampling
-     * phase.
-     */
-    void StartSampling();
-    /*
-     * End a sampling period, it will clear all states for reservior sampling.
-     */
-    void FinishSampling();
+  /*
+   * Start a sampling period, this interface will start a new reservior sampling
+   * phase.
+   */
+  void StartSampling();
+  /*
+   * End a sampling period, it will clear all states for reservior sampling.
+   */
+  void FinishSampling();
 
-    /*
-     * A combined interface for IsSampleTaken and SetSample, simpler but might be
-     * low effience.
-     */
-    void AddSample(int sample_rate,
-                   const std::vector<value_t>& data);
+  /*
+   * A combined interface for IsSampleTaken and SetSample, simpler but might be
+   * low efficiency.
+   */
+  void AddSample(int sample_rate, const std::vector<value_t>& data);
 
-    /*
-     * Will this sample be taken, this interface is introduced to reduce the cost
-     * of copy audio data, by testing whether this audio will be sampled, and only
-     * copy data when it should be sampled. In that way, most of unsampled audio
-     * data need not be copied or processed at all.
-     */
-    int IsSampleTaken();
-    /*
-     * Store audio data with sample rate
-     */
-    void SetSample(int index,
-                   int sample_rate,
-                   const std::vector<value_t>& data);
+  /*
+   * Will this sample be taken, this interface is introduced to reduce the cost
+   * of copy audio data, by testing whether this audio will be sampled, and only
+   * copy data when it should be sampled. In that way, most of unsampled audio
+   * data need not be copied or processed at all.
+   */
+  int IsSampleTaken();
+  /*
+   * Store audio data with sample rate
+   */
+  void SetSample(int index, int sample_rate, const std::vector<value_t>& data);
 
 protected:
-    bool ToSampleThisStep() { return step_id_ % step_cycle_ == 0; }
+  bool ToSampleThisStep() { return step_id_ % step_cycle_ == 0; }
 
 private:
-    Tablet writer_;
-    Record step_;
-    int num_records_{0};
-    int num_samples_{0};
-    int step_id_{0};
-    int step_cycle_;
+  Tablet writer_;
+  Record step_;
+  int num_records_{0};
+  int num_samples_{0};
+  int step_id_{0};
+  int step_cycle_;
 };
 
 /*
 * Audio reader.
 */
 struct AudioReader {
-    using value_t = typename Audio::value_t;
+  using value_t = typename Audio::value_t;
 
-    struct AudioRecord {
-        int step_id;
-        int sample_rate;
-        std::vector<int> data;
-    };
+  struct AudioRecord {
+    int step_id;
+    int sample_rate;
+    std::vector<int> data;
+  };
 
-    AudioReader(const std::string& mode, TabletReader tablet)
-            : reader_(tablet), mode_{mode} {}
+  AudioReader(const std::string& mode, TabletReader tablet)
+      : reader_(tablet), mode_{mode} {}
 
-    std::string caption();
+  std::string caption();
 
-    // number of steps.
-    int num_records() { return reader_.total_records(); }
+  // number of steps.
+  int num_records() { return reader_.total_records(); }
 
-    int num_samples() { return reader_.num_samples(); }
+  int num_samples() { return reader_.num_samples(); }
 
-    int64_t timestamp(int step) { return reader_.record(step).timestamp(); }
+  int64_t timestamp(int step) { return reader_.record(step).timestamp(); }
 
-    /*
-     * offset: offset of a step.
-     * index: index of a sample.
-     */
-    AudioRecord record(int offset, int index);
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  AudioRecord record(int offset, int index);
 
-    /*
-     * offset: offset of a step.
-     * index: index of a sample.
-     */
-    std::vector<value_t> data(int offset, int index);
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  std::vector<value_t> data(int offset, int index);
 
-    int stepid(int offset, int index);
+  int stepid(int offset, int index);
 
 private:
-    TabletReader reader_;
-    std::string mode_;
+  TabletReader reader_;
+  std::string mode_;
 };
-
-
-
 
 }  // namespace components
 }  // namespace visualdl
