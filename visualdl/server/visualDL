@@ -171,6 +171,14 @@ def histogram_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
+@app.route("/data/plugin/texts/tags")
+def texts_tags():
+    data = cache_get("/data/plugin/texts/tags", try_call,
+                     lib.get_texts_tags, log_reader)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
 @app.route('/data/plugin/scalars/scalars')
 def scalars():
     run = request.args.get('run')
@@ -215,6 +223,16 @@ def histogram():
     tag = request.args.get('tag')
     key = os.path.join('/data/plugin/histograms/histograms', run, tag)
     data = cache_get(key, try_call, lib.get_histogram, log_reader, run, tag)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/texts/texts')
+def texts():
+    run = request.args.get('run')
+    tag = request.args.get('tag')
+    key = os.path.join('/data/plugin/texts/texts', run, tag)
+    data = cache_get(key, try_call, lib.get_texts, log_reader, run, tag)
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
