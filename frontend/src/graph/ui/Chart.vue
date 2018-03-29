@@ -1,7 +1,6 @@
 <template>
     <div class="visual-dl-graph-charts">
         <svg class="visual-dl-page-left">
-            <!--<rect width="100%" height="100%" fill="cyan"/>-->
             <g/>
         </svg>
     </div>
