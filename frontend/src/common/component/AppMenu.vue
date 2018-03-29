@@ -33,6 +33,11 @@ export default {
                 name: 'images'
             },
             {
+                url: '/audio',
+                title: 'AUDIO',
+                name: 'audio'
+            },
+            {
                 url: '/histograms',
                 title: 'HISTOGRAMS',
                 name: 'histograms'

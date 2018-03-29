@@ -19,3 +19,7 @@ export const getPluginGraphsGraph = makeService('/data/plugin/graphs/graph');
 export const getPluginTextsTags = makeService('/data/plugin/texts/tags');
 
 export const getPluginTextsTexts = makeService('/data/plugin/texts/texts');
+
+export const getPluginAudioTags = makeService('/data/plugin/audio/tags');
+
+export const getPluginAudioAudio = makeService('/data/plugin/audio/audio');
