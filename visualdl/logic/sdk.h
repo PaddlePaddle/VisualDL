@@ -339,7 +339,7 @@ struct Embedding {
   }
 
   // Add all word vectors along with all labels
-  // The index of lables should match with the index of word_embeddings
+  // The index of labels should match with the index of word_embeddings
   // EX: ["Apple", "Orange"] means the first item in word_embeddings represents
   // "Apple"
   void AddEmbeddingsWithWordList(
