@@ -1,6 +1,8 @@
 <template>
     <div class="visual-dl-graph-charts">
-        <div id="container" class="cy draggable" ref="draggable"></div>
+        <svg class="visual-dl-page-left">
+            <g/>
+        </svg>
     </div>
 </template>
 <script>
@@ -16,8 +18,11 @@
 
     // https://github.com/taye/interact.js
     import interact from 'interactjs';
-    import cytoscape from 'cytoscape';
-    import dagre from 'cytoscape-dagre';
+
+    // for d3 drawing
+    import * as d3 from "d3";
+    import * as dagre from "dagre";
+    import * as dagreD3 from 'dagre-d3';
 
     export default {
         props: ['fitScreen', 'download', 'scale'],
@@ -30,8 +35,6 @@
         data() {
             return {
                 myCY: null,
-                width: 800,
-                height: 600,
                 graphUrl: '',
             };
         },
@@ -50,121 +53,73 @@
             }
         },
         mounted() {
-            var that = this;
             this.getOriginChartsData();
-            cytoscape.use( dagre );
-            getPluginGraphsGraph().then(({errno, data}) => {
 
+            getPluginGraphsGraph().then(({errno, data}) => {
                 var raw_data = data.data;
                 var data = raw_data;
 
-                var graph_data = {
-                    nodes: [],
-                    edges: []
+                // d3 svg drawing
+                var g = new dagreD3.graphlib.Graph()
+                    .setGraph({})
+                    .setDefaultEdgeLabel(function() { return {}; });
+                var render = new dagreD3.render();
+                var nodeKeys = [];
+
+                var buildInputNodeLabel = function(inputNode) {
+                    var nodeLabel = inputNode['data_type'] + ': ' + inputNode['shape'].join('x');
+                    return nodeLabel + ' '.repeat(Math.floor(nodeLabel.length/5));
                 };
 
-                var node_names = [];
-                for (var i = 0; i < data.input.length; ++i) {
-                    graph_data.nodes.push({
-                        data: {id: data.input[i].name, node_data: data.input[i].name}
-                    });
-                    node_names.push(data.input[i].name);
+                // add input nodes
+                for (var i=0; i<data['input'].length; ++i) {
+                    var curInputNode = data['input'][i];
+                    var nodeKey = curInputNode['name'];
+                    g.setNode(
+                        nodeKey,
+                        {
+                            label: buildInputNodeLabel(curInputNode),
+                            class: "input"
+                        }
+                    );
+                    nodeKeys.push(nodeKey);
                 }
 
-                for (var i = 0; i < data.edges.length; ++i) {
-                    var source = data.edges[i].source;
-                    var target = data.edges[i].target;
+                // add operator nodes then add edges from inputs to operator and from operator to output
+                for (var i=0; i<data['node'].length; ++i) {
+                    var curOperatorNode = data['node'][i];
+                    var nodeKey = 'opNode_' + i;
 
-                    if (node_names.includes(source) === false) {
-                        graph_data.nodes.push({
-                            data: {id: source, node_data:source}
-                        });
-                        node_names.push(source);
-                    }
-
-                    if (node_names.includes(target) === false) {
-                        var node_data = target;
-                        if (target.includes('node_')) {
-                            // it is an operator node
-                            var node_id = target.substring(5);
-                            node_data = data.node[node_id].opType;
+                    // add operator node
+                    var curOpLabel = curOperatorNode['opType'];
+                    g.setNode(
+                        nodeKey,
+                        {
+                            label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
+                            class: "operator"
                         }
-                        graph_data.nodes.push({
-                            data: {id: target, node_data:node_data}
-                        });
-                        node_names.push(target);
-                    }
+                    );
+                    nodeKeys.push(nodeKey);
 
-                    graph_data.edges.push({
-                        data: {source: source, target: target}
-                    });
+                    // add output node
+                    var outputNodeKey = curOperatorNode['output'][0];
+                    g.setNode(
+                        outputNodeKey,
+                        {
+                            label: outputNodeKey + ' '.repeat(Math.floor(outputNodeKey.length/5)),
+                            class: "output"
+                        }
+                    );
+                    nodeKeys.push(outputNodeKey);
+
+                    // add edges from inputs to node and from node to output
+                    for (var e=0; e<curOperatorNode['input'].length; ++e) {
+                        g.setEdge(curOperatorNode['input'][e], nodeKey);
+                    }
+                    g.setEdge(nodeKey, curOperatorNode['output'][0]);
                 }
 
-                // >> cy
-                var cy = cytoscape({
-                    container: document.getElementById('container'),
-
-                    boxSelectionEnabled: false,
-                    autounselectify: true,
-
-                    layout: {
-                        name: 'dagre'
-                    },
-
-                    style: [
-                        {
-                            selector: 'node',
-                            style: {
-                                'width': 40,
-                                'height': 40,
-                                'content': 'data(node_data)',
-                                'text-opacity': 0.5,
-                                'text-valign': 'center',
-                                'text-halign': 'right',
-                                'background-color': '#11479e'
-                            }
-                        },
-                        {
-                            selector: 'edge',
-                            style: {
-                                'curve-style': 'bezier',
-                                'width': 6,
-                                'target-arrow-shape': 'triangle',
-                                'line-color': '#9dbaea',
-                                'target-arrow-color': '#9dbaea'
-                            }
-                        }
-                    ],
-                    elements: graph_data,
-                });
-
-                this.myCY = cy;
-
-                cy.nodes().forEach(function(node){
-                    if (node.id().includes('node_')) {
-                        node.style('width', '80px');
-                        node.style('height', '36px');
-                        node.style('shape', 'roundrectangle');
-                        node.style('background-color', '#158c96');
-                        node.style('text-valign', 'center');
-                        node.style('text-halign', 'center');
-
-                    }
-
-                    let collapsed = true;
-                    node.on('tap', function(evt){
-                        if (node.id().includes('node_')) {
-                            collapsed = !collapsed;
-                            if (!collapsed) {
-                                node.style('width', '120px');
-                                node.style('height', '54px');
-                            } else {
-                                node.style('width', '80px');
-                                node.style('height', '36px');
-                            }
-                        }
-                    });
-                });
+                render(d3.select("svg g"), g);
             });
         },
 
@@ -259,13 +214,27 @@
     };
 </script>
 <style lang="stylus">
-    .cy
-        height: 100%
-        width: 70%
-        position: absolute
-        top: 0px
-        left: 0px
+    .node rect
+    .node circle
+    .node ellipse
+    .node polygon
+        stroke: #333
+        fill: #fff
+        stroke-width: 1.5px
 
+    .edgePath path.path
+        stroke: #333
+        fill: none
+        stroke-width: 1.5px
+
+    .operator
+        fill: red
+
+    .output
+        fill: green
+
+    .input
+        fill: purple
 
     .visual-dl-graph-charts
         width inherit
