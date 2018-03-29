@@ -6,6 +6,7 @@ import Histogram from '@/histogram/Histogram'
 import Images from '@/images/Images'
 import Graph from '@/graph/Graph'
 import Texts from '@/texts/Texts'
+import Audio from '@/audio/Audio'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/texts',
       name: 'Texts',
       component: Texts
+    },
+    {
+      path: '/audio',
+      name: 'Audio',
+      component: Audio
     }
   ]
 })
