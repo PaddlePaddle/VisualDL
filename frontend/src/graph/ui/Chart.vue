@@ -19,15 +19,10 @@
     // https://github.com/taye/interact.js
     import interact from 'interactjs';
 
-    // for cytoscape
-    //import cytoscape from 'cytoscape';
-    //import dagre from 'cytoscape-dagre';
-
     // for d3 drawing
     import * as d3 from "d3";
     import * as dagre from "dagre";
     import * as dagreD3 from 'dagre-d3';
-
 
     export default {
         props: ['fitScreen', 'download', 'scale'],
