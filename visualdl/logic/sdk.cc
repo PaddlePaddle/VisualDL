@@ -403,7 +403,8 @@ void Audio::SetSample(int index,
   CHECK_LE(index, num_records_)
       << "index should be less than or equal to number of records";
 
-  BinaryRecord brcd(GenBinaryRecordDir(step_.parent()->dir()), std::string(data.begin(),data.end()));
+  BinaryRecord brcd(GenBinaryRecordDir(step_.parent()->dir()),
+                    std::string(data.begin(), data.end()));
   brcd.tofile();
 
   auto entry = step_.MutableData<std::vector<byte_t>>(index);

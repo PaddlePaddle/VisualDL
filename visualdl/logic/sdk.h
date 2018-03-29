@@ -170,7 +170,8 @@ struct Image {
   void FinishSampling();
 
   /*
-   * A combined interface for IndexOfSampleTaken and SetSample, simpler but might be
+   * A combined interface for IndexOfSampleTaken and SetSample, simpler but
+   * might be
    * low efficiency.
    */
   void AddSample(const std::vector<shape_t>& shape,
@@ -362,7 +363,8 @@ struct Audio {
   void FinishSampling();
 
   /*
-   * A combined interface for IndexOfSampleTaken and SetSample, simpler but might be
+   * A combined interface for IndexOfSampleTaken and SetSample, simpler but
+   * might be
    * low efficiency.
    */
   void AddSample(int sample_rate, const std::vector<value_t>& data);
