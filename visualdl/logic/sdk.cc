@@ -350,13 +350,17 @@ size_t TextReader::size() const { return reader_.total_records(); }
 /*
  * Embedding functions
  */
-void Embedding::AddEmbeddingsWithWordList(const std::vector<std::vector<float>>& word_embeddings, std::vector<std::string>& labels){
-    for (int i = 0; i < word_embeddings.size(); i ++) {
-        AddEmbedding(i, word_embeddings[i], labels[i]);
-    }
+void Embedding::AddEmbeddingsWithWordList(
+    const std::vector<std::vector<float>>& word_embeddings,
+    std::vector<std::string>& labels) {
+  for (int i = 0; i < word_embeddings.size(); i++) {
+    AddEmbedding(i, word_embeddings[i], labels[i]);
+  }
 }
 
-void Embedding::AddEmbedding(int item_id, const std::vector<float>& one_hot_vector, std::string& label) {
+void Embedding::AddEmbedding(int item_id,
+                             const std::vector<float>& one_hot_vector,
+                             std::string& label) {
   auto record = tablet_.AddRecord();
   record.SetId(item_id);
   time_t time = std::time(nullptr);

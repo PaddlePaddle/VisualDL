@@ -100,7 +100,8 @@ private:
 
     // Go through the data, increase the item count in a bucket.
     for (auto v : data) {
-      int bucket_group_index = std::min(int((v - left_boundary) / span_), num_buckets_ - 1);
+      int bucket_group_index =
+          std::min(int((v - left_boundary) / span_), num_buckets_ - 1);
       buckets[bucket_group_index]++;
     }
   }

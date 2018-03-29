@@ -84,10 +84,11 @@ PYBIND11_MODULE(core, m) {
              auto tablet = self.tablet(tag);
              return vs::components::TextReader(tablet);
            })
-      .def("get_audio", [](vs::LogReader& self, const std::string& tag) {
-        auto tablet = self.tablet(tag);
-        return vs::components::AudioReader(self.mode(), tablet);
-      })
+      .def("get_audio",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::AudioReader(self.mode(), tablet);
+           })
       .def("get_embedding", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
         return vs::components::EmbeddingReader(tablet);
@@ -243,7 +244,8 @@ PYBIND11_MODULE(core, m) {
 
   py::class_<cp::Embedding>(m, "EmbeddingWriter")
       .def("set_caption", &cp::Embedding::SetCaption)
-      .def("add_embeddings_with_word_list", &cp::Embedding::AddEmbeddingsWithWordList);
+      .def("add_embeddings_with_word_list",
+           &cp::Embedding::AddEmbeddingsWithWordList);
 
   py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")
       .def("get_all_labels", &cp::EmbeddingReader::get_all_labels)
