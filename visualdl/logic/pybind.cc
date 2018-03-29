@@ -175,7 +175,7 @@ PYBIND11_MODULE(core, m) {
       .def("start_sampling", &cp::Image::StartSampling, R"pbdoc(
         Start a sampling period, this interface will start a new reservoir sampling phase.
       )pbdoc")
-      .def("is_sample_taken", &cp::Image::IsSampleTaken, R"pbdoc(
+      .def("is_sample_taken", &cp::Image::IndexOfSampleTaken, R"pbdoc(
         Will this sample be taken, this interface is introduced to reduce the cost
         of copy image data, by testing whether this image will be sampled, and only
         copy data when it should be sampled. In that way, most of un-sampled image
@@ -242,7 +242,7 @@ PYBIND11_MODULE(core, m) {
       .def("start_sampling", &cp::Audio::StartSampling, R"pbdoc(
             Start a sampling period, this interface will start a new reservoir sampling phase.
           )pbdoc")
-      .def("is_sample_taken", &cp::Audio::IsSampleTaken, R"pbdoc(
+      .def("is_sample_taken", &cp::Audio::IndexOfSampleTaken, R"pbdoc(
             Will this sample be taken, this interface is introduced to reduce the cost
             of copy audio data, by testing whether this audio will be sampled, and only
             copy data when it should be sampled. In that way, most of un-sampled audio
@@ -274,7 +274,7 @@ PYBIND11_MODULE(core, m) {
                   )pbdoc");
 
   py::class_<cp::AudioReader::AudioRecord>(m, "AudioRecord")
-      // TODO(ChunweiYan) make these copyless.
+      // TODO(Nicky) make these copyless.
       .def("data", [](cp::AudioReader::AudioRecord& self) { return self.data; })
       .def("sample_rate",
            [](cp::AudioReader::AudioRecord& self) { return self.sample_rate; })

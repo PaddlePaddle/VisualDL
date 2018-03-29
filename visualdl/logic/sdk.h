@@ -170,7 +170,7 @@ struct Image {
   void FinishSampling();
 
   /*
-   * A combined interface for IsSampleTaken and SetSample, simpler but might be
+   * A combined interface for IndexOfSampleTaken and SetSample, simpler but might be
    * low efficiency.
    */
   void AddSample(const std::vector<shape_t>& shape,
@@ -182,7 +182,7 @@ struct Image {
    * copy data when it should be sampled. In that way, most of unsampled image
    * data need not be copied or processed at all.
    */
-  int IsSampleTaken();
+  int IndexOfSampleTaken();
   /*
    * Just store a tensor with nothing to do with image format.
    */
@@ -362,7 +362,7 @@ struct Audio {
   void FinishSampling();
 
   /*
-   * A combined interface for IsSampleTaken and SetSample, simpler but might be
+   * A combined interface for IndexOfSampleTaken and SetSample, simpler but might be
    * low efficiency.
    */
   void AddSample(int sample_rate, const std::vector<value_t>& data);
@@ -373,7 +373,7 @@ struct Audio {
    * copy data when it should be sampled. In that way, most of unsampled audio
    * data need not be copied or processed at all.
    */
-  int IsSampleTaken();
+  int IndexOfSampleTaken();
   /*
    * Store audio data with sample rate
    */

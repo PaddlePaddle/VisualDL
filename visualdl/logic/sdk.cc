@@ -160,7 +160,7 @@ void Image::StartSampling() {
   num_records_ = 0;
 }
 
-int Image::IsSampleTaken() {
+int Image::IndexOfSampleTaken() {
   if (!ToSampleThisStep()) return -1;
   num_records_++;
   if (num_records_ <= num_samples_) {
@@ -195,7 +195,7 @@ struct is_same_type<T, T> {
 
 void Image::AddSample(const std::vector<shape_t>& shape,
                       const std::vector<value_t>& data) {
-  auto idx = IsSampleTaken();
+  auto idx = IndexOfSampleTaken();
   if (idx >= 0) {
     SetSample(idx, shape, data);
   }
@@ -363,7 +363,7 @@ void Audio::StartSampling() {
   num_records_ = 0;
 }
 
-int Audio::IsSampleTaken() {
+int Audio::IndexOfSampleTaken() {
   if (!ToSampleThisStep()) return -1;
   num_records_++;
   if (num_records_ <= num_samples_) {
@@ -387,7 +387,7 @@ void Audio::FinishSampling() {
 }
 
 void Audio::AddSample(int sample_rate, const std::vector<value_t>& data) {
-  auto idx = IsSampleTaken();
+  auto idx = IndexOfSampleTaken();
   if (idx >= 0) {
     SetSample(idx, sample_rate, data);
   }
