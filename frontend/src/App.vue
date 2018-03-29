@@ -55,13 +55,13 @@ export default {
             overflow scroll
             border solid 1px $-left-border-color
             background $-left-border-color
-            min-height 300px
+            min-height 1300px
             padding 2% 0% 2% 2%
             box-sizing border-box
         .right
             overflow scroll
             width 300px
-            min-height 300px
+            min-height 1300px
             position absolute
             right 0
             top 0
