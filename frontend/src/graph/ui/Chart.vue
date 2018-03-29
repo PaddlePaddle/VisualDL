@@ -120,6 +120,10 @@
                 }
 
                 render(d3.select("svg g"), g);
+
+                // adjust viewBox so that the whole graph can be shown, with scroll bar
+                d3.select("svg")
+                  .attr('viewBox', '0 0 ' +  g.graph().width + ' ' + g.graph().height);
             });
         },
 
