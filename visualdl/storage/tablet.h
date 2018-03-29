@@ -34,6 +34,7 @@ struct Tablet {
     kHistogram = 1,
     kImage = 2,
     kText = 3,
+    kEmbedding = 5,
     kUnknown = -1
   };
 
@@ -54,6 +55,9 @@ struct Tablet {
     }
     if (name == "text") {
       return kText;
+    }
+    if (name == "embedding") {
+      return kEmbedding;
     }
     LOG(ERROR) << "unknown component: " << name;
     return kUnknown;

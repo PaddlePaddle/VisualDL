@@ -82,6 +82,10 @@ PYBIND11_MODULE(core, m) {
       .def("get_text", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
         return vs::components::TextReader(tablet);
+      })
+      .def("get_embedding", [](vs::LogReader& self, const std::string& tag) {
+        auto tablet = self.tablet(tag);
+        return vs::components::EmbeddingReader(tablet);
       });
 
   // clang-format on
@@ -122,6 +126,10 @@ PYBIND11_MODULE(core, m) {
       .def("new_text", [](vs::LogWriter& self, const std::string& tag) {
         auto tablet = self.AddTablet(tag);
         return vs::components::Text(tablet);
+      })
+      .def("new_embedding", [](vs::LogWriter& self, const std::string& tag) {
+        auto tablet = self.AddTablet(tag);
+        return vs::components::Embedding(tablet);
       });
 
 //------------------- components --------------------
@@ -218,6 +226,19 @@ PYBIND11_MODULE(core, m) {
       .def("caption", &cp::TextReader::caption)
       .def("total_records", &cp::TextReader::total_records)
       .def("size", &cp::TextReader::size);
+
+  py::class_<cp::Embedding>(m, "EmbeddingWriter")
+      .def("set_caption", &cp::Embedding::SetCaption)
+      .def("add_embeddings_with_word_list", &cp::Embedding::AddEmbeddingsWithWordList);
+
+  py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")
+      .def("get_all_labels", &cp::EmbeddingReader::get_all_labels)
+      .def("get_all_embeddings", &cp::EmbeddingReader::get_all_embeddings)
+      .def("ids", &cp::EmbeddingReader::ids)
+      .def("timestamps", &cp::EmbeddingReader::timestamps)
+      .def("caption", &cp::EmbeddingReader::caption)
+      .def("total_records", &cp::EmbeddingReader::total_records)
+      .def("size", &cp::EmbeddingReader::size);
 
 #define ADD_HISTOGRAM_WRITER(T)                                          \
   py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, \ 
