@@ -108,6 +108,7 @@ message Tablet {
     kHistogram = 1;
     kImage = 2;
     kText = 3;
+    kAudio = 4;
     kkEmbedding = 5;
   }
   // The unique identification for this `Tablet`. VisualDL will have no the

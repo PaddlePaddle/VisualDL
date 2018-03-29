@@ -79,9 +79,14 @@ PYBIND11_MODULE(core, m) {
              auto tablet = self.tablet(tag);
              return vs::components::ImageReader(self.mode(), tablet);
            })
-      .def("get_text", [](vs::LogReader& self, const std::string& tag) {
+      .def("get_text",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::TextReader(tablet);
+           })
+      .def("get_audio", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
-        return vs::components::TextReader(tablet);
+        return vs::components::AudioReader(self.mode(), tablet);
       })
       .def("get_embedding", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
@@ -123,10 +128,19 @@ PYBIND11_MODULE(core, m) {
              auto tablet = self.AddTablet(tag);
              return vs::components::Image(tablet, num_samples, step_cycle);
            })
-      .def("new_text", [](vs::LogWriter& self, const std::string& tag) {
-        auto tablet = self.AddTablet(tag);
-        return vs::components::Text(tablet);
-      })
+      .def("new_text",
+           [](vs::LogWriter& self, const std::string& tag) {
+             auto tablet = self.AddTablet(tag);
+             return vs::components::Text(tablet);
+           })
+      .def("new_audio",
+           [](vs::LogWriter& self,
+              const std::string& tag,
+              int num_samples,
+              int step_cycle) {
+             auto tablet = self.AddTablet(tag);
+             return vs::components::Audio(tablet, num_samples, step_cycle);
+           })
       .def("new_embedding", [](vs::LogWriter& self, const std::string& tag) {
         auto tablet = self.AddTablet(tag);
         return vs::components::Embedding(tablet);
@@ -169,7 +183,7 @@ PYBIND11_MODULE(core, m) {
       .def("start_sampling", &cp::Image::StartSampling, R"pbdoc(
         Start a sampling period, this interface will start a new reservoir sampling phase.
       )pbdoc")
-      .def("is_sample_taken", &cp::Image::IsSampleTaken, R"pbdoc(
+      .def("is_sample_taken", &cp::Image::IndexOfSampleTaken, R"pbdoc(
         Will this sample be taken, this interface is introduced to reduce the cost
         of copy image data, by testing whether this image will be sampled, and only
         copy data when it should be sampled. In that way, most of un-sampled image
@@ -239,6 +253,61 @@ PYBIND11_MODULE(core, m) {
       .def("caption", &cp::EmbeddingReader::caption)
       .def("total_records", &cp::EmbeddingReader::total_records)
       .def("size", &cp::EmbeddingReader::size);
+
+  py::class_<cp::Audio>(m, "AudioWriter", R"pbdoc(
+            PyBind class. Must instantiate through the LogWriter.
+          )pbdoc")
+      .def("set_caption", &cp::Audio::SetCaption, R"pbdoc(
+            PyBind class. Must instantiate through the LogWriter.
+          )pbdoc")
+      .def("start_sampling", &cp::Audio::StartSampling, R"pbdoc(
+            Start a sampling period, this interface will start a new reservoir sampling phase.
+          )pbdoc")
+      .def("is_sample_taken", &cp::Audio::IndexOfSampleTaken, R"pbdoc(
+            Will this sample be taken, this interface is introduced to reduce the cost
+            of copy audio data, by testing whether this audio will be sampled, and only
+            copy data when it should be sampled. In that way, most of un-sampled audio
+            data need not be copied or processed at all.
+
+            :return: Index
+            :rtype: integer
+                  )pbdoc")
+      .def("finish_sampling", &cp::Audio::FinishSampling, R"pbdoc(
+            End a sampling period, it will clear all states for reservoir sampling.
+          )pbdoc")
+      .def("set_sample", &cp::Audio::SetSample, R"pbdoc(
+            Store the flatten audio data with sample rate specified.
+
+            :param index:
+            :type index: integer
+            :param sample_rate: Sample rate of audio
+            :type sample_rate: integer
+            :param audio_data: Flatten audio data
+            :type audio_data: list
+                  )pbdoc")
+      .def("add_sample", &cp::Audio::AddSample, R"pbdoc(
+            A combined interface for is_sample_taken and set_sample, simpler but is less efficient.
+
+            :param sample_rate: Sample rate of audio
+            :type sample_rate: integer
+            :param audio_data: Flatten audio data
+            :type audio_data: list
+                  )pbdoc");
+
+  py::class_<cp::AudioReader::AudioRecord>(m, "AudioRecord")
+      // TODO(Nicky) make these copyless.
+      .def("data", [](cp::AudioReader::AudioRecord& self) { return self.data; })
+      .def("sample_rate",
+           [](cp::AudioReader::AudioRecord& self) { return self.sample_rate; })
+      .def("step_id",
+           [](cp::AudioReader::AudioRecord& self) { return self.step_id; });
+
+  py::class_<cp::AudioReader>(m, "AudioReader")
+      .def("caption", &cp::AudioReader::caption)
+      .def("num_records", &cp::AudioReader::num_records)
+      .def("num_samples", &cp::AudioReader::num_samples)
+      .def("record", &cp::AudioReader::record)
+      .def("timestamp", &cp::AudioReader::timestamp);
 
 #define ADD_HISTOGRAM_WRITER(T)                                          \
   py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, \ 

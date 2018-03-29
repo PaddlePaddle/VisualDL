@@ -2,9 +2,9 @@
     <div class="visual-dl-page-container">
         <div class="visual-dl-page-left">
             <ui-chart
-                :fitScreen="fitScreen"
-                :download="download"
-                :scale="config.scale"
+                    :fitScreen="fitScreen"
+                    :download="download"
+                    :scale="config.scale"
             ></ui-chart>
         </div>
         <div class="visual-dl-page-right">
@@ -23,6 +23,7 @@
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import Config from './ui/Config'
 import Chart from './ui/Chart';
+
 
 export default {
     components: {

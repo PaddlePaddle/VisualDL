@@ -123,6 +123,16 @@ class LogReader(object):
         check_tag_name_valid(tag)
         return self.reader.get_embedding(tag)
 
+    def audio(self, tag):
+        """
+        Get an audio reader with tag
+
+        :param tag:  The reader will read the audio data marked with tag
+        :type tag: basestring
+        """
+        check_tag_name_valid(tag)
+        return self.reader.get_audio(tag)
+
     def __enter__(self):
         return self
 
@@ -229,6 +239,22 @@ class LogWriter(object):
             'int': self.writer.new_histogram_int,
         }
         return types[type](tag, num_buckets)
+
+    def audio(self, tag, num_samples, step_cycle=1):
+        """
+        Create an audio writer that used to write audio data.
+
+        :param tag: The audio writer will label the audio with tag
+        :type tag: basestring
+        :param num_samples: how many samples to take in a step.
+        :type num_samples: integer
+        :param step_cycle: store every `step_cycle` as a record.
+        :type step_cycle: integer
+        :return: A audio writer to sample audio
+        :rtype: AudioWriter
+        """
+        check_tag_name_valid(tag)
+        return self.writer.new_audio(tag, num_samples, step_cycle)
 
     def text(self, tag):
         check_tag_name_valid(tag)

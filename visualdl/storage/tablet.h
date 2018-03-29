@@ -34,6 +34,7 @@ struct Tablet {
     kHistogram = 1,
     kImage = 2,
     kText = 3,
+    kAudio = 4,
     kEmbedding = 5,
     kUnknown = -1
   };
@@ -55,6 +56,9 @@ struct Tablet {
     }
     if (name == "text") {
       return kText;
+    }
+    if (name == "audio") {
+      return kAudio;
     }
     if (name == "embedding") {
       return kEmbedding;
