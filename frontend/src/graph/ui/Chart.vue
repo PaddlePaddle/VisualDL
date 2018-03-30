@@ -67,8 +67,11 @@
                 var nodeKeys = [];
 
                 var buildInputNodeLabel = function(inputNode) {
-                    var nodeLabel = inputNode['data_type'] + ': ' + inputNode['shape'].join('x');
-                    return nodeLabel + ' '.repeat(Math.floor(nodeLabel.length/5));
+                    // TODO(daming-lu): need more complex compound node
+                    var nodeLabel = 'id: ' + inputNode['name'] + '\n'
+                        + 'type: ' + inputNode['data_type'] + '\n'
+                        + 'dims: ' + inputNode['shape'].join(' x ');
+                    return nodeLabel;
                 };
 
                 // add input nodes
@@ -119,11 +122,15 @@
                     g.setEdge(nodeKey, curOperatorNode['output'][0]);
                 }
 
+                // TODO(daming-lu): add prettier styles to diff nodes
+                var svg = d3.select("svg")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", "28px");
+
                 render(d3.select("svg g"), g);
 
                 // adjust viewBox so that the whole graph can be shown, with scroll bar
-                d3.select("svg")
-                  .attr('viewBox', '0 0 ' +  g.graph().width + ' ' + g.graph().height);
+                svg.attr('viewBox', '0 0 ' +  g.graph().width + ' ' + g.graph().height);
             });
         },
 
@@ -232,13 +239,17 @@
         stroke-width: 1.5px
 
     .operator
-        fill: red
+        fill: #41b3a3
+
+    .operator > rect
+        rx: 10;
+        ry: 10;
 
     .output
-        fill: green
+        fill: #c38d9e
 
     .input
-        fill: purple
+        fill: #e8a87c
 
     .visual-dl-graph-charts
         width inherit
