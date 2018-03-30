@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <v-card hover class="visual-dl-page-charts">
         <div ref="chartBox" class="visual-dl-chart-box" :style="computedStyle">
         </div>
-    </div>
+    </v-card>
 </template>
 
 <script>
@@ -28,6 +28,7 @@ export default {
     mounted() {
         this.createChart();
         this.setChartsOptions();
+        this.setDisplayWordLabel();
     },
     watch: {
         embedding_data: function(val) {
@@ -111,15 +112,15 @@ export default {
         setDisplayWordLabel() {
                 this.myChart.setOption({
                     label: {
-                            normal: {
-                                show: this.displayWordLabel,
-                                formatter: function (param) {
-                                    return param.data[2];
+                        normal: {
+                            show: this.displayWordLabel,
+                            formatter: function (param) {
+                                return param.data[2];
                                 },
                                 position: 'top'
                             },
                             emphasis: {
-                            show: true,
+                                show: true,
                             }
                         }
                 })
@@ -133,30 +134,9 @@ export default {
 <style lang="stylus">
     .visual-dl-page-charts
         float left
-        margin 2% 2% 0 0
         padding 10px
         position relative
-        .visual-dl-chart-actions
-            opacity 0
-            transition: opacity .3s ease-out;
-            position absolute
-            top 4px
-            right 10px
-            img
-                width 30px
-                height 30px
-                position absolute
-                top 0
-                bottom 0
-                margin auto
-            .chart-toolbox-icons
-                width 25px
-                height 25px
-                margin-left -4px
-                margin-right -4px
 
-    .visual-dl-page-charts:hover
-        .visual-dl-chart-actions
-            opacity 1
+
 
 </style>

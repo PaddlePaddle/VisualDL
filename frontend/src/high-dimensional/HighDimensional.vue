@@ -34,7 +34,8 @@ export default {
         return {
             config: {
                 searchText: '',
-                displayWordLabel: false
+                displayWordLabel: true,
+                running: true
             },
             embedding_data: []
         }

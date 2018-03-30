@@ -3,14 +3,14 @@
 
         <v-text-field
                 label="Search"
-                hint="input a word"
+                hint="Search by label"
                 v-model="config.searchText"
                 dark
         ></v-text-field>
 
 
         <v-checkbox class="visual-dl-page-config-checkbox"
-                    label="Display word labels"
+                    label="Display All Labels"
                     v-model="config.displayWordLabel" dark></v-checkbox>
 
         <v-btn :color="config.running ? 'primary' : 'error'"
