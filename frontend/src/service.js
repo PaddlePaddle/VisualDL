@@ -23,3 +23,5 @@ export const getPluginTextsTexts = makeService('/data/plugin/texts/texts');
 export const getPluginAudioTags = makeService('/data/plugin/audio/tags');
 
 export const getPluginAudioAudio = makeService('/data/plugin/audio/audio');
+
+export const getHighDimensionalDatasets = makeService('/data/plugin/embeddings/embeddings');

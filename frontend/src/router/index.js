@@ -7,6 +7,7 @@ import Images from '@/images/Images'
 import Graph from '@/graph/Graph'
 import Texts from '@/texts/Texts'
 import Audio from '@/audio/Audio'
+import HighDimensional from '@/high-dimensional/HighDimensional'
 
 Vue.use(Router)
 
@@ -41,6 +42,11 @@ export default new Router({
       path: '/audio',
       name: 'Audio',
       component: Audio
+    },
+    {
+      path: '/HighDimensional',
+      name: 'HighDimensional',
+      component: HighDimensional
     }
   ]
 })
