@@ -9,24 +9,11 @@
 import echarts from 'echarts';
 
 export default {
-    props: ['config', 'displayWordLabel', 'searchText'],
+    props: ['config', 'displayWordLabel', 'searchText', 'embedding_data'],
     data() {
         return {
             width: 900,
             height: 600,
-            embedding_data: [
-                        [10.0, 8.04, "yellow"],
-                        [8.0, 6.95, "blue"],
-                        [13.0, 7.58, "red"],
-                        [9.0, 8.81, "king"],
-                        [11.0, 8.33, "queen"],
-                        [14.0, 9.96, "man"],
-                        [6.0, 7.24, "women"],
-                        [4.0, 4.26, "kid"],
-                        [12.0, 10.84, "adult"],
-                        [7.0, 4.82, "light"],
-                        [5.0, 5.68, "dark"]
-                    ]
         };
     },
     computed: {
@@ -43,6 +30,15 @@ export default {
         this.setChartsOptions();
     },
     watch: {
+        embedding_data: function(val) {
+            this.myChart.setOption({
+                series: [{
+                    // Grab the 'matched' series data
+                    name: 'all',
+                    data: val
+                }]
+            });
+        },
         displayWordLabel: function(val) {
             this.setDisplayWordLabel()
         },
@@ -80,32 +76,34 @@ export default {
             var option = {
                 xAxis: {},
                 yAxis: {},
-                series: [{
-                    symbolSize: 10,
-                    data: this.embedding_data,
-                    type: 'scatter',
-                },
-                {
-                  name: "matched",
-                  animation: false,
-                  symbolSize:10,
-                  data: [],
-                  itemStyle: {
-                    normal: {
-                        opacity: 1
-                    }
-                  },
-                  label: {
+                series: [
+                    {
+                        name: "all",
+                        symbolSize: 10,
+                        data: this.embedding_data,
+                        type: 'scatter',
+                    },
+                    {
+                        name: "matched",
+                        animation: false,
+                        symbolSize:10,
+                        data: [],
+                        itemStyle: {
                             normal: {
-                                show: true,
-                                formatter: function (param) {
-                                    return param.data[2];
-                                },
-                                position: 'top'
+                                opacity: 1
                             }
                         },
-                  type: 'scatter'
-                }
+                        label: {
+                                normal: {
+                                    show: true,
+                                    formatter: function (param) {
+                                        return param.data[2];
+                                    },
+                                    position: 'top'
+                                }
+                            },
+                        type: 'scatter'
+                    }
                 ]
             };
             this.myChart.setOption(option);

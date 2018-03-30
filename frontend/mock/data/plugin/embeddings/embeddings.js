@@ -17,28 +17,18 @@ module.exports = function (path, queryParam, postParam) {
             status: 0,
             msg: 'SUCCESS',
             data: {
-                "test": {
-                    "layer2/biases/summaries/mean": {
-                        "displayName": "layer2/biases/summaries/mean",
-                        "description": ""
-                    }
-                },
-                "train": {
-                    "layer2/biases/summaries/mean": {
-                        "displayName": "layer2/biases/summaries/mean",
-                        "description": ""
-                    },
-                    "layer2/biases/summaries/accuracy": {
-                        "displayName": "layer2/biases/summaries/accuracy",
-                        "description": ""
-                    },
-                },
-                "labels": ["Queen", "King", "Men", "Women"]
                 "embedding": [
-                    [0.1, 0.2, 0.3, 0.4],
-                    [0.1, 0.2, 0.3, 0.4],
-                    [0.1, 0.2, 0.3, 0.4],
-                    [0.1, 0.2, 0.3, 0.4],
+                    [10.0, 8.04, "yellow"],
+                    [8.0, 6.95, "blue"],
+                    [13.0, 7.58, "red"],
+                    [9.0, 8.81, "king"],
+                    [11.0, 8.33, "queen"],
+                    [14.0, 9.96, "man"],
+                    [6.0, 7.24, "women"],
+                    [4.0, 4.26, "kid"],
+                    [12.0, 10.84, "adult"],
+                    [7.0, 4.82, "light"],
+                    [5.0, 5.68, "dark"]
                 ]
             }
         }

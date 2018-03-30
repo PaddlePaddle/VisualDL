@@ -1,11 +1,5 @@
 <template>
     <div class="visual-dl-page-config-com">
-        <v-text-field
-                label="Group name RegExp"
-                hint="input a tag group name"
-                v-model="config.groupNameReg"
-                dark
-        ></v-text-field>
 
         <v-text-field
                 label="Search"
@@ -18,17 +12,6 @@
         <v-checkbox class="visual-dl-page-config-checkbox"
                     label="Display word labels"
                     v-model="config.displayWordLabel" dark></v-checkbox>
-
-        <label class="visual-dl-page-checkbox-group-label">Runs</label>
-
-        <v-checkbox v-for="item in runsItems"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.value"
-                    v-model="config.runs"
-                    dark
-                    class="visual-dl-page-runs-checkbox"
-        ></v-checkbox>
 
         <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"

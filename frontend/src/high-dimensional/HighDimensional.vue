@@ -5,13 +5,8 @@
                     :config="config"
                     :displayWordLabel="config.displayWordLabel"
                     :searchText="config.searchText"
+                    :embedding_data="embedding_data"
             ></ui-chart>
-             <!--<ui-chart-page-->
-                    <!--:config="config"-->
-                    <!--:runsItems="runsItems"-->
-                    <!--:tagList="filteredTagsList"-->
-                    <!--:title="'Tags matching' + config.groupNameReg"-->
-            <!--&gt;</ui-chart-page>-->
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
@@ -24,17 +19,15 @@
 </template>
 
 <script>
-import {getHighDimensionalDatasets, getTensors} from '../service';
+import {getHighDimensionalDatasets} from '../service';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import Config from './ui/Config'
 import Chart from './ui/Chart';
-import ChartPage from './ui/ChartPage';
 
 export default {
     components: {
         'ui-config': Config,
         'ui-chart': Chart,
-        'ui-chart-page': ChartPage
     },
     name: 'HighDimensional',
     data () {
@@ -43,9 +36,13 @@ export default {
                 searchText: '',
                 displayWordLabel: false
             },
-            fitScreen: {fitScreen: false},
-            download: {download: false}
+            embedding_data: []
         }
+    },
+    created() {
+    	    getHighDimensionalDatasets().then(({errno, data}) => {
+            this.embedding_data = data.embedding;
+        });
     },
     mounted() {
         autoAdjustHeight();
