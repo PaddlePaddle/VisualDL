@@ -347,6 +347,79 @@ std::string TextReader::caption() const {
 
 size_t TextReader::size() const { return reader_.total_records(); }
 
+/*
+ * Embedding functions
+ */
+void Embedding::AddEmbeddingsWithWordList(
+    const std::vector<std::vector<float>>& word_embeddings,
+    std::vector<std::string>& labels) {
+  for (int i = 0; i < word_embeddings.size(); i++) {
+    AddEmbedding(i, word_embeddings[i], labels[i]);
+  }
+}
+
+void Embedding::AddEmbedding(int item_id,
+                             const std::vector<float>& one_hot_vector,
+                             std::string& label) {
+  auto record = tablet_.AddRecord();
+  record.SetId(item_id);
+  time_t time = std::time(nullptr);
+  record.SetTimeStamp(time);
+  auto entry = record.AddData();
+  entry.SetMulti<float>(one_hot_vector);
+  entry.SetRaw(label);
+}
+
+/*
+ * EmbeddingReader functions
+ */
+std::vector<std::string> EmbeddingReader::get_all_labels() const {
+  std::vector<std::string> result;
+
+  for (int i = 0; i < total_records(); i++) {
+    auto record = reader_.record(i);
+    auto entry = record.data(0);
+    result.push_back(entry.GetRaw());
+  }
+  return result;
+}
+
+std::vector<std::vector<float>> EmbeddingReader::get_all_embeddings() const {
+  std::vector<std::vector<float>> result;
+
+  for (int i = 0; i < total_records(); i++) {
+    auto record = reader_.record(i);
+    auto entry = record.data(0);
+    auto tensors = entry.GetMulti<float>();
+
+    result.push_back(tensors);
+  }
+  return result;
+}
+
+std::vector<int> EmbeddingReader::ids() const {
+  std::vector<int> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).id());
+  }
+  return res;
+}
+
+std::vector<time_t> EmbeddingReader::timestamps() const {
+  std::vector<time_t> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).timestamp());
+  }
+  return res;
+}
+
+std::string EmbeddingReader::caption() const {
+  CHECK(!reader_.captions().empty()) << "no caption";
+  return reader_.captions().front();
+}
+
+size_t EmbeddingReader::size() const { return reader_.total_records(); }
+
 void Audio::StartSampling() {
   if (!ToSampleThisStep()) return;
 

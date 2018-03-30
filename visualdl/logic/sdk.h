@@ -328,6 +328,52 @@ private:
 };
 
 /*
+ * Embedding component writer
+ */
+struct Embedding {
+  Embedding(Tablet tablet) : tablet_(tablet) {
+    tablet_.SetType(Tablet::Type::kEmbedding);
+  }
+  void SetCaption(const std::string cap) {
+    tablet_.SetCaptions(std::vector<std::string>({cap}));
+  }
+
+  // Add all word vectors along with all labels
+  // The index of labels should match with the index of word_embeddings
+  // EX: ["Apple", "Orange"] means the first item in word_embeddings represents
+  // "Apple"
+  void AddEmbeddingsWithWordList(
+      const std::vector<std::vector<float>>& word_embeddings,
+      std::vector<std::string>& labels);
+  // TODO: Create another function that takes 'word_embeddings' and 'word_dict'
+private:
+  void AddEmbedding(int item_id,
+                    const std::vector<float>& one_hot_vector,
+                    std::string& label);
+
+  Tablet tablet_;
+};
+
+/*
+ * Embedding Reader.
+ */
+struct EmbeddingReader {
+  EmbeddingReader(TabletReader reader) : reader_(reader) {}
+
+  std::vector<int> ids() const;
+  std::vector<std::string> get_all_labels() const;
+  std::vector<std::vector<float>> get_all_embeddings() const;
+
+  std::vector<time_t> timestamps() const;
+  std::string caption() const;
+  size_t total_records() const { return reader_.total_records(); }
+  size_t size() const;
+
+private:
+  TabletReader reader_;
+};
+
+/*
  * Image component writer.
  */
 struct Audio {
