@@ -1,12 +1,12 @@
 <template>
-    <v-card hover class="visual-dl-image">
-        <h3 class="visual-dl-image-title">{{tagInfo.tag.displayName}}
-            <span class="visual-dl-image-run-icon">{{tagInfo.run}}</span>
+    <v-card hover class="visual-dl-audio">
+        <h3 class="visual-dl-audio-title">{{tagInfo.tag.displayName}}
+            <span class="visual-dl-audio-run-icon">{{tagInfo.run}}</span>
         </h3>
         <p>
             <span>Step:</span>
-            <span>{{imgData.step}}</span>
-            <span class="visual-del-image-time">{{imgData.wall_time | formatTime}}</span>
+            <span>{{audioData.step}}</span>
+            <span class="visual-del-audio-time">{{audioData.wall_time | formatTime}}</span>
         </p>
         <v-slider :max="steps"
                   :min="slider.min"
@@ -14,29 +14,24 @@
                   v-model="currentIndex"
                   ></v-slider>
 
-        <img :width="imageWidth" :height="imageHeight" :src="imgData.imgSrc" />
+        <audio controls>
+            <source src="horse.ogg" type="audio/ogg">
+            Your browser does not support the audio element.
+        </audio>
     </v-card>
 </template>
 <script>
-import {getPluginImagesImages} from '../../service';
+import {getPluginAudioAudio} from '../../service';
 
-const defaultImgWidth = 400;
-const defaultImgHeight = 300;
 // the time to refresh chart data
 const intervalTime = 30;
 
 export default {
-    props: ['tagInfo', 'isActualImageSize', 'runs', 'running', 'runsItems'],
+    props: ['tagInfo', 'runs', 'running', 'runsItems'],
     computed: {
         steps() {
             let data = this.data || [];
             return data.length - 1;
-        },
-        imageWidth() {
-            return this.isActualImageSize ? this.imgData.width : defaultImgWidth
-        },
-        imageHeight() {
-            return this.isActualImageSize ? this.imgData.height : defaultImgHeight
         }
     },
     filters: {
@@ -62,14 +57,12 @@ export default {
                 min: 0,
                 step: 1
             },
-            imgData: {},
+            audioData: {},
             data: [],
-            height: defaultImgHeight,
-            weight: defaultImgWidth
         };
     },
     created() {
-        this.getOriginChartsData();
+        this.getOriginAudioData();
     },
     mounted() {
         if (this.running) {
@@ -86,21 +79,17 @@ export default {
             val ? this.startInterval() : this.stopInterval();
         },
         currentIndex: function(index) {
-            /* eslint-disable fecs-camelcase */
             if (this.data && this.data[index]) {
-                let currentImgInfo = this.data ? this.data[index] : {};
-                let {height, width, query, step, wall_time} = currentImgInfo;
-                let url = '/data/plugin/images/individualImage?ts=' + wall_time;
-                let imgSrc = [url, query].join('&');
-                this.imgData = {
-                    imgSrc,
-                    height,
-                    width,
+                let currentAudioInfo = this.data ? this.data[index] : {};
+                let {query, step, wall_time} = currentAudioInfo;
+                let url = '/data/plugin/images/individualAudio?ts=' + wall_time;
+                let audioSrc = [url, query].join('&');
+                this.audioData = {
+                    audioSrc,
                     step,
                     wall_time
                 }
             }
-            /* eslint-enable fecs-camelcase */
         }
     },
     methods: {
@@ -110,10 +99,10 @@ export default {
         // get origin data per {{intervalTime}} seconds
         startInterval() {
             this.getOringDataInterval = setInterval(() => {
-                this.getOriginChartsData();
+                this.getOriginAudioData();
             }, intervalTime * 1000);
         },
-        getOriginChartsData() {
+        getOriginAudioData() {
             //let {run, tag} = this.tagInfo;
             let run = this.tagInfo.run
             let tag = this.tagInfo.tag
@@ -123,7 +112,7 @@ export default {
                 tag: displayName,
                 samples
             };
-            getPluginImagesImages(params).then(({status, data}) => {
+            getPluginAudioAudio(params).then(({status, data}) => {
                 if (status === 0) {
                     this.data = data;
                     this.currentIndex = data.length - 1;
@@ -134,17 +123,17 @@ export default {
 };
 </script>
 <style lang="stylus">
-    .visual-dl-image
+    .visual-dl-audio
         font-size 12px
         width 420px
         float left
         margin 20px 30px 10px 0
         background #fff
         padding 10px
-        .visual-dl-image-title
+        .visual-dl-audio-title
             font-size 14px
             line-height 30px
-            .visual-dl-image-run-icon
+            .visual-dl-audio-run-icon
                 background #e4e4e4
                 float right
                 margin-right 10px
@@ -153,7 +142,7 @@ export default {
                 border-radius 6px
                 line-height 20px
                 margin-top 4px
-        .visual-del-image-time
+        .visual-del-audio-time
             float right
 </style>
 

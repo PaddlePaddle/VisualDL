@@ -84,9 +84,14 @@ PYBIND11_MODULE(core, m) {
              auto tablet = self.tablet(tag);
              return vs::components::TextReader(tablet);
            })
-      .def("get_audio", [](vs::LogReader& self, const std::string& tag) {
+      .def("get_audio",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::AudioReader(self.mode(), tablet);
+           })
+      .def("get_embedding", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
-        return vs::components::AudioReader(self.mode(), tablet);
+        return vs::components::EmbeddingReader(tablet);
       });
 
   // clang-format on
@@ -136,7 +141,11 @@ PYBIND11_MODULE(core, m) {
               int step_cycle) {
              auto tablet = self.AddTablet(tag);
              return vs::components::Audio(tablet, num_samples, step_cycle);
-           });
+           })
+      .def("new_embedding", [](vs::LogWriter& self, const std::string& tag) {
+        auto tablet = self.AddTablet(tag);
+        return vs::components::Embedding(tablet);
+      });
 
 //------------------- components --------------------
 #define ADD_SCALAR_READER(T)                               \
@@ -232,6 +241,20 @@ PYBIND11_MODULE(core, m) {
       .def("caption", &cp::TextReader::caption)
       .def("total_records", &cp::TextReader::total_records)
       .def("size", &cp::TextReader::size);
+
+  py::class_<cp::Embedding>(m, "EmbeddingWriter")
+      .def("set_caption", &cp::Embedding::SetCaption)
+      .def("add_embeddings_with_word_list",
+           &cp::Embedding::AddEmbeddingsWithWordList);
+
+  py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")
+      .def("get_all_labels", &cp::EmbeddingReader::get_all_labels)
+      .def("get_all_embeddings", &cp::EmbeddingReader::get_all_embeddings)
+      .def("ids", &cp::EmbeddingReader::ids)
+      .def("timestamps", &cp::EmbeddingReader::timestamps)
+      .def("caption", &cp::EmbeddingReader::caption)
+      .def("total_records", &cp::EmbeddingReader::total_records)
+      .def("size", &cp::EmbeddingReader::size);
 
   py::class_<cp::Audio>(m, "AudioWriter", R"pbdoc(
             PyBind class. Must instantiate through the LogWriter.

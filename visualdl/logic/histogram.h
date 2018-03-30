@@ -81,14 +81,6 @@ struct HistogramBuilder {
   T right_boundary{std::numeric_limits<T>::min()};
   std::vector<int> buckets;
 
-  void Get(size_t n, T* left, T* right, int* frequency) {
-    CHECK(!buckets.empty()) << "need to CreateBuckets first.";
-    CHECK_LT(n, num_buckets_) << "n out of range.";
-    *left = left_boundary + span_ * n;
-    *right = *left + span_;
-    *frequency = buckets[n];
-  }
-
 private:
   // Get the left and right boundaries.
   void UpdateBoundary(const std::vector<T>& data) {
@@ -106,9 +98,11 @@ private:
             (float)left_boundary / num_buckets_;
     buckets.resize(num_buckets_);
 
+    // Go through the data, increase the item count in a bucket.
     for (auto v : data) {
-      int offset = std::min(int((v - left_boundary) / span_), num_buckets_ - 1);
-      buckets[offset]++;
+      int bucket_group_index =
+          std::min(int((v - left_boundary) / span_), num_buckets_ - 1);
+      buckets[bucket_group_index]++;
     }
   }
 
