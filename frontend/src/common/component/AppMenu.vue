@@ -51,6 +51,11 @@ export default {
                 url: '/texts',
                 title: 'TEXTS',
                 name: 'texts'
+            },
+            {
+                url: '/HighDimensional',
+                title: 'HighDimensional',
+                name: 'HighDimensional'
             }
             ]
         }
