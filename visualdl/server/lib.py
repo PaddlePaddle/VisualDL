@@ -196,6 +196,22 @@ def get_texts(storage, mode, tag, num_records=100):
         return res
 
 
+def get_embeddings(storage, mode, tag, num_records=5000):
+    with storage.mode(mode) as reader:
+        embedding = reader.embedding(tag)
+        labels = embedding.get_all_labels();
+        high_dimensional_vectors = embedding.get_all_embeddings();
+
+        # TODO: Provide other ways to do dimension reduction.
+        from sklearn.manifold import TSNE
+        import matplotlib.pyplot as plt
+        tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+        plot_only = 500
+        low_dim_embs = tsne.fit_transform(high_dimensional_vectors)
+
+        return {"embedding": low_dim_embs.tolist(), "labels": labels}
+
+
 def get_histogram(storage, mode, tag):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)

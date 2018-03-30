@@ -42,7 +42,12 @@ export default {
     },
     created() {
     	    getHighDimensionalDatasets().then(({errno, data}) => {
-            this.embedding_data = data.embedding;
+            var vector_data = data.embedding;
+            var labels = data.labels;
+            for ( var i = 0; i < vector_data.length; i ++) {
+              vector_data[i].push(labels[i])
+            }
+            this.embedding_data = vector_data
         });
     },
     mounted() {

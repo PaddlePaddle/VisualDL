@@ -236,6 +236,11 @@ def texts():
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
+@app.route('/data/plugin/embeddings/embeddings')
+def embeddings():
+    data = cache_get('/data/plugin/embeddings/embeddings', try_call, lib.get_embeddings, log_reader, 'train', 'scratch/embedding')
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
