@@ -23,15 +23,16 @@ export default {
         }
     },
     created() {
-
     },
     mounted() {
         this.createChart();
+        this.myChart.showLoading()
         this.setChartsOptions();
         this.setDisplayWordLabel();
     },
     watch: {
         embedding_data: function(val) {
+            this.myChart.hideLoading();
             this.myChart.setOption({
                 series: [{
                     // Grab the 'matched' series data
