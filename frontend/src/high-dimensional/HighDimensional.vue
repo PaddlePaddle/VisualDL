@@ -5,6 +5,7 @@
                     :config="config"
                     :displayWordLabel="config.displayWordLabel"
                     :searchText="config.searchText"
+                    :dimension="config.dimension"
                     :embedding_data="embedding_data"
             ></ui-chart>
         </div>
@@ -35,6 +36,7 @@ export default {
             config: {
                 searchText: '',
                 displayWordLabel: true,
+                dimension: '2D',
                 running: true
             },
             embedding_data: []
@@ -44,11 +46,30 @@ export default {
     	    getHighDimensionalDatasets().then(({errno, data}) => {
             var vector_data = data.embedding;
             var labels = data.labels;
+
             for ( var i = 0; i < vector_data.length; i ++) {
               vector_data[i].push(labels[i])
             }
+
             this.embedding_data = vector_data
         });
+    },
+    watch: {
+        'config.dimension': function(val) {
+            let params = {
+                dimension: val
+            };
+            getHighDimensionalDatasets(params).then(({errno, data}) => {
+            var vector_data = data.embedding;
+            var labels = data.labels;
+
+            for ( var i = 0; i < vector_data.length; i ++) {
+              vector_data[i].push(labels[i])
+            }
+
+            this.embedding_data = vector_data
+        });
+        },
     },
     mounted() {
         autoAdjustHeight();

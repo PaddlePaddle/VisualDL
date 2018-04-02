@@ -13,6 +13,11 @@
                     label="Display All Labels"
                     v-model="config.displayWordLabel" dark></v-checkbox>
 
+        <v-radio-group label="Dimension" v-model="config.dimension" dark>
+            <v-radio label="2D" value="2D"></v-radio>
+            <v-radio label="3D" value="3D"></v-radio>
+        </v-radio-group>
+
         <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
                   @click="toggleAllRuns"

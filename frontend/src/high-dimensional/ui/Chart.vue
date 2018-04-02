@@ -7,9 +7,10 @@
 
 <script>
 import echarts from 'echarts';
+import 'echarts-gl';
 
 export default {
-    props: ['config', 'displayWordLabel', 'searchText', 'embedding_data'],
+    props: ['config', 'displayWordLabel', 'searchText', 'embedding_data', 'dimension'],
     data() {
         return {
             width: 900,
@@ -26,7 +27,8 @@ export default {
     mounted() {
         this.createChart();
         this.myChart.showLoading()
-        this.setChartsOptions();
+
+        this.set2DChartOptions();
         this.setDisplayWordLabel();
     },
     watch: {
@@ -43,13 +45,25 @@ export default {
         displayWordLabel: function(val) {
             this.setDisplayWordLabel()
         },
+        dimension: function(val) {
+            this.myChart.clear()
+            this.myChart.showLoading()
+            if (val == '2D') {
+                this.set2DChartOptions();
+                this.setDisplayWordLabel();
+            } else {
+                this.set3DChartOptions();
+                this.setDisplayWordLabel();
+            }
+        },
         searchText: function(val) {
+            // Filter the data that has the hasPrefix
             var matched_words = []
             if (val != '') {
                 val = val.toLowerCase()
 
                 function hasPrefix(value) {
-                    var word = value[2]
+                    var word = value[value.length - 1]
                     return (typeof word == "string" && word.toLowerCase().startsWith(val))
                 }
 
@@ -72,7 +86,7 @@ export default {
             let el = this.$refs.chartBox;
             this.myChart = echarts.init(el);
         },
-        setChartsOptions() {
+        set2DChartOptions() {
             var typeD = "normal";
             var option = {
                 xAxis: {},
@@ -97,7 +111,7 @@ export default {
                             normal: {
                                 show: true,
                                 formatter: function(param) {
-                                    return param.data[2];
+                                    return param.data[param.data.length - 1];
                                 },
                                 position: 'top'
                             }
@@ -108,6 +122,45 @@ export default {
             };
             this.myChart.setOption(option);
         },
+        set3DChartOptions() {
+          var symbolSize = 2.5;
+          var option3d = {
+            grid3D: {},
+                    xAxis3D: {
+                        type: 'category'
+                    },
+                    yAxis3D: {},
+                    zAxis3D: {},
+                    dataset: {
+                        source: this.embedding_data
+                    },
+                    series: [
+                        {
+                            name: "all",
+                            type: 'scatter3D',
+                            symbolSize: symbolSize,
+                            data: []
+                        },
+                        {
+                            name: "matched",
+                            animation: false,
+                            symbolSize: symbolSize,
+                            data: [],
+                            label: {
+                                normal: {
+                                    show: true,
+                                    formatter: function(param) {
+                                        return param.data[param.data.length - 1];
+                                    },
+                                    position: 'top'
+                                }
+                            },
+                            type: 'scatter3D'
+                        }
+                    ]
+          }
+          this.myChart.setOption(option3d);
+        },
         setDisplayWordLabel() {
             this.myChart.setOption({
                 series: [{
@@ -117,7 +170,7 @@ export default {
                         normal: {
                             show: this.displayWordLabel,
                             formatter: function(param) {
-                                return param.data[2];
+                                return param.data[param.data.length - 1];
                             },
                             position: 'top'
                         },
