@@ -18,12 +18,11 @@ export default {
     },
     computed: {
         computedStyle() {
-            return 'height:' + this.height + 'px;'
-                + 'width:' + this.width + 'px;';
+            return 'height:' + this.height + 'px;' +
+                'width:' + this.width + 'px;';
         }
     },
-    created() {
-    },
+    created() {},
     mounted() {
         this.createChart();
         this.myChart.showLoading()
@@ -73,13 +72,12 @@ export default {
             let el = this.$refs.chartBox;
             this.myChart = echarts.init(el);
         },
-        setChartsOptions(){
+        setChartsOptions() {
             var typeD = "normal";
             var option = {
                 xAxis: {},
                 yAxis: {},
-                series: [
-                    {
+                series: [{
                         name: "all",
                         symbolSize: 10,
                         data: this.embedding_data,
@@ -88,7 +86,7 @@ export default {
                     {
                         name: "matched",
                         animation: false,
-                        symbolSize:10,
+                        symbolSize: 10,
                         data: [],
                         itemStyle: {
                             normal: {
@@ -96,14 +94,14 @@ export default {
                             }
                         },
                         label: {
-                                normal: {
-                                    show: true,
-                                    formatter: function (param) {
-                                        return param.data[2];
-                                    },
-                                    position: 'top'
-                                }
-                            },
+                            normal: {
+                                show: true,
+                                formatter: function(param) {
+                                    return param.data[2];
+                                },
+                                position: 'top'
+                            }
+                        },
                         type: 'scatter'
                     }
                 ]
@@ -111,22 +109,25 @@ export default {
             this.myChart.setOption(option);
         },
         setDisplayWordLabel() {
-                this.myChart.setOption({
+            this.myChart.setOption({
+                series: [{
+                    // Grab the 'all' series data
+                    name: 'all',
                     label: {
                         normal: {
                             show: this.displayWordLabel,
-                            formatter: function (param) {
+                            formatter: function(param) {
                                 return param.data[2];
-                                },
-                                position: 'top'
                             },
-                            emphasis: {
-                                show: true,
-                            }
+                            position: 'top'
+                        },
+                        emphasis: {
+                            show: true,
                         }
-                })
+                    }
+                }]
+            });
         },
-
     }
 };
 
@@ -137,7 +138,4 @@ export default {
         float left
         padding 10px
         position relative
-
-
-
 </style>
