@@ -59,7 +59,7 @@ export default {
     },
     methods: {
         fetchDatasets() {
-            // Fetch the data from the server. Passing dimention and reduction method
+            // Fetch the data from the server. Passing dimension and reduction method
             let params = {
                 dimension: this.config.dimension,
                 reduction: this.config.reduction

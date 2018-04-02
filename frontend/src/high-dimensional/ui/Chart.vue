@@ -48,7 +48,7 @@ export default {
         dimension: function(val) {
             this.myChart.clear()
             this.myChart.showLoading()
-            if (val == "2") {
+            if (val === "2") {
                 this.set2DChartOptions();
                 this.setDisplayWordLabel();
             } else {
@@ -130,6 +130,7 @@ export default {
                         type: 'category'
                     },
                     yAxis3D: {},
+                    xAxis3D: {},
                     zAxis3D: {},
                     dataset: {
                         source: this.embedding_data
