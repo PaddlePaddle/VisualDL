@@ -36,45 +36,45 @@ export default {
             config: {
                 searchText: '',
                 displayWordLabel: true,
-                dimension: '2D',
+                dimension: "2",
+                reduction: "tsne",
                 running: true
             },
             embedding_data: []
         }
     },
     created() {
-    	    getHighDimensionalDatasets().then(({errno, data}) => {
-            var vector_data = data.embedding;
-            var labels = data.labels;
-
-            for ( var i = 0; i < vector_data.length; i ++) {
-              vector_data[i].push(labels[i])
-            }
-
-            this.embedding_data = vector_data
-        });
+        this.fetchDatasets()
     },
     watch: {
         'config.dimension': function(val) {
-            let params = {
-                dimension: val
-            };
-            getHighDimensionalDatasets(params).then(({errno, data}) => {
-            var vector_data = data.embedding;
-            var labels = data.labels;
-
-            for ( var i = 0; i < vector_data.length; i ++) {
-              vector_data[i].push(labels[i])
-            }
-
-            this.embedding_data = vector_data
-        });
+            this.fetchDatasets()
         },
+        'config.reduction': function(val) {
+            this.fetchDatasets()
+        }
     },
     mounted() {
         autoAdjustHeight();
     },
     methods: {
+        fetchDatasets() {
+            // Fetch the data from the server. Passing dimention and reduction method
+            let params = {
+                dimension: this.config.dimension,
+                reduction: this.config.reduction
+            };
+            getHighDimensionalDatasets(params).then(({errno, data}) => {
+                var vector_data = data.embedding;
+                var labels = data.labels;
+
+                for ( var i = 0; i < vector_data.length; i ++) {
+                  vector_data[i].push(labels[i])
+                }
+
+                this.embedding_data = vector_data
+            });
+        },
     }
 };
 

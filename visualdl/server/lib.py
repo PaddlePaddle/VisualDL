@@ -196,18 +196,24 @@ def get_texts(storage, mode, tag, num_records=100):
         return res
 
 
-def get_embeddings(storage, mode, tag, num_records=5000):
+def get_embeddings(storage, mode, tag, reduction, dimension=2, num_records=5000):
     with storage.mode(mode) as reader:
         embedding = reader.embedding(tag)
         labels = embedding.get_all_labels();
         high_dimensional_vectors = embedding.get_all_embeddings();
 
-        # TODO: Provide other ways to do dimension reduction.
-        from sklearn.manifold import TSNE
-        import matplotlib.pyplot as plt
-        tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
-        plot_only = 500
-        low_dim_embs = tsne.fit_transform(high_dimensional_vectors)
+        # TODO: Move away from sklearn
+        if reduction == 'tsne':
+            from sklearn.manifold import TSNE
+            import matplotlib.pyplot as plt
+            tsne = TSNE(perplexity=30, n_components=dimension, init='pca', n_iter=5000)
+            plot_only = 500
+            low_dim_embs = tsne.fit_transform(high_dimensional_vectors)
+
+        elif reduction == 'pca':
+            from sklearn.decomposition import PCA
+            pca = PCA(n_components=3)
+            low_dim_embs = pca.fit_transform(high_dimensional_vectors)
 
         return {"embedding": low_dim_embs.tolist(), "labels": labels}
 

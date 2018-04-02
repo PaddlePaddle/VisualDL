@@ -7,7 +7,7 @@
  * @return {Object}
  */
 module.exports = function(path, queryParam, postParam) {
-    if (queryParam.dimension === '3D') {
+    if (queryParam.dimension == '3') {
         return {
             // moock delay
             _timeout: 0,

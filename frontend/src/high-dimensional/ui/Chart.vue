@@ -48,7 +48,7 @@ export default {
         dimension: function(val) {
             this.myChart.clear()
             this.myChart.showLoading()
-            if (val == '2D') {
+            if (val == "2") {
                 this.set2DChartOptions();
                 this.setDisplayWordLabel();
             } else {
