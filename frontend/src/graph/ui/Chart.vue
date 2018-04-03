@@ -134,7 +134,6 @@
 
                 svg.selectAll(".node").on("click", function(d, i){
                     this.curNode = g.node(d);
-                    console.log(this.curNode);
                     var nodeType = this.curNode.class;
                     var nodeInfo = null;
                     if (nodeType === "operator") {
