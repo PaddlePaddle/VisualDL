@@ -13,6 +13,16 @@
                     label="Display All Labels"
                     v-model="config.displayWordLabel" dark></v-checkbox>
 
+        <v-radio-group label="Dimension" v-model="config.dimension" dark>
+            <v-radio label="2D" value="2"></v-radio>
+            <v-radio label="3D" value="3"></v-radio>
+        </v-radio-group>
+
+        <v-radio-group label="Reduction Method" v-model="config.reduction" dark>
+            <v-radio label="T-SNE" value="tsne"></v-radio>
+            <v-radio label="PCA" value="pca"></v-radio>
+        </v-radio-group>
+
         <v-btn :color="config.running ? 'primary' : 'error'"
                   v-model="config.running"
                   @click="toggleAllRuns"
@@ -64,5 +74,3 @@ export default {
             margin-bottom 10px
 
 </style>
-
-
