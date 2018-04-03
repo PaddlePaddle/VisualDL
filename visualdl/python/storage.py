@@ -116,6 +116,12 @@ class LogReader(object):
         return type2scalar[type](tag)
 
     def text(self, tag):
+        """
+        Get a text reader with tag
+
+        :param tag:  The reader will read the text data marked with tag
+        :type tag: basestring
+        """
         check_tag_name_valid(tag)
         return self.reader.get_text(tag)
 
@@ -257,6 +263,15 @@ class LogWriter(object):
         return self.writer.new_audio(tag, num_samples, step_cycle)
 
     def text(self, tag):
+        """
+        Create a text writer that used to write
+        text related data.
+
+        :param tag: The text writer will label the data with tag
+        :type tag: basestring
+        :return: A text writer to record distribution
+        :rtype: TextWriter
+        """
         check_tag_name_valid(tag)
         return self.writer.new_text(tag)
 
