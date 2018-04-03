@@ -196,6 +196,32 @@ def get_texts(storage, mode, tag, num_records=100):
         return res
 
 
+def get_embeddings(storage,
+                   mode,
+                   tag,
+                   reduction,
+                   dimension=2,
+                   num_records=5000):
+    with storage.mode(mode) as reader:
+        embedding = reader.embedding(tag)
+        labels = embedding.get_all_labels()
+        high_dimensional_vectors = embedding.get_all_embeddings()
+
+        # TODO: Move away from sklearn
+        if reduction == 'tsne':
+            from sklearn.manifold import TSNE
+            tsne = TSNE(
+                perplexity=30, n_components=dimension, init='pca', n_iter=5000)
+            low_dim_embs = tsne.fit_transform(high_dimensional_vectors)
+
+        elif reduction == 'pca':
+            from sklearn.decomposition import PCA
+            pca = PCA(n_components=3)
+            low_dim_embs = pca.fit_transform(high_dimensional_vectors)
+
+        return {"embedding": low_dim_embs.tolist(), "labels": labels}
+
+
 def get_histogram(storage, mode, tag):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
