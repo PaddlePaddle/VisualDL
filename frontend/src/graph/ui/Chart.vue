@@ -25,7 +25,7 @@
     import * as dagreD3 from 'dagre-d3';
 
     export default {
-        props: ['fitScreen', 'download', 'scale'],
+        props: ['fitScreen', 'download', 'scale', 'curNode'],
         computed: {
             computedWidth() {
                 let scale = this.scale;
@@ -54,7 +54,7 @@
         },
         mounted() {
             this.getOriginChartsData();
-
+            let that = this;
             getPluginGraphsGraph().then(({errno, data}) => {
                 var raw_data = data.data;
                 var data = raw_data;
@@ -131,6 +131,27 @@
 
                 // adjust viewBox so that the whole graph can be shown, with scroll bar
                 svg.attr('viewBox', '0 0 ' +  g.graph().width + ' ' + g.graph().height);
+
+                svg.selectAll(".node").on("click", function(d, i){
+                    this.curNode = g.node(d);
+                    console.log(this.curNode);
+                    var nodeType = this.curNode.class;
+                    var nodeInfo = null;
+                    if (nodeType === "operator") {
+                        var opIndex = d.slice(7); // remove prefix "opNode_"
+                        nodeInfo = data.node[opIndex];
+                    } else if (nodeType === "input") {
+                        nodeInfo = data.input[d-1];
+                    } else {
+                        nodeInfo = "output";
+                    }
+
+                    that.$emit('curNodeUpdated',
+                        {
+                            'nodeType': nodeType,
+                            'nodeInfo': nodeInfo
+                        });
+                });
             });
         },
 
@@ -244,6 +265,9 @@
     .operator > rect
         rx: 10;
         ry: 10;
+
+    .node
+        cursor: pointer
 
     .output
         fill: #c38d9e

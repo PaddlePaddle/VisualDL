@@ -5,12 +5,15 @@
                     :fitScreen="fitScreen"
                     :download="download"
                     :scale="config.scale"
+                    :curNode="curNode"
+                    @curNodeUpdated="curNode = $event"
             ></ui-chart>
         </div>
         <div class="visual-dl-page-right">
             <div class="visual-dl-page-config-container">
                 <ui-config
                     :config="config"
+                    :curNode="curNode"
                     @fitScreen="handleFitScreen"
                     @download="handleDownload"
                 ></ui-config>
@@ -37,7 +40,8 @@ export default {
                 scale: 0.5
             },
             fitScreen: {fitScreen: false},
-            download: {download: false}
+            download: {download: false},
+            curNode: {}
         }
     },
     mounted() {
@@ -45,11 +49,11 @@ export default {
     },
     methods: {
         handleFitScreen() {
-            this.fitScreen = {fitScreen: true}
+            this.fitScreen = {fitScreen: true};
             this.config.scale = 0.5;
         },
         handleDownload() {
-            this.download = {fitScreen: true}
+            this.download = {fitScreen: true};
         }
     }
 };
