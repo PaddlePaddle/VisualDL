@@ -275,7 +275,7 @@ def individual_audio():
 
     key = os.path.join('/data/plugin/audio/individualAudio', mode, tag,
                        str(step_index))
-    data = cache_get(key, try_call, lib.get_invididual_audio, log_reader, mode,
+    data = cache_get(key, try_call, lib.get_individual_audio, log_reader, mode,
                      tag, step_index)
     response = send_file(
         data, as_attachment=True, attachment_filename='audio.wav')
