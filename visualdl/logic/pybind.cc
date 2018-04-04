@@ -230,9 +230,18 @@ PYBIND11_MODULE(core, m) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
-  py::class_<cp::Text>(m, "TextWriter")
+  py::class_<cp::Text>(m, "TextWriter", R"pbdoc(
+        PyBind class. Must instantiate through the LogWriter.
+      )pbdoc")
       .def("set_caption", &cp::Text::SetCaption)
-      .def("add_record", &cp::Text::AddRecord);
+      .def("add_record", &cp::Text::AddRecord, R"pbdoc(
+            Add a record with the step and text value.
+
+            :param step: Current step value
+            :type index: integer
+            :param text: Text record
+            :type text: basestring
+          )pbdoc");
 
   py::class_<cp::TextReader>(m, "TextReader")
       .def("records", &cp::TextReader::records)
@@ -311,11 +320,13 @@ PYBIND11_MODULE(core, m) {
       .def("record", &cp::AudioReader::record)
       .def("timestamp", &cp::AudioReader::timestamp);
 
-#define ADD_HISTOGRAM_WRITER(T)                                          \
-  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T, \ 
-   R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc") \
-      .def("add_record",                                                 \
-           &cp::Histogram<T>::AddRecord,                                 \
+#define ADD_HISTOGRAM_WRITER(T)                                             \
+  py::class_<cp::Histogram<T>>(                                             \
+      m,                                                                    \
+      "HistogramWriter__" #T,                                               \
+      R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc") \
+      .def("add_record",                                                    \
+           &cp::Histogram<T>::AddRecord,                                    \
            R"pbdoc(add a record with the step and histogram_value)pbdoc");
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_WRITER)
 #undef ADD_HISTOGRAM_WRITER
