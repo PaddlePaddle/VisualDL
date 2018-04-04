@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 import numpy as np
 from PIL import Image
 from .log import logger
+import wave
 
 try:
     from urllib.parse import urlencode
@@ -154,6 +155,85 @@ def get_invididual_image(storage, mode, tag, step_index, max_size=80):
         tempfile.seek(0, 0)
         return tempfile
 
+
+def get_audio_tags(storage):
+    result = {}
+
+    for mode in storage.modes():
+        with storage.mode(mode) as reader:
+            tags = reader.tags('audio')
+            if tags:
+                result[mode] = {}
+                for tag in tags:
+                    audio = reader.audio(tag)
+                    for i in range(max(1, audio.num_samples())):
+                        caption = tag if audio.num_samples(
+                        ) <= 1 else '%s/%d' % (tag, i)
+                        result[mode][caption] = {
+                            'displayName': caption,
+                            'description': "",
+                            'samples': 1,
+                        }
+
+    return result
+
+
+def get_audio_tag_steps(storage, mode, tag):
+    # remove suffix '/x'
+    res = re.search(r".*/([0-9]+$)", tag)
+    sample_index = 0
+    origin_tag = tag
+    if res:
+        tag = tag[:tag.rfind('/')]
+        sample_index = int(res.groups()[0])
+
+    with storage.mode(mode) as reader:
+        audio = reader.audio(tag)
+        res = []
+
+    for step_index in range(audio.num_records()):
+        record = audio.record(step_index, sample_index)
+
+        query = urlencode({
+            'sample': 0,
+            'index': step_index,
+            'tag': origin_tag,
+            'run': mode,
+        })
+        res.append({
+            'step': record.step_id(),
+            'wall_time': audio.timestamp(step_index),
+            'query': query,
+        })
+
+    return res
+
+
+def get_individual_audio(storage, mode, tag, step_index, max_size=80):
+
+    with storage.mode(mode) as reader:
+        res = re.search(r".*/([0-9]+$)", tag)
+        # remove suffix '/x'
+        offset = 0
+        if res:
+            offset = int(res.groups()[0])
+            tag = tag[:tag.rfind('/')]
+
+        audio = reader.audio(tag)
+        record = audio.record(step_index, offset)
+
+        data = np.array(record.data(), dtype='uint8')
+
+        tempfile = NamedTemporaryFile(mode='w+b', suffix='.wav')
+
+        wavfile = wave.open(tempfile, 'wb')
+        wavfile.setnchannels(2)
+        wavfile.setsampwidth(2)
+        wavfile.writeframes(data.tostring())
+
+        tempfile.seek(0, 0)
+
+        return tempfile
 
 def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')

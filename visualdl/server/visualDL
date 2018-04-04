@@ -163,6 +163,14 @@ def image_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
+@app.route("/data/plugin/audio/tags")
+def audio_tags():
+    data = cache_get("/data/plugin/audio/tags", try_call, lib.get_audio_tags,
+                     log_reader)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
 @app.route("/data/plugin/histograms/tags")
 def histogram_tags():
     data = cache_get("/data/plugin/histograms/tags", try_call,
@@ -244,6 +252,35 @@ def embeddings():
     data = cache_get(key, try_call, lib.get_embeddings, log_reader, 'train', 'scratch/embedding', reduction, int(dimension))
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
+
+@app.route('/data/plugin/audio/audio')
+def audio():
+    mode = request.args.get('run')
+    tag = request.args.get('tag')
+    key = os.path.join('/data/plugin/audio/audio', mode, tag)
+
+    data = cache_get(key, try_call, lib.get_audio_tag_steps, log_reader, mode,
+                     tag)
+    result = gen_result(0, "", data)
+
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/audio/individualAudio')
+def individual_audio():
+    mode = request.args.get('run')
+    print mode
+    tag = request.args.get('tag')  # include a index
+    step_index = int(request.args.get('index'))  # index of step
+
+    key = os.path.join('/data/plugin/audio/individualAudio', mode, tag,
+                       str(step_index))
+    data = cache_get(key, try_call, lib.get_invididual_audio, log_reader, mode,
+                     tag, step_index)
+    response = send_file(
+        data, as_attachment=True, attachment_filename='audio.wav')
+    return response
+
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
