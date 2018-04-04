@@ -440,8 +440,8 @@ private:
 };
 
 /*
-* Audio reader.
-*/
+ * Audio reader.
+ */
 struct AudioReader {
   using value_t = typename Audio::value_t;
 
