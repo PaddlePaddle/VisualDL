@@ -54,7 +54,7 @@
         },
         mounted() {
             this.getOriginChartsData();
-            let that = this;
+            let chartScope = this;
             getPluginGraphsGraph().then(({errno, data}) => {
                 var raw_data = data.data;
                 var data = raw_data;
@@ -145,7 +145,7 @@
                         nodeInfo = "output";
                     }
 
-                    that.$emit('curNodeUpdated',
+                    chartScope.$emit('curNodeUpdated',
                         {
                             'nodeType': nodeType,
                             'nodeInfo': nodeInfo
@@ -195,7 +195,7 @@
             },
 
             addDragEventForImg() {
-                let that = this;
+                let chartScope = this;
                 // target elements with the "draggable" class
                 interact('.draggable').draggable({
                     // enable inertial throwing
@@ -206,8 +206,8 @@
                         dragMovelHandler(event, (target, x, y) => {
                             tansformElement(target, x, y);
                             // compute the proportional value
-                            let triggerEl = that.getBigImgEl();
-                            let relativeEl = that.getSmallImgDragHandler();
+                            let triggerEl = chartScope.getBigImgEl();
+                            let relativeEl = chartScope.getSmallImgDragHandler();
 
                             relativeMove({triggerEl, x, y}, relativeEl);
                         });
@@ -233,8 +233,8 @@
                         dragMovelHandler(event, (target, x, y) => {
                             tansformElement(target, x, y);
                             // compute the proportional value
-                            let triggerEl = that.getSmallImgEl();
-                            let relativeEl = that.getBigImgEl();
+                            let triggerEl = chartScope.getSmallImgEl();
+                            let relativeEl = chartScope.getBigImgEl();
 
                             relativeMove({triggerEl, x, y}, relativeEl);
                         });
