@@ -235,6 +235,7 @@ def get_individual_audio(storage, mode, tag, step_index, max_size=80):
 
         return tempfile
 
+
 def get_histogram_tags(storage):
     return get_tags(storage, 'histogram')
 
