@@ -123,7 +123,10 @@ const config = {
             test: /\.(styl)$/
         }),
         new ExtractTextPlugin({filename: '[name].css'})
-    ]
+    ],
+    externals: {
+        dagreD3: 'dagre-d3'
+    }
 };
 
 // template config
