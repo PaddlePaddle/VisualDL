@@ -22,10 +22,9 @@
     // for d3 drawing
     import * as d3 from "d3";
     import * as dagre from "dagre";
-    import * as dagreD3 from 'dagre-d3';
 
     export default {
-        props: ['fitScreen', 'download', 'scale'],
+        props: ['fitScreen', 'download', 'scale', 'curNode'],
         computed: {
             computedWidth() {
                 let scale = this.scale;
@@ -54,7 +53,7 @@
         },
         mounted() {
             this.getOriginChartsData();
-
+            let chartScope = this;
             getPluginGraphsGraph().then(({errno, data}) => {
                 var raw_data = data.data;
                 var data = raw_data;
@@ -131,6 +130,26 @@
 
                 // adjust viewBox so that the whole graph can be shown, with scroll bar
                 svg.attr('viewBox', '0 0 ' +  g.graph().width + ' ' + g.graph().height);
+
+                svg.selectAll(".node").on("click", function(d, i){
+                    this.curNode = g.node(d);
+                    var nodeType = this.curNode.class;
+                    var nodeInfo = null;
+                    if (nodeType === "operator") {
+                        var opIndex = d.slice(7); // remove prefix "opNode_"
+                        nodeInfo = data.node[opIndex];
+                    } else if (nodeType === "input") {
+                        nodeInfo = data.input[d-1];
+                    } else {
+                        nodeInfo = "output";
+                    }
+
+                    chartScope.$emit('curNodeUpdated',
+                        {
+                            'nodeType': nodeType,
+                            'nodeInfo': nodeInfo
+                        });
+                });
             });
         },
 
@@ -175,7 +194,7 @@
             },
 
             addDragEventForImg() {
-                let that = this;
+                let chartScope = this;
                 // target elements with the "draggable" class
                 interact('.draggable').draggable({
                     // enable inertial throwing
@@ -186,8 +205,8 @@
                         dragMovelHandler(event, (target, x, y) => {
                             tansformElement(target, x, y);
                             // compute the proportional value
-                            let triggerEl = that.getBigImgEl();
-                            let relativeEl = that.getSmallImgDragHandler();
+                            let triggerEl = chartScope.getBigImgEl();
+                            let relativeEl = chartScope.getSmallImgDragHandler();
 
                             relativeMove({triggerEl, x, y}, relativeEl);
                         });
@@ -213,8 +232,8 @@
                         dragMovelHandler(event, (target, x, y) => {
                             tansformElement(target, x, y);
                             // compute the proportional value
-                            let triggerEl = that.getSmallImgEl();
-                            let relativeEl = that.getBigImgEl();
+                            let triggerEl = chartScope.getSmallImgEl();
+                            let relativeEl = chartScope.getBigImgEl();
 
                             relativeMove({triggerEl, x, y}, relativeEl);
                         });
@@ -244,6 +263,9 @@
     .operator > rect
         rx: 10;
         ry: 10;
+
+    .node
+        cursor: pointer
 
     .output
         fill: #c38d9e
