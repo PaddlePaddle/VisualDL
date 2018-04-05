@@ -59,6 +59,18 @@ VisualDL uses this [Git branching model](http://nvie.com/posts/a-successful-git-
    Our pre-commit configuration requires [clang-format 3.8](http://releases.llvm.org/download.html) for auto-formating C/C++ code, yapf for auto-formating Python and flake8 for style checking Python.
    Please make sure clang-format version 3.8 is available in your path. For example, under ```/usr/local/bin```
 
+    ```bash
+    # For example, install clang-format on Mac
+
+    tar xvfJ clang+llvm-3.8.0-x86_64-apple-darwin.tar.xz -C ./clang_mac_install/
+    cd clang_mac_install/clang+llvm-3.8.0-x86_64-apple-darwin/bin/
+    ln -s $(pwd)/$(find clang-format | grep bin/clang-format$) /usr/local/bin/clang-format
+
+    # or directly mv clang-format binary to there
+    # mv clang-format /usr/local/bin/
+
+    ```
+
    Once installed, `pre-commit` checks the style of code and documentation in every commit.  We will see something like the following when you run `git commit`:
 
    ```

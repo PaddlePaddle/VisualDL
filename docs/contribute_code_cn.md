@@ -58,6 +58,18 @@ VisualDL 目前使用[Git流分支模型](http://nvie.com/posts/a-successful-git
     VisualDL 使用 `clang-format` 来调整 C/C++ 源代码格式，请确保 [clang-format 3.8](http://releases.llvm.org/download.html) 版本在 3.8 以上。
     请下载且安装在 path上. 例如 `/usr/local/bin`
 
+    ```bash
+    # For example, install clang-format on Mac
+
+    tar xvfJ clang+llvm-3.8.0-x86_64-apple-darwin.tar.xz -C ./clang_mac_install/
+    cd clang_mac_install/clang+llvm-3.8.0-x86_64-apple-darwin/bin/
+    ln -s $(pwd)/$(find clang-format | grep bin/clang-format$) /usr/local/bin/clang-format
+
+    # or directly mv clang-format binary to there
+    # mv clang-format /usr/local/bin/
+
+    ```
+
     Git 每次提交代码，都需要写提交说明，这可以让其他人知道这次提交做了哪些改变，这可以通过`git commit` 完成。
 
     ```
