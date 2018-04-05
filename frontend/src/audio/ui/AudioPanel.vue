@@ -14,8 +14,7 @@
                   v-model="currentIndex"
                   ></v-slider>
 
-        <audio controls>
-            <source src="horse.ogg" type="audio/ogg">
+        <audio controls :src="audioData.audioSrc">
             Your browser does not support the audio element.
         </audio>
     </v-card>
@@ -82,7 +81,7 @@ export default {
             if (this.data && this.data[index]) {
                 let currentAudioInfo = this.data ? this.data[index] : {};
                 let {query, step, wall_time} = currentAudioInfo;
-                let url = '/data/plugin/images/individualAudio?ts=' + wall_time;
+                let url = '/data/plugin/audio/individualAudio?ts=' + wall_time;
                 let audioSrc = [url, query].join('&');
                 this.audioData = {
                     audioSrc,

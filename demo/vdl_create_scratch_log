@@ -3,6 +3,7 @@ import os
 import random
 
 import numpy as np
+import wave
 from PIL import Image
 from visualdl import ROOT, LogWriter
 from visualdl.server.log import logger as log
@@ -89,6 +90,32 @@ with logw.mode("train") as logger:
             data = np.random.random(shape).flatten()
             image0.add_sample(shape, list(data))
         image0.finish_sampling()
+
+
+
+#create audio
+with logw.mode("train") as logger:
+    audio = logger.audio("scratch/audio_1", 4) # randomly sample 4 audio one pass
+
+    CHUNK = 4096
+    f = wave.open('./testing.wav', "rb")
+    wavdata = []
+    chunk = f.readframes(CHUNK)
+
+    while chunk:
+        data = np.fromstring(chunk, dtype='uint8')
+        wavdata.extend(data)
+        chunk = f.readframes(CHUNK)
+
+    for pass_ in range(4):
+        audio.start_sampling()
+        for sample in range(10):
+            idx = audio.is_sample_taken()
+            if idx >= 0:
+                audio.set_sample(idx, 8000, wavdata)
+
+        audio.finish_sampling()
+
 
 
 def download_graph_image():

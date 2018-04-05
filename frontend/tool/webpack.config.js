@@ -92,7 +92,7 @@ const config = {
                 use: getLoaders(isDev, 'stylus')
             },
             {
-                test: /\.(gif|png|jpe?g|svg)$/i,
+                test: /\.(gif|png|jpe?g|svg|wav)$/i,
                 loader: 'file-loader',
                 options: {
                     name: 'assets/[name].[hash].[ext]'
