@@ -1,39 +1,42 @@
 <template>
-    <div class="visual-dl-page-config-com">
-        <v-text-field
-                label="Group name RegExp"
-                hint="input a tag group name"
-                v-model="config.groupNameReg"
-                dark
-        ></v-text-field>
+  <div class="visual-dl-page-config-com">
+    <v-text-field
+      label="Group name RegExp"
+      hint="input a tag group name"
+      v-model="config.groupNameReg"
+      dark
+    />
 
-        <label class="visual-dl-page-checkbox-group-label">Runs</label>
+    <label class="visual-dl-page-checkbox-group-label">Runs</label>
 
-        <v-checkbox v-for="item in runsItems"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.value"
-                    v-model="config.runs"
-                    dark
-                    class="visual-dl-page-runs-checkbox"
-        ></v-checkbox>
+    <v-checkbox
+      v-for="item in runsItems"
+      :key="item.name"
+      :label="item.name"
+      :value="item.value"
+      v-model="config.runs"
+      dark
+      class="visual-dl-page-runs-checkbox"
+    />
 
-        <v-btn :color="config.running ? 'primary' : 'error'"
-                  v-model="config.running"
-                  @click="toggleAllRuns"
-                  class="visual-dl-page-run-toggle"
-                  dark block
-        >
-            {{config.running ? 'Running' : 'Stopped'}}
-        </v-btn>
-    </div>
+    <v-btn
+      :color="config.running ? 'primary' : 'error'"
+      v-model="config.running"
+      @click="toggleAllRuns"
+      class="visual-dl-page-run-toggle"
+      dark
+      block
+    >
+      {{ config.running ? 'Running' : 'Stopped' }}
+    </v-btn>
+  </div>
 </template>
 <script>
 
 export default {
     props: {
         runsItems: Array,
-        config: Object
+        config: Object,
     },
     data() {
         return {
@@ -42,8 +45,8 @@ export default {
     methods: {
         toggleAllRuns() {
             this.config.running = !this.config.running;
-        }
-    }
+        },
+    },
 };
 
 </script>

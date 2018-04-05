@@ -1,5 +1,5 @@
 import number from './number';
-export default function (values, p, valueof) {
+export default function(values, p, valueof) {
     if (valueof == null) {
         return valueof = number;
     }

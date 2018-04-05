@@ -1,35 +1,33 @@
 <template>
-    <div id="app">
-        <v-app>
-            <AppMenu :initialRoute="initialRoute">
-            </AppMenu>
-            <router-view></router-view>
-        </v-app>
-    </div>
+  <div id="app">
+    <v-app>
+      <AppMenu :initial-route="initialRoute"/>
+      <router-view/>
+    </v-app>
+  </div>
 </template>
 
 <script>
-import AppMenu from './common/component/AppMenu'
+import AppMenu from './common/component/AppMenu';
 
 export default {
     name: 'App',
     components: {
-		AppMenu
+		AppMenu,
     },
     data() {
         return {
-            initialRoute: "scalars"
-        }
+            initialRoute: 'scalars',
+        };
     },
     created() {
         if (location.hash && location.hash != '#/') {
             this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
-        }
-        else {
+        } else {
             location.hash = '#/scalars';
         }
-    }
-}
+    },
+};
 </script>
 
 <style lang="stylus">

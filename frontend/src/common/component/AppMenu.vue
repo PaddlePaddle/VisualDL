@@ -1,56 +1,62 @@
 <template>
-    <div>
-        <div class="visual-dl-app-menu">
-            <v-toolbar color="primary" dark>
-                <v-toolbar-title class="appbar-menu-title"></v-toolbar-title>
-                <v-toolbar-items>
-                    <v-btn v-for="item in items" :key="item.name"
-                    flat dark :class="selected === item.name ? 'menu-item-selected': 'menu-item'"
-                    @click="handleItemClick(item)"
-                    >{{ item.title}}</v-btn>
-                </v-toolbar-items>
-            </v-toolbar>
-        </div>
+  <div>
+    <div class="visual-dl-app-menu">
+      <v-toolbar
+        color="primary"
+        dark>
+        <v-toolbar-title class="appbar-menu-title"/>
+        <v-toolbar-items>
+          <v-btn
+            v-for="item in items"
+            :key="item.name"
+            flat
+            dark
+            :class="selected === item.name ? 'menu-item-selected': 'menu-item'"
+            @click="handleItemClick(item)"
+          >{{ item.title }}</v-btn>
+        </v-toolbar-items>
+      </v-toolbar>
     </div>
+  </div>
 </template>
 
 <script>
 export default {
     props: ['initialRoute'],
     name: 'AppMenu',
-    data () {
+    data() {
         return {
         selected: this.initialRoute,
         items: [
             {
                 url: '/scalars',
                 title: 'SCALARS',
-                name: 'scalars'
+                name: 'scalars',
             },
             {
                 url: '/images',
                 title: 'IMAGES',
-                name: 'images'
+                name: 'images',
             },
             {
                 url: '/audio',
                 title: 'AUDIO',
-                name: 'audio'
+                name: 'audio',
             },
             {
                 url: '/histograms',
                 title: 'HISTOGRAMS',
-                name: 'histograms'
+                name: 'histograms',
             },
             {
                 url: '/graphs',
                 title: 'GRAPHS',
-                name: 'graphs'
+                name: 'graphs',
             },
             {
                 url: '/texts',
                 title: 'TEXTS',
-                name: 'texts'
+                name: 'texts',
             },
             /* // Hide the top menu
             {
@@ -59,16 +65,16 @@ export default {
                 name: 'HighDimensional'
             }
             */
-            ]
-        }
+            ],
+        };
     },
     methods: {
-        handleItemClick: function (item) {
-            this.selected = item.name
-            this.$router.push(item.url)
-        }
-    }
-}
+        handleItemClick: function(item) {
+            this.selected = item.name;
+            this.$router.push(item.url);
+        },
+    },
+};
 </script>
 
 <style scoped lang="stylus">
