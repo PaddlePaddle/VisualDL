@@ -34,10 +34,10 @@
         language: system
         files: \.(py)$
 
--   repo: local
-    hooks:
-    -   id: eslint-format-checker
-        name: eslint-format-checker
-        description: Format files with ESLint.
-        entry: bash ./.eslint_format.hook
-        language: system
+#-   repo: local
+#    hooks:
+#    -   id: eslint-format-checker
+#        name: eslint-format-checker
+#        description: Format files with ESLint.
+#        entry: bash ./.eslint_format.hook
+#        language: system
