@@ -287,29 +287,34 @@ PYBIND11_MODULE(core, m) {
             End a sampling period, it will clear all states for reservoir sampling.
           )pbdoc")
       .def("set_sample", &cp::Audio::SetSample, R"pbdoc(
-            Store the flatten audio data with sample rate specified.
+            Store the flatten audio data as vector of uint8 types. Audio params need to
+            be specified as a tuple of 3 integers as following:
+            sample_rate: number of samples(frames) per second, e.g. 8000, 16000 or 44100
+            sample_width: size of each sample(frame) in bytes, 16bit frame will be 2
+            num_channels: number of channels associated with the audio data, normally 1 or 2
 
             :param index:
             :type index: integer
-            :param sample_rate: Sample rate of audio
-            :type sample_rate: integer
+            :param audio_params: [sample rate, sample width, number of channels]
+            :type audio_params: tuple
             :param audio_data: Flatten audio data
             :type audio_data: list
                   )pbdoc")
       .def("add_sample", &cp::Audio::AddSample, R"pbdoc(
             A combined interface for is_sample_taken and set_sample, simpler but is less efficient.
+            Audio params details see set_sample
 
-            :param sample_rate: Sample rate of audio
-            :type sample_rate: integer
+            :param audio_params: [sample rate, sample width, number of channels]
+            :type audio_params: tuple
             :param audio_data: Flatten audio data
-            :type audio_data: list
+            :type audio_data: list of uint8
                   )pbdoc");
 
   py::class_<cp::AudioReader::AudioRecord>(m, "AudioRecord")
       // TODO(Nicky) make these copyless.
       .def("data", [](cp::AudioReader::AudioRecord& self) { return self.data; })
-      .def("sample_rate",
-           [](cp::AudioReader::AudioRecord& self) { return self.sample_rate; })
+      .def("shape",
+           [](cp::AudioReader::AudioRecord& self) { return self.shape; })
       .def("step_id",
            [](cp::AudioReader::AudioRecord& self) { return self.step_id; });
 

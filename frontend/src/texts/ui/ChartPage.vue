@@ -31,40 +31,40 @@ import Chart from './Chart';
 import {cloneDeep, flatten} from 'lodash';
 
 export default {
-    components: {
-        'ui-chart': Chart,
-        'ui-expand-panel': ExpandPanel,
+  components: {
+    'ui-chart': Chart,
+    'ui-expand-panel': ExpandPanel,
+  },
+  props: ['config', 'runsItems', 'tagList', 'title'],
+  computed: {
+    filteredRunsList() {
+      let tagList = this.tagList || [];
+      let runs = this.config.runs || [];
+      let list = cloneDeep(tagList);
+      return flatten(list.slice().map((item) => {
+        return item.tagList.filter((one) => runs.includes(one.run));
+      }));
     },
-    props: ['config', 'runsItems', 'tagList', 'title'],
-    computed: {
-        filteredRunsList() {
-            let tagList = this.tagList || [];
-            let runs = this.config.runs || [];
-            let list = cloneDeep(tagList);
-            return flatten(list.slice().map((item) => {
-                return item.tagList.filter((one) => runs.includes(one.run));
-            }));
-        },
-        filteredPageList() {
-            let list = this.filteredRunsList || [];
-            return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
-        },
-        total() {
-            let tagList = this.tagList || [];
-            return tagList.length;
-        },
-        pageLength() {
-            return Math.ceil(this.total / this.pageSize);
-        },
+    filteredPageList() {
+      let list = this.filteredRunsList || [];
+      return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
     },
-    data() {
-        return {
-            // current page
-            currentPage: 1,
-            // item per page
-            pageSize: 8,
-        };
+    total() {
+      let tagList = this.tagList || [];
+      return tagList.length;
     },
+    pageLength() {
+      return Math.ceil(this.total / this.pageSize);
+    },
+  },
+  data() {
+    return {
+      // current page
+      currentPage: 1,
+      // item per page
+      pageSize: 8,
+    };
+  },
 };
 </script>
 <style lang="stylus">

@@ -222,15 +222,26 @@ def get_individual_audio(storage, mode, tag, step_index, max_size=80):
         audio = reader.audio(tag)
         record = audio.record(step_index, offset)
 
-        data = np.array(record.data(), dtype='uint8')
+        shape = record.shape()
+        sample_rate = shape[0]
+        sample_width = shape[1]
+        num_channels = shape[2]
 
+        # sending a temp file to front end
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.wav')
 
+        # write audio file to that tempfile
         wavfile = wave.open(tempfile, 'wb')
-        wavfile.setnchannels(2)
-        wavfile.setsampwidth(2)
+
+        wavfile.setframerate(sample_rate)
+        wavfile.setnchannels(num_channels)
+        wavfile.setsampwidth(sample_width)
+
+        # convert to binary string to write to wav file
+        data = np.array(record.data(), dtype='uint8')
         wavfile.writeframes(data.tostring())
 
+        # make sure the marker is at the start of file
         tempfile.seek(0, 0)
 
         return tempfile

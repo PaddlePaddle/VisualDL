@@ -42,27 +42,27 @@
 </template>
 <script>
 export default {
-    props: ['config', 'runsItems'],
-    data() {
-        return {
-            chartTypeItems: [
-                {
-                    name: 'Overlay',
-                    value: 'overlay',
-                },
-                {
-                    name: 'Offset',
-                    value: 'offset',
-                },
-            ],
-        };
-    },
-    methods: {
-        toggleAllRuns() {
-            let running = this.config.running;
-            this.config.running = !running;
+  props: ['config', 'runsItems'],
+  data() {
+    return {
+      chartTypeItems: [
+        {
+          name: 'Overlay',
+          value: 'overlay',
         },
+        {
+          name: 'Offset',
+          value: 'offset',
+        },
+      ],
+    };
+  },
+  methods: {
+    toggleAllRuns() {
+      let running = this.config.running;
+      this.config.running = !running;
     },
+  },
 };
 </script>
 <style lang="stylus">

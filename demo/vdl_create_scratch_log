@@ -112,7 +112,9 @@ with logw.mode("train") as logger:
         for sample in range(10):
             idx = audio.is_sample_taken()
             if idx >= 0:
-                audio.set_sample(idx, 8000, wavdata)
+                # 8k sample rate, 16bit frame, 1 channel
+                shape = [8000, 2, 1]
+                audio.set_sample(idx, shape, wavdata)
 
         audio.finish_sampling()
 

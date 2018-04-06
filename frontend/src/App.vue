@@ -11,22 +11,22 @@
 import AppMenu from './common/component/AppMenu';
 
 export default {
-    name: 'App',
-    components: {
-		AppMenu,
-    },
-    data() {
-        return {
-            initialRoute: 'scalars',
-        };
-    },
-    created() {
-        if (location.hash && location.hash != '#/') {
-            this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
-        } else {
-            location.hash = '#/scalars';
-        }
-    },
+  name: 'App',
+  components: {
+    AppMenu,
+  },
+  data() {
+    return {
+      initialRoute: 'scalars',
+    };
+  },
+  created() {
+    if (location.hash && location.hash != '#/') {
+      this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
+    } else {
+      location.hash = '#/scalars';
+    }
+  },
 };
 </script>
 

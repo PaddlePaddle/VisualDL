@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# if there are no staged changes, we can exit immediately
+# this is fast and prevents issues when popping a stash we didn't create
+STAGED_CHANGES=`git diff-index --cached HEAD --name-only --diff-filter ACMR`
+
+if [ -z "$STAGED_CHANGES" ]; then
+    exit 0
+fi
+
+# Capture the path to the eslint
+cd frontend
+ESLINT_EXECUTABLE=$(npm bin)/eslint
+cd ..
+
+# Test against with both .js and .vue files
+git diff --cached --name-only --diff-filter ACMR | egrep '.(js|vue)$' | xargs $ESLINT_EXECUTABLE --fix
+RESULT=$?
+
+[ $RESULT -ne 0 ] && exit 1
+exit 0

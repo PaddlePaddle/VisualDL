@@ -31,99 +31,99 @@ import {getPluginAudioAudio} from '../../service';
 const intervalTime = 30;
 
 export default {
-    props: ['tagInfo', 'runs', 'running', 'runsItems'],
-    computed: {
-        steps() {
-            let data = this.data || [];
-            return data.length - 1;
-        },
+  props: ['tagInfo', 'runs', 'running', 'runsItems'],
+  computed: {
+    steps() {
+      let data = this.data || [];
+      return data.length - 1;
     },
-    filters: {
-        formatTime: function(value) {
-            if (!value) {
-                return;
-            }
-            // The value was made in seconds, must convert it to milliseconds
-            let time = new Date(value * 1000);
-            let options = {
-                weekday: 'short', year: 'numeric', month: 'short',
-                day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
-            };
-            return time.toLocaleDateString('en-US', options);
-        },
+  },
+  filters: {
+    formatTime: function(value) {
+      if (!value) {
+        return;
+      }
+      // The value was made in seconds, must convert it to milliseconds
+      let time = new Date(value * 1000);
+      let options = {
+        weekday: 'short', year: 'numeric', month: 'short',
+        day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
+      };
+      return time.toLocaleDateString('en-US', options);
     },
-    data() {
-        return {
-            currentIndex: 0,
-            slider: {
-                value: '0',
-                label: '',
-                min: 0,
-                step: 1,
-            },
-            audioData: {},
-            data: [],
+  },
+  data() {
+    return {
+      currentIndex: 0,
+      slider: {
+        value: '0',
+        label: '',
+        min: 0,
+        step: 1,
+      },
+      audioData: {},
+      data: [],
+    };
+  },
+  created() {
+    this.getOriginAudioData();
+  },
+  mounted() {
+    if (this.running) {
+      this.startInterval();
+    }
+  },
+
+  beforeDestroy() {
+    this.stopInterval();
+  },
+
+  watch: {
+    running: function(val) {
+      val ? this.startInterval() : this.stopInterval();
+    },
+    currentIndex: function(index) {
+      if (this.data && this.data[index]) {
+        let currentAudioInfo = this.data ? this.data[index] : {};
+        let {query, step, wall_time} = currentAudioInfo;
+        let url = '/data/plugin/audio/individualAudio?ts=' + wall_time;
+        let audioSrc = [url, query].join('&');
+        this.audioData = {
+          audioSrc,
+          step,
+          wall_time,
         };
+      }
     },
-    created() {
+  },
+  methods: {
+    stopInterval() {
+      clearInterval(this.getOringDataInterval);
+    },
+    // get origin data per {{intervalTime}} seconds
+    startInterval() {
+      this.getOringDataInterval = setInterval(() => {
         this.getOriginAudioData();
+      }, intervalTime * 1000);
     },
-    mounted() {
-        if (this.running) {
-            this.startInterval();
+    getOriginAudioData() {
+      // let {run, tag} = this.tagInfo;
+      let run = this.tagInfo.run;
+      let tag = this.tagInfo.tag;
+      let {displayName, samples} = tag;
+      let params = {
+        run,
+        tag: displayName,
+        samples,
+      };
+      getPluginAudioAudio(params).then(({status, data}) => {
+        if (status === 0) {
+          this.data = data;
+          this.currentIndex = data.length - 1;
         }
+      });
     },
-
-    beforeDestroy() {
-        this.stopInterval();
-    },
-
-    watch: {
-        running: function(val) {
-            val ? this.startInterval() : this.stopInterval();
-        },
-        currentIndex: function(index) {
-            if (this.data && this.data[index]) {
-                let currentAudioInfo = this.data ? this.data[index] : {};
-                let {query, step, wall_time} = currentAudioInfo;
-                let url = '/data/plugin/audio/individualAudio?ts=' + wall_time;
-                let audioSrc = [url, query].join('&');
-                this.audioData = {
-                    audioSrc,
-                    step,
-                    wall_time,
-                };
-            }
-        },
-    },
-    methods: {
-        stopInterval() {
-            clearInterval(this.getOringDataInterval);
-        },
-        // get origin data per {{intervalTime}} seconds
-        startInterval() {
-            this.getOringDataInterval = setInterval(() => {
-                this.getOriginAudioData();
-            }, intervalTime * 1000);
-        },
-        getOriginAudioData() {
-            // let {run, tag} = this.tagInfo;
-            let run = this.tagInfo.run;
-            let tag = this.tagInfo.tag;
-            let {displayName, samples} = tag;
-            let params = {
-                run,
-                tag: displayName,
-                samples,
-            };
-            getPluginAudioAudio(params).then(({status, data}) => {
-                if (status === 0) {
-                    this.data = data;
-                    this.currentIndex = data.length - 1;
-                }
-            });
-        },
-    },
+  },
 };
 </script>
 <style lang="stylus">
