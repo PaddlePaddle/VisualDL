@@ -227,7 +227,6 @@ def get_individual_audio(storage, mode, tag, step_index, max_size=80):
         sample_width = shape[1]
         num_channels = shape[2]
 
-
         # sending a temp file to front end
         tempfile = NamedTemporaryFile(mode='w+b', suffix='.wav')
 
