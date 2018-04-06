@@ -2,20 +2,18 @@
   <div class="visual-dl-page-container">
     <div class="visual-dl-page-left">
       <ui-chart
-        :fit-screen="fitScreen"
-        :download="download"
-        :scale="config.scale"
-        :cur-node="curNode"
+        :doDownload="doDownload"
+        :curNode="curNode"
         @curNodeUpdated="curNode = $event"
+        @triggerDownload="doDownload = $event"
       />
     </div>
     <div class="visual-dl-page-right">
       <div class="visual-dl-page-config-container">
         <ui-config
-          :config="config"
-          :cur-node="curNode"
-          @fitScreen="handleFitScreen"
-          @download="handleDownload"
+          :curNode="curNode"
+          :doDownload="doDownload"
+          @triggerDownload="doDownload = $event"
         />
       </div>
     </div>
@@ -36,11 +34,7 @@ export default {
   name: 'Graph',
   data() {
     return {
-      config: {
-        scale: 0.5,
-      },
-      fitScreen: {fitScreen: false},
-      download: {download: false},
+      doDownload: false,
       curNode: {},
     };
   },
@@ -48,10 +42,6 @@ export default {
     autoAdjustHeight();
   },
   methods: {
-    handleFitScreen() {
-      this.fitScreen = {fitScreen: true};
-      this.config.scale = 0.5;
-    },
     handleDownload() {
       this.download = {fitScreen: true};
     },
