@@ -1,8 +1,10 @@
 <template>
   <div class="visual-dl-graph-charts">
-    <svg class="visual-dl-page-left">
+    <svg class="visual-dl-page-left" id="graphSvg">
       <g/>
     </svg>
+    <canvas id="canvas" width=600 height=800>
+    </canvas>
   </div>
 </template>
 <script>
@@ -21,6 +23,7 @@ import interact from 'interactjs';
 
 // for d3 drawing
 import * as d3 from 'd3';
+import saveSvgAsPng from 'save-svg-as-png';
 
 export default {
   props: {
@@ -40,19 +43,39 @@ export default {
   },
   watch: {
     doDownload: function(val) {
-      if (this.doDownload) {
-        console.log('do download');
-        
-        this.$emit('triggerDownload', false);
+        if (this.doDownload) {
+            // TODO(daming-lu): .svg is ugly and colorless.
+            var svg = document.getElementById("graphSvg");
+            //get svg source.
+            var serializer = new XMLSerializer();
+            var source = serializer.serializeToString(svg);
 
-      }
-      if (this.myCY) {
-        let aEl = document.createElement('a');
-        aEl.href = this.myCY.png();
-        aEl.download = 'graph.png';
-        aEl.click();
-      }
-    },
+            //add name spaces.
+            if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+                source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+                source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+            }
+
+            //add xml declaration
+            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+            //convert svg source to URI data scheme.
+            var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+
+            console.log('url');
+            console.log(url);
+
+            var a = document.createElement("a");
+            a.download = "sample.svg";
+            a.href = url;
+            a.click();
+
+
+            this.$emit('triggerDownload', false);
+        }
+    }
   },
 
   mounted() {

@@ -41,11 +41,7 @@ export default {
   mounted() {
     autoAdjustHeight();
   },
-  methods: {
-    handleDownload() {
-      this.download = {fitScreen: true};
-    },
-  },
+  methods: {},
 };
 
 </script>
