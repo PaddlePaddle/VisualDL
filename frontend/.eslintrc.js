@@ -9,5 +9,7 @@ module.exports = {
     // override/add rules settings here, such as:
     'vue/no-unused-vars': 'warn',
     'max-len': ["warn", 120],
+    "vue/prop-name-casing": ["error"],
+    'vue/script-indent': 'error',
   }
 }
