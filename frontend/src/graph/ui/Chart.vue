@@ -21,10 +21,25 @@
 
     // for d3 drawing
     import * as d3 from 'd3';
-    import * as dagre from 'dagre';
 
     export default {
-        props: ['fitScreen', 'download', 'scale', 'curNode'],
+        props: {
+            'fitScreen': {
+                type: Function,
+                required: true,
+            },
+            'download': {
+                type: Function,
+                required: true,
+            },
+            'scale': {
+                type: Number,
+                default: 1,
+            },
+            'curNode': {
+                type: Object,
+                default: {},
+            }},
         computed: {
             computedWidth() {
                 let scale = this.scale;
@@ -55,15 +70,16 @@
             this.getOriginChartsData();
             let chartScope = this;
             getPluginGraphsGraph().then(({errno, data}) => {
-                let raw_data = data.data;
-                var data = raw_data;
+                let graphData = data.data;
 
                 // d3 svg drawing
                 let g = new dagreD3.graphlib.Graph()
                     .setGraph({})
                     .setDefaultEdgeLabel(function() {
- return {};
-});
+                      return {};
+                    });
+
+                // eslint-disable-next-line
                 let render = new dagreD3.render();
                 let nodeKeys = [];
 
@@ -76,23 +92,27 @@
                 };
 
                 // add input nodes
-                for (var i=0; i<data['input'].length; ++i) {
-                    let curInputNode = data['input'][i];
-                    var nodeKey = curInputNode['name'];
+                for (let i=0; i<graphData['input'].length; ++i) {
+                    let curInputNode = graphData['input'][i];
+                    let nodeKey = curInputNode['name'];
                     g.setNode(
                         nodeKey,
                         {
                             label: buildInputNodeLabel(curInputNode),
                             class: 'input',
+                            style: 'stroke: #A3D39C; stroke-width: 3px; ' +
+                                   'stroke-dasharray: 5, 5;',
+                            labelStyle: 'font-size: 0.8em;',
+
                         }
                     );
                     nodeKeys.push(nodeKey);
                 }
 
                 // add operator nodes then add edges from inputs to operator and from operator to output
-                for (var i=0; i<data['node'].length; ++i) {
-                    let curOperatorNode = data['node'][i];
-                    var nodeKey = 'opNode_' + i;
+                for (let i=0; i<graphData['node'].length; ++i) {
+                    let curOperatorNode = graphData['node'][i];
+                    let nodeKey = 'opNode_' + i;
 
                     // add operator node
                     let curOpLabel = curOperatorNode['opType'];
@@ -101,17 +121,25 @@
                         {
                             label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
                             class: 'operator',
+                            style: 'opacity: 0.5;',
+
                         }
                     );
                     nodeKeys.push(nodeKey);
 
                     // add output node
                     let outputNodeKey = curOperatorNode['output'][0];
+                    let outputPadding = ' '.repeat(Math.floor(outputNodeKey.length/2));
                     g.setNode(
                         outputNodeKey,
                         {
-                            label: outputNodeKey + ' '.repeat(Math.floor(outputNodeKey.length/5)),
+                            label: outputNodeKey + outputPadding,
                             class: 'output',
+                            style: 'opacity: 0.5;' +
+                                    'stroke-width: 2px; ' +
+                                    'stroke-dasharray: 5, 5;',
+                            shape: 'diamond',
+
                         }
                     );
                     nodeKeys.push(outputNodeKey);
@@ -134,14 +162,14 @@
                 svg.attr('viewBox', '0 0 ' + g.graph().width + ' ' + g.graph().height);
 
                 svg.selectAll('.node').on('click', function(d, i) {
-                    this.curNode = g.node(d);
-                    let nodeType = this.curNode.class;
+                    chartScope.curNode = g.node(d);
+                    let nodeType = chartScope.curNode.class;
                     let nodeInfo = null;
                     if (nodeType === 'operator') {
                         let opIndex = d.slice(7); // remove prefix "opNode_"
-                        nodeInfo = data.node[opIndex];
+                        nodeInfo = graphData.node[opIndex];
                     } else if (nodeType === 'input') {
-                        nodeInfo = data.input[d-1];
+                        nodeInfo = graphData.input[d-1];
                     } else {
                         nodeInfo = 'output';
                     }
