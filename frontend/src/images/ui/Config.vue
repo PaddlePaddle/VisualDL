@@ -37,19 +37,19 @@
 <script>
 
 export default {
-    props: {
-        runsItems: Array,
-        config: Object,
+  props: {
+    runsItems: Array,
+    config: Object,
+  },
+  data() {
+    return {
+    };
+  },
+  methods: {
+    toggleAllRuns() {
+      this.config.running = !this.config.running;
     },
-    data() {
-        return {
-        };
-    },
-    methods: {
-        toggleAllRuns() {
-            this.config.running = !this.config.running;
-        },
-    },
+  },
 };
 
 </script>

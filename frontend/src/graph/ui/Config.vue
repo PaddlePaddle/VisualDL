@@ -54,15 +54,15 @@
 <script>
 
 export default {
-    props: ['config', 'curNode'],
-    methods: {
-        handleFitScreen() {
-            this.$emit('fitScreen');
-        },
-        handleDownload() {
-            this.$emit('download');
-        },
+  props: ['config', 'curNode'],
+  methods: {
+    handleFitScreen() {
+      this.$emit('fitScreen');
     },
+    handleDownload() {
+      this.$emit('download');
+    },
+  },
 };
 </script>
 <style lang="stylus">

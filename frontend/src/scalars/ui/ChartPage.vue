@@ -34,42 +34,42 @@ import Chart from './Chart';
 import {cloneDeep} from 'lodash';
 
 export default {
-    components: {
-        'ui-chart': Chart,
-        'ui-expand-panel': ExpandPanel,
-        // 'ui-pagination': Pagination
+  components: {
+    'ui-chart': Chart,
+    'ui-expand-panel': ExpandPanel,
+    // 'ui-pagination': Pagination
+  },
+  props: ['config', 'runsItems', 'tagList', 'title'],
+  computed: {
+    filteredRunsList() {
+      let tagList = this.tagList || [];
+      let runs = this.config.runs || [];
+      let list = cloneDeep(tagList);
+      return list.slice().map((item) => {
+        item.tagList = item.tagList.filter((one) => runs.includes(one.run));
+        return item;
+      });
     },
-    props: ['config', 'runsItems', 'tagList', 'title'],
-    computed: {
-        filteredRunsList() {
-            let tagList = this.tagList || [];
-            let runs = this.config.runs || [];
-            let list = cloneDeep(tagList);
-            return list.slice().map((item) => {
-                item.tagList = item.tagList.filter((one) => runs.includes(one.run));
-                return item;
-            });
-        },
-        filteredTagList() {
-            let tagList = this.filteredRunsList || [];
-            return tagList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
-        },
-        total() {
-            let tagList = this.tagList || [];
-            return tagList.length;
-        },
-        pageLength() {
-            return Math.ceil(this.total / this.pageSize);
-        },
+    filteredTagList() {
+      let tagList = this.filteredRunsList || [];
+      return tagList.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
     },
-    data() {
-        return {
-            // current page
-            currentPage: 1,
-            // item per page
-            pageSize: 8,
-        };
+    total() {
+      let tagList = this.tagList || [];
+      return tagList.length;
     },
+    pageLength() {
+      return Math.ceil(this.total / this.pageSize);
+    },
+  },
+  data() {
+    return {
+      // current page
+      currentPage: 1,
+      // item per page
+      pageSize: 8,
+    };
+  },
 };
 </script>
 <style lang="stylus">

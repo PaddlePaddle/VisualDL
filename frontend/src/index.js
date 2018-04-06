@@ -7,17 +7,17 @@ import router from '@/router';
 Vue.config.productionTip = false;
 
 Vue.use(Vuetify, {
-    theme: {
-        primary: '#008c99',
-        accent: '#008c99',
-        toolbox_icon: '#999999',
-    },
+  theme: {
+    primary: '#008c99',
+    accent: '#008c99',
+    toolbox_icon: '#999999',
+  },
 });
 
 /* eslint-disable no-new */
 new Vue({
-    el: '#root',
-    router,
-    components: {App},
-    template: '<App/>',
+  el: '#root',
+  router,
+  components: {App},
+  template: '<App/>',
 });

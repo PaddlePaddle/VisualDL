@@ -22,58 +22,58 @@
 
 <script>
 export default {
-    props: ['initialRoute'],
-    name: 'AppMenu',
-    data() {
-        return {
-        selected: this.initialRoute,
-        items: [
-            {
-                url: '/scalars',
-                title: 'SCALARS',
-                name: 'scalars',
-            },
-            {
-                url: '/images',
-                title: 'IMAGES',
-                name: 'images',
-            },
-            {
-                url: '/audio',
-                title: 'AUDIO',
-                name: 'audio',
-            },
-            {
-                url: '/histograms',
-                title: 'HISTOGRAMS',
-                name: 'histograms',
-            },
-            {
-                url: '/graphs',
-                title: 'GRAPHS',
-                name: 'graphs',
-            },
-            {
-                url: '/texts',
-                title: 'TEXTS',
-                name: 'texts',
-            },
-            /* // Hide the top menu
+  props: ['initialRoute'],
+  name: 'AppMenu',
+  data() {
+    return {
+      selected: this.initialRoute,
+      items: [
+        {
+          url: '/scalars',
+          title: 'SCALARS',
+          name: 'scalars',
+        },
+        {
+          url: '/images',
+          title: 'IMAGES',
+          name: 'images',
+        },
+        {
+          url: '/audio',
+          title: 'AUDIO',
+          name: 'audio',
+        },
+        {
+          url: '/histograms',
+          title: 'HISTOGRAMS',
+          name: 'histograms',
+        },
+        {
+          url: '/graphs',
+          title: 'GRAPHS',
+          name: 'graphs',
+        },
+        {
+          url: '/texts',
+          title: 'TEXTS',
+          name: 'texts',
+        },
+        /* // Hide the top menu
             {
                 url: '/HighDimensional',
                 title: 'HighDimensional',
                 name: 'HighDimensional'
             }
             */
-            ],
-        };
+      ],
+    };
+  },
+  methods: {
+    handleItemClick: function(item) {
+      this.selected = item.name;
+      this.$router.push(item.url);
     },
-    methods: {
-        handleItemClick: function(item) {
-            this.selected = item.name;
-            this.$router.push(item.url);
-        },
-    },
+  },
 };
 </script>
 

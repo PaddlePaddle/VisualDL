@@ -29,33 +29,33 @@ import Chart from './ui/Chart';
 
 
 export default {
-    components: {
-        'ui-config': Config,
-        'ui-chart': Chart,
+  components: {
+    'ui-config': Config,
+    'ui-chart': Chart,
+  },
+  name: 'Graph',
+  data() {
+    return {
+      config: {
+        scale: 0.5,
+      },
+      fitScreen: {fitScreen: false},
+      download: {download: false},
+      curNode: {},
+    };
+  },
+  mounted() {
+    autoAdjustHeight();
+  },
+  methods: {
+    handleFitScreen() {
+      this.fitScreen = {fitScreen: true};
+      this.config.scale = 0.5;
     },
-    name: 'Graph',
-    data() {
-        return {
-            config: {
-                scale: 0.5,
-            },
-            fitScreen: {fitScreen: false},
-            download: {download: false},
-            curNode: {},
-        };
+    handleDownload() {
+      this.download = {fitScreen: true};
     },
-    mounted() {
-        autoAdjustHeight();
-    },
-    methods: {
-        handleFitScreen() {
-            this.fitScreen = {fitScreen: true};
-            this.config.scale = 0.5;
-        },
-        handleDownload() {
-            this.download = {fitScreen: true};
-        },
-    },
+  },
 };
 
 </script>

@@ -28,100 +28,100 @@ import {getPluginTextsTexts} from '../../service';
 const intervalTime = 30;
 
 export default {
-    props: ['tagInfo', 'runs', 'running', 'runsItems'],
-    computed: {
-        steps() {
-            let data = this.data || [];
-            return data.length - 1;
-        },
+  props: ['tagInfo', 'runs', 'running', 'runsItems'],
+  computed: {
+    steps() {
+      let data = this.data || [];
+      return data.length - 1;
     },
-    filters: {
-        formatTime: function(value) {
-            if (!value) {
-                return;
-            }
-            // The value was made in seconds, must convert it to milliseconds
-            let time = new Date(value * 1000);
-            let options = {
-                weekday: 'short', year: 'numeric', month: 'short',
-                day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
-            };
-            return time.toLocaleDateString('en-US', options);
-        },
+  },
+  filters: {
+    formatTime: function(value) {
+      if (!value) {
+        return;
+      }
+      // The value was made in seconds, must convert it to milliseconds
+      let time = new Date(value * 1000);
+      let options = {
+        weekday: 'short', year: 'numeric', month: 'short',
+        day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
+      };
+      return time.toLocaleDateString('en-US', options);
     },
-    data() {
-        return {
-            currentIndex: 0,
-            slider: {
-                value: '0',
-                label: '',
-                min: 0,
-                step: 1,
-            },
-            textData: {},
-            data: [],
+  },
+  data() {
+    return {
+      currentIndex: 0,
+      slider: {
+        value: '0',
+        label: '',
+        min: 0,
+        step: 1,
+      },
+      textData: {},
+      data: [],
+    };
+  },
+  created() {
+    this.getOriginChartsData();
+  },
+  mounted() {
+    if (this.running) {
+      this.startInterval();
+    }
+  },
+
+  beforeDestroy() {
+    this.stopInterval();
+  },
+
+  watch: {
+    running: function(val) {
+      val ? this.startInterval() : this.stopInterval();
+    },
+    currentIndex: function(index) {
+      if (this.data && this.data[index]) {
+        let currentTextInfo = this.data ? this.data[index] : {};
+        let wall_time = currentTextInfo[0];
+        let step = currentTextInfo[1];
+        let message = currentTextInfo[2];
+
+        this.textData = {
+          step,
+          wall_time,
+          message,
         };
+      }
     },
-    created() {
+  },
+  methods: {
+    stopInterval() {
+      clearInterval(this.getOringDataInterval);
+    },
+    // get origin data per {{intervalTime}} seconds
+    startInterval() {
+      this.getOringDataInterval = setInterval(() => {
         this.getOriginChartsData();
+      }, intervalTime * 1000);
     },
-    mounted() {
-        if (this.running) {
-            this.startInterval();
+    getOriginChartsData() {
+      // let {run, tag} = this.tagInfo;
+      let run = this.tagInfo.run;
+      let tag = this.tagInfo.tag;
+      let {displayName, samples} = tag;
+      let params = {
+        run,
+        tag: displayName,
+        samples,
+      };
+      getPluginTextsTexts(params).then(({status, data}) => {
+        if (status === 0) {
+          this.data = data;
+          this.currentIndex = data.length - 1;
         }
+      });
     },
-
-    beforeDestroy() {
-        this.stopInterval();
-    },
-
-    watch: {
-        running: function(val) {
-            val ? this.startInterval() : this.stopInterval();
-        },
-        currentIndex: function(index) {
-            if (this.data && this.data[index]) {
-                let currentTextInfo = this.data ? this.data[index] : {};
-                let wall_time = currentTextInfo[0];
-                let step = currentTextInfo[1];
-                let message = currentTextInfo[2];
-
-                this.textData = {
-                    step,
-                    wall_time,
-                    message,
-                };
-            }
-        },
-    },
-    methods: {
-        stopInterval() {
-            clearInterval(this.getOringDataInterval);
-        },
-        // get origin data per {{intervalTime}} seconds
-        startInterval() {
-            this.getOringDataInterval = setInterval(() => {
-                this.getOriginChartsData();
-            }, intervalTime * 1000);
-        },
-        getOriginChartsData() {
-            // let {run, tag} = this.tagInfo;
-            let run = this.tagInfo.run;
-            let tag = this.tagInfo.tag;
-            let {displayName, samples} = tag;
-            let params = {
-                run,
-                tag: displayName,
-                samples,
-            };
-            getPluginTextsTexts(params).then(({status, data}) => {
-                if (status === 0) {
-                    this.data = data;
-                    this.currentIndex = data.length - 1;
-                }
-            });
-        },
-    },
+  },
 };
 </script>
 <style lang="stylus">
