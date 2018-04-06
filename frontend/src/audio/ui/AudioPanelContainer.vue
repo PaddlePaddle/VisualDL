@@ -29,41 +29,41 @@ import AudioPanel from './AudioPanel';
 import {cloneDeep, flatten} from 'lodash';
 
 export default {
-    props: ['config', 'runsItems', 'tagList', 'title'],
-    components: {
-        'ui-audio': AudioPanel,
-        'ui-expand-panel': ExpandPanel,
+  props: ['config', 'runsItems', 'tagList', 'title'],
+  components: {
+    'ui-audio': AudioPanel,
+    'ui-expand-panel': ExpandPanel,
+  },
+  computed: {
+    filteredRunsList() {
+      let tagList = this.tagList || [];
+      let runs = this.config.runs || [];
+      let list = cloneDeep(tagList);
+      return flatten(list.slice().map((item) => {
+        return item.tagList.filter((one) => runs.includes(one.run));
+      }));
     },
-    computed: {
-        filteredRunsList() {
-            let tagList = this.tagList || [];
-            let runs = this.config.runs || [];
-            let list = cloneDeep(tagList);
-            return flatten(list.slice().map((item) => {
-                return item.tagList.filter((one) => runs.includes(one.run));
-            }));
-        },
 
-        filteredPageList() {
-            let list = this.filteredRunsList || [];
-            return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
-        },
-        total() {
-            let list = this.filteredRunsList || [];
-            return list.length;
-        },
-        pageLength() {
-            return Math.ceil(this.total / this.pageSize);
-        },
+    filteredPageList() {
+      let list = this.filteredRunsList || [];
+      return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
     },
-    data() {
-        return {
-            // current page
-            currentPage: 1,
-            // item per page
-            pageSize: 8,
-        };
+    total() {
+      let list = this.filteredRunsList || [];
+      return list.length;
     },
+    pageLength() {
+      return Math.ceil(this.total / this.pageSize);
+    },
+  },
+  data() {
+    return {
+      // current page
+      currentPage: 1,
+      // item per page
+      pageSize: 8,
+    };
+  },
 };
 </script>
 <style lang="stylus">

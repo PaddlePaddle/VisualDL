@@ -26,56 +26,56 @@ import Config from './ui/Config';
 import Chart from './ui/Chart';
 
 export default {
-    components: {
-        'ui-config': Config,
-        'ui-chart': Chart,
+  components: {
+    'ui-config': Config,
+    'ui-chart': Chart,
+  },
+  name: 'HighDimensional',
+  data() {
+    return {
+      config: {
+        searchText: '',
+        displayWordLabel: true,
+        dimension: '2',
+        reduction: 'tsne',
+        running: true,
+      },
+      embedding_data: [],
+    };
+  },
+  created() {
+    this.fetchDatasets();
+  },
+  watch: {
+    'config.dimension': function(val) {
+      this.fetchDatasets();
     },
-    name: 'HighDimensional',
-    data() {
-        return {
-            config: {
-                searchText: '',
-                displayWordLabel: true,
-                dimension: '2',
-                reduction: 'tsne',
-                running: true,
-            },
-            embedding_data: [],
-        };
+    'config.reduction': function(val) {
+      this.fetchDatasets();
     },
-    created() {
-        this.fetchDatasets();
-    },
-    watch: {
-        'config.dimension': function(val) {
-            this.fetchDatasets();
-        },
-        'config.reduction': function(val) {
-            this.fetchDatasets();
-        },
-    },
-    mounted() {
-        autoAdjustHeight();
-    },
-    methods: {
-        fetchDatasets() {
-            // Fetch the data from the server. Passing dimension and reduction method
-            let params = {
-                dimension: this.config.dimension,
-                reduction: this.config.reduction,
-            };
-            getHighDimensionalDatasets(params).then(({errno, data}) => {
-                let vector_data = data.embedding;
-                let labels = data.labels;
+  },
+  mounted() {
+    autoAdjustHeight();
+  },
+  methods: {
+    fetchDatasets() {
+      // Fetch the data from the server. Passing dimension and reduction method
+      let params = {
+        dimension: this.config.dimension,
+        reduction: this.config.reduction,
+      };
+      getHighDimensionalDatasets(params).then(({errno, data}) => {
+        let vector_data = data.embedding;
+        let labels = data.labels;
 
-                for ( let i = 0; i < vector_data.length; i ++) {
-                  vector_data[i].push(labels[i]);
-                }
+        for ( let i = 0; i < vector_data.length; i ++) {
+          vector_data[i].push(labels[i]);
+        }
 
-                this.embedding_data = vector_data;
-            });
-        },
+        this.embedding_data = vector_data;
+      });
     },
+  },
 };
 
 </script>

@@ -76,44 +76,44 @@
 <script>
 
 export default {
-    props: {
-        runsItems: Array,
-        config: Object,
-    },
-    data() {
-        return {
-            horizontalItems: [
-                {
-                    name: 'Step',
-                    value: 'step',
-                },
-                {
-                    name: 'Relative',
-                    value: 'relative',
-                },
-                {
-                    name: 'Wall',
-                    value: 'wall',
-                },
-            ],
-            sortingMethodItems: [
-                'default', 'descending', 'ascending', 'nearest',
-            ],
-            smoothingValue: this.config.smoothing,
-        };
-    },
-    watch: {
-        smoothingValue: _.debounce(
-            function() {
-                this.config.smoothing = this.smoothingValue;
-            }, 50
-        ),
-    },
-    methods: {
-        toggleAllRuns() {
-            this.config.running = !this.config.running;
+  props: {
+    runsItems: Array,
+    config: Object,
+  },
+  data() {
+    return {
+      horizontalItems: [
+        {
+          name: 'Step',
+          value: 'step',
         },
+        {
+          name: 'Relative',
+          value: 'relative',
+        },
+        {
+          name: 'Wall',
+          value: 'wall',
+        },
+      ],
+      sortingMethodItems: [
+        'default', 'descending', 'ascending', 'nearest',
+      ],
+      smoothingValue: this.config.smoothing,
+    };
+  },
+  watch: {
+    smoothingValue: _.debounce(
+      function() {
+        this.config.smoothing = this.smoothingValue;
+      }, 50
+    ),
+  },
+  methods: {
+    toggleAllRuns() {
+      this.config.running = !this.config.running;
     },
+  },
 };
 
 </script>
