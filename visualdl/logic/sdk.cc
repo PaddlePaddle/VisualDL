@@ -459,25 +459,40 @@ void Audio::FinishSampling() {
   }
 }
 
-void Audio::AddSample(int sample_rate, const std::vector<value_t>& data) {
+void Audio::AddSample(const std::vector<shape_t>& shape,
+                      const std::vector<value_t>& data) {
   auto idx = IndexOfSampleTaken();
   if (idx >= 0) {
-    SetSample(idx, sample_rate, data);
+    SetSample(idx, shape, data);
   }
 }
 
 void Audio::SetSample(int index,
-                      int sample_rate,
+                      const std::vector<shape_t>& shape,
                       const std::vector<value_t>& data) {
-  CHECK_GT(sample_rate, 0)
-      << "sample rate should be something like 6000, 8000 or 44100";
+  CHECK_EQ(shape.size(), 3)
+      << "shape need to be (sample rate, sample width, num channel)";
+
+  shape_t sample_rate = shape[0];
+  shape_t sample_width = shape[1];
+  shape_t num_channels = shape[2];
+
+  CHECK_GT(sample_rate, 0) << "sample rate is number of frames per second, "
+                              "should be something like 8000, 16000 or 44100";
+  CHECK_GT(sample_width, 0)
+      << "sample width is frame size in bytes, 16bits frame will be 2";
+  CHECK_GT(num_channels, 0) << "num channel will be something like 1 or 2";
   CHECK_LT(index, num_samples_)
       << "index should be less than number of samples";
   CHECK_LE(index, num_records_)
       << "index should be less than or equal to number of records";
 
-  BinaryRecord brcd(GenBinaryRecordDir(step_.parent()->dir()),
-                    std::string(data.begin(), data.end()));
+  // due to prototype limit size, we create a directory to log binary data such
+  // as audio or image
+  BinaryRecord brcd(
+      GenBinaryRecordDir(step_.parent()->dir()),
+      std::string(data.begin(),
+                  data.end()));  // convert vector to binary string
   brcd.tofile();
 
   auto entry = step_.MutableData<std::vector<byte_t>>(index);
@@ -490,6 +505,7 @@ void Audio::SetSample(int index,
                                                << old_path << " failed";
   }
   entry.SetRaw(brcd.filename());
+  entry.SetMulti(shape);
 }
 
 std::string AudioReader::caption() {
@@ -511,10 +527,13 @@ AudioReader::AudioRecord AudioReader::record(int offset, int index) {
       << "g_log_dir should be set in LogReader construction";
   BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), filename);
 
+  // convert binary string back to vector of uint8_t, equivalent of python
+  // numpy.fromstring(data, dtype='uint8')
   std::transform(brcd.data.begin(),
                  brcd.data.end(),
                  std::back_inserter(res.data),
-                 [](byte_t i) { return (int8_t)(i); });
+                 [](byte_t i) { return (uint8_t)(i); });
+  res.shape = entry.GetMulti<shape_t>();
   res.step_id = record.id();
   return res;
 }
