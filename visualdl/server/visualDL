@@ -269,7 +269,6 @@ def audio():
 @app.route('/data/plugin/audio/individualAudio')
 def individual_audio():
     mode = request.args.get('run')
-    print mode
     tag = request.args.get('tag')  # include a index
     step_index = int(request.args.get('index'))  # index of step
 

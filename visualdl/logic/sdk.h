@@ -377,7 +377,8 @@ private:
  * Image component writer.
  */
 struct Audio {
-  using value_t = float;
+  using value_t = uint8_t;
+  using shape_t = int32_t;
 
   /*
    * step_cycle: store every `step_cycle` as a record.
@@ -413,7 +414,8 @@ struct Audio {
    * might be
    * low efficiency.
    */
-  void AddSample(int sample_rate, const std::vector<value_t>& data);
+  void AddSample(const std::vector<shape_t>& shape,
+                 const std::vector<value_t>& data);
 
   /*
    * Will this sample be taken, this interface is introduced to reduce the cost
@@ -425,7 +427,9 @@ struct Audio {
   /*
    * Store audio data with sample rate
    */
-  void SetSample(int index, int sample_rate, const std::vector<value_t>& data);
+  void SetSample(int index,
+                 const std::vector<shape_t>& shape,
+                 const std::vector<value_t>& data);
 
 protected:
   bool ToSampleThisStep() { return step_id_ % step_cycle_ == 0; }
@@ -444,11 +448,12 @@ private:
  */
 struct AudioReader {
   using value_t = typename Audio::value_t;
+  using shape_t = typename Audio::shape_t;
 
   struct AudioRecord {
     int step_id;
-    int sample_rate;
-    std::vector<int8_t> data;
+    std::vector<uint8_t> data;
+    std::vector<shape_t> shape;
   };
 
   AudioReader(const std::string& mode, TabletReader tablet)
@@ -474,6 +479,12 @@ struct AudioReader {
    * index: index of a sample.
    */
   std::vector<value_t> data(int offset, int index);
+
+  /*
+   * offset: offset of a step.
+   * index: index of a sample.
+   */
+  std::vector<shape_t> shape(int offset, int index);
 
   int stepid(int offset, int index);
 
