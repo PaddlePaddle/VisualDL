@@ -81,7 +81,10 @@
                         nodeKey,
                         {
                             label: buildInputNodeLabel(curInputNode),
-                            class: "input"
+                            class: "input",
+                            style: "stroke: #A3D39C; stroke-width: 3px; " +
+                                   "stroke-dasharray: 5, 5;",
+                            labelStyle: "font-size: 0.8em;"
                         }
                     );
                     nodeKeys.push(nodeKey);
@@ -98,18 +101,24 @@
                         nodeKey,
                         {
                             label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
-                            class: "operator"
+                            class: "operator",
+                            style: "opacity: 0.5;"
                         }
                     );
                     nodeKeys.push(nodeKey);
 
                     // add output node
                     var outputNodeKey = curOperatorNode['output'][0];
+                    var outputPadding = ' '.repeat(Math.floor(outputNodeKey.length/2));
                     g.setNode(
                         outputNodeKey,
                         {
-                            label: outputNodeKey + ' '.repeat(Math.floor(outputNodeKey.length/5)),
-                            class: "output"
+                            label: outputNodeKey + outputPadding,
+                            class: "output",
+                            style: "opacity: 0.5;" +
+                                    "stroke-width: 2px; " +
+                                    "stroke-dasharray: 5, 5;",
+                            shape: "diamond",
                         }
                     );
                     nodeKeys.push(outputNodeKey);
