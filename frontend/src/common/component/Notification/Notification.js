@@ -23,7 +23,7 @@ function calcTopDist(topDist = 16) {
  * @param {Object} options options
  * @return {NotificationItem} instance
  */
-const notification = function (options = {}) {
+const notification = function(options = {}) {
     options.top = calcTopDist(options.offset);
     const {onClose, onClick} = options;
     delete options.onClick;
@@ -31,9 +31,9 @@ const notification = function (options = {}) {
     delete options.offset;
     const instance = {
         vm: new NotificationItem({
-            data: options
+            data: options,
         }),
-        id: `notification_${seed++}`
+        id: `notification_${seed++}`,
     };
 
     if (typeof onClick === 'function') {
@@ -54,7 +54,7 @@ const notification = function (options = {}) {
  * @param {string} id instance id
  * @param {Function} onClose cusmtom func
  */
-notification.close = function (id, onClose) {
+notification.close = function(id, onClose) {
     let index;
     let removedHeight;
     let len = instances.length;
@@ -79,15 +79,14 @@ notification.close = function (id, onClose) {
             instances[i].vm.el.style.top = `${parseInt(instances[i].vm.el.style.top, 10) - removedHeight - 16}px`;
         }
     }
-
 };
 
 // fout type func
-['success', 'warning', 'info', 'error'].forEach(type => {
-    notification[type] = options => {
+['success', 'warning', 'info', 'error'].forEach((type) => {
+    notification[type] = (options) => {
         if (typeof options === 'string') {
             options = {
-                message: options
+                message: options,
             };
         }
         options = options || {};

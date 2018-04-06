@@ -5,5 +5,5 @@ import Images from './Images';
 router.add({
     target: '#content',
     rule: '/images',
-    Component: Images
+    Component: Images,
 });

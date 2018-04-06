@@ -1,21 +1,24 @@
 <template>
-    <v-card hover class="visual-dl-text">
-        <h3 class="visual-dl-text-title">{{tagInfo.tag.displayName}}
-            <span class="visual-dl-text-run-icon">{{tagInfo.run}}</span>
-        </h3>
-        <p>
-            <span>Step:</span>
-            <span>{{textData.step}}</span>
-            <span class="visual-del-text-time">{{textData.wall_time | formatTime}}</span>
-        </p>
-        <v-slider :max="steps"
-                  :min="slider.min"
-                  :step="1"
-                  v-model="currentIndex"
-                  ></v-slider>
+  <v-card
+    hover
+    class="visual-dl-text">
+    <h3 class="visual-dl-text-title">{{ tagInfo.tag.displayName }}
+      <span class="visual-dl-text-run-icon">{{ tagInfo.run }}</span>
+    </h3>
+    <p>
+      <span>Step:</span>
+      <span>{{ textData.step }}</span>
+      <span class="visual-del-text-time">{{ textData.wall_time | formatTime }}</span>
+    </p>
+    <v-slider
+      :max="steps"
+      :min="slider.min"
+      :step="1"
+      v-model="currentIndex"
+    />
 
-        <p> {{textData.message}} </p>
-    </v-card>
+    <p> {{ textData.message }} </p>
+  </v-card>
 </template>
 
 <script>
@@ -30,21 +33,21 @@ export default {
         steps() {
             let data = this.data || [];
             return data.length - 1;
-        }
+        },
     },
     filters: {
-        formatTime: function (value) {
+        formatTime: function(value) {
             if (!value) {
                 return;
             }
             // The value was made in seconds, must convert it to milliseconds
             let time = new Date(value * 1000);
-            var options = {
-                weekday: "short", year: "numeric", month: "short",
-                day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit",
+            let options = {
+                weekday: 'short', year: 'numeric', month: 'short',
+                day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
             };
-            return time.toLocaleDateString("en-US", options);
-        }
+            return time.toLocaleDateString('en-US', options);
+        },
     },
     data() {
         return {
@@ -53,7 +56,7 @@ export default {
                 value: '0',
                 label: '',
                 min: 0,
-                step: 1
+                step: 1,
             },
             textData: {},
             data: [],
@@ -73,23 +76,23 @@ export default {
     },
 
     watch: {
-        running: function (val) {
+        running: function(val) {
             val ? this.startInterval() : this.stopInterval();
         },
         currentIndex: function(index) {
             if (this.data && this.data[index]) {
                 let currentTextInfo = this.data ? this.data[index] : {};
-                let wall_time = currentTextInfo[0]
+                let wall_time = currentTextInfo[0];
                 let step = currentTextInfo[1];
-                let message = currentTextInfo[2]
+                let message = currentTextInfo[2];
 
                 this.textData = {
                     step,
                     wall_time,
                     message,
-                }
+                };
             }
-        }
+        },
     },
     methods: {
         stopInterval() {
@@ -102,14 +105,14 @@ export default {
             }, intervalTime * 1000);
         },
         getOriginChartsData() {
-            //let {run, tag} = this.tagInfo;
-            let run = this.tagInfo.run
-            let tag = this.tagInfo.tag
+            // let {run, tag} = this.tagInfo;
+            let run = this.tagInfo.run;
+            let tag = this.tagInfo.tag;
             let {displayName, samples} = tag;
             let params = {
                 run,
                 tag: displayName,
-                samples
+                samples,
             };
             getPluginTextsTexts(params).then(({status, data}) => {
                 if (status === 0) {
@@ -117,8 +120,8 @@ export default {
                     this.currentIndex = data.length - 1;
                 }
             });
-        }
-    }
+        },
+    },
 };
 </script>
 <style lang="stylus">

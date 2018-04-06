@@ -25,17 +25,17 @@ function s2ab(s) {
  * @param {Array} data the data for the xlsx
  * @param {string} name filename
  */
-export const generateXLSXandAutoDownload = function (data, name) {
+export const generateXLSXandAutoDownload = function(data, name) {
     let wopts = {
         bookType: 'xlsx',
         bookSST: false,
-        type: 'binary'
+        type: 'binary',
     };
     let ws = aoaToSheet(data);
     let wb = {
         SheetNames: ['Export'],
         Sheets: {},
-        Props: {}
+        Props: {},
     };
     wb.Sheets.Export = ws;
     let wbout = XLSX.write(wb, wopts);
@@ -43,7 +43,7 @@ export const generateXLSXandAutoDownload = function (data, name) {
         new Blob(
             [s2ab(wbout)],
             {
-                type: 'application/octet-stream'
+                type: 'application/octet-stream',
             }
         ),
         name + '.xlsx' || 'sheetjs.xlsx'
@@ -57,12 +57,12 @@ export const generateXLSXandAutoDownload = function (data, name) {
  * @param {Array} data the data for the xlsx
  * @param {string} name filename
  */
-export const generateJsonAndDownload = function (data, name) {
+export const generateJsonAndDownload = function(data, name) {
     saveAs(
         new Blob(
             [s2ab(JSON.stringify(data, null, '    '))],
             {
-                type: 'application/octet-stream'
+                type: 'application/octet-stream',
             }
         ),
         name + '.json' || 'json.json'

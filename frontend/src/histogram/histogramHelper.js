@@ -7,7 +7,7 @@ export function tansformBackendData(histogramData) {
         step,
         min: min(items.map(([left, right, count]) => left)),
         max: max(items.map(([left, right, count]) => right)),
-        items: items.map(([left, right, count]) => ({left, right, count}))
+        items: items.map(([left, right, count]) => ({left, right, count})),
     };
 }
 
@@ -19,7 +19,7 @@ export function computeNewHistogram(histogram, min, max, binsNum = 30) {
     }
     let stepWidth = (max - min) / binsNum;
     let itemIndex = 0;
-    return range(min, max, stepWidth).map(binLeft => {
+    return range(min, max, stepWidth).map((binLeft) => {
         let binRight = binLeft + stepWidth;
         let yValue = 0;
         while (itemIndex < histogram.items.length) {
@@ -41,7 +41,7 @@ export function computeNewHistogram(histogram, min, max, binsNum = 30) {
 }
 
 export function tansformToVisData(tempData, time, step) {
-    return tempData.map(function (dataItem) {
+    return tempData.map(function(dataItem) {
         return [time, step, dataItem.x + dataItem.dx / 2, Math.floor(dataItem.y)];
     });
 }
@@ -50,18 +50,18 @@ export function originDataToChartData(originData) {
     let tempData = originData.map(tansformBackendData);
     let globalMin = min(tempData.map(({min}) => min));
     let globalMax = max(tempData.map(({max}) => max));
-    let chartData = tempData.map(function (item) {
+    let chartData = tempData.map(function(item) {
         let histoBins = computeNewHistogram(item, globalMin, globalMax);
         let {time, step} = item;
         return {
             time,
             step,
-            items: tansformToVisData(histoBins, time, step)
+            items: tansformToVisData(histoBins, time, step),
         };
     });
     return {
         min: globalMin,
         max: globalMax,
-        chartData
+        chartData,
     };
 }
