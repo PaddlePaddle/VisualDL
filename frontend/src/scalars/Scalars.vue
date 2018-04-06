@@ -30,7 +30,7 @@
 
 <script>
 import {getPluginScalarsTags, getRuns} from '../service';
-import {debounce, flatten, uniq, isArray} from 'lodash';
+import {debounce, flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
 import Config from './ui/Config';

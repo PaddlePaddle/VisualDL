@@ -102,8 +102,40 @@ const maxQuantile = 0.95;
 const intervalTime = 15;
 
 export default {
-  props: ['tagInfo', 'smoothing', 'horizontal', 'sortingMethod', 'outlier', 'runs',
-          'running', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    tagInfo: {
+      type: Object,
+      required: true,
+    },
+    runs: {
+      type: Array,
+      required: true,
+    },
+    running: {
+      type: Boolean,
+      required: true,
+    },
+    smoothing: {
+      type: Number,
+      required: true,
+    },
+    horizontal: {
+      type: String,
+      required: true,
+    },
+    sortingMethod: {
+      type: String,
+      required: true,
+    },
+    outlier: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     computedStyle() {
       return 'height:' + this.height + 'px;'
