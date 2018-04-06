@@ -1,44 +1,62 @@
 <template>
-    <div class="visual-dl-page-config-com">
+  <div class="visual-dl-page-config-com">
 
-        <v-text-field
-                label="Search"
-                hint="Search by label"
-                v-model="config.searchText"
-                dark
-        ></v-text-field>
+    <v-text-field
+      label="Search"
+      hint="Search by label"
+      v-model="config.searchText"
+      dark
+    />
 
 
-        <v-checkbox class="visual-dl-page-config-checkbox"
-                    label="Display All Labels"
-                    v-model="config.displayWordLabel" dark></v-checkbox>
+    <v-checkbox
+      class="visual-dl-page-config-checkbox"
+      label="Display All Labels"
+      v-model="config.displayWordLabel"
+      dark/>
 
-        <v-radio-group label="Dimension" v-model="config.dimension" dark>
-            <v-radio label="2D" value="2"></v-radio>
-            <v-radio label="3D" value="3"></v-radio>
-        </v-radio-group>
+    <v-radio-group
+      label="Dimension"
+      v-model="config.dimension"
+      dark>
+      <v-radio
+        label="2D"
+        value="2"/>
+      <v-radio
+        label="3D"
+        value="3"/>
+    </v-radio-group>
 
-        <v-radio-group label="Reduction Method" v-model="config.reduction" dark>
-            <v-radio label="T-SNE" value="tsne"></v-radio>
-            <v-radio label="PCA" value="pca"></v-radio>
-        </v-radio-group>
+    <v-radio-group
+      label="Reduction Method"
+      v-model="config.reduction"
+      dark>
+      <v-radio
+        label="T-SNE"
+        value="tsne"/>
+      <v-radio
+        label="PCA"
+        value="pca"/>
+    </v-radio-group>
 
-        <v-btn :color="config.running ? 'primary' : 'error'"
-                  v-model="config.running"
-                  @click="toggleAllRuns"
-                  class="visual-dl-page-run-toggle"
-                  dark block
-        >
-            {{config.running ? 'Running' : 'Stopped'}}
-        </v-btn>
-    </div>
+    <v-btn
+      :color="config.running ? 'primary' : 'error'"
+      v-model="config.running"
+      @click="toggleAllRuns"
+      class="visual-dl-page-run-toggle"
+      dark
+      block
+    >
+      {{ config.running ? 'Running' : 'Stopped' }}
+    </v-btn>
+  </div>
 </template>
 <script>
 
 export default {
     props: {
         runsItems: Array,
-        config: Object
+        config: Object,
     },
     data() {
         return {
@@ -47,8 +65,8 @@ export default {
     methods: {
         toggleAllRuns() {
             this.config.running = !this.config.running;
-        }
-    }
+        },
+    },
 };
 
 </script>

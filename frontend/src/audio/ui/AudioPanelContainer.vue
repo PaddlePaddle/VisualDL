@@ -1,23 +1,26 @@
 <template>
-    <div class="visual-dl-chart-page">
-        <ui-expand-panel :info="total" :title="title">
-            <ui-audio
-                class="visual-dl-chart-audio"
-                v-for="(tagInfo, index) in filteredPageList"
-                :key="index"
-                :tagInfo="tagInfo"
-                :runs="config.runs"
-                :running="config.running"
-                :runsItems="runsItems"
-            ></ui-audio>
+  <div class="visual-dl-chart-page">
+    <ui-expand-panel
+      :info="total"
+      :title="title">
+      <ui-audio
+        class="visual-dl-chart-audio"
+        v-for="(tagInfo, index) in filteredPageList"
+        :key="index"
+        :tag-info="tagInfo"
+        :runs="config.runs"
+        :running="config.running"
+        :runs-items="runsItems"
+      />
 
-            <v-pagination class="visual-dl-sm-pagination"
-                          v-if="total > pageSize"
-                          v-model="currentPage"
-                          :length="pageLength"
-            ></v-pagination>
-        </ui-expand-panel>
-    </div>
+      <v-pagination
+        class="visual-dl-sm-pagination"
+        v-if="total > pageSize"
+        v-model="currentPage"
+        :length="pageLength"
+      />
+    </ui-expand-panel>
+  </div>
 </template>
 <script>
 import ExpandPanel from '../../common/component/ExpandPanel';
@@ -36,8 +39,8 @@ export default {
             let tagList = this.tagList || [];
             let runs = this.config.runs || [];
             let list = cloneDeep(tagList);
-            return flatten(list.slice().map(item => {
-                return item.tagList.filter(one => runs.includes(one.run));
+            return flatten(list.slice().map((item) => {
+                return item.tagList.filter((one) => runs.includes(one.run));
             }));
         },
 
@@ -50,15 +53,15 @@ export default {
             return list.length;
         },
         pageLength() {
-            return Math.ceil(this.total / this.pageSize)
-        }
+            return Math.ceil(this.total / this.pageSize);
+        },
     },
     data() {
         return {
             // current page
             currentPage: 1,
             // item per page
-            pageSize: 8
+            pageSize: 8,
         };
     },
 };

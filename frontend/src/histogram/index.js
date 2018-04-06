@@ -5,5 +5,5 @@ import Histogram from './Histogram';
 router.add({
     target: '#content',
     rule: '/histograms',
-    Component: Histogram
+    Component: Histogram,
 });

@@ -1,9 +1,9 @@
 <template>
-    <div class="visual-dl-graph-charts">
-        <svg class="visual-dl-page-left">
-            <g/>
-        </svg>
-    </div>
+  <div class="visual-dl-graph-charts">
+    <svg class="visual-dl-page-left">
+      <g/>
+    </svg>
+  </div>
 </template>
 <script>
     // libs
@@ -11,7 +11,7 @@
     import {
         dragMovelHandler,
         tansformElement,
-        relativeMove
+        relativeMove,
     } from './dragHelper';
     // service
     import {getPluginGraphsGraph} from '../../service';
@@ -20,16 +20,31 @@
     import interact from 'interactjs';
 
     // for d3 drawing
-    import * as d3 from "d3";
-    import * as dagre from "dagre";
+    import * as d3 from 'd3';
 
     export default {
-        props: ['fitScreen', 'download', 'scale', 'curNode'],
+        props: {
+            'fitScreen': {
+                type: Function,
+                required: true,
+            },
+            'download': {
+                type: Function,
+                required: true,
+            },
+            'scale': {
+                type: Number,
+                default: 1,
+            },
+            'curNode': {
+                type: Object,
+                default: {},
+            }},
         computed: {
             computedWidth() {
                 let scale = this.scale;
                 return Math.floor(scale * 2 * 700);
-            }
+            },
         },
         data() {
             return {
@@ -49,105 +64,120 @@
                     aEl.download = 'graph.png';
                     aEl.click();
                 }
-            }
+            },
         },
         mounted() {
             this.getOriginChartsData();
             let chartScope = this;
             getPluginGraphsGraph().then(({errno, data}) => {
-                var raw_data = data.data;
-                var data = raw_data;
+                let graphData = data.data;
 
                 // d3 svg drawing
-                var g = new dagreD3.graphlib.Graph()
+                let g = new dagreD3.graphlib.Graph()
                     .setGraph({})
-                    .setDefaultEdgeLabel(function() { return {}; });
-                var render = new dagreD3.render();
-                var nodeKeys = [];
+                    .setDefaultEdgeLabel(function() {
+                      return {};
+                    });
 
-                var buildInputNodeLabel = function(inputNode) {
+                // eslint-disable-next-line
+                let render = new dagreD3.render();
+                let nodeKeys = [];
+
+                let buildInputNodeLabel = function(inputNode) {
                     // TODO(daming-lu): need more complex compound node
-                    var nodeLabel = 'id: ' + inputNode['name'] + '\n'
+                    let nodeLabel = 'id: ' + inputNode['name'] + '\n'
                         + 'type: ' + inputNode['data_type'] + '\n'
                         + 'dims: ' + inputNode['shape'].join(' x ');
                     return nodeLabel;
                 };
 
                 // add input nodes
-                for (var i=0; i<data['input'].length; ++i) {
-                    var curInputNode = data['input'][i];
-                    var nodeKey = curInputNode['name'];
+                for (let i=0; i<graphData['input'].length; ++i) {
+                    let curInputNode = graphData['input'][i];
+                    let nodeKey = curInputNode['name'];
                     g.setNode(
                         nodeKey,
                         {
                             label: buildInputNodeLabel(curInputNode),
-                            class: "input"
+                            class: 'input',
+                            style: 'stroke: #A3D39C; stroke-width: 3px; ' +
+                                   'stroke-dasharray: 5, 5;',
+                            labelStyle: 'font-size: 0.8em;',
+
                         }
                     );
                     nodeKeys.push(nodeKey);
                 }
 
                 // add operator nodes then add edges from inputs to operator and from operator to output
-                for (var i=0; i<data['node'].length; ++i) {
-                    var curOperatorNode = data['node'][i];
-                    var nodeKey = 'opNode_' + i;
+                for (let i=0; i<graphData['node'].length; ++i) {
+                    let curOperatorNode = graphData['node'][i];
+                    let nodeKey = 'opNode_' + i;
 
                     // add operator node
-                    var curOpLabel = curOperatorNode['opType'];
+                    let curOpLabel = curOperatorNode['opType'];
                     g.setNode(
                         nodeKey,
                         {
                             label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
-                            class: "operator"
+                            class: 'operator',
+                            style: 'opacity: 0.5;',
+
                         }
                     );
                     nodeKeys.push(nodeKey);
 
                     // add output node
-                    var outputNodeKey = curOperatorNode['output'][0];
+                    let outputNodeKey = curOperatorNode['output'][0];
+                    let outputPadding = ' '.repeat(Math.floor(outputNodeKey.length/2));
                     g.setNode(
                         outputNodeKey,
                         {
-                            label: outputNodeKey + ' '.repeat(Math.floor(outputNodeKey.length/5)),
-                            class: "output"
+                            label: outputNodeKey + outputPadding,
+                            class: 'output',
+                            style: 'opacity: 0.5;' +
+                                    'stroke-width: 2px; ' +
+                                    'stroke-dasharray: 5, 5;',
+                            shape: 'diamond',
+
                         }
                     );
                     nodeKeys.push(outputNodeKey);
 
                     // add edges from inputs to node and from node to output
-                    for (var e=0; e<curOperatorNode['input'].length; ++e) {
+                    for (let e=0; e<curOperatorNode['input'].length; ++e) {
                         g.setEdge(curOperatorNode['input'][e], nodeKey);
                     }
                     g.setEdge(nodeKey, curOperatorNode['output'][0]);
                 }
 
                 // TODO(daming-lu): add prettier styles to diff nodes
-                var svg = d3.select("svg")
-                    .attr("font-family", "sans-serif")
-                    .attr("font-size", "28px");
+                let svg = d3.select('svg')
+                    .attr('font-family', 'sans-serif')
+                    .attr('font-size', '28px');
 
-                render(d3.select("svg g"), g);
+                render(d3.select('svg g'), g);
 
                 // adjust viewBox so that the whole graph can be shown, with scroll bar
-                svg.attr('viewBox', '0 0 ' +  g.graph().width + ' ' + g.graph().height);
+                svg.attr('viewBox', '0 0 ' + g.graph().width + ' ' + g.graph().height);
 
-                svg.selectAll(".node").on("click", function(d, i){
-                    this.curNode = g.node(d);
-                    var nodeType = this.curNode.class;
-                    var nodeInfo = null;
-                    if (nodeType === "operator") {
-                        var opIndex = d.slice(7); // remove prefix "opNode_"
-                        nodeInfo = data.node[opIndex];
-                    } else if (nodeType === "input") {
-                        nodeInfo = data.input[d-1];
+                svg.selectAll('.node').on('click', function(d, i) {
+                    chartScope.curNode = g.node(d);
+                    let nodeType = chartScope.curNode.class;
+                    let nodeInfo = null;
+                    if (nodeType === 'operator') {
+                        let opIndex = d.slice(7); // remove prefix "opNode_"
+                        nodeInfo = graphData.node[opIndex];
+                    } else if (nodeType === 'input') {
+                        nodeInfo = graphData.input[d-1];
                     } else {
-                        nodeInfo = "output";
+                        nodeInfo = 'output';
                     }
 
                     chartScope.$emit('curNodeUpdated',
                         {
                             'nodeType': nodeType,
-                            'nodeInfo': nodeInfo
+                            'nodeInfo': nodeInfo,
                         });
                 });
             });
@@ -182,15 +212,15 @@
             },
 
             getBigImgEl() {
-                return this.$refs.draggable
+                return this.$refs.draggable;
             },
 
             getSmallImgEl() {
-                return this.$refs.small_img
+                return this.$refs.small_img;
             },
 
             getSmallImgDragHandler() {
-                return this.$refs.screen_handler
+                return this.$refs.screen_handler;
             },
 
             addDragEventForImg() {
@@ -210,7 +240,7 @@
 
                             relativeMove({triggerEl, x, y}, relativeEl);
                         });
-                    }
+                    },
                 });
 
                 interact('.screen-handler').draggable({
@@ -224,8 +254,8 @@
                             top: 0,
                             left: 0,
                             bottom: 1,
-                            right: 1
-                        }
+                            right: 1,
+                        },
                     },
                     // call this function on every dragmove event
                     onmove(event) {
@@ -237,10 +267,10 @@
 
                             relativeMove({triggerEl, x, y}, relativeEl);
                         });
-                    }
+                    },
                 });
-            }
-        }
+            },
+        },
     };
 </script>
 <style lang="stylus">
