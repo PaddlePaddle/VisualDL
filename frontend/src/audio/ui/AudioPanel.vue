@@ -8,7 +8,7 @@
     <p>
       <span>Step:</span>
       <span>{{ audioData.step }}</span>
-      <span class="visual-del-audio-time">{{ audioData.wall_time | formatTime }}</span>
+      <span class="visual-del-audio-time">{{ audioData.wallTime | formatTime }}</span>
     </p>
     <v-slider
       :max="steps"
@@ -31,7 +31,24 @@ import {getPluginAudioAudio} from '../../service';
 const intervalTime = 30;
 
 export default {
-  props: ['tagInfo', 'runs', 'running', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    tagInfo: {
+      type: Object,
+      required: true,
+    },
+    runs: {
+      type: Array,
+      required: true,
+    },
+    running: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     steps() {
       let data = this.data || [];
@@ -85,13 +102,13 @@ export default {
     currentIndex: function(index) {
       if (this.data && this.data[index]) {
         let currentAudioInfo = this.data ? this.data[index] : {};
-        let {query, step, wall_time} = currentAudioInfo;
-        let url = '/data/plugin/audio/individualAudio?ts=' + wall_time;
+        let {query, step, wallTime} = currentAudioInfo;
+        let url = '/data/plugin/audio/individualAudio?ts=' + wallTime;
         let audioSrc = [url, query].join('&');
         this.audioData = {
           audioSrc,
           step,
-          wall_time,
+          wallTime,
         };
       }
     },
