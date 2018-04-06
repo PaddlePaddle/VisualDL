@@ -5,5 +5,5 @@ import Graph from './Graph';
 router.add({
     target: '#content',
     rule: '/graphs',
-    Component: Graph
+    Component: Graph,
 });

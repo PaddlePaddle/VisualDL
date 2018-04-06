@@ -5,5 +5,5 @@ import Texts from './Texts';
 router.add({
     target: '#content',
     rule: '/texts',
-    Component: Texts
+    Component: Texts,
 });

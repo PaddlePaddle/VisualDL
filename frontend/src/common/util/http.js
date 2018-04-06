@@ -7,11 +7,11 @@ const STATUSINFO = 'msg';
 
 const instance = axios.create({
     baseURL: '/',
-    timeout: 30000
+    timeout: 30000,
 });
 
 // for better ux, don't send the error msg because there will be too mutch error
-const responseErrorStatus = response => {
+const responseErrorStatus = (response) => {
     const data = response.data;
     // if (data[STATUS] !== 0) {
     //     Notification.error(data[STATUSINFO]);
@@ -21,7 +21,7 @@ const responseErrorStatus = response => {
 };
 
 // for better ux, don't send the error msg because there will be too mutch error
-const responseNetError = error => {
+const responseNetError = (error) => {
     // Notification.error('net error');
     return Promise.reject(error);
 };
@@ -30,11 +30,11 @@ const responseNetError = error => {
 const formInstance = axios.create({
     baseURL: '/',
     timeout: 3000,
-    transformRequest: [data => qs.stringify(data)],
+    transformRequest: [(data) => qs.stringify(data)],
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json,application/vnd.ms-excel'
-    }
+        'Accept': 'application/json,application/vnd.ms-excel',
+    },
 });
 
 
