@@ -8,7 +8,7 @@
     <p>
       <span>Step:</span>
       <span>{{ textData.step }}</span>
-      <span class="visual-del-text-time">{{ textData.wall_time | formatTime }}</span>
+      <span class="visual-del-text-time">{{ textData.wallTime | formatTime }}</span>
     </p>
     <v-slider
       :max="steps"
@@ -28,7 +28,24 @@ import {getPluginTextsTexts} from '../../service';
 const intervalTime = 30;
 
 export default {
-  props: ['tagInfo', 'runs', 'running', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    tagInfo: {
+      type: Object,
+      required: true,
+    },
+    runs: {
+      type: Array,
+      required: true,
+    },
+    running: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     steps() {
       let data = this.data || [];
@@ -82,13 +99,13 @@ export default {
     currentIndex: function(index) {
       if (this.data && this.data[index]) {
         let currentTextInfo = this.data ? this.data[index] : {};
-        let wall_time = currentTextInfo[0];
+        let wallTime = currentTextInfo[0];
         let step = currentTextInfo[1];
         let message = currentTextInfo[2];
 
         this.textData = {
           step,
-          wall_time,
+          wallTime,
           message,
         };
       }

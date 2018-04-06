@@ -102,7 +102,7 @@ const maxQuantile = 0.95;
 const intervalTime = 15;
 
 export default {
-  props: ['tagInfo', 'groupNameReg', 'smoothing', 'horizontal', 'sortingMethod', 'outlier', 'runs',
+  props: ['tagInfo', 'smoothing', 'horizontal', 'sortingMethod', 'outlier', 'runs',
           'running', 'runsItems'],
   computed: {
     computedStyle() {
