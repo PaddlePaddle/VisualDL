@@ -1,21 +1,27 @@
 <template>
-    <v-card hover class="visual-dl-image">
-        <h3 class="visual-dl-image-title">{{tagInfo.tag.displayName}}
-            <span class="visual-dl-image-run-icon">{{tagInfo.run}}</span>
-        </h3>
-        <p>
-            <span>Step:</span>
-            <span>{{imgData.step}}</span>
-            <span class="visual-del-image-time">{{imgData.wall_time | formatTime}}</span>
-        </p>
-        <v-slider :max="steps"
-                  :min="slider.min"
-                  :step="1"
-                  v-model="currentIndex"
-                  ></v-slider>
+  <v-card
+    hover
+    class="visual-dl-image">
+    <h3 class="visual-dl-image-title">{{ tagInfo.tag.displayName }}
+      <span class="visual-dl-image-run-icon">{{ tagInfo.run }}</span>
+    </h3>
+    <p>
+      <span>Step:</span>
+      <span>{{ imgData.step }}</span>
+      <span class="visual-del-image-time">{{ imgData.wall_time | formatTime }}</span>
+    </p>
+    <v-slider
+      :max="steps"
+      :min="slider.min"
+      :step="1"
+      v-model="currentIndex"
+    />
 
-        <img :width="imageWidth" :height="imageHeight" :src="imgData.imgSrc" />
-    </v-card>
+    <img
+      :width="imageWidth"
+      :height="imageHeight"
+      :src="imgData.imgSrc" >
+  </v-card>
 </template>
 <script>
 import {getPluginImagesImages} from '../../service';
@@ -33,25 +39,25 @@ export default {
             return data.length - 1;
         },
         imageWidth() {
-            return this.isActualImageSize ? this.imgData.width : defaultImgWidth
+            return this.isActualImageSize ? this.imgData.width : defaultImgWidth;
         },
         imageHeight() {
-            return this.isActualImageSize ? this.imgData.height : defaultImgHeight
-        }
+            return this.isActualImageSize ? this.imgData.height : defaultImgHeight;
+        },
     },
     filters: {
-        formatTime: function (value) {
+        formatTime: function(value) {
             if (!value) {
                 return;
             }
             // The value was made in seconds, must convert it to milliseconds
             let time = new Date(value * 1000);
-            var options = {
-                weekday: "short", year: "numeric", month: "short",
-                day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"
+            let options = {
+                weekday: 'short', year: 'numeric', month: 'short',
+                day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
             };
-            return time.toLocaleDateString("en-US", options);
-        }
+            return time.toLocaleDateString('en-US', options);
+        },
     },
     data() {
         return {
@@ -60,12 +66,12 @@ export default {
                 value: '0',
                 label: '',
                 min: 0,
-                step: 1
+                step: 1,
             },
             imgData: {},
             data: [],
             height: defaultImgHeight,
-            weight: defaultImgWidth
+            weight: defaultImgWidth,
         };
     },
     created() {
@@ -82,7 +88,7 @@ export default {
     },
 
     watch: {
-        running: function (val) {
+        running: function(val) {
             val ? this.startInterval() : this.stopInterval();
         },
         currentIndex: function(index) {
@@ -97,11 +103,11 @@ export default {
                     height,
                     width,
                     step,
-                    wall_time
-                }
+                    wall_time,
+                };
             }
             /* eslint-enable fecs-camelcase */
-        }
+        },
     },
     methods: {
         stopInterval() {
@@ -114,14 +120,14 @@ export default {
             }, intervalTime * 1000);
         },
         getOriginChartsData() {
-            //let {run, tag} = this.tagInfo;
-            let run = this.tagInfo.run
-            let tag = this.tagInfo.tag
+            // let {run, tag} = this.tagInfo;
+            let run = this.tagInfo.run;
+            let tag = this.tagInfo.tag;
             let {displayName, samples} = tag;
             let params = {
                 run,
                 tag: displayName,
-                samples
+                samples,
             };
             getPluginImagesImages(params).then(({status, data}) => {
                 if (status === 0) {
@@ -129,8 +135,8 @@ export default {
                     this.currentIndex = data.length - 1;
                 }
             });
-        }
-    }
+        },
+    },
 };
 </script>
 <style lang="stylus">

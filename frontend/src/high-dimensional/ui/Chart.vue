@@ -1,8 +1,12 @@
 <template>
-    <v-card hover class="visual-dl-page-charts">
-        <div ref="chartBox" class="visual-dl-chart-box" :style="computedStyle">
-        </div>
-    </v-card>
+  <v-card
+    hover
+    class="visual-dl-page-charts">
+    <div
+      ref="chartBox"
+      class="visual-dl-chart-box"
+      :style="computedStyle"/>
+  </v-card>
 </template>
 
 <script>
@@ -21,12 +25,12 @@ export default {
         computedStyle() {
             return 'height:' + this.height + 'px;' +
                 'width:' + this.width + 'px;';
-        }
+        },
     },
     created() {},
     mounted() {
         this.createChart();
-        this.myChart.showLoading()
+        this.myChart.showLoading();
 
         this.set2DChartOptions();
         this.setDisplayWordLabel();
@@ -38,17 +42,17 @@ export default {
                 series: [{
                     // Grab the 'matched' series data
                     name: 'all',
-                    data: val
-                }]
+                    data: val,
+                }],
             });
         },
         displayWordLabel: function(val) {
-            this.setDisplayWordLabel()
+            this.setDisplayWordLabel();
         },
         dimension: function(val) {
-            this.myChart.clear()
-            this.myChart.showLoading()
-            if (val === "2") {
+            this.myChart.clear();
+            this.myChart.showLoading();
+            if (val === '2') {
                 this.set2DChartOptions();
                 this.setDisplayWordLabel();
             } else {
@@ -58,13 +62,13 @@ export default {
         },
         searchText: function(val) {
             // Filter the data that has the hasPrefix
-            var matched_words = []
+            let matched_words = [];
             if (val != '') {
-                val = val.toLowerCase()
+                val = val.toLowerCase();
 
                 function hasPrefix(value) {
-                    var word = value[value.length - 1]
-                    return (typeof word == "string" && word.toLowerCase().startsWith(val))
+                    let word = value[value.length - 1];
+                    return (typeof word == 'string' && word.toLowerCase().startsWith(val));
                 }
 
                 matched_words = this.embedding_data.filter(hasPrefix);
@@ -75,8 +79,8 @@ export default {
                 series: [{
                     // Grab the 'matched' series data
                     name: 'matched',
-                    data: matched_words
-                }]
+                    data: matched_words,
+                }],
             });
         },
     },
@@ -87,25 +91,25 @@ export default {
             this.myChart = echarts.init(el);
         },
         set2DChartOptions() {
-            var typeD = "normal";
-            var option = {
+            let typeD = 'normal';
+            let option = {
                 xAxis: {},
                 yAxis: {},
                 series: [{
-                        name: "all",
+                        name: 'all',
                         symbolSize: 10,
                         data: this.embedding_data,
                         type: 'scatter',
                     },
                     {
-                        name: "matched",
+                        name: 'matched',
                         animation: false,
                         symbolSize: 10,
                         data: [],
                         itemStyle: {
                             normal: {
-                                opacity: 1
-                            }
+                                opacity: 1,
+                            },
                         },
                         label: {
                             normal: {
@@ -113,37 +117,37 @@ export default {
                                 formatter: function(param) {
                                     return param.data[param.data.length - 1];
                                 },
-                                position: 'top'
-                            }
+                                position: 'top',
+                            },
                         },
-                        type: 'scatter'
-                    }
-                ]
+                        type: 'scatter',
+                    },
+                ],
             };
             this.myChart.setOption(option);
         },
         set3DChartOptions() {
-          var symbolSize = 2.5;
-          var option3d = {
+          let symbolSize = 2.5;
+          let option3d = {
             grid3D: {},
                     xAxis3D: {
-                        type: 'category'
+                        type: 'category',
                     },
                     yAxis3D: {},
                     xAxis3D: {},
                     zAxis3D: {},
                     dataset: {
-                        source: this.embedding_data
+                        source: this.embedding_data,
                     },
                     series: [
                         {
-                            name: "all",
+                            name: 'all',
                             type: 'scatter3D',
                             symbolSize: symbolSize,
-                            data: []
+                            data: [],
                         },
                         {
-                            name: "matched",
+                            name: 'matched',
                             animation: false,
                             symbolSize: symbolSize,
                             data: [],
@@ -153,13 +157,13 @@ export default {
                                     formatter: function(param) {
                                         return param.data[param.data.length - 1];
                                     },
-                                    position: 'top'
-                                }
+                                    position: 'top',
+                                },
                             },
-                            type: 'scatter3D'
-                        }
-                    ]
-          }
+                            type: 'scatter3D',
+                        },
+                    ],
+          };
           this.myChart.setOption(option3d);
         },
         setDisplayWordLabel() {
@@ -173,16 +177,16 @@ export default {
                             formatter: function(param) {
                                 return param.data[param.data.length - 1];
                             },
-                            position: 'top'
+                            position: 'top',
                         },
                         emphasis: {
                             show: true,
-                        }
-                    }
-                }]
+                        },
+                    },
+                }],
             });
         },
-    }
+    },
 };
 
 </script>

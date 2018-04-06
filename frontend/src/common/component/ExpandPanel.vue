@@ -1,39 +1,41 @@
 <template>
-    <div class="visual-dl-expand-panel">
-        <h3
-            class="visual-dl-expand-head"
-            @click="isShow = !isShow"
-        >
-            <span>{{title}}</span>
-            <span class="visual-dl-expand-head-info">
-                <v-icon class="visual-dl-expand-head-arrow" size="20">{{iconName}}</v-icon>
-                <span class="visual-dl-expand-head-num">({{info}})</span>
-            </span>
-        </h3>
-        <div
-            v-if="isShow"
-            class="visual-dl-expand-panel-content"
-        >
-            <slot></slot>
-        </div>
+  <div class="visual-dl-expand-panel">
+    <h3
+      class="visual-dl-expand-head"
+      @click="isShow = !isShow"
+    >
+      <span>{{ title }}</span>
+      <span class="visual-dl-expand-head-info">
+        <v-icon
+          class="visual-dl-expand-head-arrow"
+          size="20">{{ iconName }}</v-icon>
+        <span class="visual-dl-expand-head-num">({{ info }})</span>
+      </span>
+    </h3>
+    <div
+      v-if="isShow"
+      class="visual-dl-expand-panel-content"
+    >
+      <slot/>
     </div>
+  </div>
 </template>
 <script>
 export default {
     props: {
         title: String,
-        info: Number
+        info: Number,
     },
     computed: {
         iconName() {
             return this.isShow ? 'expand_less' : 'expand_more';
-        }
+        },
     },
     data() {
         return {
-            isShow: true
+            isShow: true,
         };
-    }
+    },
 };
 </script>
 <style lang="stylus">

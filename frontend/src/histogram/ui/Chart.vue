@@ -1,14 +1,26 @@
 <template>
-    <v-card hover class="visual-dl-page-charts">
-        <div class="visual-dl-chart-box" ref="visual_dl_chart_box">
-        </div>
-        <div class="visual-dl-chart-actions">
-            <v-btn color="toolbox_icon" flat icon @click="isExpand = !isExpand" class="chart-toolbox-icons" >
-                <img v-if="!isExpand" src="../../assets/ic_fullscreen_off.svg"/>
-                <img v-if="isExpand" src="../../assets/ic_fullscreen_on.svg"/>
-            </v-btn>
-        </div>
-    </v-card>
+  <v-card
+    hover
+    class="visual-dl-page-charts">
+    <div
+      class="visual-dl-chart-box"
+      ref="visual_dl_chart_box"/>
+    <div class="visual-dl-chart-actions">
+      <v-btn
+        color="toolbox_icon"
+        flat
+        icon
+        @click="isExpand = !isExpand"
+        class="chart-toolbox-icons" >
+        <img
+          v-if="!isExpand"
+          src="../../assets/ic_fullscreen_off.svg">
+        <img
+          v-if="isExpand"
+          src="../../assets/ic_fullscreen_on.svg">
+      </v-btn>
+    </div>
+  </v-card>
 </template>
 <script>
 // libs
@@ -32,7 +44,7 @@ export default {
     data() {
         return {
             originData: [],
-            isExpand: false
+            isExpand: false,
         };
     },
     watch: {
@@ -47,7 +59,7 @@ export default {
         },
         isExpand: function(val) {
             this.expandArea(val);
-        }
+        },
     },
     mounted() {
         let tagInfo = this.tagInfo;
@@ -68,7 +80,7 @@ export default {
         },
 
         createChart() {
-            let el = this.$refs.visual_dl_chart_box
+            let el = this.$refs.visual_dl_chart_box;
             this.myChart = echarts.init(el);
         },
 
@@ -77,7 +89,7 @@ export default {
             let zr = this.myChart.getZr();
             let hoverDots = zrDrawElement.hoverDots;
             if (hoverDots != null && hoverDots.length !== 0) {
-                hoverDots.forEach(dot => zr.remove(dot));
+                hoverDots.forEach((dot) => zr.remove(dot));
             }
             let chartType = this.chartType;
             let data = this.originData;
@@ -92,19 +104,18 @@ export default {
                 left: 45,
                 top: 60,
                 right: 40,
-                bottom: 36
+                bottom: 36,
             };
             let title = {
                 text: tag,
                 textStyle: {
                     fontSize: '12',
-                    fontWeight: 'normal'
-                }
+                    fontWeight: 'normal',
+                },
             };
             if (chartType === 'overlay') {
                 this.setOverlayChartOption(visData, title, grid);
-            }
-            else if (chartType === 'offset') {
+            } else if (chartType === 'offset') {
                 this.setOffsetChartOption(visData, title, grid);
             }
         },
@@ -121,13 +132,13 @@ export default {
                     lineStyle: {
                         normal: {
                             width: 1,
-                            color: '#008c99'
-                        }
+                            color: '#008c99',
+                        },
                     },
                     encode: {
                         x: [2],
-                        y: [3]
-                    }
+                        y: [3],
+                    },
                 })
             );
             let option = {
@@ -136,40 +147,40 @@ export default {
                     link: {xAxisIndex: 'all'},
                     show: true,
                     snap: true,
-                    triggerTooltip: true
+                    triggerTooltip: true,
                 },
                 grid: grid,
                 xAxis: {
-                    type: 'value'
+                    type: 'value',
                 },
                 yAxis: {
                     type: 'value',
                     axisLine: {
-                        onZero: false
+                        onZero: false,
                     },
                     axisLabel: {
                         formatter(value, index) {
                             return yValueFormat(value);
-                        }
+                        },
                     },
                     axisPointer: {
                         label: {
                             formatter({value}) {
                                 return yValueFormat(value);
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
-                series: seriesOption
+                series: seriesOption,
             };
 
             let zr1 = this.myChart.getZr();
-            zr1.on('mousemove', function (e) {
+            zr1.on('mousemove', function(e) {
                 zr1.remove(zrDrawElement.hoverLine);
                 zr1.remove(zrDrawElement.tooltip);
                 zr1.remove(zrDrawElement.tooltipX);
                 zr1.remove(zrDrawElement.tooltipY);
-                zrDrawElement.hoverDots.forEach(dot => zr1.remove(dot));
+                zrDrawElement.hoverDots.forEach((dot) => zr1.remove(dot));
                 zrDrawElement.hoverDots.length = 0;
             });
 
@@ -188,7 +199,7 @@ export default {
             grid.top = 126;
             grid.left = 16;
             grid.right = 40;
-            chartData.forEach(function (dataItem) {
+            chartData.forEach(function(dataItem) {
                 let lineData = [];
                 maxStep = Math.max(dataItem.step, maxStep);
                 minStep = Math.min(dataItem.step, minStep);
@@ -202,7 +213,7 @@ export default {
 
             let option = {
                 textStyle: {
-                    fontFamily: 'Merriweather Sans'
+                    fontFamily: 'Merriweather Sans',
                 },
                 title,
                 color: ['#006069'],
@@ -213,43 +224,43 @@ export default {
                     max: maxStep,
                     dimension: 1,
                     inRange: {
-                        colorLightness: [0.2, 0.4]
-                    }
+                        colorLightness: [0.2, 0.4],
+                    },
                 },
                 xAxis: {
                     min: minX,
                     max: maxX,
                     axisLine: {
-                        onZero: false
+                        onZero: false,
                     },
                     axisLabel: {
                         fontSize: '11',
-                        formatter: function (value) {
+                        formatter: function(value) {
                             return Math.round(value * 100) / 100;
-                        }
+                        },
                     },
                     splitLine: {
-                        show: false
-                    }
+                        show: false,
+                    },
                 },
                 yAxis: {
                     position: 'right',
                     axisLine: {
-                        onZero: false
+                        onZero: false,
                     },
                     inverse: true,
                     splitLine: {
-                        show: false
+                        show: false,
                     },
                     axisLabel: {
-                        fontSize: '11'
-                    }
+                        fontSize: '11',
+                    },
                 },
                 grid,
                 series: [{
                     type: 'custom',
                     dimensions: ['x', 'y'],
-                    renderItem: function (params, api) {
+                    renderItem: function(params, api) {
                         let points = makePolyPoints(
                             params.dataIndex,
                             api.value,
@@ -260,16 +271,16 @@ export default {
                             type: 'polygon',
                             silent: true,
                             shape: {
-                                points
+                                points,
                             },
                             style: api.style({
                                 stroke: '#bbb',
-                                lineWidth: 1
-                            })
+                                lineWidth: 1,
+                            }),
                         };
                     },
-                    data: rawData
-                }]
+                    data: rawData,
+                }],
             };
 
             function makePolyPoints(dataIndex, getValue, getCoord, yValueMapHeight) {
@@ -296,29 +307,29 @@ export default {
                 if (zrDrawElement.hoverLine) {
                     zr.remove(zrDrawElement.hoverLine);
                     zr.remove(zrDrawElement.tooltip);
-                    zrDrawElement.hoverDots.forEach(dot => zr.remove(dot));
+                    zrDrawElement.hoverDots.forEach((dot) => zr.remove(dot));
                     zrDrawElement.hoverDots.length = 0;
                     zr.remove(zrDrawElement.tooltipX);
                     zr.remove(zrDrawElement.tooltipY);
                 }
             }
 
-            zr.on('mouseout', e => {
+            zr.on('mouseout', (e) => {
                 removeTooltip();
             });
 
-            zr.on('mousemove', e => {
+            zr.on('mousemove', (e) => {
                 removeTooltip();
                 let nearestIndex = findNearestValue(e.offsetX, e.offsetY);
                 if (nearestIndex) {
-                    let getCoord = function (pt) {
+                    let getCoord = function(pt) {
                         return ecChart.convertToPixel('grid', pt);
                     };
                     let gridRect = ecChart.getModel().getComponent('grid', 0).coordinateSystem.getRect();
 
                     let linePoints = makePolyPoints(
                         nearestIndex.itemIndex,
-                        function (i) {
+                        function(i) {
                             return rawData[nearestIndex.itemIndex][i];
                         },
                         getCoord,
@@ -328,17 +339,17 @@ export default {
                     zr.add(zrDrawElement.hoverLine = new echarts.graphic.Polyline({
                         silent: true,
                         shape: {
-                            points: linePoints
+                            points: linePoints,
                         },
                         style: {
                             stroke: '#5c5c5c',
-                            lineWidth: 2
+                            lineWidth: 2,
                         },
-                        z: 999
+                        z: 999,
                     }));
 
                     let itemX;
-                    rawData.forEach(dataItem => {
+                    rawData.forEach((dataItem) => {
                         let binIndex = nearestIndex.binIndex;
                         let x = dataItem[binIndex * 3];
                         let y = dataItem[binIndex * 3 + 1];
@@ -349,14 +360,14 @@ export default {
                             shape: {
                                 cx: pt[0],
                                 cy: pt[1],
-                                r: 3
+                                r: 3,
                             },
                             style: {
                                 fill: '#000',
                                 stroke: '#ccc',
-                                lineWidth: 1
+                                lineWidth: 1,
                             },
-                            z: 1000
+                            z: 1000,
                         });
                         zr.add(dot);
                         zrDrawElement.hoverDots.push(dot);
@@ -375,16 +386,16 @@ export default {
                             textBorderWidth: 2,
                             textBorderRadius: 5,
                             textPadding: 10,
-                            rich: {}
+                            rich: {},
                         },
-                        z: 2000
+                        z: 2000,
                     });
                     zr.add(zrDrawElement.tooltip);
 
                     zrDrawElement.tooltipX = new echarts.graphic.Text({
                         position: [
                             itemX,
-                            gridRect.y + gridRect.height
+                            gridRect.y + gridRect.height,
                         ],
                         style: {
                             fontFamily: 'Merriweather Sans',
@@ -395,16 +406,16 @@ export default {
                             textBackgroundColor: '#333',
                             textBorderWidth: 2,
                             textPadding: [5, 7],
-                            rich: {}
+                            rich: {},
                         },
-                        z: 2000
+                        z: 2000,
                     });
                     zr.add(zrDrawElement.tooltipX);
 
                     zrDrawElement.tooltipY = new echarts.graphic.Text({
                         position: [
                             gridRect.x + gridRect.width,
-                            linePoints[linePoints.length - 1][1]
+                            linePoints[linePoints.length - 1][1],
                         ],
                         style: {
                             fontFamily: 'Merriweather Sans',
@@ -415,9 +426,9 @@ export default {
                             textBackgroundColor: '#333',
                             textBorderWidth: 2,
                             textPadding: [5, 7],
-                            rich: {}
+                            rich: {},
                         },
-                        z: 2000
+                        z: 2000,
                     });
                     zr.add(zrDrawElement.tooltipY);
                 }
@@ -448,7 +459,7 @@ export default {
                     if (binIndex != null) {
                         return {
                             itemIndex: itemIndex,
-                            binIndex: binIndex
+                            binIndex: binIndex,
                         };
                     }
                 }
@@ -469,11 +480,11 @@ export default {
         },
 
         getOriginChartData(tagInfo) {
-            let run = tagInfo.run
-            let tag = tagInfo.tag
+            let run = tagInfo.run;
+            let tag = tagInfo.tag;
             let params = {
                 run,
-                tag: tag.displayName
+                tag: tag.displayName,
             };
             getPluginHistogramsHistograms(params).then(({status, data}) => {
                 if (status === 0) {
@@ -484,7 +495,7 @@ export default {
 
         expandArea(expand) {
             let pageBoxWidth = document.getElementsByClassName('visual-dl-chart-page')[0].offsetWidth;
-            let width = pageBoxWidth * 0.96; //4% margin
+            let width = pageBoxWidth * 0.96; // 4% margin
             if (expand) {
                 let el = this.$refs.visual_dl_chart_box;
                 el.style.width = width + 'px';
@@ -492,21 +503,20 @@ export default {
                 this.isExpand = true;
                 this.myChart.resize({
                     width: width,
-                    height: 600
+                    height: 600,
                 });
-            }
-            else {
+            } else {
                 let el = this.$refs.visual_dl_chart_box;
                 el.style.width = '400px';
                 el.style.height = '300px';
                 this.isExpand = false;
                 this.myChart.resize({
                     width: 400,
-                    height: 300
+                    height: 300,
                 });
             }
-        }
-    }
+        },
+    },
 };
 </script>
 <style lang="stylus">
