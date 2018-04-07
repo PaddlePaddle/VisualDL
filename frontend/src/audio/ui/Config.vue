@@ -33,8 +33,14 @@
 
 export default {
   props: {
-    runsItems: Array,
-    config: Object,
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    config: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {

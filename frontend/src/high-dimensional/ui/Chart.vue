@@ -14,7 +14,28 @@ import echarts from 'echarts';
 import 'echarts-gl';
 
 export default {
-  props: ['config', 'displayWordLabel', 'searchText', 'embedding_data', 'dimension'],
+  props: {
+    embeddingData: {
+      type: Array,
+      required: true,
+    },
+    config: {
+      type: Object,
+      required: true,
+    },
+    displayWordLabel: {
+      type: Boolean,
+      required: true,
+    },
+    searchText: {
+      type: String,
+      required: true,
+    },
+    dimension: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       width: 900,
@@ -36,7 +57,7 @@ export default {
     this.setDisplayWordLabel();
   },
   watch: {
-    embedding_data: function(val) {
+    embeddingData: function(val) {
       this.myChart.hideLoading();
       this.myChart.setOption({
         series: [{
@@ -62,7 +83,7 @@ export default {
     },
     searchText: function(val) {
       // Filter the data that has the hasPrefix
-      let matched_words = [];
+      let matchedWords = [];
       if (val != '') {
         val = val.toLowerCase();
 
@@ -71,7 +92,7 @@ export default {
           return (typeof word == 'string' && word.toLowerCase().startsWith(val));
         }
 
-        matched_words = this.embedding_data.filter(hasPrefix);
+        matchedWords = this.embeddingData.filter(hasPrefix);
       }
 
       // Update the matched series data
@@ -79,7 +100,7 @@ export default {
         series: [{
           // Grab the 'matched' series data
           name: 'matched',
-          data: matched_words,
+          data: matchedWords,
         }],
       });
     },
@@ -91,14 +112,13 @@ export default {
       this.myChart = echarts.init(el);
     },
     set2DChartOptions() {
-      let typeD = 'normal';
       let option = {
         xAxis: {},
         yAxis: {},
         series: [{
                    name: 'all',
                    symbolSize: 10,
-                   data: this.embedding_data,
+                   data: this.embeddingData,
                    type: 'scatter',
                  },
                  {
@@ -137,7 +157,7 @@ export default {
         xAxis3D: {},
         zAxis3D: {},
         dataset: {
-          source: this.embedding_data,
+          source: this.embeddingData,
         },
         series: [
           {

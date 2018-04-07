@@ -10,7 +10,6 @@
           v-for="(tagInfo, index) in filteredTagList"
           :key="index"
           :tag-info="tagInfo"
-          :group-name-reg="config.groupNameReg"
           :smoothing="config.smoothing"
           :horizontal="config.horizontal"
           :sorting-method="config.sortingMethod"
@@ -37,9 +36,25 @@ export default {
   components: {
     'ui-chart': Chart,
     'ui-expand-panel': ExpandPanel,
-    // 'ui-pagination': Pagination
   },
-  props: ['config', 'runsItems', 'tagList', 'title'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    config: {
+      type: Object,
+      required: true,
+    },
+    tagList: {
+      type: Array,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
   computed: {
     filteredRunsList() {
       let tagList = this.tagList || [];

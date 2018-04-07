@@ -42,7 +42,16 @@
 </template>
 <script>
 export default {
-  props: ['config', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    config: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       chartTypeItems: [

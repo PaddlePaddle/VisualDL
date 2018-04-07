@@ -102,8 +102,40 @@ const maxQuantile = 0.95;
 const intervalTime = 15;
 
 export default {
-  props: ['tagInfo', 'groupNameReg', 'smoothing', 'horizontal', 'sortingMethod', 'outlier', 'runs',
-          'running', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    tagInfo: {
+      type: Object,
+      required: true,
+    },
+    runs: {
+      type: Array,
+      required: true,
+    },
+    running: {
+      type: Boolean,
+      required: true,
+    },
+    smoothing: {
+      type: Number,
+      required: true,
+    },
+    horizontal: {
+      type: String,
+      required: true,
+    },
+    sortingMethod: {
+      type: String,
+      required: true,
+    },
+    outlier: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     computedStyle() {
       return 'height:' + this.height + 'px;'
@@ -366,7 +398,7 @@ export default {
     /**
      * @desc 1、add smooth data depend on smoothingWeight. see https://en.wikipedia.org/wiki/Moving_average for detail
      *       2、add relative data
-     * @param {Object} echarts series Object
+     * @param {Object} seriesData: echarts series Object
      * @param {number} smoothingWeight smooth weight, between 0 ~ 1
      */
     transformData(seriesData, smoothingWeight) {
@@ -645,7 +677,8 @@ export default {
 
       let headerHtml = '<tr style="font-size:14px;">';
       headerHtml += Object.keys(transformedData[0]).map((key) => {
-        return '<td style="padding: 0 4px; font-family: \'Merriweather Sans\'; font-weight: bold; width:' + widthPropMap[key] + 'px;">' + key + '</td>';
+        return '<td style="padding: 0 4px; font-family: \'Merriweather Sans\'; font-weight: bold; width:' +
+          widthPropMap[key] + 'px;">' + key + '</td>';
       }).join('');
       headerHtml += '</tr>';
 

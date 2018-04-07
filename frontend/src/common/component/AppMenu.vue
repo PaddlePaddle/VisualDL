@@ -22,7 +22,12 @@
 
 <script>
 export default {
-  props: ['initialRoute'],
+  props: {
+    initialRoute: {
+      type: String,
+      required: true,
+    },
+  },
   name: 'AppMenu',
   data() {
     return {
