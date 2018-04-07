@@ -28,7 +28,6 @@
     "lodash": "^4.17.4",
     "normalize.css": "^6.0.0",
     "qs": "^6.5.1",
-    "save-svg-as-png": "^1.3.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuetify": "^0.17.7",
