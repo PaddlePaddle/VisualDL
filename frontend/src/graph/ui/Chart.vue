@@ -1,29 +1,18 @@
 <template>
   <div class="visual-dl-graph-charts">
-    <svg class="visual-dl-page-left" id="graphSvg">
+    <svg
+      class="visual-dl-page-left"
+      id="graphSvg">
       <g/>
     </svg>
-    <canvas id="canvas" width=600 height=800>
-    </canvas>
   </div>
 </template>
 <script>
-    // libs
-import echarts from 'echarts';
-import {
-  dragMovelHandler,
-  tansformElement,
-  relativeMove,
-} from './dragHelper';
 // service
 import {getPluginGraphsGraph} from '../../service';
 
-// https://github.com/taye/interact.js
-import interact from 'interactjs';
-
 // for d3 drawing
 import * as d3 from 'd3';
-import saveSvgAsPng from 'save-svg-as-png';
 
 export default {
   props: {
@@ -38,41 +27,40 @@ export default {
   computed: {},
   data() {
     return {
-      myCY: null,
     };
   },
   watch: {
     doDownload: function(val) {
-        if (this.doDownload) {
-            // TODO(daming-lu): .svg is ugly and colorless.
-            let svg = document.getElementById("graphSvg");
+      if (this.doDownload) {
+        // TODO(daming-lu): .svg is ugly and colorless.
+        let svg = document.getElementById('graphSvg');
 
-            //get svg source.
-            let serializer = new XMLSerializer();
-            let source = serializer.serializeToString(svg);
+        // get svg source.
+        let serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svg);
 
-            //add name spaces.
-            if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
-                source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-            }
-            if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
-                source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-            }
-
-            //add xml declaration
-            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-
-            //convert svg source to URI data scheme.
-            let url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
-
-            let a = document.createElement("a");
-            a.download = "graph.svg";
-            a.href = url;
-            a.click();
-
-            this.$emit('triggerDownload', false);
+        // add name spaces.
+        if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+          source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
         }
-    }
+        if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
+          source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+        }
+
+        // add xml declaration
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+        // convert svg source to URI data scheme.
+        let url = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(source);
+
+        let a = document.createElement('a');
+        a.download = 'graph.svg';
+        a.href = url;
+        a.click();
+
+        this.$emit('triggerDownload', false);
+      }
+    },
   },
 
   mounted() {

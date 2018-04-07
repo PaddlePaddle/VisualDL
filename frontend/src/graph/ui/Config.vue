@@ -35,8 +35,15 @@
 <script>
 
 export default {
-  props: ['curNode', 'doDownload'],
-  methods: {
+  props: {
+    'doDownload': {
+      type: Boolean,
+      required: true,
+    },
+    'curNode': {
+      type: Object,
+      default: {},
+  }}, methods: {
     handleDownload() {
       this.$emit('triggerDownload', true);
     },

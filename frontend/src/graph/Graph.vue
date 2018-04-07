@@ -2,8 +2,8 @@
   <div class="visual-dl-page-container">
     <div class="visual-dl-page-left">
       <ui-chart
-        :doDownload="doDownload"
-        :curNode="curNode"
+        :do-download="doDownload"
+        :cur-node="curNode"
         @curNodeUpdated="curNode = $event"
         @triggerDownload="doDownload = $event"
       />
@@ -11,8 +11,8 @@
     <div class="visual-dl-page-right">
       <div class="visual-dl-page-config-container">
         <ui-config
-          :curNode="curNode"
-          :doDownload="doDownload"
+          :cur-node="curNode"
+          :do-download="doDownload"
           @triggerDownload="doDownload = $event"
         />
       </div>
