@@ -45,10 +45,11 @@ export default {
     doDownload: function(val) {
         if (this.doDownload) {
             // TODO(daming-lu): .svg is ugly and colorless.
-            var svg = document.getElementById("graphSvg");
+            let svg = document.getElementById("graphSvg");
+
             //get svg source.
-            var serializer = new XMLSerializer();
-            var source = serializer.serializeToString(svg);
+            let serializer = new XMLSerializer();
+            let source = serializer.serializeToString(svg);
 
             //add name spaces.
             if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
@@ -62,16 +63,12 @@ export default {
             source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
 
             //convert svg source to URI data scheme.
-            var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+            let url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
 
-            console.log('url');
-            console.log(url);
-
-            var a = document.createElement("a");
-            a.download = "sample.svg";
+            let a = document.createElement("a");
+            a.download = "graph.svg";
             a.href = url;
             a.click();
-
 
             this.$emit('triggerDownload', false);
         }
