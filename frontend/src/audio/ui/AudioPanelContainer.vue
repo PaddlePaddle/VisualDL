@@ -29,7 +29,24 @@ import AudioPanel from './AudioPanel';
 import {cloneDeep, flatten} from 'lodash';
 
 export default {
-  props: ['config', 'runsItems', 'tagList', 'title'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    config: {
+      type: Object,
+      required: true,
+    },
+    tagList: {
+      type: Array,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     'ui-audio': AudioPanel,
     'ui-expand-panel': ExpandPanel,

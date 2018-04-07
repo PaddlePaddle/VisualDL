@@ -55,8 +55,10 @@
 
 export default {
   props: {
-    runsItems: Array,
-    config: Object,
+    config: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {

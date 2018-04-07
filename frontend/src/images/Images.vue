@@ -31,7 +31,7 @@
 <script>
 
 import {getPluginImagesTags, getRuns} from '../service';
-import {debounce, flatten, uniq, isArray} from 'lodash';
+import {debounce, flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
 import Config from './ui/Config';
@@ -112,7 +112,6 @@ export default {
       });
     },
     filteredConfig() {
-      let tansformArr = ['isActualImageSize'];
       let config = this.config || {};
       let filteredConfig = {};
       Object.keys(config).forEach((key) => {

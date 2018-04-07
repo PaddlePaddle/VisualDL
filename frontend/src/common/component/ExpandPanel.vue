@@ -23,8 +23,14 @@
 <script>
 export default {
   props: {
-    title: String,
-    info: Number,
+    title: {
+      type: String,
+      required: true,
+    },
+    info: {
+      type: Number,
+      required: true,
+    },
   },
   computed: {
     iconName() {
