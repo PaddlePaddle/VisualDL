@@ -8,7 +8,7 @@
     <p>
       <span>Step:</span>
       <span>{{ imgData.step }}</span>
-      <span class="visual-del-image-time">{{ imgData.wall_time | formatTime }}</span>
+      <span class="visual-del-image-time">{{ imgData.wallTime | formatTime }}</span>
     </p>
     <v-slider
       :max="steps"
@@ -32,7 +32,28 @@ const defaultImgHeight = 300;
 const intervalTime = 30;
 
 export default {
-  props: ['tagInfo', 'isActualImageSize', 'runs', 'running', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    tagInfo: {
+      type: Object,
+      required: true,
+    },
+    runs: {
+      type: Array,
+      required: true,
+    },
+    running: {
+      type: Boolean,
+      required: true,
+    },
+    isActualImageSize: {
+      type: Boolean,
+      required: true,
+    },
+  },
   computed: {
     steps() {
       let data = this.data || [];
@@ -95,15 +116,15 @@ export default {
       /* eslint-disable fecs-camelcase */
       if (this.data && this.data[index]) {
         let currentImgInfo = this.data ? this.data[index] : {};
-        let {height, width, query, step, wall_time} = currentImgInfo;
-        let url = '/data/plugin/images/individualImage?ts=' + wall_time;
+        let {height, width, query, step, wallTime} = currentImgInfo;
+        let url = '/data/plugin/images/individualImage?ts=' + wallTime;
         let imgSrc = [url, query].join('&');
         this.imgData = {
           imgSrc,
           height,
           width,
           step,
-          wall_time,
+          wallTime,
         };
       }
       /* eslint-enable fecs-camelcase */

@@ -40,7 +40,28 @@ const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
 
 export default {
-  props: ['tagInfo', 'runs', 'chartType', 'running', 'runsItems'],
+  props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
+    tagInfo: {
+      type: Object,
+      required: true,
+    },
+    runs: {
+      type: Array,
+      required: true,
+    },
+    running: {
+      type: Boolean,
+      required: true,
+    },
+    chartType: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       originData: [],

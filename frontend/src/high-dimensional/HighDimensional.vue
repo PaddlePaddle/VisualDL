@@ -6,7 +6,7 @@
         :display-word-label="config.displayWordLabel"
         :search-text="config.searchText"
         :dimension="config.dimension"
-        :embedding_data="embedding_data"
+        :embedding-data="embeddingData"
       />
     </div>
     <div class="visual-dl-page-right">
@@ -40,7 +40,7 @@ export default {
         reduction: 'tsne',
         running: true,
       },
-      embedding_data: [],
+      embeddingData: [],
     };
   },
   created() {
@@ -65,14 +65,14 @@ export default {
         reduction: this.config.reduction,
       };
       getHighDimensionalDatasets(params).then(({errno, data}) => {
-        let vector_data = data.embedding;
+        let vectorData = data.embedding;
         let labels = data.labels;
 
-        for ( let i = 0; i < vector_data.length; i ++) {
-          vector_data[i].push(labels[i]);
+        for ( let i = 0; i < vectorData.length; i ++) {
+          vectorData[i].push(labels[i]);
         }
 
-        this.embedding_data = vector_data;
+        this.embeddingData = vectorData;
       });
     },
   },

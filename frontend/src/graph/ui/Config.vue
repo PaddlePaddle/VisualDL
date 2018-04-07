@@ -54,7 +54,16 @@
 <script>
 
 export default {
-  props: ['config', 'curNode'],
+  props: {
+    curNode: {
+      type: Object,
+      required: true,
+    },
+    config: {
+      type: Object,
+      required: true,
+    },
+  },
   methods: {
     handleFitScreen() {
       this.$emit('fitScreen');
