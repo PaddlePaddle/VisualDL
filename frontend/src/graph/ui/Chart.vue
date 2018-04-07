@@ -2,7 +2,7 @@
   <div class="visual-dl-graph-charts">
     <svg
       class="visual-dl-page-left"
-      id="graphSvg">
+      ref="graphSvg">
       <g/>
     </svg>
   </div>
@@ -33,7 +33,7 @@ export default {
     doDownload: function(val) {
       if (this.doDownload) {
         // TODO(daming-lu): .svg is ugly and colorless.
-        let svg = document.getElementById('graphSvg');
+        let svg = this.$refs.graphSvg;
 
         // get svg source.
         let serializer = new XMLSerializer();
