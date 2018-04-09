@@ -197,19 +197,21 @@ PYBIND11_MODULE(core, m) {
         End a sampling period, it will clear all states for reservoir sampling.
       )pbdoc")
       .def("set_sample", &cp::Image::SetSample, R"pbdoc(
-        Store the image shape with the flatten image data.
+        Store the flatten image data as vector of float types. Image params need to be
+        specified as a tuple of 3 integers for [width, height, number of channels(3 for RGB)]
 
         :param index:
         :type index: integer
-        :param image_shape: Image size
+        :param image_shape: [width, height, number of channels(3 for RGB)]
         :type image_shape: tuple
         :param image_data: Flatten image data
         :type image_data: list
               )pbdoc")
       .def("add_sample", &cp::Image::AddSample, R"pbdoc(
         A combined interface for is_sample_taken and set_sample, simpler but is less efficient.
+        Image shape params details see set_sample
 
-        :param image_shape: Image size
+        :param image_shape: [width, height, number of channels(3 for RGB)]
         :type image_shape: tuple
         :param image_data: Flatten image data
         :type image_data: list
