@@ -112,7 +112,7 @@ export default {
     smoothingValue: _.debounce(
       function() {
         this.config.smoothing = this.smoothingValue;
-      }, 50
+      }, 500
     ),
   },
   methods: {
