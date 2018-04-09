@@ -19,11 +19,8 @@ export default {
     'doDownload': {
       type: Boolean,
       required: true,
-    },
-    'curNode': {
-      type: Object,
-      default: {},
-  }},
+    }
+  },
   computed: {},
   data() {
     return {
@@ -158,8 +155,8 @@ export default {
       svg.attr('viewBox', '0 0 ' + g.graph().width + ' ' + g.graph().height);
 
       svg.selectAll('.node').on('click', function(d, i) {
-        chartScope.curNode = g.node(d);
-        let nodeType = chartScope.curNode.class;
+        let curNode = g.node(d);
+        let nodeType = curNode.class;
         let nodeInfo = null;
         if (nodeType === 'operator') {
           let opIndex = d.slice(7); // remove prefix "opNode_"
