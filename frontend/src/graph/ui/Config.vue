@@ -4,30 +4,11 @@
       <v-btn
         class="visual-dl-graph-config-button"
         color="primary"
-        @click="handleFitScreen"
-        dark>
-        <v-icon
-          style="margin-right: 6px"
-          size="20">fullscreen</v-icon>
-        Fit &nbsp; to &nbsp; screen
-      </v-btn>
-
-      <v-btn
-        class="visual-dl-graph-config-button"
-        color="primary"
         @click="handleDownload"
         dark>
         <v-icon style="margin-right: 6px">file_download</v-icon>
         Download image
       </v-btn>
-
-      <v-slider
-        label="Scale"
-        max="1"
-        min="0.1"
-        step="0.1"
-        v-model="config.scale"
-        dark/>
     </div>
     <div class="node-info">
       <h3>Node Info: </h3>
@@ -55,21 +36,16 @@
 
 export default {
   props: {
-    curNode: {
-      type: Object,
+    'doDownload': {
+      type: Boolean,
       required: true,
     },
-    config: {
+    'curNode': {
       type: Object,
-      required: true,
-    },
-  },
-  methods: {
-    handleFitScreen() {
-      this.$emit('fitScreen');
-    },
+      default: {},
+  }}, methods: {
     handleDownload() {
-      this.$emit('download');
+      this.$emit('triggerDownload', true);
     },
   },
 };

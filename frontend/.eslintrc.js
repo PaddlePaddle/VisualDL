@@ -19,6 +19,5 @@ module.exports = {
     // so we can have pre-commit running
     'no-invalid-this': 'off',
     'require-jsdoc': 'off',
-    'no-unused-vars': 'off',
   }
 }

@@ -1,9 +1,9 @@
 import axios from 'axios';
 import qs from 'qs';
-import Notification from '../component/Notification';
+// import Notification from '../component/Notification';
 
-const STATUS = 'status';
-const STATUSINFO = 'msg';
+// const STATUS = 'status';
+// const STATUSINFO = 'msg';
 
 const instance = axios.create({
   baseURL: '/',

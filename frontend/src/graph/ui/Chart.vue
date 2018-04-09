@@ -1,73 +1,69 @@
 <template>
   <div class="visual-dl-graph-charts">
-    <svg class="visual-dl-page-left">
+    <svg
+      class="visual-dl-page-left"
+      ref="graphSvg">
       <g/>
     </svg>
   </div>
 </template>
 <script>
-    // libs
-import echarts from 'echarts';
-import {
-  dragMovelHandler,
-  tansformElement,
-  relativeMove,
-} from './dragHelper';
 // service
 import {getPluginGraphsGraph} from '../../service';
-
-// https://github.com/taye/interact.js
-import interact from 'interactjs';
 
 // for d3 drawing
 import * as d3 from 'd3';
 
 export default {
   props: {
-    'fitScreen': {
-      type: Function,
+    'doDownload': {
+      type: Boolean,
       required: true,
-    },
-    'download': {
-      type: Function,
-      required: true,
-    },
-    'scale': {
-      type: Number,
-      default: 1,
     },
     'curNode': {
       type: Object,
       default: {},
   }},
-  computed: {
-    computedWidth() {
-      let scale = this.scale;
-      return Math.floor(scale * 2 * 700);
-    },
-  },
+  computed: {},
   data() {
     return {
-      myCY: null,
-      graphUrl: '',
     };
   },
   watch: {
-    fitScreen: function(val) {
-      this.clearDragedTransform(this.getBigImgEl());
-      this.clearDragedTransform(this.getSmallImgDragHandler());
-    },
-    download: function(val) {
-      if (this.myCY) {
-        let aEl = document.createElement('a');
-        aEl.href = this.myCY.png();
-        aEl.download = 'graph.png';
-        aEl.click();
+    doDownload: function(val) {
+      if (this.doDownload) {
+        // TODO(daming-lu): .svg is ugly and colorless.
+        let svg = this.$refs.graphSvg;
+
+        // get svg source.
+        let serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svg);
+
+        // add name spaces.
+        if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+          source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+        }
+        if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
+          source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+        }
+
+        // add xml declaration
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+        // convert svg source to URI data scheme.
+        let url = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(source);
+
+        let a = document.createElement('a');
+        a.download = 'graph.svg';
+        a.href = url;
+        a.click();
+
+        this.$emit('triggerDownload', false);
       }
     },
   },
+
   mounted() {
-    this.getOriginChartsData();
     let chartScope = this;
     getPluginGraphsGraph().then(({errno, data}) => {
       let graphData = data.data;
@@ -183,94 +179,7 @@ export default {
     });
   },
 
-  methods: {
-    createChart() {
-      let el = this.el.getElementsByClassName('visual-dl-chart-box')[0];
-      this.myChart = echarts.init(el);
-    },
-
-    initChartOption(data) {
-      this.setChartOptions(data);
-    },
-    setChartOptions(data) {
-      this.myChart.setOption(data);
-    },
-
-    getOriginChartsData() {
-      getPluginGraphsGraph().then(({status, data}) => {
-        if (status === 0 && data.url) {
-          this.graphUrl = data.url;
-          this.addDragEventForImg();
-        }
-      });
-    },
-
-    clearDragedTransform(dragImgEl) {
-      dragImgEl.style.transform = 'none';
-      dragImgEl.setAttribute('data-x', 0);
-      dragImgEl.setAttribute('data-y', 0);
-    },
-
-    getBigImgEl() {
-      return this.$refs.draggable;
-    },
-
-    getSmallImgEl() {
-      return this.$refs.small_img;
-    },
-
-    getSmallImgDragHandler() {
-      return this.$refs.screen_handler;
-    },
-
-    addDragEventForImg() {
-      let chartScope = this;
-      // target elements with the "draggable" class
-      interact('.draggable').draggable({
-        // enable inertial throwing
-        inertia: true,
-        autoScroll: true,
-        // call this function on every dragmove event
-        onmove(event) {
-          dragMovelHandler(event, (target, x, y) => {
-            tansformElement(target, x, y);
-            // compute the proportional value
-            let triggerEl = chartScope.getBigImgEl();
-            let relativeEl = chartScope.getSmallImgDragHandler();
-
-            relativeMove({triggerEl, x, y}, relativeEl);
-          });
-        },
-      });
-
-      interact('.screen-handler').draggable({
-        // enable inertial throwing
-        inertia: true,
-        autoScroll: true,
-        restrict: {
-          restriction: 'parent',
-          endOnly: false,
-          elementRect: {
-            top: 0,
-            left: 0,
-            bottom: 1,
-            right: 1,
-          },
-        },
-        // call this function on every dragmove event
-        onmove(event) {
-          dragMovelHandler(event, (target, x, y) => {
-            tansformElement(target, x, y);
-            // compute the proportional value
-            let triggerEl = chartScope.getSmallImgEl();
-            let relativeEl = chartScope.getBigImgEl();
-
-            relativeMove({triggerEl, x, y}, relativeEl);
-          });
-        },
-      });
-    },
-  },
+  methods: {},
 };
 </script>
 <style lang="stylus">
