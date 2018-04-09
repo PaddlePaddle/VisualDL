@@ -31,7 +31,7 @@
 import {getPluginHistogramsTags, getRuns} from '../service';
 import Config from './ui/Config';
 import ChartPage from './ui/ChartPage';
-import {debounce, flatten, uniq} from 'lodash';
+import {flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
 export default {

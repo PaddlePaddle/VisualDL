@@ -31,7 +31,7 @@
 <script>
 
 import {getPluginAudioTags, getRuns} from '../service';
-import {debounce, flatten, uniq} from 'lodash';
+import {flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
 import Config from './ui/Config';
