@@ -162,4 +162,4 @@ def download_graph_image():
     log.warning('graph ready!')
 
 
-# download_graph_image()
+download_graph_image()
