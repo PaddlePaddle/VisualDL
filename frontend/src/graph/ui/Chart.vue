@@ -93,10 +93,12 @@ export default {
           {
             label: buildInputNodeLabel(curInputNode),
             style: 'opacity: 0.1; ' +
-              'stroke-width: 3px; ',
+              'stroke-width: 3px; ' +
+              'stroke: #333; ' +
+              'stroke-color: #41b3a3; ' +
+              'fill: #6c648b; ',
             class: 'input',
             labelStyle: 'font-size: 0.8em;',
-
           }
         );
         nodeKeys.push(nodeKey);
@@ -117,8 +119,11 @@ export default {
             class: 'operator',
             style: 'stroke-width: 3px; ' +
               'opacity: 0.1; ' +
-              'rx: 10; ry: 10; ',
-
+              'rx: 10; ' +
+              'ry: 10; ' +
+              'stroke: #333; ' +
+              'stroke-color: #41b3a3; ' +
+              'fill: #008c99; ',
           }
         );
         nodeKeys.push(nodeKey);
@@ -133,7 +138,10 @@ export default {
             class: 'output',
             style: 'opacity: 0.1;' +
               'stroke-width: 3px; ' +
-              'stroke-dasharray: 5, 5;',
+              'stroke-dasharray: 5, 5;' +
+              'stroke: #333；' +
+              'stroke-color: #41b3a3; ' +
+              'fill: #015249; ',
             shape: 'diamond',
 
           }
@@ -142,9 +150,13 @@ export default {
 
         // add edges from inputs to node and from node to output
         for (let e=0; e<curOperatorNode['input'].length; ++e) {
+          // TODO(daming-lu): hard-coding style here to this polyline shows shadows.
           g.setEdge(curOperatorNode['input'][e], nodeKey);
         }
-        g.setEdge(nodeKey, curOperatorNode['output'][0]);
+
+        g.setEdge(nodeKey, curOperatorNode['output'][0], {
+            style: 'stroke: #333;stroke-width: 1.5px'
+        });
       }
 
       // TODO(daming-lu): add prettier styles to diff nodes
@@ -183,33 +195,11 @@ export default {
 };
 </script>
 <style lang="stylus">
-    .node rect
-    .node circle
-    .node ellipse
-    .node polygon
-        stroke: #333
-        stroke-color: #41b3a3
-        stroke-width: 1.5px
-
+    .node
+        cursor: pointer
     .edgePath path.path
         stroke: #333
         stroke-width: 1.5px
-
-    .operator
-        fill: #008c99
-
-    .operator > rect
-        rx: 10;
-        ry: 10;
-
-    .node
-        cursor: pointer
-
-    .output
-        fill: #015249
-
-    .input
-        fill: #6c648b
 
     .visual-dl-graph-charts
         width inherit
