@@ -14,6 +14,8 @@ import {getPluginGraphsGraph} from '../../service';
 // for d3 drawing
 import * as d3 from 'd3';
 
+import _ from 'lodash';
+
 export default {
   props: {
     'doDownload': {
@@ -63,6 +65,10 @@ export default {
   mounted() {
     let chartScope = this;
     getPluginGraphsGraph().then(({errno, data}) => {
+      if (_.has(data, 'data') === false) {
+        return;
+      }
+
       let graphData = data.data;
 
       // d3 svg drawing
@@ -73,7 +79,7 @@ export default {
       });
 
       // eslint-disable-next-line
-                let render = new dagreD3.render();
+      let render = new dagreD3.render();
       let nodeKeys = [];
 
       let buildInputNodeLabel = function(inputNode) {
@@ -85,6 +91,9 @@ export default {
       };
 
       // add input nodes
+      if (_.has(graphData, 'input') === false) {
+          return;
+      }
       for (let i=0; i<graphData['input'].length; ++i) {
         let curInputNode = graphData['input'][i];
         let nodeKey = curInputNode['name'];
@@ -105,6 +114,9 @@ export default {
       }
 
       // add operator nodes then add edges from inputs to operator and from operator to output
+      if (_.has(graphData, 'node') === false) {
+        return;
+      }
       for (let i=0; i<graphData['node'].length; ++i) {
         let curOperatorNode = graphData['node'][i];
         let nodeKey = 'opNode_' + i;
@@ -129,6 +141,9 @@ export default {
         nodeKeys.push(nodeKey);
 
         // add output node
+        if (_.has(graphData, 'output') === false) {
+            return;
+        }
         let outputNodeKey = curOperatorNode['output'][0];
         let outputPadding = ' '.repeat(Math.floor(outputNodeKey.length/2));
         g.setNode(
