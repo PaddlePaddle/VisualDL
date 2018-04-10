@@ -118,7 +118,20 @@ with logw.mode("train") as logger:
 
         audio.finish_sampling()
 
+# Create text
+with logw.mode("train") as logger:
+    text = logger.text("scratch/generated_text1")
 
+    ascii_a = ord('a')
+    ascii_z = ord('z')
+    # Generate 100 random text
+    for i in range(100):
+        str = ''
+        for j in range(8):
+            str += chr(random.randint(ascii_a, ascii_z))
+
+        # Add a new text record to the log writer
+        text.add_record(i, str)
 
 def download_graph_image():
     '''
@@ -149,4 +162,4 @@ def download_graph_image():
     log.warning('graph ready!')
 
 
-download_graph_image()
+# download_graph_image()
