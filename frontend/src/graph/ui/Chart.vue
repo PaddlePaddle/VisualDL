@@ -14,7 +14,7 @@ import {getPluginGraphsGraph} from '../../service';
 // for d3 drawing
 import * as d3 from 'd3';
 
-import _ from 'lodash';
+import has from 'lodash/has';
 
 export default {
   props: {
@@ -65,7 +65,7 @@ export default {
   mounted() {
     let chartScope = this;
     getPluginGraphsGraph().then(({errno, data}) => {
-      if (_.has(data, 'data') === false) {
+      if (has(data, 'data') === false) {
         return;
       }
 
@@ -91,7 +91,7 @@ export default {
       };
 
       // add input nodes
-      if (_.has(graphData, 'input') === false) {
+      if (has(graphData, 'input') === false) {
           return;
       }
       for (let i=0; i<graphData['input'].length; ++i) {
@@ -114,7 +114,7 @@ export default {
       }
 
       // add operator nodes then add edges from inputs to operator and from operator to output
-      if (_.has(graphData, 'node') === false) {
+      if (has(graphData, 'node') === false) {
         return;
       }
       for (let i=0; i<graphData['node'].length; ++i) {
@@ -141,7 +141,7 @@ export default {
         nodeKeys.push(nodeKey);
 
         // add output node
-        if (_.has(graphData, 'output') === false) {
+        if (has(graphData, 'output') === false) {
             return;
         }
         let outputNodeKey = curOperatorNode['output'][0];
