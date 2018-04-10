@@ -92,7 +92,7 @@ export default {
 
       // add input nodes
       if (has(graphData, 'input') === false) {
-          return;
+        return;
       }
       for (let i=0; i<graphData['input'].length; ++i) {
         let curInputNode = graphData['input'][i];
@@ -142,7 +142,7 @@ export default {
 
         // add output node
         if (has(graphData, 'output') === false) {
-            return;
+          return;
         }
         let outputNodeKey = curOperatorNode['output'][0];
         let outputPadding = ' '.repeat(Math.floor(outputNodeKey.length/2));
@@ -170,7 +170,7 @@ export default {
         }
 
         g.setEdge(nodeKey, curOperatorNode['output'][0], {
-            style: 'stroke: #333;stroke-width: 1.5px'
+          style: 'stroke: #333;stroke-width: 1.5px',
         });
       }
 
