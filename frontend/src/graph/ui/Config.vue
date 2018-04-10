@@ -66,6 +66,10 @@ export default {
         height 26px
 
 .graph-config-upper
-    height 400px
+    height 150px
+
+.node-info
+  font-family 'Courier New', sans-serif
+  font-weight bold
 
 </style>
