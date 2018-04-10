@@ -19,7 +19,7 @@ export default {
     'doDownload': {
       type: Boolean,
       required: true,
-    }
+    },
   },
   computed: {},
   data() {
@@ -92,8 +92,8 @@ export default {
           nodeKey,
           {
             label: buildInputNodeLabel(curInputNode),
-            style:  'opacity: 0.1; ' +
-                    'stroke-width: 3px; ',
+            style: 'opacity: 0.1; ' +
+              'stroke-width: 3px; ',
             class: 'input',
             labelStyle: 'font-size: 0.8em;',
 
@@ -115,9 +115,9 @@ export default {
             label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
             shape: 'rect',
             class: 'operator',
-            style:  'stroke-width: 3px; ' +
-                    'opacity: 0.1; ' +
-                    'rx: 10; ry: 10; ',
+            style: 'stroke-width: 3px; ' +
+              'opacity: 0.1; ' +
+              'rx: 10; ry: 10; ',
 
           }
         );
@@ -132,8 +132,8 @@ export default {
             label: outputNodeKey + outputPadding,
             class: 'output',
             style: 'opacity: 0.1;' +
-                    'stroke-width: 3px; ' +
-                    'stroke-dasharray: 5, 5;',
+              'stroke-width: 3px; ' +
+              'stroke-dasharray: 5, 5;',
             shape: 'diamond',
 
           }
