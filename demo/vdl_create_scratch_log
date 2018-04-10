@@ -98,7 +98,7 @@ with logw.mode("train") as logger:
     audio = logger.audio("scratch/audio_1", 4) # randomly sample 4 audio one pass
 
     CHUNK = 4096
-    f = wave.open('./testing.wav', "rb")
+    f = wave.open(os.path.join(ROOT, 'python/testing.wav'), "rb")
     wavdata = []
     chunk = f.readframes(CHUNK)
 
