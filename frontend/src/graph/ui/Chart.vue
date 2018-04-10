@@ -20,10 +20,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    'curNode': {
-      type: Object,
-      default: {},
-  }},
+  },
   computed: {},
   data() {
     return {
@@ -95,9 +92,9 @@ export default {
           nodeKey,
           {
             label: buildInputNodeLabel(curInputNode),
+            style: 'opacity: 0.1; ' +
+              'stroke-width: 3px; ',
             class: 'input',
-            style: 'stroke: #A3D39C; stroke-width: 3px; ' +
-              'stroke-dasharray: 5, 5;',
             labelStyle: 'font-size: 0.8em;',
 
           }
@@ -116,8 +113,11 @@ export default {
           nodeKey,
           {
             label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
+            shape: 'rect',
             class: 'operator',
-            style: 'opacity: 0.5;',
+            style: 'stroke-width: 3px; ' +
+              'opacity: 0.1; ' +
+              'rx: 10; ry: 10; ',
 
           }
         );
@@ -131,8 +131,8 @@ export default {
           {
             label: outputNodeKey + outputPadding,
             class: 'output',
-            style: 'opacity: 0.5;' +
-              'stroke-width: 2px; ' +
+            style: 'opacity: 0.1;' +
+              'stroke-width: 3px; ' +
               'stroke-dasharray: 5, 5;',
             shape: 'diamond',
 
@@ -158,8 +158,8 @@ export default {
       svg.attr('viewBox', '0 0 ' + g.graph().width + ' ' + g.graph().height);
 
       svg.selectAll('.node').on('click', function(d, i) {
-        chartScope.curNode = g.node(d);
-        let nodeType = chartScope.curNode.class;
+        let curNode = g.node(d);
+        let nodeType = curNode.class;
         let nodeInfo = null;
         if (nodeType === 'operator') {
           let opIndex = d.slice(7); // remove prefix "opNode_"
@@ -188,16 +188,15 @@ export default {
     .node ellipse
     .node polygon
         stroke: #333
-        fill: #fff
+        stroke-color: #41b3a3
         stroke-width: 1.5px
 
     .edgePath path.path
         stroke: #333
-        fill: none
         stroke-width: 1.5px
 
     .operator
-        fill: #41b3a3
+        fill: #008c99
 
     .operator > rect
         rx: 10;
@@ -207,10 +206,10 @@ export default {
         cursor: pointer
 
     .output
-        fill: #c38d9e
+        fill: #015249
 
     .input
-        fill: #e8a87c
+        fill: #6c648b
 
     .visual-dl-graph-charts
         width inherit

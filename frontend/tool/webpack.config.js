@@ -125,7 +125,7 @@ const config = {
         new ExtractTextPlugin({filename: '[name].css'})
     ],
     externals: {
-        dagreD3: 'dagre-d3'
+        dagreD3: 'dagre-d3',
     }
 };
 

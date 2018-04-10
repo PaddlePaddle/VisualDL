@@ -3,7 +3,6 @@
     <div class="visual-dl-page-left">
       <ui-chart
         :do-download="doDownload"
-        :cur-node="curNode"
         @curNodeUpdated="curNode = $event"
         @triggerDownload="doDownload = $event"
       />
