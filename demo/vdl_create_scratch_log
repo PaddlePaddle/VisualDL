@@ -98,7 +98,7 @@ with logw.mode("train") as logger:
     audio = logger.audio("scratch/audio_1", 4) # randomly sample 4 audio one pass
 
     CHUNK = 4096
-    f = wave.open('./testing.wav', "rb")
+    f = wave.open(os.path.join(ROOT, 'python/testing.wav'), "rb")
     wavdata = []
     chunk = f.readframes(CHUNK)
 
@@ -118,7 +118,20 @@ with logw.mode("train") as logger:
 
         audio.finish_sampling()
 
+# Create text
+with logw.mode("train") as logger:
+    text = logger.text("scratch/generated_text1")
 
+    ascii_a = ord('a')
+    ascii_z = ord('z')
+    # Generate 100 random text
+    for i in range(100):
+        str = ''
+        for j in range(8):
+            str += chr(random.randint(ascii_a, ascii_z))
+
+        # Add a new text record to the log writer
+        text.add_record(i, str)
 
 def download_graph_image():
     '''
