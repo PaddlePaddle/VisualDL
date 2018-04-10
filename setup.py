@@ -107,7 +107,7 @@ setup(
         'visualdl.server':
         ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/assets/*'],
         'visualdl': ['core.so'],
-        'visualdl.python': ['core.so', 'dog.jpg']
+        'visualdl.python': ['core.so', 'dog.jpg', 'testing.wav']
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
