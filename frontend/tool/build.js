@@ -24,13 +24,22 @@ webpackConfig.plugins = webpackConfig.plugins.concat([
 
             var name = opt.outputName.replace(/\.html$/, '');
 
-            var feRoot = feRoots[name];
+            /*
+             We do not need the following hack, which was added here:
 
-            if (feRoot) {
-                html = html
-                    .replace(/href="/g, 'href="' + feRoot)
-                    .replace(/src="/g, 'src="' + feRoot);
-            }
+             https://github.com/PaddlePaddle/VisualDL/commit/75f5c3b55fb411e0329b98d66253e60137f88bd5#diff-b6dc766994d45268924eff9a07f0765bR31
+
+             What it does is simply add './' in front of 'src' and 'href' to make sure it is loading local files.
+             But it should be able to load both local JS files and CDN files via 'https://...'
+             */
+
+            // var feRoot = feRoots[name];
+
+            // if (feRoot) {
+            //     html = html
+            //         .replace(/href="/g, 'href="' + feRoot);
+            //         .replace(/src="/g, 'src="' + feRoot);
+            // }
 
             return html;
 
