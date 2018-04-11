@@ -29,11 +29,4 @@ TEST(HistogramBuilder, build) {
 
   HistogramBuilder<float> builder(100);
   builder(data);
-
-  float left, right;
-  int frequency;
-  for (int i = 0; i < 100; i++) {
-    builder.Get(i, &left, &right, &frequency);
-    ASSERT_GT(frequency, 0);
-  }
 }
