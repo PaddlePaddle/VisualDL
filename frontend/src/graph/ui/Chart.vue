@@ -11,8 +11,8 @@
 // service
 import {getPluginGraphsGraph} from '../../service';
 
-// The name 'svgToPngDownloadHelper' is just a placeholder. Loading the JS lib file will
-// bind saveSvgAsPng to window.
+// The name 'svgToPngDownloadHelper' is just a placeholder.
+// Loading the JS lib file will bind saveSvgAsPng to window.
 import * as svgToPngDownloadHelper from './svgToPngDownloadHelper.js';
 
 // for d3 drawing
@@ -35,11 +35,8 @@ export default {
   watch: {
     doDownload: function(val) {
       if (this.doDownload) {
-        // TODO(daming-lu): .svg is ugly and colorless.
         let svg = this.$refs.graphSvg;
-
         saveSvgAsPng(svg, "graph.png", {scale: 1.0});
-
         this.$emit('triggerDownload', false);
       }
     },
