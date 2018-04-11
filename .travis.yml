@@ -1,4 +1,7 @@
 language: cpp
+
+compiler: clang
+
 cache:
   - pip
   - ccache
@@ -13,9 +16,17 @@ os:
     # TODO(ChunweiYan) support osx in the future
     #- osx
 
+env:
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=check_style"
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=test"
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=build_doc"
+
 addons:
   apt:
+    sources:
+      - llvm-toolchain-trusty-5.0
     packages:
+      - clang-5.0
       - gcc-4.8
       - g++-4.8
       - git
@@ -23,18 +34,26 @@ addons:
       - python-pip
       - python2.7-dev
       - python-wheel
+      - python3-pip
+      - python3-dev
+      - python3-wheel
       - clang-format-3.8
       - ccache
       - npm
       - nodejs
+  ssh_known_hosts: 13.229.163.131
 
 before_install:
+  - eval "${MATRIX_EVAL}"
+  - if [[ "$JOB" == "check_style" ]]; then sudo ln -s /usr/bin/clang-format-3.8 /usr/bin/clang-format; sudo pip install pre-commit flake8; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install brew-pip; fi
 
 script:
-  /bin/bash ./tests.sh all
+  - if [[ "$JOB" == "check_style" ]]; then ./scripts/check_style.sh; fi
+  - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; WITH_PYTHON3=ON ./scripts/tests.sh all; fi
+  - if [[ "$JOB" == "build_doc" ]]; then ./scripts/deploy_docs_on_travis.sh; fi;
 
 notifications:
   email:

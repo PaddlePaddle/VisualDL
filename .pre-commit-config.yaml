@@ -22,4 +22,22 @@
         description: Format files with ClangFormat.
         entry: bash ./.clang_format.hook -i
         language: system
-        files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx|proto)$
+        files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx)$
+
+
+-   repo: local
+    hooks:
+    -   id: python-format-checker
+        name: python-format-checker
+        description: Format python files using PEP8 standard
+        entry: flake8
+        language: system
+        files: \.(py)$
+
+-   repo: local
+    hooks:
+    -   id: eslint-format-checker
+        name: eslint-format-checker
+        description: Format files with ESLint.
+        entry: bash ./.eslint_format.hook
+        language: system

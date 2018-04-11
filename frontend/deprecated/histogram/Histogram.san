@@ -62,7 +62,7 @@ export default {
                         run,
                         tag: tags[run][tag]
                     };
-                });
+                }).filter(item => item.tag !== undefined);
                 return {
                     tagList,
                     tag,

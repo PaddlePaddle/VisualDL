@@ -19,15 +19,27 @@ module.exports = function (path, queryParam, postParam) {
             data: {
                 "test": {
                     "layer1/Wx_plus_b/pre_activations":
-                    {
-                        "displayName": "layer1/Wx_plus_b/pre_activations",
-                        "description": ""
-                    },
+                        {
+                            "displayName": "layer1/Wx_plus_b/pre_activations",
+                            "description": ""
+                        },
                     "layer1/Wx_plus_b/pre_activations_1":
-                    {
-                        "displayName": "layer1/Wx_plus_b/pre_activations_1",
-                        "description": ""
-                    }
+                        {
+                            "displayName": "layer1/Wx_plus_b/pre_activations_1",
+                            "description": ""
+                        }
+                },
+                "train": {
+                    "layer1/Wx_plus_b/pre_activations":
+                        {
+                            "displayName": "layer1/Wx_plus_b/pre_activations",
+                            "description": ""
+                        },
+                    "layer1/Wx_plus_b/pre_activations_1":
+                        {
+                            "displayName": "layer1/Wx_plus_b/pre_activations_1",
+                            "description": ""
+                        }
                 }
             }
         }

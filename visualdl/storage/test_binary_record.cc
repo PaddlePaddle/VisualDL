@@ -23,7 +23,7 @@ TEST(BinaryRecord, init) {
   BinaryRecord rcd("./", std::move(message));
   rcd.tofile();
 
-  BinaryRecordReader reader("./", rcd.hash());
+  BinaryRecordReader reader("./", rcd.filename());
   LOG(INFO) << reader.data;
   ASSERT_EQ(reader.data, "hello world");
 }

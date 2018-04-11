@@ -22,6 +22,20 @@ module.exports = function (path, queryParam, postParam) {
                         "displayName": "layer2/biases/summaries/mean",
                         "description": ""
                     }
+                },
+                "train": {
+                    "layer2/biases/summaries/mean": {
+                        "displayName": "layer2/biases/summaries/mean",
+                        "description": ""
+                    },
+                    "layer2/biases/summaries/accuracy": {
+                        "displayName": "layer2/biases/summaries/accuracy",
+                        "description": ""
+                    },
+                    "layer2/biases/summaries/cost": {
+                        "displayName": "layer2/biases/summaries/cost",
+                        "description": ""
+                    }
                 }
             }
         }

@@ -15,7 +15,6 @@ limitations under the License. */
 #ifndef VISUALDL_STORAGE_STORAGE_H
 #define VISUALDL_STORAGE_STORAGE_H
 
-#include "visualdl/utils/logging.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -25,6 +24,7 @@ limitations under the License. */
 #include "visualdl/storage/tablet.h"
 #include "visualdl/utils/filesystem.h"
 #include "visualdl/utils/guard.h"
+#include "visualdl/utils/logging.h"
 
 namespace visualdl {
 static const std::string meta_file_name = "storage.meta";
@@ -58,7 +58,7 @@ struct Storage {
 
   Storage();
   Storage(const Storage& other);
-
+  ~Storage();
   // Add a mode. Mode is similar to TB's FileWriter, It can be "train" or "test"
   // or something else.
   void AddMode(const std::string& x);
@@ -67,8 +67,8 @@ struct Storage {
   Tablet AddTablet(const std::string& x);
 
   // Set storage's directory.
-  void SetDir(const std::string& dir) { *dir_ = dir; }
-  std::string dir() const { return *dir_; }
+  void SetDir(const std::string& dir);
+  std::string dir() const;
 
   // Save content in memory to `dir_`.
   void PersistToDisk();
@@ -77,20 +77,20 @@ struct Storage {
   void PersistToDisk(const std::string& dir);
 
   // A trick help to retrieve the storage's `SimpleSyncMeta`.
-  Storage* parent() { return this; }
+  Storage* parent();
+
+  void MarkTabletModified(const std::string tag);
 
 protected:
   // Add a tag which content is `x`.
-  void AddTag(const std::string& x) {
-    *data_->add_tags() = x;
-    WRITE_GUARD
-  }
+  void AddTag(const std::string& x);
 
 private:
   std::shared_ptr<std::string> dir_;
   std::shared_ptr<std::map<std::string, storage::Tablet>> tablets_;
   std::shared_ptr<storage::Storage> data_;
   std::shared_ptr<std::set<std::string>> modes_;
+  std::unordered_set<std::string> modified_tablet_set_;
 };
 
 // Storage reader, each method will trigger a reading from disk.

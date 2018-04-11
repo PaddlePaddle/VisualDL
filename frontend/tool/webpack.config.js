@@ -46,26 +46,23 @@ const config = {
     resolve: {
 
         alias: {
-            'san-mui': 'san-mui/lib',
-            axios: 'axios/dist/axios.min.js'
+            axios: 'axios/dist/axios.min.js',
+            'vue$': 'vue/dist/vue.esm.js',
+            '@': path.resolve(projectPath, 'src'),
+            style: path.resolve(__dirname, '../src/style')
         },
 
-        extensions: ['.js', '.json', '.styl', '.css', '.html', '.san']
+        extensions: ['.js', '.json', '.styl', '.css', '.html', '.vue']
     },
 
     module: {
         noParse: [
-            /node_modules\/(san|axios)\//
+            /node_modules\/(axios)\//
         ],
         rules: [
             {
-                test: /\.san$/,
-                loader: 'san-loader',
-                options: {
-                    loaders: {
-                        stylus: getLoaders(isDev, 'stylus')
-                    }
-                }
+                test: /\.vue$/,
+                loader: 'vue-loader',
             },
             {
                 test: /\.js$/,
@@ -95,10 +92,10 @@ const config = {
                 use: getLoaders(isDev, 'stylus')
             },
             {
-                test: /\.(gif|png|jpe?g)$/i,
+                test: /\.(gif|png|jpe?g|svg|wav)$/i,
                 loader: 'file-loader',
                 options: {
-                    name: 'images/[name].[hash].[ext]'
+                    name: 'assets/[name].[hash].[ext]'
                 }
             },
             {
@@ -111,7 +108,7 @@ const config = {
                 }
             },
             {
-                test: /\.(ttf|eot|svg)$/,
+                test: /\.(ttf|eot)$/,
                 loader: 'file-loader',
                 options: {
                     name: 'fonts/[name].[hash].[ext]'
@@ -123,9 +120,13 @@ const config = {
 
         new CaseSensitivePathsPlugin(),
         new webpack.LoaderOptionsPlugin({
-            test: /\.(styl|san)$/
-        })
-    ]
+            test: /\.(styl)$/
+        }),
+        new ExtractTextPlugin({filename: '[name].css'})
+    ],
+    externals: {
+        dagreD3: 'dagre-d3',
+    }
 };
 
 // template config

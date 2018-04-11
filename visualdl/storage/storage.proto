@@ -107,6 +107,9 @@ message Tablet {
     kScalar = 0;
     kHistogram = 1;
     kImage = 2;
+    kText = 3;
+    kAudio = 4;
+    kEmbedding = 5;
   }
   // The unique identification for this `Tablet`. VisualDL will have no the
   // concept of FileWriter like TB. It will store all the tablets in a single

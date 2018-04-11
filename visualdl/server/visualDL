@@ -1,8 +1,22 @@
 #!/user/bin/env python
 
+# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =======================================================================
+
 import json
 import os
-import exceptions
 import time
 import sys
 from argparse import ArgumentParser
@@ -20,6 +34,11 @@ from visualdl.server.mock import data as mock_tags
 from visualdl.python.cache import MemCache
 from visualdl.python.storage import (LogWriter, LogReader)
 
+try:
+    import exceptions
+except:
+    pass
+    
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
@@ -159,10 +178,26 @@ def image_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
+@app.route("/data/plugin/audio/tags")
+def audio_tags():
+    data = cache_get("/data/plugin/audio/tags", try_call, lib.get_audio_tags,
+                     log_reader)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
 @app.route("/data/plugin/histograms/tags")
 def histogram_tags():
     data = cache_get("/data/plugin/histograms/tags", try_call,
                      lib.get_histogram_tags, log_reader)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route("/data/plugin/texts/tags")
+def texts_tags():
+    data = cache_get("/data/plugin/texts/tags", try_call,
+                     lib.get_texts_tags, log_reader)
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
@@ -215,6 +250,52 @@ def histogram():
     return Response(json.dumps(result), mimetype='application/json')
 
 
+@app.route('/data/plugin/texts/texts')
+def texts():
+    run = request.args.get('run')
+    tag = request.args.get('tag')
+    key = os.path.join('/data/plugin/texts/texts', run, tag)
+    data = cache_get(key, try_call, lib.get_texts, log_reader, run, tag)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+@app.route('/data/plugin/embeddings/embeddings')
+def embeddings():
+    dimension = request.args.get('dimension')
+    reduction = request.args.get('reduction')
+    key = os.path.join('/data/plugin/embeddings/embeddings', dimension, reduction)
+    data = cache_get(key, try_call, lib.get_embeddings, log_reader, 'train', 'scratch/embedding', reduction, int(dimension))
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+@app.route('/data/plugin/audio/audio')
+def audio():
+    mode = request.args.get('run')
+    tag = request.args.get('tag')
+    key = os.path.join('/data/plugin/audio/audio', mode, tag)
+
+    data = cache_get(key, try_call, lib.get_audio_tag_steps, log_reader, mode,
+                     tag)
+    result = gen_result(0, "", data)
+
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/audio/individualAudio')
+def individual_audio():
+    mode = request.args.get('run')
+    tag = request.args.get('tag')  # include a index
+    step_index = int(request.args.get('index'))  # index of step
+
+    key = os.path.join('/data/plugin/audio/individualAudio', mode, tag,
+                       str(step_index))
+    data = cache_get(key, try_call, lib.get_individual_audio, log_reader, mode,
+                     tag, step_index)
+    response = send_file(
+        data, as_attachment=True, attachment_filename='audio.wav')
+    return response
+
+
 @app.route('/data/plugin/graphs/graph')
 def graph():
     # TODO(ChunweiYan) need to add a config for whether have graph.
@@ -235,4 +316,4 @@ if __name__ == '__main__':
             os.mkdir(image_dir)
         graph_image_path = vdl_graph.draw_graph(args.model_pb, image_dir)
 
-    app.run(debug=False, host=args.host, port=args.port)
+    app.run(debug=False, host=args.host, port=args.port, threaded=True)

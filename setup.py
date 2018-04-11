@@ -1,12 +1,27 @@
+# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =======================================================================
+
 from __future__ import absolute_import
 
 import os
 import sys
 from distutils.spawn import find_executable
-from distutils import sysconfig, dep_util, log
+from distutils import log
 import setuptools.command.build_py
 import setuptools
-from setuptools import setup, find_packages, Distribution, Extension
+from setuptools import setup, Extension
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -28,7 +43,7 @@ LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
 install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
-execute_requires = ['npm', 'node', 'bash']
+execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
 
 
 def die(msg):
@@ -58,9 +73,12 @@ class BaseCommand(setuptools.Command):
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
         cmd = ['bash', 'build.sh']
+        env = dict(os.environ)
         if MODE == "travis-CI":
             cmd.append('travis-CI')
-        subprocess.check_call(cmd)
+        if sys.version_info[0] >= 3:
+            env["WITH_PYTHON3"] = "ON"
+        subprocess.check_call(cmd, env=env)
         return setuptools.command.build_py.build_py.run(self)
 
 
@@ -76,14 +94,6 @@ packages = [
     'visualdl.server.onnx',
 ]
 
-datas = []
-data_root = os.path.join(TOP_DIR, 'visualdl/server/dist')
-for root, dirs, files in os.walk(data_root):
-    for filename in files:
-        path = 'dist/' + os.path.join(root, filename)[len(data_root) + 1:]
-        datas.append(path)
-print datas
-
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
@@ -94,11 +104,12 @@ setup(
     long_description=read('README.md'),
     install_requires=install_requires,
     package_data={
-        'visualdl.server': datas,
+        'visualdl.server':
+        ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/assets/*'],
         'visualdl': ['core.so'],
-        'visualdl.python': ['core.so', 'dog.jpg']
+        'visualdl.python': ['core.so', 'dog.jpg', 'testing.wav']
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
-    scripts=['visualdl/server/visualDL', 'demo/vdl_scratch.py'],
+    scripts=['visualdl/server/visualDL', 'demo/vdl_create_scratch_log'],
     cmdclass=cmdclass)

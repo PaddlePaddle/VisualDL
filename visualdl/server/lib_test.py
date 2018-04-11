@@ -1,12 +1,29 @@
+# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =======================================================================
+
+from __future__ import print_function
 import pprint
 import unittest
 
 from visualdl import LogReader, LogWriter
 
-import lib
-from storage_mock import add_histogram, add_image, add_scalar
+from . import lib
+from .storage_mock import add_histogram, add_image, add_scalar
 
 _retry_counter = 0
+
 
 class LibTest(unittest.TestCase):
     def setUp(self):
@@ -54,7 +71,7 @@ class LibTest(unittest.TestCase):
 
     def test_scalar(self):
         tags = lib.get_scalar_tags(self.reader)
-        print 'scalar tags:'
+        print('scalar tags:')
         pprint.pprint(tags)
         self.assertEqual(len(tags), 3)
         self.assertEqual(
@@ -69,7 +86,7 @@ class LibTest(unittest.TestCase):
 
         image = lib.get_invididual_image(self.reader, "train",
                                          'layer/image0/0', 2)
-        print image
+        print(image)
 
     def test_histogram(self):
         tags = lib.get_histogram_tags(self.reader)

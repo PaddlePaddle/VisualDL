@@ -26,15 +26,12 @@ module.exports = merge(baseWebpackConfig, {
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
-                'NODE_ENV': 'production'
+                NODE_ENV: '"production"'
             }
         }),
 
         new webpack.LoaderOptionsPlugin({
-            test: /\.(styl|san)$/,
-            san: {
-                autoprefixer: autoPrefixOptions
-            }
+            test: /\.(styl)$/,
         }),
 
         new webpack.optimize.CommonsChunkPlugin({

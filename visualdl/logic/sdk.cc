@@ -30,6 +30,12 @@ namespace visualdl {
 std::string g_log_dir;
 
 LogWriter LogWriter::AsMode(const std::string& mode) {
+  for (auto ch : "%/") {
+    CHECK(mode.find(ch) == std::string::npos)
+        << "character " << ch
+        << " is a reserved word, it is not allowed in mode.";
+  }
+
   LogWriter writer = *this;
   storage_.AddMode(mode);
   writer.mode_ = mode;
@@ -37,7 +43,9 @@ LogWriter LogWriter::AsMode(const std::string& mode) {
 }
 
 Tablet LogWriter::AddTablet(const std::string& tag) {
-  // TODO(ChunweiYan) add string check here.
+  CHECK(tag.find("%") == std::string::npos)
+      << "character % is a reserved word, it is not allowed in tag.";
+
   auto tmp = mode_ + "/" + tag;
   string::TagEncode(tmp);
   auto res = storage_.AddTablet(tmp);
@@ -101,7 +109,7 @@ namespace components {
 template <typename T>
 std::vector<T> ScalarReader<T>::records() const {
   std::vector<T> res;
-  for (int i = 0; i < reader_.total_records(); i++) {
+  for (int i = 0; i < total_records(); i++) {
     res.push_back(reader_.record(i).data(0).template Get<T>());
   }
   return res;
@@ -152,7 +160,7 @@ void Image::StartSampling() {
   num_records_ = 0;
 }
 
-int Image::IsSampleTaken() {
+int Image::IndexOfSampleTaken() {
   if (!ToSampleThisStep()) return -1;
   num_records_++;
   if (num_records_ <= num_samples_) {
@@ -187,7 +195,7 @@ struct is_same_type<T, T> {
 
 void Image::AddSample(const std::vector<shape_t>& shape,
                       const std::vector<value_t>& data) {
-  auto idx = IsSampleTaken();
+  auto idx = IndexOfSampleTaken();
   if (idx >= 0) {
     SetSample(idx, shape, data);
   }
@@ -214,11 +222,6 @@ void Image::SetSample(int index,
   CHECK_LT(index, num_samples_);
   CHECK_LE(index, num_records_);
 
-  // trick to store int8 to protobuf
-  std::vector<byte_t> data_str(data.size());
-  for (int i = 0; i < data.size(); i++) {
-    data_str[i] = data[i];
-  }
   Uint8Image image(new_shape[2], new_shape[0] * new_shape[1]);
   NormalizeImage(&image, &data[0], new_shape[0] * new_shape[1], new_shape[2]);
 
@@ -236,7 +239,7 @@ void Image::SetSample(int index,
     CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
                                                << old_path << " failed";
   }
-  entry.SetRaw(brcd.hash());
+  entry.SetRaw(brcd.filename());
 
   static_assert(
       !is_same_type<value_t, shape_t>::value,
@@ -260,10 +263,10 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   ImageRecord res;
   auto record = reader_.record(offset);
   auto entry = record.data(index);
-  auto data_hash = entry.GetRaw();
+  auto filename = entry.GetRaw();
   CHECK(!g_log_dir.empty())
       << "g_log_dir should be set in LogReader construction";
-  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), data_hash);
+  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), filename);
 
   std::transform(brcd.data.begin(),
                  brcd.data.end(),
@@ -294,7 +297,7 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
 
 template <typename T>
 HistogramRecord<T> HistogramReader<T>::record(int i) {
-  CHECK_LT(i, reader_.total_records());
+  CHECK_LT(i, num_records());
   auto r = reader_.record(i);
   auto d = r.data(0);
   auto boundaries_str = d.GetRaw();
@@ -312,6 +315,228 @@ HistogramRecord<T> HistogramReader<T>::record(int i) {
 DECL_BASIC_TYPES_CLASS_IMPL(class, ScalarReader)
 DECL_BASIC_TYPES_CLASS_IMPL(struct, Histogram)
 DECL_BASIC_TYPES_CLASS_IMPL(struct, HistogramReader)
+
+std::vector<std::string> TextReader::records() const {
+  std::vector<std::string> res;
+  for (int i = 0; i < total_records(); i++) {
+    res.push_back(reader_.record(i).data(0).template Get<std::string>());
+  }
+  return res;
+}
+
+std::vector<int> TextReader::ids() const {
+  std::vector<int> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).id());
+  }
+  return res;
+}
+
+std::vector<time_t> TextReader::timestamps() const {
+  std::vector<time_t> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).timestamp());
+  }
+  return res;
+}
+
+std::string TextReader::caption() const {
+  CHECK(!reader_.captions().empty()) << "no caption";
+  return reader_.captions().front();
+}
+
+size_t TextReader::size() const { return reader_.total_records(); }
+
+/*
+ * Embedding functions
+ */
+void Embedding::AddEmbeddingsWithWordList(
+    const std::vector<std::vector<float>>& word_embeddings,
+    std::vector<std::string>& labels) {
+  for (int i = 0; i < word_embeddings.size(); i++) {
+    AddEmbedding(i, word_embeddings[i], labels[i]);
+  }
+}
+
+void Embedding::AddEmbedding(int item_id,
+                             const std::vector<float>& one_hot_vector,
+                             std::string& label) {
+  auto record = tablet_.AddRecord();
+  record.SetId(item_id);
+  time_t time = std::time(nullptr);
+  record.SetTimeStamp(time);
+  auto entry = record.AddData();
+  entry.SetMulti<float>(one_hot_vector);
+  entry.SetRaw(label);
+}
+
+/*
+ * EmbeddingReader functions
+ */
+std::vector<std::string> EmbeddingReader::get_all_labels() const {
+  std::vector<std::string> result;
+
+  for (int i = 0; i < total_records(); i++) {
+    auto record = reader_.record(i);
+    auto entry = record.data(0);
+    result.push_back(entry.GetRaw());
+  }
+  return result;
+}
+
+std::vector<std::vector<float>> EmbeddingReader::get_all_embeddings() const {
+  std::vector<std::vector<float>> result;
+
+  for (int i = 0; i < total_records(); i++) {
+    auto record = reader_.record(i);
+    auto entry = record.data(0);
+    auto tensors = entry.GetMulti<float>();
+
+    result.push_back(tensors);
+  }
+  return result;
+}
+
+std::vector<int> EmbeddingReader::ids() const {
+  std::vector<int> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).id());
+  }
+  return res;
+}
+
+std::vector<time_t> EmbeddingReader::timestamps() const {
+  std::vector<time_t> res;
+  for (int i = 0; i < reader_.total_records(); i++) {
+    res.push_back(reader_.record(i).timestamp());
+  }
+  return res;
+}
+
+std::string EmbeddingReader::caption() const {
+  CHECK(!reader_.captions().empty()) << "no caption";
+  return reader_.captions().front();
+}
+
+size_t EmbeddingReader::size() const { return reader_.total_records(); }
+
+void Audio::StartSampling() {
+  if (!ToSampleThisStep()) return;
+
+  step_ = writer_.AddRecord();
+  step_.SetId(step_id_);
+
+  time_t time = std::time(nullptr);
+  step_.SetTimeStamp(time);
+
+  // resize record
+  for (int i = 0; i < num_samples_; i++) {
+    step_.AddData();
+  }
+  num_records_ = 0;
+}
+
+int Audio::IndexOfSampleTaken() {
+  if (!ToSampleThisStep()) return -1;
+  num_records_++;
+  if (num_records_ <= num_samples_) {
+    return num_records_ - 1;
+  }
+  float prob = float(num_samples_) / num_records_;
+  float randv = (float)rand() / RAND_MAX;
+  if (randv < prob) {
+    // take this sample
+    int index = rand() % num_samples_;
+    return index;
+  }
+  return -1;
+}
+
+void Audio::FinishSampling() {
+  step_id_++;
+  if (ToSampleThisStep()) {
+    writer_.parent()->PersistToDisk();
+  }
+}
+
+void Audio::AddSample(const std::vector<shape_t>& shape,
+                      const std::vector<value_t>& data) {
+  auto idx = IndexOfSampleTaken();
+  if (idx >= 0) {
+    SetSample(idx, shape, data);
+  }
+}
+
+void Audio::SetSample(int index,
+                      const std::vector<shape_t>& shape,
+                      const std::vector<value_t>& data) {
+  CHECK_EQ(shape.size(), 3)
+      << "shape need to be (sample rate, sample width, num channel)";
+
+  shape_t sample_rate = shape[0];
+  shape_t sample_width = shape[1];
+  shape_t num_channels = shape[2];
+
+  CHECK_GT(sample_rate, 0) << "sample rate is number of frames per second, "
+                              "should be something like 8000, 16000 or 44100";
+  CHECK_GT(sample_width, 0)
+      << "sample width is frame size in bytes, 16bits frame will be 2";
+  CHECK_GT(num_channels, 0) << "num channel will be something like 1 or 2";
+  CHECK_LT(index, num_samples_)
+      << "index should be less than number of samples";
+  CHECK_LE(index, num_records_)
+      << "index should be less than or equal to number of records";
+
+  // due to prototype limit size, we create a directory to log binary data such
+  // as audio or image
+  BinaryRecord brcd(
+      GenBinaryRecordDir(step_.parent()->dir()),
+      std::string(data.begin(),
+                  data.end()));  // convert vector to binary string
+  brcd.tofile();
+
+  auto entry = step_.MutableData<std::vector<byte_t>>(index);
+  // update record
+  auto old_hash = entry.reader().GetRaw();
+  if (!old_hash.empty()) {
+    std::string old_path =
+        GenBinaryRecordDir(step_.parent()->dir()) + "/" + old_hash;
+    CHECK_EQ(std::remove(old_path.c_str()), 0) << "delete old binary record "
+                                               << old_path << " failed";
+  }
+  entry.SetRaw(brcd.filename());
+  entry.SetMulti(shape);
+}
+
+std::string AudioReader::caption() {
+  CHECK_EQ(reader_.captions().size(), 1);
+  auto caption = reader_.captions().front();
+  if (LogReader::TagMatchMode(caption, mode_)) {
+    return LogReader::GenReadableTag(mode_, caption);
+  }
+  string::TagDecode(caption);
+  return caption;
+}
+
+AudioReader::AudioRecord AudioReader::record(int offset, int index) {
+  AudioRecord res;
+  auto record = reader_.record(offset);
+  auto entry = record.data(index);
+  auto filename = entry.GetRaw();
+  CHECK(!g_log_dir.empty())
+      << "g_log_dir should be set in LogReader construction";
+  BinaryRecordReader brcd(GenBinaryRecordDir(g_log_dir), filename);
+
+  // convert binary string back to vector of uint8_t, equivalent of python
+  // numpy.fromstring(data, dtype='uint8')
+  std::transform(brcd.data.begin(),
+                 brcd.data.end(),
+                 std::back_inserter(res.data),
+                 [](byte_t i) { return (uint8_t)(i); });
+  res.shape = entry.GetMulti<shape_t>();
+  res.step_id = record.id();
+  return res;
+}
 
 }  // namespace components
 

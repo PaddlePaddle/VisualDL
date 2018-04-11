@@ -1,3 +1,18 @@
+# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =======================================================================
+
 from __future__ import print_function
 
 import sys
@@ -117,8 +132,11 @@ elif net_type == "resnet":
 else:
     raise ValueError("%s network is not supported" % net_type)
 
-predict = fluid.layers.fc(input=net, size=classdim, act='softmax',
-                          param_attr=ParamAttr(name="param1", initializer=NormalInitializer()))
+predict = fluid.layers.fc(
+    input=net,
+    size=classdim,
+    act='softmax',
+    param_attr=ParamAttr(name="param1", initializer=NormalInitializer()))
 cost = fluid.layers.cross_entropy(input=predict, label=label)
 avg_cost = fluid.layers.mean(x=cost)
 
@@ -131,8 +149,7 @@ BATCH_SIZE = 16
 PASS_NUM = 1
 
 train_reader = paddle.batch(
-    paddle.reader.shuffle(
-        paddle.dataset.cifar.train10(), buf_size=128 * 10),
+    paddle.reader.shuffle(paddle.dataset.cifar.train10(), buf_size=128 * 10),
     batch_size=BATCH_SIZE)
 
 place = fluid.CPUPlace()
@@ -150,9 +167,10 @@ param1_var = start_up_program.global_block().var("param1")
 for pass_id in range(PASS_NUM):
     accuracy.reset(exe)
     for data in train_reader():
-        loss, conv1_out, param1, acc = exe.run(fluid.default_main_program(),
-                            feed=feeder.feed(data),
-                            fetch_list=[avg_cost, conv1, param1_var] + accuracy.metrics)
+        loss, conv1_out, param1, acc = exe.run(
+            fluid.default_main_program(),
+            feed=feeder.feed(data),
+            fetch_list=[avg_cost, conv1, param1_var] + accuracy.metrics)
         pass_acc = accuracy.eval(exe)
 
         if sample_num == 0:
@@ -165,11 +183,14 @@ for pass_id in range(PASS_NUM):
         idx = idx1
         if idx != -1:
             image_data = data[0][0]
-            input_image_data = np.transpose(image_data.reshape(data_shape), axes=[1, 2, 0])
-            input_image.set_sample(idx, input_image_data.shape, input_image_data.flatten())
+            input_image_data = np.transpose(
+                image_data.reshape(data_shape), axes=[1, 2, 0])
+            input_image.set_sample(idx, input_image_data.shape,
+                                   input_image_data.flatten())
 
             conv_image_data = conv1_out[0][0]
-            conv_image.set_sample(idx, conv_image_data.shape, conv_image_data.flatten())
+            conv_image.set_sample(idx, conv_image_data.shape,
+                                  conv_image_data.flatten())
 
             sample_num += 1
             if sample_num % num_samples == 0:

@@ -28,14 +28,25 @@ namespace cp = visualdl::components;
   CODE(float);                   \
   CODE(double);
 
-PYBIND11_PLUGIN(core) {
-  py::module m("core", "C++ core of VisualDL");
+PYBIND11_MODULE(core, m) {
+  m.doc() = R"pbdoc(
+
+        VisualDL uses PyBind to operate with the c++ framework. Users should use LogWriter to instantiate scalar/histogram/image writer
+
+        .. autoclass:: ScalarWriter__float
+            :members:
+
+        .. autoclass:: HistogramWriter__float
+            :members:
+
+        .. autoclass:: ImageWriter
+            :members:
+
+    )pbdoc";
 
   py::class_<vs::LogReader>(m, "LogReader")
-      .def("__init__",
-           [](vs::LogReader& instance, const std::string& dir) {
-             new (&instance) vs::LogReader(dir);
-           })
+      .def(py::init(
+          [](const std::string& dir) { return new vs::LogReader(dir); }))
       .def("as_mode", &vs::LogReader::AsMode)
       .def("set_mode", &vs::LogReader::SetMode)
       .def("modes", [](vs::LogReader& self) { return self.storage().modes(); })
@@ -63,19 +74,34 @@ PYBIND11_PLUGIN(core) {
       #undef READER_ADD_HISTOGRAM
 
       // clang-format on
-      .def("get_image", [](vs::LogReader& self, const std::string& tag) {
+      .def("get_image",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::ImageReader(self.mode(), tablet);
+           })
+      .def("get_text",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::TextReader(tablet);
+           })
+      .def("get_audio",
+           [](vs::LogReader& self, const std::string& tag) {
+             auto tablet = self.tablet(tag);
+             return vs::components::AudioReader(self.mode(), tablet);
+           })
+      .def("get_embedding", [](vs::LogReader& self, const std::string& tag) {
         auto tablet = self.tablet(tag);
-        return vs::components::ImageReader(self.mode(), tablet);
+        return vs::components::EmbeddingReader(tablet);
       });
 
   // clang-format on
   py::class_<vs::LogWriter>(m, "LogWriter")
-      .def("__init__",
-           [](vs::LogWriter& instance, const std::string& dir, int sync_cycle) {
-             new (&instance) vs::LogWriter(dir, sync_cycle);
-           })
+      .def(py::init([](const std::string& dir, int sync_cycle) {
+        return new vs::LogWriter(dir, sync_cycle);
+      }))
       .def("set_mode", &vs::LogWriter::SetMode)
       .def("as_mode", &vs::LogWriter::AsMode)
+      .def("save", &vs::LogWriter::Save)
 // clang-format off
       #define WRITER_ADD_SCALAR(T)                                               \
       .def("new_scalar_" #T, [](vs::LogWriter& self, const std::string& tag) { \
@@ -102,7 +128,24 @@ PYBIND11_PLUGIN(core) {
               int step_cycle) {
              auto tablet = self.AddTablet(tag);
              return vs::components::Image(tablet, num_samples, step_cycle);
-           });
+           })
+      .def("new_text",
+           [](vs::LogWriter& self, const std::string& tag) {
+             auto tablet = self.AddTablet(tag);
+             return vs::components::Text(tablet);
+           })
+      .def("new_audio",
+           [](vs::LogWriter& self,
+              const std::string& tag,
+              int num_samples,
+              int step_cycle) {
+             auto tablet = self.AddTablet(tag);
+             return vs::components::Audio(tablet, num_samples, step_cycle);
+           })
+      .def("new_embedding", [](vs::LogWriter& self, const std::string& tag) {
+        auto tablet = self.AddTablet(tag);
+        return vs::components::Embedding(tablet);
+      });
 
 //------------------- components --------------------
 #define ADD_SCALAR_READER(T)                               \
@@ -117,23 +160,62 @@ PYBIND11_PLUGIN(core) {
   ADD_SCALAR_READER(int64_t);
 #undef ADD_SCALAR_READER
 
-#define ADD_SCALAR_WRITER(T)                          \
-  py::class_<cp::Scalar<T>>(m, "ScalarWriter__" #T)   \
-      .def("set_caption", &cp::Scalar<T>::SetCaption) \
-      .def("add_record", &cp::Scalar<T>::AddRecord);
+#define ADD_SCALAR_WRITER(T)                                                \
+  py::class_<cp::Scalar<T>>(                                                \
+      m,                                                                    \
+      "ScalarWriter__" #T,                                                  \
+      R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc") \
+      .def("set_caption", &cp::Scalar<T>::SetCaption)                       \
+      .def("add_record",                                                    \
+           &cp::Scalar<T>::AddRecord,                                       \
+           R"pbdoc(add a record with the step and value)pbdoc");
   ADD_SCALAR_WRITER(int);
   ADD_SCALAR_WRITER(float);
   ADD_SCALAR_WRITER(double);
 #undef ADD_SCALAR_WRITER
 
   // clang-format on
-  py::class_<cp::Image>(m, "ImageWriter")
-      .def("set_caption", &cp::Image::SetCaption)
-      .def("start_sampling", &cp::Image::StartSampling)
-      .def("is_sample_taken", &cp::Image::IsSampleTaken)
-      .def("finish_sampling", &cp::Image::FinishSampling)
-      .def("set_sample", &cp::Image::SetSample)
-      .def("add_sample", &cp::Image::AddSample);
+  py::class_<cp::Image>(m, "ImageWriter", R"pbdoc(
+        PyBind class. Must instantiate through the LogWriter.
+      )pbdoc")
+      .def("set_caption", &cp::Image::SetCaption, R"pbdoc(
+        PyBind class. Must instantiate through the LogWriter.
+      )pbdoc")
+      .def("start_sampling", &cp::Image::StartSampling, R"pbdoc(
+        Start a sampling period, this interface will start a new reservoir sampling phase.
+      )pbdoc")
+      .def("is_sample_taken", &cp::Image::IndexOfSampleTaken, R"pbdoc(
+        Will this sample be taken, this interface is introduced to reduce the cost
+        of copy image data, by testing whether this image will be sampled, and only
+        copy data when it should be sampled. In that way, most of un-sampled image
+        data need not be copied or processed at all.
+
+        :return: Index
+        :rtype: integer
+              )pbdoc")
+      .def("finish_sampling", &cp::Image::FinishSampling, R"pbdoc(
+        End a sampling period, it will clear all states for reservoir sampling.
+      )pbdoc")
+      .def("set_sample", &cp::Image::SetSample, R"pbdoc(
+        Store the flatten image data as vector of float types. Image params need to be
+        specified as a tuple of 3 integers for [width, height, number of channels(3 for RGB)]
+
+        :param index:
+        :type index: integer
+        :param image_shape: [width, height, number of channels(3 for RGB)]
+        :type image_shape: tuple
+        :param image_data: Flatten image data
+        :type image_data: list
+              )pbdoc")
+      .def("add_sample", &cp::Image::AddSample, R"pbdoc(
+        A combined interface for is_sample_taken and set_sample, simpler but is less efficient.
+        Image shape params details see set_sample
+
+        :param image_shape: [width, height, number of channels(3 for RGB)]
+        :type image_shape: tuple
+        :param image_data: Flatten image data
+        :type image_data: list
+              )pbdoc");
 
   py::class_<cp::ImageReader::ImageRecord>(m, "ImageRecord")
       // TODO(ChunweiYan) make these copyless.
@@ -150,9 +232,109 @@ PYBIND11_PLUGIN(core) {
       .def("record", &cp::ImageReader::record)
       .def("timestamp", &cp::ImageReader::timestamp);
 
-#define ADD_HISTOGRAM_WRITER(T)                           \
-  py::class_<cp::Histogram<T>>(m, "HistogramWriter__" #T) \
-      .def("add_record", &cp::Histogram<T>::AddRecord);
+  py::class_<cp::Text>(m, "TextWriter", R"pbdoc(
+        PyBind class. Must instantiate through the LogWriter.
+      )pbdoc")
+      .def("set_caption", &cp::Text::SetCaption)
+      .def("add_record", &cp::Text::AddRecord, R"pbdoc(
+            Add a record with the step and text value.
+
+            :param step: Current step value
+            :type index: integer
+            :param text: Text record
+            :type text: basestring
+          )pbdoc");
+
+  py::class_<cp::TextReader>(m, "TextReader")
+      .def("records", &cp::TextReader::records)
+      .def("ids", &cp::TextReader::ids)
+      .def("timestamps", &cp::TextReader::timestamps)
+      .def("caption", &cp::TextReader::caption)
+      .def("total_records", &cp::TextReader::total_records)
+      .def("size", &cp::TextReader::size);
+
+  py::class_<cp::Embedding>(m, "EmbeddingWriter")
+      .def("set_caption", &cp::Embedding::SetCaption)
+      .def("add_embeddings_with_word_list",
+           &cp::Embedding::AddEmbeddingsWithWordList);
+
+  py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")
+      .def("get_all_labels", &cp::EmbeddingReader::get_all_labels)
+      .def("get_all_embeddings", &cp::EmbeddingReader::get_all_embeddings)
+      .def("ids", &cp::EmbeddingReader::ids)
+      .def("timestamps", &cp::EmbeddingReader::timestamps)
+      .def("caption", &cp::EmbeddingReader::caption)
+      .def("total_records", &cp::EmbeddingReader::total_records)
+      .def("size", &cp::EmbeddingReader::size);
+
+  py::class_<cp::Audio>(m, "AudioWriter", R"pbdoc(
+            PyBind class. Must instantiate through the LogWriter.
+          )pbdoc")
+      .def("set_caption", &cp::Audio::SetCaption, R"pbdoc(
+            PyBind class. Must instantiate through the LogWriter.
+          )pbdoc")
+      .def("start_sampling", &cp::Audio::StartSampling, R"pbdoc(
+            Start a sampling period, this interface will start a new reservoir sampling phase.
+          )pbdoc")
+      .def("is_sample_taken", &cp::Audio::IndexOfSampleTaken, R"pbdoc(
+            Will this sample be taken, this interface is introduced to reduce the cost
+            of copy audio data, by testing whether this audio will be sampled, and only
+            copy data when it should be sampled. In that way, most of un-sampled audio
+            data need not be copied or processed at all.
+
+            :return: Index
+            :rtype: integer
+                  )pbdoc")
+      .def("finish_sampling", &cp::Audio::FinishSampling, R"pbdoc(
+            End a sampling period, it will clear all states for reservoir sampling.
+          )pbdoc")
+      .def("set_sample", &cp::Audio::SetSample, R"pbdoc(
+            Store the flatten audio data as vector of uint8 types. Audio params need to
+            be specified as a tuple of 3 integers as following:
+            sample_rate: number of samples(frames) per second, e.g. 8000, 16000 or 44100
+            sample_width: size of each sample(frame) in bytes, 16bit frame will be 2
+            num_channels: number of channels associated with the audio data, normally 1 or 2
+
+            :param index:
+            :type index: integer
+            :param audio_params: [sample rate, sample width, number of channels]
+            :type audio_params: tuple
+            :param audio_data: Flatten audio data
+            :type audio_data: list
+                  )pbdoc")
+      .def("add_sample", &cp::Audio::AddSample, R"pbdoc(
+            A combined interface for is_sample_taken and set_sample, simpler but is less efficient.
+            Audio params details see set_sample
+
+            :param audio_params: [sample rate, sample width, number of channels]
+            :type audio_params: tuple
+            :param audio_data: Flatten audio data
+            :type audio_data: list of uint8
+                  )pbdoc");
+
+  py::class_<cp::AudioReader::AudioRecord>(m, "AudioRecord")
+      // TODO(Nicky) make these copyless.
+      .def("data", [](cp::AudioReader::AudioRecord& self) { return self.data; })
+      .def("shape",
+           [](cp::AudioReader::AudioRecord& self) { return self.shape; })
+      .def("step_id",
+           [](cp::AudioReader::AudioRecord& self) { return self.step_id; });
+
+  py::class_<cp::AudioReader>(m, "AudioReader")
+      .def("caption", &cp::AudioReader::caption)
+      .def("num_records", &cp::AudioReader::num_records)
+      .def("num_samples", &cp::AudioReader::num_samples)
+      .def("record", &cp::AudioReader::record)
+      .def("timestamp", &cp::AudioReader::timestamp);
+
+#define ADD_HISTOGRAM_WRITER(T)                                             \
+  py::class_<cp::Histogram<T>>(                                             \
+      m,                                                                    \
+      "HistogramWriter__" #T,                                               \
+      R"pbdoc(PyBind class. Must instantiate through the LogWriter.)pbdoc") \
+      .def("add_record",                                                    \
+           &cp::Histogram<T>::AddRecord,                                    \
+           R"pbdoc(add a record with the step and histogram_value)pbdoc");
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_WRITER)
 #undef ADD_HISTOGRAM_WRITER
 

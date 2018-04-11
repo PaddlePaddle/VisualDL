@@ -1,7 +1,13 @@
+[![Build Status](https://travis-ci.org/PaddlePaddle/VisualDL.svg?branch=develop)](https://travis-ci.org/PaddlePaddle/VisualDL)
+[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs)
+[![Release](https://img.shields.io/github/release/PaddlePaddle/VisualDL.svg)](https://github.com/PaddlePaddle/VisualDL/releases)
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
+
 <p align="center">
-  <img src="./docs/images/vs-logo.png" width="60%" />
+  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/vs-logo.png" width="60%" />
 </p>
 
+#
 ## Introduction
 VisualDL is a deep learning visualization tool that can help design deep learning jobs.
 It includes features such as scalar, parameter distribution, model structure and image visualization.
@@ -10,7 +16,6 @@ New features will be continuously added.
 
 At present, most DNN frameworks use Python as their primary language. VisualDL supports Python by nature.
 Users can get plentiful visualization results by simply add a few lines of Python code into their model before training.
-
 
 Besides Python SDK, VisualDL was writen in C++ on the low level. It also provides C++ SDK that
 can be integrated into other platforms.  
@@ -25,12 +30,12 @@ VisualDL now provides 4 components:
 - histogram
 
 ### Graph
-Graph is compatible with ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx],
+Graph is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
 Cooperated with Python SDK, VisualDL can be compatible with most major DNN frameworks, including
 PaddlePaddle, PyTorch and MXNet.
 
 <p align="center">
-  <img src="https://github.com/daming-lu/large_files/blob/master/graph_demo.gif" width="60%" />
+  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
 </p>
 
 ### Scalar
@@ -38,28 +43,43 @@ Scalar can be used to show the trends of error during training.
 
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_scalar.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
 </p>
 
 ### Image
 Image can be used to visualize any tensor or intermediate generated image.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/loss_image.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
 </p>
 
 ### Histogram
 Histogram can be used to visualize parameter distribution and trends for any tensor.
 
 <p align="center">
-<img src="https://github.com/daming-lu/large_files/blob/master/histogram.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
 </p>
+
+## Quick Start
+To give the VisualDL a quick test, please use the following commands.
+
+```
+# Install the VisualDL. Preferably under a virtual environment.
+pip install --upgrade visualdl
+
+# run a demo, vdl_create_scratch_log will create logs for testing.
+vdl_create_scratch_log
+visualDL --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
+```
 
 ## SDK
 VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.
 
 
 ### Python SDK
+VisualDL now supports both Python 2 and Python 3.
 Below is an example of creating a simple Scalar component and inserting data from different timestamps:
 
 ```python
@@ -67,7 +87,7 @@ import random
 from visualdl import LogWriter
 
 logdir = "./tmp"
-logger = LogWriter(dir, sync_cycle=10)
+logger = LogWriter(logdir, sync_cycle=10000)
 
 # mark the components with 'train' label.
 with logger.mode("train"):
@@ -85,17 +105,17 @@ Here is the C++ SDK identical to the Python SDK example above:
 ```c++
 #include <cstdlib>
 #include <string>
-#include "visualdl/sdk.h"
+#include "visualdl/logic/sdk.h"
 
 namespace vs = visualdl;
-namepsace cp = visualdl::components;
+namespace cp = visualdl::components;
 
 int main() {
   const std::string dir = "./tmp";
-  vs::LogWriter logger(dir, 10);
+  vs::LogWriter logger(dir, 10000);
 
   logger.SetMode("train");
-  auto tablet = logger.NewTablet("scalars/scalar0");
+  auto tablet = logger.AddTablet("scalars/scalar0");
 
   cp::Scalar<float> scalar0(tablet);
 
@@ -122,6 +142,9 @@ Board also supports the parameters below for remote access:
 - `--port` set port
 - `--model_pb` specify ONNX format for model file
 
+The VisualDL Graphing system uses `GraphViz` to visualize the ONNX model. To enable the VisualDL Graph feature,
+please install [GraphViz](https://www.graphviz.org/download/)
+
 ### How to install from pypi
 ```
 pip install --upgrade visualdl
@@ -138,7 +161,8 @@ pip install --upgrade dist/visualdl-*.whl
 
 ### Run a demo from scratch
 ```
-vdl_scratch.py
+# vdl_create_scratch_log is a helper commend that creates mock data.
+vdl_create_scratch_log
 visualDL --logdir=scratch_log --port=8080
 ```
 that will start a server locally on port 8080, then
