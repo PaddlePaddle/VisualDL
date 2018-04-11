@@ -14,8 +14,6 @@
   "dependencies": {
     "axios": "^0.16.1",
     "csshint": "^0.3.3",
-    "cytoscape": "^3.2.11",
-    "cytoscape-dagre": "^2.2.0",
     "d3": "^4.7.4",
     "d3-format": "^1.2.1",
     "dagre": "^0.8.2",
