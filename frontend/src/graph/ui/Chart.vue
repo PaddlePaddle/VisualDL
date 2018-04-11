@@ -11,6 +11,10 @@
 // service
 import {getPluginGraphsGraph} from '../../service';
 
+// The name 'svgToPngDownloadHelper' is just a placeholder. Loading the JS lib file will
+// bind saveSvgAsPng to window.
+import * as svgToPngDownloadHelper from './svgToPngDownloadHelper.js';
+
 // for d3 drawing
 import * as d3 from 'd3';
 
@@ -34,28 +38,7 @@ export default {
         // TODO(daming-lu): .svg is ugly and colorless.
         let svg = this.$refs.graphSvg;
 
-        // get svg source.
-        let serializer = new XMLSerializer();
-        let source = serializer.serializeToString(svg);
-
-        // add name spaces.
-        if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
-          source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-        }
-        if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
-          source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-        }
-
-        // add xml declaration
-        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-
-        // convert svg source to URI data scheme.
-        let url = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(source);
-
-        let a = document.createElement('a');
-        a.download = 'graph.svg';
-        a.href = url;
-        a.click();
+        saveSvgAsPng(svg, "graph.png", {scale: 1.0});
 
         this.$emit('triggerDownload', false);
       }
