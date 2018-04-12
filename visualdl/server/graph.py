@@ -18,7 +18,6 @@ import json
 import os
 
 from google.protobuf.json_format import MessageToJson
-from PIL import Image
 
 from . import graphviz_graph as gg
 from . import onnx
@@ -328,21 +327,27 @@ def add_edges(json_obj):
         cur_node = json_obj['node'][node_index]
 
         # input edges
-        for source in cur_node['input']:
+        if 'input' in cur_node and len(cur_node['input']) > 0:
+            for source in cur_node['input']:
+                json_obj['edges'].append({
+                    'source':
+                    source,
+                    'target':
+                    'node_' + str(node_index),
+                    'label':
+                    'label_' + str(label_incrementer)
+                })
+                label_incrementer += 1
+
+        # output edge
+        if 'output' in cur_node and len(cur_node['output']) > 0:
             json_obj['edges'].append({
-                'source': source,
-                'target': 'node_' + str(node_index),
+                'source': 'node_' + str(node_index),
+                'target': cur_node['output'][0],
                 'label': 'label_' + str(label_incrementer)
             })
             label_incrementer += 1
 
-        # output edge
-        json_obj['edges'].append({
-            'source': 'node_' + str(node_index),
-            'target': cur_node['output'][0],
-            'label': 'label_' + str(label_incrementer)
-        })
-        label_incrementer += 1
     return json_obj
 
 
@@ -483,23 +488,7 @@ class GraphPreviewGenerator(object):
 
 def draw_graph(model_pb_path, image_dir):
     json_str = load_model(model_pb_path)
-    best_image = None
-    min_width = None
-    for i in range(10):
-        # randomly generate dot images and select the one with minimum width.
-        g = GraphPreviewGenerator(json_str)
-        dot_path = os.path.join(image_dir, "temp-%d.dot" % i)
-        image_path = os.path.join(image_dir, "temp-%d.jpg" % i)
-        g(dot_path)
-
-        try:
-            im = Image.open(image_path)
-            if min_width is None or im.size[0] < min_width:
-                min_width = im.size
-                best_image = image_path
-        except Exception:
-            pass
-    return best_image
+    return json_str
 
 
 if __name__ == '__main__':
