@@ -331,9 +331,12 @@ def add_edges(json_obj):
         if 'input' in cur_node and len(cur_node['input']) > 0:
             for source in cur_node['input']:
                 json_obj['edges'].append({
-                    'source': source,
-                    'target': 'node_' + str(node_index),
-                    'label': 'label_' + str(label_incrementer)
+                    'source':
+                    source,
+                    'target':
+                    'node_' + str(node_index),
+                    'label':
+                    'label_' + str(label_incrementer)
                 })
                 label_incrementer += 1
 
