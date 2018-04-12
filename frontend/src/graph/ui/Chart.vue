@@ -19,6 +19,7 @@ import * as svgToPngDownloadHelper from './svgToPngDownloadHelper.js';
 import * as d3 from 'd3';
 
 import has from 'lodash/has';
+import isArrayLike from 'lodash/isArrayLike';
 
 export default {
   props: {
@@ -74,9 +75,11 @@ export default {
       if (has(graphData, 'input') === false) {
         return;
       }
+      let inputIdToIndex = {};
       for (let i=0; i<graphData['input'].length; ++i) {
         let curInputNode = graphData['input'][i];
         let nodeKey = curInputNode['name'];
+        inputIdToIndex[nodeKey] = i;
         g.setNode(
           nodeKey,
           {
@@ -144,14 +147,16 @@ export default {
         nodeKeys.push(outputNodeKey);
 
         // add edges from inputs to node and from node to output
-        for (let e=0; e<curOperatorNode['input'].length; ++e) {
-          // TODO(daming-lu): hard-coding style here to this polyline shows shadows.
-          g.setEdge(curOperatorNode['input'][e], nodeKey);
+        if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
+            for (let e = 0; e < curOperatorNode['input'].length; ++e) {
+                g.setEdge(curOperatorNode['input'][e], nodeKey);
+            }
         }
-
-        g.setEdge(nodeKey, curOperatorNode['output'][0], {
-          style: 'stroke: #333;stroke-width: 1.5px',
-        });
+        if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
+            g.setEdge(nodeKey, curOperatorNode['output'][0], {
+                style: 'stroke: #333;stroke-width: 1.5px',
+            });
+        }
       }
 
       // TODO(daming-lu): add prettier styles to diff nodes
@@ -172,7 +177,7 @@ export default {
           let opIndex = d.slice(7); // remove prefix "opNode_"
           nodeInfo = graphData.node[opIndex];
         } else if (nodeType === 'input') {
-          nodeInfo = graphData.input[d-1];
+          nodeInfo = graphData.input[inputIdToIndex[d]];
         } else {
           nodeInfo = 'output';
         }
