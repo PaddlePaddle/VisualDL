@@ -11,10 +11,15 @@
 // service
 import {getPluginGraphsGraph} from '../../service';
 
+// The name 'svgToPngDownloadHelper' is just a placeholder.
+// Loading the JS lib file will bind saveSvgAsPng to window.
+import * as svgToPngDownloadHelper from './svgToPngDownloadHelper.js';
+
 // for d3 drawing
 import * as d3 from 'd3';
 
 import has from 'lodash/has';
+import isArrayLike from 'lodash/isArrayLike';
 
 export default {
   props: {
@@ -31,32 +36,8 @@ export default {
   watch: {
     doDownload: function(val) {
       if (this.doDownload) {
-        // TODO(daming-lu): .svg is ugly and colorless.
         let svg = this.$refs.graphSvg;
-
-        // get svg source.
-        let serializer = new XMLSerializer();
-        let source = serializer.serializeToString(svg);
-
-        // add name spaces.
-        if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
-          source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-        }
-        if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
-          source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
-        }
-
-        // add xml declaration
-        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-
-        // convert svg source to URI data scheme.
-        let url = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(source);
-
-        let a = document.createElement('a');
-        a.download = 'graph.svg';
-        a.href = url;
-        a.click();
-
+        saveSvgAsPng(svg, "graph.png", {scale: 1.0});
         this.$emit('triggerDownload', false);
       }
     },
@@ -94,9 +75,11 @@ export default {
       if (has(graphData, 'input') === false) {
         return;
       }
+      let inputIdToIndex = {};
       for (let i=0; i<graphData['input'].length; ++i) {
         let curInputNode = graphData['input'][i];
         let nodeKey = curInputNode['name'];
+        inputIdToIndex[nodeKey] = i;
         g.setNode(
           nodeKey,
           {
@@ -164,14 +147,16 @@ export default {
         nodeKeys.push(outputNodeKey);
 
         // add edges from inputs to node and from node to output
-        for (let e=0; e<curOperatorNode['input'].length; ++e) {
-          // TODO(daming-lu): hard-coding style here to this polyline shows shadows.
-          g.setEdge(curOperatorNode['input'][e], nodeKey);
+        if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
+            for (let e = 0; e < curOperatorNode['input'].length; ++e) {
+                g.setEdge(curOperatorNode['input'][e], nodeKey);
+            }
         }
-
-        g.setEdge(nodeKey, curOperatorNode['output'][0], {
-          style: 'stroke: #333;stroke-width: 1.5px',
-        });
+        if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
+            g.setEdge(nodeKey, curOperatorNode['output'][0], {
+                style: 'stroke: #333;stroke-width: 1.5px',
+            });
+        }
       }
 
       // TODO(daming-lu): add prettier styles to diff nodes
@@ -192,7 +177,7 @@ export default {
           let opIndex = d.slice(7); // remove prefix "opNode_"
           nodeInfo = graphData.node[opIndex];
         } else if (nodeType === 'input') {
-          nodeInfo = graphData.input[d-1];
+          nodeInfo = graphData.input[inputIdToIndex[d]];
         } else {
           nodeInfo = 'output';
         }
