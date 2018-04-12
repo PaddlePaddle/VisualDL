@@ -18,7 +18,6 @@ import json
 import os
 
 from google.protobuf.json_format import MessageToJson
-from PIL import Image
 
 from . import graphviz_graph as gg
 from . import onnx
