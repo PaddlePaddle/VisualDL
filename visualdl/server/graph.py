@@ -483,23 +483,7 @@ class GraphPreviewGenerator(object):
 
 def draw_graph(model_pb_path, image_dir):
     json_str = load_model(model_pb_path)
-    best_image = None
-    min_width = None
-    for i in range(10):
-        # randomly generate dot images and select the one with minimum width.
-        g = GraphPreviewGenerator(json_str)
-        dot_path = os.path.join(image_dir, "temp-%d.dot" % i)
-        image_path = os.path.join(image_dir, "temp-%d.jpg" % i)
-        g(dot_path)
-
-        try:
-            im = Image.open(image_path)
-            if min_width is None or im.size[0] < min_width:
-                min_width = im.size
-                best_image = image_path
-        except Exception:
-            pass
-    return best_image
+    return json_str
 
 
 if __name__ == '__main__':

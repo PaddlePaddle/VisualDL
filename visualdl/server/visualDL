@@ -298,11 +298,24 @@ def individual_audio():
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
+    # import pdb; pdb.set_trace()
     # TODO(ChunweiYan) need to add a config for whether have graph.
-    if graph_image_path is None or not os.path.isfile(graph_image_path):
-        data = {'url': ''}
+    # if graph_image_path is None or not os.path.isfile(graph_image_path):
+    if graph_image_path is not None:
+        data = {
+            'data': graph_image_path,
+
+        }
     else:
-        data = {'url': '/graphs/image'}
+        # import pdb; pdb.set_trace()
+        # draw graph
+        # print 'args'
+        # print args
+        image_dir = os.path.join(args.logdir, "graphs")
+        if not os.path.isdir(image_dir):
+            os.mkdir(image_dir)
+        json_str = vdl_graph.draw_graph(args.model_pb, image_dir)
+        data = {'data': json_str}
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
