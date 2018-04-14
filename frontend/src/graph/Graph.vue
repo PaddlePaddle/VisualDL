@@ -3,8 +3,11 @@
     <div class="visual-dl-page-left">
       <ui-chart
         :do-download="doDownload"
+        :do-restore="doRestore"
+        :scale="config.scale"
         @curNodeUpdated="curNode = $event"
         @triggerDownload="doDownload = $event"
+        @triggerRestore="doRestore = $event"
       />
     </div>
     <div class="visual-dl-page-right">
@@ -12,7 +15,9 @@
         <ui-config
           :cur-node="curNode"
           :do-download="doDownload"
+          :config="config"
           @triggerDownload="doDownload = $event"
+          @triggerRestore="doRestore = $event"
         />
       </div>
     </div>
@@ -34,7 +39,11 @@ export default {
   data() {
     return {
       doDownload: false,
+      doRestore: false,
       curNode: {},
+      config: {
+        scale: 0.5,
+      },
     };
   },
   mounted() {

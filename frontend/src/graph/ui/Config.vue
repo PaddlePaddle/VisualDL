@@ -9,7 +9,26 @@
         <v-icon style="margin-right: 6px">file_download</v-icon>
         Download image
       </v-btn>
+
+      <v-btn
+        class="visual-dl-graph-config-button"
+        color="primary"
+        @click="resetImage"
+        dark>
+        <v-icon style="margin-right: 6px">restore</v-icon>
+        Restore image
+      </v-btn>
+
+      <v-slider
+        label="Scale"
+        max="1"
+        min="0.1"
+        step="0.1"
+        v-model="config.scale"
+        dark/>
     </div>
+
+
     <div class="node-info">
       <h3>Node Info: </h3>
 
@@ -43,9 +62,17 @@ export default {
     'curNode': {
       type: Object,
       default: {},
-  }}, methods: {
+    },
+    'config': {
+      type: Object,
+      default: {},
+    },
+  }, methods: {
     handleDownload() {
       this.$emit('triggerDownload', true);
+    },
+    resetImage() {
+      this.$emit('triggerRestore', true);
     },
   },
 };
@@ -66,7 +93,7 @@ export default {
         height 26px
 
 .graph-config-upper
-    height 150px
+    height 300px
 
 .node-info
   font-family 'Courier New', sans-serif
