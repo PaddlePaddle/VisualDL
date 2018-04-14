@@ -51,6 +51,8 @@ export default {
   },
   watch: {
     doDownload: function(val) {
+      console.log('doDownload');
+
       let chartScope = this;
       if (this.doDownload) {
         this.restoreImage(false);
@@ -60,6 +62,8 @@ export default {
       }
     },
     doRestore: function(val) {
+      console.log('doRestore');
+
       this.restoreImage(true);
     },
     scale: function(val) {
@@ -70,6 +74,7 @@ export default {
   },
   methods: {
     restoreImage(animate) {
+      console.log('restoreImage');
       let svg = d3.select('svg');
       this.imageWidth = this.originImageWidth;
       this.imageHeight = this.originImageHeight;
