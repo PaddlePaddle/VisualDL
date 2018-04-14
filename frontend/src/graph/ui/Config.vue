@@ -65,7 +65,7 @@ export default {
     },
     'config': {
       type: Object,
-      default: {},
+      required: true,
     },
   }, methods: {
     handleDownload() {

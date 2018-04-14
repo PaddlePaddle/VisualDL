@@ -64,7 +64,8 @@ export default {
     },
     scale: function(val) {
       let k = this.zoomScale(val);
-      this.svgSelection.call(this.graphZoom.transform, d3.zoomIdentity.scale(k));
+      let svg = d3.select('svg');
+      svg.call(this.graphZoom.transform, d3.zoomIdentity.scale(k));
     },
   },
   methods: {
@@ -87,15 +88,15 @@ export default {
       this.$emit('triggerRestore', false);
     },
   },
+  created() {
+    // scale
+    let linearScale = d3.scaleLinear();
+    linearScale.domain([0.1, 1]);
+    linearScale.range([0.75, 1.25]);
+    this.zoomScale = linearScale;
+  },
   mounted() {
     let chartScope = this;
-
-    // scale
-    let scale = d3.scaleLinear();
-    scale.domain([0.1, 1]);
-    scale.range([0.75, 1.25]);
-    this.zoomScale = scale;
-
     getPluginGraphsGraph().then(({errno, data}) => {
       if (has(data, 'data') === false) {
         return;
