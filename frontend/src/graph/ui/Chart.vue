@@ -70,21 +70,17 @@ export default {
   },
   methods: {
     restoreImage(animate) {
-      if (this.svgSelection &&
-        this.graphZoom &&
-        this.originImageWidth &&
-        this.originImageHeight) {
-          this.imageWidth = this.originImageWidth;
-          this.imageHeight = this.originImageHeight;
+      let svg = d3.select('svg');
+      this.imageWidth = this.originImageWidth;
+      this.imageHeight = this.originImageHeight;
 
-          if (animate) {
-            this.svgSelection.transition()
-              .duration(750)
-              .call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
-          } else {
-            this.svgSelection.call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
-          }
-        }
+      if (animate) {
+        svg.transition()
+          .duration(750)
+          .call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
+      } else {
+        svg.call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
+      }
       this.$emit('triggerRestore', false);
     },
   },
