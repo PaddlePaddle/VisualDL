@@ -116,8 +116,8 @@ std::vector<T> ScalarReader<T>::records() const {
 }
 
 template <typename T>
-std::vector<T> ScalarReader<T>::ids() const {
-  std::vector<T> res;
+std::vector<int> ScalarReader<T>::ids() const {
+  std::vector<int> res;
   for (int i = 0; i < reader_.total_records(); i++) {
     res.push_back(reader_.record(i).id());
   }
@@ -125,8 +125,8 @@ std::vector<T> ScalarReader<T>::ids() const {
 }
 
 template <typename T>
-std::vector<T> ScalarReader<T>::timestamps() const {
-  std::vector<T> res;
+std::vector<time_t> ScalarReader<T>::timestamps() const {
+  std::vector<time_t> res;
   for (int i = 0; i < reader_.total_records(); i++) {
     res.push_back(reader_.record(i).timestamp());
   }

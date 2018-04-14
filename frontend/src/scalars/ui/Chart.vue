@@ -521,6 +521,11 @@ export default {
             type: 'time',
             axisLabel: {
               fontSize: '11',
+              formatter: function(value, index) {
+                // The value is in seconds, need to convert to milliseconds
+                let date = new Date(value * 1000);
+                return date.toLocaleTimeString();
+              },
             },
           },
           series: wallSeries,

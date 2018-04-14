@@ -20,7 +20,7 @@
     </div>
 
     <v-radio-group
-      label="Horizontal"
+      label="X-Axis"
       v-model="config.horizontal"
       dark>
       <v-radio
@@ -30,7 +30,7 @@
         label="Relative"
         value="relative"/>
       <v-radio
-        label="Wall"
+        label="Wall Time"
         value="wall"/>
     </v-radio-group>
 

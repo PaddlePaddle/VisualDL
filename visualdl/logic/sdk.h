@@ -123,8 +123,8 @@ struct ScalarReader {
   ScalarReader(TabletReader&& reader) : reader_(reader) {}
 
   std::vector<T> records() const;
-  std::vector<T> ids() const;
-  std::vector<T> timestamps() const;
+  std::vector<int> ids() const;
+  std::vector<time_t> timestamps() const;
   std::string caption() const;
   size_t total_records() const { return reader_.total_records(); }
   size_t size() const;

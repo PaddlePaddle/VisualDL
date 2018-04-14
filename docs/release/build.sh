@@ -48,15 +48,25 @@ if [ "$1" != "" ]; then
         export PYTHON_FLAGS="-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3.6
         -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.6m
         -DPYTHON_LIBRARIES:FILEPATH=/usr/lib64/libpython3.6m.so"
+    elif [ "$1" == "mac-cp36-cp36m" ]; then
+#       NOTE: The following setting is for building osx package. Please run this on osx
+#             The currently is assuming you install python3.6 off the pathon.org
+#             Please adjust each variables accordingly.
+        PYTHON_EXECUTABLE=/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6
+        PIP_EXECUTABLE=/Library/Frameworks/Python.framework/Versions/3.6/bin/pip
+        export LD_LIBRARY_PATH=/Library/Frameworks/Python.framework/Versions/3.6/:${LD_LIBRARY_PATH}
+        export PYTHON_FLAGS="-DPYTHON_EXECUTABLE:FILEPATH=/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6
+        -DPYTHON_INCLUDE_DIR:PATH=/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m
+        -DPYTHON_LIBRARIES:FILEPATH=/Library/Frameworks/Python.framework/Versions/3.6/Python"
     fi
 else
-  echo "Please specify an environment. {cp27-cp27m, cp27-cp27mu, cp34-cp34m, cp35-cp35m, cp36-cp36m}"
+  echo "Please specify an environment. {cp27-cp27m, cp27-cp27mu, cp34-cp34m, cp35-cp35m, cp36-cp36m, mac-cp36-cp36m}"
   exit
 fi
 
 if [ "$PYTHON_EXECUTABLE" == "" ]; then
     echo "Incorrect python environment. "
-    echo "Please choose from {cp27-cp27m, cp27-cp27mu, cp34-cp34m, cp35-cp35m, cp36-cp36m}"
+    echo "Please choose from {cp27-cp27m, cp27-cp27mu, cp34-cp34m, cp35-cp35m, cp36-cp36m, mac-cp36-cp36m}"
     exit
 fi
 
