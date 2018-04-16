@@ -12,8 +12,8 @@
 // service
 import {getPluginGraphsGraph} from '../../service';
 
-// The name 'svgToPngDownloadHelper' is just a placeholder.
-// Loading the JS lib file will bind saveSvgAsPng to window.
+// Loading the JS lib file will bind saveSvgAsPng to window,
+// which does an SVG -> PNG -> download process.
 import './svgToPngDownloadHelper.js';
 
 // for d3 drawing
@@ -53,6 +53,8 @@ export default {
     doDownload: function(val) {
       let chartScope = this;
       if (this.doDownload) {
+        // in order to download the full graph image, we need to first restore it
+        // to its original size
         this.restoreImage(true);
         chartScope.$emit('triggerDownload', false);
       }
