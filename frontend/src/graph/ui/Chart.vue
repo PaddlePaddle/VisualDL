@@ -1,6 +1,7 @@
 <template>
   <div class="visual-dl-graph-charts">
     <svg
+      :style="{ width: imageWidth + 'px', height: imageHeight + 'px' }"
       class="visual-dl-page-left"
       ref="graphSvg">
       <g/>
@@ -11,9 +12,9 @@
 // service
 import {getPluginGraphsGraph} from '../../service';
 
-// The name 'svgToPngDownloadHelper' is just a placeholder.
-// Loading the JS lib file will bind saveSvgAsPng to window.
-import * as svgToPngDownloadHelper from './svgToPngDownloadHelper.js';
+// Loading the JS lib file will bind saveSvgAsPng to window,
+// which does an SVG -> PNG -> download process.
+import './svgToPngDownloadHelper.js';
 
 // for d3 drawing
 import * as d3 from 'd3';
@@ -27,22 +28,76 @@ export default {
       type: Boolean,
       required: true,
     },
+    'doRestore': {
+      type: Boolean,
+      required: true,
+    },
+    'scale': {
+      type: Number,
+      required: true,
+    },
   },
   computed: {},
   data() {
     return {
+      imageHeight: 0,
+      imageWidth: 0,
+      originImageWidth: 0,
+      originImageHeight: 0,
+      graphZoom: null,
+      svgSelection: null,
+      zoomScale: null,
     };
   },
   watch: {
     doDownload: function(val) {
+      let chartScope = this;
       if (this.doDownload) {
-        let svg = this.$refs.graphSvg;
-        saveSvgAsPng(svg, "graph.png", {scale: 1.0});
-        this.$emit('triggerDownload', false);
+        // in order to download the full graph image, we need to first restore it
+        // to its original size
+        this.restoreImage(true);
+        chartScope.$emit('triggerDownload', false);
       }
     },
+    doRestore: function(val) {
+      this.restoreImage(false);
+    },
+    scale: function(val) {
+      let k = this.zoomScale(val);
+      let svg = d3.select('svg');
+      svg.call(this.graphZoom.transform, d3.zoomIdentity.scale(k));
+    },
   },
+  methods: {
+    restoreImage(thenDownload) {
+      let chartScope = this;
+      let svg = d3.select('svg');
+      this.imageWidth = this.originImageWidth;
+      this.imageHeight = this.originImageHeight;
 
+      if (thenDownload) {
+        svg.transition()
+          .duration(750)
+          .call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0))
+          .on('end', function() {
+            let svg = chartScope.$refs.graphSvg;
+            saveSvgAsPng(svg, 'graph.png', {scale: 1.0});
+        });
+      } else {
+        svg.transition()
+          .duration(750)
+          .call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
+      }
+      this.$emit('triggerRestore', false);
+    },
+  },
+  created() {
+    // scale
+    let linearScale = d3.scaleLinear();
+    linearScale.domain([0.1, 1]);
+    linearScale.range([0.75, 1.25]);
+    this.zoomScale = linearScale;
+  },
   mounted() {
     let chartScope = this;
     getPluginGraphsGraph().then(({errno, data}) => {
@@ -148,26 +203,49 @@ export default {
 
         // add edges from inputs to node and from node to output
         if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
-            for (let e = 0; e < curOperatorNode['input'].length; ++e) {
-                g.setEdge(curOperatorNode['input'][e], nodeKey);
-            }
+          for (let e = 0; e < curOperatorNode['input'].length; ++e) {
+            g.setEdge(curOperatorNode['input'][e], nodeKey);
+          }
         }
         if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
-            g.setEdge(nodeKey, curOperatorNode['output'][0], {
-                style: 'stroke: #333;stroke-width: 1.5px',
-            });
+          g.setEdge(nodeKey, curOperatorNode['output'][0], {
+            style: 'stroke: #333;stroke-width: 1.5px',
+          });
         }
       }
 
-      // TODO(daming-lu): add prettier styles to diff nodes
       let svg = d3.select('svg')
         .attr('font-family', 'sans-serif')
         .attr('font-size', '28px');
 
       render(d3.select('svg g'), g);
 
-      // adjust viewBox so that the whole graph can be shown, with scroll bar
-      svg.attr('viewBox', '0 0 ' + g.graph().width + ' ' + g.graph().height);
+      let graphSelection = d3.select('svg g');
+      let graphWidth = g.graph().width;
+      let graphHeight = g.graph().height;
+
+      svg.attr('viewBox', '0 0 ' + graphWidth + ' ' + graphHeight);
+
+      this.imageWidth = graphWidth;
+      this.imageHeight = graphHeight;
+      this.originImageWidth = graphWidth;
+      this.originImageHeight = graphHeight;
+
+      // zooming
+      let zooming = function(d) {
+        graphSelection.attr('transform', d3.event.transform);
+        let newViewBoxWidth = d3.event.transform.k * graphWidth;
+        let newViewBoxHeight = d3.event.transform.k * graphHeight;
+        chartScope.imageWidth = newViewBoxWidth;
+        chartScope.imageHeight = newViewBoxHeight;
+      };
+
+      let zoom = d3.zoom().on('zoom', zooming);
+      chartScope.graphZoom = zoom;
+
+      // TODO(daming-lu): enable zoom would have conflict with scale slider
+      // need to find a coordinated way to handle panning and zooming.
+      // svg.call(zoom);
 
       svg.selectAll('.node').on('click', function(d, i) {
         let curNode = g.node(d);
@@ -190,8 +268,6 @@ export default {
       });
     });
   },
-
-  methods: {},
 };
 </script>
 <style lang="stylus">

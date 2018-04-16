@@ -52,7 +52,7 @@ before_install:
 
 script:
   - if [[ "$JOB" == "check_style" ]]; then ./scripts/check_style.sh; fi
-  - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; WITH_PYTHON3=ON ./scripts/tests.sh all; fi
+  - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; fi
   - if [[ "$JOB" == "build_doc" ]]; then ./scripts/deploy_docs_on_travis.sh; fi;
 
 notifications:
