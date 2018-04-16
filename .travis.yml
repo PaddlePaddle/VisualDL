@@ -19,6 +19,7 @@ os:
 env:
   - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=check_style"
   - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=test"
+  - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=test_python3"
   - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=build_doc"
 
 addons:
@@ -53,6 +54,7 @@ before_install:
 script:
   - if [[ "$JOB" == "check_style" ]]; then ./scripts/check_style.sh; fi
   - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; fi
+  - if [[ "$JOB" == "test_python3" ]]; then WITH_PYTHON3=ON ./scripts/tests.sh all; fi
   - if [[ "$JOB" == "build_doc" ]]; then ./scripts/deploy_docs_on_travis.sh; fi;
 
 notifications:
