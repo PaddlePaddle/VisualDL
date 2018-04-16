@@ -53,14 +53,12 @@ export default {
     doDownload: function(val) {
       let chartScope = this;
       if (this.doDownload) {
-        this.restoreImage(false);
-        let svg = chartScope.$refs.graphSvg;
-        saveSvgAsPng(svg, 'graph.png', {scale: 1.0});
+        this.restoreImage(true);
         chartScope.$emit('triggerDownload', false);
       }
     },
     doRestore: function(val) {
-      this.restoreImage(true);
+      this.restoreImage(false);
     },
     scale: function(val) {
       let k = this.zoomScale(val);
@@ -69,17 +67,24 @@ export default {
     },
   },
   methods: {
-    restoreImage(animate) {
+    restoreImage(thenDownload) {
+      let chartScope = this;
       let svg = d3.select('svg');
       this.imageWidth = this.originImageWidth;
       this.imageHeight = this.originImageHeight;
 
-      if (animate) {
+      if (thenDownload) {
+        svg.transition()
+          .duration(750)
+          .call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0))
+          .on('end', function() {
+            let svg = chartScope.$refs.graphSvg;
+            saveSvgAsPng(svg, 'graph.png', {scale: 1.0});
+        });
+      } else {
         svg.transition()
           .duration(750)
           .call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
-      } else {
-        svg.call(this.graphZoom.transform, d3.zoomIdentity.translate(0, 0));
       }
       this.$emit('triggerRestore', false);
     },
@@ -235,7 +240,10 @@ export default {
 
       let zoom = d3.zoom().on('zoom', zooming);
       chartScope.graphZoom = zoom;
-      svg.call(zoom);
+
+      // TODO(daming-lu): enable zoom would have conflict with scale slider
+      // need to find a coordinated way to handle panning and zooming.
+      // svg.call(zoom);
 
       svg.selectAll('.node').on('click', function(d, i) {
         let curNode = g.node(d);
