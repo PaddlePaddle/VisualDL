@@ -2,7 +2,7 @@
 
 ## New Features
 
-- Improve the Graph feature to include interactive response. Users can now click on a node to inspect node info and parameter
+- Improve the Graph feature to include interactive response. Users can now click on a node to inspect its details such as parameters, input, output, dimensions, etc. They can also zoom in/out and move around if the graph is too large, restore to its original size and download it as PNG.
 - Add new `Audio` recording visualization. Users can recording audio and inspect to help fine tuning the audio training.
 - Add new `Text` recording visualization. Users can record strings during training and inspect later.
 - User can manually `save` to sync the recordings to the disk.
