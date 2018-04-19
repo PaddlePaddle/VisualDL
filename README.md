@@ -113,7 +113,7 @@ pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
 vdl_create_scratch_log
-visualdl --logdir=scratch_log --port=8080
+visualDL --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```
@@ -146,10 +146,26 @@ pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
 vdl_create_scratch_log
-visualdl --logdir=scratch_log --port=8080
+visualDL --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```
+
+If you still have issues installing VisualDL, try installing from sources as in following section.
+
+
+### Install from source
+```
+#Preferably under a virtualenv or anaconda.
+git clone https://github.com/PaddlePaddle/VisualDL.git
+cd VisualDL
+
+python setup.py bdist_wheel
+pip install --upgrade dist/visualdl-*.whl
+```
+
+If there are still issues regarding the ```pip install```, you can still start Visual DL by starting the dev server
+[here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/how_to_dev_frontend_en.md)
 
 
 ## SDK
@@ -211,10 +227,10 @@ After some logs have been generated during training, users can launch Visual DL 
 
 
 ```
-visualdl --logdir <some log dir>
+visualDL --logdir <some log dir>
 ```
 
-visualdl also supports following optional parameters:
+visualDL also supports following optional parameters:
 
 - `--host` set IP
 - `--port` set port
