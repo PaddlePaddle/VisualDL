@@ -3,7 +3,14 @@
 ### How to install from pypi
 
 ```
+# Install the VisualDL. Preferably under a virtual environment or anaconda.
 pip install --upgrade visualdl
+
+# run a demo, vdl_create_scratch_log will create logs for testing.
+vdl_create_scratch_log
+visualDL --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
 ```
 
 If you run into issues in above steps, it could be error caused by environmental issues by different python or pip versions.
@@ -86,7 +93,7 @@ visualDL --logdir=scratch_log --port=8080
 If you still have issues installing VisualDL, try installing from sources as in following section.
 
 
-### Install from source
+## Install from source
 ```
 #Preferably under a virtualenv or anaconda.
 git clone https://github.com/PaddlePaddle/VisualDL.git

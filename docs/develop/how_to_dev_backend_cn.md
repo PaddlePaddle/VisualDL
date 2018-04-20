@@ -1,9 +1,9 @@
-# 后台架构
+# 后台指南
 
 VisualDL has three components.
 1. The Python/C++ SDK that logs the data during training.
-1. The single page client side app that visualized training data.
-1. The server (powered on Flask) that reads the logs data and delivers it to the client side app for displaying graphs (scalars/histograms) and embeddings.
+1. The single page client side app that visualizes training data.
+1. The server powered by Flask, reads the log data and delivers it to the client side app for displaying graphs (scalars/histograms) and embeddings.
 
 This doc will go over Backend / SDK structure with development guide.
 
@@ -51,7 +51,7 @@ make {TARGET MODULE}
 
 ## Tests
 
-Modification in SDK API and any major function changes should be adding test cases.
+Modification in SDK API or any major function should be adding test cases.
 
 
 In {VisualDL_ROOT}/CMakeList.txt, we have a list of test files as target
@@ -91,7 +91,7 @@ make vl_test
   - defines server arguments and config
   - provides API and router for front end
 - ```lib.py``` : delegate wrapper for function calls
-  - read and caches log data
+  - read and cache log data
   - convert data to JSON
   - retry mechanism
 - ```graph.py``` and ```onnx```
@@ -120,5 +120,5 @@ make vl_test
   - ```Storage``` : main set of data with different modes such as "train" or "test", contain multiple ```Tablet```
   - ```Tablet``` : group a single type of data with ```tag```. One tablet will only represent one data type such as scalar, histogram, image and contains multiple ```Record```. For example one tablet represents a line in scalar chart.
   - ```Record``` : represent any data structure for any component
-- Handles the actual logic to serialized to disk and deserialized from disk
+- Handles the actual logic to serialize to disk and deserialize from disk
 - ```storage.proto```: protobuf file that defines the exact interface to be read/write

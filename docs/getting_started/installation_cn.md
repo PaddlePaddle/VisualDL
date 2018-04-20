@@ -4,7 +4,14 @@
 Visual DL提供独立的Python SDK，如果训练任务是基于Python的话，直接安装visualdl的whl包，import到自己项目中即可使用。
 
 ```
+# Install the VisualDL. Preferably under a virtual environment or anaconda.
 pip install --upgrade visualdl
+
+# run a demo, vdl_create_scratch_log will create logs for testing.
+vdl_create_scratch_log
+visualDL --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
 ```
 
 如果以上步骤出现问题，很可能是因为python或pip不同版本或不同位置所致，以下安装方法能解决。
@@ -83,7 +90,7 @@ visualDL --logdir=scratch_log --port=8080
 
 如果仍然遇到安装问题，请尝试以下用源代码安装方法。
 
-### 使用代码安装
+## 使用代码安装
 ```
 #建議是在虚拟环境或anaconda下。
 git clone https://github.com/PaddlePaddle/VisualDL.git
