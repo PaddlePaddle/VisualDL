@@ -7,4 +7,4 @@
   introduction_cn.md
   installation_cn.md
   quick_start_cn.md
-  ../demo/demo_cn.rst
+  demo/demo_cn.rst
