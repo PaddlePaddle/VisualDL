@@ -2,7 +2,7 @@ VisualDL
 ========
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     getting_started/index_en.rst
     api/index.rst
