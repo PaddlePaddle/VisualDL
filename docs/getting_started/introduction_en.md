@@ -21,14 +21,14 @@ Visual DL has the following advantages:
 At present, most deep learning frameworks are using Python. The status of training process is recorded by logs.
 This method can show short-term training status. But it can hardly show long-term trends. Visual DL can help you visualize the whole training process and construct plots as below:
 <p align="center">
-<img src="scalar.png" height="300" width="300"/>
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/scalar.png" height="300"/>
 </p>
 
 ### Easy to Integrate
 
 Visual DL provides independent Python SDK. If the training task is based on Python, user can simply
 use Visual DL by installing the Visual DL wheel package and importing it into her/his own project.
-Please refer to [Installation](./installation_en.md) for more details.
+Please refer to Installation for more details.
 
 ### Easy to Use
 - Add log collecting logic to your own Python code.
@@ -61,11 +61,11 @@ visualDL --logdir ./log --port 8080
     - display input and intermediate images, easy to check data sample
     - support display for convolutional layer, easy to see results after each layer
         <p align="left">
-        <img src="dog.png" height="300" width="300"/>
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/dog.png" height="300" width="300"/>
         </p>
 	- support image-generating tasks to preview generated image
         <p align="left">
-        <img src="image-gan.png" height="300" width="300"/>
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/image-gan.png" height="300" width="300"/>
         </p>
 
 3. Histogram: display of parameter distribution, easy to check distribution curves in each tensor,
@@ -75,7 +75,7 @@ show the trend of parameter distribution.
 	- help users judge if the training is on the track. For example, if parameter change rate becomes close to 0 or grows rapidly,
 	then exploding and vanishing gradients might happen
         <p align="left">
-        <img src="histogram.png" />
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/histogram.png" />
         </p>
 
 4. Graph: visualize the model structure of deep learning networks.
@@ -84,7 +84,7 @@ show the trend of parameter distribution.
     - easy to see wrong configuration of a network
     - help understand network structure
         <p align="left">
-        <img src="graph.png" height="250" width="400"/>
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/graph.png" height="250" width="400"/>
         </p>
 
 ### Purely Open Source

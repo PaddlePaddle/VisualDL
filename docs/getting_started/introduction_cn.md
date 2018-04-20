@@ -20,12 +20,13 @@ Visual DL有以下几方面的优点。
 
 Visual DL 让你方便的将训练过程可视化起来，形成类似下面的图片：
 <p align="center">
-<img src="scalar.png" height="300" width="300"/>
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/scalar.png" height="300"/>
 </p>
 
 
 ### 易集成
 Visual DL提供独立的Python SDK，如果训练任务是基于Python的话，直接安装visualdl的whl包，import到自己项目中即可使用。
+详情请参阅安装。
 
 ### 易使用
 - 在自己的Python代码中加入visualdl记日志的逻辑。
@@ -55,18 +56,18 @@ visualDL --logdir ./log --port 8080
 	- 输入图片展示，方便查看数据样本的质量
 	- 支持卷积层的结果展示，方便查看卷积之后的效果。
         <p align="left">
-        <img src="dog.png" height="300" width="300"/>
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/dog.png" height="300" width="300"/>
         </p>
 	- 支持图像生成任务生成图片的预览。
         <p align="left">
-        <img src="image-gan.png" height="300" width="300"/>
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/image-gan.png" height="300" width="300"/>
         </p>
 
 3. Histogram. 参数分布展示，方便查看参数矩阵中数值的分布曲线，以及随着训练的进行，参数数值分布的变化趋势。
 	- 帮助用户理解训练过程，随着训练的进行，参数从一种分布变化到另外一种分布，背后对应的原因。
 	- 方便用户判断训练是否正常，例如参数迅速变小到0或者迅速变大，说明有梯度消失或者梯度爆炸的问题。
         <p align="left">
-        <img src="histogram.png" />
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/histogram.png" />
         </p>
 
 4. Graph. 方便查看深度神经网络的模型结构。
@@ -74,7 +75,7 @@ visualDL --logdir ./log --port 8080
 	- 便于排查网络配置的错误
 	- 帮助理解网络结构
         <p align="left">
-        <img src="graph.png" height="250" width="400"/>
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/graph.png" height="250" width="400"/>
         </p>
 
 ### 完全开放
