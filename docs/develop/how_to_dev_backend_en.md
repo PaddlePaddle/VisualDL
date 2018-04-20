@@ -1,4 +1,4 @@
-# VisualDL Backend / SDK structure and Develop Guide
+# Backend Architecture
 
 VisualDL has three components.
 1. The Python/C++ SDK that logs the data during training.

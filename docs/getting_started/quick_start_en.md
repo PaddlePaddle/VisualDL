@@ -1,5 +1,5 @@
-Quick start
-===========
+Setting up First Visualization
+==============================
 
 VisualDL is a deep learning visualization tool. It can be used to visualize intermediate and final results for training.
 Currently, VisualDL supports visualization features as follows:
