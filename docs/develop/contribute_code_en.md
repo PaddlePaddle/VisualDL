@@ -1,4 +1,4 @@
-# Contribute Code
+# How To Contribute
 
 VisualDL is an open source project initiated by PaddlePaddle and ECharts.
 Our goal is to break through the deep learning black box and help the developers to see the training trend by providing visualization.
