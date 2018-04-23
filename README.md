@@ -64,7 +64,51 @@ Histogram can be used to visualize parameter distribution and trends for any ten
 To give the VisualDL a quick test, please use the following commands.
 
 ```
-# Install the VisualDL. Preferably under a virtual environment.
+# Install the VisualDL. Preferably under a virtual environment or anaconda.
+pip install --upgrade visualdl
+
+# run a demo, vdl_create_scratch_log will create logs for testing.
+vdl_create_scratch_log
+visualdl --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
+```
+
+If you run into issues in above steps, it could be error caused by environmental issues by different python or pip versions.
+Following installation methods might fix the issues.
+
+## Install with Virtualenv
+
+[Virtualenv](https://virtualenv.pypa.io/en/stable/) creates isolated Python environment that prevents interfering
+by other Python programs on the same machine and make sure Python and pip are located properly.
+
+On macOS, install pip and virtualenv by:
+```
+sudo easy_install pip
+pip install --upgrade virtualenv
+```
+
+On Linux, install pip and virtualenv by:
+```
+sudo apt-get install python3-pip python3-dev python-virtualenv
+```
+
+Then create a Virtualenv environment by one of following command:
+```
+virtualenv ~/vdl  # for Python2.7
+virtualenv -p python3 ~/vdl for Python 3.x
+```
+
+```~/vdl``` will be your Virtualenv directory, you may choose to install anywhere.
+
+Activate your Virtualenv environment by:
+```
+source ~/vdl/bin/activate
+```
+
+Now you should be able to install VisualDL and run our demo:
+
+```
 pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
@@ -73,6 +117,56 @@ visualDL --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```
+
+If you still have issues installing VisualDL from Virtualenv, try following installation method.
+
+
+## Install with Anaconda
+
+Anaconda is a python distribution, with installation and package management tools. Also it is an environment manager,
+which provides the facility to create different python environments, each with their own settings.
+
+Follow the instructions on the [Anaconda download site](https://www.anaconda.com/download) to download and install Anaconda.
+Download Python 3.6 version command-Line installer.
+
+Create a conda environment named ```vdl``` or anything you want by:
+```
+conda create -n vdl pip python=2.7 # or python=3.3, etc.
+```
+
+Activate the conda environment by:
+```
+source activate vdl
+```
+
+Now you should be able to install VisualDL and run our demo:
+
+```
+pip install --upgrade visualdl
+
+# run a demo, vdl_create_scratch_log will create logs for testing.
+vdl_create_scratch_log
+visualDL --logdir=scratch_log --port=8080
+
+# visit http://127.0.0.1:8080
+```
+
+If you still have issues installing VisualDL, try installing from sources as in following section.
+
+
+### Install from source
+```
+#Preferably under a virtualenv or anaconda.
+git clone https://github.com/PaddlePaddle/VisualDL.git
+cd VisualDL
+
+python setup.py bdist_wheel
+pip install --upgrade dist/visualdl-*.whl
+```
+
+If there are still issues regarding the ```pip install```, you can still start Visual DL by starting the dev server
+[here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/how_to_dev_frontend_en.md)
+
 
 ## SDK
 VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.
@@ -128,45 +222,19 @@ int main() {
 }
 ```
 
-## Launch Board
-After some logs have been generated during training, users can launch board to see real-time data visualization.
+## Launch Visual DL
+After some logs have been generated during training, users can launch Visual DL application to see real-time data visualization by:
 
 
 ```
 visualDL --logdir <some log dir>
 ```
 
-Board also supports the parameters below for remote access:
+visualDL also supports following optional parameters:
 
 - `--host` set IP
 - `--port` set port
-- `--model_pb` specify ONNX format for model file
-
-The VisualDL Graphing system uses `GraphViz` to visualize the ONNX model. To enable the VisualDL Graph feature,
-please install [GraphViz](https://www.graphviz.org/download/)
-
-### How to install from pypi
-```
-pip install --upgrade visualdl
-```
-
-### How to build and install locally
-```
-git clone https://github.com/PaddlePaddle/VisualDL.git
-cd VisualDL
-
-python setup.py bdist_wheel
-pip install --upgrade dist/visualdl-*.whl
-```
-
-### Run a demo from scratch
-```
-# vdl_create_scratch_log is a helper commend that creates mock data.
-vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
-```
-that will start a server locally on port 8080, then
-you can visit http://127.0.0.1:8080 the see the visualdl board.
+- `--model_pb` specify ONNX format for model file to view graph
 
 
 ### Contribute

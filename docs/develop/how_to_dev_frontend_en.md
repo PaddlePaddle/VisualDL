@@ -1,4 +1,4 @@
-# VisualDL Web app Develop
+# Frontend Guide
 
 VisualDL has three components.
 1. The Python/C++ SDK that logs the data during training.
