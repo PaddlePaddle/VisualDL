@@ -84,23 +84,30 @@ export default {
     searchText: function(val) {
       // Filter the data that has the hasPrefix
       let matchedWords = [];
-      if (val != '') {
-        val = val.toLowerCase();
+      let notMatchedWords = [];
 
-        function hasPrefix(value) {
-          let word = value[value.length - 1];
-          return (typeof word == 'string' && word.toLowerCase().startsWith(val));
+      val = val.toLowerCase();
+      this.embeddingData.forEach( function(dataItem) {
+        let word = dataItem[dataItem.length - 1];
+
+        if (typeof word == 'string' && word.toLowerCase().startsWith(val)) {
+          matchedWords.push(dataItem);
+        } else {
+          notMatchedWords.push(dataItem);
         }
-
-        matchedWords = this.embeddingData.filter(hasPrefix);
-      }
+      });
 
       // Update the matched series data
       this.myChart.setOption({
         series: [{
-          // Grab the 'matched' series data
-          name: 'matched',
-          data: matchedWords,
+                   // Grab the 'matched' series data
+                   name: 'matched',
+                   data: matchedWords,
+                 },
+                 {
+                   // Grab the 'all' series data
+                   name: 'all',
+                   data: notMatchedWords,
         }],
       });
     },
@@ -113,6 +120,7 @@ export default {
     },
     set2DChartOptions() {
       let option = {
+        animation: false,
         xAxis: {},
         yAxis: {},
         series: [{
@@ -150,6 +158,7 @@ export default {
     set3DChartOptions() {
       let symbolSize = 8;
       let option3d = {
+        animation: false,
         grid3D: {},
         xAxis3D: {
           type: 'category',
