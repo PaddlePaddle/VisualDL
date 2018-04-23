@@ -59,13 +59,9 @@ export default {
   watch: {
     embeddingData: function(val) {
       this.myChart.hideLoading();
-      this.myChart.setOption({
-        series: [{
-          // Grab the 'matched' series data
-          name: 'all',
-          data: val,
-        }],
-      });
+
+      // Got new data, pass to the filter function to render the 'matched' set and 'not matched' set
+      this.filterSeriesDataAndSetOption(this.searchText);
     },
     displayWordLabel: function(val) {
       this.setDisplayWordLabel();
@@ -82,34 +78,7 @@ export default {
       }
     },
     searchText: function(val) {
-      // Filter the data that has the hasPrefix
-      let matchedWords = [];
-      let notMatchedWords = [];
-
-      val = val.toLowerCase();
-      this.embeddingData.forEach( function(dataItem) {
-        let word = dataItem[dataItem.length - 1];
-
-        if (typeof word == 'string' && word.toLowerCase().startsWith(val)) {
-          matchedWords.push(dataItem);
-        } else {
-          notMatchedWords.push(dataItem);
-        }
-      });
-
-      // Update the matched series data
-      this.myChart.setOption({
-        series: [{
-                   // Grab the 'matched' series data
-                   name: 'matched',
-                   data: matchedWords,
-                 },
-                 {
-                   // Grab the 'all' series data
-                   name: 'all',
-                   data: notMatchedWords,
-        }],
-      });
+      this.filterSeriesDataAndSetOption(val);
     },
   },
   methods: {
@@ -126,7 +95,7 @@ export default {
         series: [{
                    name: 'all',
                    symbolSize: 10,
-                   data: this.embeddingData,
+                   data: [],
                    type: 'scatter',
                    color: '#008c99',
                  },
@@ -220,6 +189,40 @@ export default {
               show: true,
             },
           },
+        }],
+      });
+    },
+    filterSeriesDataAndSetOption(keyWord) {
+      // Filter the data that has the hasPrefix
+      let matchedWords = [];
+      let notMatchedWords = [];
+
+      if (keyWord != '') {
+        keyWord = keyWord.toLowerCase();
+        this.embeddingData.forEach( function(dataItem) {
+          let word = dataItem[dataItem.length - 1];
+
+          if (typeof word == 'string' && word.toLowerCase().startsWith(keyWord)) {
+            matchedWords.push(dataItem);
+          } else {
+            notMatchedWords.push(dataItem);
+          }
+        });
+      } else {
+        notMatchedWords = this.embeddingData;
+      }
+
+      // Update the matched series data
+      this.myChart.setOption({
+        series: [{
+                   // Grab the 'matched' series data
+                   name: 'matched',
+                   data: matchedWords,
+                 },
+                 {
+                   // Grab the 'all' series data
+                   name: 'all',
+                   data: notMatchedWords,
         }],
       });
     },
