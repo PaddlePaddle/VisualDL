@@ -120,6 +120,7 @@ export default {
                    symbolSize: 10,
                    data: this.embeddingData,
                    type: 'scatter',
+                   color: '#008c99',
                  },
                  {
                    name: 'matched',
@@ -147,7 +148,7 @@ export default {
       this.myChart.setOption(option);
     },
     set3DChartOptions() {
-      let symbolSize = 2.5;
+      let symbolSize = 8;
       let option3d = {
         grid3D: {},
         xAxis3D: {
@@ -165,6 +166,7 @@ export default {
             type: 'scatter3D',
             symbolSize: symbolSize,
             data: [],
+            color: '#008c99',
           },
           {
             name: 'matched',
@@ -178,6 +180,9 @@ export default {
                   return param.data[param.data.length - 1];
                 },
                 position: 'top',
+                textStyle: {
+                  color: '#990d00',
+                },
               },
             },
             type: 'scatter3D',
@@ -198,6 +203,9 @@ export default {
                 return param.data[param.data.length - 1];
               },
               position: 'top',
+              textStyle: {
+                color: '#008c99',
+              },
             },
             emphasis: {
               show: true,
