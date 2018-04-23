@@ -40,6 +40,8 @@ export default {
     return {
       width: 900,
       height: 600,
+      regularLabelColor: '#008c99',
+      matchedLabelColor: '#990d00',
     };
   },
   computed: {
@@ -97,7 +99,7 @@ export default {
                    symbolSize: 10,
                    data: [],
                    type: 'scatter',
-                   color: '#008c99',
+                   color: this.regularLabelColor,
                  },
                  {
                    name: 'matched',
@@ -144,7 +146,7 @@ export default {
             type: 'scatter3D',
             symbolSize: symbolSize,
             data: [],
-            color: '#008c99',
+            color: this.regularLabelColor,
           },
           {
             name: 'matched',
@@ -159,7 +161,7 @@ export default {
                 },
                 position: 'top',
                 textStyle: {
-                  color: '#990d00',
+                  color: this.matchedLabelColor,
                 },
               },
             },
@@ -182,7 +184,7 @@ export default {
               },
               position: 'top',
               textStyle: {
-                color: '#008c99',
+                color: this.regularLabelColor,
               },
             },
             emphasis: {
