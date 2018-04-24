@@ -51,7 +51,9 @@ export default {
       this.runsArray = data;
 
       // Setting showingRun should trigger fetchDatasets
-      this.config.showingRun = data[0];
+      if (data.length > 0) {
+        this.config.showingRun = data[0];
+      }
     });
   },
   watch: {
