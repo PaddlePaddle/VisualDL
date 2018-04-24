@@ -18,10 +18,12 @@ from __future__ import absolute_import
 from visualdl import core
 
 dtypes = ("float", "double", "int32", "int64")
+EMBEDDING_TAG = 'embedding'
 
 
 def check_tag_name_valid(tag):
     assert '%' not in tag, "character % is a reserved word, it is not allowed in tag."
+    assert tag != EMBEDDING_TAG, "embedding is a reserved word, it is not allowed in tag."
 
 
 def check_mode_name_valid(tag):
@@ -141,8 +143,7 @@ class LogReader(object):
         return self.reader.get_text(tag)
 
     def embedding(self, tag):
-        check_tag_name_valid(tag)
-        return self.reader.get_embedding(tag)
+        return self.reader.get_embedding(EMBEDDING_TAG)
 
     def audio(self, tag):
         """
@@ -292,7 +293,7 @@ class LogWriter(object):
 
     def embedding(self, tag):
         check_tag_name_valid(tag)
-        return self.writer.new_embedding(tag)
+        return self.writer.new_embedding(EMBEDDING_TAG)
 
     def save(self):
         self.writer.save()
