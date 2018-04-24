@@ -1,16 +1,16 @@
 # 前端指南
 
-VisualDL has three components.
-1. The Python/C++ SDK that logs the data during training.
-1. The single page client side app that visualized training data.
-1. The server (powered on Flask) that reads the logs data and delivers it to the client side app for displaying graphs (scalars/histograms) and embeddings.
+VisualDL有三个功能模块.
+1. 在训练过程中用来记录日志数据的 Python/C++ SDK。
+1. 用来可视化训练数据的客户端单页面应用。
+1. 后端 Flask 服务器，用来读取日志数据并提供给前端应用，以便前端可以展示各类图标，如柱状图，嵌入图等等.
 
-This article will go over the basic web-app architecture and development guide.
+这篇文档用来介绍前端的架构，以及指导用户自行开发。
 
-## TL;DR
-If you are not interested in the details of mumbo jumbo and want to start development as soon as possible, please run the following commands.
+## 长话短说
+如果您不关心细节，而是想马上开始开发，请运行以下命令。
 
-To clone the repo and to prepare the environment
+克隆代码库以及准备开发环境
 ```bash
 git clone git@github.com:PaddlePaddle/VisualDL.git
 cd VisualDL
@@ -19,60 +19,62 @@ pip install -r requirements.txt
 # Set up the node dependencies and the VisualDL SDK
 ./scripts/setup_dev_env.sh
 ```
-To run the dev server and start coding
+运行开发服务器，开始码代码喽~
 ```bash
 ./scripts/start_dev_server.sh --logdir=<LOG_DIR>
 ```
-The script will run a dev server at `http://0.0.0.0:8040`. Open a browser and navigate to `http://0.0.0.0:8040/` to see it
+这个脚本会在 `http://0.0.0.0:8040` 启动一个开发服务器。打开浏览器，来到 `http://0.0.0.0:8040/`，您就可以发现开发版的 VisualDL 啦~
 
-## Web App Architecture
 
-The VisualDL Web app uses multiple frameworks to help manage the project. They are
+## 前端网络应用架构
 
-1. webpack: To manage all assets
-1. npm: To manage dependencies
-1. Vue: Javascript Component framework
-1. ECharts: To pilot charts
+VisualDL 前端网络应用使用多个框架来管理项目。这些框架包括：
+
+1. webpack: 管理所有组件
+1. npm: 管理依赖性
+1. Vue: 流行的Javascript组件框架
+1. ECharts: 专业的数据可视化库
 
 ## Webpack
-webpack is a module bundler. Its main purpose is to bundle JavaScript files for usage in a browser.
+webpack 是一个模块打包框架. 它主要的工作是把前端JavaScript文件带包在一起，提供给浏览器。
 
-For a long time, web developers need to worry about backward compatibility or how to support different versions of browsers.
-webpack can help to transpile the Javascript files to the version where a browser can take. The developers don't need to implement version specific code anymore.
-It can also help to minify and uglify Javascript files. In a nutshell, webpack helps to manage all of your assets (.js, .css, .gif, .sass, etc) so you don't have to.
+很长一段时间，网络开发者不得不关心如何向后兼容以及如何支持不同的浏览器。Webpack可以把JavaScript代码同步编译到不同的版本，以便适应不同的浏览器。
+网络开发者不必再担心为了特定的浏览器而订制特定的代码版本。
+它也可以 '最小化' 和 '丑化' JavaScript文件。一句话，webpack可以帮助管理你的所有资料（.js, .css, .gif, .sass, etc）.
 
-To learn more about [webpack](https://webpack.js.org/).
+更多Webpack内容请参考[这里](https://webpack.js.org/).
 
 ## npm package
-npm is the package manager for JavaScript and is a great tool to manage multiple dependencies. To confirm that you have npm installed. Please run this command
+npm 是一个JavaScript的代码包管理器。而且是一个很优秀的管理多种依赖性的工具。请运行以下命令来确保您已经安装了 npm
+
 ``` bash
 npm -v
 ```
-If your environment does not have npm already, please [download npm](https://www.npmjs.com/get-npm).
+如果您的环境没有npm，请在 [这里](https://www.npmjs.com/get-npm) 下载.
 
-The basic packaging information is stored in `package.json`. It specifies build scripts and dependencies for each environment.
-npm reads `package.json` to build different package according to the packaging script.
-If you are not familiar with npm, please refer to the [npm documentation](https://docs.npmjs.com/) for more detail.
+基本的包裹信息在  `package.json`中。它用来定义构造脚本的依赖关系。
+npm 读取 `package.json` 来根据打包脚本构造不同的包裹。
+如果您对 npm 还不熟，请看 [这里](https://docs.npmjs.com/)。
 
-Install the necessary dependencies by running
+运行如下命令来安装所需的依赖库
 ```bash
 # Navigate to the web-app folder
 cd VisualDL/frontend
 npm install
 ```
 
-This command will go through `package.json` and install the dependencies in the local node_modules folder.
+这个命令会逐行检查`package.json`并且安装相应的依赖库到本地的 `node_modules` 文件夹里
 
 ## Vue
 
-Vue is a JavaScript component framework that helps the developer to implement web component in MVVM architecture pattern.
+Vue 是一个很潮的 JavaScript 框架。可以帮助开发者用 MVM 架构模式 开发网络组件。
 
-Vue allows you to define a self-contained view model in a .vue file and attach view model objects to DOM objects.
+Vue 允许开发者自己定义视图模型并保存在 .vue 文件里。然后把视图模型绑定到 DOM 对象上。
 
-To learn more about [Vue](https://vuejs.org/)
+更多内容参见 [这里](https://vuejs.org/)
 
 ## ECharts
 
-We use ECharts javascript library to render our charts and graphs. ECharts is a leading open source charting library that supports numerous data visualization.
+我们使用一个国内流行的 ECharts 来显示图表和图像。 ECharts 是领先的开源前端数据可视化库。它支持多种多样的数据可视化需求。
 
-To learn more about ECharts framework, please visit [ECharts](https://ecomfe.github.io/echarts-doc/public/en/index.html).
+更多关于 [ECharts](https://ecomfe.github.io/echarts-doc/public/en/index.html)的信息。
