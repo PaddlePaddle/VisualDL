@@ -40,6 +40,8 @@ export default {
     return {
       width: 900,
       height: 600,
+      regularLabelColor: '#008c99',
+      matchedLabelColor: '#c23531',
     };
   },
   computed: {
@@ -59,13 +61,9 @@ export default {
   watch: {
     embeddingData: function(val) {
       this.myChart.hideLoading();
-      this.myChart.setOption({
-        series: [{
-          // Grab the 'matched' series data
-          name: 'all',
-          data: val,
-        }],
-      });
+
+      // Got new data, pass to the filter function to render the 'matched' set and 'not matched' set
+      this.filterSeriesDataAndSetOption(this.searchText);
     },
     displayWordLabel: function(val) {
       this.setDisplayWordLabel();
@@ -82,27 +80,7 @@ export default {
       }
     },
     searchText: function(val) {
-      // Filter the data that has the hasPrefix
-      let matchedWords = [];
-      if (val != '') {
-        val = val.toLowerCase();
-
-        function hasPrefix(value) {
-          let word = value[value.length - 1];
-          return (typeof word == 'string' && word.toLowerCase().startsWith(val));
-        }
-
-        matchedWords = this.embeddingData.filter(hasPrefix);
-      }
-
-      // Update the matched series data
-      this.myChart.setOption({
-        series: [{
-          // Grab the 'matched' series data
-          name: 'matched',
-          data: matchedWords,
-        }],
-      });
+      this.filterSeriesDataAndSetOption(val);
     },
   },
   methods: {
@@ -113,13 +91,15 @@ export default {
     },
     set2DChartOptions() {
       let option = {
+        animation: false,
         xAxis: {},
         yAxis: {},
         series: [{
                    name: 'all',
                    symbolSize: 10,
-                   data: this.embeddingData,
+                   data: [],
                    type: 'scatter',
+                   color: this.regularLabelColor,
                  },
                  {
                    name: 'matched',
@@ -147,8 +127,9 @@ export default {
       this.myChart.setOption(option);
     },
     set3DChartOptions() {
-      let symbolSize = 2.5;
+      let symbolSize = 8;
       let option3d = {
+        animation: false,
         grid3D: {},
         xAxis3D: {
           type: 'category',
@@ -165,6 +146,7 @@ export default {
             type: 'scatter3D',
             symbolSize: symbolSize,
             data: [],
+            color: this.regularLabelColor,
           },
           {
             name: 'matched',
@@ -178,6 +160,9 @@ export default {
                   return param.data[param.data.length - 1];
                 },
                 position: 'top',
+                textStyle: {
+                  color: this.matchedLabelColor,
+                },
               },
             },
             type: 'scatter3D',
@@ -198,11 +183,48 @@ export default {
                 return param.data[param.data.length - 1];
               },
               position: 'top',
+              textStyle: {
+                color: this.regularLabelColor,
+              },
             },
             emphasis: {
               show: true,
             },
           },
+        }],
+      });
+    },
+    filterSeriesDataAndSetOption(keyWord) {
+      // Filter the data that has the hasPrefix
+      let matchedWords = [];
+      let notMatchedWords = [];
+
+      if (keyWord != '') {
+        keyWord = keyWord.toLowerCase();
+        this.embeddingData.forEach( function(dataItem) {
+          let word = dataItem[dataItem.length - 1];
+
+          if (typeof word == 'string' && word.toLowerCase().startsWith(keyWord)) {
+            matchedWords.push(dataItem);
+          } else {
+            notMatchedWords.push(dataItem);
+          }
+        });
+      } else {
+        notMatchedWords = this.embeddingData;
+      }
+
+      // Update the matched series data
+      this.myChart.setOption({
+        series: [{
+                   // Grab the 'matched' series data
+                   name: 'matched',
+                   data: matchedWords,
+                 },
+                 {
+                   // Grab the 'all' series data
+                   name: 'all',
+                   data: notMatchedWords,
         }],
       });
     },
