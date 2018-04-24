@@ -41,7 +41,7 @@
 
     <v-radio-group
       label="Run"
-      v-model="config.showingRun"
+      v-model="config.selectedRun"
       dark>
       <v-radio
         v-for="item in runsItems"

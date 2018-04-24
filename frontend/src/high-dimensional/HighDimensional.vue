@@ -40,7 +40,7 @@ export default {
         displayWordLabel: true,
         dimension: '2',
         reduction: 'tsne',
-        showingRun: '',
+        selectedRun: '',
         running: true,
       },
       embeddingData: [],
@@ -50,9 +50,9 @@ export default {
     getRuns().then(({errno, data}) => {
       this.runsArray = data;
 
-      // Setting showingRun should trigger fetchDatasets
+      // Setting selectedRun should trigger fetchDatasets
       if (data.length > 0) {
-        this.config.showingRun = data[0];
+        this.config.selectedRun = data[0];
       }
     });
   },
@@ -63,7 +63,7 @@ export default {
     'config.reduction': function(val) {
       this.fetchDatasets();
     },
-    'config.showingRun': function(val) {
+    'config.selectedRun': function(val) {
       this.fetchDatasets();
     },
   },
@@ -87,7 +87,7 @@ export default {
       let params = {
         dimension: this.config.dimension,
         reduction: this.config.reduction,
-        run: this.config.showingRun,
+        run: this.config.selectedRun,
       };
       getHighDimensionalDatasets(params).then(({errno, data}) => {
         let vectorData = data.embedding;
