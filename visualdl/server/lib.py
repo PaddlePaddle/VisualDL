@@ -303,14 +303,9 @@ def get_texts(storage, mode, tag, num_records=100):
         return res
 
 
-def get_embeddings(storage,
-                   mode,
-                   tag,
-                   reduction,
-                   dimension=2,
-                   num_records=5000):
+def get_embeddings(storage, mode, reduction, dimension=2, num_records=5000):
     with storage.mode(mode) as reader:
-        embedding = reader.embedding(tag)
+        embedding = reader.embedding()
         labels = embedding.get_all_labels()
         high_dimensional_vectors = embedding.get_all_embeddings()
 

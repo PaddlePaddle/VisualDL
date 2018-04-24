@@ -142,7 +142,7 @@ class LogReader(object):
         check_tag_name_valid(tag)
         return self.reader.get_text(tag)
 
-    def embedding(self, tag):
+    def embedding(self):
         return self.reader.get_embedding(EMBEDDING_TAG)
 
     def audio(self, tag):
@@ -291,8 +291,7 @@ class LogWriter(object):
         check_tag_name_valid(tag)
         return self.writer.new_text(tag)
 
-    def embedding(self, tag):
-        check_tag_name_valid(tag)
+    def embedding(self):
         return self.writer.new_embedding(EMBEDDING_TAG)
 
     def save(self):
