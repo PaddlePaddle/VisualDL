@@ -47,11 +47,10 @@ export default {
     };
   },
   created() {
-    // TODO: Do this after we have the runsArray
-    this.fetchDatasets();
-
     getRuns().then(({errno, data}) => {
       this.runsArray = data;
+
+      // Setting showingRun should trigger fetchDatasets
       this.config.showingRun = data[0];
     });
   },
