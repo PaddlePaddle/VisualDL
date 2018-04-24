@@ -41,7 +41,7 @@ export default {
       width: 900,
       height: 600,
       regularLabelColor: '#008c99',
-      matchedLabelColor: '#990d00',
+      matchedLabelColor: '#c23531',
     };
   },
   computed: {
