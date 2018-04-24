@@ -12,6 +12,7 @@
     <div class="visual-dl-page-right">
       <div class="visual-dl-page-config-container">
         <ui-config
+          :runs-items="runsItems"
           :config="config"
         />
       </div>
@@ -20,7 +21,7 @@
 </template>
 
 <script>
-import {getHighDimensionalDatasets} from '../service';
+import {getHighDimensionalDatasets, getRuns} from '../service';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import Config from './ui/Config';
 import Chart from './ui/Chart';
@@ -33,18 +34,27 @@ export default {
   name: 'HighDimensional',
   data() {
     return {
+      runsArray: [],
       config: {
         searchText: '',
         displayWordLabel: true,
         dimension: '2',
         reduction: 'tsne',
+        selectedRun: '',
         running: true,
       },
       embeddingData: [],
     };
   },
   created() {
-    this.fetchDatasets();
+    getRuns().then(({errno, data}) => {
+      this.runsArray = data;
+
+      // Setting selectedRun should trigger fetchDatasets
+      if (data.length > 0) {
+        this.config.selectedRun = data[0];
+      }
+    });
   },
   watch: {
     'config.dimension': function(val) {
@@ -53,9 +63,23 @@ export default {
     'config.reduction': function(val) {
       this.fetchDatasets();
     },
+    'config.selectedRun': function(val) {
+      this.fetchDatasets();
+    },
   },
   mounted() {
     autoAdjustHeight();
+  },
+  computed: {
+    runsItems() {
+      let runsArray = this.runsArray || [];
+      return runsArray.map((item) => {
+        return {
+          name: item,
+          value: item,
+        };
+      });
+    },
   },
   methods: {
     fetchDatasets() {
@@ -63,6 +87,7 @@ export default {
       let params = {
         dimension: this.config.dimension,
         reduction: this.config.reduction,
+        run: this.config.selectedRun,
       };
       getHighDimensionalDatasets(params).then(({errno, data}) => {
         let vectorData = data.embedding;
