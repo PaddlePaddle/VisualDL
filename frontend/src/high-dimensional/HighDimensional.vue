@@ -86,6 +86,7 @@ export default {
       let params = {
         dimension: this.config.dimension,
         reduction: this.config.reduction,
+        run: this.config.showingRun,
       };
       getHighDimensionalDatasets(params).then(({errno, data}) => {
         let vectorData = data.embedding;
