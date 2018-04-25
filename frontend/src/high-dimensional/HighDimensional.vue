@@ -7,6 +7,7 @@
         :search-text="config.searchText"
         :dimension="config.dimension"
         :embedding-data="embeddingData"
+        :show-loading="showLoading"
       />
     </div>
     <div class="visual-dl-page-right">
@@ -39,11 +40,12 @@ export default {
         searchText: '',
         displayWordLabel: true,
         dimension: '2',
-        reduction: 'tsne',
+        reduction: 'pca',
         selectedRun: '',
         running: true,
       },
       embeddingData: [],
+      showLoading: false,
     };
   },
   created() {
@@ -83,6 +85,8 @@ export default {
   },
   methods: {
     fetchDatasets() {
+      this.showLoading = true;
+
       // Fetch the data from the server. Passing dimension and reduction method
       let params = {
         dimension: this.config.dimension,
@@ -90,6 +94,8 @@ export default {
         run: this.config.selectedRun,
       };
       getHighDimensionalDatasets(params).then(({errno, data}) => {
+        this.showLoading = false;
+
         let vectorData = data.embedding;
         let labels = data.labels;
 

@@ -307,19 +307,18 @@ def get_embeddings(storage, mode, reduction, dimension=2, num_records=5000):
     with storage.mode(mode) as reader:
         embedding = reader.embedding()
         labels = embedding.get_all_labels()
-        high_dimensional_vectors = embedding.get_all_embeddings()
+        high_dimensional_vectors = np.array(embedding.get_all_embeddings())
 
-        # TODO: Move away from sklearn
         if reduction == 'tsne':
-            from sklearn.manifold import TSNE
-            tsne = TSNE(
-                perplexity=30, n_components=dimension, init='pca', n_iter=5000)
-            low_dim_embs = tsne.fit_transform(high_dimensional_vectors)
+            import tsne
+            low_dim_embs = tsne.tsne(
+                high_dimensional_vectors,
+                dimension,
+                initial_dims=50,
+                perplexity=30.0)
 
         elif reduction == 'pca':
-            from sklearn.decomposition import PCA
-            pca = PCA(n_components=3)
-            low_dim_embs = pca.fit_transform(high_dimensional_vectors)
+            low_dim_embs = simple_pca(high_dimensional_vectors, dimension)
 
         return {"embedding": low_dim_embs.tolist(), "labels": labels}
 
@@ -393,3 +392,23 @@ def cache_get(cache):
         return data
 
     return _handler
+
+
+# A simple PCA implementaiton to do the dimension reduction.
+def simple_pca(x, dimension):
+    # Center the data.
+    x -= np.mean(x, axis=0)
+
+    # Computing the Covariance Matrix
+    cov = np.cov(x, rowvar=False)
+
+    # Get eigenvectors and eigenvalues from the covariance matrix
+    eigvals, eigvecs = np.linalg.eig(cov)
+
+    # Sort the eigvals from high to low
+    order = np.argsort(eigvals)[::-1]
+
+    # Drop the eigenvectors with low eigenvalues
+    eigvecs = eigvecs[:, order[:dimension]]
+
+    return np.dot(x, eigvecs)

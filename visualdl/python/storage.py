@@ -143,6 +143,9 @@ class LogReader(object):
         return self.reader.get_text(tag)
 
     def embedding(self):
+        """
+        Get the embedding reader.
+        """
         return self.reader.get_embedding(EMBEDDING_TAG)
 
     def audio(self, tag):
@@ -292,9 +295,19 @@ class LogWriter(object):
         return self.writer.new_text(tag)
 
     def embedding(self):
+        """
+        Create an embedding writer that used to write
+        embedding data.
+
+        :return: A embedding writer to record embedding data
+        :rtype: embeddingWriter
+        """
         return self.writer.new_embedding(EMBEDDING_TAG)
 
     def save(self):
+        """
+        Force the VisualDL to sync with the file system.
+        """
         self.writer.save()
 
     def __enter__(self):

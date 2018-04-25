@@ -35,6 +35,10 @@ export default {
       type: String,
       required: true,
     },
+    showLoading: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -53,15 +57,11 @@ export default {
   created() {},
   mounted() {
     this.createChart();
-    this.myChart.showLoading();
-
     this.set2DChartOptions();
     this.setDisplayWordLabel();
   },
   watch: {
     embeddingData: function(val) {
-      this.myChart.hideLoading();
-
       // Got new data, pass to the filter function to render the 'matched' set and 'not matched' set
       this.filterSeriesDataAndSetOption(this.searchText);
     },
@@ -70,7 +70,6 @@ export default {
     },
     dimension: function(val) {
       this.myChart.clear();
-      this.myChart.showLoading();
       if (val === '2') {
         this.set2DChartOptions();
         this.setDisplayWordLabel();
@@ -81,6 +80,13 @@ export default {
     },
     searchText: function(val) {
       this.filterSeriesDataAndSetOption(val);
+    },
+    showLoading: function(val) {
+      if (val) {
+        this.myChart.showLoading();
+      } else {
+        this.myChart.hideLoading();
+      }
     },
   },
   methods: {
