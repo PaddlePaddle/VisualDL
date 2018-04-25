@@ -15,8 +15,6 @@
 
 from __future__ import print_function
 
-import sys
-
 import numpy as np
 from visualdl import LogWriter
 
@@ -41,12 +39,12 @@ with logwriter.mode("train") as writer:
 num_samples = 4
 with logwriter.mode("train") as writer:
     conv_image = writer.image("conv_image", num_samples,
-                              1)  #show 4 samples for every 1 step
+                              1)  # show 4 samples for every 1 step
     input_image = writer.image("input_image", num_samples, 1)
 
 with logwriter.mode("train") as writer:
     param1_histgram = writer.histogram(
-        "param1", 100)  #100 buckets, e.g 100 data sets in a histograms
+        "param1", 100)  # 100 buckets, e.g 100 data sets in a histograms
 
 
 def vgg16_bn_drop(input):
@@ -125,9 +123,9 @@ for pass_id in range(PASS_NUM):
             fetch_list=[avg_cost, conv1, param1_var] + accuracy.metrics)
         pass_acc = accuracy.eval(exe)
 
-        #all code below is for VisualDL
+        # all code below is for VisualDL
 
-        #start picking sample from beginning
+        # start picking sample from beginning
         if sample_num == 0:
             input_image.start_sampling()
             conv_image.start_sampling()
@@ -157,7 +155,7 @@ for pass_id in range(PASS_NUM):
                 conv_image.finish_sampling()
                 sample_num = 0
 
-        #add record for loss and accuracy to scalar
+        # add record for loss and accuracy to scalar
         loss_scalar.add_record(step, loss)
         acc_scalar.add_record(step, acc)
         param1_histgram.add_record(step, param1.flatten())
