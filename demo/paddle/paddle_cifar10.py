@@ -40,11 +40,13 @@ with logwriter.mode("train") as writer:
 
 num_samples = 4
 with logwriter.mode("train") as writer:
-    conv_image = writer.image("conv_image", num_samples, 1) #show 4 samples for every 1 step
+    conv_image = writer.image("conv_image", num_samples,
+                              1)  #show 4 samples for every 1 step
     input_image = writer.image("input_image", num_samples, 1)
 
 with logwriter.mode("train") as writer:
-    param1_histgram = writer.histogram("param1", 100) #100 buckets, e.g 100 data sets in a histograms
+    param1_histgram = writer.histogram(
+        "param1", 100)  #100 buckets, e.g 100 data sets in a histograms
 
 
 def vgg16_bn_drop(input):
@@ -142,7 +144,6 @@ for pass_id in range(PASS_NUM):
             # add sample to VisualDL Image Writer to view input image
             input_image.set_sample(idx, input_image_data.shape,
                                    input_image_data.flatten())
-
 
             conv_image_data = conv1_out[0][0]
             # add sample to view conv image
