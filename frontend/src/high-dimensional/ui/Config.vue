@@ -32,11 +32,12 @@
       v-model="config.reduction"
       dark>
       <v-radio
-        label="T-SNE"
-        value="tsne"/>
-      <v-radio
         label="PCA"
         value="pca"/>
+      <v-radio
+        label="T-SNE"
+        value="tsne"/>
+
     </v-radio-group>
 
     <v-radio-group
