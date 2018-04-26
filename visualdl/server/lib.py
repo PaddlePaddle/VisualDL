@@ -394,8 +394,11 @@ def cache_get(cache):
     return _handler
 
 
-# A simple PCA implementaiton to do the dimension reduction.
 def simple_pca(x, dimension):
+    """
+    A simple PCA implementation to do the dimension reduction.
+    """
+
     # Center the data.
     x -= np.mean(x, axis=0)
 
