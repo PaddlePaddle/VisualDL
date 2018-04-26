@@ -34,7 +34,7 @@ import {getPluginHistogramsHistograms} from '../../service';
 let zrDrawElement = {};
 zrDrawElement.hoverDots = [];
 // the time to refresh chart data
-const intervalTime = 15;
+const intervalTime = 15;  // in demo, we should turn this off
 
 const p = Math.max(0, precisionRound(0.01, 1.01) - 1);
 const yValueFormat = format('.' + p + 'e');
@@ -86,6 +86,9 @@ export default {
     let tagInfo = this.tagInfo;
     this.initChart(tagInfo);
     if (this.running) {
+      console.log('histogram running');
+      console.log('process.env');
+      console.log(process.env);
       this.startInterval();
     }
   },

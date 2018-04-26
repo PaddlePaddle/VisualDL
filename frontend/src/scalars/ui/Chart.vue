@@ -338,8 +338,12 @@ export default {
           run: item.run,
           tag: tag,
         };
+        // console.log('params');
+        // console.log(params);
         return getPluginScalarsScalars(params);
       });
+      window.axios = axios;
+      // console.log('requestList');
       axios.all(requestList).then((resArray) => {
         if (resArray.every((res) => res.status === 0)) {
           this.originData = resArray.map((res) => res.data);
