@@ -27,6 +27,9 @@ import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import Config from './ui/Config';
 import Chart from './ui/Chart';
 
+// the time to refresh chart data
+const intervalTime = 30;
+
 export default {
   components: {
     'ui-config': Config,
@@ -57,6 +60,13 @@ export default {
         this.config.selectedRun = data[0];
       }
     });
+
+    if (this.config.running) {
+      this.startInterval();
+    }
+  },
+  beforeDestroy() {
+    this.stopInterval();
   },
   watch: {
     'config.dimension': function(val) {
@@ -67,6 +77,9 @@ export default {
     },
     'config.selectedRun': function(val) {
       this.fetchDatasets();
+    },
+    'config.running': function(val) {
+      val ? this.startInterval() : this.stopInterval();
     },
   },
   mounted() {
@@ -84,6 +97,15 @@ export default {
     },
   },
   methods: {
+    stopInterval() {
+      clearInterval(this.getOringDataInterval);
+    },
+    // get origin data per {{intervalTime}} seconds
+    startInterval() {
+      this.getOringDataInterval = setInterval(() => {
+        this.fetchDatasets();
+      }, intervalTime * 1000);
+    },
     fetchDatasets() {
       this.showLoading = true;
 

@@ -296,10 +296,10 @@ class LogWriter(object):
 
     def embedding(self):
         """
-        Create an embedding writer that used to write
+        Create an embedding writer that is used to write
         embedding data.
 
-        :return: A embedding writer to record embedding data
+        :return: An embedding writer to record embedding data
         :rtype: embeddingWriter
         """
         return self.writer.new_embedding(EMBEDDING_TAG)
