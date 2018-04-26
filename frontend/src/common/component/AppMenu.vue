@@ -63,13 +63,11 @@ export default {
           title: 'TEXTS',
           name: 'texts',
         },
-        /* // Hide the top menu
-            {
-                url: '/HighDimensional',
-                title: 'HighDimensional',
-                name: 'HighDimensional'
-            }
-            */
+        {
+          url: '/HighDimensional',
+          title: 'HighDimensional',
+          name: 'HighDimensional',
+        },
       ],
     };
   },
