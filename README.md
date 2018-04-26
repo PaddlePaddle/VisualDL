@@ -88,7 +88,7 @@ sudo easy_install pip
 pip install --upgrade virtualenv
 ```
 
-On Linux, install virtualenv by:
+On Linux, install pip and virtualenv by:
 ```
 sudo apt-get install python3-pip python3-dev python-virtualenv
 ```

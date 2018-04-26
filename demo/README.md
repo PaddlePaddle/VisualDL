@@ -6,7 +6,7 @@ there are several demos for different platforms.
 ## PaddlePaddle
 Locates in `./paddle`.
 
-This is a visualization for `resnet` on `cifar10` dataset, we visualize the CONV parameters,
+This is a visualization for `vgg` on `cifar10` dataset, we visualize the CONV parameters,
 and there are some interesting patterns.
 
 ## PyTorch GAN
