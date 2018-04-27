@@ -190,7 +190,7 @@ export default {
 
     this.$watch('running', function(running) {
       // if it is demo, do not trigger interval
-      running = running &&  !this.isDemo;
+      running = running && !this.isDemo;
       running ? this.startInterval() : this.stopInterval();
     });
   },
@@ -341,12 +341,9 @@ export default {
           run: item.run,
           tag: tag,
         };
-        // console.log('params');
-        // console.log(params);
         return getPluginScalarsScalars(params);
       });
       window.axios = axios;
-      // console.log('requestList');
       axios.all(requestList).then((resArray) => {
         if (resArray.every((res) => res.status === 0)) {
           this.originData = resArray.map((res) => res.data);

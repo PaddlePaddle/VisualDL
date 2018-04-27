@@ -6,7 +6,6 @@
  * @param {Object} postParam post params
  * @return {Object}
  */
-console.log('graph.js');
 module.exports = function (path, queryParam, postParam) {
     return {
         // moock delay

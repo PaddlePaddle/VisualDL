@@ -21,7 +21,7 @@ module.exports = merge(baseWebpackConfig, {
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
-                'NODE_ENV': '"demo"'
+                'NODE_ENV': '"demo"'  //  only diff from webpack.dev.config.js
             }
         }),
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage

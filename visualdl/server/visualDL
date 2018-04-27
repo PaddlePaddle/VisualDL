@@ -204,7 +204,6 @@ def texts_tags():
 
 @app.route('/data/plugin/scalars/scalars')
 def scalars():
-    print '\n/data/plugin/scalars/scalars\n'
     run = request.args.get('run')
     tag = request.args.get('tag')
     key = os.path.join('/data/plugin/scalars/scalars', run, tag)
