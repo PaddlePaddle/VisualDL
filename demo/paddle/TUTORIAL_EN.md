@@ -8,7 +8,7 @@ This example is the modification with fluid PaddlePaddle's API from this officia
 
 The full demonstration code can be downloaded in [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/paddle/paddle_cifar10.py).
 
-The script is based on Paddle v2 0.11. You can do ```pip install paddlepaddle``` or ```docker pull paddlepaddle/paddle:0.11.0```. Notice Paddle does not support Python3 yet. For details, please
+The script is based on Paddle v2 0.11. You can do ```pip install paddlepaddle``` or ```docker pull paddlepaddle/paddle:0.11.0```. Notice Paddle does not support Python3 yet and protobuf version needs to be 3.5+. For details, please
 follow Paddle's installation guide [here](http://paddlepaddle.org/docs/0.11.0/documentation/en/getstarted/build_and_install/index_en.html)
 
 
@@ -37,7 +37,7 @@ with logwriter.mode("train") as writer:
 
 ```
 
-We use Paddle v2 Fluid apis to define our VGG CNN model as follows:
+We use Paddle v2 Fluid APIs to define our VGG CNN model as follows:
 
 ```python
 def vgg16_bn_drop(input):
