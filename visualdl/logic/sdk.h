@@ -337,19 +337,14 @@ struct Embedding {
   void SetCaption(const std::string cap) {
     tablet_.SetCaptions(std::vector<std::string>({cap}));
   }
-
-  // Add all word vectors along with all labels
-  // The index of labels should match with the index of word_embeddings
-  // EX: ["Apple", "Orange"] means the first item in word_embeddings represents
-  // "Apple"
-  void AddEmbeddingsWithWordList(
+  void AddEmbeddingsWithWordDict(
       const std::vector<std::vector<float>>& word_embeddings,
-      std::vector<std::string>& labels);
-  // TODO: Create another function that takes 'word_embeddings' and 'word_dict'
+      std::map<std::string, int>& word_dict);
+
 private:
   void AddEmbedding(int item_id,
                     const std::vector<float>& one_hot_vector,
-                    std::string& label);
+                    const std::string& label);
 
   Tablet tablet_;
 };

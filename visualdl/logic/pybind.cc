@@ -42,6 +42,12 @@ PYBIND11_MODULE(core, m) {
         .. autoclass:: ImageWriter
             :members:
 
+        .. autoclass:: TextWriter
+            :members:
+
+        .. autoclass:: AudioWriter
+            :members:
+
     )pbdoc";
 
   py::class_<vs::LogReader>(m, "LogReader")
@@ -240,7 +246,7 @@ PYBIND11_MODULE(core, m) {
             Add a record with the step and text value.
 
             :param step: Current step value
-            :type index: integer
+            :type step: integer
             :param text: Text record
             :type text: basestring
           )pbdoc");
@@ -257,15 +263,25 @@ PYBIND11_MODULE(core, m) {
         PyBind class. Must instantiate through the LogWriter.
       )pbdoc")
       .def("set_caption", &cp::Embedding::SetCaption)
-      .def(
-          "add_embeddings_with_word_list"
-          R"pbdoc(
-            Add embedding record. Each run can only store one embedding data.
+      .def("add_embeddings_with_word_dict",
+           &cp::Embedding::AddEmbeddingsWithWordDict,
+           R"pbdoc(
+            Add the embedding record. Each run can only store one embedding data. **embeddings** and **word_dict** should be
+            the same length. The **word_dict** is used to find the word embedding index in **embeddings**::
 
-            :param embedding: hot vector of embedding words
-            :type embedding: list
-          )pbdoc",
-          &cp::Embedding::AddEmbeddingsWithWordList);
+                embeddings = [[-1.5246837, -0.7505612, -0.65406495, -1.610278],
+                 [-0.781105, -0.24952792, -0.22178008, 1.6906816]]
+
+                word_dict = {"Apple" : 0, "Orange": 1}
+
+            Shows that ``"Apple"`` is embedded to ``[-1.5246837, -0.7505612, -0.65406495, -1.610278]`` and
+            ``"Orange"`` is embedded to ``[-0.781105, -0.24952792, -0.22178008, 1.6906816]``
+
+            :param embeddings: list of word embeddings
+            :type embeddings: list
+            :param word_dict: The mapping from words to indices.
+            :type word_dict: dictionary
+            )pbdoc");
 
   py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")
       .def("get_all_labels", &cp::EmbeddingReader::get_all_labels)
