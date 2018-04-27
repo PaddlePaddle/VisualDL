@@ -10,7 +10,7 @@ Object.keys(baseWebpackConfig.entry).forEach(function (name) {
 });
 
 /**
- * dev config
+ * demo config
  *
  * @type {Object}
  */

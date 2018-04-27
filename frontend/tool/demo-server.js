@@ -6,7 +6,7 @@ let opn = require('opn');
 let express = require('express');
 let webpack = require('webpack');
 let proxyMiddleware = require('http-proxy-middleware');
-let webpackConfig = require('./webpack.dev.config');
+let webpackConfig = require('./webpack.demo.config');
 let autoresponse = require('autoresponse');
 let path = require('path');
 
@@ -73,7 +73,7 @@ let readyPromise = new Promise(resolve => {
     _resolve = resolve;
 });
 
-console.log('> Starting dev server...');
+console.log('> Starting demo server...');
 devMiddleware.waitUntilValid(() => {
     console.log('> Listening at ' + uri + '\n');
     // when env is testing, don't need open it
