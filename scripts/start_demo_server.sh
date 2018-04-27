@@ -12,7 +12,8 @@ rm -rf ./dist
 mkdir dist
 npm run build
 
-./node_modules/.bin/webpack --watch --config tool/webpack.dev.config.js --output-path=../visualdl/server/dist &
+# the config is the only diff from dev_server (webpack.demo.config.js)
+./node_modules/.bin/webpack --watch --config tool/webpack.demo.config.js --output-path=../visualdl/server/dist &
 # Track webpack pid
 WEBPACKPID=$!
 
@@ -24,5 +25,5 @@ trap finish EXIT HUP INT QUIT PIPE TERM
 
 cd $CURRENT_DIR
 
-#Run the visualDL with local PATH
+# Run the visualDL with local PATH
 python ${SCRIPT_DIR}/../visualdl/server/visualDL "$@"
