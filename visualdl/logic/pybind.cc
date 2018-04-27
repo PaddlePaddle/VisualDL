@@ -263,24 +263,24 @@ PYBIND11_MODULE(core, m) {
         PyBind class. Must instantiate through the LogWriter.
       )pbdoc")
       .def("set_caption", &cp::Embedding::SetCaption)
-      .def("add_embeddings_with_word_list",
-           &cp::Embedding::AddEmbeddingsWithWordList,
+      .def("add_embeddings_with_word_dict",
+           &cp::Embedding::AddEmbeddingsWithWordDict,
            R"pbdoc(
-            Add embedding record. Each run can only store one embedding data. embedding and word_list should have
-            the same length and the items in the word_list should map to the embedding. For example::
+            Add the embedding record. Each run can only store one embedding data. **embeddings** and **word_dict** should be
+            the same length. The **word_dict** is used to find the word embedding index in **embeddings**::
 
-                embedding = [[-1.5246837, -0.7505612, -0.65406495, -1.610278],
+                embeddings = [[-1.5246837, -0.7505612, -0.65406495, -1.610278],
                  [-0.781105, -0.24952792, -0.22178008, 1.6906816]]
 
-                word_list = ["Apple", "Orange"]
+                word_dict = {"Apple" : 0, "Orange": 1}
 
             Shows that ``"Apple"`` is embedded to ``[-1.5246837, -0.7505612, -0.65406495, -1.610278]`` and
             ``"Orange"`` is embedded to ``[-0.781105, -0.24952792, -0.22178008, 1.6906816]``
 
-            :param embedding: list of word embeddings
-            :type embedding: list
-            :param word_list: list of labels.
-            :type word_list: list
+            :param embeddings: list of word embeddings
+            :type embeddings: list
+            :param word_dict: The mapping from words to indices.
+            :type word_dict: dictionary
             )pbdoc");
 
   py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")

@@ -92,19 +92,13 @@ for epoch in range(10):
 print(losses)  # The loss decreased every iteration over the training data!
 
 # VisualDL setup
-
 logw = LogWriter("./embedding_log", sync_cycle=10000)
-
 with logw.mode('train') as logger:
     embedding = logger.embedding()
 
-# VisualDL embedding log writer takes teo parameters
-# The first parameter is embedding list. The type is list[list[float]]
-# The second parameter is word_list. The type is list[string].
-embeddings_list = model.embeddings.weight.data.numpy()
-word_list = [None] * len(word_to_ix)
-for idx_val, key_label in enumerate(word_to_ix):
-    word_list[idx_val] = key_label
+embeddings_list = model.embeddings.weight.data.numpy()  # convert to numpy array
 
-# Save the record
-embedding.add_embeddings_with_word_list(embeddings_list, word_list)
+# VisualDL embedding log writer takes two parameters
+# The first parameter is embedding list. The type is list[list[float]]
+# The second parameter is word_dict. The type is dictionary<string, int>.
+embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
