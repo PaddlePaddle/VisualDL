@@ -253,10 +253,19 @@ PYBIND11_MODULE(core, m) {
       .def("total_records", &cp::TextReader::total_records)
       .def("size", &cp::TextReader::size);
 
-  py::class_<cp::Embedding>(m, "EmbeddingWriter")
+  py::class_<cp::Embedding>(m, "EmbeddingWriter", R"pbdoc(
+        PyBind class. Must instantiate through the LogWriter.
+      )pbdoc")
       .def("set_caption", &cp::Embedding::SetCaption)
-      .def("add_embeddings_with_word_list",
-           &cp::Embedding::AddEmbeddingsWithWordList);
+      .def(
+          "add_embeddings_with_word_list"
+          R"pbdoc(
+            Add embedding record. Each run can only store one embedding data.
+
+            :param embedding: hot vector of embedding words
+            :type embedding: list
+          )pbdoc",
+          &cp::Embedding::AddEmbeddingsWithWordList);
 
   py::class_<cp::EmbeddingReader>(m, "EmbeddingReader")
       .def("get_all_labels", &cp::EmbeddingReader::get_all_labels)
