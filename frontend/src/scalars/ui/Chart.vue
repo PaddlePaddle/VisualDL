@@ -343,7 +343,7 @@ export default {
         };
         return getPluginScalarsScalars(params);
       });
-      window.axios = axios;
+
       axios.all(requestList).then((resArray) => {
         if (resArray.every((res) => res.status === 0)) {
           this.originData = resArray.map((res) => res.data);
