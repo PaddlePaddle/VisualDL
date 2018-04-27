@@ -68,6 +68,7 @@
       class="visual-dl-page-run-toggle"
       dark
       block
+      v-if="!isDemo"
     >
       {{ config.running ? 'Running' : 'Stopped' }}
     </v-btn>
@@ -106,6 +107,7 @@ export default {
         'default', 'descending', 'ascending', 'nearest',
       ],
       smoothingValue: this.config.smoothing,
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   watch: {
