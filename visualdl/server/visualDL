@@ -262,10 +262,11 @@ def texts():
 
 @app.route('/data/plugin/embeddings/embeddings')
 def embeddings():
+    run = request.args.get('run')
     dimension = request.args.get('dimension')
     reduction = request.args.get('reduction')
-    key = os.path.join('/data/plugin/embeddings/embeddings', dimension, reduction)
-    data = cache_get(key, try_call, lib.get_embeddings, log_reader, 'train', 'scratch/embedding', reduction, int(dimension))
+    key = os.path.join('/data/plugin/embeddings/embeddings', run, dimension, reduction)
+    data = cache_get(key, try_call, lib.get_embeddings, log_reader, run, reduction, int(dimension))
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 

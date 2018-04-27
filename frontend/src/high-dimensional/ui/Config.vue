@@ -32,11 +32,23 @@
       v-model="config.reduction"
       dark>
       <v-radio
-        label="T-SNE"
-        value="tsne"/>
-      <v-radio
         label="PCA"
         value="pca"/>
+      <v-radio
+        label="T-SNE"
+        value="tsne"/>
+
+    </v-radio-group>
+
+    <v-radio-group
+      label="Run"
+      v-model="config.selectedRun"
+      dark>
+      <v-radio
+        v-for="item in runsItems"
+        :key="item.name"
+        :label="item.name"
+        :value="item.value" />
     </v-radio-group>
 
     <v-btn
@@ -55,6 +67,10 @@
 
 export default {
   props: {
+    runsItems: {
+      type: Array,
+      required: true,
+    },
     config: {
       type: Object,
       required: true,
