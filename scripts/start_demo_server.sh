@@ -8,7 +8,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR/../frontend
 export PYTHONPATH=$PYTHONPATH:"$SCRIPT_DIR/.."
 
-./node_modules/.bin/webpack --config tool/webpack.demo.config.js --output-path=../visualdl/server/dist &
+rm -rf ./dist
+mkdir dist
+npm run build
+
+./node_modules/.bin/webpack --watch --config tool/webpack.demo.config.js --output-path=../visualdl/server/dist &
 # Track webpack pid
 WEBPACKPID=$!
 

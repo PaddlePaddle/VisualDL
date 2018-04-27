@@ -1,9 +1,3 @@
-console.log('service.js');
-
-if (process.env.NODE_ENV === 'dev') {
-    console.log('\n\nI am in DEV !!!');
-}
-
 import {makeService} from './common/util/http';
 
 export const getPluginScalarsTags = makeService('/data/plugin/scalars/tags');

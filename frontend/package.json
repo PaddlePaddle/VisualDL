@@ -6,7 +6,7 @@
     "release": "cross-env NODE_ENV=production node ./tool/build.js",
     "build": "cross-env NODE_ENV=dev node ./tool/build.js",
     "dev": "cross-env NODE_ENV=dev node tool/dev-server.js",
-    "demo": "cross-env NODE_ENV=demo node ./tool/build.js",
+    "demo": "cross-env NODE_ENV=demo node tool/demo-server.js",
     "lint": "./node_modules/fecs/bin/fecs --rule"
   },
   "engines": {
