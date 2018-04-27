@@ -10,7 +10,7 @@ const instance = axios.create({
   timeout: 30000,
 });
 
-// for better ux, don't send the error msg because there will be too mutch error
+// for better ux, don't send the error msg because there will be too many errors
 const responseErrorStatus = (response) => {
   const data = response.data;
   // if (data[STATUS] !== 0) {
@@ -20,13 +20,13 @@ const responseErrorStatus = (response) => {
   return data;
 };
 
-// for better ux, don't send the error msg because there will be too mutch error
+// for better ux, don't send the error msg because there will be too many errors
 const responseNetError = (error) => {
   // Notification.error('net error');
   return Promise.reject(error);
 };
 
-// post from
+// post form
 const formInstance = axios.create({
   baseURL: '/',
   timeout: 3000,
