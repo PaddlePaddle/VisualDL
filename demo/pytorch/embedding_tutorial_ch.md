@@ -9,7 +9,7 @@ Embedding 可视化有助于验证训练算法，Embedding 可视化会将高维
 我们使用 PyTorch [embedding 示例](http://pytorch.org/tutorials/beginner/nlp/word_embeddings_tutorial.html) 示例作为基础。
 
 以下就是全部的 embedding Python 脚本，
-您可以直接在Python环境中测试它。
+您可以直接在 Python 环境中测试它。
 
 ```
 import torch
@@ -99,8 +99,8 @@ for epoch in range(10):
 print(losses)  # The loss decreased every iteration over the training data!
 ```
 
-这是生成第一个embedding所需的所有代码。
-现在，让我们添加一小段代码来将embedding存储到VisualDL日志中，之后就能利用VisualDL来进行可视化。
+这是生成第一个 embedding 所需的所有代码。
+现在，让我们添加一小段代码来将 embedding 存储到 VisualDL 日志中，之后就能利用 VisualDL 来进行可视化。
 
 ```
 # Import VisualDL
@@ -119,7 +119,7 @@ embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
 ```
 
 将上述代码嵌入到您的embedding训练程序中，
-这将embedding和word_dict保存到 `./embedding_log` 文件夹中。
+这将 embedding 和 word_dict 保存到 `./embedding_log` 文件夹中。
 
 现在我们可以用 `visualdl --logdir=./embedding_log` 执行VisualDL，
 使用浏览器导航到 `localhost:8080`，切换到 `High Dimensional` 。
