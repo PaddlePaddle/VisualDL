@@ -125,9 +125,9 @@ embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
 
 Include the above code to your embedding training program.
 
-This will save the embeddings and the word dictionary to the `./embedding_log` folder
+This will save the embeddings and the word dictionary to the `./embedding_log` folder.
 
-We can now activate the VisualDL by running `visualdl --logdir=./embedding_log`
-Use your browser to navigate to `localhost:8080`, switch the tag to `High Dimensional`
+We can now activate the VisualDL by running `visualdl --logdir=./embedding_log`.
+Use your browser to navigate to `localhost:8080`, switch the tab to `High Dimensional`
 
-You can download the tutorial code [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py)
+You can download the tutorial code [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py).

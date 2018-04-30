@@ -124,4 +124,4 @@ embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
 现在我们可以用 `visualdl --logdir=./embedding_log` 执行VisualDL，
 使用浏览器导航到 `localhost:8080`，切换到 `High Dimensional` 。
 
-你可以下载教程代码 [这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py)
+你可以下载教程代码 [这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py)。
