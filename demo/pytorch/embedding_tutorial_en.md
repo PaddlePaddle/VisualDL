@@ -104,7 +104,7 @@ print(losses)  # The loss decreased every iteration over the training data!
 
 That's all the code you need to generate your first embedding.
 
-Now, let just add a little bit of code to store the embedding to VisualDL log
+Now, let us just add a little bit of code to store the embedding to VisualDL log
 so we can visualize it later.
 
 ```
@@ -123,7 +123,7 @@ embeddings_list = model.embeddings.weight.data.numpy()  # convert to numpy array
 embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
 ```
 
-Include the above code to your embedding training program.
+Insert the above code snippet into your embedding training program.
 
 This will save the embeddings and the word dictionary to the `./embedding_log` folder.
 
