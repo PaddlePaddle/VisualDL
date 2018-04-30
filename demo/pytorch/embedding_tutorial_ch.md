@@ -1,18 +1,15 @@
-# How to visualize embedding with VisualDL
+# 如何用VisualDL可视化 Embedding
 
-Here we would like to show you how to visualize embeddings with
-VisualDL in PyTourch.
+在这里，我们将向您展示如何在 PyTourch 中使用 VisualDL 可视化 Embedding。
+Embedding 常用于自然语言处理中，他能将语义意义使用高维向量来表示。
 
-Embedding is often used in NLP(Nature Language Processing), it can represent the
-sematic meanings with high dimensional vectors.
+Embedding 可视化有助于验证训练算法，Embedding 可视化会将高维向量压缩到二维/三维空间，
+两个词越接近，它们共享的语义意义就越明显。
 
-Embedding visualization is useful to verify the training algorithm,
-as visualization can reduce the high dimensional vector to 2D / 3D spaces.
-The closer two words are, the more sematic meaning they share.
+我们使用 PyTorch [embedding 示例](http://pytorch.org/tutorials/beginner/nlp/word_embeddings_tutorial.html) 示例作为基础。
 
-We use the PyTorch [embedding example](http://pytorch.org/tutorials/beginner/nlp/word_embeddings_tutorial.html) as
-the base. Here is the whole embedding program. The following block is a working python script.
-Feel free to test it in your python environment.
+以下就是全部的 embedding Python 脚本，
+您可以直接在Python环境中测试它。
 
 ```
 import torch
@@ -102,10 +99,8 @@ for epoch in range(10):
 print(losses)  # The loss decreased every iteration over the training data!
 ```
 
-That's all the code you need to generate your first embedding.
-
-Now, let just add a little bit of code to store the embedding to VisualDL log
-so we can visualize it later.
+这是生成第一个embedding所需的所有代码。
+现在，让我们添加一小段代码来将embedding存储到VisualDL日志中，之后就能利用VisualDL来进行可视化。
 
 ```
 # Import VisualDL
@@ -123,11 +118,10 @@ embeddings_list = model.embeddings.weight.data.numpy()  # convert to numpy array
 embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
 ```
 
-Include the above code to your embedding training program.
+将上述代码嵌入到您的embedding训练程序中，
+这将embedding和word_dict保存到 `./embedding_log` 文件夹中。
 
-This will save the embeddings and the word dictionary to the `./embedding_log` folder
+现在我们可以用 `visualdl --logdir=./embedding_log` 执行VisualDL，
+使用浏览器导航到 `localhost:8080`，切换到 `High Dimensional` 。
 
-We can now activate the VisualDL by running `visualdl --logdir=./embedding_log`
-Use your browser to navigate to `localhost:8080`, switch the tag to `High Dimensional`
-
-You can download the tutorial code [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py)
+你可以下载教程代码 [这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py)
