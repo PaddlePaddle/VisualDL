@@ -1,7 +1,7 @@
 # 如何用VisualDL可视化 Embedding
 
-在这里，我们将向您展示如何在 PyTourch 中使用 VisualDL 可视化 Embedding。
-Embedding 常用于自然语言处理中，他能将语义意义使用高维向量来表示。
+在这里，我们将向您展示如何在 PyTorch 中使用 VisualDL 可视化 Embedding。
+Embedding 常用于自然语言处理中，他能将语义使用高维向量来表示。
 
 Embedding 可视化有助于验证训练算法，Embedding 可视化会将高维向量压缩到二维/三维空间，
 两个词越接近，它们共享的语义意义就越明显。

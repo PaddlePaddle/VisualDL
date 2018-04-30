@@ -1,7 +1,7 @@
 # How to visualize embedding with VisualDL
 
 Here we would like to show you how to visualize embeddings with
-VisualDL in PyTourch.
+VisualDL in PyTorch.
 
 Embedding is often used in NLP(Nature Language Processing), it can represent the
 sematic meanings with high dimensional vectors.
