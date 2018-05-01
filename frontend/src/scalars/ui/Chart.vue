@@ -144,6 +144,7 @@ export default {
   },
   data() {
     return {
+      isDemo: process.env.NODE_ENV === 'demo',
       width: 400,
       height: 300,
       isExpand: false,
@@ -183,11 +184,13 @@ export default {
     this.initChart(this.tagInfo);
     this.toggleSelectZoom(true);
 
-    if (this.running) {
+    if (this.running && !this.isDemo) {
       this.startInterval();
     }
 
     this.$watch('running', function(running) {
+      // if it is demo, do not trigger interval
+      running = running && !this.isDemo;
       running ? this.startInterval() : this.stopInterval();
     });
   },
@@ -340,6 +343,7 @@ export default {
         };
         return getPluginScalarsScalars(params);
       });
+
       axios.all(requestList).then((resArray) => {
         if (resArray.every((res) => res.status === 0)) {
           this.originData = resArray.map((res) => res.data);
