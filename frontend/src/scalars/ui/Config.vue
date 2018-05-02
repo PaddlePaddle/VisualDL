@@ -64,11 +64,11 @@
     <v-btn
       :color="config.running ? 'primary' : 'error'"
       v-model="config.running"
+      v-if="!isDemo"
       @click="toggleAllRuns"
       class="visual-dl-page-run-toggle"
       dark
       block
-      v-if="!isDemo"
     >
       {{ config.running ? 'Running' : 'Stopped' }}
     </v-btn>
