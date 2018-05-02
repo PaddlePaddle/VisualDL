@@ -93,13 +93,14 @@ export default {
       data: [],
       height: defaultImgHeight,
       weight: defaultImgWidth,
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   created() {
     this.getOriginChartsData();
   },
   mounted() {
-    if (this.running) {
+    if (this.running && !this.isDemo) {
       this.startInterval();
     }
   },
@@ -110,7 +111,7 @@ export default {
 
   watch: {
     running: function(val) {
-      val ? this.startInterval() : this.stopInterval();
+      (val && !this.isDemo) ? this.startInterval() : this.stopInterval();
     },
     currentIndex: function(index) {
       /* eslint-disable fecs-camelcase */
