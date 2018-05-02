@@ -45,6 +45,7 @@ export default {
   },
   data() {
     return {
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   methods: {

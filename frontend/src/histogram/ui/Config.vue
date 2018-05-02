@@ -65,6 +65,7 @@ export default {
           value: 'offset',
         },
       ],
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   methods: {
