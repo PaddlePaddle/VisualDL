@@ -662,7 +662,7 @@ export default {
         Relative: 4,
       };
       let widthPropMap = {
-        Run: 40,
+        Run: 60,
         Time: 120,
         Step: 40,
         Value: 50,
@@ -694,13 +694,13 @@ export default {
       let content = transformedData.map((item) => {
         let str = '<tr style="font-size:12px;">';
         str += Object.keys(item).map((val) => {
-          return '<td style="padding: 0 4px">' + item[val] + '</td>';
+          return '<td style="padding: 0 4px; overflow: hidden;">' + item[val] + '</td>';
         }).join('');
         str += '</tr>';
         return str;
       }).join('');
 
-      return '<table style="text-align: left;table-layout: fixed;width: 480px;"><thead>' + headerHtml + '</thead>'
+      return '<table style="text-align: left;table-layout: fixed;width: 500px;"><thead>' + headerHtml + '</thead>'
         + '<tbody>' + content + '</tbody><table>';
     },
   },
