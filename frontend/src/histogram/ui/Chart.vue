@@ -66,6 +66,7 @@ export default {
     return {
       originData: [],
       isExpand: false,
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   watch: {
@@ -76,7 +77,7 @@ export default {
       this.initChartOption();
     },
     running: function(val) {
-      val ? this.startInterval() : this.stopInterval();
+      (val && !this.isDemo) ? this.startInterval() : this.stopInterval();
     },
     isExpand: function(val) {
       this.expandArea(val);
@@ -85,7 +86,7 @@ export default {
   mounted() {
     let tagInfo = this.tagInfo;
     this.initChart(tagInfo);
-    if (this.running) {
+    if (this.running && !this.isDemo) {
       this.startInterval();
     }
   },
