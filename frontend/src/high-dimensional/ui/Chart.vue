@@ -6,6 +6,37 @@
       ref="chartBox"
       class="visual-dl-chart-box"
       :style="computedStyle"/>
+    <div class="visual-dl-chart-actions">
+      <v-btn
+        color="toolbox_icon"
+        flat
+        icon
+        @click="isSelectZoomEnable = !isSelectZoomEnable"
+        class="chart-toolbox-icons">
+        <img
+          v-if="!isSelectZoomEnable"
+          src="../../assets/ic_zoom_select_off.svg">
+        <img
+          v-if="isSelectZoomEnable"
+          src="../../assets/ic_zoom_select_on.svg">
+      </v-btn>
+      <v-btn
+        color="toolbox_icon"
+        flat
+        icon
+        @click="restoreChart"
+        class="chart-toolbox-icons">
+        <img src="../../assets/ic_undo.svg">
+      </v-btn>
+      <v-btn
+        color="toolbox_icon"
+        flat
+        icon
+        @click="saveChartAsImage"
+        class="chart-toolbox-icons" >
+        <img src="../../assets/ic_download.svg">
+      </v-btn>
+    </div>
   </v-card>
 </template>
 
@@ -46,6 +77,8 @@ export default {
       height: 600,
       regularLabelColor: '#008c99',
       matchedLabelColor: '#c23531',
+      isSelectZoomEnable: true,
+
     };
   },
   computed: {
@@ -59,6 +92,7 @@ export default {
     this.createChart();
     this.set2DChartOptions();
     this.setDisplayWordLabel();
+    this.toggleSelectZoom(true);
   },
   watch: {
     embeddingData: function(val) {
@@ -88,6 +122,9 @@ export default {
         this.myChart.hideLoading();
       }
     },
+    isSelectZoomEnable: function(val) {
+      this.toggleSelectZoom(val);
+    },
   },
   methods: {
     createChart() {
@@ -100,6 +137,18 @@ export default {
         animation: false,
         xAxis: {},
         yAxis: {},
+        toolbox: {
+          show: true,
+          showTitle: false,
+          itemSize: 0,
+
+          feature: {
+            dataZoom: {
+            },
+            restore: {},
+            saveAsImage: {},
+          },
+        },
         series: [{
                    name: 'all',
                    symbolSize: 10,
@@ -234,6 +283,34 @@ export default {
         }],
       });
     },
+    toggleSelectZoom(enable) {
+      let instance = this;
+      setTimeout(function() {
+        instance.myChart.dispatchAction({
+          type: 'takeGlobalCursor',
+          key: 'dataZoomSelect',
+          dataZoomSelectActive: enable,
+        });
+      }, 0);
+    },
+    restoreChart() {
+      this.myChart.dispatchAction({
+        type: 'restore',
+      });
+    },
+    saveChartAsImage() {
+      let dataUrl = this.myChart.getDataURL({
+        pixelRatio: 1,
+        backgroundColor: '#fff',
+      });
+      let fileName = 'embedding';
+      let link = document.createElement('a');
+      link.download = fileName;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
   },
 };
 
@@ -244,4 +321,27 @@ export default {
         float left
         padding 10px
         position relative
+
+        .visual-dl-chart-actions
+            opacity 0
+            transition: opacity .3s ease-out;
+            position absolute
+            top 4px
+            right 10px
+            img
+                width 30px
+                height 30px
+                position absolute
+                top 0
+                bottom 0
+                margin auto
+            .chart-toolbox-icons
+                width 25px
+                height 25px
+                margin-left -4px
+                margin-right -4px
+
+    .visual-dl-page-charts:hover
+        .visual-dl-chart-actions
+            opacity 1
 </style>
