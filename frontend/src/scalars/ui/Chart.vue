@@ -305,6 +305,7 @@ export default {
         },
         xAxis: {
           type: 'value',
+          name: this.horizontal,
           axisLabel: {
             fontSize: '11',
           },
@@ -503,6 +504,7 @@ export default {
         step: {
           xAxis: {
             type: 'value',
+            name: this.horizontal,
             axisLabel: {
               fontSize: '11',
             },
@@ -513,6 +515,7 @@ export default {
         relative: {
           xAxis: {
             type: 'value',
+            name: this.horizontal,
             axisLabel: {
               fontSize: '11',
             },
@@ -523,6 +526,7 @@ export default {
         wall: {
           xAxis: {
             type: 'time',
+            name: this.horizontal,
             axisLabel: {
               fontSize: '11',
               formatter: function(value, index) {
