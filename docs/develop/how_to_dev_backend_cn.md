@@ -32,7 +32,7 @@ VisualDL有三个功能模块.
 任何在 ```server``` 文件夹里代码的改动，都可以通过运行以下命令
 
 ```
-python visualdl/server/visualDL --logdir={LOG_DIR} --port=8080
+python visualdl/server/visualdl --logdir={LOG_DIR} --port=8080
 ```
 来重启 Flask 服务器
 
@@ -88,7 +88,7 @@ make vl_test
 - 采用轻量级 Flask 框架来搭建服务器并提供以下两种服务
   - 搭建主程序来支持前端应用
   - 提供一系列 HTTP 访问点，通过返回的 JSON 来和前端沟通
-- ```visualDL``` : 主程序入口
+- ```visualdl``` : 主程序入口
   - 定义了服务器参数
   - 给前端提供 API 和 路由匹配
 - ```lib.py``` : 调用库函数的入口

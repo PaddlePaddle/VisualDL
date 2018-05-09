@@ -111,5 +111,5 @@ setup(
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
-    scripts=['visualdl/server/visualDL', 'demo/vdl_create_scratch_log'],
+    scripts=['visualdl/server/visualdl', 'demo/vdl_create_scratch_log'],
     cmdclass=cmdclass)

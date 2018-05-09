@@ -8,7 +8,7 @@ pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```
@@ -52,7 +52,7 @@ pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```
@@ -85,7 +85,7 @@ pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```

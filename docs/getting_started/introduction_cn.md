@@ -46,7 +46,7 @@ for step in steps:
 - 启动visualdl service即可通过浏览器查看日志的可视化结果。
 
 ```shell
-visualDL --logdir ./log --port 8080
+visualdl --logdir ./log --port 8080
 ```
 ### 功能全
 1. Scalar. 支持Scalar打点数据展示，如上图所示：

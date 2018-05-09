@@ -32,7 +32,7 @@ All backend and sdk logic is under visualdl sub directory
 Any code changes in ```server``` folder, simply run
 
 ```
-python visualdl/server/visualDL --logdir={LOG_DIR} --port=8080
+python visualdl/server/visualdl --logdir={LOG_DIR} --port=8080
 ```
 to restart flask server
 
@@ -87,7 +87,7 @@ make vl_test
 - Implement a server using a lightweight framework Flask, provides two services:
   - Host a main application with support of a front end web app
   - Provide a series of HTTP end points, using JSON for front end data communication
-- ```visualDL``` : main app entry point
+- ```visualdl``` : main app entry point
   - defines server arguments and config
   - provides API and router for front end
 - ```lib.py``` : delegate wrapper for function calls

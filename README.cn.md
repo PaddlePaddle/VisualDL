@@ -63,7 +63,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
@@ -105,7 +105,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
@@ -137,7 +137,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
@@ -213,7 +213,7 @@ int main() {
 当训练过程中已经产生了日志数据，就可以启动board进行实时预览可视化信息
 
 ```
-visualDL --logdir <some log dir>
+visualdl --logdir <some log dir>
 ```
 
 board 还支持一下参数来实现远程的访问：

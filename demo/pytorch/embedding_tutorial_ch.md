@@ -121,7 +121,7 @@ embedding.add_embeddings_with_word_dict(embeddings_list, word_to_ix)
 将上述代码嵌入到您的embedding训练程序中，
 这将 embedding 和 word_dict 保存到 `./embedding_log` 文件夹中。
 
-现在我们可以用 `visualDL --logdir=./embedding_log` 执行VisualDL，
+现在我们可以用 `visualdl --logdir=./embedding_log` 执行VisualDL，
 使用浏览器导航到 `localhost:8080`，切换到 `High Dimensional` 。
 
 你可以下载教程代码 [这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py)。
