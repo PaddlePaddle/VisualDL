@@ -7,7 +7,6 @@
   <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/vs-logo.png" width="60%" />
 </p>
 
-#
 ## Introduction
 VisualDL is a deep learning visualization tool that can help design deep learning jobs.
 It includes features such as scalar, parameter distribution, model structure and image visualization.
