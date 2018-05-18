@@ -49,6 +49,7 @@ export default {
       },
       embeddingData: [],
       showLoading: false,
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   created() {
@@ -61,7 +62,7 @@ export default {
       }
     });
 
-    if (this.config.running) {
+    if (this.config.running && !this.isDemo) {
       this.startInterval();
     }
   },
@@ -79,7 +80,7 @@ export default {
       this.fetchDatasets();
     },
     'config.running': function(val) {
-      val ? this.startInterval() : this.stopInterval();
+      (val && !this.isDemo) ? this.startInterval() : this.stopInterval();
     },
   },
   mounted() {

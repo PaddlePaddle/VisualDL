@@ -144,6 +144,7 @@ export default {
   },
   data() {
     return {
+      isDemo: process.env.NODE_ENV === 'demo',
       width: 400,
       height: 300,
       isExpand: false,
@@ -183,11 +184,13 @@ export default {
     this.initChart(this.tagInfo);
     this.toggleSelectZoom(true);
 
-    if (this.running) {
+    if (this.running && !this.isDemo) {
       this.startInterval();
     }
 
     this.$watch('running', function(running) {
+      // if it is demo, do not trigger interval
+      running = running && !this.isDemo;
       running ? this.startInterval() : this.stopInterval();
     });
   },
@@ -302,6 +305,7 @@ export default {
         },
         xAxis: {
           type: 'value',
+          name: this.horizontal,
           axisLabel: {
             fontSize: '11',
           },
@@ -340,6 +344,7 @@ export default {
         };
         return getPluginScalarsScalars(params);
       });
+
       axios.all(requestList).then((resArray) => {
         if (resArray.every((res) => res.status === 0)) {
           this.originData = resArray.map((res) => res.data);
@@ -499,6 +504,7 @@ export default {
         step: {
           xAxis: {
             type: 'value',
+            name: this.horizontal,
             axisLabel: {
               fontSize: '11',
             },
@@ -509,6 +515,7 @@ export default {
         relative: {
           xAxis: {
             type: 'value',
+            name: this.horizontal,
             axisLabel: {
               fontSize: '11',
             },
@@ -519,6 +526,7 @@ export default {
         wall: {
           xAxis: {
             type: 'time',
+            name: this.horizontal,
             axisLabel: {
               fontSize: '11',
               formatter: function(value, index) {
@@ -658,7 +666,7 @@ export default {
         Relative: 4,
       };
       let widthPropMap = {
-        Run: 40,
+        Run: 60,
         Time: 120,
         Step: 40,
         Value: 50,
@@ -690,13 +698,13 @@ export default {
       let content = transformedData.map((item) => {
         let str = '<tr style="font-size:12px;">';
         str += Object.keys(item).map((val) => {
-          return '<td style="padding: 0 4px">' + item[val] + '</td>';
+          return '<td style="padding: 0 4px; overflow: hidden;">' + item[val] + '</td>';
         }).join('');
         str += '</tr>';
         return str;
       }).join('');
 
-      return '<table style="text-align: left;table-layout: fixed;width: 480px;"><thead>' + headerHtml + '</thead>'
+      return '<table style="text-align: left;table-layout: fixed;width: 500px;"><thead>' + headerHtml + '</thead>'
         + '<tbody>' + content + '</tbody><table>';
     },
   },

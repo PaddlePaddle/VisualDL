@@ -32,6 +32,7 @@
       class="visual-dl-page-run-toggle"
       :color="config.running ? 'primary' : 'error'"
       v-model="config.running"
+      v-if="!isDemo"
       @click="toggleAllRuns"
       dark
       block
@@ -64,6 +65,7 @@ export default {
           value: 'offset',
         },
       ],
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   methods: {

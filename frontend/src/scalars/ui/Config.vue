@@ -64,6 +64,7 @@
     <v-btn
       :color="config.running ? 'primary' : 'error'"
       v-model="config.running"
+      v-if="!isDemo"
       @click="toggleAllRuns"
       class="visual-dl-page-run-toggle"
       dark
@@ -106,6 +107,7 @@ export default {
         'default', 'descending', 'ascending', 'nearest',
       ],
       smoothingValue: this.config.smoothing,
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   watch: {

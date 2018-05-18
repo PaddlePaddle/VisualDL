@@ -80,13 +80,14 @@ export default {
       },
       audioData: {},
       data: [],
+      isDemo: process.env.NODE_ENV === 'demo',
     };
   },
   created() {
     this.getOriginAudioData();
   },
   mounted() {
-    if (this.running) {
+    if (this.running && !this.isDemo) {
       this.startInterval();
     }
   },
@@ -97,7 +98,7 @@ export default {
 
   watch: {
     running: function(val) {
-      val ? this.startInterval() : this.stopInterval();
+      (val && !this.isDemo) ? this.startInterval() : this.stopInterval();
     },
     currentIndex: function(index) {
       if (this.data && this.data[index]) {
