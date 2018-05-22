@@ -104,4 +104,4 @@ pip install --upgrade dist/visualdl-*.whl
 ```
 
 If there are still issues regarding the ```pip install```, you can still start Visual DL by starting the dev server
-[here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/how_to_dev_frontend_en.md)
+[here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/develop/how_to_dev_frontend_en.md)
