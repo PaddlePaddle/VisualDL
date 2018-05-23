@@ -7,7 +7,7 @@ INCLUDE_DIRECTORIES(${EIGEN_SOURCE_DIR}/src/extern_eigen3)
 ExternalProject_Add(
     extern_eigen3
     ${EXTERNAL_PROJECT_LOG_ARGS}
-    GIT_REPOSITORY  "https://github.com/RLovelett/eigen.git"
+    GIT_REPOSITORY  "https://github.com/libigl/eigen.git"
     GIT_TAG         "master"
     PREFIX          ${EIGEN_SOURCE_DIR}
     UPDATE_COMMAND  ""
