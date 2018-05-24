@@ -18,6 +18,7 @@ limitations under the License. */
 #include <Eigen/Core>
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "visualdl/utils/logging.h"
+#include <algorithm>
 
 namespace visualdl {
 
@@ -65,8 +66,8 @@ static void NormalizeImage(Uint8Image* image,
     if (finite) {
       for (int j = 0; j < depth; j++) {
         float v = values(j, i);
-        image_min = std::min(image_min, v);
-        image_max = std::max(image_max, v);
+        image_min = (std::min)(image_min, v);
+        image_max = (std::max)(image_max, v);
       }
     }
   }
@@ -75,7 +76,7 @@ static void NormalizeImage(Uint8Image* image,
   const float kZeroThreshold = 1e-6;
   float scale, offset;
   if (image_min < 0) {
-    float max_val = std::max(std::abs(image_min), image_max);
+    float max_val = (std::max)(std::abs(image_min), image_max);
     scale = (max_val < kZeroThreshold ? 0.0f : 127.0f) / max_val;
   } else {
     scale = (image_max < kZeroThreshold ? 0.0f : 255.0f) / image_max;

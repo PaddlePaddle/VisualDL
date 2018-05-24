@@ -21,6 +21,7 @@ limitations under the License. */
 #include "visualdl/utils/image.h"
 #include "visualdl/utils/logging.h"
 #include "visualdl/utils/macro.h"
+#include <numeric>
 
 namespace visualdl {
 

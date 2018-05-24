@@ -183,12 +183,14 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
         ${EXTERNAL_PROJECT_LOG_ARGS}
         PREFIX          ${PROTOBUF_SOURCES_DIR}
         UPDATE_COMMAND  ""
-        DEPENDS         zlib
-        GIT_REPOSITORY  "https://github.com/google/protobuf.git"
-        GIT_TAG         "2761122b810fe8861004ae785cc3ab39f384d342"
+        #DEPENDS         zlib
+        URL https://github.com/google/protobuf/archive/v3.5.2.zip
         CONFIGURE_COMMAND
         ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
             ${OPTIONAL_ARGS}
+            -G ${CMAKE_GENERATOR}
+            -Dprotobuf_BUILD_SHARED_LIBS=ON
+            -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
             -Dprotobuf_BUILD_TESTS=OFF
             -DCMAKE_POSITION_INDEPENDENT_CODE=ON
             -DCMAKE_BUILD_TYPE=${THIRD_PARTY_BUILD_TYPE}

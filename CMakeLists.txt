@@ -53,6 +53,10 @@ if (NOT ON_RELEASE)
   add_definitions(-DVISUALDL_WITH_GLOG)
 endif(NOT ON_RELEASE)
 
+if (MSVC)
+  add_definitions(-DPROTOBUF_USE_DLLS)
+endif(MSVC)
+
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
