@@ -19,6 +19,7 @@ from visualdl import core
 
 dtypes = ("float", "double", "int32", "int64")
 EMBEDDING_TAG = 'embedding'
+DEFAULT_MODE = 'default'
 
 
 def check_tag_name_valid(tag):
@@ -46,6 +47,7 @@ class LogReader(object):
         """
         self.dir = dir
         self.reader = reader if reader else core.LogReader(dir)
+        self.reader.set_mode(DEFAULT_MODE)
 
     def mode(self, mode):
         """
@@ -186,6 +188,7 @@ class LogWriter(object):
         self.dir = dir
         self.sync_cycle = sync_cycle
         self.writer = writer if writer else core.LogWriter(dir, sync_cycle)
+        self.writer.set_mode(DEFAULT_MODE)
 
     def mode(self, mode):
         """
