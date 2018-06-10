@@ -59,6 +59,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/julia)
 
 # compile test only in release mode
 if (NOT ON_RELEASE)
