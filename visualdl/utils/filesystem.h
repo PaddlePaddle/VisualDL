@@ -23,9 +23,9 @@ limitations under the License. */
 #include "visualdl/utils/logging.h"
 
 #ifdef _WIN32
-  #include <filesystem>
+#include <filesystem>
 #else
-  #include <unistd.h>
+#include <unistd.h>
 #endif
 
 namespace visualdl {
@@ -67,11 +67,11 @@ bool DeSerializeFromFile(T* proto, const std::string& path) {
 static void TryMkdir(const std::string& dir) {
   struct stat st = {0};
   if (stat(dir.c_str(), &st) == -1) {
-    #ifdef _WIN32
+#ifdef _WIN32
       std::experimental::filesystem::create_directory(dir);
-    #else
+#else
       ::mkdir(dir.c_str(), 0700);
-    #endif
+#endif
   }
 }
 

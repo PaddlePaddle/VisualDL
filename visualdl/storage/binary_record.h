@@ -43,11 +43,11 @@ struct BinaryRecord {
 
   void tofile() {
     fs::TryRecurMkdir(dir_);
-    #ifdef _WIN32
+#ifdef _WIN32
       std::fstream file(path_, std::ios_base::binary | std::ios_base::out);
-    #else
+#else
       std::fstream file(path_, file.binary | file.out);
-    #endif
+#endif
     CHECK(file.is_open()) << "open " << path_ << " failed";
 
     size_t size = data_.size();
@@ -94,11 +94,11 @@ protected:
     // which impacts performance.
     if (!filename_.empty()) {
       std::string path = dir_ + "/" + filename_;
-      #ifdef _WIN32
+#ifdef _WIN32
         std::ifstream file(path, std::ios_base::binary);
-      #else
+#else
         std::ifstream file(path, file.binary);
-      #endif
+#endif
       CHECK(file.is_open()) << " failed to open file " << path;
 
       size_t size;

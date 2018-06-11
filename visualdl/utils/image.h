@@ -16,9 +16,9 @@ limitations under the License. */
 #define VISUALDL_UTILS_IMAGE_H
 
 #include <Eigen/Core>
+#include <algorithm>
 #include <unsupported/Eigen/CXX11/Tensor>
 #include "visualdl/utils/logging.h"
-#include <algorithm>
 
 namespace visualdl {
 
