@@ -68,9 +68,9 @@ static void TryMkdir(const std::string& dir) {
   struct stat st = {0};
   if (stat(dir.c_str(), &st) == -1) {
 #ifdef _WIN32
-      std::experimental::filesystem::create_directory(dir);
+    std::experimental::filesystem::create_directory(dir);
 #else
-      ::mkdir(dir.c_str(), 0700);
+    ::mkdir(dir.c_str(), 0700);
 #endif
   }
 }

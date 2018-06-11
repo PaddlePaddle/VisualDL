@@ -44,9 +44,9 @@ struct BinaryRecord {
   void tofile() {
     fs::TryRecurMkdir(dir_);
 #ifdef _WIN32
-      std::fstream file(path_, std::ios_base::binary | std::ios_base::out);
+    std::fstream file(path_, std::ios_base::binary | std::ios_base::out);
 #else
-      std::fstream file(path_, file.binary | file.out);
+    std::fstream file(path_, file.binary | file.out);
 #endif
     CHECK(file.is_open()) << "open " << path_ << " failed";
 
@@ -95,9 +95,9 @@ protected:
     if (!filename_.empty()) {
       std::string path = dir_ + "/" + filename_;
 #ifdef _WIN32
-        std::ifstream file(path, std::ios_base::binary);
+      std::ifstream file(path, std::ios_base::binary);
 #else
-        std::ifstream file(path, file.binary);
+      std::ifstream file(path, file.binary);
 #endif
       CHECK(file.is_open()) << " failed to open file " << path;
 

@@ -48,6 +48,7 @@ execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
 if platform == "win32":
     execute_requires = ['node', 'powershell', 'cmake']
 
+
 def die(msg):
     log.error(msg)
     sys.exit(1)
@@ -102,6 +103,10 @@ libraries = ['core.so']
 if platform == 'win32':
     libraries = ['core.pyd', 'libprotobuf.dll']
 
+scripts = ['visualdl/server/visualDL', 'demo/vdl_create_scratch_log']
+if platform == 'win32':
+    scripts.append('visualdl/server/visualDL.bat')
+
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
@@ -114,10 +119,12 @@ setup(
     package_data={
         'visualdl.server':
         ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/assets/*'],
-        'visualdl': libraries,
-        'visualdl.python': libraries + ['dog.jpg', 'testing.wav']
+        'visualdl':
+        libraries,
+        'visualdl.python':
+        libraries + ['dog.jpg', 'testing.wav']
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
-    scripts=['visualdl/server/visualDL', 'demo/vdl_create_scratch_log'],
+    scripts=scripts,
     cmdclass=cmdclass)
