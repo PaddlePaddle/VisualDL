@@ -55,6 +55,7 @@ endif(NOT ON_RELEASE)
 
 if (MSVC)
   add_definitions(-DPROTOBUF_USE_DLLS)
+  add_definitions(-DNOMINMAX) # No min/max macros
 endif(MSVC)
 
 include_directories(${PROJECT_SOURCE_DIR})
