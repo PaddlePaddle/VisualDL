@@ -14,11 +14,8 @@ struct WrapScalar {
   void operator()(TypeWrapperT&& wrapped) {
     typedef typename TypeWrapperT::type WrappedT;
     wrapped.template constructor<vs::Tablet>();
-    wrapped.module().method("setcaptions", &WrappedT::SetCaption);
-    wrapped.module().method(
-        "addrecord", [](WrappedT& s, int id, WrappedT::param_type value) {
-          return s.AddRecord(id, value);
-        });
+    wrapped.method("setcaptions", &WrappedT::SetCaption);
+    wrapped.method("addrecord", &WrappedT::AddRecord);
   }
 };
 

@@ -96,7 +96,6 @@ namespace components {
  */
 template <typename T>
 struct Scalar {
-  typedef typename T::val_type first_val_type;
   Scalar(Tablet tablet) : tablet_(tablet) {
     tablet_.SetType(Tablet::Type::kScalar);
   }
