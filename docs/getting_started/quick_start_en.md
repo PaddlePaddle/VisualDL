@@ -62,7 +62,7 @@ for step in range(200):
 The example above randomly generated some logs. Next we can open the board page:
 
 ```
-visualDL --logdir ./random_log --port 8080
+visualdl --logdir ./random_log --port 8080
 ```
 
 Point your browser to `http://0.0.0.0:8080`, you can see the scalar as follows:
@@ -93,7 +93,7 @@ VisualDL supports the visualization for the format in [ONNX](https://github.com/
 Currently, ONNX supports format conversion among various deep learning frameworks such as `MXNet`, `PyTorch`, `Caffe2`, `Caffe`.
 
 ```
-visualDL --logdir somedir --model_pb <path_to_model>
+visualdl --logdir somedir --model_pb <path_to_model>
 ```
 
 For example, for the MNIST dataset, Graph component can render model graph as below:

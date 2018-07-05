@@ -56,7 +56,7 @@ for step in range(200):
 上述例子生成了一段随机日志，接下来可以打开board页面：
 
 ```
-visualDL --logdir ./random_log --port 8080
+visualdl --logdir ./random_log --port 8080
 ```
 
 之后用浏览器打开地址 `http://0.0.0.0:8080`，就可以看到scalar下的可视化结果
@@ -86,7 +86,7 @@ VisualDL 的 C++ SDK 与 Python 的基本一致，上面Python示例对应的C++
 VisualDL 支持开源的 [ONNX](https://github.com/onnx/onnx)模型结构的可视化，目前ONNX支持包括 `pytorch`, `Caffe2`, `Caffe`, `MxNet` 在内的多种深度学习平台的模型结构的转化。
 
 ```
-visualDL --logdir somedir --model_pb <path_to_model>
+visualdl --logdir somedir --model_pb <path_to_model>
 ```
 
 比如mnist，会得到如下graph

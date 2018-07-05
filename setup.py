@@ -103,7 +103,7 @@ libraries = ['core.so']
 if platform == 'win32':
     libraries = ['core.pyd', 'libprotobuf.dll']
 
-scripts = ['visualdl/server/visualDL', 'demo/vdl_create_scratch_log']
+scripts = ['visualdl/server/visualdl', 'demo/vdl_create_scratch_log']
 if platform == 'win32':
     scripts.append('visualdl/server/visualDL.bat')
 
