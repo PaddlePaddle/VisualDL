@@ -69,7 +69,7 @@ VisualDL的一个优点是能可视化深度学习模型，帮助用户更直观
 VisualDL的使用很简单，在完成安装后只需要把模型文件（protobuf格式）用参数 -m 提供给VisualDL即可。
 
 ```bash
-visualDL --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=8888
+visualdl --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=8888
 ```
 
 模型图的效果如下：

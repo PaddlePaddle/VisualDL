@@ -5,4 +5,4 @@ WORKDIR /
 COPY ./demo/vdl_create_scratch_log vdl_create_scratch_log
 RUN python /vdl_create_scratch_log
 
-ENTRYPOINT ["visualDL", "--logdir=/scratch_log"]
+ENTRYPOINT ["visualdl", "--logdir=/scratch_log"]

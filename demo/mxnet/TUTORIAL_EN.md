@@ -74,7 +74,7 @@ Here we use the existing model that has been transformed from MXNet to ONNX, [Su
 To display the model graph via VisualDL, pass the model file path with the parameter -m to the VisualDL
 
 ```bash
-visualDL --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=8888
+visualdl --logdir=/workspace -m /workspace/super_resolution_mnist.onnx --port=8888
 ```
 
 The model graph is as follows:

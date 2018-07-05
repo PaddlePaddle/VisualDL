@@ -48,7 +48,7 @@ for step in steps:
 - Launch Visual DL service and you can see the visualization results.
 
 ```shell
-visualDL --logdir ./log --port 8080
+visualdl --logdir ./log --port 8080
 ```
 
 ### Comprehensive Usability

@@ -15,6 +15,7 @@ limitations under the License. */
 #include "visualdl/logic/sdk.h"
 
 #include <cstdio>
+#include <numeric>
 
 #include "visualdl/logic/histogram.h"
 #include "visualdl/storage/binary_record.h"

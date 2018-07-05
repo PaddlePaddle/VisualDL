@@ -26,4 +26,4 @@ trap finish EXIT HUP INT QUIT PIPE TERM
 cd $CURRENT_DIR
 
 # Run the visualDL with local PATH
-python ${SCRIPT_DIR}/../visualdl/server/visualDL "$@"
+python ${SCRIPT_DIR}/../visualdl/server/visualdl "$@"
