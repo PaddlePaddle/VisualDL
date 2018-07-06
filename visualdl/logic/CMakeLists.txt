@@ -30,10 +30,10 @@ add_library(core SHARED ${PROJECT_SOURCE_DIR}/visualdl/logic/pybind.cc)
 
 if (NOT ON_RELEASE)
   add_dependencies(core pybind im entry tablet storage sdk protobuf glog eigen3)
-  target_link_libraries(core PRIVATE pybind entry binary_record python im tablet storage sdk protobuf glog ${OPTIONAL_LINK_FLAGS})
+  target_link_libraries(core PRIVATE pybind entry binary_record im tablet storage sdk protobuf glog ${OPTIONAL_LINK_FLAGS})
 else()
   add_dependencies(core pybind im entry tablet storage sdk protobuf eigen3)
-  target_link_libraries(core PRIVATE pybind entry binary_record python im tablet storage sdk protobuf ${OPTIONAL_LINK_FLAGS})
+  target_link_libraries(core PRIVATE pybind entry binary_record im tablet storage sdk protobuf ${OPTIONAL_LINK_FLAGS})
 endif()
 
 ## MacOS needs this flag to import python lib
