@@ -26,12 +26,19 @@ endif()
 
 add_library(core SHARED ${PROJECT_SOURCE_DIR}/visualdl/logic/pybind.cc)
 
+## do not link python library and let system auto resolve to avoid different python lib conflict
+
 if (NOT ON_RELEASE)
-  add_dependencies(core pybind python im entry tablet storage sdk protobuf glog eigen3)
-  target_link_libraries(core PRIVATE pybind entry binary_record python im tablet storage sdk protobuf glog ${OPTIONAL_LINK_FLAGS})
+  add_dependencies(core pybind im entry tablet storage sdk protobuf glog eigen3)
+  target_link_libraries(core PRIVATE pybind entry binary_record im tablet storage sdk protobuf glog ${OPTIONAL_LINK_FLAGS})
 else()
-  add_dependencies(core pybind python im entry tablet storage sdk protobuf eigen3)
-  target_link_libraries(core PRIVATE pybind entry binary_record python im tablet storage sdk protobuf ${OPTIONAL_LINK_FLAGS})
+  add_dependencies(core pybind im entry tablet storage sdk protobuf eigen3)
+  target_link_libraries(core PRIVATE pybind entry binary_record im tablet storage sdk protobuf ${OPTIONAL_LINK_FLAGS})
+endif()
+
+## MacOS needs this flag to import python lib
+if (APPLE)
+  set_target_properties(core PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif()
 
 if (MSVC)
