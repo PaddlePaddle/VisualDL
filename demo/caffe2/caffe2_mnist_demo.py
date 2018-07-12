@@ -41,7 +41,9 @@ print("Necessities imported!")
 # This section preps your image and test set in a lmdb database
 def DownloadResource(url, path):
     '''Downloads resources from s3 by url and unzips them to the provided path'''
-    import requests, zipfile, StringIO
+    import requests
+    import zipfile
+    import StringIO
     print("Downloading... {} to {}".format(url, path))
     r = requests.get(url, stream=True)
     z = zipfile.ZipFile(StringIO.StringIO(r.content))
