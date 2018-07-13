@@ -11,3 +11,4 @@ here are some examples for different platforms.
     keras/TUTORIAL_EN.md
     mxnet/TUTORIAL_EN.md
     pytorch/TUTORIAL_EN.md
+    caffe2/TUTORIAL_EN.md
