@@ -6,8 +6,10 @@ Currently, VisualDL supports visualization features as follows:
 
 - Scalar: plot of trends, can be used to show error trends during training.
 - Image: image visualization, can be used to show intermediate images from CNN.
+- Audio: can be used to play input audio samples or generated audio samples.
 - Histogram: can be used to show parameter distribution and trend.
 - Graph: can be used to visualize model structure.
+- High dimensional: can be used to visualize embeddings projection.
 
 VisualDL provides both Python SDK and C++ SDK in nature. It can support various frameworks.
 Users can retrieve visualization data by simply adding a few lines of code using Pythong SDK.
