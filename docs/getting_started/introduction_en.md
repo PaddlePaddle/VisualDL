@@ -67,7 +67,7 @@ visualdl --logdir ./log --port 8080
         <p align="left">
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/image-gan.png" height="300" width="300"/>
         </p>
-        
+
 3. Audio: collect audio sampling for playback.
     - display audio input or generated audio for users to play or download audio clip
     - useful for training models for Speech Recognition or Text to Speech
@@ -91,7 +91,7 @@ show the trend of parameter distribution.
         <p align="left">
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/graph.png" height="250" width="400"/>
         </p>
-        
+
 6. High Dimensional: visualize data embeddings by projects high-dimensional data into 2D / 3D.
     - Help users understand the similarity, correlation of different objects (e.g. word / image)
     - Map objects to vectors in vector space to visualize distance of neighbors and form clusters

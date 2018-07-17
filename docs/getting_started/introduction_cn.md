@@ -52,7 +52,7 @@ visualdl --logdir ./log --port 8080
 1. Scalar. 支持Scalar打点数据展示，如上图所示：
 	- 可以将训练过程中的loss，准确率等信息以折现的形式体现出来，方便看出整体趋势。
 	- 可以在同一个图片中画出多条曲线，方便对比分析。
-	
+
 2. Image. 支持图片展示。
 	- 输入图片展示，方便查看数据样本的质量
 	- 支持卷积层的结果展示，方便查看卷积之后的效果。
@@ -63,10 +63,10 @@ visualdl --logdir ./log --port 8080
         <p align="left">
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/image-gan.png" height="300" width="300"/>
         </p>
-        
+
 3. Audio. 支持播放音频样本。
     - 输入音频或生成音频展示，让用户播放或下载
-    - 
+    - 针对于语音识别和语音合成模型的训练
     - 方便查看数据样本的质量或调查问题
 
 4. Histogram. 参数分布展示，方便查看参数矩阵中数值的分布曲线，以及随着训练的进行，参数数值分布的变化趋势。
@@ -83,7 +83,7 @@ visualdl --logdir ./log --port 8080
         <p align="left">
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/graph.png" height="250" width="400"/>
         </p>
-        
+
 6. High Dimensional: 用高维度数据映射在2D/3D来可视化嵌入
     - 便于了解不同物件（文字，图片）的相似度，相关性
     - 把物件嵌入到向量空间来可视化邻居距离和聚集
