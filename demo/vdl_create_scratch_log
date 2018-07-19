@@ -197,10 +197,9 @@ with logw.mode("train") as logger:
     embedding.add_embeddings_with_word_dict(hot_vectors, word_dict)
 
 
-def download_graph_image():
+def download_onnx():
     '''
-    This is a scratch demo, it do not generate a ONNX proto, but just download an image
-    that generated before to show how the graph frontend works.
+    This is a scratch demo, it do not generate a ONNX proto, but just download a prebuilt ONNX file.
 
     For real cases, just refer to README.
     '''
@@ -218,12 +217,12 @@ def download_graph_image():
     myssl = ssl.create_default_context()
     myssl.check_hostname = False
     myssl.verify_mode = ssl.CERT_NONE
-    image_url = "https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/super_resolution_graph.png?raw=true"
-    log.warning('download graph demo from {}'.format(image_url))
-    graph_image = ur.urlopen(image_url, context=myssl).read()
-    with open(os.path.join(logdir, 'graph.jpg'), 'wb') as f:
-        f.write(graph_image)
-    log.warning('graph ready!')
+    onnx_url = "https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mnist_model.onnx?raw=true"
+    log.warning('download ONNX file from {}'.format(onnx_url))
+    onnx_model = ur.urlopen(onnx_url, context=myssl).read()
+    with open(os.path.join(logdir, 'mnist_model.onnx'), 'wb') as f:
+        f.write(onnx_model)
+    log.warning('ONNX model ready! use visualdl --logdir=scratch_log -m scratch_log/mnist_model.onnx to launch')
 
 
-download_graph_image()
+download_onnx()
