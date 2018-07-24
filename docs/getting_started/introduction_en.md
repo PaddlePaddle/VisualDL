@@ -92,7 +92,7 @@ show the trend of parameter distribution.
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/graph.png" height="250" width="400"/>
         </p>
 
-6. High Dimensional: visualize data embeddings by projects high-dimensional data into 2D / 3D.
+6. High Dimensional: visualize data embeddings by projecting high-dimensional data into 2D / 3D.
     - Help users understand the similarity, correlation of different objects (e.g. word / image)
     - Map objects to vectors in vector space to visualize distance of neighbors and form clusters
     - Support dimension reduction algorithm like PCA, T-SNE

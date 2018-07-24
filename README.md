@@ -64,7 +64,7 @@ PaddlePaddle, PyTorch and MXNet.
 </p>
 
 ### High Dimensional
-High Dimensional can be used to visualize data embeddings by projects high-dimensional data into 2D / 3D.
+High Dimensional can be used to visualize data embeddings by projecting high-dimensional data into 2D / 3D.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_3d.png" width="60%"/>
