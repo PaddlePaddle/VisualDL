@@ -17,25 +17,28 @@ VisualDL是一个面向深度学习任务设计的可视化工具，包含了sca
 实现原生的性能和定制效果。
 
 ## 组件
-VisualDL 目前支持4种组件：
+VisualDL 目前支持以下组件：
 
-- graph
 - scalar
-- image
 - histogram
-
-### Graph
-兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
-</p>
+- image
+- audio
+- graph
+- high dimensional
 
 ### Scalar
 可以用于展示训练测试的误差趋势
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
+</p>
+
+### Histogram
+
+用于可视化任何tensor中元素分布的变化趋势
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
 </p>
 
 ### Image
@@ -45,12 +48,21 @@ VisualDL 目前支持4种组件：
 <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
 </p>
 
-### Histogram
+### Audio
+可用于播放输入或生成的音频样本
 
-用于可视化任何tensor中元素分布的变化趋势
+### Graph
+兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
+  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
+</p>
+
+### High Dimensional
+用高维度数据映射在2D/3D来可视化嵌入
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_3d.png" width="60%"/>
 </p>
 
 ## 快速尝试
@@ -219,7 +231,7 @@ board 还支持一下参数来实现远程的访问：
 
 - `--host` 设定IP
 - `--port` 设定端口
-- `--model_pb` 指定 ONNX 格式的模型文件
+- `-m / --model_pb` 指定 ONNX 格式的模型文件
 
 ### 贡献
 

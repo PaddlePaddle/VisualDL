@@ -48,7 +48,7 @@ for step in steps:
 - Launch Visual DL service and you can see the visualization results.
 
 ```shell
-visualdl --logdir ./log --port 8080
+visualdl --logdir ./log --model_pb <path_to_onnx_model> --port 8080 # onnx model and port are optional
 ```
 
 ### Comprehensive Usability

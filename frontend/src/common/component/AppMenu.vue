@@ -39,6 +39,11 @@ export default {
           name: 'scalars',
         },
         {
+          url: '/histograms',
+          title: 'HISTOGRAMS',
+          name: 'histograms',
+        },
+        {
           url: '/images',
           title: 'IMAGES',
           name: 'images',
@@ -49,19 +54,14 @@ export default {
           name: 'audio',
         },
         {
-          url: '/histograms',
-          title: 'HISTOGRAMS',
-          name: 'histograms',
+          url: '/texts',
+          title: 'TEXTS',
+          name: 'texts',
         },
         {
           url: '/graphs',
           title: 'GRAPHS',
           name: 'graphs',
-        },
-        {
-          url: '/texts',
-          title: 'TEXTS',
-          name: 'texts',
         },
         {
           url: '/HighDimensional',

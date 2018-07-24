@@ -95,7 +95,7 @@ VisualDL supports the visualization for the format in [ONNX](https://github.com/
 Currently, ONNX supports format conversion among various deep learning frameworks such as `MXNet`, `PyTorch`, `Caffe2`, `Caffe`.
 
 ```
-visualdl --logdir somedir --model_pb <path_to_model>
+visualdl --logdir somedir --model_pb <path_to_onnx_model>
 ```
 
 For example, for the MNIST dataset, Graph component can render model graph as below:
