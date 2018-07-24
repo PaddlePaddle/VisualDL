@@ -88,7 +88,7 @@ VisualDL 的 C++ SDK 与 Python 的基本一致，上面Python示例对应的C++
 VisualDL 支持开源的 [ONNX](https://github.com/onnx/onnx)模型结构的可视化，目前ONNX支持包括 `pytorch`, `Caffe2`, `Caffe`, `MxNet` 在内的多种深度学习平台的模型结构的转化。
 
 ```
-visualdl --logdir somedir --model_pb <path_to_model>
+visualdl --logdir somedir --model_pb <path_to_onnx_model>
 ```
 
 比如mnist，会得到如下graph

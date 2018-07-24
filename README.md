@@ -21,12 +21,38 @@ can be integrated into other platforms.
 
 
 ## Component
-VisualDL now provides 4 components:
+VisualDL provides following components:
 
-- graph
 - scalar
-- image
 - histogram
+- image
+- audio
+- graph
+- high dimensional
+
+### Scalar
+Scalar can be used to show the trends of error during training.
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
+</p>
+
+### Histogram
+Histogram can be used to visualize parameter distribution and trends for any tensor.
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
+</p>
+
+### Image
+Image can be used to visualize any tensor or intermediate generated image.
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
+</p>
+
+### Audio
+Audio can be used to play input audio samples or generated audio samples.
 
 ### Graph
 Graph is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
@@ -37,26 +63,11 @@ PaddlePaddle, PyTorch and MXNet.
   <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
 </p>
 
-### Scalar
-Scalar can be used to show the trends of error during training.
-
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
-</p>
-
-### Image
-Image can be used to visualize any tensor or intermediate generated image.
+### High Dimensional
+High Dimensional can be used to visualize data embeddings by projecting high-dimensional data into 2D / 3D.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
-</p>
-
-### Histogram
-Histogram can be used to visualize parameter distribution and trends for any tensor.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_3d.png" width="60%"/>
 </p>
 
 ## Quick Start
@@ -233,7 +244,7 @@ visualDL also supports following optional parameters:
 
 - `--host` set IP
 - `--port` set port
-- `--model_pb` specify ONNX format for model file to view graph
+- `-m / --model_pb` specify ONNX format for model file to view graph
 
 
 ### Contribute
