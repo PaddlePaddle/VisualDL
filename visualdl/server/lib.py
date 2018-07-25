@@ -310,7 +310,7 @@ def get_embeddings(storage, mode, reduction, dimension=2, num_records=5000):
         high_dimensional_vectors = np.array(embedding.get_all_embeddings())
 
         if reduction == 'tsne':
-            import tsne
+            import visualdl.server.tsne as tsne
             low_dim_embs = tsne.tsne(
                 high_dimensional_vectors,
                 dimension,
