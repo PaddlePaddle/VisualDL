@@ -77,7 +77,8 @@ logger = LogWriter(logdir, sync_cycle=100)
 # mark the components with 'train' label.
 with logger.mode("train"):
     # create a scalar component called 'scalars/'
-    scalar_keras_train_loss = logger.scalar("scalars/scalar_keras_train_loss")
+    scalar_keras_train_loss = logger.scalar(
+        "scalars/scalar_keras_mnist_train_loss")
     image_input = logger.image("images/input", 1)
     image0 = logger.image("images/image0", 1)
     image1 = logger.image("images/image1", 1)
