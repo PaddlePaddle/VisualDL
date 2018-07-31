@@ -39,6 +39,29 @@ The whole build step can be:
 
 1. Get the VisualDL code and run docs/release/build.sh. It will generate a whl file like `visualdl-0.0.2a0-cp27-cp27m(u)-linux_x86_64.whl`
 
+    - If you run into some SSL issues like following while downloading some packages, this is due to CMake not configured with SSL in old linux OS. Skip
+    to next step if you do not encounter this.
+
+        ```shell
+             status_code: 1
+             status_string: "Unsupported protocol"
+             Protocol "https" not supported or disabled in libcurl
+        ```
+
+        Solution is we need to rebuild CMake from source and configure it to point to system `curl` that comes with SSL.
+
+        ```shell
+             yum -y install zlib-devel libcurl-devel
+             wget https://cmake.org/files/v3.12/cmake-3.12.0.tar.gz
+             tar xzvf cmake-3.12.0.tar.gz
+             cd cmake-3.12.0
+             ./configure --system-curl
+             make
+             make install
+        ```
+
+        Remove `build` folder and rerun the build command.
+
 1. The `linux` above should be renamed to `manylinux1`
 
     ```shell
