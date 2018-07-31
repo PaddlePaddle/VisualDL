@@ -39,6 +39,11 @@ export default {
           name: 'scalars',
         },
         {
+          url: '/histograms',
+          title: 'HISTOGRAMS',
+          name: 'histograms',
+        },
+        {
           url: '/images',
           title: 'IMAGES',
           name: 'images',
@@ -49,19 +54,14 @@ export default {
           name: 'audio',
         },
         {
-          url: '/histograms',
-          title: 'HISTOGRAMS',
-          name: 'histograms',
+          url: '/texts',
+          title: 'TEXTS',
+          name: 'texts',
         },
         {
           url: '/graphs',
           title: 'GRAPHS',
           name: 'graphs',
-        },
-        {
-          url: '/texts',
-          title: 'TEXTS',
-          name: 'texts',
         },
         {
           url: '/HighDimensional',
@@ -86,11 +86,10 @@ export default {
 .visual-dl-app-menu
     .appbar-menu-title
         flex none
-        margin-right 50px
-        background url('./visualdl-logo.png') no-repeat
-        background-size cover
-        width 120px
-        height 50px
+        margin-right 20px
+        background url('../../assets/ic_logo.svg') no-repeat
+        width 180px
+        height 24px
 
     .menu-item
         font-size 16px

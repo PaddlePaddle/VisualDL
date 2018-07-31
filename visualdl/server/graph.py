@@ -486,7 +486,7 @@ class GraphPreviewGenerator(object):
         return self.graph.edge(source, target, **kwargs)
 
 
-def draw_graph(model_pb_path, image_dir):
+def draw_graph(model_pb_path):
     json_str = load_model(model_pb_path)
     return json_str
 
