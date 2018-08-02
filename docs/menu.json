@@ -1,0 +1,162 @@
+{
+    "sections": [
+        {
+            "sections": [
+                {
+                    "link": {
+                        "en": "getting_started/introduction_en.md",
+                        "zh": "getting_started/introduction_cn.md"
+                    },
+                    "title": {
+                        "en": "Introduction",
+                        "zh": "介绍"
+                    }
+                },
+                {
+                    "link": {
+                        "en": "getting_started/installation_en.md",
+                        "zh": "getting_started/installation_cn.md"
+                    },
+                    "title": {
+                        "en": "Installation",
+                        "zh": "安装"
+                    }
+                },
+                {
+                    "link": {
+                        "en": "getting_started/quick_start_en.md",
+                        "zh": "getting_started/quick_start_cn.md"
+                    },
+                    "title": {
+                        "en": "Setting up your first visualization",
+                        "zh": "快速入门"
+                    }
+                },
+                {
+                    "title": {
+                        "en": "Examples",
+                        "zh": "示例"
+                    },
+
+                    "sections": [
+                        {
+                            "link": {
+                                "en": "getting_started/demo/paddle/TUTORIAL_EN.md",
+                                "zh": "getting_started/demo/paddle/TUTORIAL_CN.md"
+                            },
+                            "title": {
+                                "en": "How to use VisualDL in PaddlePaddle",
+                                "zh": "如何在PaddlePaddle中使用VisualDL"
+                            }
+                        },
+
+                        {
+                            "link": {
+                                "en": "getting_started/demo/keras/TUTORIAL_EN.md",
+                                "zh": "getting_started/demo/keras/TUTORIAL_CN.md"
+                            },
+                            "title": {
+                                "en": "How to use VisualDL in Keras",
+                                "zh": "如何在Keras中使用VisualDL"
+                            }
+                        },
+
+                        {
+                            "link": {
+                                "en": "getting_started/demo/mxnet/TUTORIAL_EN.md",
+                                "zh": "getting_started/demo/mxnet/TUTORIAL_CN.md"
+                            },
+                            "title": {
+                                "en": "How to use VisualDL in MXNet",
+                                "zh": "在MXNet中使用VisualDL"
+                            }
+                        },
+
+                        {
+                            "link": {
+                                "en": "getting_started/demo/pytorch/TUTORIAL_EN.md",
+                                "zh": "getting_started/demo/pytorch/TUTORIAL_CN.md"
+                            },
+                            "title": {
+                                "en": "How to use VisualDL in PyTorch",
+                                "zh": "如何在PyTorch中使用VisualDL"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "title": {
+                "en": "Getting Started",
+                "zh": "新手入门"
+            }
+        },
+
+        {
+            "sections": [
+                {
+                    "link": {
+                        "en": "api/initialize_logger.rst",
+                        "zh": "api/initialize_logger.rst"
+                    },
+                    "title": {
+                        "en": "Initialize Logger",
+                        "zh": "Initialize Logger"
+                    }
+                },
+                {
+                    "link": {
+                        "en": "api/write_logs.rst",
+                        "zh": "api/write_logs.rst"
+                    },
+                    "title": {
+                        "en": "Write Logs",
+                        "zh": "Write Logs"
+                    }
+                }
+            ],
+            "title": {
+                "en": "API",
+                "zh": "API"
+            }
+        },
+
+        {
+            "sections": [
+                {
+                    "link": {
+                        "en": "develop/contribute_code_en.md",
+                        "zh": "develop/contribute_code_cn.md"
+                    },
+                    "title": {
+                        "en": "How To Contribute",
+                        "zh": "如何贡献代码"
+                    }
+                },
+                {
+                    "link": {
+                        "en": "develop/how_to_dev_backend_en.md",
+                        "zh": "develop/how_to_dev_backend_cn.md"
+                    },
+                    "title": {
+                        "en": "Backend Guide",
+                        "zh": "后台指南"
+                    }
+                },
+                {
+                    "link": {
+                        "en": "develop/how_to_dev_frontend_en.md",
+                        "zh": "develop/how_to_dev_frontend_cn.md"
+                    },
+                    "title": {
+                        "en": "Frontend Guide",
+                        "zh": "前端指南"
+                    }
+                }
+            ],
+            "title": {
+                "en": "Develop",
+                "zh": "开发和贡献"
+            }
+        }
+    ]
+}
