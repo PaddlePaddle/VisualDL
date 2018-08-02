@@ -28,9 +28,9 @@
 
 - Fix Scalar incorrect wall time display	- Fix issues where different Python libraries conflicted in Mac
 - Fix incorrect timestamp label display	- Update Visual DL new logo
-- Fix the Travis-CI not failing issue	
-- Fix the last recording not showing	
-- Update and clarify ImageWriter API docs for input params.	
-- VisualDL will call `SyncToDisk` before exiting.	
-- Adjust the interval between each `SyncToDisk` to improve performance.	
+- Fix the Travis-CI not failing issue
+- Fix the last recording not showing
+- Update and clarify ImageWriter API docs for input params.
+- VisualDL will call `SyncToDisk` before exiting.
+- Adjust the interval between each `SyncToDisk` to improve performance.
 - Enforce ESLint coding standard.
