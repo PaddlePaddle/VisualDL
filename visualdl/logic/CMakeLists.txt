@@ -42,6 +42,9 @@ if (APPLE)
 endif()
 
 if (MSVC)
+  ## On Windows, we still link againt python library
+  target_link_libraries(core PRIVATE python)
+  ## Name the libraries as *.pyd
   set_target_properties(core PROPERTIES PREFIX "" SUFFIX ".pyd")
   add_custom_command(TARGET core POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy
