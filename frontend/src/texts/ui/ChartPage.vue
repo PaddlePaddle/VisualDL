@@ -14,7 +14,6 @@
           :outlier="config.outlier"
           :runs="config.runs"
           :running="config.running"
-          :runs-items="runsItems"
         />
       </div>
       <v-pagination
@@ -36,10 +35,6 @@ export default {
     'ui-expand-panel': ExpandPanel,
   },
   props: {
-    runsItems: {
-      type: Array,
-      required: true,
-    },
     config: {
       type: Object,
       required: true,

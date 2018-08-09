@@ -10,7 +10,6 @@
         :tag-info="tagInfo"
         :runs="config.runs"
         :running="config.running"
-        :runs-items="runsItems"
       />
 
       <v-pagination
@@ -30,10 +29,6 @@ import {cloneDeep, flatten} from 'lodash';
 
 export default {
   props: {
-    runsItems: {
-      type: Array,
-      required: true,
-    },
     config: {
       type: Object,
       required: true,

@@ -17,16 +17,25 @@ export default new Router({
       path: '/scalars',
       name: 'Scalars',
       component: Scalars,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
       path: '/histograms',
       name: 'Histograms',
       component: Histogram,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
       path: '/images',
       name: 'Images',
       component: Images,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
       path: '/graphs',
@@ -37,16 +46,25 @@ export default new Router({
       path: '/texts',
       name: 'Texts',
       component: Texts,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
       path: '/audio',
       name: 'Audio',
       component: Audio,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
       path: '/HighDimensional',
       name: 'HighDimensional',
       component: HighDimensional,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
   ],
 });

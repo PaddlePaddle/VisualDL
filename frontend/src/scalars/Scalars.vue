@@ -3,7 +3,6 @@
     <div class="visual-dl-page-left">
       <ui-chart-page
         :config="config"
-        :runs-items="runsItems"
         :tag-list="filteredTagsList"
         :title="'Tags matching' + config.groupNameReg"
       />
@@ -11,7 +10,6 @@
         v-for="item in groupedTags"
         :key="item.group"
         :config="config"
-        :runs-items="runsItems"
         :tag-list="item.tags"
         :title="item.group"
       />
@@ -20,7 +18,6 @@
     <div class="visual-dl-page-right">
       <div class="visual-dl-page-config-container">
         <ui-config
-          :runs-items="runsItems"
           :config="config"
         />
       </div>
@@ -29,7 +26,7 @@
 </template>
 
 <script>
-import {getPluginScalarsTags, getRuns} from '../service';
+import {getPluginScalarsTags} from '../service';
 import {flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
@@ -41,9 +38,14 @@ export default {
     'ui-config': Config,
     'ui-chart-page': ChartPage,
   },
+  props: {
+      runs: {
+        type: Array,
+        required: true,
+      },
+  },
   data() {
     return {
-      runsArray: [],
       tags: [],
       config: {
         groupNameReg: '.*',
@@ -58,15 +60,6 @@ export default {
     };
   },
   computed: {
-    runsItems() {
-      let runsArray = this.runsArray || [];
-      return runsArray.map((item) => {
-        return {
-          name: item,
-          value: item,
-        };
-      });
-    },
     tagsList() {
       let tags = this.tags;
 
@@ -121,11 +114,7 @@ export default {
       let groupNameReg = this.config.groupNameReg;
       this.filterTagsList(groupNameReg);
     });
-
-    getRuns().then(({errno, data}) => {
-      this.runsArray = data;
-      this.config.runs = data;
-    });
+    this.config.runs = this.runs;
   },
   mounted() {
     autoAdjustHeight();
@@ -134,6 +123,9 @@ export default {
     'config.groupNameReg': function(val) {
       this.throttledFilterTagsList();
     },
+    runs: function(val) {
+        this.config.runs = val;
+    }
   },
   methods: {
     filterTagsList(groupNameReg) {
