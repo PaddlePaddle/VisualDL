@@ -5,6 +5,30 @@
         color="primary"
         dark>
         <v-toolbar-title class="appbar-menu-title"/>
+        <v-menu :close-on-content-click="false">
+            <v-btn
+                slot="activator"
+                dark
+                flat
+            > Runs: {{ runs }}
+            </v-btn>
+            <v-list dense>
+              <v-list-tile
+                v-for="(item, index) in availableRuns"
+                :key="index"
+                @click=""
+              >
+                  <v-list-tile-action>
+                    <v-checkbox
+                        :value="item"
+                        :key="item"
+                        :label="item"
+                        v-model="runs"
+                    />
+                  </v-list-tile-action>
+              </v-list-tile>
+             </v-list>
+        </v-menu>
         <v-toolbar-items>
           <v-btn
             v-for="item in items"
@@ -21,6 +45,8 @@
 </template>
 
 <script>
+import {getRuns} from '../../service';
+
 export default {
   props: {
     initialRoute: {
@@ -31,6 +57,8 @@ export default {
   name: 'AppMenu',
   data() {
     return {
+      availableRuns: [],
+      runs: [],
       selected: this.initialRoute,
       items: [
         {
@@ -71,10 +99,21 @@ export default {
       ],
     };
   },
+  created() {
+    getRuns().then(({errno, data}) => {
+      this.availableRuns = data;
+      this.runs = data;
+    });
+  },
+  watch: {
+    runs: function(val) {
+        this.$router.push( {query: { runs: this.runs }});
+    },
+  },
   methods: {
     handleItemClick: function(item) {
       this.selected = item.name;
-      this.$router.push(item.url);
+      this.$router.push( { path: item.url, query: { runs: this.runs }});
     },
   },
 };

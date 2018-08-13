@@ -41,10 +41,6 @@ const yValueFormat = format('.' + p + 'e');
 
 export default {
   props: {
-    runsItems: {
-      type: Array,
-      required: true,
-    },
     tagInfo: {
       type: Object,
       required: true,
