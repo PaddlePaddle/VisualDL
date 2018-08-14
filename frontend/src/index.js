@@ -11,6 +11,7 @@ Vue.use(Vuetify, {
     primary: '#008c99',
     accent: '#008c99',
     toolbox_icon: '#999999',
+    dark_primary: '#00727c'
   },
 });
 

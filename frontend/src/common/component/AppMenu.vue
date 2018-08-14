@@ -13,16 +13,20 @@
           :close-on-content-click="false">
           <v-btn
             slot="activator"
-            dark
-            flat
-            class="runs-selected-menu"
+            depressed
+            @mouseover="runsSelectorOpen = true"
+            @mouseout="runsSelectorOpen = false"
+            :color="runsSelectorOpen ? 'dark_primary' : 'primary'"
+            :class="runsSelectorOpen ? 'runs-selected-menu-open' : 'runs-selected-menu'"
             > <span class="runs-selected-text">Runs: {{ runs.length == 0 ? 'None selected' : runs.join(', ') }} </span>
             <v-icon>arrow_drop_down</v-icon>
           </v-btn>
           <v-list dense>
             <v-list-tile
               v-for="(item, index) in availableRuns"
-              :key="index" >
+              :key="index"
+              @mouseover="runsSelectorOpen = true"
+              @mouseout="runsSelectorOpen = false">
               <v-list-tile-action>
                 <v-checkbox
                   :value="item"
@@ -61,6 +65,7 @@ export default {
   name: 'AppMenu',
   data() {
     return {
+      runsSelectorOpen: false,
       availableRuns: [],
       runs: [],
       selected: this.initialRoute,
@@ -155,6 +160,10 @@ export default {
         font-size 16px
         text-transform none
         opacity 0.75
+
+    .runs-selected-menu-open
+        @extends .visual-dl-app-menu .runs-selected-menu
+        opacity 1
 
     .runs-selected-text
         text-align left
