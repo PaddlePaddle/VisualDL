@@ -5,31 +5,39 @@
         color="primary"
         dark>
         <v-toolbar-title class="appbar-menu-title"/>
-        <v-menu :close-on-content-click="false">
-            <v-btn
-                slot="activator"
-                dark
-                flat
-            > Runs: {{ runs }}
-            </v-btn>
-            <v-list dense>
-              <v-list-tile
-                v-for="(item, index) in availableRuns"
-                :key="index"
-                @click=""
-              >
-                  <v-list-tile-action>
-                    <v-checkbox
-                        :value="item"
-                        :key="item"
-                        :label="item"
-                        v-model="runs"
-                    />
-                  </v-list-tile-action>
-              </v-list-tile>
-             </v-list>
-        </v-menu>
+
         <v-toolbar-items>
+        <v-menu
+          open-on-hover
+          offset-y
+          :close-on-content-click="false">
+          <v-btn
+            slot="activator"
+            depressed
+            @mouseover="runsSelectorOpen = true"
+            @mouseout="runsSelectorOpen = false"
+            :color="runsSelectorOpen ? 'dark_primary' : 'primary'"
+            :class="runsSelectorOpen ? 'runs-selected-menu-open' : 'runs-selected-menu'"
+            > <span class="runs-selected-text">Runs: {{ runs.length == 0 ? 'None selected' : runs.join(', ') }} </span>
+            <v-icon>arrow_drop_down</v-icon>
+          </v-btn>
+          <v-list dense>
+            <v-list-tile
+              v-for="(item, index) in availableRuns"
+              :key="index"
+              @mouseover="runsSelectorOpen = true"
+              @mouseout="runsSelectorOpen = false">
+              <v-list-tile-action>
+                <v-checkbox
+                  :value="item"
+                  :key="item"
+                  :label="item"
+                  v-model="runs" />
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+
           <v-btn
             v-for="item in items"
             :key="item.name"
@@ -57,6 +65,7 @@ export default {
   name: 'AppMenu',
   data() {
     return {
+      runsSelectorOpen: false,
       availableRuns: [],
       runs: [],
       selected: this.initialRoute,
@@ -119,13 +128,13 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="stylus">
 @import '~style/variables';
 
 .visual-dl-app-menu
     .appbar-menu-title
         flex none
-        margin-right 20px
+        margin-right 10px
         background url('../../assets/ic_logo.svg') no-repeat
         width 180px
         height 24px
@@ -146,4 +155,29 @@ export default {
     .menu-item-selected
         @extends .visual-dl-app-menu .menu-item
         opacity 1
+
+    .runs-selected-menu
+        font-size 16px
+        text-transform none
+        opacity 0.75
+
+    .runs-selected-menu-open
+        @extends .visual-dl-app-menu .runs-selected-menu
+        opacity 1
+
+    .runs-selected-text
+        text-align left
+        padding-right 6px
+        overflow hidden
+        text-overflow ellipsis
+        max-width 200px
+
+.theme--light .input-group:not(.input-group--error) label
+    color #000
+
+.input-group label
+    overflow visible
+
+
+
 </style>
