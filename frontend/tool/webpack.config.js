@@ -7,6 +7,7 @@ const argv = require('yargs').argv;
 const isDev = process.env.NODE_ENV === 'dev';
 const entry = require('./entry');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 function getLoaders(isDev, ext) {
     let arr = ['css-loader'];
@@ -122,7 +123,8 @@ const config = {
         new webpack.LoaderOptionsPlugin({
             test: /\.(styl)$/
         }),
-        new ExtractTextPlugin({filename: '[name].css'})
+        new ExtractTextPlugin({filename: '[name].css'}),
+        new HtmlWebpackPlugin({favicon: 'src/assets/favicon.png'})
     ],
     externals: {
         dagreD3: 'dagre-d3',
