@@ -16,6 +16,7 @@
             depressed
             @mouseover="runsSelectorOpen = true"
             @mouseout="runsSelectorOpen = false"
+            :ripple="false"
             :color="runsSelectorOpen ? 'dark_primary' : 'primary'"
             :class="runsSelectorOpen ? 'runs-selected-menu-open' : 'runs-selected-menu'"
             > <span class="runs-selected-text">Runs: {{ runs.length == 0 ? 'None selected' : runs.join(', ') }} </span>
@@ -43,7 +44,7 @@
             :key="item.name"
             flat
             dark
-            :class="selected === item.name ? 'menu-item-selected': 'menu-item'"
+            :class="selected.toLowerCase() === item.name.toLowerCase() ? 'menu-item-selected': 'menu-item'"
             @click="handleItemClick(item)"
           >{{ item.title }}</v-btn>
         </v-toolbar-items>
@@ -112,12 +113,18 @@ export default {
     getRuns().then(({errno, data}) => {
       this.availableRuns = data;
       this.runs = data;
+      //use replace here instead of push so that user cannot go back to empty run state
+      this.$router.replace( { path: this.initialRoute, query: { runs: this.runs }});
     });
   },
   watch: {
     runs: function(val) {
         this.$router.push( {query: { runs: this.runs }});
     },
+    '$route' (to, from) { //this will get called when back button is hit that changes path or query
+       this.runs = this.$route.query.runs;
+       this.selected = this.$route.name;
+    }
   },
   methods: {
     handleItemClick: function(item) {
