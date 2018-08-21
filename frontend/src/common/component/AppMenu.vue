@@ -110,16 +110,19 @@ export default {
     };
   },
   created() {
+    this.runs = this.$route.query.runs; //maintain runs state after refresh
     getRuns().then(({errno, data}) => {
       this.availableRuns = data;
-      this.runs = data;
+      if (!this.runs) this.runs = data;
       //use replace here instead of push so that user cannot go back to empty run state
       this.$router.replace( { path: this.initialRoute, query: { runs: this.runs }});
     });
   },
   watch: {
     runs: function(val) {
-        this.$router.push( {query: { runs: this.runs }});
+        if (this.runs) {
+          this.$router.push( {query: { runs: this.runs }});
+        }
     },
     '$route' (to, from) { //this will get called when back button is hit that changes path or query
        this.runs = this.$route.query.runs;
