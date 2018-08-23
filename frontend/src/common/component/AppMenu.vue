@@ -72,9 +72,9 @@ export default {
       selected: this.initialRoute,
       items: [
         {
-          url: '/scalars',
-          title: 'SCALARS',
-          name: 'scalars',
+          url: '/metrics',
+          title: 'METRICS',
+          name: 'metrics',
         },
         {
           url: '/histograms',
