@@ -57,7 +57,7 @@ export default {
         running: true,
         chartType: 'offset',
       },
-      filteredTagsList: [],
+      filteredTagsList: { scalar: [], histogram: [] },
     };
   },
   computed: {
@@ -67,10 +67,7 @@ export default {
 
       Object.keys(this.tagInfo).forEach((type) => {
 
-        console.log("type =", type);
         let tags = this.tagInfo[type];
-
-        console.log("tags =", tags);
 
         let runs = Object.keys(tags);
         let tagsArray = runs.map((run) => Object.keys(tags[run]));
@@ -90,16 +87,11 @@ export default {
             group: tag.split('/')[0],
           };
         });
-
         list[type] = tagsForEachType;
-
       });
-
       return list;
-
     },
     groupedTags() {
-        console.log("groupedTags");
 
       let tagsList = this.tagsList || [];
 
@@ -131,7 +123,6 @@ export default {
           tags: groupData[group],
         };
       });
-      console.log("group1 list = ", groupList);
 
       return groupList;
     },
@@ -139,12 +130,8 @@ export default {
   created() {
     getPluginScalarsTags().then(({errno, data}) => {
       this.tagInfo.scalar = data;
-      console.log("taginfo scalar=", this.tagInfo.scalar);
       this.filterTagsList(this.config.groupNameReg);
     });
-
-
-    console.log("start getting histogram");
 
     getPluginHistogramsTags().then(({errno, data}) => {
       this.tagInfo.histogram = data;
@@ -167,24 +154,24 @@ export default {
   methods: {
     filterTagsList(groupNameReg) {
       if (!groupNameReg) {
-        this.filteredTagsList = [];
+        this.filteredTagsList = {};
         return;
       }
-      let tagsList = this.tagsList || [];
-
-
-      console.log("tagsList2 =", tagsList);
+      let tagsList = this.tagsList || {};
 
       let regExp = new RegExp(groupNameReg);
-      this.filteredTagsList = tagsList.filter((item) => regExp.test(item.tag));
+
+      Object.keys(tagsList).forEach((type) => {
+        let tagsForEachType = tagsList[type];
+
+        this.filteredTagsList[type] = tagsForEachType.filter((item) => regExp.test(item.tag));
+      });
     },
     throttledFilterTagsList: _.debounce(
       function() {
         this.filterTagsList(this.config.groupNameReg);
       }, 300
     ),
-
-
   },
 };
 

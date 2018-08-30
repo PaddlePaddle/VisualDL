@@ -77,11 +77,6 @@ export default {
           name: 'metrics',
         },
         {
-          url: '/histograms',
-          title: 'HISTOGRAMS',
-          name: 'histograms',
-        },
-        {
           url: '/images',
           title: 'IMAGES',
           name: 'images',
