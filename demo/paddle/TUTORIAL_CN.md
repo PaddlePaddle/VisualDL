@@ -9,7 +9,8 @@
 
 完整的演示程序可以在[这里](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/paddle/paddle_cifar10.py)下载。
 
-这程序是在Paddle v2 0.11版本上开发。可以用```pip install paddlepaddle``` 或 ```docker pull paddlepaddle/paddle:0.11.0```来安装。注意Paddle还没支持Python3。
+这程序是在Paddle v2 0.11版本上开发。可以用```pip install paddlepaddle``` 或 ```docker pull paddlepaddle/paddle:0.11.0```来安装。注意Paddle还没支持Python3和protobuf需要3.5+。
+如果出现`TypeError: __init__() got an unexpected keyword argument 'file'`, 是因为protobuf不是3.5以上，运行`pip install --upgrade protobuf`就能解决。
 安装详细流程请看[这里](http://paddlepaddle.org/docs/0.11.0/documentation/cn/getstarted/build_and_install/index_en.html)
 
 首先我们创建Loggers来记录不同种类的数据：
