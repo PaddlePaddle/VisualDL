@@ -71,6 +71,7 @@ export default {
   },
   computed: {
     filteredListByRunsForScalar() {
+      if (!this.config.scalar.display) return [];
       let runs = this.config.runs || [];
       let list = cloneDeep(this.tagList.scalar) || [];
       list = list.slice().map((item) => {
@@ -80,6 +81,7 @@ export default {
       return list.filter((item) => item.tagList.length > 0);
     },
     filteredListByRunsForHistogram() {
+      if (!this.config.histogram.display) return [];
       let runs = this.config.runs || [];
       let list = cloneDeep(this.tagList.histogram) || [];
       return flatten(list.slice().map((item) => {
@@ -87,7 +89,6 @@ export default {
       }));
     },
     filteredScalarTagList() {
-        console.log("filteredScalarTagList");
         return this.filteredListByRunsForScalar.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
     },
     filteredHistogramTagList() {

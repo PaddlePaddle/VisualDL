@@ -49,6 +49,9 @@ export default {
       tagInfo: { scalar: {}, histogram: {} },
       config: {
         groupNameReg: '.*',
+        //scalar 'enabled' will be false when no scalar logs available, 'display' is toggled by user in config
+        scalar: { enabled: false, display: false },
+        histogram: { enabled: false, display: false },
         smoothing: 0.6,
         horizontal: 'step',
         sortingMethod: 'default',
@@ -129,12 +132,20 @@ export default {
   },
   created() {
     getPluginScalarsTags().then(({errno, data}) => {
+      if (!data) return;
+
       this.tagInfo.scalar = data;
+      this.config.scalar.enabled = true;
+      this.config.scalar.display = true;
       this.filterTagsList(this.config.groupNameReg);
     });
 
     getPluginHistogramsTags().then(({errno, data}) => {
+      if (!data) return;
+
       this.tagInfo.histogram = data;
+      this.config.histogram.enabled = true;
+      this.config.histogram.display = true;
       this.filterTagsList(this.config.groupNameReg);
     });
 
