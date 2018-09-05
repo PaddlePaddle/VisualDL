@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Scalars from '@/scalars/Scalars';
+import Metrics from '@/metrics/Metrics';
 import Histogram from '@/histogram/Histogram';
 import Images from '@/images/Images';
 import Graph from '@/graph/Graph';
@@ -14,9 +14,9 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: '/scalars',
-      name: 'Scalars',
-      component: Scalars,
+      path: '/metrics',
+      name: 'Metrics',
+      component: Metrics,
       props: (route) => ({
           runs: route.query.runs
       })
