@@ -77,19 +77,9 @@ export default {
           name: 'metrics',
         },
         {
-          url: '/images',
-          title: 'IMAGES',
-          name: 'images',
-        },
-        {
-          url: '/audio',
-          title: 'AUDIO',
-          name: 'audio',
-        },
-        {
-          url: '/texts',
-          title: 'TEXTS',
-          name: 'texts',
+          url: '/samples',
+          title: 'SAMPLES',
+          name: 'samples',
         },
         {
           url: '/graphs',
