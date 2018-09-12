@@ -66,7 +66,7 @@ export default {
       // current page
       currentPage: 1,
       // item per page
-      pageSize: 8,
+      pageSize: 12,
     };
   },
   computed: {
