@@ -1,10 +1,13 @@
 <template>
-  <div
-    @click="$emit('click')"
+  <v-card
+    hover
+    color="tag_background"
     class="visual-dl-tags-tab">
+    <div
+      @click="$emit('click')">
     <span :class="active ? 'visual-dl-tags-tab-text-active':'visual-dl-tags-tab-text-inactive' ">{{ title }} &nbsp; ({{ total }})</span>
-    </h3>
-  </div>
+    </div>
+  </v-card>
 </template>
 <script>
 export default {
@@ -26,20 +29,21 @@ export default {
 </script>
 <style lang="stylus">
     .visual-dl-tags-tab
-      border solid 1px #ccc
-      line-height 40px
-      height 40px
+      border-radius 17px
+      line-height 34px
+      height 34px
       padding 0 14px
-      margin-right 20px
+      margin-right 16px
       cursor pointer
       position relative
       display inline-block
       .visual-dl-tags-tab-text-active
-        font-size 13px
+        font-size 12px
         font-weight bold
       .visual-dl-tags-tab-text-inactive
-        font-size 13px
+        font-size 12px
         font-weight normal
+        color #555555
 
 </style>
 
