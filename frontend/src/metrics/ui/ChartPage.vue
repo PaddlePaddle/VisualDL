@@ -32,7 +32,6 @@
   </div>
 </template>
 <script>
-import ExpandPanel from '../../common/component/ExpandPanel';
 import ScalarChart from './ScalarChart';
 import HistogramChart from './HistogramChart';
 
@@ -40,7 +39,6 @@ export default {
   components: {
     'ui-scalar-chart': ScalarChart,
     'ui-histogram-chart': HistogramChart,
-    'ui-expand-panel': ExpandPanel,
   },
   props: {
     config: {
@@ -61,7 +59,7 @@ export default {
       // current page
       currentPage: 1,
       // item per page
-      pageSize: 4,
+      pageSize: 12,
     };
   },
   computed: {
@@ -84,7 +82,7 @@ export default {
     'config.runs': function(val) {
       this.currentPage = 1;
     },
-    'tagList': function(val) {
+    tagList: function(val) {
       this.currentPage = 1;
     },
   },

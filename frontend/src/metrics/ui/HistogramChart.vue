@@ -66,6 +66,13 @@ export default {
     };
   },
   watch: {
+    tagInfo: function(val) {
+      this.initChart(val);
+      this.stopInterval();
+      if (this.running && !this.isDemo) {
+        this.startInterval();
+      }
+    },
     originData: function(val) {
       this.initChartOption();
     },

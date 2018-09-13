@@ -11,7 +11,6 @@
         />
         <ui-tags-tab
           v-for="item in groupedTags"
-          :key="item.group"
           :total="tagsListCount(item.tags)"
           :title="item.group"
           :active="item.group === selectedGroup"

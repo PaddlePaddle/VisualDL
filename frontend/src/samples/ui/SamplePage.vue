@@ -1,8 +1,5 @@
 <template>
   <div class="visual-dl-chart-page">
-    <ui-expand-panel
-      :info="total"
-      :title="title">
 
       <div class="visual-dl-sample-chart-box">
         <ui-image
@@ -39,23 +36,18 @@
         v-model="currentPage"
         :length="pageLength"
       />
-    </ui-expand-panel>
   </div>
 </template>
 <script>
-import ExpandPanel from '../../common/component/ExpandPanel';
 import Image from './Image';
 import Audio from './Audio';
 import Text from './Text';
-
-import {cloneDeep, flatten} from 'lodash';
 
 export default {
   components: {
     'ui-image': Image,
     'ui-audio': Audio,
     'ui-text': Text,
-    'ui-expand-panel': ExpandPanel,
   },
   props: {
     config: {
@@ -66,8 +58,8 @@ export default {
       type: Object,
       required: true,
     },
-    title: {
-      type: String,
+    total: {
+      type: Number,
       required: true,
     },
   },
@@ -80,54 +72,24 @@ export default {
     };
   },
   computed: {
-    filteredListByRunsForImage() {
-      if (!this.config.image.display) return [];
-      let runs = this.config.runs || [];
-      let list = cloneDeep(this.tagList.image) || [];
-      return flatten(list.slice().map((item) => {
-        return item.tagList.filter((one) => runs.includes(one.run));
-      }));
-    },
-    filteredListByRunsForAudio() {
-      if (!this.config.audio.display) return [];
-      let runs = this.config.runs || [];
-      let list = cloneDeep(this.tagList.audio) || [];
-      return flatten(list.slice().map((item) => {
-        return item.tagList.filter((one) => runs.includes(one.run));
-      }));
-    },
-    filteredListByRunsForText() {
-      if (!this.config.text.display) return [];
-      let runs = this.config.runs || [];
-      let list = cloneDeep(this.tagList.text) || [];
-      return flatten(list.slice().map((item) => {
-        return item.tagList.filter((one) => runs.includes(one.run));
-      }));
-    },
     filteredImageTagList() {
-        return this.filteredListByRunsForImage.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+        return this.tagList.image.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
     },
     filteredAudioTagList() {
-        let offset = this.filteredListByRunsForImage.length;
+        let offset = this.tagList.image.length;
         let start = (this.currentPage - 1) * this.pageSize - offset;
         if (start < 0) start = 0;
         let end = this.currentPage * this.pageSize - offset;
         if (end < 0) end = 0;
-        return this.filteredListByRunsForAudio.slice(start, end);
+        return this.tagList.audio.slice(start, end);
     },
     filteredTextTagList() {
-        let offset = this.filteredListByRunsForImage.length + this.filteredListByRunsForAudio.length;
+        let offset = this.tagList.image.length + this.tagList.audio.length;
         let start = (this.currentPage - 1) * this.pageSize - offset;
         if (start < 0) start = 0;
         let end = this.currentPage * this.pageSize - offset;
         if (end < 0) end = 0;
-        return this.filteredListByRunsForText.slice(start, end);
-    },
-    total() {
-      let imageList = this.filteredListByRunsForImage || [];
-      let audioList = this.filteredListByRunsForAudio || [];
-      let textList = this.filteredListByRunsForText || [];
-      return imageList.length + audioList.length + textList.length;
+        return this.tagList.text.slice(start, end);
     },
     pageLength() {
       return Math.ceil(this.total / this.pageSize);
@@ -136,7 +98,10 @@ export default {
   watch: {
     'config.runs': function(val) {
       this.currentPage = 1;
-    }
+    },
+    tagList: function(val) {
+      this.currentPage = 1;
+    },
   },
 };
 </script>
