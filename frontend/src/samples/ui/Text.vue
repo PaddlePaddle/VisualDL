@@ -106,6 +106,10 @@ export default {
         };
       }
     },
+    tagInfo: function(val) {
+      this.currentIndex = 0;
+      this.getOriginChartsData();
+    }
   },
   methods: {
     stopInterval() {

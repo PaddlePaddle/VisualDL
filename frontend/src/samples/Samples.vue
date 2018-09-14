@@ -1,17 +1,27 @@
 <template>
   <div class="visual-dl-page-container">
     <div class="visual-dl-page-left">
+
+       <div>
+        <ui-tags-tab
+          :total="tagsListCount(allTagsMatchingList)"
+          :title="'Tags matching' + config.groupNameReg"
+          :active="selectedGroup === '' "
+          @click="selectedGroup = '' "
+        />
+        <ui-tags-tab
+          v-for="item in groupedTags"
+          :total="tagsListCount(item.tags)"
+          :title="item.group"
+          :active="item.group === selectedGroup"
+          @click="selectedGroup = item.group"
+        />
+      </div>
+
       <ui-sample-page
         :config="config"
-        :tag-list="filteredTagsList"
-        :title="'Tags matching ' + config.groupNameReg"
-      />
-      <ui-sample-page
-        v-for="item in groupedTags"
-        :key="item.group"
-        :config="config"
-        :tag-list="item.tags"
-        :title="item.group"
+        :tag-list="finalTagsList"
+        :total="tagsListCount(finalTagsList)"
       />
     </div>
     <div class="visual-dl-page-right">
@@ -27,9 +37,10 @@
 <script>
 
 import {getPluginImagesTags, getPluginAudioTags, getPluginTextsTags} from '../service';
-import {flatten, uniq} from 'lodash';
+import {cloneDeep, flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
+import TagsTab from '../common/component/TagsTab';
 import Config from './ui/Config';
 import SamplePage from './ui/SamplePage';
 
@@ -38,6 +49,7 @@ export default {
   components: {
     'ui-config': Config,
     'ui-sample-page': SamplePage,
+    'ui-tags-tab': TagsTab,
   },
   props: {
       runs: {
@@ -58,12 +70,30 @@ export default {
         running: true,
       },
       filteredTagsList: { image: {}, audio: {}, text: {} },
+      selectedGroup: '',
     };
   },
   computed: {
+    finalTagsList() {
+      if (this.selectedGroup === '') {
+        return this.allTagsMatchingList;
+      } else {
+        let list;
+        this.groupedTags.forEach((item) => {
+          if (item.group === this.selectedGroup) {
+            list = item.tags;
+          }
+        });
+        return list;
+      }
+    },
+    allTagsMatchingList() {
+      let list = cloneDeep(this.filteredTagsList);
+      this.filteredListByRuns(list);
+      return list;
+    },
     tagsList() {
-
-      var list = {};
+      let list = {};
 
       Object.keys(this.tagInfo).forEach((type) => {
 
@@ -118,6 +148,8 @@ export default {
       // to array
       let groups = Object.keys(groupData);
       let groupList = groups.map((group) => {
+        this.filteredListByRuns(groupData[group]);
+
         return {
           group,
           tags: groupData[group],
@@ -187,6 +219,25 @@ export default {
         this.filterTagsList(this.config.groupNameReg);
       }, 300
     ),
+    filteredListByRuns(list) {
+      list.image = !this.config.image.display ? [] : this.filteredTypeByRuns(list.image);
+      list.audio = !this.config.audio.display ? [] : this.filteredTypeByRuns(list.audio);
+      list.text = !this.config.text.display ? [] : this.filteredTypeByRuns(list.text);
+    },
+    filteredTypeByRuns(tagList) {
+      let runs = this.config.runs || [];
+      let list = cloneDeep(tagList) || [];
+      return flatten(list.map((item) => {
+        return item.tagList.filter((one) => runs.includes(one.run));
+      }));
+    },
+    tagsListCount(tagsList) {
+      let count = 0;
+      if (tagsList.image !== undefined) count += tagsList.image.length;
+      if (tagsList.audio !== undefined) count += tagsList.audio.length;
+      if (tagsList.text !== undefined) count += tagsList.text.length;
+      return count;
+    },
   },
 };
 
