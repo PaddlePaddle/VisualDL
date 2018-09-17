@@ -126,6 +126,10 @@ export default {
       }
       /* eslint-enable fecs-camelcase */
     },
+    tagInfo: function(val) {
+      this.currentIndex = 0;
+      this.getOriginChartsData();
+    }
   },
   methods: {
     stopInterval() {

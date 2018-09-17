@@ -109,6 +109,10 @@ export default {
         };
       }
     },
+    tagInfo: function(val) {
+      this.currentIndex = 0;
+      this.getOriginAudioData();
+    }
   },
   methods: {
     stopInterval() {
