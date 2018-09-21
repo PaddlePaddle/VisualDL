@@ -3,9 +3,20 @@
     <div class="visual-dl-page-left">
 
       <div>
+        <v-card
+          hover
+          color="tag_background"
+          class="visual-dl-tags-tab">
+          <v-icon>search</v-icon>
+          <input type="search" v-model="config.groupNameReg"
+             autocomplete="false"
+             placeholder="Search tags in RegExp"
+             class="visual-dl-tags-search-input">
+        </v-card>
+
         <ui-tags-tab
           :total="tagsListCount(allTagsMatchingList)"
-          :title="'Tags matching' + config.groupNameReg"
+          :title="config.groupNameReg.trim().length == 0 ? 'All' : config.groupNameReg"
           :active="selectedGroup === '' "
           @click="selectedGroup = '' "
         />
@@ -60,7 +71,7 @@ export default {
     return {
       tagInfo: {scalar: {}, histogram: {}},
       config: {
-        groupNameReg: '.*',
+        groupNameReg: '',
         // scalar 'enabled' will be false when no scalar logs available, 'display' is toggled by user in config
         scalar: {enabled: false, display: false},
         histogram: {enabled: false, display: false},
@@ -196,14 +207,13 @@ export default {
   },
   methods: {
     filterTagsList(groupNameReg) {
-      if (!groupNameReg) {
-        this.filteredTagsList = {};
+      if (!groupNameReg || groupNameReg.trim().length == 0) {
+        this.filteredTagsList = cloneDeep(this.tagsList);
         return;
       }
+      this.selectedGroup = '';
       let tagsList = this.tagsList || {};
-
       let regExp = new RegExp(groupNameReg);
-
       Object.keys(tagsList).forEach((type) => {
         let tagsForEachType = tagsList[type];
 
