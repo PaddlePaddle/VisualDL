@@ -1,6 +1,6 @@
 # RELEASE 1.2.0
 
-## New design 
+## New design
 
 - Cleaner and more organized interface
 - Show / select runs in global bar instead of individual tab
