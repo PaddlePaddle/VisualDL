@@ -28,6 +28,9 @@ export default {
 };
 </script>
 <style lang="stylus">
+    .visual-dl-tags-search-input
+      outline none
+      font-size 12px
     .visual-dl-tags-tab
       border-radius 17px
       line-height 34px
