@@ -1,3 +1,17 @@
+# RELEASE 1.2.0
+
+## New design 
+
+- Cleaner and more organized interface
+- Show / select runs in global bar instead of individual tab
+- Merge Scalar and Histogram into Metrics
+- Merge Image, Audio and Text into Samples
+- New Config design, add filter types in config
+- New tags bar design instead of expand panel, easier to filter by tags
+- New search bar integrated on tags bar
+- Improve performance by showing less duplicate charts with tabs bar design
+
+
 # RELEASE 1.1.0
 
 ## New Features
