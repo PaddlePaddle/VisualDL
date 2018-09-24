@@ -1,12 +1,5 @@
 <template>
   <div class="visual-dl-page-config-com">
-    <v-text-field
-      label="Group name RegExp"
-      hint="input a tag group name"
-      v-model="config.groupNameReg"
-      dark
-    />
-
     <v-checkbox
       class="visual-dl-page-config-checkbox"
       label="Scalars"
