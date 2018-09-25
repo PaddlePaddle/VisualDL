@@ -72,29 +72,14 @@ export default {
       selected: this.initialRoute,
       items: [
         {
-          url: '/scalars',
-          title: 'SCALARS',
-          name: 'scalars',
+          url: '/metrics',
+          title: 'METRICS',
+          name: 'metrics',
         },
         {
-          url: '/histograms',
-          title: 'HISTOGRAMS',
-          name: 'histograms',
-        },
-        {
-          url: '/images',
-          title: 'IMAGES',
-          name: 'images',
-        },
-        {
-          url: '/audio',
-          title: 'AUDIO',
-          name: 'audio',
-        },
-        {
-          url: '/texts',
-          title: 'TEXTS',
-          name: 'texts',
+          url: '/samples',
+          title: 'SAMPLES',
+          name: 'samples',
         },
         {
           url: '/graphs',

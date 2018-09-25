@@ -17,14 +17,14 @@ export default {
   },
   data() {
     return {
-      initialRoute: 'scalars',
+      initialRoute: 'metrics',
     };
   },
   created() {
     if (location.hash && location.hash != '#/') {
       this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
     } else {
-      location.hash = '#/scalars';
+      location.hash = '#/metrics';
     }
   },
 };
