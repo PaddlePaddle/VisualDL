@@ -1,6 +1,6 @@
 # Release VisualDL to Pypi
 
-To release VisualDL so that user can do `pip install --upgrade visualdl`, we need to upload the package to pypi. 
+To release VisualDL so that user can do `pip install --upgrade visualdl`, we need to upload the package to pypi.
 
 ## Prepare for release build
 
@@ -17,15 +17,15 @@ After built successfully you will see something like `visualdl-1.2.0-cp27-cp27m-
 
 Make sure we build for python2.7 and python3.6, use anaconda to create python version envrionment easily.
 
-## Build for manylinux 
-To build for manylinux package, you need a manylinux docker image, please look at details in 
+## Build for manylinux
+To build for manylinux package, you need a manylinux docker image, please look at details in
 https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/release/build_manylinux.md
 
-## Build for Windows 
+## Build for Windows
 To build for windows, you need to have a windows machine and run `python setup.py bdist_wheel` as similar in building for MacOS.
 
 ## Upload the wheel package
-Before uploading, make sure you test the package that you generated in dist folder by 
+Before uploading, make sure you test the package that you generated in dist folder by
 `pip install --upgrade xx.whl` and run `visualdl` to make sure everything is fine.
 
 Before upload to the final pypi website, you can first upload it to a test repo `https://testpypi.python.org/pypi` and test the installation process.
