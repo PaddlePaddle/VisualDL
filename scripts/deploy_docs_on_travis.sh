@@ -14,4 +14,4 @@ export DEPLOY_DOCS_SH=https://raw.githubusercontent.com/PaddlePaddle/PaddlePaddl
 export DOCS_DIR=`pwd`
 cd ..
 
-curl $DEPLOY_DOCS_SH | bash -s $CONTENT_DEC_PASSWD $TRAVIS_BRANCH $DOCS_DIR $DOCS_DIR/docs $PPO_SCRIPT_BRANCH
+curl $DEPLOY_DOCS_SH | bash -s $CONTENT_DEC_PASSWD $TRAVIS_BRANCH $DOCS_DIR/docs $DOCS_DIR/docs $PPO_SCRIPT_BRANCH
