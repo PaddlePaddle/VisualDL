@@ -3,7 +3,7 @@
 if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then exit 0; fi;
 
 if [ "$TRAVIS_BRANCH" == "develop_doc" ]; then
-    PPO_SCRIPT_BRANCH=develop
+    PPO_SCRIPT_BRANCH=develop_doc
 elif [[ "$TRAVIS_BRANCH" == "develop" ]]; then
     PPO_SCRIPT_BRANCH=master
 else
