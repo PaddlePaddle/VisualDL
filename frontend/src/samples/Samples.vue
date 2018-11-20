@@ -2,21 +2,23 @@
   <div class="visual-dl-page-container">
     <div class="visual-dl-page-left">
 
-       <div>
+      <div>
         <v-card
           hover
           color="tag_background"
           class="visual-dl-tags-tab">
           <v-icon>search</v-icon>
-          <input type="search" v-model="config.groupNameReg"
-             autocomplete="false"
-             placeholder="Search tags in RegExp"
-             class="visual-dl-tags-search-input">
+          <input
+            type="search"
+            v-model="config.groupNameReg"
+            autocomplete="false"
+            :placeholder="$t('lang.searchTagInReg')"
+            class="visual-dl-tags-search-input">
         </v-card>
 
         <ui-tags-tab
           :total="tagsListCount(allTagsMatchingList)"
-          :title="config.groupNameReg.trim().length == 0 ? 'All' : config.groupNameReg"
+          :title="config.groupNameReg.trim().length == 0 ? $t('lang.all') : config.groupNameReg"
           :active="selectedGroup === '' "
           @click="selectedGroup = '' "
         />
@@ -24,6 +26,7 @@
           v-for="item in groupedTags"
           :total="tagsListCount(item.tags)"
           :title="item.group"
+          :key="item.group"
           :active="item.group === selectedGroup"
           @click="selectedGroup = item.group"
         />
@@ -63,24 +66,24 @@ export default {
     'ui-tags-tab': TagsTab,
   },
   props: {
-      runs: {
-        type: Array,
-        required: true,
-      },
+    runs: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
-      tagInfo: { image: {}, audio: {}, text: {} },
+      tagInfo: {image: {}, audio: {}, text: {}},
       config: {
         groupNameReg: '',
-        image: { enabled: false, display: false },
-        audio: { enabled: false, display: false },
-        text: { enabled: false, display: false },
+        image: {enabled: false, display: false},
+        audio: {enabled: false, display: false},
+        text: {enabled: false, display: false},
         isActualImageSize: false,
         runs: [],
         running: true,
       },
-      filteredTagsList: { image: {}, audio: {}, text: {} },
+      filteredTagsList: {image: {}, audio: {}, text: {}},
       selectedGroup: '',
     };
   },
@@ -107,7 +110,6 @@ export default {
       let list = {};
 
       Object.keys(this.tagInfo).forEach((type) => {
-
         let tags = this.tagInfo[type];
 
         let runs = Object.keys(tags);
@@ -133,7 +135,6 @@ export default {
       return list;
     },
     groupedTags() {
-
       let tagsList = this.tagsList || [];
 
       // put data in group
@@ -143,11 +144,10 @@ export default {
         let tagsForEachType = tagsList[type];
 
         tagsForEachType.forEach((item) => {
-
           let group = item.group;
 
           if (groupData[group] === undefined) {
-            groupData[group] = {}
+            groupData[group] = {};
           }
           if (groupData[group][type] === undefined) {
             groupData[group][type] = [];
@@ -207,9 +207,9 @@ export default {
     'config.groupNameReg': function(val) {
       this.throttledFilterTagsList();
     },
-    runs: function(val) {
-        this.config.runs = val;
-    }
+    'runs': function(val) {
+      this.config.runs = val;
+    },
   },
   methods: {
     filterTagsList(groupNameReg) {

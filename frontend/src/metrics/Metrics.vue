@@ -8,15 +8,17 @@
           color="tag_background"
           class="visual-dl-tags-tab">
           <v-icon>search</v-icon>
-          <input type="search" v-model="config.groupNameReg"
-             autocomplete="false"
-             placeholder="Search tags in RegExp"
-             class="visual-dl-tags-search-input">
+          <input
+            type="search"
+            v-model="config.groupNameReg"
+            autocomplete="false"
+            :placeholder="$t('lang.searchTagInReg')"
+            class="visual-dl-tags-search-input">
         </v-card>
 
         <ui-tags-tab
           :total="tagsListCount(allTagsMatchingList)"
-          :title="config.groupNameReg.trim().length == 0 ? 'All' : config.groupNameReg"
+          :title="config.groupNameReg.trim().length == 0 ? $t('lang.all') : config.groupNameReg"
           :active="selectedGroup === '' "
           @click="selectedGroup = '' "
         />
@@ -24,6 +26,7 @@
           v-for="item in groupedTags"
           :total="tagsListCount(item.tags)"
           :title="item.group"
+          :key="item.group"
           :active="item.group === selectedGroup"
           @click="selectedGroup = item.group"
         />

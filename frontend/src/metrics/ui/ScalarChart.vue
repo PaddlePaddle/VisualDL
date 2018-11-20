@@ -61,7 +61,7 @@
         <v-list dense>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>Download data in JSON</v-list-tile-title>
+              <v-list-tile-title>{{ $t("lang.downloadDataInJson") }}</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-icon>expand_more</v-icon>

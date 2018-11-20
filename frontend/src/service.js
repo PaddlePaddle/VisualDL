@@ -4,6 +4,8 @@ export const getPluginScalarsTags = makeService('/data/plugin/scalars/tags');
 
 export const getRuns = makeService('/data/runs');
 
+export const getLanguage = makeService('/data/language');
+
 export const getPluginScalarsScalars = makeService('/data/plugin/scalars/scalars');
 
 export const getPluginImagesTags = makeService('/data/plugin/images/tags');
