@@ -15,29 +15,35 @@ export default new Router({
       name: 'Metrics',
       component: Metrics,
       props: (route) => ({
-          runs: route.query.runs
-      })
+        runs: route.query.runs,
+        language: route.query.language,
+      }),
     },
     {
       path: '/samples',
       name: 'Samples',
       component: Samples,
       props: (route) => ({
-          runs: route.query.runs
-      })
+        runs: route.query.runs,
+        language: route.query.language,
+      }),
     },
     {
       path: '/graphs',
       name: 'Graph',
       component: Graph,
+      props: (route) => ({
+        language: route.query.language,
+      }),
     },
     {
       path: '/HighDimensional',
       name: 'HighDimensional',
       component: HighDimensional,
       props: (route) => ({
-          runs: route.query.runs
-      })
+        runs: route.query.runs,
+        language: route.query.language,
+      }),
     },
   ],
 });
