@@ -11,13 +11,16 @@
         :horizontal="config.horizontal"
         :sorting-method="config.sortingMethod"
         :outlier="config.outlier"
+        :key="tagInfo"
         :runs="config.runs"
         :running="config.running"
+        :config="config"
       />
 
       <ui-histogram-chart
         v-for="(tagInfo, index) in filteredHistogramTagList"
         :tag-info="tagInfo"
+        :key="tagInfo"
         :runs="config.runs"
         :chart-type="config.chartType"
         :running="config.running"
@@ -82,7 +85,7 @@ export default {
     'config.runs': function(val) {
       this.currentPage = 1;
     },
-    tagList: function(val) {
+    'tagList': function(val) {
       this.currentPage = 1;
     },
   },

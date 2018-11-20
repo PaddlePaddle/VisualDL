@@ -2,8 +2,8 @@
   <div class="visual-dl-page-config-com">
 
     <v-text-field
-      label="Search"
-      hint="Search by label"
+      :label=this.keyConfig.kSearch.title
+      :hint=this.keyConfig.kSearchByLabel.title
       v-model="config.searchText"
       dark
     />
@@ -11,24 +11,24 @@
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Display All Labels"
+      :label=this.keyConfig.kDisplayAllLabel.title
       v-model="config.displayWordLabel"
       dark/>
 
     <v-radio-group
-      label="Dimension"
+      :label=this.keyConfig.kDimension.title
       v-model="config.dimension"
       dark>
       <v-radio
-        label="2D"
+        :label=this.keyConfig.k2D.title
         value="2"/>
       <v-radio
-        label="3D"
+        :label=this.keyConfig.k3D.title
         value="3"/>
     </v-radio-group>
 
     <v-radio-group
-      label="Reduction Method"
+      :label=this.keyConfig.kReductionMethod.title
       v-model="config.reduction"
       dark>
       <v-radio
@@ -49,11 +49,12 @@
       dark
       block
     >
-      {{ config.running ? 'Running' : 'Stopped' }}
+      {{ config.running ? this.keyConfig.kStartRunning.title : this.keyConfig.kStopRunning.title }}
     </v-btn>
   </div>
 </template>
 <script>
+import {getValueByLanguage} from '../../language';
 
 export default {
   props: {
@@ -64,12 +65,69 @@ export default {
   },
   data() {
     return {
+      language: '',
+      keyConfig: {
+        kSearch: {
+          title: '',
+          key: 'search',
+        },
+        kSearchByLabel: {
+          title: '',
+          key: 'searchByLabel',
+        },
+        kDisplayAllLabel: {
+          title: '',
+          key: 'displayAllLabel',
+        },
+        kDimension: {
+          title: '',
+          key: 'dimension',
+        },
+        k2D: {
+          title: '',
+          key: '2D',
+        },
+        k3D: {
+          title: '',
+          key: '3D',
+        },
+        kStartRunning: {
+          title: '',
+          key: 'startRunning',
+        },
+        kStopRunning: {
+          title: '',
+          key: 'stopRunning',
+        },
+        kReductionMethod: {
+          title: '',
+          key: 'reductionMethod',
+        },
+      },
       isDemo: process.env.NODE_ENV === 'demo',
     };
+  },
+  watch: {
+    config: {
+      handler: function(newval, oldval) {
+        this.language = newval.language;
+        this.setValueByLanguage();
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
     toggleAllRuns() {
       this.config.running = !this.config.running;
+    },
+    setValueByLanguage: function() {
+      for (let key in this.keyConfig) {
+        if (this.keyConfig.hasOwnProperty(key)) {
+          let item = this.keyConfig[key];
+          item.title = getValueByLanguage(this.language, item.key);
+        }
+      }
     },
   },
 };

@@ -2,30 +2,30 @@
   <div class="visual-dl-page-config-com">
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Image"
+      :label=this.keyConfig.kImageValue.title
       v-model="config.image.display"
       :disabled="!config.image.enabled"
       dark/>
 
     <div class="visual-dl-page-component-block">
-        <v-checkbox
-          class="visual-dl-page-subconfig-checkbox"
-          label="Show actual image size"
-          v-model="config.isActualImageSize"
-          dark
-          :disabled="!config.image.display"/>
+      <v-checkbox
+        class="visual-dl-page-subconfig-checkbox"
+        :label=this.keyConfig.kShowActualImageSize.title
+        v-model="config.isActualImageSize"
+        dark
+        :disabled="!config.image.display"/>
     </div>
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Audio"
+      :label=this.keyConfig.kAudioValue.title
       v-model="config.audio.display"
       :disabled="!config.audio.enabled"
       dark/>
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Text"
+      :label=this.keyConfig.kTextValue.title
       v-model="config.text.display"
       :disabled="!config.text.enabled"
       dark/>
@@ -39,11 +39,12 @@
       dark
       block
     >
-      {{ config.running ? 'Running' : 'Stopped' }}
+      {{ config.running ? this.keyConfig.kStartRunning.title : this.keyConfig.kStopRunning.title }}
     </v-btn>
   </div>
 </template>
 <script>
+import {getValueByLanguage} from '../../language';
 
 export default {
   props: {
@@ -54,12 +55,57 @@ export default {
   },
   data() {
     return {
+      language: '',
+      keyConfig: {
+        kTextValue: {
+          title: '',
+          key: 'text',
+        },
+        kImageValue: {
+          title: '',
+          key: 'image',
+        },
+        kAudioValue: {
+          title: '',
+          key: 'audio',
+        },
+        kStartRunning: {
+          title: '',
+          key: 'startRunning',
+        },
+        kStopRunning: {
+          title: '',
+          key: 'stopRunning',
+        },
+        kShowActualImageSize: {
+          title: '',
+          key: 'showActualImageSize',
+        },
+      },
       isDemo: process.env.NODE_ENV === 'demo',
     };
+  },
+  watch: {
+    config: {
+      handler: function(newval, oldval) {
+        this.language = newval.language;
+        this.setValueByLanguage();
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
     toggleAllRuns() {
       this.config.running = !this.config.running;
+    },
+    setValueByLanguage: function() {
+      for (let key in this.keyConfig) {
+        if (this.keyConfig.hasOwnProperty(key)) {
+          let item = this.keyConfig[key];
+          item.title = getValueByLanguage(this.language, item.key);
+        }
+      }
     },
   },
 };

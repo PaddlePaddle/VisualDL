@@ -8,15 +8,17 @@
           color="tag_background"
           class="visual-dl-tags-tab">
           <v-icon>search</v-icon>
-          <input type="search" v-model="config.groupNameReg"
-             autocomplete="false"
-             placeholder="Search tags in RegExp"
-             class="visual-dl-tags-search-input">
+          <input
+            type="search"
+            v-model="config.groupNameReg"
+            autocomplete="false"
+            :placeholder=this.keyConfig.kSearchTagInReg.title
+            class="visual-dl-tags-search-input">
         </v-card>
 
         <ui-tags-tab
           :total="tagsListCount(allTagsMatchingList)"
-          :title="config.groupNameReg.trim().length == 0 ? 'All' : config.groupNameReg"
+          :title="config.groupNameReg.trim().length == 0 ? this.keyConfig.kAll.title : config.groupNameReg"
           :active="selectedGroup === '' "
           @click="selectedGroup = '' "
         />
@@ -24,6 +26,7 @@
           v-for="item in groupedTags"
           :total="tagsListCount(item.tags)"
           :title="item.group"
+          :key="item.group"
           :active="item.group === selectedGroup"
           @click="selectedGroup = item.group"
         />
@@ -48,6 +51,7 @@
 
 <script>
 import {getPluginScalarsTags, getPluginHistogramsTags} from '../service';
+import {getValueByLanguage} from '../language';
 import {cloneDeep, flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
@@ -66,12 +70,27 @@ export default {
       type: Array,
       required: true,
     },
+    language: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       tagInfo: {scalar: {}, histogram: {}},
+      keyConfig: {
+        kSearchTagInReg: {
+          title: '',
+          key: 'searchTagInReg',
+        },
+        kAll: {
+          title: '',
+          key: 'all',
+        },
+      },
       config: {
         groupNameReg: '',
+        language: '',
         // scalar 'enabled' will be false when no scalar logs available, 'display' is toggled by user in config
         scalar: {enabled: false, display: false},
         histogram: {enabled: false, display: false},
@@ -193,6 +212,8 @@ export default {
     });
 
     this.config.runs = this.runs;
+    this.config.language = this.language;
+    this.setValueByLanguage();
   },
   mounted() {
     autoAdjustHeight();
@@ -204,8 +225,20 @@ export default {
     'runs': function(val) {
       this.config.runs = val;
     },
+    'language': function(val) {
+      this.config.language = val;
+      this.setValueByLanguage();
+    },
   },
   methods: {
+    setValueByLanguage: function() {
+      for (let key in this.keyConfig) {
+        if (this.keyConfig.hasOwnProperty(key)) {
+          let item = this.keyConfig[key];
+          item.title = getValueByLanguage(this.config.language, item.key);
+        }
+      }
+    },
     filterTagsList(groupNameReg) {
       if (!groupNameReg || groupNameReg.trim().length == 0) {
         this.filteredTagsList = cloneDeep(this.tagsList);

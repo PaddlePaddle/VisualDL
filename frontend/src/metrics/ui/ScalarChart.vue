@@ -61,7 +61,7 @@
         <v-list dense>
           <v-list-tile>
             <v-list-tile-content>
-              <v-list-tile-title>Download data in JSON</v-list-tile-title>
+              <v-list-tile-title>{{ this.keyConfig.kDownloadDataInJson.title }}</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-icon>expand_more</v-icon>
@@ -93,6 +93,7 @@ import moment from 'moment';
 
 // service
 import {getPluginScalarsScalars} from '../../service';
+import {getValueByLanguage} from '../../language';
 
 const originLinesOpacity = 0.3;
 const lineWidth = 1.5;
@@ -131,6 +132,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    config: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     computedStyle() {
@@ -140,6 +145,13 @@ export default {
   },
   data() {
     return {
+      keyConfig: {
+        kDownloadDataInJson: {
+          title: '',
+          key: 'downloadDataInJson',
+        },
+      },
+      language: '',
       isDemo: process.env.NODE_ENV === 'demo',
       width: 400,
       height: 300,
@@ -149,6 +161,14 @@ export default {
     };
   },
   watch: {
+    config: {
+      handler: function(newval, oldval) {
+        this.language = newval.language;
+        this.setValueByLanguage();
+      },
+      deep: true,
+      immediate: true,
+    },
     originData: function(val) {
       this.setChartData();
       this.setChartsOutlier();
@@ -195,6 +215,14 @@ export default {
     this.stopInterval();
   },
   methods: {
+    setValueByLanguage: function() {
+      for (let key in this.keyConfig) {
+        if (this.keyConfig.hasOwnProperty(key)) {
+          let item = this.keyConfig[key];
+          item.title = getValueByLanguage(this.language, item.key);
+        }
+      }
+    },
     // Create a Scalar Chart, initialize it with default settings, then load datas
     initChart(tagInfo) {
       this.createChart();

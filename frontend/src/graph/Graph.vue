@@ -31,6 +31,12 @@ import Chart from './ui/Chart';
 
 
 export default {
+  props: {
+    language: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     'ui-config': Config,
     'ui-chart': Chart,
@@ -42,9 +48,18 @@ export default {
       doRestore: false,
       curNode: {},
       config: {
+        language: '',
         scale: 0.5,
       },
     };
+  },
+  created() {
+    this.config.language = this.language;
+  },
+  watch: {
+    language: function(val) {
+      this.config.language = val;
+    },
   },
   mounted() {
     autoAdjustHeight();
