@@ -7,37 +7,37 @@
         <v-toolbar-title class="appbar-menu-title"/>
 
         <v-toolbar-items>
-        <v-menu
-          open-on-hover
-          offset-y
-          :close-on-content-click="false">
-          <v-btn
-            slot="activator"
-            depressed
-            @mouseover="runsSelectorOpen = true"
-            @mouseout="runsSelectorOpen = false"
-            :ripple="false"
-            :color="runsSelectorOpen ? 'dark_primary' : 'primary'"
-            :class="runsSelectorOpen ? 'runs-selected-menu-open' : 'runs-selected-menu'"
-            > <span class="runs-selected-text">Runs: {{ runs.length == 0 ? 'None selected' : runs.join(', ') }} </span>
-            <v-icon>arrow_drop_down</v-icon>
-          </v-btn>
-          <v-list dense>
-            <v-list-tile
-              v-for="(item, index) in availableRuns"
-              :key="index"
+          <v-menu
+            open-on-hover
+            offset-y
+            :close-on-content-click="false">
+            <v-btn
+              slot="activator"
+              depressed
               @mouseover="runsSelectorOpen = true"
-              @mouseout="runsSelectorOpen = false">
-              <v-list-tile-action>
-                <v-checkbox
-                  :value="item"
-                  :key="item"
-                  :label="item"
-                  v-model="runs" />
-              </v-list-tile-action>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
+              @mouseout="runsSelectorOpen = false"
+              :ripple="false"
+              :color="runsSelectorOpen ? 'dark_primary' : 'primary'"
+              :class="runsSelectorOpen ? 'runs-selected-menu-open' : 'runs-selected-menu'"
+            > <span class="runs-selected-text">{{ $t("lang.runs") }}: {{ runs.length == 0 ? $t("lang.notRunsSelect") : runs.join(', ') }} </span>
+              <v-icon>arrow_drop_down</v-icon>
+            </v-btn>
+            <v-list dense>
+              <v-list-tile
+                v-for="(item, index) in availableRuns"
+                :key="index"
+                @mouseover="runsSelectorOpen = true"
+                @mouseout="runsSelectorOpen = false">
+                <v-list-tile-action>
+                  <v-checkbox
+                    :value="item"
+                    :key="item"
+                    :label="item"
+                    v-model="runs" />
+                </v-list-tile-action>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
 
           <v-btn
             v-for="item in items"
@@ -46,7 +46,7 @@
             dark
             :class="selected.toLowerCase() === item.name.toLowerCase() ? 'menu-item-selected': 'menu-item'"
             @click="handleItemClick(item)"
-          >{{ item.title }}</v-btn>
+          >{{ $t('lang.' + item.name) }}</v-btn>
         </v-toolbar-items>
       </v-toolbar>
     </div>
@@ -95,29 +95,29 @@ export default {
     };
   },
   created() {
-    this.runs = this.$route.query.runs; //maintain runs state after refresh
+    this.runs = this.$route.query.runs; // maintain runs state after refresh
     getRuns().then(({errno, data}) => {
       this.availableRuns = data;
       if (!this.runs) this.runs = data;
-      //use replace here instead of push so that user cannot go back to empty run state
-      this.$router.replace( { path: this.initialRoute, query: { runs: this.runs }});
+      // use replace here instead of push so that user cannot go back to empty run state
+      this.$router.replace( {path: this.initialRoute, query: {runs: this.runs}});
     });
   },
   watch: {
     runs: function(val) {
-        if (this.runs) {
-          this.$router.push( {query: { runs: this.runs }});
-        }
+      if (this.runs) {
+        this.$router.push( {query: {runs: this.runs}});
+      }
     },
-    '$route' (to, from) { //this will get called when back button is hit that changes path or query
-       this.runs = this.$route.query.runs;
-       this.selected = this.$route.name;
-    }
+    '$route'(to, from) { // this will get called when back button is hit that changes path or query
+      this.runs = this.$route.query.runs;
+      this.selected = this.$route.name;
+    },
   },
   methods: {
     handleItemClick: function(item) {
       this.selected = item.name;
-      this.$router.push( { path: item.url, query: { runs: this.runs }});
+      this.$router.push( {path: item.url, query: {runs: this.runs}});
     },
   },
 };
@@ -172,7 +172,6 @@ export default {
 
 .input-group label
     overflow visible
-
 
 
 </style>
