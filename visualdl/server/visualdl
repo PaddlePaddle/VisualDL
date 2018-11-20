@@ -48,6 +48,9 @@ error_sleep_time = 2  # seconds
 
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
+support_language = ["en", "cn"]
+default_language = support_language[0]
+
 
 def try_call(function, *args, **kwargs):
     res = lib.retry(error_retry_times, function, error_sleep_time, *args,
@@ -98,6 +101,14 @@ def parse_args():
         default=20,
         help="memory cache timeout duration in seconds, default 20",
     )
+    parser.add_argument(
+        "-L",
+        "--language",
+        type=str,
+        default=default_language,
+        action="store",
+        help="set the default language")
+
     args = parser.parse_args()
     if not args.logdir:
         parser.print_help()
@@ -158,6 +169,15 @@ def logdir():
 @app.route('/data/runs')
 def runs():
     data = cache_get('/data/runs', lib.get_modes, log_reader)
+    result = gen_result(0, "", data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/language')
+def language():
+    data = args.language
+    if not data in support_language:
+        data = default_language
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
