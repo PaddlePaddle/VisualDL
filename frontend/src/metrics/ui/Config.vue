@@ -2,79 +2,79 @@
   <div class="visual-dl-page-config-com">
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Scalars"
+      :label="$t('lang.scalars')"
       v-model="config.scalar.display"
       :disabled="!config.scalar.enabled"
       dark/>
 
     <div class="visual-dl-page-component-block">
 
-        <div class="visual-dl-page-control-block">
-          <span :class="'visual-dl-page-control-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">Smoothing</span>
-          <v-slider
-            :max="0.99"
-            :min="0"
-            :step="0.01"
-            v-model="smoothingValue"
-            class="visual-dl-page-smoothing-slider"
-            dark
-            :disabled="!config.scalar.display"/>
-          <span :class="'visual-dl-page-slider-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">{{ smoothingValue }}</span>
-        </div>
-
-        <div class="visual-dl-page-control-block">
-            <span :class="'visual-dl-page-control-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">X-axis</span>
-            <v-select
-              :items="horizontalItems"
-              v-model="config.horizontal"
-              class="visual-dl-page-config-selector"
-              dark
-              dense
-              :disabled="!config.scalar.display"
-            />
-        </div>
-
-        <div class="visual-dl-page-control-block">
-            <span :class="'visual-dl-page-control-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">Tooltip sorting</span>
-            <v-select
-              :items="sortingMethodItems"
-              v-model="config.sortingMethod"
-              class="visual-dl-page-config-selector"
-              dark
-              dense
-              :disabled="!config.scalar.display"
-            />
-        </div>
-
-        <v-checkbox
-          class="visual-dl-page-outliers-checkbox"
-          label="Ignore outliers in chart scaling"
-          v-model="config.outlier"
+      <div class="visual-dl-page-control-block">
+        <span :class="'visual-dl-page-control-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">{{ $t("lang.smoothing") }}</span>
+        <v-slider
+          :max="0.99"
+          :min="0"
+          :step="0.01"
+          v-model="smoothingValue"
+          class="visual-dl-page-smoothing-slider"
           dark
           :disabled="!config.scalar.display"/>
+        <span :class="'visual-dl-page-slider-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">{{ smoothingValue }}</span>
+      </div>
+
+      <div class="visual-dl-page-control-block">
+        <span :class="'visual-dl-page-control-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">{{ $t("lang.xAxis") }}</span>
+        <v-select
+          :items="horizontalItems"
+          v-model="config.horizontal"
+          class="visual-dl-page-config-selector"
+          dark
+          dense
+          :disabled="!config.scalar.display"
+        />
+      </div>
+
+      <div class="visual-dl-page-control-block">
+        <span :class="'visual-dl-page-control-span' + (config.scalar.display ? '' : ' visual-dl-page-disabled-text')">{{ $t("lang.toolTipSorting") }}</span>
+        <v-select
+          :items="sortingMethodItems"
+          v-model="config.sortingMethod"
+          class="visual-dl-page-config-selector"
+          dark
+          dense
+          :disabled="!config.scalar.display"
+        />
+      </div>
+
+      <v-checkbox
+        class="visual-dl-page-outliers-checkbox"
+        :label="$t('lang.ignoreOutliers')"
+        v-model="config.outlier"
+        dark
+        :disabled="!config.scalar.display"/>
 
     </div>
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Histogram"
+      :label="$t('lang.histogram')"
       v-model="config.histogram.display"
       :disabled="!config.histogram.enabled"
       dark/>
 
-      <div class="visual-dl-page-component-block">
-         <div class="visual-dl-page-control-block">
-           <span :class="'visual-dl-page-control-span' + (config.histogram.display ? '' : ' visual-dl-page-disabled-text')">Mode</span>
-           <v-select
-              :items="chartTypeItems"
-              v-model="config.chartType"
-              class="visual-dl-page-config-selector"
-              dark
-              dense
-              :disabled="!config.histogram.display"
-            />
-        </div>
+    <div class="visual-dl-page-component-block">
+      <div class="visual-dl-page-control-block">
+        <span :class="'visual-dl-page-control-span' + (config.histogram.display ? '' : ' visual-dl-page-disabled-text')">{{ $t("lang.mode") }}</span>
+        <v-select
+          :items="chartTypeItems"
+          v-model="config.chartType"
+          class="visual-dl-page-config-selector"
+          dark
+          dense
+          :disabled="!config.histogram.display"
+        />
       </div>
+    </div>
 
     <v-btn
       :color="config.running ? 'primary' : 'error'"
@@ -85,7 +85,7 @@
       dark
       block
     >
-      {{ config.running ? 'Running' : 'Stopped' }}
+      {{ config.running ? $t("lang.startRunning") : $t("lang.stopRunning") }}
     </v-btn>
   </div>
 </template>
@@ -100,36 +100,59 @@ export default {
   },
   data() {
     return {
-      horizontalItems: [
-        {
-          text: 'Step',
-          value: 'step',
-        },
-        {
-          text: 'Relative',
-          value: 'relative',
-        },
-        {
-          text: 'Wall Time',
-          value: 'wall',
-        },
-      ],
-      sortingMethodItems: [
-        'default', 'descending', 'ascending', 'nearest',
-      ],
-      chartTypeItems: [
-        {
-          text: 'Overlay',
-          value: 'overlay',
-        },
-        {
-          text: 'Offset',
-          value: 'offset',
-        },
-      ],
       smoothingValue: this.config.smoothing,
       isDemo: process.env.NODE_ENV === 'demo',
     };
+  },
+  computed: {
+    sortingMethodItems() {
+      return [
+        {
+          text: this.$i18n.t('lang.default'),
+          value: 'default',
+        },
+        {
+          text: this.$i18n.t('lang.descending'),
+          value: 'descending',
+        },
+        {
+          text: this.$i18n.t('lang.ascending'),
+          value: 'ascending',
+        },
+        {
+          text: this.$i18n.t('lang.nearest'),
+          value: 'nearest',
+        },
+      ];
+    },
+    chartTypeItems() {
+      return [
+        {
+          text: this.$i18n.t('lang.overlay'),
+          value: 'overlay',
+        },
+        {
+          text: this.$i18n.t('lang.offset'),
+          value: 'offset',
+        },
+      ];
+    },
+    horizontalItems() {
+      return [
+        {
+          text: this.$i18n.t('lang.step'),
+          value: 'step',
+        },
+        {
+          text: this.$i18n.t('lang.relative'),
+          value: 'relative',
+        },
+        {
+          text: this.$i18n.t('lang.wall'),
+          value: 'wall',
+        },
+      ];
+    },
   },
   watch: {
     smoothingValue: _.debounce(

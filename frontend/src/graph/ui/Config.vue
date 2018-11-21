@@ -7,7 +7,7 @@
         @click="handleDownload"
         dark>
         <v-icon style="margin-right: 6px">file_download</v-icon>
-        Download image
+        {{ $t("lang.downloadImage") }}
       </v-btn>
 
       <v-btn
@@ -16,11 +16,11 @@
         @click="resetImage"
         dark>
         <v-icon style="margin-right: 6px">restore</v-icon>
-        Restore image
+        {{ $t("lang.restoreImage") }}
       </v-btn>
 
       <v-slider
-        label="Scale"
+        :label="$t('lang.scale')"
         max="1"
         min="0.1"
         step="0.1"
@@ -30,22 +30,22 @@
 
 
     <div class="node-info">
-      <h3>Node Info: </h3>
+      <h3>{{ $t("lang.nodeInfo") }}: </h3>
 
       <div v-if="curNode.nodeType === 'input'">
-        <div>Node Type: {{ curNode.nodeType }}</div>
-        <div>Name: {{ curNode.nodeInfo.name }}</div>
-        <div>Shape: {{ curNode.nodeInfo.shape }}</div>
-        <div>Data Type: {{ curNode.nodeInfo.data_type }}</div>
+        <div>{{ $t("lang.nodeType") }}: {{ curNode.nodeType }}</div>
+        <div>{{ $t("lang.nodeName") }}: {{ curNode.nodeInfo.name }}</div>
+        <div>{{ $t("lang.dataShape") }}: {{ curNode.nodeInfo.shape }}</div>
+        <div>{{ $t("lang.dataType") }}: {{ curNode.nodeInfo.data_type }}</div>
       </div>
       <div v-else-if="curNode.nodeType === 'output'">
-        <div>Node Type: {{ curNode.nodeType }}</div>
+        <div>{{ $t("lang.nodeType") }}: {{ curNode.nodeType }}</div>
       </div>
       <div v-else-if="curNode.nodeType === 'operator'">
-        <div>Node Type: {{ curNode.nodeType }}</div>
-        <div>Input: {{ curNode.nodeInfo.input }}</div>
-        <div>Operator Type: {{ curNode.nodeInfo.opType }}</div>
-        <div>Output: {{ curNode.nodeInfo.output }}</div>
+        <div>{{ $t("lang.nodeType") }}: {{ curNode.nodeType }}</div>
+        <div>{{ $t("lang.input") }}: {{ curNode.nodeInfo.input }}</div>
+        <div>{{ $t("lang.opType") }}: {{ curNode.nodeInfo.opType }}</div>
+        <div>{{ $t("lang.output") }}: {{ curNode.nodeInfo.output }}</div>
       </div>
       <div v-else/>
     </div>

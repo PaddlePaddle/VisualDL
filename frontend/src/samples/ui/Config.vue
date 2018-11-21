@@ -2,30 +2,30 @@
   <div class="visual-dl-page-config-com">
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Image"
+      :label="$t('lang.image')"
       v-model="config.image.display"
       :disabled="!config.image.enabled"
       dark/>
 
     <div class="visual-dl-page-component-block">
-        <v-checkbox
-          class="visual-dl-page-subconfig-checkbox"
-          label="Show actual image size"
-          v-model="config.isActualImageSize"
-          dark
-          :disabled="!config.image.display"/>
+      <v-checkbox
+        class="visual-dl-page-subconfig-checkbox"
+        :label="$t('lang.showActualImageSize')"
+        v-model="config.isActualImageSize"
+        dark
+        :disabled="!config.image.display"/>
     </div>
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Audio"
+      :label="$t('lang.audio')"
       v-model="config.audio.display"
       :disabled="!config.audio.enabled"
       dark/>
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Text"
+      :label="$t('lang.text')"
       v-model="config.text.display"
       :disabled="!config.text.enabled"
       dark/>
@@ -39,7 +39,7 @@
       dark
       block
     >
-      {{ config.running ? 'Running' : 'Stopped' }}
+      {{ config.running ? $t('lang.startRunning') : $t('lang.stopRunning') }}
     </v-btn>
   </div>
 </template>
