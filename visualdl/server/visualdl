@@ -320,14 +320,12 @@ def individual_audio():
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
-
     if model.is_onnx_model(args.model_pb):
         json_str = vdl_graph.draw_onnx_graph(args.model_pb)
     elif model.is_paddle_model(args.model_pb):
         json_str = vdl_graph.draw_paddle_graph(args.model_pb)
     else:
         json_str = {}
-
     data = {'data': json_str}
 
     result = gen_result(0, "", data)

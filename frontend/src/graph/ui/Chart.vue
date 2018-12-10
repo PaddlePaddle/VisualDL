@@ -47,6 +47,12 @@ export default {
       graphZoom: null,
       svgSelection: null,
       zoomScale: null,
+      graphConfig: {
+        drawInputNode: false,
+        drawOutputNode: false,
+        drawTempNode: false,
+        inputMap: {},
+      },
     };
   },
   watch: {
@@ -69,6 +75,144 @@ export default {
     },
   },
   methods: {
+    // get the relate operator of a variable
+    getVarRelateDict(graphData) {
+      let dic = {};
+      for (let i = 0; i < graphData['node'].length; ++i) {
+        let curOperatorNode = graphData['node'][i];
+        let nodeKey = 'opNode_' + i;
+        // record all relate operator of a variable
+        if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
+          for (let j = 0; j < curOperatorNode['output'].length; ++j) {
+            let outputData = curOperatorNode['output'][j];
+            if (!dic[outputData]) {
+              dic[outputData] = {'input': [], 'output': []};
+            }
+            let arr = dic[outputData]['input'];
+            arr[arr.length] = nodeKey;
+          }
+        }
+        if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
+          for (let j = 0; j < curOperatorNode['input'].length; ++j) {
+            let inputData = curOperatorNode['input'][j];
+            if (!dic[inputData]) {
+              dic[inputData] = {'input': [], 'output': []};
+            }
+            let arr = dic[inputData]['output'];
+            arr[arr.length] = nodeKey;
+          }
+        }
+      }
+      return dic;
+    },
+    getInputNodeStyle() {
+      return 'opacity: 0.1; ' +
+        'stroke-width: 3px; ' +
+        'stroke: #333; ' +
+        'stroke-color: #41b3a3; ' +
+        'fill: #6c648b; ';
+    },
+    getOutputNodeStyle() {
+      return 'opacity: 0.1;' +
+        'stroke-width: 3px; ' +
+        'stroke-dasharray: 5, 5;' +
+        'stroke: #333；' +
+        'stroke-color: #41b3a3; ' +
+        'fill: #015249; ';
+    },
+    getTempNodeStyle() {
+      return getOutputNodeStyle();
+    },
+    getOpNodeStyle() {
+      return 'stroke-width: 3px; ' +
+        'opacity: 0.1; ' +
+        'rx: 10; ' +
+        'ry: 10; ' +
+        'stroke: #333; ' +
+        'stroke-color: #41b3a3; ' +
+        'fill: #008c99; ';
+    },
+    setGraphNode(graph, nodeKey, labelVal, shapeVal, className, styleVal) {
+      graph.setNode(
+        nodeKey,
+        {
+          label: labelVal,
+          shape: shapeVal,
+          class: className,
+          style: styleVal,
+        }
+      );
+    },
+    buildInputNodeLabel(inputNode) {
+      // TODO(daming-lu): need more complex compound node
+      let nodeLabel = 'id: ' + inputNode['name'] + '\n'
+        + 'type: ' + inputNode['data_type'] + '\n'
+        + 'dims: ' + inputNode['shape'].join(' x ');
+      return nodeLabel;
+    },
+    buildGraph(graph, graphData) {
+      // add operator node
+      for (let i = 0; i < graphData['node'].length; ++i) {
+        let curOperatorNode = graphData['node'][i];
+        let nodeKey = 'opNode_' + i;
+
+        // add operator node
+        let curOpLabel = curOperatorNode['opType'];
+        curOpLabel = curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5));
+        this.setGraphNode(graph, nodeKey, curOpLabel, 'rect', 'operator', this.getOpNodeStyle());
+      }
+      let dic = this.getVarRelateDict(graphData);
+
+      for (let obj in dic) {
+        if (!dic.hasOwnProperty(obj)) continue;
+
+        // add input node
+        if (dic[obj]['input'].length === 0 && this.graphConfig.drawInputNode === true) {
+          let temp = obj.indexOf('@');
+          let nodeKey = obj;
+          if (temp > 0) {
+            nodeKey = obj.substr(0, temp);
+          }
+          let index = this.graphConfig.inputMap[nodeKey];
+          let curInputNode = graphData['input'][index];
+          this.setGraphNode(graph, nodeKey,
+                            this.buildInputNodeLabel(curInputNode), 'rect', 'input', this.getInputNodeStyle());
+          for (let output in dic[obj]['output']) {
+            if (!dic[obj]['output'].hasOwnProperty(output)) continue;
+            graph.setEdge(nodeKey, dic[obj]['output'][output]);
+          }
+        }
+
+        // add output node
+        if (dic[obj]['output'].length === 0 && this.graphConfig.drawOutputNode === true) {
+          let nodeKey = obj;
+          let outputPadding = ' '.repeat(Math.floor(nodeKey.length/2));
+          this.setGraphNode(graph, nodeKey, nodeKey + outputPadding, 'diamond', 'output', this.getOutputNodeStyle());
+          for (let input in dic[obj]['input']) {
+            if (!dic[obj]['input'].hasOwnProperty(input)) continue;
+            graph.setEdge(nodeKey, dic[obj]['input'][input]);
+          }
+        }
+
+        for (let input in dic[obj]['input']) {
+          if (!dic[obj]['input'].hasOwnProperty(input)) continue;
+          for (let output in dic[obj]['output']) {
+            if (!dic[obj]['output'].hasOwnProperty(output)) continue;
+
+            if (this.graphConfig.drawTempNode === true) {
+              let nodeKey = obj;
+              let outputPadding = ' '.repeat(Math.floor(nodeKey.length/2));
+              this.setGraphNode(graph,
+                                nodeKey, nodeKey + outputPadding, 'diamond', 'output', this.getOutputNodeStyle());
+              graph.setEdge(dic[obj]['input'][input], nodeKey);
+              graph.setEdge(nodeKey, dic[obj]['output'][output]);
+            } else {
+              graph.setEdge(dic[obj]['input'][input], dic[obj]['output'][output]);
+            }
+          }
+        }
+      }
+    },
     restoreImage(thenDownload) {
       let chartScope = this;
       let svg = d3.select('svg');
@@ -100,10 +244,6 @@ export default {
   },
   mounted() {
     // some model is too large to draw in dagred3, so don't draw input and output node in default
-    let drawInputNode = false;
-    let drawOutputNode = false;
-    let drawTempNode = false;
-    let inputMap = {};
 
     let chartScope = this;
     getPluginGraphsGraph().then(({errno, data}) => {
@@ -112,6 +252,9 @@ export default {
       }
 
       let graphData = data.data;
+      if (has(graphData, 'node') === false) {
+        return;
+      }
 
       // d3 svg drawing
       let g = new dagreD3.graphlib.Graph()
@@ -123,171 +266,13 @@ export default {
       // eslint-disable-next-line
       let render = new dagreD3.render();
 
-      let buildInputNodeLabel = function(inputNode) {
-        // TODO(daming-lu): need more complex compound node
-        let nodeLabel = 'id: ' + inputNode['name'] + '\n'
-          + 'type: ' + inputNode['data_type'] + '\n'
-          + 'dims: ' + inputNode['shape'].join(' x ');
-        return nodeLabel;
-      };
-
-      // add operator nodes then add edges from inputs to operator and from operator to output
-      if (has(graphData, 'node') === false) {
-        return;
-      }
-      let dic = [];
-
-      for (let i = 0; i < graphData['node'].length; ++i) {
-        let curOperatorNode = graphData['node'][i];
-        let nodeKey = 'opNode_' + i;
-
-        // add operator node
-        let curOpLabel = curOperatorNode['opType'];
-        g.setNode(
-          nodeKey,
-          {
-            label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
-            shape: 'rect',
-            class: 'operator',
-            style: 'stroke-width: 3px; ' +
-              'opacity: 0.1; ' +
-              'rx: 10; ' +
-              'ry: 10; ' +
-              'stroke: #333; ' +
-              'stroke-color: #41b3a3; ' +
-              'fill: #008c99; ',
-          }
-        );
-        if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
-          for (let j = 0; j < curOperatorNode['output'].length; ++j) {
-            let outputData = curOperatorNode['output'][j];
-            if (!dic[outputData]) {
-              dic[outputData] = {'input': [], 'output': []};
-            }
-            let arr = dic[outputData]['input'];
-            arr[arr.length] = nodeKey;
-          }
-        }
-        if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
-          for (let j = 0; j < curOperatorNode['input'].length; ++j) {
-            let inputData = curOperatorNode['input'][j];
-            if (!dic[inputData]) {
-              dic[inputData] = {'input': [], 'output': []};
-            }
-            let arr = dic[inputData]['output'];
-            arr[arr.length] = nodeKey;
-          }
-        }
-      }
-
-      for (let i in dic) {
-        if (dic.hasOwnProperty(i)) {
-          for (let input in dic[i]['input']) {
-            if (dic[i]['input'].hasOwnProperty(input)) {
-              for (let output in dic[i]['output']) {
-                if (dic[i]['output'].hasOwnProperty(output)) {
-                  if (drawTempNode === true) {
-                    let nodeKey = i;
-                    let outputPadding = ' '.repeat(Math.floor(nodeKey.length/2));
-                    g.setNode(
-                      nodeKey,
-                      {
-                        label: nodeKey + outputPadding,
-                        class: 'output',
-                        style: 'opacity: 0.1;' +
-                          'stroke-width: 3px; ' +
-                          'stroke-dasharray: 5, 5;' +
-                          'stroke: #333；' +
-                          'stroke-color: #41b3a3; ' +
-                          'fill: #015249; ',
-                        shape: 'diamond',
-                      }
-                    );
-                    g.setEdge(dic[i]['input'][input], nodeKey);
-                    g.setEdge(nodeKey, dic[i]['output'][output]);
-                  } else {
-                    g.setEdge(dic[i]['input'][input], dic[i]['output'][output]);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // add input nodes
-      if (has(graphData, 'input') === true && drawInputNode === true) {
+      if (has(graphData, 'input') === true && this.graphConfig.drawInputNode === true) {
         for (let i = 0; i < graphData['input'].length; ++i) {
           let name = graphData['input'][i]['name'];
-          inputMap[name] = i;
-        }
-        console.log(inputMap);
-
-        for (let i in dic) {
-          if (dic.hasOwnProperty(i)) {
-            // only input node would be drawn
-            if (dic[i]['input'].length === 0) {
-              let temp = i.indexOf('@');
-              let nodeKey = i;
-              if (temp > 0) {
-                nodeKey = i.substr(0, temp);
-              }
-              console.log(i);
-              console.log(nodeKey);
-              let index = inputMap[nodeKey];
-              console.log(index);
-              let curInputNode = graphData['input'][index];
-              g.setNode(
-                nodeKey,
-                {
-                  label: buildInputNodeLabel(curInputNode),
-                  style: 'opacity: 0.1; ' +
-                    'stroke-width: 3px; ' +
-                    'stroke: #333; ' +
-                    'stroke-color: #41b3a3; ' +
-                    'fill: #6c648b; ',
-                  class: 'input',
-                  labelStyle: 'font-size: 0.8em;',
-                }
-              );
-
-              for (let output in dic[i]['output']) {
-                if (dic[i]['output'].hasOwnProperty(output)) {
-                  g.setEdge(nodeKey, dic[i]['output'][output]);
-                }
-              }
-            }
-          }
+          this.graphConfig.inputMap[name] = i;
         }
       }
-
-      if (drawOutputNode === true) {
-        for (let i in dic) {
-          if (dic[i]['output'].length === 0) {
-            let nodeKey = i;
-            let outputPadding = ' '.repeat(Math.floor(nodeKey.length/2));
-            g.setNode(
-              nodeKey,
-              {
-                label: nodeKey + outputPadding,
-                class: 'output',
-                style: 'opacity: 0.1;' +
-                  'stroke-width: 3px; ' +
-                  'stroke-dasharray: 5, 5;' +
-                  'stroke: #333；' +
-                  'stroke-color: #41b3a3; ' +
-                  'fill: #015249; ',
-                shape: 'diamond',
-              }
-            );
-            for (let input in dic[i]['input']) {
-              if (dic[i]['input'].hasOwnProperty(input)) {
-                g.setEdge(dic[i]['input'][input], nodeKey);
-              }
-            }
-          }
-        }
-      }
+      this.buildGraph(g, graphData);
 
       let svg = d3.select('svg')
         .attr('font-family', 'sans-serif')
@@ -329,7 +314,7 @@ export default {
           let opIndex = d.slice(7); // remove prefix "opNode_"
           nodeInfo = graphData.node[opIndex];
         } else if (nodeType === 'input') {
-          nodeInfo = graphData.input[inputMap[d]];
+          nodeInfo = graphData.input[this.graphConfig.inputMap[d]];
         } else {
           nodeInfo = 'output';
         }
