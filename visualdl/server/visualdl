@@ -27,6 +27,7 @@ from flask import (Flask, Response, redirect, request, send_file,
 import visualdl
 import visualdl.server
 import visualdl.server.graph as vdl_graph
+import visualdl.server.model as model
 from visualdl.server import lib
 from visualdl.server.log import logger
 from visualdl.server.mock import data as mock_data
@@ -86,7 +87,7 @@ def parse_args():
         "--model_pb",
         type=str,
         action="store",
-        help="model proto in ONNX format")
+        help="model proto in ONNX format or in Paddle framework format")
     parser.add_argument(
         "--logdir",
         required=True,
@@ -319,7 +320,14 @@ def individual_audio():
 
 @app.route('/data/plugin/graphs/graph')
 def graph():
-    json_str = vdl_graph.draw_graph(args.model_pb)
+
+    if model.is_onnx_model(args.model_pb):
+        json_str = vdl_graph.draw_onnx_graph(args.model_pb)
+    elif model.is_paddle_model(args.model_pb):
+        json_str = vdl_graph.draw_paddle_graph(args.model_pb)
+    else:
+        json_str = {}
+
     data = {'data': json_str}
 
     result = gen_result(0, "", data)
