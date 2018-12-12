@@ -6,7 +6,7 @@
       <span class="visual-dl-image-run-icon">{{ tagInfo.run }}</span>
     </h3>
     <p>
-      <span>Step:</span>
+      <span>{{ $t('lang.step') }}:</span>
       <span>{{ imgData.step }}</span>
       <span class="visual-del-image-time">{{ imgData.wallTime | formatTime }}</span>
     </p>
@@ -129,7 +129,7 @@ export default {
     tagInfo: function(val) {
       this.currentIndex = 0;
       this.getOriginChartsData();
-    }
+    },
   },
   methods: {
     stopInterval() {

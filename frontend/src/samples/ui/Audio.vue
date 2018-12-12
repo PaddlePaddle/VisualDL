@@ -6,9 +6,9 @@
       <span class="visual-dl-audio-run-icon">{{ tagInfo.run }}</span>
     </h3>
     <p>
-      <span>Step:</span>
+      <span>{{ $t('lang.step') }}:</span>
       <span>{{ audioData.step }}</span>
-      <span class="visual-del-audio-time">{{ audioData.wallTime | formatTime }}</span>
+      <span class="visual-del-audio-time">{{ audioData.wallTime | formatTime(this.$i18n.locale) }}</span>
     </p>
     <v-slider
       :max="steps"
@@ -52,7 +52,7 @@ export default {
     },
   },
   filters: {
-    formatTime: function(value) {
+    formatTime: function(value, language) {
       if (!value) {
         return;
       }
@@ -62,7 +62,8 @@ export default {
         weekday: 'short', year: 'numeric', month: 'short',
         day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit',
       };
-      return time.toLocaleDateString('en-US', options);
+      let enc = language === 'zh' ? 'zh-CN' : 'en-US';
+      return time.toLocaleDateString(enc, options);
     },
   },
   data() {
@@ -112,7 +113,7 @@ export default {
     tagInfo: function(val) {
       this.currentIndex = 0;
       this.getOriginAudioData();
-    }
+    },
   },
   methods: {
     stopInterval() {

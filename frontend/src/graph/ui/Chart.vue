@@ -47,6 +47,12 @@ export default {
       graphZoom: null,
       svgSelection: null,
       zoomScale: null,
+      graphConfig: {
+        drawInputNode: false,
+        drawOutputNode: false,
+        drawTempNode: false,
+        inputMap: {},
+      },
     };
   },
   watch: {
@@ -69,6 +75,144 @@ export default {
     },
   },
   methods: {
+    // get the relate operator of a variable
+    getVarRelateDict(graphData) {
+      let dic = {};
+      for (let i = 0; i < graphData['node'].length; ++i) {
+        let curOperatorNode = graphData['node'][i];
+        let nodeKey = 'opNode_' + i;
+        // record all relate operator of a variable
+        if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
+          for (let j = 0; j < curOperatorNode['output'].length; ++j) {
+            let outputData = curOperatorNode['output'][j];
+            if (!dic[outputData]) {
+              dic[outputData] = {'input': [], 'output': []};
+            }
+            let arr = dic[outputData]['input'];
+            arr[arr.length] = nodeKey;
+          }
+        }
+        if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
+          for (let j = 0; j < curOperatorNode['input'].length; ++j) {
+            let inputData = curOperatorNode['input'][j];
+            if (!dic[inputData]) {
+              dic[inputData] = {'input': [], 'output': []};
+            }
+            let arr = dic[inputData]['output'];
+            arr[arr.length] = nodeKey;
+          }
+        }
+      }
+      return dic;
+    },
+    getInputNodeStyle() {
+      return 'opacity: 0.1; ' +
+        'stroke-width: 3px; ' +
+        'stroke: #333; ' +
+        'stroke-color: #41b3a3; ' +
+        'fill: #6c648b; ';
+    },
+    getOutputNodeStyle() {
+      return 'opacity: 0.1;' +
+        'stroke-width: 3px; ' +
+        'stroke-dasharray: 5, 5;' +
+        'stroke: #333；' +
+        'stroke-color: #41b3a3; ' +
+        'fill: #015249; ';
+    },
+    getTempNodeStyle() {
+      return getOutputNodeStyle();
+    },
+    getOpNodeStyle() {
+      return 'stroke-width: 3px; ' +
+        'opacity: 0.1; ' +
+        'rx: 10; ' +
+        'ry: 10; ' +
+        'stroke: #333; ' +
+        'stroke-color: #41b3a3; ' +
+        'fill: #008c99; ';
+    },
+    setGraphNode(graph, nodeKey, labelVal, shapeVal, className, styleVal) {
+      graph.setNode(
+        nodeKey,
+        {
+          label: labelVal,
+          shape: shapeVal,
+          class: className,
+          style: styleVal,
+        }
+      );
+    },
+    buildInputNodeLabel(inputNode) {
+      // TODO(daming-lu): need more complex compound node
+      let nodeLabel = 'id: ' + inputNode['name'] + '\n'
+        + 'type: ' + inputNode['data_type'] + '\n'
+        + 'dims: ' + inputNode['shape'].join(' x ');
+      return nodeLabel;
+    },
+    buildGraph(graph, graphData) {
+      // add operator node
+      for (let i = 0; i < graphData['node'].length; ++i) {
+        let curOperatorNode = graphData['node'][i];
+        let nodeKey = 'opNode_' + i;
+
+        // add operator node
+        let curOpLabel = curOperatorNode['opType'];
+        curOpLabel = curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5));
+        this.setGraphNode(graph, nodeKey, curOpLabel, 'rect', 'operator', this.getOpNodeStyle());
+      }
+      let dic = this.getVarRelateDict(graphData);
+
+      for (let obj in dic) {
+        if (!dic.hasOwnProperty(obj)) continue;
+
+        // add input node
+        if (dic[obj]['input'].length === 0 && this.graphConfig.drawInputNode === true) {
+          let temp = obj.indexOf('@');
+          let nodeKey = obj;
+          if (temp > 0) {
+            nodeKey = obj.substr(0, temp);
+          }
+          let index = this.graphConfig.inputMap[nodeKey];
+          let curInputNode = graphData['input'][index];
+          this.setGraphNode(graph, nodeKey,
+                            this.buildInputNodeLabel(curInputNode), 'rect', 'input', this.getInputNodeStyle());
+          for (let output in dic[obj]['output']) {
+            if (!dic[obj]['output'].hasOwnProperty(output)) continue;
+            graph.setEdge(nodeKey, dic[obj]['output'][output]);
+          }
+        }
+
+        // add output node
+        if (dic[obj]['output'].length === 0 && this.graphConfig.drawOutputNode === true) {
+          let nodeKey = obj;
+          let outputPadding = ' '.repeat(Math.floor(nodeKey.length/2));
+          this.setGraphNode(graph, nodeKey, nodeKey + outputPadding, 'diamond', 'output', this.getOutputNodeStyle());
+          for (let input in dic[obj]['input']) {
+            if (!dic[obj]['input'].hasOwnProperty(input)) continue;
+            graph.setEdge(nodeKey, dic[obj]['input'][input]);
+          }
+        }
+
+        for (let input in dic[obj]['input']) {
+          if (!dic[obj]['input'].hasOwnProperty(input)) continue;
+          for (let output in dic[obj]['output']) {
+            if (!dic[obj]['output'].hasOwnProperty(output)) continue;
+
+            if (this.graphConfig.drawTempNode === true) {
+              let nodeKey = obj;
+              let outputPadding = ' '.repeat(Math.floor(nodeKey.length/2));
+              this.setGraphNode(graph,
+                                nodeKey, nodeKey + outputPadding, 'diamond', 'output', this.getOutputNodeStyle());
+              graph.setEdge(dic[obj]['input'][input], nodeKey);
+              graph.setEdge(nodeKey, dic[obj]['output'][output]);
+            } else {
+              graph.setEdge(dic[obj]['input'][input], dic[obj]['output'][output]);
+            }
+          }
+        }
+      }
+    },
     restoreImage(thenDownload) {
       let chartScope = this;
       let svg = d3.select('svg');
@@ -99,6 +243,8 @@ export default {
     this.zoomScale = linearScale;
   },
   mounted() {
+    // some model is too large to draw in dagred3, so don't draw input and output node in default
+
     let chartScope = this;
     getPluginGraphsGraph().then(({errno, data}) => {
       if (has(data, 'data') === false) {
@@ -106,6 +252,9 @@ export default {
       }
 
       let graphData = data.data;
+      if (has(graphData, 'node') === false) {
+        return;
+      }
 
       // d3 svg drawing
       let g = new dagreD3.graphlib.Graph()
@@ -116,119 +265,29 @@ export default {
 
       // eslint-disable-next-line
       let render = new dagreD3.render();
-      let nodeKeys = [];
 
-      let buildInputNodeLabel = function(inputNode) {
-        // TODO(daming-lu): need more complex compound node
-        let nodeLabel = 'id: ' + inputNode['name'] + '\n'
-          + 'type: ' + inputNode['data_type'] + '\n'
-          + 'dims: ' + inputNode['shape'].join(' x ');
-        return nodeLabel;
-      };
-
-      // add input nodes
-      if (has(graphData, 'input') === false) {
-        return;
-      }
-      let inputIdToIndex = {};
-      for (let i=0; i<graphData['input'].length; ++i) {
-        let curInputNode = graphData['input'][i];
-        let nodeKey = curInputNode['name'];
-        inputIdToIndex[nodeKey] = i;
-        g.setNode(
-          nodeKey,
-          {
-            label: buildInputNodeLabel(curInputNode),
-            style: 'opacity: 0.1; ' +
-              'stroke-width: 3px; ' +
-              'stroke: #333; ' +
-              'stroke-color: #41b3a3; ' +
-              'fill: #6c648b; ',
-            class: 'input',
-            labelStyle: 'font-size: 0.8em;',
-          }
-        );
-        nodeKeys.push(nodeKey);
-      }
-
-      // add operator nodes then add edges from inputs to operator and from operator to output
-      if (has(graphData, 'node') === false) {
-        return;
-      }
-      for (let i=0; i<graphData['node'].length; ++i) {
-        let curOperatorNode = graphData['node'][i];
-        let nodeKey = 'opNode_' + i;
-
-        // add operator node
-        let curOpLabel = curOperatorNode['opType'];
-        g.setNode(
-          nodeKey,
-          {
-            label: curOpLabel + ' '.repeat(Math.floor(curOpLabel.length/5)),
-            shape: 'rect',
-            class: 'operator',
-            style: 'stroke-width: 3px; ' +
-              'opacity: 0.1; ' +
-              'rx: 10; ' +
-              'ry: 10; ' +
-              'stroke: #333; ' +
-              'stroke-color: #41b3a3; ' +
-              'fill: #008c99; ',
-          }
-        );
-        nodeKeys.push(nodeKey);
-
-        // add output node
-        if (has(graphData, 'output') === false) {
-          return;
-        }
-        let outputNodeKey = curOperatorNode['output'][0];
-        let outputPadding = ' '.repeat(Math.floor(outputNodeKey.length/2));
-        g.setNode(
-          outputNodeKey,
-          {
-            label: outputNodeKey + outputPadding,
-            class: 'output',
-            style: 'opacity: 0.1;' +
-              'stroke-width: 3px; ' +
-              'stroke-dasharray: 5, 5;' +
-              'stroke: #333；' +
-              'stroke-color: #41b3a3; ' +
-              'fill: #015249; ',
-            shape: 'diamond',
-
-          }
-        );
-        nodeKeys.push(outputNodeKey);
-
-        // add edges from inputs to node and from node to output
-        if (has(curOperatorNode, 'input') && isArrayLike(curOperatorNode['input'])) {
-          for (let e = 0; e < curOperatorNode['input'].length; ++e) {
-            g.setEdge(curOperatorNode['input'][e], nodeKey);
-          }
-        }
-        if (has(curOperatorNode, 'output') && isArrayLike(curOperatorNode['output'])) {
-          g.setEdge(nodeKey, curOperatorNode['output'][0], {
-            style: 'stroke: #333;stroke-width: 1.5px',
-          });
+      if (has(graphData, 'input') === true && this.graphConfig.drawInputNode === true) {
+        for (let i = 0; i < graphData['input'].length; ++i) {
+          let name = graphData['input'][i]['name'];
+          this.graphConfig.inputMap[name] = i;
         }
       }
+      this.buildGraph(g, graphData);
 
       let svg = d3.select('svg')
         .attr('font-family', 'sans-serif')
         .attr('font-size', '28px');
 
       render(d3.select('svg g'), g);
-
       let graphSelection = d3.select('svg g');
       let graphWidth = g.graph().width;
       let graphHeight = g.graph().height;
 
       svg.attr('viewBox', '0 0 ' + graphWidth + ' ' + graphHeight);
 
-      this.imageWidth = graphWidth;
+      this.imageWidth = graphWidth * 1.1;
       this.imageHeight = graphHeight;
-      this.originImageWidth = graphWidth;
+      this.originImageWidth = graphWidth * 1.1;
       this.originImageHeight = graphHeight;
 
       // zooming
@@ -255,7 +314,7 @@ export default {
           let opIndex = d.slice(7); // remove prefix "opNode_"
           nodeInfo = graphData.node[opIndex];
         } else if (nodeType === 'input') {
-          nodeInfo = graphData.input[inputIdToIndex[d]];
+          nodeInfo = graphData.input[this.graphConfig.inputMap[d]];
         } else {
           nodeInfo = 'output';
         }

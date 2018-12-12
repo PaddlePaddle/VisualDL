@@ -3,9 +3,17 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import google.protobuf.message
+import os
 
 from .onnx_pb2 import ModelProto
+
+
+def is_onnx_model(model_path):
+
+    if not os.path.isfile(model_path):
+        return False
+    res = load(model_path)
+    return res is not None and str(res) != ""
 
 
 def load(obj):
@@ -37,7 +45,9 @@ def load_from_string(s):
     decoded = model.ParseFromString(s)
     # in python implementation ParseFromString returns None
     if decoded is not None and decoded != len(s):
-        raise google.protobuf.message.DecodeError(
-            "Protobuf decoding consumed too few bytes: {} out of {}".format(
-                decoded, len(s)))
+        return None
+
+#         raise google.protobuf.message.DecodeError(
+#             "Protobuf decoding consumed too few bytes: {} out of {}".format(
+#                 decoded, len(s)))
     return model

@@ -500,7 +500,7 @@ export default {
         step: {
           xAxis: {
             type: 'value',
-            name: this.horizontal,
+            name: this.$t('lang.step'),
             axisLabel: {
               fontSize: '11',
             },
@@ -511,7 +511,7 @@ export default {
         relative: {
           xAxis: {
             type: 'value',
-            name: this.horizontal,
+            name: this.$t('lang.relative'),
             axisLabel: {
               fontSize: '11',
             },
@@ -522,7 +522,7 @@ export default {
         wall: {
           xAxis: {
             type: 'time',
-            name: this.horizontal,
+            name: this.$t('lang.wall'),
             axisLabel: {
               fontSize: '11',
               formatter: function(value, index) {
