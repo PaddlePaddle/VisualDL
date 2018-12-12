@@ -1,3 +1,3 @@
 @ECHO OFF
 setlocal DISABLEDELAYEDEXPANSION
-python %0\..\visualDL %*
+python %~dp0\visualDL %*
