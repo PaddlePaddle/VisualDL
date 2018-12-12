@@ -49,8 +49,10 @@ build_backend() {
 
 build_onnx_graph() {
     export PATH="$BUILD_DIR/third_party/protobuf/src/extern_protobuf-build/:$PATH"
-    cd $TOP_DIR/visualdl/server/onnx
+    cd $TOP_DIR/visualdl/server/model/onnx
     protoc onnx.proto --python_out .
+    cd $TOP_DIR/visualdl/server/model/paddle
+    protoc framework.proto --python_out .
 }
 
 clean_env() {

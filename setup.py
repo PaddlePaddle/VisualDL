@@ -96,7 +96,9 @@ packages = [
     'visualdl.python',
     'visualdl.server',
     'visualdl.server.mock',
-    'visualdl.server.onnx',
+    'visualdl.server.model',
+    'visualdl.server.model.onnx',
+    'visualdl.server.model.paddle',
 ]
 
 libraries = ['core.so']
