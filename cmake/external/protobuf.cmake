@@ -184,7 +184,7 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
             ${EXTERNAL_PROJECT_LOG_ARGS}
             PREFIX          ${PROTOBUF_SOURCES_DIR}
             UPDATE_COMMAND  ""
-            URL https://github.com/google/protobuf/archive/v3.5.2.zip
+            URL https://github.com/google/protobuf/archive/v3.1.0.zip
             CONFIGURE_COMMAND
             ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
                 ${OPTIONAL_ARGS}
@@ -210,7 +210,7 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
             PREFIX          ${PROTOBUF_SOURCES_DIR}
             UPDATE_COMMAND  ""
             DEPENDS         zlib
-            URL https://github.com/google/protobuf/archive/v3.5.2.zip
+            URL https://github.com/google/protobuf/archive/v3.1.0.zip
             CONFIGURE_COMMAND
             ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
                 ${OPTIONAL_ARGS}
@@ -229,7 +229,7 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
     ENDIF(MSVC)
 ENDFUNCTION()
 
-SET(PROTOBUF_VERSION 3.5)
+SET(PROTOBUF_VERSION 3.1)
 IF(CMAKE_CROSSCOMPILING)
     build_protobuf(protobuf_host TRUE)
     LIST(APPEND external_project_dependencies protobuf_host)
