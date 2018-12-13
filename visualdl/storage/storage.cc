@@ -21,7 +21,7 @@ Storage::Storage() {
   data_ = std::make_shared<storage::Storage>();
   tablets_ = std::make_shared<std::map<std::string, storage::Tablet>>();
   modes_ = std::make_shared<std::set<std::string>>();
-  modified_tablet_set_ = std::unordered_set<std::string>();
+  modified_tablet_set_ = std::set<std::string>();
   time_t t;
   time(&t);
   data_->set_timestamp(t);
