@@ -90,7 +90,7 @@ private:
   std::shared_ptr<std::map<std::string, storage::Tablet>> tablets_;
   std::shared_ptr<storage::Storage> data_;
   std::shared_ptr<std::set<std::string>> modes_;
-  std::unordered_set<std::string> modified_tablet_set_;
+  std::set<std::string> modified_tablet_set_;
 };
 
 // Storage reader, each method will trigger a reading from disk.
