@@ -19,7 +19,6 @@ docker run -it \
     -e TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST \
     -e PPO_SCRIPT_BRANCH=$PPO_SCRIPT_BRANCH \
     -e PADDLE_ROOT=/VisualDL \
-    -e PYTHONPATH=/FluidDoc/external/Paddle/build/python \
     -v "$PWD:/VisualDL" \
     -w /VisualDL \
     paddlepaddle/paddle:latest-dev \
