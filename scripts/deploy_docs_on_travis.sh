@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 exit_code=0
-if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then exit $exit_code=0; fi;
+if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then exit $exit_code; fi;
 
 if [ "$TRAVIS_BRANCH" == "develop_doc" ]; then
     PPO_SCRIPT_BRANCH=develop
