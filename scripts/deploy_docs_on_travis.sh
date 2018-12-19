@@ -12,10 +12,6 @@ fi
 
 export DEPLOY_DOCS_SH=https://raw.githubusercontent.com/PaddlePaddle/PaddlePaddle.org/$PPO_SCRIPT_BRANCH/scripts/deploy/deploy_docs.sh
 
-echo "Show PWD"
-ls $PWD
-echo "Show PWD ----------- "
-
 docker run -it \
     -e CONTENT_DEC_PASSWD=$CONTENT_DEC_PASSWD \
     -e TRAVIS_BRANCH=$TRAVIS_BRANCH \
