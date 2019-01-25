@@ -184,7 +184,8 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
             ${EXTERNAL_PROJECT_LOG_ARGS}
             PREFIX          ${PROTOBUF_SOURCES_DIR}
             UPDATE_COMMAND  ""
-            URL https://github.com/google/protobuf/archive/v3.1.0.zip
+            GIT_REPOSITORY  "https://github.com/google/protobuf.git"
+            GIT_TAG         "9f69353562fe1fbb3fbd11345ea3676b0eb267cd"
             CONFIGURE_COMMAND
             ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
                 ${OPTIONAL_ARGS}
