@@ -1,12 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Scalars from '@/scalars/Scalars';
-import Histogram from '@/histogram/Histogram';
-import Images from '@/images/Images';
+import Metrics from '@/metrics/Metrics';
+import Samples from '@/samples/Samples';
 import Graph from '@/graph/Graph';
-import Texts from '@/texts/Texts';
-import Audio from '@/audio/Audio';
 import HighDimensional from '@/high-dimensional/HighDimensional';
 
 Vue.use(Router);
@@ -14,19 +11,20 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: '/scalars',
-      name: 'Scalars',
-      component: Scalars,
+      path: '/metrics',
+      name: 'Metrics',
+      component: Metrics,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
-      path: '/histograms',
-      name: 'Histograms',
-      component: Histogram,
-    },
-    {
-      path: '/images',
-      name: 'Images',
-      component: Images,
+      path: '/samples',
+      name: 'Samples',
+      component: Samples,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
     {
       path: '/graphs',
@@ -34,19 +32,12 @@ export default new Router({
       component: Graph,
     },
     {
-      path: '/texts',
-      name: 'Texts',
-      component: Texts,
-    },
-    {
-      path: '/audio',
-      name: 'Audio',
-      component: Audio,
-    },
-    {
       path: '/HighDimensional',
       name: 'HighDimensional',
       component: HighDimensional,
+      props: (route) => ({
+          runs: route.query.runs
+      })
     },
   ],
 });

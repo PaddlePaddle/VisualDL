@@ -12,16 +12,6 @@
       v-model="config.isActualImageSize"
       dark/>
 
-    <label class="visual-dl-page-checkbox-group-label">Runs</label>
-    <v-checkbox
-      v-for="item in runsItems"
-      :key="item.name"
-      :label="item.name"
-      :value="item.value"
-      v-model="config.runs"
-      dark
-    />
-
     <v-btn
       :color="config.running ? 'primary' : 'error'"
       v-model="config.running"
@@ -39,10 +29,6 @@
 
 export default {
   props: {
-    runsItems: {
-      type: Array,
-      required: true,
-    },
     config: {
       type: Object,
       required: true,

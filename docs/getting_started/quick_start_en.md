@@ -6,8 +6,10 @@ Currently, VisualDL supports visualization features as follows:
 
 - Scalar: plot of trends, can be used to show error trends during training.
 - Image: image visualization, can be used to show intermediate images from CNN.
+- Audio: can be used to play input audio samples or generated audio samples.
 - Histogram: can be used to show parameter distribution and trend.
 - Graph: can be used to visualize model structure.
+- High dimensional: can be used to visualize embeddings projection.
 
 VisualDL provides both Python SDK and C++ SDK in nature. It can support various frameworks.
 Users can retrieve visualization data by simply adding a few lines of code using Pythong SDK.
@@ -62,7 +64,7 @@ for step in range(200):
 The example above randomly generated some logs. Next we can open the board page:
 
 ```
-visualDL --logdir ./random_log --port 8080
+visualdl --logdir ./random_log --port 8080
 ```
 
 Point your browser to `http://0.0.0.0:8080`, you can see the scalar as follows:
@@ -93,7 +95,7 @@ VisualDL supports the visualization for the format in [ONNX](https://github.com/
 Currently, ONNX supports format conversion among various deep learning frameworks such as `MXNet`, `PyTorch`, `Caffe2`, `Caffe`.
 
 ```
-visualDL --logdir somedir --model_pb <path_to_model>
+visualdl --logdir somedir --model_pb <path_to_onnx_model>
 ```
 
 For example, for the MNIST dataset, Graph component can render model graph as below:

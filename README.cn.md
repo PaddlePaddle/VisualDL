@@ -17,25 +17,28 @@ VisualDL是一个面向深度学习任务设计的可视化工具，包含了sca
 实现原生的性能和定制效果。
 
 ## 组件
-VisualDL 目前支持4种组件：
+VisualDL 目前支持以下组件：
 
-- graph
 - scalar
-- image
 - histogram
-
-### Graph
-兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
-</p>
+- image
+- audio
+- graph
+- high dimensional
 
 ### Scalar
 可以用于展示训练测试的误差趋势
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
+</p>
+
+### Histogram
+
+用于可视化任何tensor中元素分布的变化趋势
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
 </p>
 
 ### Image
@@ -45,12 +48,21 @@ VisualDL 目前支持4种组件：
 <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
 </p>
 
-### Histogram
+### Audio
+可用于播放输入或生成的音频样本
 
-用于可视化任何tensor中元素分布的变化趋势
+### Graph
+兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
+  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
+</p>
+
+### High Dimensional
+用高维度数据映射在2D/3D来可视化嵌入
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_3d.png" width="60%"/>
 </p>
 
 ## 快速尝试
@@ -62,12 +74,14 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
 
-如果以上步骤出现问题，很可能是因为python或pip不同版本或不同位置所致，以下安装方法能解决。
+如果出现`TypeError: __init__() got an unexpected keyword argument 'file'`, 是因为protobuf不是3.5以上，运行`pip install --upgrade protobuf`就能解决。
+
+如果以上步骤还有出现其他问题，很可能是因为python或pip不同版本或不同位置所致，以下安装方法能解决。
 
 ## 使用 virtualenv 安装
 
@@ -104,7 +118,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
@@ -136,7 +150,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
@@ -212,14 +226,14 @@ int main() {
 当训练过程中已经产生了日志数据，就可以启动board进行实时预览可视化信息
 
 ```
-visualDL --logdir <some log dir>
+visualdl --logdir <some log dir>
 ```
 
 board 还支持一下参数来实现远程的访问：
 
 - `--host` 设定IP
 - `--port` 设定端口
-- `--model_pb` 指定 ONNX 格式的模型文件
+- `-m / --model_pb` 指定 ONNX 格式的模型文件
 
 ### 贡献
 

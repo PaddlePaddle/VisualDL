@@ -17,6 +17,7 @@ from __future__ import absolute_import
 
 import os
 import sys
+from sys import platform
 from distutils.spawn import find_executable
 from distutils import log
 import setuptools.command.build_py
@@ -42,8 +43,10 @@ VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
-install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf', 'scipy']
+install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf >= 3.1.0', 'scipy']
 execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
+if platform == "win32":
+    execute_requires = ['node', 'powershell', 'cmake']
 
 
 def die(msg):
@@ -73,6 +76,8 @@ class BaseCommand(setuptools.Command):
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
         cmd = ['bash', 'build.sh']
+        if platform == "win32":
+            cmd = ['powershell', '-NoProfile', './build.ps1']
         env = dict(os.environ)
         if MODE == "travis-CI":
             cmd.append('travis-CI')
@@ -91,8 +96,18 @@ packages = [
     'visualdl.python',
     'visualdl.server',
     'visualdl.server.mock',
-    'visualdl.server.onnx',
+    'visualdl.server.model',
+    'visualdl.server.model.onnx',
+    'visualdl.server.model.paddle',
 ]
+
+libraries = ['core.so']
+if platform == 'win32':
+    libraries = ['core.pyd', 'libprotobuf.dll']
+
+scripts = ['visualdl/server/visualdl', 'demo/vdl_create_scratch_log']
+if platform == 'win32':
+    scripts.append('visualdl/server/visualDL.bat')
 
 setup(
     name="visualdl",
@@ -106,10 +121,12 @@ setup(
     package_data={
         'visualdl.server':
         ['dist/*.js', 'dist/*.html', 'dist/fonts/*', 'dist/assets/*'],
-        'visualdl': ['core.so'],
-        'visualdl.python': ['core.so', 'dog.jpg', 'testing.wav']
+        'visualdl':
+        libraries,
+        'visualdl.python':
+        libraries + ['dog.jpg', 'testing.wav']
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
-    scripts=['visualdl/server/visualDL', 'demo/vdl_create_scratch_log'],
+    scripts=scripts,
     cmdclass=cmdclass)

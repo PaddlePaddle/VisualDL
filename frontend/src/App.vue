@@ -9,6 +9,7 @@
 
 <script>
 import AppMenu from './common/component/AppMenu';
+import {getLanguage} from './service';
 
 export default {
   name: 'App',
@@ -17,14 +18,18 @@ export default {
   },
   data() {
     return {
-      initialRoute: 'scalars',
+      initialRoute: 'metrics',
     };
   },
   created() {
+    getLanguage().then(({errno, data}) => {
+      this.$i18n.locale = data;
+    });
+
     if (location.hash && location.hash != '#/') {
       this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
     } else {
-      location.hash = '#/scalars';
+      location.hash = '#/metrics';
     }
   },
 };

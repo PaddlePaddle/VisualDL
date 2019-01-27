@@ -127,7 +127,7 @@ Insert the above code snippet into your embedding training program.
 
 This will save the embeddings and the word dictionary to the `./embedding_log` folder.
 
-We can now activate the VisualDL by running `visualDL --logdir=./embedding_log`.
+We can now activate the VisualDL by running `visualdl --logdir=./embedding_log`.
 Use your browser to navigate to `localhost:8080`, switch the tab to `High Dimensional`
 
 You can download the tutorial code [here](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/pytorch/pytorch_word2vec.py).

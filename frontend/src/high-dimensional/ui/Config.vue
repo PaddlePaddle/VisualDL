@@ -2,8 +2,8 @@
   <div class="visual-dl-page-config-com">
 
     <v-text-field
-      label="Search"
-      hint="Search by label"
+      :label="$t('lang.search')"
+      :hint="$t('lang.searchByLabel')"
       v-model="config.searchText"
       dark
     />
@@ -11,24 +11,24 @@
 
     <v-checkbox
       class="visual-dl-page-config-checkbox"
-      label="Display All Labels"
+      :label="$t('lang.displayAllLabel')"
       v-model="config.displayWordLabel"
       dark/>
 
     <v-radio-group
-      label="Dimension"
+      :label="$t('lang.dimension')"
       v-model="config.dimension"
       dark>
       <v-radio
-        label="2D"
+        :label="$t('lang.2D')"
         value="2"/>
       <v-radio
-        label="3D"
+        :label="$t('lang.3D')"
         value="3"/>
     </v-radio-group>
 
     <v-radio-group
-      label="Reduction Method"
+      :label="$t('lang.reductionMethod')"
       v-model="config.reduction"
       dark>
       <v-radio
@@ -40,17 +40,6 @@
 
     </v-radio-group>
 
-    <v-radio-group
-      label="Run"
-      v-model="config.selectedRun"
-      dark>
-      <v-radio
-        v-for="item in runsItems"
-        :key="item.name"
-        :label="item.name"
-        :value="item.value" />
-    </v-radio-group>
-
     <v-btn
       :color="config.running ? 'primary' : 'error'"
       v-model="config.running"
@@ -60,7 +49,7 @@
       dark
       block
     >
-      {{ config.running ? 'Running' : 'Stopped' }}
+      {{ config.running ? $t('lang.startRunning') : $t('lang.stopRunning') }}
     </v-btn>
   </div>
 </template>
@@ -68,10 +57,6 @@
 
 export default {
   props: {
-    runsItems: {
-      type: Array,
-      required: true,
-    },
     config: {
       type: Object,
       required: true,

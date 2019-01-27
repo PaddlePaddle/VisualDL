@@ -13,7 +13,6 @@
     <div class="visual-dl-page-right">
       <div class="visual-dl-page-config-container">
         <ui-config
-          :runs-items="runsItems"
           :config="config"
         />
       </div>
@@ -22,7 +21,7 @@
 </template>
 
 <script>
-import {getHighDimensionalDatasets, getRuns} from '../service';
+import {getHighDimensionalDatasets} from '../service';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 import Config from './ui/Config';
 import Chart from './ui/Chart';
@@ -36,9 +35,14 @@ export default {
     'ui-chart': Chart,
   },
   name: 'HighDimensional',
+  props: {
+      runs: {
+        type: Array,
+        required: true,
+      },
+  },
   data() {
     return {
-      runsArray: [],
       config: {
         searchText: '',
         displayWordLabel: true,
@@ -53,14 +57,10 @@ export default {
     };
   },
   created() {
-    getRuns().then(({errno, data}) => {
-      this.runsArray = data;
-
-      // Setting selectedRun should trigger fetchDatasets
-      if (data.length > 0) {
-        this.config.selectedRun = data[0];
-      }
-    });
+    // Setting selectedRun should trigger fetchDatasets
+    if (this.runs.length > 0) {
+      this.config.selectedRun = this.runs[0];
+    }
 
     if (this.config.running && !this.isDemo) {
       this.startInterval();
@@ -82,20 +82,14 @@ export default {
     'config.running': function(val) {
       (val && !this.isDemo) ? this.startInterval() : this.stopInterval();
     },
+    runs: function(val) {
+      if (this.runs.length > 0) {
+        this.config.selectedRun = this.runs[0];
+      }
+    }
   },
   mounted() {
     autoAdjustHeight();
-  },
-  computed: {
-    runsItems() {
-      let runsArray = this.runsArray || [];
-      return runsArray.map((item) => {
-        return {
-          name: item,
-          value: item,
-        };
-      });
-    },
   },
   methods: {
     stopInterval() {

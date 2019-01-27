@@ -46,12 +46,13 @@ for step in steps:
 - 启动visualdl service即可通过浏览器查看日志的可视化结果。
 
 ```shell
-visualDL --logdir ./log --port 8080
+visualdl --logdir ./log --model_pb <path_to_onnx_model> # onnx model and port are optional
 ```
 ### 功能全
 1. Scalar. 支持Scalar打点数据展示，如上图所示：
 	- 可以将训练过程中的loss，准确率等信息以折现的形式体现出来，方便看出整体趋势。
 	- 可以在同一个图片中画出多条曲线，方便对比分析。
+
 2. Image. 支持图片展示。
 	- 输入图片展示，方便查看数据样本的质量
 	- 支持卷积层的结果展示，方便查看卷积之后的效果。
@@ -63,19 +64,37 @@ visualDL --logdir ./log --port 8080
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/image-gan.png" height="300" width="300"/>
         </p>
 
-3. Histogram. 参数分布展示，方便查看参数矩阵中数值的分布曲线，以及随着训练的进行，参数数值分布的变化趋势。
+3. Audio. 支持播放音频样本。
+    - 输入音频或生成音频展示，让用户播放或下载
+    - 针对于语音识别和语音合成模型的训练
+    - 方便查看数据样本的质量或调查问题
+
+4. Histogram. 参数分布展示，方便查看参数矩阵中数值的分布曲线，以及随着训练的进行，参数数值分布的变化趋势。
 	- 帮助用户理解训练过程，随着训练的进行，参数从一种分布变化到另外一种分布，背后对应的原因。
 	- 方便用户判断训练是否正常，例如参数迅速变小到0或者迅速变大，说明有梯度消失或者梯度爆炸的问题。
         <p align="left">
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/histogram.png" />
         </p>
 
-4. Graph. 方便查看深度神经网络的模型结构。
+5. Graph. 方便查看深度神经网络的模型结构。
 	- Graph支持直接对[ONNX](http://onnx.ai/)的模型进行预览，因为MXNet，Caffe2，Pytorch和CNTK都支持转成ONNX的模型，也就间接支持了这些框架的模型可视化功能。
 	- 便于排查网络配置的错误
 	- 帮助理解网络结构
         <p align="left">
         <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/graph.png" height="250" width="400"/>
+        </p>
+
+6. High Dimensional: 用高维度数据映射在2D/3D来可视化嵌入
+    - 便于了解不同物件（文字，图片）的相似度，相关性
+    - 把物件嵌入到向量空间来可视化邻居距离和聚集
+    - 支持降维算法像PCA, T-SNE
+    - 从以下图片(`vdl_create_log`例子生成)能看出'man' and 'women', 'king' and 'queen'的相似性
+        <p align="left">
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_2d.png" height="250" width="400"/>
+        </p>
+    - 这是在3D图的效果
+        <p align="right">
+        <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_3d.png" height="250" width="400"/>
         </p>
 
 ### 完全开放

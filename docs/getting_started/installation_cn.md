@@ -9,12 +9,14 @@ pip install --upgrade visualdl
 
 # run a demo, vdl_create_scratch_log will create logs for testing.
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # visit http://127.0.0.1:8080
 ```
 
-如果以上步骤出现问题，很可能是因为python或pip不同版本或不同位置所致，以下安装方法能解决。
+如果出现`TypeError: __init__() got an unexpected keyword argument 'file'`, 是因为protobuf不是3.5以上，运行`pip install --upgrade protobuf`就能解决。
+
+如果以上步骤还有出现其他问题，很可能是因为python或pip不同版本或不同位置所致，以下安装方法能解决。
 
 ## 使用 virtualenv 安装
 
@@ -51,7 +53,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```
@@ -83,7 +85,7 @@ pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
 vdl_create_scratch_log
-visualDL --logdir=scratch_log --port=8080
+visualdl --logdir=scratch_log --port=8080
 
 # 访问 http://127.0.0.1:8080
 ```

@@ -6,8 +6,10 @@ VisualDL 是一个面向深度学习任务的可视化工具，可用于训练�
 
 - scalar，趋势图，可用于训练测试误差的展示
 - image, 图片的可视化，可用于卷积层或者其他参数的图形化展示
+- audio, 可用于播放输入或生成的音频样本
 - histogram, 用于参数分布及变化趋势的展示
 - graph，用于训练模型结构的可视化
+- high dimensional, 用于可视化高纬度数据来展示物件相关性
 
 VisualDL提供原生的Python和C++ SDK，可以支持多种深度学习平台。用户可以在特定深度学习平台上利用Python SDK进行简单配置来支持可视化，也可以利用 C++ SDK深入嵌入到平台底层。
 
@@ -56,7 +58,7 @@ for step in range(200):
 上述例子生成了一段随机日志，接下来可以打开board页面：
 
 ```
-visualDL --logdir ./random_log --port 8080
+visualdl --logdir ./random_log --port 8080
 ```
 
 之后用浏览器打开地址 `http://0.0.0.0:8080`，就可以看到scalar下的可视化结果
@@ -86,7 +88,7 @@ VisualDL 的 C++ SDK 与 Python 的基本一致，上面Python示例对应的C++
 VisualDL 支持开源的 [ONNX](https://github.com/onnx/onnx)模型结构的可视化，目前ONNX支持包括 `pytorch`, `Caffe2`, `Caffe`, `MxNet` 在内的多种深度学习平台的模型结构的转化。
 
 ```
-visualDL --logdir somedir --model_pb <path_to_model>
+visualdl --logdir somedir --model_pb <path_to_onnx_model>
 ```
 
 比如mnist，会得到如下graph

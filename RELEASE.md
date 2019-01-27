@@ -1,16 +1,47 @@
+# RELEASE 1.2.0
+
+## New design
+
+- Cleaner and more organized interface
+- Show / select runs in global bar instead of individual tab
+- Merge Scalar and Histogram into Metrics
+- Merge Image, Audio and Text into Samples
+- New Config design, add filter types in config
+- New tags bar design instead of expand panel, easier to filter by tags
+- New search bar integrated on tags bar
+- Improve performance by showing less duplicate charts with tabs bar design
+
+
+# RELEASE 1.1.0
+
+## New Features
+
+- Add new `High Dimensional / embeddings` recording visualization. Users can visualize data embeddings by projecting high-dimensional data into 2D / 3D
+- Add Caffe2 Demo and tutorial
+- Update `vdl_create_log`, add embeddings data and ONNX model in scratch_log
+- Windows support
+
+
+## Bug Fixes and improvements
+
+- Fix issues where different Python libraries conflicted in Mac
+- Update Visual DL new logo
+
+
 # RELEASE 1.0.0
 
 ## New Features
 
-- Improve the Graph feature to include interactive response. Users can now click on a node to inspect its details such as parameters, input, output, dimensions, etc. They can also zoom in/out and move around if the graph is too large, restore to its original size and download it as PNG.
-- Add new `Audio` recording visualization. Users can recording audio and inspect to help fine tuning the audio training.
-- Add new `Text` recording visualization. Users can record strings during training and inspect later.
+- Improve the Graph feature to include interactive response. Users can now click on a node to inspect its details such as parameters, input, output, dimensions, etc. They can also zoom in/out and move around if the graph is too large, restore to its original size and download it as PNG.	- Add new `High Dimensional / embeddings` recording visualization. Users can visualize data embeddings by projecting high-dimensional data into 2D / 3D
+- Add new `Audio` recording visualization. Users can recording audio and inspect to help fine tuning the audio training.	- Add Caffe2 Demo and tutorial
+- Add new `Text` recording visualization. Users can record strings during training and inspect later.	- Update `vdl_create_log`, add embeddings data and ONNX model in scratch_log
 - User can manually `save` to sync the recordings to the disk.
+
 
 ## Bug Fixes and improvements
 
-- Fix Scalar incorrect wall time display
-- Fix incorrect timestamp label display
+- Fix Scalar incorrect wall time display	- Fix issues where different Python libraries conflicted in Mac
+- Fix incorrect timestamp label display	- Update Visual DL new logo
 - Fix the Travis-CI not failing issue
 - Fix the last recording not showing
 - Update and clarify ImageWriter API docs for input params.

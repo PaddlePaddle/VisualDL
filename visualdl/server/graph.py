@@ -20,7 +20,8 @@ import os
 from google.protobuf.json_format import MessageToJson
 
 from . import graphviz_graph as gg
-from . import onnx
+from .model import onnx
+from .model import paddle
 
 
 def debug_print(json_obj):
@@ -486,8 +487,14 @@ class GraphPreviewGenerator(object):
         return self.graph.edge(source, target, **kwargs)
 
 
-def draw_graph(model_pb_path, image_dir):
+def draw_onnx_graph(model_pb_path):
     json_str = load_model(model_pb_path)
+    return json_str
+
+
+def draw_paddle_graph(model_pb_path):
+    pm = paddle.PaddleModel(model_pb_path)
+    json_str = pm.to_graph_data()
     return json_str
 
 

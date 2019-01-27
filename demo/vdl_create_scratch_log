@@ -149,10 +149,57 @@ with logw.mode("train") as logger:
         # Add a new text record to the log writer
         text.add_record(i, str)
 
-def download_graph_image():
+
+# Create embeddings
+with logw.mode("train") as logger:
+    embedding = logger.embedding()
+
+    hot_vectors = [
+        [10.0, 8.04, 2],
+        [8.0, 6.95, 2],
+        [13.0, 7.58, 2],
+        [9.0, 8.81, 3],
+        [11.0, 8.33, 4],
+        [14.0, 9.96, 5],
+        [6.0, 7.24, 6],
+        [4.0, 4.26, 7],
+        [12.0, 10.84, 8],
+        [7.0, 4.8, 1],
+        [5.0, 5.68, 2]
+    ]
+
+    labels = [
+        "yellow",
+        "blue",
+        "red",
+        "king",
+        "queen",
+        "man",
+        "women",
+        "kid",
+        "adult",
+        "light",
+        "dark"
+    ]
+    word_dict = {
+        "yellow": 1,
+        "blue": 2,
+        "red": 3,
+        "king": 4,
+        "queen": 5,
+        "man": 6,
+        "women": 7,
+        "kid": 8,
+        "adult": 9,
+        "light": 10,
+        "dark": 0
+    }
+    embedding.add_embeddings_with_word_dict(hot_vectors, word_dict)
+
+
+def download_onnx():
     '''
-    This is a scratch demo, it do not generate a ONNX proto, but just download an image
-    that generated before to show how the graph frontend works.
+    This is a scratch demo, it do not generate a ONNX proto, but just download a prebuilt ONNX file.
 
     For real cases, just refer to README.
     '''
@@ -170,12 +217,12 @@ def download_graph_image():
     myssl = ssl.create_default_context()
     myssl.check_hostname = False
     myssl.verify_mode = ssl.CERT_NONE
-    image_url = "https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mxnet/super_resolution_graph.png?raw=true"
-    log.warning('download graph demo from {}'.format(image_url))
-    graph_image = ur.urlopen(image_url, context=myssl).read()
-    with open(os.path.join(logdir, 'graph.jpg'), 'wb') as f:
-        f.write(graph_image)
-    log.warning('graph ready!')
+    onnx_url = "https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/mnist_model.onnx?raw=true"
+    log.warning('download ONNX file from {}'.format(onnx_url))
+    onnx_model = ur.urlopen(onnx_url, context=myssl).read()
+    with open(os.path.join(logdir, 'mnist_model.onnx'), 'wb') as f:
+        f.write(onnx_model)
+    log.warning('ONNX model ready! use visualdl --logdir=scratch_log -m scratch_log/mnist_model.onnx to launch')
 
 
-download_graph_image()
+download_onnx()

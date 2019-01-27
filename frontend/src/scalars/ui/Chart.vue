@@ -103,10 +103,6 @@ const intervalTime = 15;
 
 export default {
   props: {
-    runsItems: {
-      type: Array,
-      required: true,
-    },
     tagInfo: {
       type: Object,
       required: true,

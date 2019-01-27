@@ -178,32 +178,59 @@ FUNCTION(build_protobuf TARGET_NAME BUILD_FOR_HOST)
         SET(OPTIONAL_CACHE_ARGS "-DZLIB_ROOT:STRING=${ZLIB_ROOT}")
     ENDIF()
 
-    ExternalProject_Add(
-        ${TARGET_NAME}
-        ${EXTERNAL_PROJECT_LOG_ARGS}
-        PREFIX          ${PROTOBUF_SOURCES_DIR}
-        UPDATE_COMMAND  ""
-        DEPENDS         zlib
-        GIT_REPOSITORY  "https://github.com/google/protobuf.git"
-        GIT_TAG         "2761122b810fe8861004ae785cc3ab39f384d342"
-        CONFIGURE_COMMAND
-        ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
-            ${OPTIONAL_ARGS}
-            -Dprotobuf_BUILD_TESTS=OFF
-            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-            -DCMAKE_BUILD_TYPE=${THIRD_PARTY_BUILD_TYPE}
-            -DCMAKE_INSTALL_PREFIX=${PROTOBUF_INSTALL_DIR}
-            -DCMAKE_INSTALL_LIBDIR=lib
-        CMAKE_CACHE_ARGS
-            -DCMAKE_INSTALL_PREFIX:PATH=${PROTOBUF_INSTALL_DIR}
-            -DCMAKE_BUILD_TYPE:STRING=${THIRD_PARTY_BUILD_TYPE}
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
-            -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-            ${OPTIONAL_CACHE_ARGS}
-    )
+    IF(MSVC)
+        ExternalProject_Add(
+            ${TARGET_NAME}
+            ${EXTERNAL_PROJECT_LOG_ARGS}
+            PREFIX          ${PROTOBUF_SOURCES_DIR}
+            UPDATE_COMMAND  ""
+            GIT_REPOSITORY  "https://github.com/google/protobuf.git"
+            GIT_TAG         "9f69353562fe1fbb3fbd11345ea3676b0eb267cd"
+            CONFIGURE_COMMAND
+            ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
+                ${OPTIONAL_ARGS}
+                -G ${CMAKE_GENERATOR}
+                -Dprotobuf_BUILD_SHARED_LIBS=ON
+                -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
+                -Dprotobuf_BUILD_TESTS=OFF
+                -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+                -DCMAKE_BUILD_TYPE=${THIRD_PARTY_BUILD_TYPE}
+                -DCMAKE_INSTALL_PREFIX=${PROTOBUF_INSTALL_DIR}
+                -DCMAKE_INSTALL_LIBDIR=lib
+            CMAKE_CACHE_ARGS
+                -DCMAKE_INSTALL_PREFIX:PATH=${PROTOBUF_INSTALL_DIR}
+                -DCMAKE_BUILD_TYPE:STRING=${THIRD_PARTY_BUILD_TYPE}
+                -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+                -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+                ${OPTIONAL_CACHE_ARGS}
+        )
+    ELSE()
+        ExternalProject_Add(
+            ${TARGET_NAME}
+            ${EXTERNAL_PROJECT_LOG_ARGS}
+            PREFIX          ${PROTOBUF_SOURCES_DIR}
+            UPDATE_COMMAND  ""
+            DEPENDS         zlib
+            URL https://github.com/google/protobuf/archive/v3.1.0.zip
+            CONFIGURE_COMMAND
+            ${CMAKE_COMMAND} ${PROTOBUF_SOURCES_DIR}/src/${TARGET_NAME}/cmake
+                ${OPTIONAL_ARGS}
+                -Dprotobuf_BUILD_TESTS=OFF
+                -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+                -DCMAKE_BUILD_TYPE=${THIRD_PARTY_BUILD_TYPE}
+                -DCMAKE_INSTALL_PREFIX=${PROTOBUF_INSTALL_DIR}
+                -DCMAKE_INSTALL_LIBDIR=lib
+            CMAKE_CACHE_ARGS
+                -DCMAKE_INSTALL_PREFIX:PATH=${PROTOBUF_INSTALL_DIR}
+                -DCMAKE_BUILD_TYPE:STRING=${THIRD_PARTY_BUILD_TYPE}
+                -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+                -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+                ${OPTIONAL_CACHE_ARGS}
+        )
+    ENDIF(MSVC)
 ENDFUNCTION()
 
-SET(PROTOBUF_VERSION 3.5)
+SET(PROTOBUF_VERSION 3.1)
 IF(CMAKE_CROSSCOMPILING)
     build_protobuf(protobuf_host TRUE)
     LIST(APPEND external_project_dependencies protobuf_host)
