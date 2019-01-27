@@ -55,9 +55,6 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& vdl)
 
   // components
   vdl.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Scalar")
-      .apply<cp::Scalar<int>,
-            cp::Scalar<long int>,
-            cp::Scalar<float>,
-            cp::Scalar<double>>(WrapScalar());
+      .apply<cp::Scalar<float>>(WrapScalar());
 
 }
