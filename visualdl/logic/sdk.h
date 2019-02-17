@@ -258,6 +258,8 @@ private:
  */
 template <typename T>
 struct Histogram {
+  typedef T data_type;
+
   Histogram(Tablet tablet, int num_buckets)
       : writer_(tablet), num_buckets_(num_buckets) {
     writer_.SetType(Tablet::Type::kHistogram);
