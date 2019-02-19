@@ -106,7 +106,7 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& vdl) {
   vdl.add_type<cp::Text>("Text")
       .constructor<vs::Tablet>()
       .method("set_caption", &cp::Text::SetCaption)
-      .method("AddRecord", &cp::Text::AddRecord);
+      .method("add_record", &cp::Text::AddRecord);
 
   vdl.add_type<cp::Audio>("Audio")
       .constructor<vs::Tablet, int, int>()
