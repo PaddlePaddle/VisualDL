@@ -33,6 +33,7 @@ set(THIRD_PARTY_PATH "${CMAKE_BINARY_DIR}/third_party" CACHE STRING
 option(WITH_DOC         "Compile VisualDL with documentation"       OFF)
 option(WITH_TESTING     "Compile VisualDL with unit testing"        ON)
 option(WITH_PYTHON3     "Compile VisualDL with Python 3"            OFF)
+option(WITH_JULIA       "Compile VisualDL with Julia"               OFF)
 option(ON_RELEASE       "RELEASE mode" ON)
 
 
@@ -64,6 +65,10 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/storage)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/logic)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/python)
+
+if(WITH_JULIA)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/visualdl/julia)
+endif()
 
 # compile test only in release mode
 if (NOT ON_RELEASE)
