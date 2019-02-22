@@ -1,3 +1,18 @@
+# RELEASE 1.3.0
+
+## New Features
+
+- Support show paddle model，user can use **paddle.fluid.io.save_inference_model()** to save their model to <SAVE_MODEL_PATH>, and then use **visualdl --model_pb <SAVE_MODEL_PATH>** to load the model
+- Change the dependent version of protobuf to 3.1.0
+
+
+# RELEASE 1.2.1
+
+## New Features
+
+- Add language Selection options. Users can use -L or --language option to select the language show in the webpage(1.2.1 only support {zh, en}, and default is en)
+
+
 # RELEASE 1.2.0
 
 ## New design
