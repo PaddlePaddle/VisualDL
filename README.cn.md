@@ -52,13 +52,19 @@ VisualDL 目前支持以下组件：
 可用于播放输入或生成的音频样本
 
 ### Graph
-兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx], 通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
+VisualDL的graph支持paddle program的展示，同时兼容 ONNX(Open Neural Network Exchange)[https://github.com/onnx/onnx]，通过与 python SDK的结合，VisualDL可以兼容包括 PaddlePaddle, pytorch, mxnet在内的大部分主流DNN平台。
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
+  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/graph_demo.gif" width="60%" />
 </p>
 
+要进行paddle模型的展示，需要进行以下两步操作：
+
+1. 在paddle代码中，调用`fluid.io.save_inference_model()`接口保存模型
+2. 在命令行界面，使用`visualdl --model_pb [paddle_model_dir]` 加载paddle模型
+
 ### High Dimensional
+
 用高维度数据映射在2D/3D来可视化嵌入
 
 <p align="center">

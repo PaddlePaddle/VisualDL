@@ -55,15 +55,21 @@ Image can be used to visualize any tensor or intermediate generated image.
 Audio can be used to play input audio samples or generated audio samples.
 
 ### Graph
-Graph is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
+VisualDL graph supports displaying paddle model, furthermore is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
 Cooperated with Python SDK, VisualDL can be compatible with most major DNN frameworks, including
 PaddlePaddle, PyTorch and MXNet.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/daming-lu/large_files/master/graph_demo.gif" width="60%" />
+  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/graph_demo.gif" width="60%" />
 </p>
 
+To display the paddle model, all you have to do is:
+
+1. call the `fluid.io.save_inference_model()`interface to save paddle model
+2. use `visualdl --model_pb [paddle_model_dir]` to load paddle model in command line
+
 ### High Dimensional
+
 High Dimensional can be used to visualize data embeddings by projecting high-dimensional data into 2D / 3D.
 
 <p align="center">
