@@ -245,3 +245,9 @@ board 还支持一下参数来实现远程的访问：
 
 VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和
 [ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。
+
+
+
+## 更多细节
+
+想了解更多关于VisualDL的使用介绍，请查看[文档](https://github.com/PaddlePaddle/VisualDL/tree/develop/demo)
