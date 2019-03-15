@@ -260,3 +260,9 @@ visualDL also supports following optional parameters:
 VisualDL is initially created by [PaddlePaddle](http://www.paddlepaddle.org/) and
 [ECharts](http://echarts.baidu.com/).
 We welcome everyone to use, comment and contribute to Visual DL :)
+
+
+
+## More details
+
+For more details about how to use VisualDL, please take a look at [documents](https://github.com/PaddlePaddle/VisualDL/tree/develop/demo)
