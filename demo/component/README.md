@@ -8,7 +8,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。ViusalDL �
 |:----:|:---:|:---|
 |<a href="#1">scalar</a>|折线图|用于误差、准确率等数据的动态展示|
 |<a href="#2">histogram</a>|直方图|用于查看参数矩阵中数值的分布曲线，以及随着训练的进行，参数分布的变化趋势|
-|<a href="#3">image</a>|图片|用于显示图片，可以显示输入数据和卷积后的结果，方便查看中间过程的变化|
+|<a href="#3">image</a>|图片|用于显示图片，可以显示输入图片和卷积后的结果，方便查看中间过程的变化|
 |<a href="#4">text</a>|文本|用于展示文本，有助于 NLP 等领域的用户进行数据分析和结果判断|
 |<a href="#5">audio</a>|音频|用于展示音频，用户可直接播放或下载，有助于语音识别等相关领域的用户进行数据分析和结果判断|
 |<a href="#6">high dimensional</a>|坐标|将高维度数据映射在 2D/3D 空间来可视化嵌入，便于了解不同数据的相关性|
@@ -19,19 +19,17 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。ViusalDL �
 
 ### LogWriter  --  记录器
 LogWriter 是一个数据记录器，在数据记录过程中，LogWriter 会周期性地将数据写入指定路径。
-
-LogWriter 的定义为：
-&emsp;&emsp;&emsp;&emsp; <font color= DarkCyan>  class LogWriter(dir, sync_cycle) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color= DarkCyan> dir </font> : 指定日志文件的保存路径
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color= DarkCyan> sync_cycle </font> : 同步周期，即经过 sync_cycle 次添加数据的操作，就执行一次将数据从内存写入磁盘的操作
+LogWriter 的定义为：  
+```python
+class LogWriter(dir, sync_cycle)
+```
+> dir        ：指定日志文件的保存路径  
+> sync_cycle ：同步周期，即经过 sync_cycle 次添加数据的操作，就执行一次将数据从内存写入磁盘的操作  
 
 例1 创建一个 LogWriter 对象：
-
 ```python
+# 创建一个 LogWriter 对象 log_writer
 log_writer = LogWriter("./log", sync_cycle=10)
-# 上述语句将生成一个 LogWriter 对象 log_writer
-# 此后 log_writer 每执行10次添加数据的操作，就把这10个新添加的数据写进 ./log
 ```
 
 LogWriter 类的成员函数用于指定模式以及选择功能组件。成员函数包括：
@@ -39,7 +37,7 @@ LogWriter 类的成员函数用于指定模式以及选择功能组件。成员�
 * scalar(), histogram(), image(), text(), audio(), embedding()
 
 
-成员函数 mode() 用于指定模式，模式的名称是自定义的(不能有 % 和 / 这两个字符)，比如训练阶段的数据可设为 train，验证阶段的数据可设为 verify，测试阶段的数据可设为 test。在不同模式下添加的组件，在前端展示时会根据模式名称进行分组。
+成员函数 mode() 用于指定模式，模式的名称是自定义的，比如训练阶段的数据可设为 train，验证阶段的数据可设为 verify，测试阶段的数据可设为 test。在不同模式下添加的组件，在前端展示时会根据模式名称进行分组。
 
 成员函数 scalar(), histogram(), image(), text(), audio(), embedding() 用于创建组件，这六个成员函数的返回值分别为 ScalarWriter 对象、 HistogramWriter 对象、ImageWriter 对象、 TextWriter 对象、AudioWriter 对象、EmbeddingWriter 对象，各种对象都有相应的数据添加方式。
 
@@ -47,25 +45,30 @@ LogWriter 类的成员函数用于指定模式以及选择功能组件。成员�
 ```python
 # 设定模式为train，创建一个 scalar 组件
 with log_writer.mode("train") as logger:
-	train_scalar = logger.scalar("acc")
+train_scalar = logger.scalar("acc")
 # 设定模式为test，创建一个 image 组件
 with log_writer.mode("test") as shower:
-	test_image = shower.image("conv_image", 10, 1)
+test_image = shower.image("conv_image", 10, 1)
 ```
 
 ### scalar -- 折线图组件
-<a name="1">scalar</a> 直译为中文就是标量，顾名思义， scalar 组件的输入数据就是[标量](https://baike.baidu.com/item/%E6%A0%87%E9%87%8F/1530843?fr=aladdin)，该组件的作用是画折线图。例如将训练过程中的损失率、准确率等指标通过 scalar 组件加入 LogWriter 对象，即可画出折线图，便于观察变化趋势。
+<a name="1">scalar</a> 直译为中文就是标量，顾名思义， scalar 组件的输入数据就是标量，该组件的作用是画折线图。将训练过程中的损失函数值、准确率等参数通过 scalar 组件加入 LogWriter 对象，即可画出折线图，便于观察变化趋势。
 
 想通过 scalar 组件画折线图，只需先设定 LogWriter 对象的成员函数 scalar()，即可使用 add_record() 函数添加数据。这两个函数的具体用法如下：
 
-* LogWriter 对象的成员函数 scalar()
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> scalar(tag, type) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> tag </font>:  标签，tag 相同的折线在同一张图，否则在不同的图，tag 的名称中不能有 % 这个字符。
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> type </font>: 数据类型，默认值为 "float"
+* LogWriter 对象的成员函数 scalar()  
+```python
+scalar(tag, type)  
+```  
+> tag  ：标签，tag 相同的折线在同一张图，否则在不同的图，tag 的名称中不能有 % 这个字符  
+> type ：数据类型，默认值为 "float"
 
-* scalar 组件的 add_record() 函数的形参 step 为采样点的序号，形参 value 为输入变量。
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> add_record(step, value) </font>
+* scalar 组件的 add_record() 函数
+```python
+add_record(step, value)  
+```
+> step ：采样步骤
+> value ：输入数据
 
 例3 scalar 组件示例程序 [Github](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/component/scalar-demo.py)
 ```python
@@ -77,28 +80,28 @@ log_writer = LogWriter("./log", sync_cycle=20)
 
 # 创建 scalar 组件，模式为train
 with log_writer.mode("train") as logger:
-    train_acc = logger.scalar("acc")
-    train_loss = logger.scalar("loss")
+train_acc = logger.scalar("acc")
+train_loss = logger.scalar("loss")
 
 # 创建 scalar 组件，模式设为 test， tag 设为 acc
 with log_writer.mode("test") as logger:
-    test_acc = logger.scalar("acc")
+test_acc = logger.scalar("acc")
 
 value = [i/1000.0 for i in range(1000)]
 for step in range(1000):
-    # 向名称为 acc 的图中添加模式为train的数据
-    train_acc.add_record(step, value[step])
-    # 向名称为 loss 的图中添加模式为train的数据
-    train_loss.add_record(step, 1 / (value[step] + 1))
-    # 向名称为 acc 的图中添加模式为test的数据
-    test_acc.add_record(step, 1 - value[step])
+# 向名称为 acc 的图中添加模式为train的数据
+train_acc.add_record(step, value[step])
+# 向名称为 loss 的图中添加模式为train的数据
+train_loss.add_record(step, 1 / (value[step] + 1))
+# 向名称为 acc 的图中添加模式为test的数据
+test_acc.add_record(step, 1 - value[step])
 ```
 
 运行上述程序后，在命令行中执行
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080
 ```
-接着在浏览器打开**http://0.0.0.0:8080**，即可看到下图：
+接着在浏览器打开 [http://0.0.0.0:8080](http://0.0.0.0:8080)，即可看到下图：
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/scalar-interface.png)
 
 VisualDL 页面的右边侧栏有各个组件的调节选项，以 scalar 组件为例：
@@ -114,17 +117,19 @@ VisualDL 页面的右边侧栏的最下方还有一个 RUNNING 按钮，此时�
 想通过 histogram 组件画参数直方图，只需先设定 LogWriter 对象的成员函数 histogram()，即可使用 add_record() 函数添加数据。这两个函数的具体用法如下：
 
 * LogWriter 对象的成员函数 histogram()
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> histogram(tag, num_buckets, type) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> tag </font>: 标签，tag 相同的输入参数将显示在同一张图中，否则不同
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> num_buckets </font>: 直方图的柱子数量
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> type </font>: 数据类型，默认值为"float"
+```python
+histogram(tag, num_buckets, type)  
+```
+> tag ：标签，tag 相同的输入参数将显示在同一张图中，否则不同  
+> num_buckets ：直方图的柱子数量  
+> type ： 数据类型，默认值为 "float"  
 
-* histogram 组件的成员函数 add_record()
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> add_record(step, data) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> step </font>: 步进数，标记这是第几组数据
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> data </font>: 输入参数， 数据类型为 list[]
+* histogram 组件的成员函数 add_record()  
+```python
+add_record(step, data)  
+```
+> step ：步进数，标记这是第几组数据  
+> data ：输入参数， 数据类型为 list[]  
 
 例4 histogram 组件示例程序 [Github](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/component/histogram-demo.py)
 ```python
@@ -137,54 +142,60 @@ log_writer = LogWriter('./log', sync_cycle=10)
 
 # 创建 histogram 组件，模式为train
 with log_writer.mode("train") as logger:
-    param1_histogram = logger.histogram("param1", num_buckets=100)
+param1_histogram = logger.histogram("param1", num_buckets=100)
 
 # 设定步数为 1 - 100
 for step in range(1, 101):
-    # 添加的数据为随机分布，所在区间值变小
-    interval_start = 1 + 2 * step/100.0
-    interval_end = 6 - 2 * step/100.0
-    data = np.random.uniform(interval_start, interval_end, size=(10000))
+# 添加的数据为随机分布，所在区间值变小
+interval_start = 1 + 2 * step/100.0
+interval_end = 6 - 2 * step/100.0
+data = np.random.uniform(interval_start, interval_end, size=(10000))
 
-    # 使用 add_record()函数添加数据
-    param1_histogram.add_record(step, data)
+# 使用 add_record()函数添加数据
+param1_histogram.add_record(step, data)
 ```
 
 运行上述程序后，在命令行中执行
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080
 ```
-接着在浏览器打开**http://0.0.0.0:8080**，即可看到下图。其中横坐标为参数的数值，曲线上的值为相应参数的个数。右边纵轴的值为 Step，不同 Step 的数据组用不同颜色加以区分。
+接着在浏览器打开[http://0.0.0.0:8080](http://0.0.0.0:8080)，即可看到下图。其中横坐标为参数的数值，曲线上的值为相应参数的个数。右边纵轴的值为 Step，不同 Step 的数据组用不同颜色加以区分。
 
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/histogram-interface.png)
 
 ### image -- 图片可视化组件
 <a name="3">image</a> 组件用于显示图片。在程序运行过程中，将图片数据（通常为numpy.ndarray）传入 image 组件，就可在 VisualDL 的前端网页看到相应图片。
 
-使用 image 组件添加数据，需要先设定 LogWriter 对象的成员函数 image()，即可结合 start_sampling(), is_sample_taken(), set_sample()和 finish_sample()这四个 image 组件的成员函数来完成。这几个函数的具体用法如下：
+使用 image 组件添加数据，需要先设定 LogWriter 对象的成员函数 image()，即可结合 start_sampling(), is_sample_taken(), set_sample() 和 finish_sample() 这四个 image 组件的成员函数来完成。这几个函数的具体用法如下：
 
-* LogWriter 对象的成员函数 image()
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> image(tag, num_samples, step_cycle) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> tag </font>: 标签，结合图片数据的 index，决定图片显示的子框。
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> num_samples </font>: 设置单个 step 的采样数，页面上的图片数目也等于 num_samples
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> step_cycle </font>: 将 step_cycle 个 step 的数据存储到日志中，默认值为 1
+* LogWriter 对象的成员函数 image()  
+```python  
+image(tag, num_samples, step_cycle)  
+```  
+> tag </font> ：标签，结合图片数据的 index，决定图片显示的子框  
+> num_samples </font> ：设置单个 step 的采样数，页面上的图片数目也等于 num_samples  
+> step_cycle </font> ：将 step_cycle 个 step 的数据存储到日志中，默认值为 1  
 
 * 开始新的采样周期 - 开辟一块内存空间，用于存放采样的数据
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> start_sampling() </font>
+```python
+start_sampling()
+```
 
 * 判断该图片是否应被采样，当返回值为 -1，表示不用采样，否则，应被采样
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> is_sample_taken() </font>
+```python
+is_sample_taken()
+```
 
 * 添加图片
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> set_sample(index, image_shape, image_data) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> index </font>: 索引号，与 tag 组合使用，决定图片显示的子框
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> image_shape </font>: 图片的形状，[weight, height, 通道数(RGB 则为 3)]
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> image_data </font>:  图片的数据格式为矩阵，通常为 numpy.ndarray，经 flatten() 后变为行向量
+```python
+set_sample(index, image_shape, image_data)  
+```  
+> index ：索引号，与 tag 组合使用，决定图片显示的子框  
+> image_shape ：图片的形状，[weight, height, 通道数(RGB 则为 3)]  
+> image_data ：图片的数据格式为矩阵，通常为 numpy.ndarray，经 flatten() 后变为行向量  
 
 * 结束当前的采样周期，将内存空间中已采样的数据传到前端，之后释放这一块内存空间
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> finish_sample() </font>
+> finish_sample()  
 
 例5 image 组件示例程序 [Github](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/component/image-demo.py)
 ```python
@@ -195,14 +206,14 @@ from PIL import Image
 
 
 def random_crop(img):
-    '''
-	  此函数用于获取图片image的 100*100 的随机分块
-    '''
-    img = Image.open(img)
-    w, h = img.size
-    random_w = np.random.randint(0, w - 100)
-    random_h = np.random.randint(0, h - 100)
-    return img.crop((random_w, random_h, random_w + 100, random_h + 100))
+'''
+此函数用于获取图片image的 100*100 的随机分块
+'''
+img = Image.open(img)
+w, h = img.size
+random_w = np.random.randint(0, w - 100)
+random_h = np.random.randint(0, h - 100)
+return img.crop((random_w, random_h, random_w + 100, random_h + 100))
 
 
 # 创建LogWriter对象
@@ -211,39 +222,39 @@ log_writer = LogWriter("./log", sync_cycle=10)
 # 创建 image 组件，模式为train, 采样数设为 ns
 ns = 2
 with log_writer.mode("train") as logger:
-    input_image = logger.image(tag="test", num_samples=ns)
+input_image = logger.image(tag="test", num_samples=ns)
 
 # 一般要设置一个变量sample_num，用于记录当前已采样了几个image数据
 sample_num = 0
 
 for step in range(6):
-    # 设置start_sampling() 的条件，满足条件时，开始采样
-    if sample_num == 0:
-        input_image.start_sampling()
+# 设置start_sampling() 的条件，满足条件时，开始采样
+if sample_num == 0:
+input_image.start_sampling()
 
-    # 获取idx
-    idx = input_image.is_sample_taken()
-    # 如果 idx != -1，采样，否则跳过
-    if idx != -1:
-        # 获取图片数据
-        image_path = "test.jpg"
-        image_data = np.array(random_crop(image_path))
-        # 使用 set_sample() 函数添加数据
-        # flatten() 用于把 ndarray 由矩阵变为行向量
-        input_image.set_sample(idx, image_data.shape, image_data.flatten())
-        sample_num += 1
+# 获取idx
+idx = input_image.is_sample_taken()
+# 如果 idx != -1，采样，否则跳过
+if idx != -1:
+# 获取图片数据
+image_path = "test.jpg"
+image_data = np.array(random_crop(image_path))
+# 使用 set_sample() 函数添加数据
+# flatten() 用于把 ndarray 由矩阵变为行向量
+input_image.set_sample(idx, image_data.shape, image_data.flatten())
+sample_num += 1
 
-        # 如果完成了当前轮的采样，则调用finish_sample()
-        if sample_num % ns == 0:
-            input_image.finish_sampling()
-            sample_num = 0
+# 如果完成了当前轮的采样，则调用finish_sample()
+if sample_num % ns == 0:
+input_image.finish_sampling()
+sample_num = 0
 ```
 
 运行上述程序后，在命令行中执行
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080
 ```
-此时在浏览器打开**http://0.0.0.0:8080**，点击页面最上方的 SAMPLES 选项，即可查看图片。每一张子图都有一条浅绿色的横轴，拖动即可展示不同 Step 的图片。
+此时在浏览器打开[http://0.0.0.0:8080](http://0.0.0.0:8080)，点击页面最上方的 SAMPLES 选项，即可查看图片。每一张子图都有一条浅绿色的横轴，拖动即可展示不同 Step 的图片。
 
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/image-interface.png)
 
@@ -252,11 +263,18 @@ visualdl --logdir ./log --host 0.0.0.0 --port 8080
 
 想要通过 text 组件添加数据，只需先设定 LogWriter 对象的成员函数 text()，即可使用 add_record() 函数来完成。这两个函数的具体用法如下：
 
-* LogWriter 对象的成员函数 text()，只有一个参数 tag，用于设置标签
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> text(tag) </font>
+* LogWriter 对象的成员函数 text()
+```python
+text(tag)
+```
+> tag ：标签，tag 相同的文本显示于同一个子框，否则不同
 
-* text 组件的 add_record()函数的形参 step 为采样点的序号，第二个参数为输入文本，数据类型为 unicode（即字符串）
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> add_record(step, str) </font>
+* text 组件的 add_record()函数
+```python
+add_record(step, str)
+```
+> step ：采样点的序号
+> str ：输入文本，数据类型为 unicode
 
 例6 text 组件示例程序 [Github](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/component/text-demo.py)
 ```python
@@ -268,19 +286,19 @@ log_writter = LogWriter("./log", sync_cycle=10)
 
 # 创建 text 组件，模式为 train， 标签为 test
 with log_writter.mode("train") as logger:
-    vdl_text_comp = logger.text(tag="test")
+vdl_text_comp = logger.text(tag="test")
 
 # 使用 add_record() 函数添加数据
 for i in range(1, 6):
-    vdl_text_comp.add_record(i, "这是第 %d 个 step 的数据。" % i)
-    vdl_text_comp.add_record(i, "This is data %d ." % i)
+vdl_text_comp.add_record(i, "这是第 %d 个 step 的数据。" % i)
+vdl_text_comp.add_record(i, "This is data %d ." % i)
 ```
 
 运行上述程序后，在命令行中执行
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080
 ```
-此时在浏览器打开**http://0.0.0.0:8080**，点击页面最上方的 SAMPLES 选项，即可显示文本。每一张小框都有一条浅绿色的横轴，拖动即可显示不同 Step 的文本。
+此时在浏览器打开 [http://0.0.0.0:8080](http://0.0.0.0:8080)，点击页面最上方的 SAMPLES 选项，即可显示文本。每一张小框都有一条浅绿色的横轴，拖动即可显示不同 Step 的文本。
 
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/text-interface.png)
 
@@ -290,28 +308,35 @@ visualdl --logdir ./log --host 0.0.0.0 --port 8080
 使用 audio 组件添加数据，需要先设定 LogWriter 对象的成员函数 audio()，即可结合 start_sampling(), is_sample_taken(), set_sample() 和 finish_sample() 这四个 audio 组件的成员函数来完成。这几个函数的具体用法如下：
 
 * LogWriter 对象的成员函数 audio()
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> audio(tag, num_samples, step_cycle) </font>  
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> tag </font>: 标签，结合音频数据的 index，决定音频播放的子框
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> num_samples </font>: 设置单个 step 的采样数，页面上的音频数目也等于 num_samples
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> step_cycle </font>: 将 step_cycle 个 step 的数据存储到日志中，默认值为 1
+```python
+audio(tag, num_samples, step_cycle)  
+```
+> tag ：标签，结合音频数据的 index，决定音频播放的子框  
+> num_samples ：设置单个 step 的采样数，页面上的音频数目也等于 num_samples  
+> step_cycle ：将 step_cycle 个 step 的数据存储到日志中，默认值为 1  
 
 * 开始新的采样周期 - 开辟一块内存空间，用于存放采样的数据
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> start_sampling() </font>
+```python
+start_sampling()  
+```
 
 * 判断该音频是否应被采样，当返回值为 -1，表示不用采样，否则，应被采样。
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> is_sample_taken() </font>
+```python
+is_sample_taken()  
+```
 
 * 添加音频
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> set_sample(index, audio_params, audio_data) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> index </font>: 索引号，结合 tag，决定音频播放的子框
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> audio_params </font>: 音频的参数 [sample rate, sample width, channel]，其中 sample rate 为采样率， sample width 为每一帧采样的字节数， channel 为通道数（单声道设为1，双声道设为2，四声道设为4，以此类推）
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> audio_data </font>:  音频数据，音频数据的格式一般为 numpy.ndarray，经 flatten() 后变为行向量
+```python
+set_sample(index, audio_params, audio_data)  
+```
+> index ：索引号，结合 tag，决定音频播放的子框  
+> audio_params ：音频的参数 [sample rate, sample width, channel]，其中 sample rate 为采样率， sample width 为每一帧采样的字节数， channel 为通道数（单声道设为1，双声道设为2，四声道设为4，以此类推）  
+> audio_data ：音频数据，音频数据的格式一般为 numpy.ndarray，经 flatten() 后变为行向量  
 
 * 结束当前的采样周期，将内存空间中已采样的数据传到前端，之后释放这一块内存空间
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> finish_sample() </font>
-
+```python
+finish_sample()  
+```
 
 例7 audio 组件示例程序 [Github](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/component/audio-demo.py)
 ```python
@@ -322,23 +347,23 @@ from visualdl import LogWriter
 
 
 def read_audio_data(audio_path):
-    """
-      读取音频数据
-    """
-    CHUNK = 4096
-    f = wave.open(audio_path, "rb")
-    wavdata = []
-    chunk = f.readframes(CHUNK)
+"""
+读取音频数据
+"""
+CHUNK = 4096
+f = wave.open(audio_path, "rb")
+wavdata = []
+chunk = f.readframes(CHUNK)
 
-    while chunk:
-        data = np.fromstring(chunk, dtype='uint8')
-        wavdata.extend(data)
-        chunk = f.readframes(CHUNK)
+while chunk:
+data = np.fromstring(chunk, dtype='uint8')
+wavdata.extend(data)
+chunk = f.readframes(CHUNK)
 
-    # 8k sample rate, 16bit frame, 1 channel
-    shape = [8000, 2, 1]
+# 8k sample rate, 16bit frame, 1 channel
+shape = [8000, 2, 1]
 
-    return shape, wavdata
+return shape, wavdata
 
 
 # 创建一个 LogWriter 对象
@@ -347,39 +372,38 @@ log_writter = LogWriter("./log", sync_cycle=10)
 # 创建audio组件，模式为train
 ns = 2
 with log_writter.mode("train") as logger:
-    input_audio = logger.audio(tag="test", num_samples=ns)
+input_audio = logger.audio(tag="test", num_samples=ns)
 
 # 一般要设定一个变量audio_sample_num，用来记录当前已采样了几段audio数据
 audio_sample_num = 0
 
 for step in range(9):
-    # 设置start_sampling() 的条件，满足条件时，开始采样
-    if audio_sample_num == 0:
-        input_audio.start_sampling()
+# 设置start_sampling() 的条件，满足条件时，开始采样
+if audio_sample_num == 0:
+input_audio.start_sampling()
 
-    # 获取 idx
-    idx = input_audio.is_sample_taken()
-    # 如果 idx != -1，采样，否则跳过
-    if idx != -1:
-        # 读取数据，音频文件的格式可以为.wav .mp3等
-        audio_path = "test.wav"
-        audio_shape, audio_data = read_audio_data(audio_path)
-        # 使用 set_sample()函数添加数据
-        input_audio.set_sample(idx, audio_shape, audio_data)
-        audio_sample_num += 1
+# 获取 idx
+idx = input_audio.is_sample_taken()
+# 如果 idx != -1，采样，否则跳过
+if idx != -1:
+# 读取数据，音频文件的格式可以为.wav .mp3等
+audio_path = "test.wav"
+audio_shape, audio_data = read_audio_data(audio_path)
+# 使用 set_sample()函数添加数据
+input_audio.set_sample(idx, audio_shape, audio_data)
+audio_sample_num += 1
 
-        # 如果完成了当前轮的采样，则调用finish_sample()
-        if audio_sample_num % ns ==0:
-            input_audio.finish_sampling()
-            audio_sample_num = 0
+# 如果完成了当前轮的采样，则调用finish_sample()
+if audio_sample_num % ns ==0:
+input_audio.finish_sampling()
+audio_sample_num = 0
 ```
-
 
 运行上述程序后，在命令行中执行
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080
 ```
-此时在浏览器打开**http://0.0.0.0:8080**，点击页面最上方的 SAMPLES 选项，即有音频的小框，可以播放和下载。每一张小框都有一条浅绿色的横轴，拖动即可选择不同 Step 的音频段。
+此时在浏览器打开[http://0.0.0.0:8080](http://0.0.0.0:8080)，点击页面最上方的 SAMPLES 选项，即有音频的小框，可以播放和下载。每一张小框都有一条浅绿色的横轴，拖动即可选择不同 Step 的音频段。
 
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/audio-interface.png)
 
@@ -391,14 +415,15 @@ visualdl --logdir ./log --host 0.0.0.0 --port 8080
 想使用 high dimensional 组件，只需先设定 LogWriter 对象的成员函数 embedding()，即可使用 add_embeddings_with_word_dict() 函数添加数据。这两个函数的具体用法如下：
 
 * LogWriter 对象的成员函数 embedding() 不需输入参数
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> embedding() </font>
+> embedding()  
 
 * 添加数据
-&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> add_embeddings_with_word_dict(data, Dict) </font>
-&emsp;&emsp;&emsp;&emsp; 各个形参的含义为：
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> data </font>: 输入数据，数据类型为 List[List(float)]
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <font color=DarkCyan> Dict </font>: 字典， 数据类型为 Dict[str, int]
+```python
+add_embeddings_with_word_dict(data, Dict)  
+```
 
+> data ：输入数据，数据类型为 List[List(float)]  
+> Dict ：字典， 数据类型为 Dict[str, int]  
 
 例8 high dimensional 组件示例程序 [Github](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/component/embedding-demo.py)
 ```python
@@ -411,18 +436,18 @@ log_writer = LogWriter("./log", sync_cycle=10)
 
 # 创建一个 high dimensional 组件，模式设为 train
 with log_writer.mode("train") as logger:
-    train_embedding = logger.embedding()
+train_embedding = logger.embedding()
 
 # 第一个参数为数据，数据类型为 List[List(float)]
 hot_vectors = np.random.uniform(1, 2, size=(10, 3))
 # 第二个参数为字典，数据类型为 Dict[str, int]
 # 其中第一个分量为坐标点的名称, 第二个分量为该坐标对应原数据的第几行分量
 word_dict = {
-    "label_1": 5,
-    "label_2": 4,
-    "label_3": 3,
-    "label_4": 2,
-    "label_5": 1,}
+"label_1": 5,
+"label_2": 4,
+"label_3": 3,
+"label_4": 2,
+"label_5": 1,}
 
 # 使用 add_embeddings_with_word_dict(data, Dict)
 train_embedding.add_embeddings_with_word_dict(hot_vectors, word_dict)
@@ -431,7 +456,7 @@ train_embedding.add_embeddings_with_word_dict(hot_vectors, word_dict)
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080
 ```
-此时在浏览器打开**http://0.0.0.0:8080**，点击页面最上方的 HIGHDIMENSIONAL 选项，即可显示数据映射后的相对位置。
+此时在浏览器打开[http://0.0.0.0:8080](http://0.0.0.0:8080)，点击页面最上方的 HIGHDIMENSIONAL 选项，即可显示数据映射后的相对位置。
 
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/embedding-2D.png)
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/embedding-3D.png)
@@ -448,29 +473,29 @@ import paddle.fluid as fluid
 
 
 def lenet_5(img):
-    '''
-      定义神经网络结构
-    '''
-    conv1 = fluid.nets.simple_img_conv_pool(
-        input=img,
-        filter_size=5,
-        num_filters=20,
-        pool_size=2,
-        pool_stride=2,
-        act="relu")
+'''
+定义神经网络结构
+'''
+conv1 = fluid.nets.simple_img_conv_pool(
+input=img,
+filter_size=5,
+num_filters=20,
+pool_size=2,
+pool_stride=2,
+act="relu")
 
-    conv1_bn = fluid.layers.batch_norm(input=conv1)
+conv1_bn = fluid.layers.batch_norm(input=conv1)
 
-    conv2 = fluid.nets.simple_img_conv_pool(
-        input=conv1_bn,
-        filter_size=5,
-        num_filters=50,
-        pool_size=2,
-        pool_stride=2,
-        act="relu")
+conv2 = fluid.nets.simple_img_conv_pool(
+input=conv1_bn,
+filter_size=5,
+num_filters=50,
+pool_size=2,
+pool_stride=2,
+act="relu")
 
-    predition = fluid.layers.fc(input=conv2, size=10, act="softmax")
-    return predition
+predition = fluid.layers.fc(input=conv2, size=10, act="softmax")
+return predition
 
 
 # 变量赋值
@@ -483,16 +508,16 @@ exe.run(fluid.default_startup_program())
 
 # 将结果保存到./paddle_lenet_5_model
 fluid.io.save_inference_model(
-    "./paddle_lenet_5_model",
-    feeded_var_names=[image.name],
-    target_vars=[predition],
-    executor=exe)
+"./paddle_lenet_5_model",
+feeded_var_names=[image.name],
+target_vars=[predition],
+executor=exe)
 ```
 
 运行上述程序后，在命令行中执行
 ```shell
 visualdl --logdir ./log --host 0.0.0.0 --port 8080 --model_pb paddle_lenet_5_model
 ```
-此时在浏览器打开**http://0.0.0.0:8080**，点击页面最上方的 GRAPHS 选项，即可看到上述神经网络的模型结构:
+此时在浏览器打开[http://0.0.0.0:8080](http://0.0.0.0:8080)，点击页面最上方的 GRAPHS 选项，即可看到上述神经网络的模型结构:
 
 ![](https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/demo/component/usage-interface/graph.png)
