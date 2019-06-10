@@ -272,7 +272,7 @@ ImageReader::ImageRecord ImageReader::record(int offset, int index) {
   std::transform(brcd.data.begin(),
                  brcd.data.end(),
                  std::back_inserter(res.data),
-                 [](byte_t i) { return (int)(i); });
+                 [](byte_t i) { return (uint8_t)(i); });
   res.shape = entry.GetMulti<shape_t>();
   res.step_id = record.id();
   return res;
