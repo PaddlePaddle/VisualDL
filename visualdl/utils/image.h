@@ -78,6 +78,7 @@ static void NormalizeImage(Uint8Image* image,
   if (image_min < 0) {
     float max_val = std::max(std::abs(image_min), image_max);
     scale = (max_val < kZeroThreshold ? 0.0f : 127.0f) / max_val;
+    offset = 127.0f;
   } else {
     scale = (image_max < kZeroThreshold ? 0.0f : 255.0f) / image_max;
     offset = 0.0f;
