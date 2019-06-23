@@ -50,7 +50,7 @@ visualdl --logdir ./log --model_pb <path_to_onnx_model> # onnx model and port ar
 ```
 ### 功能全
 1. Scalar. 支持Scalar打点数据展示，如上图所示：
-	- 可以将训练过程中的loss，准确率等信息以折现的形式体现出来，方便看出整体趋势。
+	- 可以将训练过程中的loss，准确率等信息以折线的形式体现出来，方便看出整体趋势。
 	- 可以在同一个图片中画出多条曲线，方便对比分析。
 
 2. Image. 支持图片展示。
