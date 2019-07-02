@@ -46,6 +46,8 @@ struct HistogramRecord {
         frequency(frequency),
         span_(float(right - left) / frequency.size()) {}
 
+  ~HistogramRecord() { frequency.clear(); }
+
   Instance instance(int i) const {
     CHECK_LT(i, frequency.size());
     Instance res;
