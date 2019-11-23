@@ -15,11 +15,14 @@
             ],
             "fecs-valid-jsdoc": [
                 "0"
-            ]
+            ],
+            "max-len": 120
         }
     },
     "csshint": {},
-    "htmlcs": {},
+    "htmlcs": {
+        "max-len": 120
+    },
     "jformatter": {},
     "esformatter": {},
     "csscomb": {}
