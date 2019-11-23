@@ -54,27 +54,27 @@
 <script>
 
 export default {
-  props: {
-    'doDownload': {
-      type: Boolean,
-      required: true,
-    },
-    'curNode': {
-      type: Object,
-      default: {},
-    },
-    'config': {
-      type: Object,
-      required: true,
-    },
-  }, methods: {
-    handleDownload() {
-      this.$emit('triggerDownload', true);
-    },
-    resetImage() {
-      this.$emit('triggerRestore', true);
-    },
-  },
+    props: {
+        doDownload: {
+            type: Boolean,
+            required: true
+        },
+        curNode: {
+            type: Object,
+            default: {}
+        },
+        config: {
+            type: Object,
+            required: true
+        }
+    }, methods: {
+        handleDownload() {
+            this.$emit('triggerDownload', true);
+        },
+        resetImage() {
+            this.$emit('triggerRestore', true);
+        }
+    }
 };
 </script>
 <style lang="stylus">

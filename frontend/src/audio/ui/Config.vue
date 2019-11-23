@@ -23,22 +23,22 @@
 <script>
 
 export default {
-  props: {
-    config: {
-      type: Object,
-      required: true,
+    props: {
+        config: {
+            type: Object,
+            required: true
+        }
     },
-  },
-  data() {
-    return {
-      isDemo: process.env.NODE_ENV === 'demo',
-    };
-  },
-  methods: {
-    toggleAllRuns() {
-      this.config.running = !this.config.running;
+    data() {
+        return {
+            isDemo: process.env.NODE_ENV === 'demo'
+        };
     },
-  },
+    methods: {
+        toggleAllRuns() {
+            this.config.running = !this.config.running;
+        }
+    }
 };
 
 </script>

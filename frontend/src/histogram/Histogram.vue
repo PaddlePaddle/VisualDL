@@ -32,114 +32,115 @@ import {flatten, uniq} from 'lodash';
 import autoAdjustHeight from '../common/util/autoAdjustHeight';
 
 export default {
-  components: {
-    'ui-config': Config,
-    'ui-chart-page': ChartPage,
-  },
-  props: {
-      runs: {
-        type: Array,
-        required: true,
-      },
-  },
-  data() {
-    return {
-      tags: [],
-      config: {
-        groupNameReg: '.*',
-        horizontal: 'step',
-        chartType: 'offset',
-        runs: [],
-        running: true,
-      },
-      filteredTagsList: [],
-    };
-  },
-  computed: {
-    tagsList() {
-      let tags = this.tags;
-
-      let runs = Object.keys(tags);
-      let tagsArray = runs.map((run) => Object.keys(tags[run]));
-      let allUniqTags = uniq(flatten(tagsArray));
-
-      // get the data for every chart
-      return allUniqTags.map((tag) => {
-        let tagList = runs.map((run) => {
-          return {
-            run,
-            tag: tags[run][tag],
-          };
-        }).filter((item) => item.tag !== undefined);
-        return {
-          tagList,
-          tag,
-          group: tag.split('/')[0],
-        };
-      });
+    components: {
+        'ui-config': Config,
+        'ui-chart-page': ChartPage
     },
-    groupedTags() {
-      let tagsList = this.tagsList || [];
-      // put data in group
-      let groupData = {};
-      tagsList.forEach((item) => {
-        let group = item.group;
-        if (groupData[group] === undefined) {
-          groupData[group] = [];
-          groupData[group].push(item);
-        } else {
-          groupData[group].push(item);
+    props: {
+        runs: {
+            type: Array,
+            required: true
         }
-      });
-
-      // to array
-      let groups = Object.keys(groupData);
-      return groups.map((group) => {
+    },
+    data() {
         return {
-          group,
-          tags: groupData[group],
+            tags: [],
+            config: {
+                groupNameReg: '.*',
+                horizontal: 'step',
+                chartType: 'offset',
+                runs: [],
+                running: true
+            },
+            filteredTagsList: []
         };
-      });
     },
-  },
-  created() {
-    getPluginHistogramsTags().then(({errno, data}) => {
-      this.tags = data;
-      // filter when inited
-      let groupNameReg = this.config.groupNameReg;
-      this.filterTagsList(groupNameReg);
-    });
-    this.config.runs = this.runs;
-  },
+    computed: {
+        tagsList() {
+            let tags = this.tags;
 
-  mounted() {
-    autoAdjustHeight();
-  },
-  watch: {
-    'config.groupNameReg': function(val) {
-      this.throttledFilterTagsList();
+            let runs = Object.keys(tags);
+            let tagsArray = runs.map(run => Object.keys(tags[run]));
+            let allUniqTags = uniq(flatten(tagsArray));
+
+            // get the data for every chart
+            return allUniqTags.map(tag => {
+                let tagList = runs.map(run => {
+                    return {
+                        run,
+                        tag: tags[run][tag]
+                    };
+                }).filter(item => item.tag !== undefined);
+                return {
+                    tagList,
+                    tag,
+                    group: tag.split('/')[0]
+                };
+            });
+        },
+        groupedTags() {
+            let tagsList = this.tagsList || [];
+            // put data in group
+            let groupData = {};
+            tagsList.forEach(item => {
+                let group = item.group;
+                if (groupData[group] === undefined) {
+                    groupData[group] = [];
+                    groupData[group].push(item);
+                }
+                else {
+                    groupData[group].push(item);
+                }
+            });
+
+            // to array
+            let groups = Object.keys(groupData);
+            return groups.map(group => {
+                return {
+                    group,
+                    tags: groupData[group]
+                };
+            });
+        }
     },
-    runs: function(val) {
-        this.config.runs = val;
+    created() {
+        getPluginHistogramsTags().then(({errno, data}) => {
+            this.tags = data;
+            // filter when inited
+            let groupNameReg = this.config.groupNameReg;
+            this.filterTagsList(groupNameReg);
+        });
+        this.config.runs = this.runs;
+    },
+
+    mounted() {
+        autoAdjustHeight();
+    },
+    watch: {
+        'config.groupNameReg': function (val) {
+            this.throttledFilterTagsList();
+        },
+        runs: function (val) {
+            this.config.runs = val;
+        }
+    },
+    methods: {
+        filterTagsList(groupNameReg) {
+            if (!groupNameReg) {
+                this.filteredTagsList = [];
+                return;
+            }
+            let tagsList = this.tagsList || [];
+            let regExp = new RegExp(groupNameReg);
+            let filtedTagsList = tagsList.filter(item => regExp.test(item.tag));
+            this.filteredTagsList = filtedTagsList;
+        },
+        throttledFilterTagsList: _.debounce(
+            function () {
+                this.filterTagsList(this.config.groupNameReg);
+            }, 300
+        )
     }
-  },
-  methods: {
-    filterTagsList(groupNameReg) {
-      if (!groupNameReg) {
-        this.filteredTagsList = [];
-        return;
-      }
-      let tagsList = this.tagsList || [];
-      let regExp = new RegExp(groupNameReg);
-      let filtedTagsList = tagsList.filter((item) => regExp.test(item.tag));
-      this.filteredTagsList = filtedTagsList;
-    },
-    throttledFilterTagsList: _.debounce(
-      function() {
-        this.filterTagsList(this.config.groupNameReg);
-      }, 300
-    ),
-  },
 };
 
 </script>

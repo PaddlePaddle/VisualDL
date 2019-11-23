@@ -59,200 +59,201 @@ import Config from './ui/Config';
 import ChartPage from './ui/ChartPage';
 
 export default {
-  components: {
-    'ui-config': Config,
-    'ui-chart-page': ChartPage,
-    'ui-tags-tab': TagsTab,
-  },
-  props: {
-    runs: {
-      type: Array,
-      required: true,
+    components: {
+        'ui-config': Config,
+        'ui-chart-page': ChartPage,
+        'ui-tags-tab': TagsTab
     },
-  },
-  data() {
-    return {
-      tagInfo: {scalar: {}, histogram: {}},
-      config: {
-        groupNameReg: '',
-        // scalar 'enabled' will be false when no scalar logs available, 'display' is toggled by user in config
-        scalar: {enabled: false, display: false},
-        histogram: {enabled: false, display: false},
-        smoothing: 0.6,
-        horizontal: 'step',
-        sortingMethod: 'default',
-        outlier: false,
-        runs: [],
-        running: true,
-        chartType: 'offset',
-      },
-      filteredTagsList: {scalar: [], histogram: []},
-      selectedGroup: '',
-    };
-  },
-  computed: {
-    finalTagsList() {
-      if (this.selectedGroup === '') {
-        return this.allTagsMatchingList;
-      } else {
-        let list;
-        this.groupedTags.forEach((item) => {
-          if (item.group === this.selectedGroup) {
-            list = item.tags;
-          }
-        });
-        return list;
-      }
+    props: {
+        runs: {
+            type: Array,
+            required: true
+        }
     },
-    allTagsMatchingList() {
-      let list = cloneDeep(this.filteredTagsList);
-      list.scalar = this.filteredListByRunsForScalar(list.scalar);
-      list.histogram = this.filteredListByRunsForHistogram(list.histogram);
-      return list;
-    },
-    tagsList() {
-      let list = {};
-
-      Object.keys(this.tagInfo).forEach((type) => {
-        let tags = this.tagInfo[type];
-
-        let runs = Object.keys(tags);
-        let tagsArray = runs.map((run) => Object.keys(tags[run]));
-        let allUniqTags = uniq(flatten(tagsArray));
-
-        // get the data for every chart
-        let tagsForEachType = allUniqTags.map((tag) => {
-          let tagList = runs.map((run) => {
-            return {
-              run,
-              tag: tags[run][tag],
-            };
-          }).filter((item) => item.tag !== undefined);
-          return {
-            tagList,
-            tag,
-            group: tag.split('/')[0],
-          };
-        });
-        list[type] = tagsForEachType;
-      });
-      return list;
-    },
-    groupedTags() {
-      let tagsList = this.tagsList || [];
-
-      // put data in group
-      let groupData = {};
-
-      Object.keys(tagsList).forEach((type) => {
-        let tagsForEachType = tagsList[type];
-
-        tagsForEachType.forEach((item) => {
-          let group = item.group;
-
-          if (groupData[group] === undefined) {
-            groupData[group] = {};
-          }
-          if (groupData[group][type] === undefined) {
-            groupData[group][type] = [];
-          }
-
-          groupData[group][type].push(item);
-        });
-      });
-
-      // to array
-      let groups = Object.keys(groupData);
-      let groupList = groups.map((group) => {
-        groupData[group].scalar = this.filteredListByRunsForScalar(groupData[group].scalar);
-        groupData[group].histogram = this.filteredListByRunsForHistogram(groupData[group].histogram);
-
+    data() {
         return {
-          group,
-          tags: groupData[group],
+            tagInfo: {scalar: {}, histogram: {}},
+            config: {
+                groupNameReg: '',
+                // scalar 'enabled' will be false when no scalar logs available, 'display' is toggled by user in config
+                scalar: {enabled: false, display: false},
+                histogram: {enabled: false, display: false},
+                smoothing: 0.6,
+                horizontal: 'step',
+                sortingMethod: 'default',
+                outlier: false,
+                runs: [],
+                running: true,
+                chartType: 'offset'
+            },
+            filteredTagsList: {scalar: [], histogram: []},
+            selectedGroup: ''
         };
-      });
+    },
+    computed: {
+        finalTagsList() {
+            if (this.selectedGroup === '') {
+                return this.allTagsMatchingList;
+            }
+            else {
+                let list;
+                this.groupedTags.forEach(item => {
+                    if (item.group === this.selectedGroup) {
+                        list = item.tags;
+                    }
+                });
+                return list;
+            }
+        },
+        allTagsMatchingList() {
+            let list = cloneDeep(this.filteredTagsList);
+            list.scalar = this.filteredListByRunsForScalar(list.scalar);
+            list.histogram = this.filteredListByRunsForHistogram(list.histogram);
+            return list;
+        },
+        tagsList() {
+            let list = {};
 
-      return groupList;
-    },
-  },
-  created() {
-    getPluginScalarsTags().then(({errno, data}) => {
-      if (!data) return;
+            Object.keys(this.tagInfo).forEach(type => {
+                let tags = this.tagInfo[type];
 
-      this.tagInfo.scalar = data;
-      this.config.scalar.enabled = true;
-      this.config.scalar.display = true;
-      this.filterTagsList(this.config.groupNameReg);
-    });
+                let runs = Object.keys(tags);
+                let tagsArray = runs.map(run => Object.keys(tags[run]));
+                let allUniqTags = uniq(flatten(tagsArray));
 
-    getPluginHistogramsTags().then(({errno, data}) => {
-      if (!data) return;
+                // get the data for every chart
+                let tagsForEachType = allUniqTags.map(tag => {
+                    let tagList = runs.map(run => {
+                        return {
+                            run,
+                            tag: tags[run][tag]
+                        };
+                    }).filter(item => item.tag !== undefined);
+                    return {
+                        tagList,
+                        tag,
+                        group: tag.split('/')[0]
+                    };
+                });
+                list[type] = tagsForEachType;
+            });
+            return list;
+        },
+        groupedTags() {
+            let tagsList = this.tagsList || [];
 
-      this.tagInfo.histogram = data;
-      this.config.histogram.enabled = true;
-      this.config.histogram.display = true;
-      this.filterTagsList(this.config.groupNameReg);
-    });
+            // put data in group
+            let groupData = {};
 
-    this.config.runs = this.runs;
-  },
-  mounted() {
-    autoAdjustHeight();
-  },
-  watch: {
-    'config.groupNameReg': function(val) {
-      this.throttledFilterTagsList();
-    },
-    'runs': function(val) {
-      this.config.runs = val;
-    },
-  },
-  methods: {
-    filterTagsList(groupNameReg) {
-      if (!groupNameReg || groupNameReg.trim().length == 0) {
-        this.filteredTagsList = cloneDeep(this.tagsList);
-        return;
-      }
-      this.selectedGroup = '';
-      let tagsList = this.tagsList || {};
-      let regExp = new RegExp(groupNameReg);
-      Object.keys(tagsList).forEach((type) => {
-        let tagsForEachType = tagsList[type];
+            Object.keys(tagsList).forEach(type => {
+                let tagsForEachType = tagsList[type];
 
-        this.filteredTagsList[type] = tagsForEachType.filter((item) => regExp.test(item.tag));
-      });
+                tagsForEachType.forEach(item => {
+                    let group = item.group;
+
+                    if (groupData[group] === undefined) {
+                        groupData[group] = {};
+                    }
+                    if (groupData[group][type] === undefined) {
+                        groupData[group][type] = [];
+                    }
+
+                    groupData[group][type].push(item);
+                });
+            });
+
+            // to array
+            let groups = Object.keys(groupData);
+            let groupList = groups.map(group => {
+                groupData[group].scalar = this.filteredListByRunsForScalar(groupData[group].scalar);
+                groupData[group].histogram = this.filteredListByRunsForHistogram(groupData[group].histogram);
+
+                return {
+                    group,
+                    tags: groupData[group]
+                };
+            });
+
+            return groupList;
+        }
     },
-    throttledFilterTagsList: _.debounce(
-      function() {
-        this.filterTagsList(this.config.groupNameReg);
-      }, 300
-    ),
-    filteredListByRunsForScalar(scalar) {
-      if (!this.config.scalar.display) return [];
-      let runs = this.config.runs || [];
-      let list = cloneDeep(scalar) || [];
-      list = list.map((item) => {
-        item.tagList = item.tagList.filter((one) => runs.includes(one.run));
-        return item;
-      });
-      return list.filter((item) => item.tagList.length > 0);
+    created() {
+        getPluginScalarsTags().then(({errno, data}) => {
+            if (!data) return;
+
+            this.tagInfo.scalar = data;
+            this.config.scalar.enabled = true;
+            this.config.scalar.display = true;
+            this.filterTagsList(this.config.groupNameReg);
+        });
+
+        getPluginHistogramsTags().then(({errno, data}) => {
+            if (!data) return;
+
+            this.tagInfo.histogram = data;
+            this.config.histogram.enabled = true;
+            this.config.histogram.display = true;
+            this.filterTagsList(this.config.groupNameReg);
+        });
+
+        this.config.runs = this.runs;
     },
-    filteredListByRunsForHistogram(histogram) {
-      if (!this.config.histogram.display) return [];
-      let runs = this.config.runs || [];
-      let list = cloneDeep(histogram) || [];
-      return flatten(list.map((item) => {
-        return item.tagList.filter((one) => runs.includes(one.run));
-      }));
+    mounted() {
+        autoAdjustHeight();
     },
-    tagsListCount(tagsList) {
-      let count = 0;
-      if (tagsList.scalar !== undefined) count += tagsList.scalar.length;
-      if (tagsList.histogram !== undefined) count += tagsList.histogram.length;
-      return count;
+    watch: {
+        'config.groupNameReg': function (val) {
+            this.throttledFilterTagsList();
+        },
+        runs: function (val) {
+            this.config.runs = val;
+        }
     },
-  },
+    methods: {
+        filterTagsList(groupNameReg) {
+            if (!groupNameReg || groupNameReg.trim().length == 0) {
+                this.filteredTagsList = cloneDeep(this.tagsList);
+                return;
+            }
+            this.selectedGroup = '';
+            let tagsList = this.tagsList || {};
+            let regExp = new RegExp(groupNameReg);
+            Object.keys(tagsList).forEach(type => {
+                let tagsForEachType = tagsList[type];
+
+                this.filteredTagsList[type] = tagsForEachType.filter(item => regExp.test(item.tag));
+            });
+        },
+        throttledFilterTagsList: _.debounce(
+            function () {
+                this.filterTagsList(this.config.groupNameReg);
+            }, 300
+        ),
+        filteredListByRunsForScalar(scalar) {
+            if (!this.config.scalar.display) return [];
+            let runs = this.config.runs || [];
+            let list = cloneDeep(scalar) || [];
+            list = list.map(item => {
+                item.tagList = item.tagList.filter(one => runs.includes(one.run));
+                return item;
+            });
+            return list.filter(item => item.tagList.length > 0);
+        },
+        filteredListByRunsForHistogram(histogram) {
+            if (!this.config.histogram.display) return [];
+            let runs = this.config.runs || [];
+            let list = cloneDeep(histogram) || [];
+            return flatten(list.map(item => {
+                return item.tagList.filter(one => runs.includes(one.run));
+            }));
+        },
+        tagsListCount(tagsList) {
+            let count = 0;
+            if (tagsList.scalar !== undefined) count += tagsList.scalar.length;
+            if (tagsList.histogram !== undefined) count += tagsList.histogram.length;
+            return count;
+        }
+    }
 };
 
 </script>

@@ -5,26 +5,26 @@
     class="visual-dl-tags-tab">
     <div
       @click="$emit('click')">
-    <span :class="active ? 'visual-dl-tags-tab-text-active':'visual-dl-tags-tab-text-inactive' ">{{ title }} &nbsp; ({{ total }})</span>
+      <span :class="active ? 'visual-dl-tags-tab-text-active':'visual-dl-tags-tab-text-inactive' ">{{ title }} &nbsp; ({{ total }})</span>
     </div>
   </v-card>
 </template>
 <script>
 export default {
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    total: {
-      type: Number,
-      required: true,
-    },
-    active: {
-      type: Boolean,
-      required: true,
-    },
-  },
+    props: {
+        title: {
+            type: String,
+            required: true
+        },
+        total: {
+            type: Number,
+            required: true
+        },
+        active: {
+            type: Boolean,
+            required: true
+        }
+    }
 };
 </script>
 <style lang="stylus">

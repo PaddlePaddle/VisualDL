@@ -36,56 +36,56 @@ import ScalarChart from './ScalarChart';
 import HistogramChart from './HistogramChart';
 
 export default {
-  components: {
-    'ui-scalar-chart': ScalarChart,
-    'ui-histogram-chart': HistogramChart,
-  },
-  props: {
-    config: {
-      type: Object,
-      required: true,
+    components: {
+        'ui-scalar-chart': ScalarChart,
+        'ui-histogram-chart': HistogramChart
     },
-    tagList: {
-      type: Object,
-      required: true,
+    props: {
+        config: {
+            type: Object,
+            required: true
+        },
+        tagList: {
+            type: Object,
+            required: true
+        },
+        total: {
+            type: Number,
+            required: true
+        }
     },
-    total: {
-      type: Number,
-      required: true,
+    data() {
+        return {
+            // current page
+            currentPage: 1,
+            // item per page
+            pageSize: 12
+        };
     },
-  },
-  data() {
-    return {
-      // current page
-      currentPage: 1,
-      // item per page
-      pageSize: 12,
-    };
-  },
-  computed: {
-    filteredScalarTagList() {
-      return this.tagList.scalar.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+    computed: {
+        filteredScalarTagList() {
+            return this.tagList.scalar.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+        },
+        filteredHistogramTagList() {
+            let offset = this.tagList.scalar.length;
+            let start = (this.currentPage - 1) * this.pageSize - offset;
+            if (start < 0) start = 0;
+            let end = this.currentPage * this.pageSize - offset;
+            if (end < 0) end = 0;
+            return this.tagList.histogram.slice(start, end);
+        },
+        pageLength() {
+            return Math.ceil(this.total / this.pageSize);
+        }
     },
-    filteredHistogramTagList() {
-      let offset = this.tagList.scalar.length;
-      let start = (this.currentPage - 1) * this.pageSize - offset;
-      if (start < 0) start = 0;
-      let end = this.currentPage * this.pageSize - offset;
-      if (end < 0) end = 0;
-      return this.tagList.histogram.slice(start, end);
-    },
-    pageLength() {
-      return Math.ceil(this.total / this.pageSize);
-    },
-  },
-  watch: {
-    'config.runs': function(val) {
-      this.currentPage = 1;
-    },
-    tagList: function(val) {
-      this.currentPage = 1;
-    },
-  },
+    watch: {
+        'config.runs': function (val) {
+            this.currentPage = 1;
+        },
+        tagList: function (val) {
+            this.currentPage = 1;
+        }
+    }
 };
 </script>
 <style lang="stylus">

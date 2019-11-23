@@ -57,69 +57,69 @@
 import {getRuns} from '../../service';
 
 export default {
-  props: {
-    initialRoute: {
-      type: String,
-      required: true,
+    props: {
+        initialRoute: {
+            type: String,
+            required: true
+        }
     },
-  },
-  name: 'AppMenu',
-  data() {
-    return {
-      runsSelectorOpen: false,
-      availableRuns: [],
-      runs: [],
-      selected: this.initialRoute,
-      items: [
-        {
-          url: '/metrics',
-          title: 'METRICS',
-          name: 'metrics',
-        },
-        {
-          url: '/samples',
-          title: 'SAMPLES',
-          name: 'samples',
-        },
-        {
-          url: '/graphs',
-          title: 'GRAPHS',
-          name: 'graphs',
-        },
-        {
-          url: '/HighDimensional',
-          title: 'HighDimensional',
-          name: 'HighDimensional',
-        },
-      ],
-    };
-  },
-  created() {
-    this.runs = this.$route.query.runs; // maintain runs state after refresh
-    getRuns().then(({errno, data}) => {
-      this.availableRuns = data;
-      if (!this.runs) this.runs = data;
-      // use replace here instead of push so that user cannot go back to empty run state
-      this.$router.replace( {path: this.initialRoute, query: {runs: this.runs}});
-    });
-  },
-  watch: {
-    runs: function(val) {
-      if (this.runs) {
-        this.$router.push( {query: {runs: this.runs}});
-      }
+    name: 'AppMenu',
+    data() {
+        return {
+            runsSelectorOpen: false,
+            availableRuns: [],
+            runs: [],
+            selected: this.initialRoute,
+            items: [
+                {
+                    url: '/metrics',
+                    title: 'METRICS',
+                    name: 'metrics'
+                },
+                {
+                    url: '/samples',
+                    title: 'SAMPLES',
+                    name: 'samples'
+                },
+                {
+                    url: '/graphs',
+                    title: 'GRAPHS',
+                    name: 'graphs'
+                },
+                {
+                    url: '/HighDimensional',
+                    title: 'HighDimensional',
+                    name: 'HighDimensional'
+                }
+            ]
+        };
     },
-    '$route'(to, from) { // this will get called when back button is hit that changes path or query
-      this.runs = this.$route.query.runs;
-      this.selected = this.$route.name;
+    created() {
+        this.runs = this.$route.query.runs; // maintain runs state after refresh
+        getRuns().then(({errno, data}) => {
+            this.availableRuns = data;
+            if (!this.runs) this.runs = data;
+            // use replace here instead of push so that user cannot go back to empty run state
+            this.$router.replace( {path: this.initialRoute, query: {runs: this.runs}});
+        });
     },
-  },
-  methods: {
-    handleItemClick: function(item) {
-      this.selected = item.name;
-      this.$router.push( {path: item.url, query: {runs: this.runs}});
+    watch: {
+        runs: function (val) {
+            if (this.runs) {
+                this.$router.push( {query: {runs: this.runs}});
+            }
+        },
+        '$route'(to, from) { // this will get called when back button is hit that changes path or query
+            this.runs = this.$route.query.runs;
+            this.selected = this.$route.name;
+        }
     },
-  },
+    methods: {
+        handleItemClick: function (item) {
+            this.selected = item.name;
+            this.$router.push( {path: item.url, query: {runs: this.runs}});
+        }
+    }
 };
 </script>
 

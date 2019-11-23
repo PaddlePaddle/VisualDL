@@ -29,54 +29,54 @@ import Image from './Image';
 import {cloneDeep, flatten} from 'lodash';
 
 export default {
-  props: {
-    config: {
-      type: Object,
-      required: true,
+    props: {
+        config: {
+            type: Object,
+            required: true
+        },
+        tagList: {
+            type: Array,
+            required: true
+        },
+        title: {
+            type: String,
+            required: true
+        }
     },
-    tagList: {
-      type: Array,
-      required: true,
+    components: {
+        'ui-image': Image,
+        'ui-expand-panel': ExpandPanel
     },
-    title: {
-      type: String,
-      required: true,
-    },
-  },
-  components: {
-    'ui-image': Image,
-    'ui-expand-panel': ExpandPanel,
-  },
-  computed: {
-    filteredRunsList() {
-      let tagList = this.tagList || [];
-      let runs = this.config.runs || [];
-      let list = cloneDeep(tagList);
-      return flatten(list.slice().map((item) => {
-        return item.tagList.filter((one) => runs.includes(one.run));
-      }));
-    },
+    computed: {
+        filteredRunsList() {
+            let tagList = this.tagList || [];
+            let runs = this.config.runs || [];
+            let list = cloneDeep(tagList);
+            return flatten(list.slice().map(item => {
+                return item.tagList.filter(one => runs.includes(one.run));
+            }));
+        },
 
-    filteredPageList() {
-      let list = this.filteredRunsList || [];
-      return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+        filteredPageList() {
+            let list = this.filteredRunsList || [];
+            return list.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize);
+        },
+        total() {
+            let list = this.filteredRunsList || [];
+            return list.length;
+        },
+        pageLength() {
+            return Math.ceil(this.total / this.pageSize);
+        }
     },
-    total() {
-      let list = this.filteredRunsList || [];
-      return list.length;
-    },
-    pageLength() {
-      return Math.ceil(this.total / this.pageSize);
-    },
-  },
-  data() {
-    return {
-      // current page
-      currentPage: 1,
-      // item per page
-      pageSize: 8,
-    };
-  },
+    data() {
+        return {
+            // current page
+            currentPage: 1,
+            // item per page
+            pageSize: 8
+        };
+    }
 };
 </script>
 <style lang="stylus">

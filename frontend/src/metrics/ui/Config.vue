@@ -92,80 +92,80 @@
 <script>
 
 export default {
-  props: {
-    config: {
-      type: Object,
-      required: true,
+    props: {
+        config: {
+            type: Object,
+            required: true
+        }
     },
-  },
-  data() {
-    return {
-      smoothingValue: this.config.smoothing,
-      isDemo: process.env.NODE_ENV === 'demo',
-    };
-  },
-  computed: {
-    sortingMethodItems() {
-      return [
-        {
-          text: this.$i18n.t('lang.default'),
-          value: 'default',
-        },
-        {
-          text: this.$i18n.t('lang.descending'),
-          value: 'descending',
-        },
-        {
-          text: this.$i18n.t('lang.ascending'),
-          value: 'ascending',
-        },
-        {
-          text: this.$i18n.t('lang.nearest'),
-          value: 'nearest',
-        },
-      ];
+    data() {
+        return {
+            smoothingValue: this.config.smoothing,
+            isDemo: process.env.NODE_ENV === 'demo'
+        };
     },
-    chartTypeItems() {
-      return [
-        {
-          text: this.$i18n.t('lang.overlay'),
-          value: 'overlay',
+    computed: {
+        sortingMethodItems() {
+            return [
+                {
+                    text: this.$i18n.t('lang.default'),
+                    value: 'default'
+                },
+                {
+                    text: this.$i18n.t('lang.descending'),
+                    value: 'descending'
+                },
+                {
+                    text: this.$i18n.t('lang.ascending'),
+                    value: 'ascending'
+                },
+                {
+                    text: this.$i18n.t('lang.nearest'),
+                    value: 'nearest'
+                }
+            ];
         },
-        {
-          text: this.$i18n.t('lang.offset'),
-          value: 'offset',
+        chartTypeItems() {
+            return [
+                {
+                    text: this.$i18n.t('lang.overlay'),
+                    value: 'overlay'
+                },
+                {
+                    text: this.$i18n.t('lang.offset'),
+                    value: 'offset'
+                }
+            ];
         },
-      ];
+        horizontalItems() {
+            return [
+                {
+                    text: this.$i18n.t('lang.step'),
+                    value: 'step'
+                },
+                {
+                    text: this.$i18n.t('lang.relative'),
+                    value: 'relative'
+                },
+                {
+                    text: this.$i18n.t('lang.wall'),
+                    value: 'wall'
+                }
+            ];
+        }
     },
-    horizontalItems() {
-      return [
-        {
-          text: this.$i18n.t('lang.step'),
-          value: 'step',
-        },
-        {
-          text: this.$i18n.t('lang.relative'),
-          value: 'relative',
-        },
-        {
-          text: this.$i18n.t('lang.wall'),
-          value: 'wall',
-        },
-      ];
+    watch: {
+        smoothingValue: _.debounce(
+            function () {
+                this.config.smoothing = this.smoothingValue;
+            }, 50
+        )
     },
-  },
-  watch: {
-    smoothingValue: _.debounce(
-      function() {
-        this.config.smoothing = this.smoothingValue;
-      }, 50
-    ),
-  },
-  methods: {
-    toggleAllRuns() {
-      this.config.running = !this.config.running;
-    },
-  },
+    methods: {
+        toggleAllRuns() {
+            this.config.running = !this.config.running;
+        }
+    }
 };
 
 </script>

@@ -65,47 +65,47 @@
 <script>
 
 export default {
-  props: {
-    config: {
-      type: Object,
-      required: true,
+    props: {
+        config: {
+            type: Object,
+            required: true
+        }
     },
-  },
-  data() {
-    return {
-      horizontalItems: [
-        {
-          name: 'Step',
-          value: 'step',
-        },
-        {
-          name: 'Relative',
-          value: 'relative',
-        },
-        {
-          name: 'Wall',
-          value: 'wall',
-        },
-      ],
-      sortingMethodItems: [
-        'default', 'descending', 'ascending', 'nearest',
-      ],
-      smoothingValue: this.config.smoothing,
-      isDemo: process.env.NODE_ENV === 'demo',
-    };
-  },
-  watch: {
-    smoothingValue: _.debounce(
-      function() {
-        this.config.smoothing = this.smoothingValue;
-      }, 500
-    ),
-  },
-  methods: {
-    toggleAllRuns() {
-      this.config.running = !this.config.running;
+    data() {
+        return {
+            horizontalItems: [
+                {
+                    name: 'Step',
+                    value: 'step'
+                },
+                {
+                    name: 'Relative',
+                    value: 'relative'
+                },
+                {
+                    name: 'Wall',
+                    value: 'wall'
+                }
+            ],
+            sortingMethodItems: [
+                'default', 'descending', 'ascending', 'nearest'
+            ],
+            smoothingValue: this.config.smoothing,
+            isDemo: process.env.NODE_ENV === 'demo'
+        };
     },
-  },
+    watch: {
+        smoothingValue: _.debounce(
+            function () {
+                this.config.smoothing = this.smoothingValue;
+            }, 500
+        )
+    },
+    methods: {
+        toggleAllRuns() {
+            this.config.running = !this.config.running;
+        }
+    }
 };
 
 </script>

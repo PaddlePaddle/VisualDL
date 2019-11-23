@@ -22,26 +22,26 @@
 </template>
 <script>
 export default {
-  props: {
-    title: {
-      type: String,
-      required: true,
+    props: {
+        title: {
+            type: String,
+            required: true
+        },
+        info: {
+            type: Number,
+            required: true
+        }
     },
-    info: {
-      type: Number,
-      required: true,
+    computed: {
+        iconName() {
+            return this.isShow ? 'expand_less' : 'expand_more';
+        }
     },
-  },
-  computed: {
-    iconName() {
-      return this.isShow ? 'expand_less' : 'expand_more';
-    },
-  },
-  data() {
-    return {
-      isShow: true,
-    };
-  },
+    data() {
+        return {
+            isShow: true
+        };
+    }
 };
 </script>
 <style lang="stylus">

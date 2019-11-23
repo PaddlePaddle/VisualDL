@@ -33,33 +33,33 @@
 </template>
 <script>
 export default {
-  props: {
-    config: {
-      type: Object,
-      required: true,
+    props: {
+        config: {
+            type: Object,
+            required: true
+        }
     },
-  },
-  data() {
-    return {
-      chartTypeItems: [
-        {
-          name: 'Overlay',
-          value: 'overlay',
-        },
-        {
-          name: 'Offset',
-          value: 'offset',
-        },
-      ],
-      isDemo: process.env.NODE_ENV === 'demo',
-    };
-  },
-  methods: {
-    toggleAllRuns() {
-      let running = this.config.running;
-      this.config.running = !running;
+    data() {
+        return {
+            chartTypeItems: [
+                {
+                    name: 'Overlay',
+                    value: 'overlay'
+                },
+                {
+                    name: 'Offset',
+                    value: 'offset'
+                }
+            ],
+            isDemo: process.env.NODE_ENV === 'demo'
+        };
     },
-  },
+    methods: {
+        toggleAllRuns() {
+            let running = this.config.running;
+            this.config.running = !running;
+        }
+    }
 };
 </script>
 <style lang="stylus">

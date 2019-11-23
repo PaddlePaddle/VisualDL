@@ -31,25 +31,25 @@ import Chart from './ui/Chart';
 
 
 export default {
-  components: {
-    'ui-config': Config,
-    'ui-chart': Chart,
-  },
-  name: 'Graph',
-  data() {
-    return {
-      doDownload: false,
-      doRestore: false,
-      curNode: {},
-      config: {
-        scale: 0.5,
-      },
-    };
-  },
-  mounted() {
-    autoAdjustHeight();
-  },
-  methods: {},
+    components: {
+        'ui-config': Config,
+        'ui-chart': Chart
+    },
+    name: 'Graph',
+    data() {
+        return {
+            doDownload: false,
+            doRestore: false,
+            curNode: {},
+            config: {
+                scale: 0.5
+            }
+        };
+    },
+    mounted() {
+        autoAdjustHeight();
+    },
+    methods: {}
 };
 
 </script>

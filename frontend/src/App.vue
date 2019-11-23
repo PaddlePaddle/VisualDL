@@ -12,26 +12,27 @@ import AppMenu from './common/component/AppMenu';
 import {getLanguage} from './service';
 
 export default {
-  name: 'App',
-  components: {
-    AppMenu,
-  },
-  data() {
-    return {
-      initialRoute: 'metrics',
-    };
-  },
-  created() {
-    getLanguage().then(({errno, data}) => {
-      this.$i18n.locale = data;
-    });
+    name: 'App',
+    components: {
+        AppMenu
+    },
+    data() {
+        return {
+            initialRoute: 'metrics'
+        };
+    },
+    created() {
+        getLanguage().then(({errno, data}) => {
+            this.$i18n.locale = data;
+        });
 
-    if (location.hash && location.hash != '#/') {
-      this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
-    } else {
-      location.hash = '#/metrics';
+        if (location.hash && location.hash != '#/') {
+            this.initialRoute = /(\#\/)(\w*)([?|&]{0,1})/.exec(location.hash)[2];
+        }
+        else {
+            location.hash = '#/metrics';
+        }
     }
-  },
 };
 </script>
 
