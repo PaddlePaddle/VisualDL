@@ -1,23 +1,38 @@
 module.exports = {
-  extends: [
-    'google',
-    'plugin:vue/base',
-    'plugin:vue/essential',
-    'plugin:vue/strongly-recommended',
-  ],
-  parserOptions: {
-    "sourceType": "module",
-  },
-  rules: {
-    // override/add rules settings here, such as:
-    'vue/no-unused-vars': 'warn',
-    'max-len': ["warn", 120],
-    "vue/prop-name-casing": ["error"],
-    'vue/script-indent': 'error',
-
-    // The following rules should apply eventually. Turn them off for now
-    // so we can have pre-commit running
-    'no-invalid-this': 'off',
-    'require-jsdoc': 'off',
-  }
-}
+    root: true,
+    env: {
+        browser: true,
+        node: true
+    },
+    parser: '@typescript-eslint/parser', // Specifies the ESLint parser
+    parserOptions: {
+        ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
+        sourceType: 'module' // Allows for the use of imports
+    },
+    extends: [
+        'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+        'prettier'
+    ],
+    rules: {
+        // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
+        // e.g. "@typescript-eslint/explicit-function-return-type": "off",
+        indent: [
+            'error',
+            4,
+            {
+                SwitchCase: 1
+            }
+        ],
+        semi: ['error', 'always'],
+        'object-curly-spacing': ['error', 'never'],
+        'space-before-function-paren': [
+            'error',
+            {
+                anonymous: 'always',
+                named: 'never',
+                asyncArrow: 'always'
+            }
+        ],
+        'arrow-parens': ['error', 'as-needed']
+    }
+};

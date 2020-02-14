@@ -1,7 +1,16 @@
 {
-    "presets": [
-        ["es2015", {"modules": false}],
-        "stage-0"
-    ],
-    "plugins": ["transform-class-properties"]
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "current"
+            }
+          }
+        ]
+      ]
+    }
+  }
 }
