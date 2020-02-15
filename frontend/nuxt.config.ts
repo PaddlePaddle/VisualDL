@@ -133,8 +133,8 @@ const config: Configuration = {
         transpile: [/typed-vuex/],
 
         babel: {
-            sourceType: 'unambiguous',
-            compact: false
+            // https://github.com/vuejs/composition-api/issues/168#issuecomment-548377182
+            presets: ['vca-jsx', '@nuxt/babel-preset-app']
         },
 
         /*

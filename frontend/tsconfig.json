@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "jsx": "preserve",
-    "jsxFactory": "h",
     "target": "es2018",
     "module": "esnext",
     "moduleResolution": "node",

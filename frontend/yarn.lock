@@ -2576,6 +2576,13 @@ babel-preset-jest@^25.1.0:
     "@babel/plugin-syntax-object-rest-spread" "^7.0.0"
     babel-plugin-jest-hoist "^25.1.0"
 
+babel-preset-vca-jsx@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/babel-preset-vca-jsx/-/babel-preset-vca-jsx-0.3.4.tgz#2bb0a23208bda7827be371883cce0023ad5b1da8"
+  integrity sha512-kzEPXaBpSSD75wiZ1eg8fQXcBkHmJEKHnyFPaqk43kuicaILIKJo90P+ffcSQ4ZaDDMd4fI8424JFn/l8jI1FQ==
+  dependencies:
+    "@babel/plugin-syntax-jsx" "^7.2.0"
+
 babel-runtime@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
