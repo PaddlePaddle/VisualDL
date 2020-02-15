@@ -4,6 +4,8 @@
  * @author PeterPan
  */
 
+import fs from 'fs';
+import path from 'path';
 import {config as dotenv} from 'dotenv';
 import {Configuration} from '@nuxt/types';
 import pkg from './package.json';
@@ -29,7 +31,8 @@ const config: Configuration = {
     modern: isProd,
 
     router: {
-        base: baseUrl
+        base: baseUrl,
+        middleware: ['i18n']
     },
 
     /*
@@ -63,6 +66,10 @@ const config: Configuration = {
     // client environment variables
     env: {
         PUBLIC_PATH: publicPath,
+        LOCALES: fs
+            .readdirSync(path.resolve(__dirname, 'locales'))
+            .map(locale => path.basename(locale, '.json'))
+            .join(','),
         ...APP
     },
 
@@ -79,17 +86,15 @@ const config: Configuration = {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/composition-api'],
+    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/i18n'],
 
     /*
      ** Nuxt.js dev-modules
      */
     buildModules: [
+        '@nuxt/typescript-build',
         // Doc: https://github.com/nuxt-community/eslint-module
         '@nuxtjs/eslint-module',
-        // Doc: https://github.com/nuxt-community/stylelint-module
-        '@nuxtjs/stylelint-module',
-        '@nuxt/typescript-build',
         // Doc: https://nuxt-typed-vuex.danielcroe.com/
         'nuxt-typed-vuex'
     ],
@@ -101,13 +106,8 @@ const config: Configuration = {
         // Doc: https://github.com/nuxt-community/axios-module#usage
         '@nuxtjs/axios',
         // Doc: https://github.com/nuxt-community/dotenv-module
-        '@nuxtjs/dotenv',
-        '@nuxtjs/style-resources'
+        '@nuxtjs/dotenv'
     ],
-
-    styleResources: {
-        scss: ['~/assets/style/variables.scss']
-    },
 
     /*
      ** Axios module configuration

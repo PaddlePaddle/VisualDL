@@ -33,6 +33,7 @@ module.exports = {
                 asyncArrow: 'always'
             }
         ],
-        'arrow-parens': ['error', 'as-needed']
+        'arrow-parens': ['error', 'as-needed'],
+        '@typescript-eslint/explicit-function-return-type': 'off'
     }
 };

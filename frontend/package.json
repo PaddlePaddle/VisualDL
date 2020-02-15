@@ -22,8 +22,7 @@
         "test": "jest"
     },
     "lint-staged": {
-        "*.{js,vue}": "yarn lint",
-        "*.{css,vue}": "stylelint"
+        "*.{js,vue}": "yarn lint"
     },
     "husky": {
         "hooks": {
@@ -34,19 +33,20 @@
         "@nuxt/typescript-runtime": "0.3.8",
         "@nuxtjs/axios": "5.9.5",
         "@nuxtjs/dotenv": "1.4.1",
-        "@nuxtjs/style-resources": "1.0.0",
         "@vue/composition-api": "0.3.4",
         "cross-env": "7.0.0",
         "dotenv": "8.2.0",
+        "i18next": "^19.1.0",
         "koa": "2.11.0",
         "nuxt": "2.11.0",
-        "nuxt-typed-vuex": "0.1.16"
+        "nuxt-typed-vuex": "0.1.16",
+        "styled-components": "5.0.1",
+        "vue-i18n": "^8.15.3"
     },
     "devDependencies": {
         "@nuxt/typescript-build": "0.5.6",
         "@nuxtjs/eslint-config-typescript": "1.0.2",
         "@nuxtjs/eslint-module": "1.1.0",
-        "@nuxtjs/stylelint-module": "3.2.2",
         "@types/dotenv": "8.2.0",
         "@types/koa": "2.11.1",
         "@vue/test-utils": "1.0.0-beta.31",
@@ -62,11 +62,6 @@
         "lint-staged": "10.0.7",
         "nodemon": "2.0.2",
         "prettier": "1.19.1",
-        "pug": "2.0.4",
-        "pug-plain-loader": "1.0.0",
-        "sass": "1.25.0",
-        "sass-loader": "8.0.2",
-        "stylelint": "13.2.0",
         "ts-node": "8.6.2",
         "typescript": "3.7.5",
         "vue-jest": "4.0.0-beta.2"
