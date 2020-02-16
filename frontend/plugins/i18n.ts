@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import {Plugin} from '@nuxt/types';
-import en from '~/locales/en.json';
+import en from '~/locales/en.yml';
 
 declare module 'vue/types/vue' {
     interface Vue {
@@ -23,6 +23,9 @@ declare module 'vuex/types/index' {
 const i18nPlugin: Plugin = async (context, inject): Promise<void> => {
     await i18next.init({
         lng: 'en',
+        fallbackLng: ['en'],
+        ns: ['translation'],
+        defaultNS: 'translation',
         resources: {
             en
         }

@@ -68,7 +68,7 @@ const config: Configuration = {
         PUBLIC_PATH: publicPath,
         LOCALES: fs
             .readdirSync(path.resolve(__dirname, 'locales'))
-            .map(locale => path.basename(locale, '.json'))
+            .map(locale => path.basename(locale, '.yml'))
             .join(','),
         ...APP
     },
@@ -142,6 +142,10 @@ const config: Configuration = {
          */
         extend(config): void {
             config.devtool = isProd ? 'source-map' : false;
+            config.module?.rules.push({
+                test: /\.ya?ml$/,
+                use: 'js-yaml-loader'
+            });
         }
     },
 

@@ -19,18 +19,13 @@ const i18nMiddleware: Middleware = async ({isHMR, app, route, params, error, red
     }
 
     // Set locale
-    accessor.setLanguage(locale);
     if (!i18n.getDataByLanguage(locale)) {
-        const resource = await import(/* webpackChunkName: "locale-[request]" */ `~/locales/${locale}.json`);
+        const resource = await import(/* webpackChunkName: "locale-[request]" */ `~/locales/${locale}.yml`);
         Object.keys(resource.default).forEach(ns =>
             i18n.addResourceBundle(locale, ns, resource.default[ns], true, true)
         );
     }
-    await i18n.changeLanguage(accessor.locale);
-    axios.defaults.headers.common['Accept-Language'] = accessor.locale;
-    if (process.client) {
-        document.querySelector('html')?.setAttribute('lang', accessor.locale);
-    }
+    await accessor.changeLanguage(locale);
 
     // If route is /<defaultLocale>/... -> redirect to /...
     if (locale === defaultLocale && route.fullPath.startsWith('/')) {

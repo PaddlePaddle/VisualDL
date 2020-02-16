@@ -36,12 +36,11 @@
         "@vue/composition-api": "0.3.4",
         "cross-env": "7.0.0",
         "dotenv": "8.2.0",
-        "i18next": "^19.1.0",
+        "i18next": "19.1.0",
         "koa": "2.11.0",
         "nuxt": "2.11.0",
         "nuxt-typed-vuex": "0.1.16",
-        "styled-components": "5.0.1",
-        "vue-i18n": "^8.15.3"
+        "styled-components": "5.0.1"
     },
     "devDependencies": {
         "@nuxt/typescript-build": "0.5.6",
@@ -59,6 +58,7 @@
         "eslint-plugin-prettier": "3.1.2",
         "husky": "4.2.3",
         "jest": "25.1.0",
+        "js-yaml-loader": "1.2.2",
         "lint-staged": "10.0.7",
         "nodemon": "2.0.2",
         "prettier": "1.19.1",
