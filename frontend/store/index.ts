@@ -7,7 +7,7 @@ import axios from 'axios';
 
 // Keep your existing vanilla Vuex code for state, getters, mutations, actions, plugins, etc.
 export const state = () => ({
-    locale: 'en',
+    locale: '',
     locales: process.env.LOCALES ? process.env.LOCALES.split(',') : ([] as string[])
 });
 export type RootState = ReturnType<typeof state>;

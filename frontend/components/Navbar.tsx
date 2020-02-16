@@ -1,7 +1,7 @@
-import Vue from 'vue';
 import {createComponent} from '@vue/composition-api';
 import styled from 'vue-styled-components';
-import {rem, primaryColor} from '~/plugins/style';
+import {lighten} from 'polished';
+import {rem, primaryColor, styledNuxtLink, duration, easing} from '~/plugins/style';
 import logo from '~/assets/images/logo.svg';
 
 const Nav = styled.nav`
@@ -20,7 +20,7 @@ const Logo = styled.a`
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     font-weight: 600;
-    padding-right: ${rem(40)};
+    margin-right: ${rem(40)};
 `;
 
 const LogoImg = styled.img`
@@ -34,18 +34,33 @@ const LogoText = styled.span`
     vertical-align: middle;
 `;
 
+const NavItem = styled.a`
+    padding: 0 ${rem(20)};
+    height: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: ${primaryColor};
+    transition: background-color ${duration} ${easing};
+
+    &:hover {
+        background-color: ${lighten(0.05, primaryColor)};
+    }
+`;
+
 const NavItemText = styled.span`
-    padding: ${rem(20)} 0 ${rem(17)};
-    border-bottom: ${rem(3)} solid #596cd6;
+    padding: ${rem(10)} 0 ${rem(7)};
+    border-bottom: ${rem(3)} solid transparent;
     text-transform: uppercase;
+
+    .nuxt-link-active & {
+        border-bottom-color: #596CD6;
+    }
 `;
 
 export default createComponent({
     setup(_props, {root: {$i18n}}) {
-        const {options: NuxtLink} = Vue.component('NuxtLink');
-        const NavItem = styled(NuxtLink)`
-            padding: 0 ${rem(20)};
-        `;
+        const NavItemNuxtLink = styledNuxtLink(NavItem);
 
         return () => (
             <Nav>
@@ -53,9 +68,12 @@ export default createComponent({
                     <LogoImg alt="PaddlePaddle" src={logo}></LogoImg>
                     <LogoText>Visual DL</LogoText>
                 </Logo>
-                <NavItem to="/">
+                <NavItemNuxtLink to={{name: 'metrics'}}>
                     <NavItemText>{$i18n.t('global.metrics')}</NavItemText>
-                </NavItem>
+                </NavItemNuxtLink>
+                <NavItemNuxtLink to={{name: 'samples'}}>
+                    <NavItemText>{$i18n.t('global.samples')}</NavItemText>
+                </NavItemNuxtLink>
             </Nav>
         );
     }

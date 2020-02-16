@@ -20,6 +20,13 @@ const Header = styled.header`
 
 export default createComponent({
     setup() {
-        return () => <Main><Header><Navbar></Navbar></Header><nuxt></nuxt></Main>;
+        return () => (
+            <Main>
+                <Header>
+                    <Navbar></Navbar>
+                </Header>
+                <nuxt></nuxt>
+            </Main>
+        );
     }
 });

@@ -44,7 +44,10 @@ declare module 'vue-styled-components' {
                 cssRules: TemplateStringsArray,
                 ...interpolate: TemplateStringsArray[]
             ): StyledComponent<Props & U>;
-            withComponent<V extends VueProps>(target: Vue.VueConstructor): StyledComponent<Props & V>;
+            withComponent<V extends VueProps>(
+                target: Vue.VueConstructor | Vue.ComponentOptions<Vue>
+            ): StyledComponent<Props & V>;
+            withComponent(target: string): StyledComponent<Props>;
         } & {new (props: PropsType<Props>): Vue.Component};
 
     export type StyledComponentElements<T = JSX.IntrinsicElements> = {
@@ -57,7 +60,6 @@ declare module 'vue-styled-components' {
         <T extends Component, Props extends VueProps>(Component: T, props?: Props): (
             str: TemplateStringsArray,
             ...placeholders: (
-                // eslint-disable-next-line
                 | ((props: PropsType<Props>) => string | String | {toString: () => string | String})
                 | Interpolation
             )[]

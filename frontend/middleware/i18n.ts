@@ -2,9 +2,8 @@ import {Middleware} from '@nuxt/types';
 
 const i18nMiddleware: Middleware = async ({isHMR, app, route, params, error, redirect}): Promise<void> => {
     const accessor = app.$accessor;
-    const i18n = app.$i18n;
 
-    const defaultLocale = i18n.options.lng;
+    const defaultLocale = 'en';
 
     // If middleware is called from hot module replacement, ignore it
     if (isHMR) {

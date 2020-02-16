@@ -1,4 +1,4 @@
-import i18next, {InitOptions} from 'i18next';
+import i18next, {InitOptions, Resource} from 'i18next';
 import {Plugin} from '@nuxt/types';
 import XHR from 'i18next-xhr-backend';
 
@@ -22,23 +22,17 @@ declare module 'vuex/types/index' {
 
 const DEFAULT_LANG = 'en';
 
-const loadLocaleBundle = async (initOptions: InitOptions) => {
+const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typeof i18next['t']> => {
+    // server
     if (process.server) {
-        const {default: zh} = await import('~/static/locales/zh.json');
-        const {default: en} = await import('~/static/locales/en.json');
-
-        return i18next.init({
-            ...initOptions,
-            lng: DEFAULT_LANG,
-            resources: {zh, en}
-        });
+        return i18next.init({...initOptions, resources});
     }
 
     // client
     return i18next.use(XHR).init({
         ...initOptions,
         backend: {
-            loadPath: '/locales/{{lng}}.json?ns={{ns}}',
+            loadPath: '/locales/{{lng}}?ns={{ns}}',
             allowMultiLoading: false,
             parse(data: string) {
                 const record: {translation: Record<string, unknown>} = JSON.parse(data);
@@ -48,14 +42,22 @@ const loadLocaleBundle = async (initOptions: InitOptions) => {
     });
 };
 
-const i18nPlugin: Plugin = async (context, inject): Promise<void> => {
-    const lng = context.params.lang || DEFAULT_LANG;
-    const initOptions = {
+const i18nPlugin: Plugin = async ({params, app}, inject): Promise<void> => {
+    const lng = params.lang || DEFAULT_LANG;
+
+    const initOptions: InitOptions = {
         lng,
-        fallbackLng: [lng],
+        fallbackLng: [DEFAULT_LANG],
         ns: ['translation'],
-        defaultNS: 'translation'
+        defaultNS: 'translation',
+        resources: {}
     };
+
+    if (process.server) {
+        for (const lang of app.$accessor.locales) {
+            (initOptions.resources as Resource)[lang] = (await import(`~/locales/${lang}.yml`)).default;
+        }
+    }
 
     await loadLocaleBundle(initOptions);
     inject('i18n', i18next);

@@ -1,7 +1,7 @@
 {
     "name": "visualdl",
     "version": "2.0.0-beta",
-    "title": "VisualDL",
+    "title": "Visual DL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -30,6 +30,7 @@
         }
     },
     "dependencies": {
+        "@koa/router": "^8.0.8",
         "@nuxt/typescript-runtime": "0.3.8",
         "@nuxtjs/axios": "5.9.5",
         "@nuxtjs/dotenv": "1.4.1",
@@ -39,6 +40,7 @@
         "dotenv": "8.2.0",
         "i18next": "19.1.0",
         "i18next-xhr-backend": "3.2.2",
+        "js-yaml": "^3.13.1",
         "koa": "2.11.0",
         "koa-static": "5.0.0",
         "normalize.css": "8.0.1",
@@ -53,8 +55,10 @@
         "@nuxtjs/eslint-module": "1.1.0",
         "@types/dotenv": "8.2.0",
         "@types/i18next-xhr-backend": "1.4.2",
+        "@types/js-yaml": "^3.12.2",
         "@types/koa": "2.11.1",
         "@types/koa-static": "4.0.1",
+        "@types/koa__router": "^8.0.2",
         "@vue/test-utils": "1.0.0-beta.31",
         "babel-eslint": "10.0.3",
         "babel-jest": "25.1.0",

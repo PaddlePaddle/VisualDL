@@ -4,9 +4,13 @@
  * @author PeterPan
  */
 
+import path from 'path';
+import {promises as fs} from 'fs';
 import {config as dotenv} from 'dotenv';
 import Koa from 'koa';
-import staticServe from 'koa-static';
+import koaStatic from 'koa-static';
+import Router from '@koa/router';
+import yaml from 'js-yaml';
 import {Nuxt, Builder} from 'nuxt';
 import consola from 'consola';
 import config from '../nuxt.config';
@@ -22,7 +26,27 @@ interface State extends Koa.DefaultState {
 const app = new Koa<State, Context>();
 config.dev = app.env !== 'production';
 
-app.use(staticServe(`${__dirname}/../static`));
+if (config.dev) {
+    const router = new Router();
+    router.get('/locales/:lang', async ctx => {
+        try {
+            const filename = path.resolve(__dirname, '../locales/', `${ctx.params.lang}.yml`);
+            const stat = await fs.stat(filename);
+            if (stat.isFile()) {
+                ctx.response.body = yaml.safeLoad(await fs.readFile(filename, 'utf-8'));
+                ctx.response.type = 'text/vnd.yaml';
+            } else {
+                throw new Error('locale file not found!');
+            }
+        } catch (e) {
+            ctx.response.body = e.message;
+            ctx.response.status = 404;
+        }
+    });
+    app.use(router.routes()).use(router.allowedMethods());
+}
+
+app.use(koaStatic(path.resolve(__dirname, '../static')));
 
 async function start(): Promise<void> {
     // Instantiate nuxt.js

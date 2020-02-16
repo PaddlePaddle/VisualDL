@@ -1,0 +1,4 @@
+translation:
+    global:
+        metrics: metrics
+        samples: samples
