@@ -8,7 +8,7 @@ export default createComponent({
         setInterval(() => data.count++, 1000);
         return () => (
             <div>
-                <p>{$i18n.t('global.metrics')}</p>
+                <p>{$i18n.t('metrics')}</p>
                 <p>{data.count}</p>
             </div>
         );
