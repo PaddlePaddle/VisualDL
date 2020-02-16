@@ -32,7 +32,7 @@ const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typ
     return i18next.use(XHR).init({
         ...initOptions,
         backend: {
-            loadPath: '/locales/{{lng}}?ns={{ns}}',
+            loadPath: '/locales/{{lng}}.json?ns={{ns}}',
             allowMultiLoading: false,
             parse(data: string) {
                 const record: {translation: Record<string, unknown>} = JSON.parse(data);

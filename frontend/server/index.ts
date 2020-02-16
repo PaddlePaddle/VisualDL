@@ -30,11 +30,11 @@ if (config.dev) {
     const router = new Router();
     router.get('/locales/:lang', async ctx => {
         try {
-            const filename = path.resolve(__dirname, '../locales/', `${ctx.params.lang}.yml`);
+            const lang = ctx.params.lang?.replace(/\.json$/, '');
+            const filename = path.resolve(__dirname, '../locales/', `${lang}.yml`);
             const stat = await fs.stat(filename);
             if (stat.isFile()) {
                 ctx.response.body = yaml.safeLoad(await fs.readFile(filename, 'utf-8'));
-                ctx.response.type = 'text/vnd.yaml';
             } else {
                 throw new Error('locale file not found!');
             }

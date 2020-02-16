@@ -4,8 +4,6 @@
  * @author PeterPan
  */
 
-import fs from 'fs';
-import path from 'path';
 import {config as dotenv} from 'dotenv';
 import {Configuration} from '@nuxt/types';
 import pkg from './package.json';
@@ -66,10 +64,6 @@ const config: Configuration = {
     // client environment variables
     env: {
         PUBLIC_PATH: publicPath,
-        LOCALES: fs
-            .readdirSync(path.resolve(__dirname, 'locales'))
-            .map(locale => path.basename(locale, '.yml'))
-            .join(','),
         ...APP
     },
 
@@ -107,7 +101,8 @@ const config: Configuration = {
         '@nuxtjs/axios',
         // Doc: https://github.com/nuxt-community/dotenv-module
         '@nuxtjs/dotenv',
-        'portal-vue/nuxt'
+        'portal-vue/nuxt',
+        '~/modules/locale'
     ],
 
     /*
