@@ -7,9 +7,13 @@ module.exports = {
     parser: '@typescript-eslint/parser', // Specifies the ESLint parser
     parserOptions: {
         ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
-        sourceType: 'module' // Allows for the use of imports
+        sourceType: 'module', // Allows for the use of imports
+        ecmaFeatures: {
+            jsx: true // Allows for the parsing of JSX
+        }
     },
     extends: [
+        'plugin:react/recommended',
         'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
         'prettier'
     ],
@@ -34,6 +38,24 @@ module.exports = {
             }
         ],
         'arrow-parens': ['error', 'as-needed'],
-        '@typescript-eslint/explicit-function-return-type': 'off'
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        'react/react-in-jsx-scope': 'off',
+        'react/display-name': 'off'
+    },
+    settings: {
+        react: {
+            createClass: 'createComponent',
+            version: 'latest'
+        },
+        linkComponents: [
+            {
+                name: 'RouterLink',
+                linkAttribute: 'to'
+            },
+            {
+                name: 'NuxtLink',
+                linkAttribute: 'to'
+            }
+        ]
     }
 };

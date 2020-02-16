@@ -18,11 +18,11 @@
         "build:server": "tsc --project server/tsconfig.json",
         "start": "cross-env NODE_ENV=production node server/index.js",
         "generate": "nuxt-ts generate",
-        "lint": "eslint --ext .ts,.tsx,.js,.jsx --ignore-path .gitignore .",
+        "lint": "tsc --noEmit && eslint --ext .ts,.tsx,.js,.jsx --ignore-path .gitignore .",
         "test": "jest"
     },
     "lint-staged": {
-        "*.{js,vue}": "yarn lint"
+        "*.{ts,tsx,js,jsx,vue}": "yarn lint"
     },
     "husky": {
         "hooks": {
@@ -34,32 +34,37 @@
         "@nuxtjs/axios": "5.9.5",
         "@nuxtjs/dotenv": "1.4.1",
         "@vue/composition-api": "0.3.4",
+        "core-js": "3.6.4",
         "cross-env": "7.0.0",
         "dotenv": "8.2.0",
         "i18next": "19.1.0",
-        "i18next-xhr-backend": "^3.2.2",
+        "i18next-xhr-backend": "3.2.2",
         "koa": "2.11.0",
-        "koa-static": "^5.0.0",
+        "koa-static": "5.0.0",
+        "normalize.css": "8.0.1",
         "nuxt": "2.11.0",
         "nuxt-typed-vuex": "0.1.16",
-        "styled-components": "5.0.1"
+        "polished": "3.4.4",
+        "vue-styled-components": "1.4.14"
     },
     "devDependencies": {
         "@nuxt/typescript-build": "0.5.6",
         "@nuxtjs/eslint-config-typescript": "1.0.2",
         "@nuxtjs/eslint-module": "1.1.0",
         "@types/dotenv": "8.2.0",
-        "@types/i18next-xhr-backend": "^1.4.2",
+        "@types/i18next-xhr-backend": "1.4.2",
         "@types/koa": "2.11.1",
-        "@types/koa-static": "^4.0.1",
+        "@types/koa-static": "4.0.1",
         "@vue/test-utils": "1.0.0-beta.31",
         "babel-eslint": "10.0.3",
         "babel-jest": "25.1.0",
         "babel-preset-vca-jsx": "0.3.4",
+        "csstype": "2.6.9",
         "eslint": "6.8.0",
         "eslint-config-prettier": "6.10.0",
         "eslint-plugin-nuxt": "0.5.1",
         "eslint-plugin-prettier": "3.1.2",
+        "eslint-plugin-react": "7.18.3",
         "husky": "4.2.3",
         "jest": "25.1.0",
         "js-yaml-loader": "1.2.2",

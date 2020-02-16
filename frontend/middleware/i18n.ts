@@ -1,6 +1,6 @@
 import {Middleware} from '@nuxt/types';
 
-const i18nMiddleware: Middleware = async ({isHMR, app, route, params, error, redirect}): Promise<void> => {
+const i18nMiddleware: Middleware = async ({isDev, isHMR, app, route, params, error, redirect}): Promise<void> => {
     const accessor = app.$accessor;
     const i18n = app.$i18n;
 
@@ -18,8 +18,9 @@ const i18nMiddleware: Middleware = async ({isHMR, app, route, params, error, red
     }
 
     // Set locale
-    if (process.env.NODE_ENV !== 'production' || !i18n.getDataByLanguage(locale)) {
+    if (isDev || !i18n.getDataByLanguage(locale)) {
         const resource = await import(/* webpackChunkName: "locale-[request]" */ `~/static/locales/${locale}.json`);
+        console.log(i18n);
         Object.keys(resource.default).forEach(ns =>
             i18n.addResourceBundle(locale, ns, resource.default[ns], true, true)
         );

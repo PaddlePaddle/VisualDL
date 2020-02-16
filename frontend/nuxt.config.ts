@@ -81,12 +81,12 @@ const config: Configuration = {
     /*
      ** Global CSS
      */
-    css: [],
+    css: ['normalize.css'],
 
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/i18n'],
+    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/i18n', '~/plugins/style'],
 
     /*
      ** Nuxt.js dev-modules
@@ -129,12 +129,23 @@ const config: Configuration = {
     build: {
         publicPath,
         extractCSS: isProd,
-        parallel: true,
+        // parallel: true,
         transpile: [/typed-vuex/],
 
         babel: {
-            // https://github.com/vuejs/composition-api/issues/168#issuecomment-548377182
-            presets: ['vca-jsx', '@nuxt/babel-preset-app']
+            presets({isServer}) {
+                return [
+                    // https://github.com/vuejs/composition-api/issues/168#issuecomment-548377182
+                    'vca-jsx',
+                    [
+                        require.resolve('@nuxt/babel-preset-app'),
+                        {
+                            buildTarget: isServer ? 'server' : 'client',
+                            corejs: {version: 3}
+                        }
+                    ]
+                ];
+            }
         },
 
         /*

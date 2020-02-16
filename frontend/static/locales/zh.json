@@ -1,5 +1,7 @@
 {
     "translation": {
-        "metrics": "度量数据"
+        "global": {
+            "metrics": "度量数据"
+        }
     }
 }
