@@ -6,6 +6,8 @@ const fontSize = '14px';
 export const rem = (pxval: string | number): string => rem16(pxval, fontSize);
 
 // sizes
+export const headerHeight = rem(60);
+export const asideWidth = rem(260);
 
 // colors
 export const primaryColor = '#1527C2';

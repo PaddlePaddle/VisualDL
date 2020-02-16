@@ -24,10 +24,14 @@ export const actions = actionTree(
     {state, getters, mutations},
     {
         async changeLanguage({commit, state}, lang: string): Promise<void> {
+            if (state.locale === lang) {
+                return;
+            }
             if (state.locales.includes(lang)) {
                 commit('SET_LANG', lang);
                 await i18next.changeLanguage(lang);
                 axios.defaults.headers.common['Accept-Language'] = lang;
+                // TODO: set html lang attribute on ssr
                 if (process.client) {
                     document.querySelector('html')?.setAttribute('lang', lang);
                 }

@@ -106,7 +106,8 @@ const config: Configuration = {
         // Doc: https://github.com/nuxt-community/axios-module#usage
         '@nuxtjs/axios',
         // Doc: https://github.com/nuxt-community/dotenv-module
-        '@nuxtjs/dotenv'
+        '@nuxtjs/dotenv',
+        'portal-vue/nuxt'
     ],
 
     /*

@@ -20,7 +20,7 @@ declare module 'vuex/types/index' {
     }
 }
 
-const DEFAULT_LANG = 'en';
+export const DEFAULT_LANG = 'en';
 
 const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typeof i18next['t']> => {
     // server

@@ -1,9 +1,8 @@
 import {createComponent} from '@vue/composition-api';
 import styled from 'vue-styled-components';
 import Navbar from '~/components/Navbar';
-import {rem} from '~/plugins/style';
-
-const headerHeight = rem(60);
+import Aside from '~/components/Aside';
+import {rem, headerHeight} from '~/plugins/style';
 
 const Main = styled.main`
     padding-top: ${headerHeight};
@@ -18,6 +17,21 @@ const Header = styled.header`
     right: 0;
 `;
 
+const Section = styled.section`
+    min-height: calc(100vh - ${headerHeight});
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+`;
+
+const Article = styled.article`
+    margin: ${rem(20)};
+    padding: ${rem(20)};
+    background-color: #fff;
+    flex-shrink: 1;
+    flex-grow: 1;
+`;
+
 export default createComponent({
     setup() {
         return () => (
@@ -25,7 +39,12 @@ export default createComponent({
                 <Header>
                     <Navbar></Navbar>
                 </Header>
-                <nuxt></nuxt>
+                <Section>
+                    <Article>
+                        <nuxt></nuxt>
+                    </Article>
+                    <Aside></Aside>
+                </Section>
             </Main>
         );
     }

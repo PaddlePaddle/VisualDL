@@ -1,8 +1,11 @@
 import {createComponent} from '@vue/composition-api';
 import styled from 'vue-styled-components';
 import {lighten} from 'polished';
+import {RawLocation} from 'vue-router';
 import {rem, primaryColor, styledNuxtLink, duration, easing} from '~/plugins/style';
 import logo from '~/assets/images/logo.svg';
+
+const navItems = ['metrics', 'samples'];
 
 const Nav = styled.nav`
     background-color: ${primaryColor};
@@ -54,13 +57,28 @@ const NavItemText = styled.span`
     text-transform: uppercase;
 
     .nuxt-link-active & {
-        border-bottom-color: #596CD6;
+        border-bottom-color: #596cd6;
     }
 `;
 
 export default createComponent({
-    setup(_props, {root: {$i18n}}) {
+    name: 'Navbar',
+    setup(_props, {root: {$i18n, $route}}) {
         const NavItemNuxtLink = styledNuxtLink(NavItem);
+
+        const navItemRoute = (name: string): RawLocation => {
+            if ($route.params.lang) {
+                return {
+                    name: `lang-${name}`,
+                    params: {
+                        lang: $route.params.lang
+                    }
+                };
+            }
+            return {
+                name
+            };
+        };
 
         return () => (
             <Nav>
@@ -68,12 +86,11 @@ export default createComponent({
                     <LogoImg alt="PaddlePaddle" src={logo}></LogoImg>
                     <LogoText>Visual DL</LogoText>
                 </Logo>
-                <NavItemNuxtLink to={{name: 'metrics'}}>
-                    <NavItemText>{$i18n.t('global.metrics')}</NavItemText>
-                </NavItemNuxtLink>
-                <NavItemNuxtLink to={{name: 'samples'}}>
-                    <NavItemText>{$i18n.t('global.samples')}</NavItemText>
-                </NavItemNuxtLink>
+                {navItems.map(name => (
+                    <NavItemNuxtLink to={navItemRoute(name)} key={name}>
+                        <NavItemText>{$i18n.t(`global.${name}`)}</NavItemText>
+                    </NavItemNuxtLink>
+                ))}
             </Nav>
         );
     }
