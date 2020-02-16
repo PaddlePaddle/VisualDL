@@ -67,8 +67,8 @@ const config: Configuration = {
     env: {
         PUBLIC_PATH: publicPath,
         LOCALES: fs
-            .readdirSync(path.resolve(__dirname, 'locales'))
-            .map(locale => path.basename(locale, '.yml'))
+            .readdirSync(path.resolve(__dirname, 'static/locales'))
+            .map(locale => path.basename(locale, '.json'))
             .join(','),
         ...APP
     },
