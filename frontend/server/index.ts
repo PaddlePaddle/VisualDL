@@ -6,6 +6,7 @@
 
 import {config as dotenv} from 'dotenv';
 import Koa from 'koa';
+import staticServe from 'koa-static';
 import {Nuxt, Builder} from 'nuxt';
 import consola from 'consola';
 import config from '../nuxt.config';
@@ -20,6 +21,8 @@ interface State extends Koa.DefaultState {
 
 const app = new Koa<State, Context>();
 config.dev = app.env !== 'production';
+
+app.use(staticServe(`${__dirname}/../static`));
 
 async function start(): Promise<void> {
     // Instantiate nuxt.js

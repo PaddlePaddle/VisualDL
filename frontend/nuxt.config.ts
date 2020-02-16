@@ -15,7 +15,7 @@ const isProd = process.env.NODE_ENV === 'production';
 const baseUrl = '/';
 
 const trimSuffix = (s: string | undefined): string => (s || '').replace(/\/$/, '');
-const publicPath = trimSuffix(process.env.PUBLIC_PATH) + baseUrl;
+const publicPath = isProd ? trimSuffix(process.env.PUBLIC_PATH) + baseUrl : '';
 
 const APP = {
     name: pkg.name,
