@@ -39,6 +39,7 @@ module.exports = {
         ],
         'arrow-parens': ['error', 'as-needed'],
         '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
         'react/react-in-jsx-scope': 'off',
         'react/display-name': 'off'
     },

@@ -20,14 +20,22 @@ declare module 'vuex/types/index' {
     }
 }
 
+const DEFAULT_LANG = 'en';
+
 const loadLocaleBundle = async (initOptions: InitOptions) => {
     if (process.server) {
-        // middleware will hanlde it
-        return;
+        const {default: zh} = await import('~/static/locales/zh.json');
+        const {default: en} = await import('~/static/locales/en.json');
+
+        return i18next.init({
+            ...initOptions,
+            lng: DEFAULT_LANG,
+            resources: {zh, en}
+        });
     }
 
     // client
-    await i18next.use(XHR).init({
+    return i18next.use(XHR).init({
         ...initOptions,
         backend: {
             loadPath: '/locales/{{lng}}.json?ns={{ns}}',
@@ -41,7 +49,7 @@ const loadLocaleBundle = async (initOptions: InitOptions) => {
 };
 
 const i18nPlugin: Plugin = async (context, inject): Promise<void> => {
-    const lng = context.params.lang || 'en';
+    const lng = context.params.lang || DEFAULT_LANG;
     const initOptions = {
         lng,
         fallbackLng: [lng],

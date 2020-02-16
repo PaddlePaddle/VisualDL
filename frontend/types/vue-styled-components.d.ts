@@ -57,6 +57,7 @@ declare module 'vue-styled-components' {
         <T extends Component, Props extends VueProps>(Component: T, props?: Props): (
             str: TemplateStringsArray,
             ...placeholders: (
+                // eslint-disable-next-line
                 | ((props: PropsType<Props>) => string | String | {toString: () => string | String})
                 | Interpolation
             )[]

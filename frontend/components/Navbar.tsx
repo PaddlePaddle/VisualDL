@@ -17,7 +17,8 @@ const Nav = styled.nav`
 
 const Logo = styled.a`
     font-size: ${rem(20)};
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     font-weight: 600;
     padding-right: ${rem(40)};
 `;
@@ -33,26 +34,26 @@ const LogoText = styled.span`
     vertical-align: middle;
 `;
 
-// const NavItem = styled(Vue.component('nuxt-link'))`
-const NavItem = styled.a`
-    padding: 0 ${rem(20)};
-`;
-
 const NavItemText = styled.span`
     padding: ${rem(20)} 0 ${rem(17)};
-    border-bottom: ${rem(3)} solid #596CD6;
+    border-bottom: ${rem(3)} solid #596cd6;
     text-transform: uppercase;
 `;
 
 export default createComponent({
-    setup(props, {root: {$i18n}}) {
+    setup(_props, {root: {$i18n}}) {
+        const {options: NuxtLink} = Vue.component('NuxtLink');
+        const NavItem = styled(NuxtLink)`
+            padding: 0 ${rem(20)};
+        `;
+
         return () => (
             <Nav>
                 <Logo href="/">
                     <LogoImg alt="PaddlePaddle" src={logo}></LogoImg>
                     <LogoText>Visual DL</LogoText>
                 </Logo>
-                <NavItem>
+                <NavItem to="/">
                     <NavItemText>{$i18n.t('global.metrics')}</NavItemText>
                 </NavItem>
             </Nav>
