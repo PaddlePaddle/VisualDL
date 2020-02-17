@@ -6,7 +6,7 @@ import {Module} from '@nuxt/types';
 
 const logger = consola.withScope('nuxt:locale');
 
-const localeModule: Module = async function (moduleOptions) {
+const localeModule: Module = async function localeModule(moduleOptions) {
     const options = Object.assign(
         {
             localeDir: './locales',

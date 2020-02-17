@@ -35,8 +35,8 @@ const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typ
             loadPath: '/locales/{{lng}}.json?ns={{ns}}',
             allowMultiLoading: false,
             parse(data: string) {
-                const record: {translation: Record<string, unknown>} = JSON.parse(data);
-                return record.translation;
+                const record = JSON.parse(data);
+                return record[initOptions.defaultNS || 'translation'];
             }
         }
     });
