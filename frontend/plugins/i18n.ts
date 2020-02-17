@@ -22,7 +22,7 @@ declare module 'vuex/types/index' {
 
 export const DEFAULT_LANG = 'en';
 
-const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typeof i18next['t']> => {
+const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typeof i18next.t> => {
     // server
     if (process.server) {
         return i18next.init({...initOptions, resources});
@@ -60,6 +60,7 @@ const i18nPlugin: Plugin = async ({params, app}, inject): Promise<void> => {
     }
 
     await loadLocaleBundle(initOptions);
+
     inject('i18n', i18next);
 };
 
