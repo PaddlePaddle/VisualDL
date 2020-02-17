@@ -1,26 +1,6 @@
 import i18next, {InitOptions, Resource} from 'i18next';
-import {Plugin} from '@nuxt/types';
 import XHR from 'i18next-xhr-backend';
-
-declare module 'vue/types/vue' {
-    interface Vue {
-        $i18n: typeof i18next;
-    }
-}
-
-declare module '@nuxt/types' {
-    interface NuxtAppOptions {
-        $i18n: typeof i18next;
-    }
-}
-
-declare module 'vuex/types/index' {
-    interface Store<S> {
-        $i18n: typeof i18next;
-    }
-}
-
-export const DEFAULT_LANG = 'en';
+import {Plugin} from '@nuxt/types';
 
 const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typeof i18next.t> => {
     // server
@@ -32,7 +12,7 @@ const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typ
     return i18next.use(XHR).init({
         ...initOptions,
         backend: {
-            loadPath: '/locales/{{lng}}.json?ns={{ns}}',
+            loadPath: '<%= options.loadPath %>/{{lng}}.json?ns={{ns}}',
             allowMultiLoading: false,
             parse(data: string) {
                 const record = JSON.parse(data);
@@ -42,20 +22,24 @@ const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typ
     });
 };
 
-const i18nPlugin: Plugin = async ({params, app}, inject): Promise<void> => {
-    const lng = params.lang || DEFAULT_LANG;
+const i18nPlugin: Plugin = async ({params}, inject): Promise<void> => {
+    const defaultLocale = '<%= options.defaultLocale %>';
+    const lng = params.lang || defaultLocale;
 
     const initOptions: InitOptions = {
         lng,
-        fallbackLng: [DEFAULT_LANG],
+        fallbackLng: [defaultLocale],
         ns: ['translation'],
         defaultNS: 'translation',
         resources: {}
     };
 
     if (process.server) {
-        for (const lang of app.$accessor.locales) {
-            (initOptions.resources as Resource)[lang] = (await import(`~/locales/${lang}.yml`)).default;
+        const locales = process.env.LOCALES ? process.env.LOCALES.split(',') : ([] as string[]);
+        for (const lang of locales) {
+            (initOptions.resources as Resource)[lang] = (
+                await import(`<%= options.localeDir %>/${lang}<%= options.ext %>`)
+            ).default;
         }
     }
 

@@ -63,20 +63,12 @@ const NavItemText = styled.span`
 
 export default createComponent({
     name: 'Navbar',
-    setup(_props, {root: {$i18n, $route}}) {
+    setup(_props, {root: {$i18n, $accessor}}) {
         const NavItemNuxtLink = styledNuxtLink(NavItem);
 
         const navItemRoute = (name: string): RawLocation => {
-            if ($route.params.lang) {
-                return {
-                    name: `lang-${name}`,
-                    params: {
-                        lang: $route.params.lang
-                    }
-                };
-            }
             return {
-                name
+                name: `${$accessor.locale}__${name}`
             };
         };
 

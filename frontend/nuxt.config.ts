@@ -4,6 +4,7 @@
  * @author PeterPan
  */
 
+import path from 'path';
 import {config as dotenv} from 'dotenv';
 import {Configuration} from '@nuxt/types';
 import pkg from './package.json';
@@ -80,7 +81,7 @@ const config: Configuration = {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/i18n', '~/plugins/style'],
+    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/style'],
 
     /*
      ** Nuxt.js dev-modules
@@ -102,7 +103,7 @@ const config: Configuration = {
         // Doc: https://github.com/nuxt-community/dotenv-module
         '@nuxtjs/dotenv',
         'portal-vue/nuxt',
-        '~/modules/locale'
+        '~/modules/i18n'
     ],
 
     /*
@@ -117,6 +118,12 @@ const config: Configuration = {
         typeCheck: {
             eslint: true
         }
+    },
+
+    locale: {
+        localeDir: path.resolve(__dirname, './locales'),
+        localePath: 'locales',
+        ext: '.yml'
     },
 
     /*
@@ -134,7 +141,7 @@ const config: Configuration = {
                     // https://github.com/vuejs/composition-api/issues/168#issuecomment-548377182
                     'vca-jsx',
                     [
-                        require.resolve('@nuxt/babel-preset-app'),
+                        '@nuxt/babel-preset-app',
                         {
                             buildTarget: isServer ? 'server' : 'client',
                             corejs: {version: 3}
@@ -149,10 +156,6 @@ const config: Configuration = {
          */
         extend(config): void {
             config.devtool = isProd ? 'source-map' : false;
-            config.module?.rules.push({
-                test: /\.ya?ml$/,
-                use: 'js-yaml-loader'
-            });
         }
     },
 

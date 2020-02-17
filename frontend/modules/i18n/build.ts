@@ -1,44 +1,16 @@
 import path from 'path';
 import {promises as fs} from 'fs';
-import consola from 'consola';
 import yaml from 'js-yaml';
-import {Module} from '@nuxt/types';
+import {ModuleThis} from '@nuxt/types';
+import {ModuleOptions} from './index';
+import logger from './logger';
 
-const logger = consola.withScope('nuxt:locale');
-
-const localeModule: Module = async function localeModule(moduleOptions) {
-    const options = Object.assign(
-        {
-            localeDir: './locales',
-            localePath: 'locales',
-            localesEnv: 'LOCALES',
-            ext: '.yml'
-        },
-        this.options.locale,
-        moduleOptions
-    );
-
-    const localeDir = path.resolve(this.options.srcDir || '.', options.localeDir);
-
-    let locales: string[] = [];
-    const stat = await fs.stat(localeDir);
-    if (stat.isDirectory()) {
-        locales = (await fs.readdir(options.localeDir))
-            .filter(locale => locale.endsWith(options.ext))
-            .map(locale => path.join(localeDir, locale));
-        if (!locales.length) {
-            logger.warn(`no locale file found in \`${options.localeDir}\`.`);
-        }
-    } else {
-        logger.warn(`\`${options.localeDir}\` is not exist.`);
-    }
-
-    this.options.env = this.options.env || {};
-    this.options.env[options.localesEnv] = locales.map(locale => path.basename(locale, options.ext)).join(',');
-
-    logger.debug(`env \`${options.localesEnv}\` is set to \`${this.options.env[options.localesEnv]}\`.`);
-
-    this.nuxt.hook('build:done', async () => {
+export default function build(
+    this: ModuleThis,
+    options: Required<ModuleOptions>,
+    locales: string[]
+): () => Promise<void> {
+    return async () => {
         if (!this.options.dev && this.options.buildDir) {
             const outputPath = path.resolve(this.options.buildDir, 'dist', 'client', options.localePath);
             try {
@@ -68,7 +40,5 @@ const localeModule: Module = async function localeModule(moduleOptions) {
                 }
             }
         }
-    });
-};
-
-export default localeModule;
+    };
+}
