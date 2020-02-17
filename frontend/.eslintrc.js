@@ -58,5 +58,6 @@ module.exports = {
                 linkAttribute: 'to'
             }
         ]
-    }
+    },
+    ignorePatterns: ['modules/locale/App.js']
 };

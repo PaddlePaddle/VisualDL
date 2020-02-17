@@ -24,6 +24,13 @@ export interface ModuleFunction<T> {
     (this: ModuleThis, options: Required<ModuleOptions>, locales: string[]): T;
 }
 
+interface TemplateFile {
+    src: string;
+    dst: string;
+    custom: boolean;
+    options: Record<string, any>;
+}
+
 const localeModule: Module = async function localeModule(moduleOptions: ModuleOptions = {}) {
     const options = Object.assign(
         {
@@ -41,7 +48,7 @@ const localeModule: Module = async function localeModule(moduleOptions: ModuleOp
     // add webpack yml loader
     this.extendBuild(extendsBuild());
 
-    const localeDir = options.localeDir = path.resolve(this.options.srcDir || '.', options.localeDir);
+    const localeDir = (options.localeDir = path.resolve(this.options.srcDir || '.', options.localeDir));
     let locales: string[] = [];
     const stat = await fs.stat(localeDir);
     if (stat.isDirectory()) {
@@ -59,6 +66,7 @@ const localeModule: Module = async function localeModule(moduleOptions: ModuleOp
 
     callWithContext(injectEnv);
     callWithContext(injectRoute);
+    callWithContext(buildLocales);
 
     this.addPlugin({
         src: path.resolve(__dirname, './plugin.ts'),
@@ -68,7 +76,13 @@ const localeModule: Module = async function localeModule(moduleOptions: ModuleOp
         }
     });
 
-    this.nuxt.hook('build:done', callWithContext(buildLocales));
+    // replace default App.js in order to add `htmlAttrs.lang`
+    this.nuxt.hook('build:templates', ({templatesFiles}: {templatesFiles: TemplateFile[]}): void => {
+        const templateFile = templatesFiles.find(file => file.dst === 'App.js');
+        if (templateFile) {
+            templateFile.src = path.resolve(__dirname, './App.js');
+        }
+    });
 };
 
 export default localeModule;

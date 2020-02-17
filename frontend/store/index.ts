@@ -1,6 +1,6 @@
 import {getAccessorType, mutationTree, actionTree, getterTree} from 'typed-vuex';
 import i18next from 'i18next';
-import axios from 'axios';
+import updateLocale from '~/utils/updateLocale';
 
 // Import all your submodules
 // import * as submodule from '~/store/submodule'
@@ -30,11 +30,7 @@ export const actions = actionTree(
             if (state.locales.includes(lang)) {
                 commit('SET_LANG', lang);
                 await i18next.changeLanguage(lang);
-                axios.defaults.headers.common['Accept-Language'] = lang;
-                // TODO: set html lang attribute on ssr
-                if (process.client) {
-                    document.querySelector('html')?.setAttribute('lang', lang);
-                }
+                updateLocale(lang);
             }
         }
     }

@@ -71,7 +71,7 @@ const config: Configuration = {
     /*
      ** Customize the progress-bar color
      */
-    loading: {color: '#1f6fed', height: '2px'},
+    loading: {color: '#fff', height: '2px'},
 
     /*
      ** Global CSS
@@ -81,7 +81,7 @@ const config: Configuration = {
     /*
      ** Plugins to load before mounting the App
      */
-    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/style'],
+    plugins: ['~/plugins/composition-api', '~/plugins/axios', '~/plugins/i18n', '~/plugins/style'],
 
     /*
      ** Nuxt.js dev-modules
@@ -103,7 +103,7 @@ const config: Configuration = {
         // Doc: https://github.com/nuxt-community/dotenv-module
         '@nuxtjs/dotenv',
         'portal-vue/nuxt',
-        '~/modules/i18n'
+        '~/modules/locale'
     ],
 
     /*

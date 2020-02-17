@@ -5,14 +5,15 @@ import {ModuleThis} from '@nuxt/types';
 import {ModuleOptions} from './index';
 import logger from './logger';
 
-export default function build(
-    this: ModuleThis,
-    options: Required<ModuleOptions>,
-    locales: string[]
-): () => Promise<void> {
-    return async () => {
-        if (!this.options.dev && this.options.buildDir) {
-            const outputPath = path.resolve(this.options.buildDir, 'dist', 'client', options.localePath);
+export default function buildLocales(this: ModuleThis, options: Required<ModuleOptions>, locales: string[]): void {
+    if (!this.options.dev) {
+        this.nuxt.hook('build:done', async () => {
+            const outputPath = path.resolve(
+                this.options.buildDir || '../../.nuxt',
+                'dist',
+                'client',
+                options.localePath
+            );
             try {
                 await fs.mkdir(outputPath);
             } catch {
@@ -39,6 +40,6 @@ export default function build(
                     logger.error(`cannot read locale file \`${locale}\`.`);
                 }
             }
-        }
-    };
+        });
+    }
 }

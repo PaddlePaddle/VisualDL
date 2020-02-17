@@ -22,13 +22,13 @@ const loadLocaleBundle = ({resources, ...initOptions}: InitOptions): Promise<typ
     });
 };
 
-const i18nPlugin: Plugin = async ({params}, inject): Promise<void> => {
+const localePlugin: Plugin = async ({route}, inject): Promise<void> => {
     const defaultLocale = '<%= options.defaultLocale %>';
-    const lng = params.lang || defaultLocale;
+    const lng = route.meta[0]?.locale || defaultLocale;
 
     const initOptions: InitOptions = {
         lng,
-        fallbackLng: [defaultLocale],
+        fallbackLng: [],
         ns: ['translation'],
         defaultNS: 'translation',
         resources: {}
@@ -48,4 +48,4 @@ const i18nPlugin: Plugin = async ({params}, inject): Promise<void> => {
     inject('i18n', i18next);
 };
 
-export default i18nPlugin;
+export default localePlugin;
