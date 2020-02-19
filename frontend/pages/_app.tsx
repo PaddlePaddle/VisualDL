@@ -1,12 +1,18 @@
 import React from 'react';
 import App from 'next/app';
-import i18n from '~/i18n';
+import {appWithTranslation} from '~/utils/i18n';
+import {GlobalStyle} from '~/utils/style';
 
-class MyApp extends App {
+class VDLApp extends App {
     render() {
         const {Component, pageProps} = this.props;
-        return <Component {...pageProps} />;
+        return (
+            <React.Fragment>
+                <GlobalStyle />
+                <Component {...pageProps} />
+            </React.Fragment>
+        );
     }
 }
 
-export default i18n.appWithTranslation(MyApp);
+export default appWithTranslation(VDLApp);

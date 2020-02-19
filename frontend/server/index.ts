@@ -3,7 +3,7 @@ import next from 'next';
 import {setConfig} from 'next/config';
 import nextI18NextMiddleware from 'next-i18next/middleware';
 import conf from '../next.config';
-import nextI18next from '../i18n';
+import nextI18next from '../utils/i18n';
 
 setConfig(conf);
 

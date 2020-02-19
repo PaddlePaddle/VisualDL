@@ -1,6 +1,0 @@
-translation:
-    global:
-        metrics: 度量数据
-        samples: 样本数据
-        searchTagPlaceholder: 搜索标签（支持正则）
-        all: 全部
