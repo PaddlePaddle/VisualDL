@@ -13,7 +13,7 @@ declare module 'vue-styled-components' {
 
     export type CSSKeyframes = object & {[key: string]: CSSObject};
 
-    type VueProps =
+    export type VueProps =
         | {
               [propsName: string]: {
                   type: new (...args: any[]) => unknown;

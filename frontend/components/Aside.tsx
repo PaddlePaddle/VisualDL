@@ -1,7 +1,6 @@
 import {createComponent} from '@vue/composition-api';
-import styled from 'vue-styled-components';
 import {PortalTarget} from 'portal-vue';
-import {asideWidth} from '~/plugins/style';
+import {styled, asideWidth} from '~/plugins/style';
 
 const Aside = styled(PortalTarget.options)`
     width: ${asideWidth};

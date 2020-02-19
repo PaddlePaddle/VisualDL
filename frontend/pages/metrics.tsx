@@ -1,6 +1,7 @@
-import {createComponent, reactive} from '@vue/composition-api';
+import {createComponent} from '@vue/composition-api';
 import i18next from 'i18next';
 import capitalize from 'lodash/capitalize';
+import TagFilter from '~/components/TagFilter';
 
 export default createComponent({
     head() {
@@ -10,13 +11,9 @@ export default createComponent({
     },
 
     setup(_props, {root: {$i18n}}) {
-        const data = reactive({
-            count: 0
-        });
         return () => (
             <div>
-                <p>{$i18n.t('global.metrics')}</p>
-                <p>{data.count}</p>
+                <TagFilter placeholder={$i18n.t('global.searchTagPlaceholder')}></TagFilter>
             </div>
         );
     }

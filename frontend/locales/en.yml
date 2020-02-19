@@ -2,3 +2,5 @@ translation:
     global:
         metrics: metrics
         samples: samples
+        searchTagPlaceholder: Search tags in RegExp
+        all: all

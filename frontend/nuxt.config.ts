@@ -54,10 +54,8 @@ const config: Configuration = {
         ],
         link: [
             {
-                rel: 'icon',
-                type: 'image/png',
-                sizes: '96x96',
-                href: '/favicon.png'
+                rel: 'shortcut icon',
+                href: '/favicon.ico'
             }
         ]
     },

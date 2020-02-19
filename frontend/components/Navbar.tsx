@@ -1,14 +1,12 @@
 import {createComponent} from '@vue/composition-api';
-import styled from 'vue-styled-components';
-import {lighten} from 'polished';
 import {RawLocation} from 'vue-router';
-import {rem, primaryColor, styledNuxtLink, duration, easing} from '~/plugins/style';
+import {styled, rem, headerColor, styledNuxtLink, duration, easing, lighten} from '~/plugins/style';
 import logo from '~/assets/images/logo.svg';
 
 const navItems = ['metrics', 'samples'];
 
 const Nav = styled.nav`
-    background-color: ${primaryColor};
+    background-color: ${headerColor};
     color: #fff;
     height: 100%;
     width: 100%;
@@ -43,11 +41,11 @@ const NavItem = styled.a`
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    background-color: ${primaryColor};
+    background-color: ${headerColor};
     transition: background-color ${duration} ${easing};
 
     &:hover {
-        background-color: ${lighten(0.05, primaryColor)};
+        background-color: ${lighten(0.05, headerColor)};
     }
 `;
 
