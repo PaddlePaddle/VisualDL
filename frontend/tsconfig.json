@@ -19,18 +19,21 @@
     "paths": {
       "~/*": [
         "./*"
-      ],
-      "@/*": [
-        "./*"
       ]
     },
     "types": [
-      "@types/node",
-      "@nuxt/types",
-      "nuxt-i18n"
-    ]
+      "@types/node"
+    ],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
   },
   "exclude": [
     "node_modules"
+  ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
   ]
 }
