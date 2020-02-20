@@ -1,37 +1,46 @@
 {
-  "name": "visual-dl",
-  "version": "2.0.0-beta",
-  "private": true,
-  "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon --watch server --ext ts --exec \"ts-node --project=server/tsconfig.json\" server/index.ts",
-    "build:next": "next build",
-    "build:server": "tsc --project server/tsconfig.json",
-    "build:locale": "ts-node build/locale.ts",
-    "start": "NODE_ENV=production node server/index.js"
-  },
-  "dependencies": {
-    "express": "4.17.1",
-    "next": "9.2.2",
-    "next-i18next": "4.2.0",
-    "nprogress": "0.2.0",
-    "polished": "3.4.4",
-    "react": "16.12.0",
-    "react-dom": "16.12.0",
-    "styled-components": "5.0.1",
-    "styled-normalize": "8.0.7",
-    "swr": "0.1.17"
-  },
-  "devDependencies": {
-    "@types/express": "4.17.2",
-    "@types/node": "13.7.4",
-    "@types/nprogress": "0.2.0",
-    "@types/react": "16.9.21",
-    "@types/styled-components": "4.4.3",
-    "@types/webpack": "4.41.6",
-    "babel-plugin-styled-components": "1.10.7",
-    "cross-env": "7.0.0",
-    "nodemon": "2.0.2",
-    "ts-node": "8.6.2",
-    "typescript": "3.7.5"
-  }
+    "name": "visual-dl",
+    "version": "2.0.0-beta",
+    "title": "Visual DL",
+    "description": "A platform to visualize the deep learning process and result.",
+    "keywords": [
+        "visualdl",
+        "paddlepaddle",
+        "visualization",
+        "deep learning"
+    ],
+    "author": "PeterPanZH, Niandalu",
+    "private": true,
+    "scripts": {
+        "dev": "cross-env NODE_ENV=development nodemon --watch server --ext ts --exec \"ts-node --project=server/tsconfig.json\" server/index.ts",
+        "build:next": "next build",
+        "build:server": "tsc --project server/tsconfig.json",
+        "build:locale": "ts-node build/locale.ts",
+        "start": "NODE_ENV=production node server/index.js"
+    },
+    "dependencies": {
+        "express": "4.17.1",
+        "next": "9.2.2",
+        "next-i18next": "4.2.0",
+        "nprogress": "0.2.0",
+        "polished": "3.4.4",
+        "react": "16.12.0",
+        "react-dom": "16.12.0",
+        "styled-components": "5.0.1",
+        "styled-normalize": "8.0.7",
+        "swr": "0.1.17"
+    },
+    "devDependencies": {
+        "@types/express": "4.17.2",
+        "@types/node": "13.7.4",
+        "@types/nprogress": "0.2.0",
+        "@types/react": "16.9.21",
+        "@types/styled-components": "4.4.3",
+        "@types/webpack": "4.41.6",
+        "babel-plugin-styled-components": "1.10.7",
+        "cross-env": "7.0.0",
+        "nodemon": "2.0.2",
+        "ts-node": "8.6.2",
+        "typescript": "3.7.5"
+    }
 }

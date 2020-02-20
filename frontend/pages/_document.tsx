@@ -46,10 +46,7 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
         const {languageDirection, language} = this.props;
         return (
             <html lang={language} dir={languageDirection}>
-                <Head>
-                    <title>Visual DL</title>
-                    <link rel="shortcut icon" href="/favicon.ico" />
-                </Head>
+                <Head />
                 <body>
                     <Main />
                     <NextScript />

@@ -6,7 +6,7 @@ export default class Title extends React.Component {
         const title = this.props.children;
         return (
             <Head>
-                <title>{title ? `${title} - ` : ''}Visual DL</title>
+                <title>{title ? `${title} - ` : ''}{process.env.title}</title>
             </Head>
         );
     }
