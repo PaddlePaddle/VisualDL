@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {styled, WithStyled, em, math} from '~/utils/style';
 import Input, {padding, InputProps} from '~/components/Input';
 
@@ -26,14 +26,11 @@ const Icon = styled.span`
     pointer-events: none;
 `;
 
-export default class SearchInput extends React.Component<InputProps & WithStyled> {
-    render() {
-        const {className, ...props} = this.props;
-        return (
-            <Control className={className}>
-                <StyledInput {...props} />
-                <Icon />
-            </Control>
-        );
-    }
-}
+const SearchInput: FunctionComponent<InputProps & WithStyled> = ({className, ...props}) => (
+    <Control className={className}>
+        <StyledInput {...props} />
+        <Icon />
+    </Control>
+);
+
+export default SearchInput;

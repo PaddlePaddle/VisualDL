@@ -1,6 +1,5 @@
-import React from 'react';
-import {WithTranslation} from 'next-i18next';
-import {withTranslation} from '~/utils/i18n';
+import React, {useState} from 'react';
+import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import {Tag} from '~/types';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
@@ -11,43 +10,37 @@ type MetricsProps = {
     total: number;
 };
 
-class Metrics extends React.Component<MetricsProps & WithTranslation> {
-    static getInitialProps() {
-        return {
-            namespacesRequired: ['common', 'metrics'],
-            tags: [
-                {label: 'test', count: 12},
-                {label: 'asdfa', count: 2}
-            ],
-            total: 123
-        };
-    }
+const Metrics: NextI18NextPage<MetricsProps> = props => {
+    const {t} = useTranslation(['common', 'metrics']);
+    const {tags} = props;
 
-    state = {
-        total: this.props.total
-    };
-
-    onChangeTagFilter = (value: string) => {
+    const [total, setTotal] = useState(props.total);
+    const onChangeTagFilter = (value: string) => {
         console.log(value);
-        this.setState({total: Math.floor(Math.random() * 100)});
+        setTotal(Math.floor(Math.random() * 100));
     };
 
-    aside() {
-        return <div>{this.props.t('metrics')}</div>;
-    }
+    const aside = <div>{t('metrics')}</div>;
 
-    render() {
-        const {t, tags} = this.props;
-        const {total} = this.state;
-        return (
-            <>
-                <Title>{t('metrics')}</Title>
-                <Content aside={this.aside()}>
-                    <TagFilter tags={tags} total={total} onChange={this.onChangeTagFilter}></TagFilter>
-                </Content>
-            </>
-        );
-    }
-}
+    return (
+        <>
+            <Title>{t('metrics')}</Title>
+            <Content aside={aside}>
+                <TagFilter tags={tags} total={total} onChange={onChangeTagFilter}></TagFilter>
+            </Content>
+        </>
+    );
+};
 
-export default withTranslation(['common', 'metrics'])(Metrics);
+Metrics.getInitialProps = () => {
+    return {
+        namespacesRequired: ['common', 'metrics'],
+        tags: [
+            {label: 'test', count: 12},
+            {label: 'asdfa', count: 2}
+        ],
+        total: 123
+    };
+};
+
+export default Metrics;

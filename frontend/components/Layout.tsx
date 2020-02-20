@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {styled, headerHeight} from '~/utils/style';
 import Navbar from '~/components/Navbar';
 
@@ -15,16 +15,13 @@ const Header = styled.header`
     right: 0;
 `;
 
-export default class Layout extends React.Component {
-    render() {
-        const {children} = this.props;
-        return (
-            <Main>
-                <Header>
-                    <Navbar />
-                </Header>
-                {children}
-            </Main>
-        );
-    }
-}
+const Layout: FunctionComponent = ({children}) => (
+    <Main>
+        <Header>
+            <Navbar />
+        </Header>
+        {children}
+    </Main>
+);
+
+export default Layout;

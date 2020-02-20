@@ -1,7 +1,6 @@
-import React from 'react';
-import {WithTranslation} from 'next-i18next';
+import React, {FunctionComponent, useState} from 'react';
 import capitalize from 'lodash/capitalize';
-import {withTranslation} from '~/utils/i18n';
+import {useTranslation} from '~/utils/i18n';
 import {styled, rem, math} from '~/utils/style';
 import {Tag as TagType} from '~/types';
 import SearchInput from '~/components/SearchInput';
@@ -31,58 +30,50 @@ type TagFilterProps = {
     onChange?: (value: string) => unknown;
 };
 
-class TagFilter extends React.Component<TagFilterProps & WithTranslation> {
-    static defaultProps = {
-        total: 0,
-        tags: [] as TagType[]
+const TagFilter: FunctionComponent<TagFilterProps> = ({tags, total, onChange}) => {
+    const {t} = useTranslation('common');
+
+    const [inputValue, setInputValue] = useState('');
+    const [selectedValue, setSelectedValue] = useState('');
+    const hasSelectedValue = selectedValue !== '';
+    const allText = inputValue || `${capitalize(t('all'))}`;
+
+    const onInputChange = (value: string) => {
+        setInputValue(value);
+        setSelectedValue('');
+        onChange?.(value);
+    };
+    const onClickTag = (value: string) => {
+        setSelectedValue(value);
+        onChange?.(value);
+    };
+    const onClickAllTag = () => {
+        setSelectedValue('');
+        onChange?.(inputValue);
     };
 
-    state = {
-        inputValue: '',
-        selectedValue: ''
-    };
-
-    onInputChange = (value: string) => {
-        this.setState({inputValue: value, selectedValue: ''});
-        this.props.onChange?.(value);
-    };
-
-    onClickTag = (value: string) => {
-        this.setState({selectedValue: value});
-        this.props.onChange?.(value);
-    };
-
-    onClickAllTag = () => {
-        this.setState({selectedValue: ''});
-        this.props.onChange?.(this.state.inputValue);
-    };
-
-    render() {
-        const {tags, total, t} = this.props;
-        const {inputValue, selectedValue} = this.state;
-
-        const hasSelectedValue = selectedValue !== '';
-
-        const allText = inputValue || `${capitalize(t('all'))}`;
-
-        return (
-            <Wrapper>
-                <Search placeholder={t('searchTagPlaceholder')} rounded onChange={this.onInputChange}></Search>
-                <SearchTag active={!hasSelectedValue} onClick={this.onClickAllTag}>
-                    {allText} ({total})
+    return (
+        <Wrapper>
+            <Search placeholder={t('searchTagPlaceholder')} rounded onChange={onInputChange}></Search>
+            <SearchTag active={!hasSelectedValue} onClick={onClickAllTag}>
+                {allText} ({total})
+            </SearchTag>
+            {tags?.map((tag, index) => (
+                <SearchTag
+                    active={hasSelectedValue && tag.label === selectedValue}
+                    onClick={() => onClickTag(tag.label)}
+                    key={index}
+                >
+                    {tag.label} ({tag.count})
                 </SearchTag>
-                {tags?.map((tag, index) => (
-                    <SearchTag
-                        active={hasSelectedValue && tag.label === selectedValue}
-                        onClick={() => this.onClickTag(tag.label)}
-                        key={index}
-                    >
-                        {tag.label} ({tag.count})
-                    </SearchTag>
-                ))}
-            </Wrapper>
-        );
-    }
-}
+            ))}
+        </Wrapper>
+    );
+};
 
-export default withTranslation('common')(TagFilter);
+TagFilter.defaultProps = {
+    total: 0,
+    tags: [] as TagType[]
+};
+
+export default TagFilter;

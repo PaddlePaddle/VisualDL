@@ -1,10 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {withRouter} from 'next/router';
-// https://github.com/zeit/next.js/issues/9424
-import {WithRouterProps} from 'next/dist/client/with-router';
-import {WithTranslation} from 'next-i18next';
-import {withTranslation, Link} from '~/utils/i18n';
+import React, {FunctionComponent} from 'react';
+import {useRouter} from 'next/router';
+import {useTranslation, Link} from '~/utils/i18n';
 import {styled, rem, headerColor, duration, easing, lighten} from '~/utils/style';
 
 const navItems = ['metrics', 'samples'];
@@ -59,29 +55,29 @@ const NavItem = styled.a<{active: boolean}>`
     }
 `;
 
-class Navbar extends React.Component<WithTranslation & WithRouterProps> {
-    render() {
-        const {t, router} = this.props;
-        return (
-            <Nav>
-                <Logo href="/">
-                    <img alt="PaddlePaddle" src="/images/logo.svg" />
-                    <span>Visual DL</span>
-                </Logo>
-                {navItems.map(name => {
-                    const href = `/${name}`;
-                    return (
-                        // https://nextjs.org/docs/api-reference/next/link#if-the-child-is-a-custom-component-that-wraps-an-a-tag
-                        <Link href={href} key={name} passHref>
-                            <NavItem active={router.pathname === href}>
-                                <span>{t(name)}</span>
-                            </NavItem>
-                        </Link>
-                    );
-                })}
-            </Nav>
-        );
-    }
+const Navbar: FunctionComponent = () => {
+    const {t} = useTranslation('common');
+    const {pathname} = useRouter();
+
+    return (
+        <Nav>
+            <Logo href="/">
+                <img alt="PaddlePaddle" src="/images/logo.svg" />
+                <span>Visual DL</span>
+            </Logo>
+            {navItems.map(name => {
+                const href = `/${name}`;
+                return (
+                    // https://nextjs.org/docs/api-reference/next/link#if-the-child-is-a-custom-component-that-wraps-an-a-tag
+                    <Link href={href} key={name} passHref>
+                        <NavItem active={pathname === href}>
+                            <span>{t(name)}</span>
+                        </NavItem>
+                    </Link>
+                );
+            })}
+        </Nav>
+    );
 }
 
-export default withTranslation('common')(withRouter(Navbar));
+export default Navbar;

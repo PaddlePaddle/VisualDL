@@ -1,21 +1,18 @@
-import React from 'react';
-import {WithTranslation} from 'next-i18next';
-import {withTranslation, Router} from '~/utils/i18n';
+import {useEffect} from 'react';
+import {NextI18NextPage, Router} from '~/utils/i18n';
 
-class Index extends React.Component<WithTranslation> {
-    static getInitialProps() {
-        return {
-            namespacesRequired: ['common']
-        };
-    }
-
-    render() {
-        return null;
-    }
-
-    componentDidMount() {
+const Index: NextI18NextPage = () => {
+    useEffect(() => {
         Router.replace('/metrics');
-    }
-}
+    });
 
-export default withTranslation('common')(Index);
+    return null;
+};
+
+Index.getInitialProps = () => {
+    return {
+        namespacesRequired: []
+    };
+};
+
+export default Index;

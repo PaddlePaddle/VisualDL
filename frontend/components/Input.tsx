@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {styled, WithStyled, em, borderColor, borderRadius, duration, easing, darken, math} from '~/utils/style';
 
 export const padding = em(10);
@@ -32,19 +32,15 @@ export type InputProps = {
     onChange?: (value: string) => unknown;
 };
 
-export default class Input extends React.Component<InputProps & WithStyled> {
-    render() {
-        const {rounded, placeholder, value, onChange, className} = this.props;
+const Input: FunctionComponent<InputProps & WithStyled> = ({rounded, placeholder, value, onChange, className}) => (
+    <StyledInput
+        rounded={rounded}
+        placeholder={placeholder}
+        value={value}
+        type="text"
+        className={className}
+        onChange={e => onChange?.(e.target.value)}
+    ></StyledInput>
+);
 
-        return (
-            <StyledInput
-                rounded={rounded}
-                placeholder={placeholder}
-                value={value}
-                type="text"
-                className={className}
-                onChange={e => onChange?.(e.target.value)}
-            ></StyledInput>
-        );
-    }
-}
+export default Input;

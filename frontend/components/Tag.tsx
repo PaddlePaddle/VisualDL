@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import {styled, WithStyled, em, primaryColor, lightColor, duration, easing, math, darken} from '~/utils/style';
 
 const height = em(36);
@@ -24,10 +24,6 @@ type TagProps = {
     onClick?: () => void;
 };
 
-export default class Tag extends React.Component<TagProps & WithStyled> {
-    render() {
-        const {children, ...props} = this.props;
+const Tag: FunctionComponent<TagProps & WithStyled> = ({children, ...props}) => <Span {...props}>{children}</Span>;
 
-        return <Span {...props} >{children}</Span>;
-    }
-}
+export default Tag;
