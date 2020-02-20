@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {WithTranslation} from 'next-i18next';
 import {withTranslation} from '~/utils/i18n';
+import Title from '~/components/Title';
 import Content from '~/components/Content';
 
 class Metrics extends React.Component<WithTranslation> {
@@ -14,10 +15,14 @@ class Metrics extends React.Component<WithTranslation> {
     }
 
     render() {
+        const {t} = this.props;
         return (
-            <Content aside={this.aside()}>
-                <div>Hello metrics!</div>
-            </Content>
+            <>
+                <Title>{t('metrics')}</Title>
+                <Content aside={this.aside()}>
+                    <div>Hello metrics!</div>
+                </Content>
+            </>
         );
     }
 

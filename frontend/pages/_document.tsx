@@ -47,6 +47,7 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
         return (
             <html lang={language} dir={languageDirection}>
                 <Head>
+                    <title>Visual DL</title>
                     <link rel="shortcut icon" href="/favicon.ico" />
                 </Head>
                 <body>
