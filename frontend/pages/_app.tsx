@@ -1,16 +1,25 @@
 import React from 'react';
 import App from 'next/app';
-import {appWithTranslation} from '~/utils/i18n';
+import NProgress from 'nprogress';
+import {Router, appWithTranslation} from '~/utils/i18n';
 import {GlobalStyle} from '~/utils/style';
+import Layout from '~/components/Layout';
+
+Router.events.on('routeChangeStart', () => NProgress.start());
+Router.events.on('routeChangeComplete', () => NProgress.done());
+Router.events.on('routeChangeError', () => NProgress.done());
 
 class VDLApp extends App {
     render() {
         const {Component, pageProps} = this.props;
+
         return (
-            <React.Fragment>
+            <>
                 <GlobalStyle />
-                <Component {...pageProps} />
-            </React.Fragment>
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            </>
         );
     }
 }
