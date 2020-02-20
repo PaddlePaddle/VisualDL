@@ -38,6 +38,10 @@ const spinner = keyframes`
     }
 `;
 
+export type WithStyled = {
+    className?: string;
+};
+
 export const GlobalStyle = createGlobalStyle`
     ${normalize}
 

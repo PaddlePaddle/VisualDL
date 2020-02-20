@@ -2,5 +2,7 @@
     "error-with-status": "A {{statusCode}} error occurred on server",
     "error-without-status": "An error occurred on the server",
     "metrics": "metrics",
-    "samples": "samples"
+    "samples": "samples",
+    "searchTagPlaceholder": "Search tags in RegExp",
+    "all": "all"
 }

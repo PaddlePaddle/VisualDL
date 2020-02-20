@@ -60,10 +60,6 @@ const NavItem = styled.a<{active: boolean}>`
 `;
 
 class Navbar extends React.Component<WithTranslation & WithRouterProps> {
-    static propTypes = {
-        t: PropTypes.func.isRequired
-    };
-
     render() {
         const {t, router} = this.props;
         return (
