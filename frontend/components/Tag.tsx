@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {styled, WithStyled, em, primaryColor, lightColor, duration, easing, math, darken} from '~/utils/style';
+import {styled, WithStyled, em, primaryColor, lightColor, duration, easing, math, darken, transitions} from '~/utils/style';
 
 const height = em(36);
 
@@ -9,7 +9,7 @@ const Span = styled.span<{active?: boolean}>`
     line-height: ${height};
     display: inline-block;
     border-radius: ${math(`${height} / 2`)};
-    transition: color ${duration} ${easing}, background-color ${duration} ${easing};
+    ${transitions(['color', 'background-color'], `${duration} ${easing}`)}
     color: ${prop => (prop.active ? '#FFF' : primaryColor)};
     background-color: ${prop => (prop.active ? primaryColor : lightColor)};
     cursor: pointer;

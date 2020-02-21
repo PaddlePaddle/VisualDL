@@ -2,5 +2,8 @@
     "metrics": "metrics",
     "samples": "samples",
     "searchTagPlaceholder": "Search tags in RegExp",
-    "all": "all"
+    "all": "all",
+    "empty": "empty",
+    "select": "Please Select",
+    "select-display-data": "Select Display Data"
 }

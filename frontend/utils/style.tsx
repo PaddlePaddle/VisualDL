@@ -1,6 +1,5 @@
 import {createGlobalStyle, keyframes} from 'styled-components';
-import {rem as rem16, em as em16, math} from 'polished';
-import {normalize} from 'styled-normalize';
+import {rem as rem16, em as em16, math, normalize, darken} from 'polished';
 
 export {default as styled} from 'styled-components';
 export * from 'styled-components';
@@ -19,10 +18,15 @@ export const progressSpinnerSize = '20px';
 // colors
 export const headerColor = '#1527C2';
 export const primaryColor = '#2932E1';
+export const selectedColor = '#1A73E8';
 export const lightColor = '#F4F5FC';
 export const textColor = '#333';
-export const bodyBackground = '#F4F4F4';
+export const textLightColor = '#999';
+export const bodyBackgroundColor = '#F4F4F4';
+export const backgroundColor = '#FFF';
+export const backgroundFocusedColor = '#F6F6F6';
 export const borderColor = '#DDD';
+export const borderFocusedColor = darken(0.15, borderColor);
 export const progressBarColor = '#FFF';
 
 // transitions
@@ -55,7 +59,7 @@ export const GlobalStyle = createGlobalStyle`
     html,
     body {
         height: 100%;
-        background: ${bodyBackground};
+        background-color: ${bodyBackgroundColor};
         color: ${textColor};
     }
 

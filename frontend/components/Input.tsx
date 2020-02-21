@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {styled, WithStyled, em, borderColor, borderRadius, duration, easing, darken, math} from '~/utils/style';
+import {styled, WithStyled, em, textLightColor, borderColor, borderFocusedColor, borderRadius, duration, easing, math} from '~/utils/style';
 
 export const padding = em(10);
 export const height = em(36);
@@ -17,11 +17,11 @@ const StyledInput = styled.input<{rounded?: boolean}>`
 
     &:hover,
     &:focus {
-        border-color: ${darken(0.15, borderColor)};
+        border-color: ${borderFocusedColor};
     }
 
     &::placeholder {
-        color: #999;
+        color: ${textLightColor};
     }
 `;
 
