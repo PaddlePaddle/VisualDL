@@ -1,5 +1,17 @@
 import React, {FunctionComponent} from 'react';
-import {styled, WithStyled, em, primaryColor, lightColor, duration, easing, math, darken, transitions} from '~/utils/style';
+import {
+    styled,
+    WithStyled,
+    em,
+    primaryColor,
+    lightColor,
+    lightFocusedColor,
+    lightActiveColor,
+    duration,
+    easing,
+    math,
+    transitions
+} from '~/utils/style';
 
 const height = em(36);
 
@@ -15,11 +27,16 @@ const Span = styled.span<{active?: boolean}>`
     cursor: pointer;
 
     &:hover {
-        background-color: ${prop => (prop.active ? primaryColor : darken(0.03, lightColor))};
+        background-color: ${prop => (prop.active ? primaryColor : lightFocusedColor)};
+    }
+
+    &:active {
+        background-color: ${prop => (prop.active ? primaryColor : lightActiveColor)};
     }
 `;
 
 type TagProps = {
+    title?: string;
     active?: boolean;
     onClick?: () => void;
 };

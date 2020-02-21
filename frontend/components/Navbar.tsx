@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import {useRouter} from 'next/router';
 import {useTranslation, Link} from '~/utils/i18n';
-import {styled, rem, headerColor, duration, easing, lighten} from '~/utils/style';
+import {styled, rem, headerColor, duration, easing, lighten, transitions} from '~/utils/style';
 
 const navItems = ['metrics', 'samples'];
 
@@ -42,7 +42,7 @@ const NavItem = styled.a<{active: boolean}>`
     justify-content: center;
     align-items: center;
     background-color: ${headerColor};
-    transition: background-color ${duration} ${easing};
+    ${transitions(['background-color'], `${duration} ${easing}`)}
 
     &:hover {
         background-color: ${lighten(0.05, headerColor)};
@@ -51,6 +51,7 @@ const NavItem = styled.a<{active: boolean}>`
     > span {
         padding: ${rem(10)} 0 ${rem(7)};
         border-bottom: ${rem(3)} solid ${props => (props.active ? '#596cd6' : 'transparent')};
+        ${transitions(['border-bottom'], `${duration} ${easing}`)}
         text-transform: uppercase;
     }
 `;

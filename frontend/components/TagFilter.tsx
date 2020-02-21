@@ -1,7 +1,6 @@
 import React, {FunctionComponent, useState} from 'react';
-import capitalize from 'lodash/capitalize';
 import {useTranslation} from '~/utils/i18n';
-import {styled, rem, math} from '~/utils/style';
+import {styled, rem, math, ellipsis} from '~/utils/style';
 import {Tag as TagType} from '~/types';
 import SearchInput from '~/components/SearchInput';
 import Tag from '~/components/Tag';
@@ -22,6 +21,12 @@ const Search = styled(SearchInput)`
 
 const SearchTag = styled(Tag)`
     margin: 0 ${margin} ${margin} 0;
+    vertical-align: middle;
+`;
+
+const SearchTagLabel = styled.span`
+    ${ellipsis(rem(120))}
+    vertical-align: middle;
 `;
 
 type TagFilterProps = {
@@ -36,7 +41,7 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({tags, total, onChange}) =
     const [inputValue, setInputValue] = useState('');
     const [selectedValue, setSelectedValue] = useState('');
     const hasSelectedValue = selectedValue !== '';
-    const allText = inputValue || `${capitalize(t('all'))}`;
+    const allText = inputValue || t('all');
 
     const onInputChange = (value: string) => {
         setInputValue(value);
@@ -55,16 +60,17 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({tags, total, onChange}) =
     return (
         <Wrapper>
             <Search placeholder={t('searchTagPlaceholder')} rounded onChange={onInputChange}></Search>
-            <SearchTag active={!hasSelectedValue} onClick={onClickAllTag}>
-                {allText} ({total})
+            <SearchTag active={!hasSelectedValue} onClick={onClickAllTag} title={allText}>
+                <SearchTagLabel>{allText}</SearchTagLabel> ({total})
             </SearchTag>
             {tags?.map((tag, index) => (
                 <SearchTag
                     active={hasSelectedValue && tag.label === selectedValue}
                     onClick={() => onClickTag(tag.label)}
                     key={index}
+                    title={tag.label}
                 >
-                    {tag.label} ({tag.count})
+                    <SearchTagLabel>{tag.label}</SearchTagLabel> ({tag.count})
                 </SearchTag>
             ))}
         </Wrapper>

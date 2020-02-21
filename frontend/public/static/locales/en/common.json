@@ -1,9 +1,11 @@
 {
-    "metrics": "metrics",
-    "samples": "samples",
+    "metrics": "Metrics",
+    "samples": "Samples",
     "searchTagPlaceholder": "Search tags in RegExp",
-    "all": "all",
-    "empty": "empty",
+    "all": "All",
+    "empty": "Empty",
     "select": "Please Select",
-    "select-display-data": "Select Display Data"
+    "select-runs": "Select Runs",
+    "start-running": "Start",
+    "stop-running": "Stop"
 }

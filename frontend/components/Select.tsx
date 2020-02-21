@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useState, useCallback, useEffect, useRef} from 'react';
-import capitalize from 'lodash/capitalize';
+import without from 'lodash/without';
 import {useTranslation} from '~/utils/i18n';
 import {
     styled,
@@ -15,15 +15,17 @@ import {
     duration,
     easing,
     ellipsis,
-    transitions
+    transitions,
+    css
 } from '~/utils/style';
+import Checkbox from '~/components/Checkbox';
+import Icon from '~/components/Icon';
 
 export const padding = em(10);
 export const height = em(36);
 
 // prettier-ignore
 const Wrapper = styled.div<{opened?: boolean}>`
-    width: 100%;
     height: ${height};
     line-height: calc(${height} - 2px);
     position: relative;
@@ -49,16 +51,13 @@ const Trigger = styled.div<{selected?: boolean}>`
     ${props => (props.selected ? '' : `color: ${textLightColor}`)}
 `;
 
-const Icon = styled.i<{opened?: boolean}>`
-    width: ${em(20)};
-    height: ${em(10)};
+const TriggerIcon = styled(Icon)<{opened?: boolean}>`
+    width: ${em(14)};
+    height: ${em(14)};
+    text-align: center;
     display: block;
-    background-image: url('/images/chevron-down.svg');
-    background-size: 100% 100%;
-    background-position: center center;
-    background-repeat: no-repeat;
     flex-shrink: 0;
-    transform: rotate(${props => (props.opened ? '180' : '0')}deg);
+    transform: rotate(${props => (props.opened ? '180' : '0')}deg) scale(${10 / 14});
     transition: transform ${duration} ${easing};
 `;
 
@@ -79,6 +78,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     z-index: 9999;
     line-height: 1;
     background-color: inherit;
+    box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
     ${props =>
         props.empty
             ? `
@@ -88,23 +88,32 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
             : ''}
 `;
 
-const ListItem = styled.div<{selected?: boolean}>`
+const listItem = css`
+    display: block;
+    cursor: pointer;
     padding: 0 ${padding};
     height: ${height};
     line-height: ${height};
-    cursor: pointer;
     width: 100%;
-    ${ellipsis()}
-    display: block;
-    ${props => (props.selected ? `color: ${selectedColor};` : '')}
     ${transitions(['color', 'background-color'], `${duration} ${easing}`)}
-
     &:hover {
         background-color: ${backgroundFocusedColor};
     }
 `;
 
-type SelectValueType = string | number | symbol;
+const ListItem = styled.div<{selected?: boolean}>`
+    ${ellipsis()}
+    ${listItem}
+    ${props => (props.selected ? `color: ${selectedColor};` : '')}
+`;
+
+const MultipleListItem = styled(Checkbox)<{selected?: boolean}>`
+    ${listItem}
+    display: flex;
+    align-items: center;
+`;
+
+export type SelectValueType = string | number | symbol;
 
 type SelectListItem<T> = {
     value: T;
@@ -132,11 +141,26 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
     const [isOpened, setIsOpened] = useState(false);
     const toggleOpened = () => setIsOpened(!isOpened);
 
-    const [value, setValue] = useState(propValue);
+    const [value, setValue] = useState(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue);
     const isSelected = !!(multiple ? value && (value as SelectValueType[]).length !== 0 : (value as SelectValueType));
-    const changeValue = (value: NonNullable<typeof propValue>) => {
-        setValue(value);
-        onChange?.(value);
+    const changeValue = (mutateValue: SelectValueType, checked?: boolean) => {
+        let newValue;
+        if (multiple) {
+            newValue = value as SelectValueType[];
+            if (checked) {
+                if (!newValue.includes(mutateValue)) {
+                    newValue = [...newValue, mutateValue];
+                }
+            } else {
+                if (newValue.includes(mutateValue)) {
+                    newValue = without(newValue, mutateValue);
+                }
+            }
+        } else {
+            newValue = mutateValue;
+        }
+        setValue(newValue);
+        onChange?.(newValue);
         if (!multiple) {
             setIsOpened(false);
         }
@@ -150,7 +174,7 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
     }, []);
     const clickListener = useCallback(
         (e: MouseEvent) => {
-            if (!(ref.current! as any).contains(e.target)) {
+            if (!(ref.current! as Node).contains(e.target as Node)) {
                 setIsOpened(false);
             }
         },
@@ -167,25 +191,48 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
         }, []);
     }
 
-    const label = value || placeholder || t('select');
-
     const list = propList?.map(item => ('string' === typeof item ? {value: item, label: item} : item)) ?? [];
     const isListEmpty = list.length === 0;
 
+    const findLabelByValue = (v: SelectValueType) => list.find(item => item.value === v)?.label ?? '';
+    const label = isSelected
+        ? multiple
+            ? (value as SelectValueType[]).map(findLabelByValue).join(' / ')
+            : findLabelByValue(value as SelectValueType)
+        : placeholder || t('select');
+
     return (
         <Wrapper ref={ref} opened={isOpened} className={className}>
-            <Trigger onClick={toggleOpened} selected={isSelected}>
+            <Trigger onClick={toggleOpened} selected={isSelected} title={isSelected && label ? String(label) : ''}>
                 <Label>{label}</Label>
-                <Icon opened={isOpened} />
+                <TriggerIcon opened={isOpened} type="chevron-down" />
             </Trigger>
             <List opened={isOpened} empty={isListEmpty}>
                 {isListEmpty
-                    ? capitalize(t('empty'))
-                    : list.map((item, index) => (
-                          <ListItem selected={item.value === value} key={index} onClick={() => changeValue(item.value)}>
-                              {item.label}
-                          </ListItem>
-                      ))}
+                    ? t('empty')
+                    : list.map((item, index) => {
+                          if (multiple) {
+                              return (
+                                  <MultipleListItem
+                                      value={(value as SelectValueType[]).includes(item.value)}
+                                      key={index}
+                                      size="small"
+                                      onChange={checked => changeValue(item.value, checked)}
+                                  >
+                                      {item.label}
+                                  </MultipleListItem>
+                              );
+                          }
+                          return (
+                              <ListItem
+                                  selected={item.value === value}
+                                  key={index}
+                                  onClick={() => changeValue(item.value)}
+                              >
+                                  {item.label}
+                              </ListItem>
+                          );
+                      })}
             </List>
         </Wrapper>
     );

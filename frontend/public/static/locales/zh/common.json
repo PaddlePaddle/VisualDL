@@ -5,6 +5,7 @@
     "all": "全部",
     "empty": "空空如也",
     "select": "请选择",
-    "select-display-data": "选择展示数据"
-
+    "select-runs": "选择展示数据",
+    "start-running": "运行",
+    "stop-running": "停止"
 }

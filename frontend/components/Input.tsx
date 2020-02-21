@@ -1,5 +1,16 @@
 import React, {FunctionComponent} from 'react';
-import {styled, WithStyled, em, textLightColor, borderColor, borderFocusedColor, borderRadius, duration, easing, math} from '~/utils/style';
+import {
+    styled,
+    WithStyled,
+    em,
+    textLightColor,
+    borderColor,
+    borderFocusedColor,
+    borderRadius,
+    duration,
+    easing,
+    math
+} from '~/utils/style';
 
 export const padding = em(10);
 export const height = em(36);
@@ -9,7 +20,6 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     height: ${height};
     line-height: ${height};
     display: inline-block;
-    width: 100%;
     border: 1px solid ${borderColor};
     border-radius: ${props => (props.rounded ? math(`${height} / 2`) : borderRadius)};
     transition: border-color ${duration} ${easing};

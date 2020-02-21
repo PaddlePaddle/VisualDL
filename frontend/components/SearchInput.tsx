@@ -1,11 +1,13 @@
 import React, {FunctionComponent} from 'react';
-import {styled, WithStyled, em, math} from '~/utils/style';
+import {styled, WithStyled, em, math, textLightColor} from '~/utils/style';
 import Input, {padding, InputProps} from '~/components/Input';
+import Icon from '~/components/Icon';
 
 const iconSize = em(16);
 
 const StyledInput = styled(Input)`
     padding-right: ${math(`${iconSize} + ${padding} * 2`)};
+    width: 100%;
 `;
 
 const Control = styled.div`
@@ -13,23 +15,20 @@ const Control = styled.div`
     position: relative;
 `;
 
-const Icon = styled.span`
-    background-image: url('/images/search.svg');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
-    width: ${iconSize};
-    height: ${iconSize};
+const SearchIcon = styled(Icon)`
+    font-size: ${iconSize};
+    display: block;
     position: absolute;
     top: ${padding};
     right: ${padding};
     pointer-events: none;
+    color: ${textLightColor};
 `;
 
 const SearchInput: FunctionComponent<InputProps & WithStyled> = ({className, ...props}) => (
     <Control className={className}>
         <StyledInput {...props} />
-        <Icon />
+        <SearchIcon type="search" />
     </Control>
 );
 

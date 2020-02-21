@@ -1,3 +1,24 @@
 {
-
+    "scalar": "标量",
+    "histogram": "直方图",
+    "smoothing": "平滑度",
+    "x-axis": "X轴",
+    "x-axis-value": {
+        "step": "步",
+        "relative": "相对值",
+        "wall": "时间"
+    },
+    "tooltip-sorting": "标签排序方法",
+    "tooltip-sorting-value": {
+        "default": "默认",
+        "descending": "降序",
+        "ascending": "升序",
+        "nearest": "最近"
+    },
+    "ignore-outliers": "图表缩放时忽略极端值",
+    "mode": "模式",
+    "mode-value": {
+        "overlay": "概览",
+        "offset": "偏移"
+    }
 }

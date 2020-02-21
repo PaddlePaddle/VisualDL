@@ -1,3 +1,4 @@
+import '~/public/style/vdl-icon.css';
 import React from 'react';
 import {NextComponentType, NextPageContext} from 'next';
 import App from 'next/app';

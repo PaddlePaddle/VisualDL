@@ -1,3 +1,24 @@
 {
-
+    "scalar": "Scalar",
+    "histogram": "Histogram",
+    "smoothing": "Smoothing",
+    "x-axis": "X-Axis",
+    "x-axis-value": {
+        "step": "Step",
+        "relative": "Relative",
+        "wall": "Wall Time"
+    },
+    "tooltip-sorting": "Tooltip Sorting",
+    "tooltip-sorting-value": {
+        "default": "Default",
+        "descending": "Descending",
+        "ascending": "Ascending",
+        "nearest": "Nearest"
+    },
+    "ignore-outliers": "Ignore outliers in chart scaling",
+    "mode": "Mode",
+    "mode-value": {
+        "overlay": "Overlay",
+        "offset": "Offset"
+    }
 }
