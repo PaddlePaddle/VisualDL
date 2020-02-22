@@ -1,6 +1,10 @@
 import React, {useState} from 'react';
+import useSWR from 'swr';
+import uniq from 'lodash/uniq';
+import intersection from 'lodash/intersection';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import {styled, rem, em} from '~/utils/style';
+import {withFetcher} from '~/utils/fetch';
 import {Tag} from '~/types';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
@@ -60,9 +64,10 @@ type MetricsProps = {
     tags: Tag[];
     total: number;
     runs: string[];
+    selectedRuns: string[];
 };
 
-const Metrics: NextI18NextPage<MetricsProps> = ({tags, runs: propRuns, total: propTotal}) => {
+const Metrics: NextI18NextPage<MetricsProps> = ({tags, runs: propRuns, selectedRuns, total: propTotal}) => {
     const {t} = useTranslation(['metrics', 'common']);
 
     const [total, setTotal] = useState(propTotal);
@@ -70,7 +75,8 @@ const Metrics: NextI18NextPage<MetricsProps> = ({tags, runs: propRuns, total: pr
         setTotal(Math.floor(Math.random() * 100));
     };
 
-    const [runs, setRuns] = useState(propRuns);
+    const {data: dataRuns} = useSWR('/runs', {initialData: propRuns});
+    const [runs, setRuns] = useState(selectedRuns);
     const onChangeRuns = (value: SelectValueType | SelectValueType[]) => setRuns(value as string[]);
 
     const [scalar, setScalar] = useState(true);
@@ -92,8 +98,9 @@ const Metrics: NextI18NextPage<MetricsProps> = ({tags, runs: propRuns, total: pr
 
     const aside = (
         <section>
+            {!dataRuns && <div>loading...</div>}
             <AsideTitle>{t('common:select-runs')}</AsideTitle>
-            <StyledSelect multiple list={propRuns} onChange={onChangeRuns}></StyledSelect>
+            <StyledSelect multiple list={dataRuns} value={runs} onChange={onChangeRuns}></StyledSelect>
             <Divider />
             <Field>
                 <Checkbox value={scalar} onChange={setScalar}>
@@ -151,16 +158,27 @@ const Metrics: NextI18NextPage<MetricsProps> = ({tags, runs: propRuns, total: pr
     );
 };
 
-Metrics.getInitialProps = () => {
+Metrics.defaultProps = {
+    tags: [],
+    runs: [],
+    total: 0
+};
+
+Metrics.getInitialProps = withFetcher(async ({query}, fetcher) => {
+    const runs = uniq(await fetcher('/runs'));
     return {
-        namespacesRequired: ['metrics', 'common'],
+        runs: runs,
+        selectedRuns: query.runs
+            ? intersection(uniq(Array.isArray(query.runs) ? query.runs : query.runs.split(',')), runs)
+            : runs,
+
         tags: [
             {label: 'test', count: 12},
             {label: 'asdfa', count: 2}
         ],
-        runs: ['123', '456', '789'],
-        total: 123
+        total: 123,
+        namespacesRequired: ['metrics', 'common']
     };
-};
+});
 
 export default Metrics;

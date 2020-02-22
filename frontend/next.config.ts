@@ -2,6 +2,9 @@ import path from 'path';
 import {Configuration} from 'webpack';
 import pkg from './package.json';
 
+const publicPath = process.env.PUBLIC_PATH || '';
+const apiUrl = process.env.API_URL || '/api';
+
 const APP = {
     name: pkg.name,
     version: pkg.version,
@@ -12,8 +15,12 @@ const APP = {
 };
 
 export default {
+    assetPrefix: publicPath,
+    poweredByHeader: false,
     env: {
-        ...APP
+        ...APP,
+        PUBLIC_PATH: publicPath,
+        API_URL: apiUrl
     },
     webpack: (config: Configuration) => {
         config.resolve = config.resolve || {};

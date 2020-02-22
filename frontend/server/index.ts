@@ -2,18 +2,26 @@ import express from 'express';
 import next from 'next';
 import {setConfig} from 'next/config';
 import nextI18NextMiddleware from 'next-i18next/middleware';
-import conf from '../next.config';
+import jsonServer from 'json-server';
+import config from '../next.config';
 import nextI18next from '../utils/i18n';
+import db from '../mock';
 
-setConfig(conf);
+const isDev = process.env.NODE_ENV !== 'production';
+
+setConfig(config);
 
 const port = process.env.PORT || 8999;
-const app = next({dev: process.env.NODE_ENV !== 'production', conf});
+const app = next({dev: isDev, conf: config});
 const handle = app.getRequestHandler();
 
 (async () => {
     await app.prepare();
     const server = express();
+
+    if (isDev) {
+        server.use(config.env.API_URL, jsonServer.router(db));
+    }
 
     await nextI18next.initPromise;
     server.use(nextI18NextMiddleware(nextI18next));
