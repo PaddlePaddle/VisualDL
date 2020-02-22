@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useState} from 'react';
+import styled from 'styled-components';
 import {
-    styled,
     WithStyled,
     em,
     textInvertColor,

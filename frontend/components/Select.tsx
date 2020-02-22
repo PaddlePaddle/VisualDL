@@ -1,8 +1,8 @@
 import React, {FunctionComponent, useState, useCallback, useEffect, useRef} from 'react';
+import styled from 'styled-components';
 import without from 'lodash/without';
 import {useTranslation} from '~/utils/i18n';
 import {
-    styled,
     WithStyled,
     em,
     backgroundColor,

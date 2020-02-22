@@ -1,7 +1,8 @@
 import React, {FunctionComponent} from 'react';
+import styled from 'styled-components';
 import {useRouter} from 'next/router';
 import {useTranslation, Link} from '~/utils/i18n';
-import {styled, rem, headerColor, duration, easing, lighten, transitions} from '~/utils/style';
+import {rem, headerColor, duration, easing, lighten, transitions} from '~/utils/style';
 
 const navItems = ['scalars', 'samples'];
 

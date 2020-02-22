@@ -19,8 +19,9 @@
         "start": "NODE_ENV=production node server/index.js"
     },
     "dependencies": {
+        "echarts": "4.6.0",
         "express": "4.17.1",
-        "isomorphic-unfetch": "^3.0.0",
+        "isomorphic-unfetch": "3.0.0",
         "lodash": "4.17.15",
         "next": "9.2.2",
         "next-i18next": "4.2.0",
@@ -33,8 +34,9 @@
         "swr": "0.1.17"
     },
     "devDependencies": {
+        "@types/echarts": "4.4.3",
         "@types/express": "4.17.2",
-        "@types/faker": "^4.1.9",
+        "@types/faker": "4.1.9",
         "@types/lodash": "4.14.149",
         "@types/node": "13.7.4",
         "@types/nprogress": "0.2.0",
@@ -44,7 +46,7 @@
         "babel-plugin-styled-components": "1.10.7",
         "babel-plugin-typescript-to-proptypes": "1.2.1",
         "cross-env": "7.0.0",
-        "faker": "^4.1.0",
+        "faker": "4.1.0",
         "nodemon": "2.0.2",
         "ts-node": "8.6.2",
         "typescript": "3.7.5"

@@ -1,5 +1,6 @@
 import React, {FunctionComponent} from 'react';
-import {styled, rem, headerHeight, asideWidth} from '~/utils/style';
+import styled from 'styled-components';
+import {rem, headerHeight, asideWidth} from '~/utils/style';
 
 const Section = styled.section`
     min-height: calc(100vh - ${headerHeight});

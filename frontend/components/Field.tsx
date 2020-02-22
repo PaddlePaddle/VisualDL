@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
+import styled from 'styled-components';
 import {
-    styled,
     WithStyled,
     rem
 } from '~/utils/style';

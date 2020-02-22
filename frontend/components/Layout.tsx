@@ -1,5 +1,6 @@
 import React, {FunctionComponent} from 'react';
-import {styled, headerHeight} from '~/utils/style';
+import styled from 'styled-components';
+import {headerHeight} from '~/utils/style';
 import Navbar from '~/components/Navbar';
 
 const Main = styled.main`

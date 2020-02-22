@@ -1,9 +1,12 @@
 import React, {FunctionComponent, useState} from 'react';
+import styled from 'styled-components';
+import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
 import {useTranslation} from '~/utils/i18n';
-import {styled, rem, math, ellipsis} from '~/utils/style';
-import {Tag as TagType} from '~/types';
+import {rem, math, ellipsis} from '~/utils/style';
 import SearchInput from '~/components/SearchInput';
 import Tag from '~/components/Tag';
+import {Tag as TagType} from '~/types';
 
 const margin = rem(16);
 
@@ -30,15 +33,24 @@ const SearchTagLabel = styled.span`
 `;
 
 type TagFilterProps = {
-    total?: number;
+    value?: string;
     tags?: TagType[];
-    onChange?: (value: string) => unknown;
+    onChange?: (value: TagType[]) => unknown;
 };
 
-const TagFilter: FunctionComponent<TagFilterProps> = ({tags, total, onChange}) => {
+const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, onChange}) => {
     const {t} = useTranslation('common');
 
-    const [inputValue, setInputValue] = useState('');
+    const tagGroups = sortBy(
+        Object.entries(groupBy<TagType>(propTags || [], tag => tag.label.split('/')[0])).map(([label, tags]) => ({
+            label,
+            tags
+        })),
+        tag => tag.label
+    );
+
+    const [matchedCount, setMatchedCount] = useState(propTags?.length ?? 0);
+    const [inputValue, setInputValue] = useState(value || '');
     const [selectedValue, setSelectedValue] = useState('');
     const hasSelectedValue = selectedValue !== '';
     const allText = inputValue || t('all');
@@ -46,31 +58,38 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({tags, total, onChange}) =
     const onInputChange = (value: string) => {
         setInputValue(value);
         setSelectedValue('');
-        onChange?.(value);
+        try {
+            const pattern = new RegExp(value);
+            const matchedTags = propTags?.filter(tag => pattern.test(tag.label)) ?? [];
+            setMatchedCount(matchedTags.length);
+            onChange?.(matchedTags);
+        } catch {
+            setMatchedCount(0);
+        }
     };
-    const onClickTag = (value: string) => {
-        setSelectedValue(value);
-        onChange?.(value);
+    const onClickTag = ({label, tags}: {label: string; tags: NonNullable<typeof propTags>}) => {
+        setSelectedValue(label);
+        onChange?.(tags);
     };
     const onClickAllTag = () => {
         setSelectedValue('');
-        onChange?.(inputValue);
+        onInputChange(inputValue);
     };
 
     return (
         <Wrapper>
             <Search placeholder={t('searchTagPlaceholder')} rounded onChange={onInputChange}></Search>
             <SearchTag active={!hasSelectedValue} onClick={onClickAllTag} title={allText}>
-                <SearchTagLabel>{allText}</SearchTagLabel> ({total})
+                <SearchTagLabel>{allText}</SearchTagLabel> ({matchedCount})
             </SearchTag>
-            {tags?.map((tag, index) => (
+            {tagGroups.map(group => (
                 <SearchTag
-                    active={hasSelectedValue && tag.label === selectedValue}
-                    onClick={() => onClickTag(tag.label)}
-                    key={index}
-                    title={tag.label}
+                    active={hasSelectedValue && group.label === selectedValue}
+                    onClick={() => onClickTag(group)}
+                    key={group.label}
+                    title={group.label}
                 >
-                    <SearchTagLabel>{tag.label}</SearchTagLabel> ({tag.count})
+                    <SearchTagLabel>{group.label}</SearchTagLabel> ({group.tags.length})
                 </SearchTag>
             ))}
         </Wrapper>
@@ -78,7 +97,6 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({tags, total, onChange}) =
 };
 
 TagFilter.defaultProps = {
-    total: 0,
     tags: [] as TagType[]
 };
 

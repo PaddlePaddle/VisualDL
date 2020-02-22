@@ -1,5 +1,6 @@
 import React, {FunctionComponent} from 'react';
-import {styled, WithStyled, em, math, textLightColor} from '~/utils/style';
+import styled from 'styled-components';
+import {WithStyled, em, math, textLightColor} from '~/utils/style';
 import Input, {padding, InputProps} from '~/components/Input';
 import Icon from '~/components/Icon';
 

@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
+import styled from 'styled-components';
 import useSWR from 'swr';
 import uniq from 'lodash/uniq';
-import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
+import groupBy from 'lodash/groupBy';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import {styled, rem} from '~/utils/style';
+import {rem} from '~/utils/style';
 import {withFetcher} from '~/utils/fetch';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
@@ -14,6 +15,8 @@ import Field from '~/components/Field';
 import Checkbox from '~/components/Checkbox';
 import RangeSlider from '~/components/RangeSlider';
 import Button from '~/components/Button';
+import ChartPage from '~/components/ChartPage';
+import {Tag} from '~/types';
 
 const xAxisValues = ['step', 'relative', 'wall'];
 const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
@@ -47,37 +50,34 @@ const StyledButton = styled(Button)`
 
 type ScalarsProps = {
     tags: Record<string, string[]>;
-    total: number;
     runs: string[];
     selectedRuns: string[];
 };
 
-const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns, total: propTotal}) => {
+const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns}) => {
     const {t} = useTranslation(['scalars', 'common']);
-
-    const [total, setTotal] = useState(propTotal);
-    const onChangeTagFilter = (value: string) => {
-        setTotal(Math.floor(Math.random() * 100));
-    };
 
     const {data: dataRuns} = useSWR('/runs', {initialData: propRuns});
     const [runs, setRuns] = useState(selectedRuns);
     const onChangeRuns = (value: SelectValueType | SelectValueType[]) => setRuns(value as string[]);
 
     const {data: dataTags} = useSWR('/scalars/tags', {initialData: propTags});
-    const tags = Object.entries(
-        groupBy<string>(
-            runs
-                .reduce((prev, run) => {
-                    if (dataTags && dataTags[run]) {
-                        Array.prototype.push.apply(prev, dataTags[run]);
-                    }
-                    return prev;
-                }, [])
-                .sort(),
-            tag => tag.split('/')[0]
+    const tags: Tag[] = Object.entries(
+        groupBy<{label: Tag['label']; run: Tag['runs'][number]}>(
+            runs.reduce((prev, run) => {
+                if (dataTags && dataTags[run]) {
+                    Array.prototype.push.apply(
+                        prev,
+                        dataTags[run].map(label => ({label, run}))
+                    );
+                }
+                return prev;
+            }, []),
+            tag => tag.label
         )
-    ).map(([label, tags]) => ({label, count: tags.length}));
+    ).map(([label, tags]) => ({label, runs: tags.map(tag => tag.run)}));
+
+    const [filteredTags, setFilteredTags] = useState(tags);
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -124,7 +124,8 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
         <>
             <Title>{t('common:scalars')}</Title>
             <Content aside={aside}>
-                <TagFilter tags={tags} total={total} onChange={onChangeTagFilter}></TagFilter>
+                <TagFilter tags={tags} onChange={setFilteredTags}></TagFilter>
+                <ChartPage value={filteredTags} />
             </Content>
         </>
     );
@@ -132,8 +133,7 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
 
 Scalars.defaultProps = {
     tags: {},
-    runs: [],
-    total: 0
+    runs: []
 };
 
 Scalars.getInitialProps = withFetcher(async ({query}, fetcher) => {
@@ -145,7 +145,6 @@ Scalars.getInitialProps = withFetcher(async ({query}, fetcher) => {
             : runs,
 
         tags,
-        total: 123,
         namespacesRequired: ['scalars', 'common']
     };
 });
