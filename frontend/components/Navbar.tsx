@@ -3,7 +3,7 @@ import {useRouter} from 'next/router';
 import {useTranslation, Link} from '~/utils/i18n';
 import {styled, rem, headerColor, duration, easing, lighten, transitions} from '~/utils/style';
 
-const navItems = ['metrics', 'samples'];
+const navItems = ['scalars', 'samples'];
 
 const Nav = styled.nav`
     background-color: ${headerColor};

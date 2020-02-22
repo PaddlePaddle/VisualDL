@@ -1,6 +1,4 @@
 {
-    "scalar": "Scalar",
-    "histogram": "Histogram",
     "smoothing": "Smoothing",
     "x-axis": "X-Axis",
     "x-axis-value": {
@@ -15,10 +13,5 @@
         "ascending": "Ascending",
         "nearest": "Nearest"
     },
-    "ignore-outliers": "Ignore outliers in chart scaling",
-    "mode": "Mode",
-    "mode-value": {
-        "overlay": "Overlay",
-        "offset": "Offset"
-    }
+    "ignore-outliers": "Ignore outliers in chart scaling"
 }

@@ -1,11 +1,11 @@
 {
-    "metrics": "度量数据",
+    "scalars": "标量数据",
     "samples": "样本数据",
     "searchTagPlaceholder": "搜索标签（支持正则）",
     "all": "全部",
     "empty": "空空如也",
     "select": "请选择",
     "select-runs": "选择展示数据",
-    "start-running": "运行",
-    "stop-running": "停止"
+    "running": "运行中",
+    "stopped": "已停止"
 }
