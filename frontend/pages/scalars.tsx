@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import useSWR from 'swr';
 import uniq from 'lodash/uniq';
+import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import {styled, rem} from '~/utils/style';
 import {withFetcher} from '~/utils/fetch';
-import {Tag} from '~/types';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import TagFilter from '~/components/TagFilter';
@@ -46,13 +46,13 @@ const StyledButton = styled(Button)`
 `;
 
 type ScalarsProps = {
-    tags: Tag[];
+    tags: Record<string, string[]>;
     total: number;
     runs: string[];
     selectedRuns: string[];
 };
 
-const Scalars: NextI18NextPage<ScalarsProps> = ({tags, runs: propRuns, selectedRuns, total: propTotal}) => {
+const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns, total: propTotal}) => {
     const {t} = useTranslation(['scalars', 'common']);
 
     const [total, setTotal] = useState(propTotal);
@@ -63,6 +63,21 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags, runs: propRuns, selectedR
     const {data: dataRuns} = useSWR('/runs', {initialData: propRuns});
     const [runs, setRuns] = useState(selectedRuns);
     const onChangeRuns = (value: SelectValueType | SelectValueType[]) => setRuns(value as string[]);
+
+    const {data: dataTags} = useSWR('/scalars/tags', {initialData: propTags});
+    const tags = Object.entries(
+        groupBy<string>(
+            runs
+                .reduce((prev, run) => {
+                    if (dataTags && dataTags[run]) {
+                        Array.prototype.push.apply(prev, dataTags[run]);
+                    }
+                    return prev;
+                }, [])
+                .sort(),
+            tag => tag.split('/')[0]
+        )
+    ).map(([label, tags]) => ({label, count: tags.length}));
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -116,23 +131,20 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags, runs: propRuns, selectedR
 };
 
 Scalars.defaultProps = {
-    tags: [],
+    tags: {},
     runs: [],
     total: 0
 };
 
 Scalars.getInitialProps = withFetcher(async ({query}, fetcher) => {
-    const runs = uniq(await fetcher('/runs'));
+    const [runs, tags] = await Promise.all([fetcher('/runs').then(uniq), fetcher('/scalars/tags')]);
     return {
         runs: runs,
         selectedRuns: query.runs
             ? intersection(uniq(Array.isArray(query.runs) ? query.runs : query.runs.split(',')), runs)
             : runs,
 
-        tags: [
-            {label: 'test', count: 12},
-            {label: 'asdfa', count: 2}
-        ],
+        tags,
         total: 123,
         namespacesRequired: ['scalars', 'common']
     };
