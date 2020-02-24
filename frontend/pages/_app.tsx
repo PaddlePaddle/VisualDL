@@ -16,6 +16,7 @@ Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
 type AppProps<P = {}> = {
+    // eslint-disable-next-line
     Component: {title?: string} & NextComponentType<NextPageContext, any, P>;
 };
 

@@ -12,6 +12,7 @@ const Wrapper = styled.div`
 `;
 
 export const ValueContext = createContext(null as string | number | symbol | undefined | null);
+// eslint-disable-next-line
 export const EventContext = createContext((() => {}) as ((value: string | number | symbol) => unknown) | undefined);
 
 type RadioGroupProps = {

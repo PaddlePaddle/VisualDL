@@ -22,6 +22,7 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
 
             // stealed from https://github.com/isaachinman/next-i18next/issues/20#issuecomment-558799264
             // FIXME: https://github.com/i18next/i18next-express-middleware/blob/master/src/index.js#L23-L26
+            // eslint-disable-next-line
             const {locals} = ctx.res as any;
             const additionalProps = {
                 languageDirection: locals.languageDirection as string,

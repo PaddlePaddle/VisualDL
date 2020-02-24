@@ -8,8 +8,8 @@ interface ErrorProps {
 const Error: NextI18NextPage<ErrorProps> = ({statusCode}) => {
     const {t} = useTranslation('errors');
 
-    return <p>{statusCode ? t('error-with-status', {statusCode}) : t('error-without-status')}</p>
-}
+    return <p>{statusCode ? t('error-with-status', {statusCode}) : t('error-without-status')}</p>;
+};
 
 Error.getInitialProps = ({res, err}) => {
     let statusCode = null;

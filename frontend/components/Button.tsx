@@ -41,13 +41,13 @@ const Wrapper = styled.a`
 
 type ButtonProps = {
     icon?: string;
-}
+};
 
 const Button: FunctionComponent<ButtonProps & WithStyled> = ({icon, children, className}) => (
     <Wrapper className={className}>
         {icon && <Icon type="icon"></Icon>}
         {children}
     </Wrapper>
-)
+);
 
 export default Button;

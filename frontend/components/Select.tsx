@@ -174,6 +174,7 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
     }, []);
     const clickListener = useCallback(
         (e: MouseEvent) => {
+            // eslint-disable-next-line
             if (!(ref.current! as Node).contains(e.target as Node)) {
                 setIsOpened(false);
             }

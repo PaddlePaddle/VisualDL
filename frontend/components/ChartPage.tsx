@@ -1,9 +1,6 @@
 import React, {FunctionComponent, useState} from 'react';
 import styled from 'styled-components';
-import {
-    WithStyled,
-    rem
-} from '~/utils/style';
+import {WithStyled, rem} from '~/utils/style';
 import Chart from '~/components/Chart';
 import LineChart from '~/components/LineChart';
 import Pagination from '~/components/Pagination';
@@ -20,6 +17,8 @@ const Wrapper = styled.div`
 `;
 
 type ChartPageProps = {
+    // TODO: add types
+    // eslint-disable-next-line
     value?: any[];
 };
 

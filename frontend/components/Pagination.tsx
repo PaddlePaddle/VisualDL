@@ -98,7 +98,7 @@ const Pagination: FunctionComponent<PaginationProps & WithStyled> = ({page, tota
     const genLink = (arr: number[]) =>
         arr.map(i => (
             <Li key={i}>
-                <A>{i}</A>
+                <A onClick={() => onChange?.(i)}>{i}</A>
             </Li>
         ));
     const hellip = (

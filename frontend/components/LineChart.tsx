@@ -19,6 +19,7 @@ const LineChart: FunctionComponent<LineChartProps> = ({value}) => {
     }));
 
     const createChart = () => {
+        // eslint-disable-next-line
         chart = echarts.init((ref.current as any) as HTMLDivElement);
     };
     const destroyChart = () => {
@@ -60,7 +61,7 @@ const LineChart: FunctionComponent<LineChartProps> = ({value}) => {
                                 z: dataset.length + i,
                                 animationDuration: 100,
                                 lineStyle: {
-                                    width: 1.5,
+                                    width: 1.5
                                 },
                                 data: smooth(data.data, 0.6),
                                 encode: {
@@ -102,7 +103,7 @@ const LineChart: FunctionComponent<LineChartProps> = ({value}) => {
                         axisPointer: {
                             type: 'cross',
                             label: {
-                                show: false
+                                show: true
                             },
                             lineStyle: {
                                 color: '#2932E1',
@@ -202,7 +203,7 @@ const LineChart: FunctionComponent<LineChartProps> = ({value}) => {
                 setChartData(datas);
             }
             return () => destroyChart();
-        }, [datas]);
+        }, []);
     }
 
     return <div style={{height: '100%'}} ref={ref}></div>;

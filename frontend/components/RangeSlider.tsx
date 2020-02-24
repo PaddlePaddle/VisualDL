@@ -1,14 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
-import {
-    WithStyled,
-    em,
-    size,
-    half,
-    math,
-    primaryColor,
-    backgroundColor
-} from '~/utils/style';
+import {WithStyled, em, size, half, math, primaryColor, backgroundColor} from '~/utils/style';
 import InputRange, {Range} from 'react-input-range';
 
 const height = em(20);

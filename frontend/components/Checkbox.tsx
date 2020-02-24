@@ -16,7 +16,8 @@ import {
 
 const height = em(20);
 const checkSize = em(16);
-const checkMark = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAxMSA4IiB3aWR0aD0iMTEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTkuNDc5NDI3MDggMTAuMTg3NWgtNS4yNXYtMS4zMTI1aDMuOTM3bC4wMDA1LTcuODc1aDEuMzEyNXoiIGZpbGw9IiNmNWY1ZjUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgdHJhbnNmb3JtPSJtYXRyaXgoLjcwNzEwNjc4IC43MDcxMDY3OCAtLjcwNzEwNjc4IC43MDcxMDY3OCA0Ljk2Mjk5NCAtNi4yMDg0NCkiLz48L3N2Zz4=';
+const checkMark =
+    'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjgiIHZpZXdCb3g9IjAgMCAxMSA4IiB3aWR0aD0iMTEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTkuNDc5NDI3MDggMTAuMTg3NWgtNS4yNXYtMS4zMTI1aDMuOTM3bC4wMDA1LTcuODc1aDEuMzEyNXoiIGZpbGw9IiNmNWY1ZjUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgdHJhbnNmb3JtPSJtYXRyaXgoLjcwNzEwNjc4IC43MDcxMDY3OCAtLjcwNzEwNjc4IC43MDcxMDY3OCA0Ljk2Mjk5NCAtNi4yMDg0NCkiLz48L3N2Zz4=';
 
 const Wrapper = styled.label`
     position: relative;
@@ -36,15 +37,15 @@ const Input = styled.input.attrs(() => ({
     pointer-events: none;
 `;
 
-const Inner = styled.div<{checked?: boolean, size?: string}>`
-    color: ${props => props.checked ? textInvertColor : 'transparent'};
+const Inner = styled.div<{checked?: boolean; size?: string}>`
+    color: ${props => (props.checked ? textInvertColor : 'transparent')};
     flex-shrink: 0;
     ${props => size(math(`${checkSize} * ${props.size === 'small' ? 0.875 : 1}`))}
     margin: ${math(`(${height} - ${checkSize}) / 2`)} 0;
     margin-right: ${em(4)};
     border: 1px solid ${props => (props.checked ? primaryColor : '#999')};
     background-color: ${props => (props.checked ? primaryColor : backgroundColor)};
-    background-image: ${props => props.checked ? `url("${checkMark}")` : 'none'};
+    background-image: ${props => (props.checked ? `url("${checkMark}")` : 'none')};
     background-repeat: no-repeat;
     background-position: center center;
     background-size: ${em(10)} ${em(8)};

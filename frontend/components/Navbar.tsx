@@ -80,6 +80,6 @@ const Navbar: FunctionComponent = () => {
             })}
         </Nav>
     );
-}
+};
 
 export default Navbar;
