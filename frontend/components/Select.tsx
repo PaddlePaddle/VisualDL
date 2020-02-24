@@ -172,25 +172,22 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
             setIsOpened(false);
         }
     }, []);
-    const clickListener = useCallback(
-        (e: MouseEvent) => {
-            // eslint-disable-next-line
-            if (!(ref.current! as Node).contains(e.target as Node)) {
-                setIsOpened(false);
-            }
-        },
-        [ref.current]
-    );
-    if (process.browser) {
-        useEffect(() => {
+    const clickListener = useCallback((e: MouseEvent) => {
+        // eslint-disable-next-line
+        if (!(ref.current! as Node).contains(e.target as Node)) {
+            setIsOpened(false);
+        }
+    }, []);
+    useEffect(() => {
+        if (process.browser) {
             document.addEventListener('click', clickListener);
             document.addEventListener('keyup', escapeListener);
             return () => {
                 document.removeEventListener('click', clickListener);
                 document.removeEventListener('keyup', escapeListener);
             };
-        }, []);
-    }
+        }
+    }, [clickListener, escapeListener]);
 
     const list = propList?.map(item => ('string' === typeof item ? {value: item, label: item} : item)) ?? [];
     const isListEmpty = list.length === 0;

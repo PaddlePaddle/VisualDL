@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent, useState, useCallback} from 'react';
 import styled from 'styled-components';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
@@ -39,6 +39,8 @@ type TagFilterProps = {
 };
 
 const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, onChange}) => {
+    type NonNullTags = NonNullable<typeof propTags>;
+
     const {t} = useTranslation('common');
 
     const tagGroups = sortBy(
@@ -55,32 +57,38 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, on
     const hasSelectedValue = selectedValue !== '';
     const allText = inputValue || t('all');
 
-    const onInputChange = (value: string) => {
-        setInputValue(value);
-        setSelectedValue('');
-        try {
-            const pattern = new RegExp(value);
-            const matchedTags = propTags?.filter(tag => pattern.test(tag.label)) ?? [];
-            setMatchedCount(matchedTags.length);
-            onChange?.(matchedTags);
-        } catch {
-            setMatchedCount(0);
-        }
-    };
-    const onClickTag = ({label, tags}: {label: string; tags: NonNullable<typeof propTags>}) => {
-        setSelectedValue(label);
-        onChange?.(tags);
-    };
-    const onClickAllTag = () => {
+    const onInputChange = useCallback(
+        (value: string) => {
+            setInputValue(value);
+            setSelectedValue('');
+            try {
+                const pattern = new RegExp(value);
+                const matchedTags = propTags?.filter(tag => pattern.test(tag.label)) ?? [];
+                setMatchedCount(matchedTags.length);
+                onChange?.(matchedTags);
+            } catch {
+                setMatchedCount(0);
+            }
+        },
+        [propTags, onChange]
+    );
+    const onClickTag = useCallback(
+        ({label, tags}: {label: string; tags: NonNullTags}) => {
+            setSelectedValue(label);
+            onChange?.(tags);
+        },
+        [onChange]
+    );
+    const onClickAllTag = useCallback(() => {
         setSelectedValue('');
         onInputChange(inputValue);
-    };
+    }, [inputValue, onInputChange]);
 
     return (
         <Wrapper>
             <Search placeholder={t('searchTagPlaceholder')} rounded onChange={onInputChange}></Search>
             <SearchTag active={!hasSelectedValue} onClick={onClickAllTag} title={allText}>
-                <SearchTagLabel>{allText}</SearchTagLabel> ({matchedCount})
+                <SearchTagLabel>{allText}</SearchTagLabel> ({inputValue ? matchedCount : propTags?.length ?? 0})
             </SearchTag>
             {tagGroups.map(group => (
                 <SearchTag

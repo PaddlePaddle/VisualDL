@@ -2,9 +2,15 @@ import fetch from 'isomorphic-unfetch';
 import {NextPageContext} from 'next';
 import {Request} from 'express';
 
-const fetcher = async (url: string, options?: any, baseUrl = ''): Promise<any> => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export const fetcher = async (url: string, options?: any, baseUrl = ''): Promise<any> => {
     const res = await fetch(baseUrl + process.env.API_URL + url, options);
     return await res.json();
+};
+
+export const cycleFetcher = async (urls: string[], options?: any, baseUrl = ''): Promise<any> => {
+    return await Promise.all(urls.map(url => fetcher(url, options, baseUrl)));
 };
 
 type GetInitialProps = (context: NextPageContext, f: typeof fetcher) => any;
@@ -15,5 +21,3 @@ export const withFetcher = (getInitialProps: GetInitialProps) => (context: NextP
     const baseUrl = req ? `${((req as unknown) as Request).protocol}://${req.headers.host}` : '';
     return getInitialProps(context, (url: string, options: unknown) => fetcher(url, options, baseUrl));
 };
-
-export default fetcher;

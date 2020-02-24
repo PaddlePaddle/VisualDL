@@ -5,7 +5,7 @@ import App from 'next/app';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import {SWRConfig} from 'swr';
-import fetcher from '~/utils/fetch';
+import {fetcher} from '~/utils/fetch';
 import {Router, appWithTranslation} from '~/utils/i18n';
 import {GlobalStyle} from '~/utils/style';
 import Title from '~/components/Title';
