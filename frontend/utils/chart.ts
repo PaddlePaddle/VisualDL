@@ -1,8 +1,6 @@
-import {EChartOption} from 'echarts';
+export const color = ['#2932E1', '#25C9FF', '#981EFF', '#D8DAF6', '#E9F9FF', '#F3E8FF'];
 
-export const color: EChartOption['color'] = ['#2932E1', '#25C9FF', '#981EFF', '#D8DAF6', '#E9F9FF', '#F3E8FF'];
-
-export const title: EChartOption['title'] = {
+export const title = {
     textStyle: {
         fontSize: 16,
         fontWeight: 'bold'
@@ -11,8 +9,9 @@ export const title: EChartOption['title'] = {
     left: 15
 };
 
-export const tooltip: EChartOption['tooltip'] = {
+export const tooltip = {
     trigger: 'axis',
+    position: ['10%', '95%'],
     axisPointer: {
         type: 'cross',
         label: {
@@ -29,7 +28,7 @@ export const tooltip: EChartOption['tooltip'] = {
     }
 };
 
-export const toolbox: EChartOption['toolbox'] = {
+export const toolbox = {
     show: true,
     orient: 'vertical',
     showTitle: false,
@@ -51,7 +50,7 @@ export const toolbox: EChartOption['toolbox'] = {
     }
 };
 
-export const legend: EChartOption['legend'] = {
+export const legend = {
     top: 12,
     right: 15,
     itemWidth: 17,
@@ -62,16 +61,16 @@ export const legend: EChartOption['legend'] = {
     icon: 'roundRect'
 };
 
-export const grid: EChartOption['grid'] = {
+export const grid = {
     left: 50,
     top: 60,
     right: 50,
     bottom: 50
 };
 
-export const xAxis: EChartOption['xAxis'] = {
+export const xAxis = {
     type: 'value',
-    name: 'Step',
+    name: '',
     nameTextStyle: {
         fontSize: 12,
         color: '#666'
@@ -94,7 +93,7 @@ export const xAxis: EChartOption['xAxis'] = {
     splitNumber: 5
 };
 
-export const yAxis: EChartOption['yAxis'] = {
+export const yAxis = {
     type: 'value',
     splitNumber: 4,
     axisLine: {
@@ -124,6 +123,5 @@ export const series = {
     animationDuration: 100,
     lineStyle: {
         width: 1.5
-    },
-    smooth: true
+    }
 };

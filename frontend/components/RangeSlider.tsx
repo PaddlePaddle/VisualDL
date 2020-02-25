@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
 import {WithStyled, em, size, half, math, primaryColor, backgroundColor} from '~/utils/style';
 import InputRange, {Range} from 'react-input-range';
@@ -60,17 +60,18 @@ type RangeSliderProps = {
     step?: number;
     value?: number;
     onChange?: (value: number) => unknown;
+    onChangeComplete?: () => unknown;
 };
 
 const RangeSlider: FunctionComponent<RangeSliderProps & WithStyled> = ({
     onChange,
+    onChangeComplete,
     className,
     min,
     max,
     step,
     value
 }) => {
-    const [v, setV] = useState(value as number | Range);
     const onChangeRange = (range: number | Range) => onChange?.(range as number);
 
     return (
@@ -79,10 +80,9 @@ const RangeSlider: FunctionComponent<RangeSliderProps & WithStyled> = ({
                 minValue={min}
                 maxValue={max}
                 step={step}
-                value={v as number}
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                onChange={setV}
-                onChangeComplete={onChangeRange}
+                value={value as number}
+                onChange={onChangeRange}
+                onChangeComplete={() => onChangeComplete?.()}
             />
         </Wrapper>
     );

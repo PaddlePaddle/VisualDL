@@ -41,10 +41,11 @@ const Wrapper = styled.a`
 
 type ButtonProps = {
     icon?: string;
+    onClick?: () => unknown;
 };
 
-const Button: FunctionComponent<ButtonProps & WithStyled> = ({icon, children, className}) => (
-    <Wrapper className={className}>
+const Button: FunctionComponent<ButtonProps & WithStyled> = ({icon, children, className, onClick}) => (
+    <Wrapper className={className} onClick={onClick}>
         {icon && <Icon type="icon"></Icon>}
         {children}
     </Wrapper>
