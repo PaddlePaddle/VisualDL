@@ -1,9 +1,8 @@
-import React, {useState, useCallback, useReducer} from 'react';
+import React, {useState, useCallback} from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 import uniq from 'lodash/uniq';
 import intersection from 'lodash/intersection';
-import groupBy from 'lodash/groupBy';
+import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import {rem} from '~/utils/style';
 import {withFetcher} from '~/utils/fetch';
@@ -47,93 +46,19 @@ const StyledButton = styled(Button)`
     text-transform: uppercase;
 `;
 
-const groupTags = (runs: string[], tags?: Record<string, string[]>) =>
-    Object.entries(
-        groupBy<{label: Tag['label']; run: Tag['runs'][number]}>(
-            runs
-                // get tags of selected runs
-                .filter(run => runs.includes(run))
-                // group by runs
-                .reduce((prev, run) => {
-                    if (tags && tags[run]) {
-                        Array.prototype.push.apply(
-                            prev,
-                            tags[run].map(label => ({label, run}))
-                        );
-                    }
-                    return prev;
-                }, []),
-            tag => tag.label
-        )
-    ).map(([label, tags]) => ({label, runs: tags.map(tag => tag.run)}));
-
 type ScalarsProps = {
     tags: Record<string, string[]>;
     runs: string[];
     selectedRuns: string[];
 };
 
-type ScalarsState = {
-    runs: string[];
-    tags: ReturnType<typeof groupTags>;
-    filteredTags: ReturnType<typeof groupTags>;
-};
-
-enum ScalarsStateActionType {
-    setRuns,
-    setTags,
-    setFilteredTags
-}
-
-type ScalarsStateAction = {
-    type: ScalarsStateActionType;
-    payload: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-};
-
-const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns}) => {
+const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns: propSelectedRuns}) => {
     const {t} = useTranslation(['scalars', 'common']);
 
-    const {data: runs} = useSWR('/runs', {initialData: propRuns});
-
-    const {data: tags} = useSWR('/scalars/tags', {initialData: propTags});
-
-    const reducer = (state: ScalarsState, action: ScalarsStateAction) => {
-        switch (action.type) {
-            case ScalarsStateActionType.setRuns:
-                const newTags = groupTags(action.payload, tags);
-                return {
-                    ...state,
-                    runs: action.payload,
-                    tags: newTags,
-                    filteredTags: newTags
-                };
-            case ScalarsStateActionType.setTags:
-                return {
-                    ...state,
-                    tags: action.payload,
-                    filteredTags: action.payload
-                };
-            case ScalarsStateActionType.setFilteredTags:
-                return {
-                    ...state,
-                    filteredTags: action.payload
-                };
-            default:
-                throw Error();
-        }
-    };
-    const [state, dispatch] = useReducer(
-        reducer,
-        {
-            runs: selectedRuns,
-            tags: groupTags(selectedRuns, tags)
-        },
-        initArgs => ({...initArgs, filteredTags: initArgs.tags})
-    );
-
-    const onChangeRuns = (value: SelectValueType | SelectValueType[]) =>
-        dispatch({type: ScalarsStateActionType.setRuns, payload: value as SelectValueType[]});
-    const onFilterTags = (tags: Tag[]) => dispatch({type: ScalarsStateActionType.setFilteredTags, payload: tags});
+    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter(propSelectedRuns, {
+        runs: propRuns,
+        tags: propTags
+    });
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -152,7 +77,12 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
     const aside = (
         <section>
             <AsideTitle>{t('common:select-runs')}</AsideTitle>
-            <StyledSelect multiple list={runs} value={state.runs} onChange={onChangeRuns}></StyledSelect>
+            <StyledSelect
+                multiple
+                list={runs}
+                value={selectedRuns}
+                onChange={(value: SelectValueType | SelectValueType[]) => onChangeRuns(value as string[])}
+            />
             <Divider />
             <SmoothingSlider value={smoothing} onChange={setSmoothing} />
             <Field label={t('x-axis')}>
@@ -197,8 +127,8 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
         <>
             <Title>{t('common:scalars')}</Title>
             <Content aside={aside}>
-                <TagFilter tags={state.tags} onChange={onFilterTags} />
-                <ChartPage items={state.filteredTags} withChart={withChart} />
+                <TagFilter tags={tags} onChange={onFilterTags} />
+                <ChartPage items={selectedTags} withChart={withChart} />
             </Content>
         </>
     );
