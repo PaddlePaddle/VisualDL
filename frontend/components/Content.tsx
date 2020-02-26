@@ -1,28 +1,31 @@
 import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
-import {rem, headerHeight, asideWidth} from '~/utils/style';
+import {rem, math, headerHeight, asideWidth, backgroundColor} from '~/utils/style';
+
+const margin = rem(20);
+const padding = rem(20);
 
 const Section = styled.section`
-    min-height: calc(100vh - ${headerHeight});
-    display: flex;
-    align-items: stretch;
-    justify-content: space-between;
+    /* trigger BFC */
+    overflow: hidden;
 `;
 
-const Article = styled.article`
-    margin: ${rem(20)};
-    padding: ${rem(20)};
-    background-color: #fff;
-    flex-shrink: 1;
-    flex-grow: 1;
+const Article = styled.article<{aside?: boolean}>`
+    margin: ${margin};
+    margin-right: ${props => (props.aside ? math(`${margin} + ${asideWidth}`) : margin)};
+    padding: ${padding};
+    background-color: ${backgroundColor};
+    min-height: calc(100vh - ${math(`${margin} * 2 + ${headerHeight}`)});
 `;
 
 const Aside = styled.aside`
     width: ${asideWidth};
-    padding: ${rem(20)};
-    background-color: #fff;
-    flex-shrink: 0;
-    flex-grow: 0;
+    padding: ${padding};
+    background-color: ${backgroundColor};
+    height: calc(100vh - ${headerHeight});
+    position: fixed;
+    top: ${headerHeight};
+    right: 0;
 `;
 
 type ContentProps = {
@@ -31,7 +34,7 @@ type ContentProps = {
 
 const Content: FunctionComponent<ContentProps> = ({children, aside}) => (
     <Section>
-        <Article>{children}</Article>
+        <Article aside={!!aside}>{children}</Article>
         {aside && <Aside>{aside}</Aside>}
     </Section>
 );
