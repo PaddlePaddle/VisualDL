@@ -1,3 +1,5 @@
+// TODO: use this instead
+// https://github.com/zeit/swr/blob/master/examples/axios-typescript/libs/useRequest.ts
 import fetch from 'isomorphic-unfetch';
 import {NextPageContext} from 'next';
 import {Request} from 'express';
