@@ -5,7 +5,9 @@
     "all": "全部",
     "empty": "空空如也",
     "select": "请选择",
-    "select-runs": "选择展示数据",
+    "runs": "数据流",
+    "select-runs": "选择数据流",
     "running": "运行中",
-    "stopped": "已停止"
+    "stopped": "已停止",
+    "loading": "载入中"
 }

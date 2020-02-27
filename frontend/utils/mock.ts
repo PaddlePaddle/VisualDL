@@ -1,6 +1,6 @@
 import path from 'path';
 import faker from 'faker';
-import {Request, Response, NextFunction} from 'express';
+import {Request, Response} from 'express';
 
 const sleep = (time: number) => {
     return new Promise(resolve => setTimeout(resolve, time));
@@ -12,7 +12,7 @@ export type Options = {
 };
 
 export default (options: Options) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response) => {
         const method = req.path.replace(/^\//, '');
 
         if (!method) {

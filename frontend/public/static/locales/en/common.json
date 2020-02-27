@@ -5,7 +5,9 @@
     "all": "ALL",
     "empty": "Empty",
     "select": "Please Select",
+    "runs": "Runs",
     "select-runs": "Select Runs",
     "running": "Running",
-    "stopped": "Stopped"
+    "stopped": "Stopped",
+    "loading": "Loading"
 }

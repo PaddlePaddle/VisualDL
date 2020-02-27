@@ -49,7 +49,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const {t} = useTranslation('scalars');
 
     // TODO: maybe we can create a custom hook here
-    const {data: datasets} = useSWR<DataSet[]>(
+    const {data: datasets, error} = useSWR<DataSet[]>(
         runs.map(run => `/scalars/scalars?run=${encodeURIComponent(run)}&tag=${encodeURIComponent(tag)}`),
         (...urls) => cycleFetcher(urls),
         {
@@ -165,6 +165,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             type={type}
             tooltip={formatter}
             data={data}
+            loading={!datasets && !error}
         />
     );
 };
