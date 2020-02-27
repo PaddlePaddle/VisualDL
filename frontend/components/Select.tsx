@@ -23,11 +23,13 @@ import Icon from '~/components/Icon';
 
 export const padding = em(10);
 export const height = em(36);
+const minWidth = em(160);
 
 // prettier-ignore
 const Wrapper = styled.div<{opened?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
+    min-width: ${minWidth};
     position: relative;
     border: 1px solid ${borderColor};
     /* eslint-disable-next-line */

@@ -9,6 +9,7 @@ import {withFetcher} from '~/utils/fetch';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import TagFilter from '~/components/TagFilter';
+import RunSelect from '~/components/RunSelect';
 import Select, {SelectValueType} from '~/components/Select';
 import Field from '~/components/Field';
 import Checkbox from '~/components/Checkbox';
@@ -22,16 +23,6 @@ type XAxis = keyof typeof xAxisMap;
 const xAxisValues = ['step', 'relative', 'wall'];
 type TooltiopSorting = keyof typeof sortingMethodMap;
 const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
-
-const AsideTitle = styled.h3`
-    font-size: ${rem(16)};
-    line-height: ${rem(16)};
-    margin-bottom: ${rem(10)};
-`;
-
-const StyledSelect = styled(Select)`
-    width: ${rem(160)};
-`;
 
 const Divider = styled.hr<{height?: string | number}>`
     background-color: transparent;
@@ -76,28 +67,22 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
 
     const aside = (
         <section>
-            <AsideTitle>{t('common:select-runs')}</AsideTitle>
-            <StyledSelect
-                multiple
-                list={runs}
-                value={selectedRuns}
-                onChange={(value: SelectValueType | SelectValueType[]) => onChangeRuns(value as string[])}
-            />
+            <RunSelect runs={runs} value={selectedRuns} onChange={onChangeRuns} />
             <Divider />
             <SmoothingSlider value={smoothing} onChange={setSmoothing} />
             <Field label={t('x-axis')}>
-                <StyledSelect
+                <Select
                     list={xAxisValues.map(value => ({label: t(`x-axis-value.${value}`), value}))}
                     value={xAxis}
                     onChange={onChangeXAxis}
-                ></StyledSelect>
+                ></Select>
             </Field>
             <Field label={t('tooltip-sorting')}>
-                <StyledSelect
+                <Select
                     list={toolTipSortingValues.map(value => ({label: t(`tooltip-sorting-value.${value}`), value}))}
                     value={tooltipSorting}
                     onChange={onChangeTooltipSorting}
-                ></StyledSelect>
+                />
             </Field>
             <Field>
                 <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
