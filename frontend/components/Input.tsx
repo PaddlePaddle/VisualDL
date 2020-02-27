@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {
     WithStyled,
     em,
-    textLightColor,
+    textLighterColor,
     borderColor,
     borderFocusedColor,
     borderRadius,
@@ -31,7 +31,7 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     }
 
     &::placeholder {
-        color: ${textLightColor};
+        color: ${textLighterColor};
     }
 `;
 

@@ -15,7 +15,7 @@ export const cycleFetcher = async (urls: string[], options?: any, baseUrl = ''):
     return await Promise.all(urls.map(url => fetcher(url, options, baseUrl)));
 };
 
-type GetInitialProps = (context: NextPageContext, f: typeof fetcher) => any;
+type GetInitialProps<T = any> = (context: NextPageContext, f: typeof fetcher) => T | Promise<T>;
 
 export const withFetcher = (getInitialProps: GetInitialProps) => (context: NextPageContext) => {
     const {req} = context;

@@ -7,7 +7,7 @@ import {
     em,
     backgroundColor,
     backgroundFocusedColor,
-    textLightColor,
+    textLighterColor,
     selectedColor,
     borderColor,
     borderFocusedColor,
@@ -50,7 +50,7 @@ const Trigger = styled.div<{selected?: boolean}>`
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    ${props => (props.selected ? '' : `color: ${textLightColor}`)}
+    ${props => (props.selected ? '' : `color: ${textLighterColor}`)}
 `;
 
 const TriggerIcon = styled(Icon)<{opened?: boolean}>`
@@ -84,7 +84,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     ${props =>
         props.empty
             ? `
-                color: ${textLightColor};
+                color: ${textLighterColor};
                 text-align: center;
             `
             : ''}

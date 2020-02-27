@@ -1,6 +1,10 @@
 import {useReducer} from 'react';
 import useSWR from 'swr';
 import groupBy from 'lodash/groupBy';
+import uniq from 'lodash/uniq';
+import intersection from 'lodash/intersection';
+import {NextPageContext} from 'next';
+import {fetcher} from '~/utils/fetch';
 import {Tag} from '~/types';
 
 type Runs = string[];
@@ -60,9 +64,33 @@ type InitData = {
     tags: Tags;
 };
 
-const useTagFilters = (selectedRuns: string[], initData: InitData) => {
+export type Props = {
+    tags: Tags;
+    runs: Runs;
+    selectedRuns: Runs;
+};
+
+export const defaultProps = {
+    tags: {},
+    runs: []
+};
+
+type GetInitialProps = (type: string, context: NextPageContext, f: typeof fetcher) => Promise<Props>;
+
+export const getInitialProps: GetInitialProps = async (type, {query}, fetcher) => {
+    const [runs, tags] = await Promise.all([fetcher('/runs').then(uniq), fetcher(`/${type}/tags`)]);
+    return {
+        runs: runs,
+        selectedRuns: query.runs
+            ? intersection(uniq(Array.isArray(query.runs) ? query.runs : query.runs.split(',')), runs)
+            : runs,
+        tags
+    };
+};
+
+const useTagFilters = (type: string, selectedRuns: Runs, initData: InitData) => {
     const {data: runs} = useSWR('/runs', {initialData: initData.runs});
-    const {data: tags} = useSWR('/scalars/tags', {initialData: initData.tags});
+    const {data: tags} = useSWR(`/${type}/tags`, {initialData: initData.tags});
 
     const reducer = (state: State, action: Action): State => {
         switch (action.type) {

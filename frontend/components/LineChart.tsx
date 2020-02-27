@@ -1,5 +1,6 @@
 import React, {FunctionComponent, useRef, useEffect, useCallback} from 'react';
 import echarts, {ECharts, EChartOption} from 'echarts';
+import {WithStyled} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
 import * as chart from '~/utils/chart';
 
@@ -17,7 +18,17 @@ type LineChartProps = {
     loading?: boolean;
 };
 
-const LineChart: FunctionComponent<LineChartProps> = ({title, legend, data, xAxis, type, yRange, tooltip, loading}) => {
+const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
+    title,
+    legend,
+    data,
+    xAxis,
+    type,
+    yRange,
+    tooltip,
+    loading,
+    className
+}) => {
     const {t} = useTranslation('common');
     const ref = useRef(null);
     const echart = useRef(null as ECharts | null);
@@ -116,7 +127,7 @@ const LineChart: FunctionComponent<LineChartProps> = ({title, legend, data, xAxi
         }
     }, [t, loading]);
 
-    return <div style={{height: '100%'}} ref={ref}></div>;
+    return <div className={className} ref={ref}></div>;
 };
 
 export default LineChart;

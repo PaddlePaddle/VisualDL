@@ -1,15 +1,24 @@
 import React, {FunctionComponent, useCallback, useMemo} from 'react';
+import styled from 'styled-components';
 import useSWR from 'swr';
 import compact from 'lodash/compact';
 import minBy from 'lodash/minBy';
 import maxBy from 'lodash/maxBy';
 import sortBy from 'lodash/sortBy';
 import {EChartOption} from 'echarts';
+import {em, size} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
 import {cycleFetcher} from '~/utils/fetch';
 import {transform, range, tooltip, TooltipData} from '~/utils/scalars';
 import * as chart from '~/utils/chart';
 import LineChart from '~/components/LineChart';
+
+const width = em(430);
+const height = em(320);
+
+const StyledLineChart = styled(LineChart)`
+    ${size(height, width)}
+`;
 
 export const xAxisMap = {
     step: 1,
@@ -157,7 +166,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     );
 
     return (
-        <LineChart
+        <StyledLineChart
             title={tag}
             legend={runs}
             xAxis={t(`x-axis-value.${xAxis}`)}

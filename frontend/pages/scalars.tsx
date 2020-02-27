@@ -1,20 +1,21 @@
 import React, {useState, useCallback} from 'react';
-import styled from 'styled-components';
-import uniq from 'lodash/uniq';
-import intersection from 'lodash/intersection';
-import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import {rem} from '~/utils/style';
+import useTagFilter, {
+    getInitialProps as getTagFilterInitialProps,
+    defaultProps as defaultTagFilterProps,
+    Props as TagFilterProps
+} from '~/hooks/useTagFilter';
 import {withFetcher} from '~/utils/fetch';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
-import TagFilter from '~/components/TagFilter';
 import RunSelect from '~/components/RunSelect';
+import TagFilter from '~/components/TagFilter';
 import Select, {SelectValueType} from '~/components/Select';
 import Field from '~/components/Field';
 import Checkbox from '~/components/Checkbox';
 import SmoothingSlider from '~/components/SmoothingSlider';
-import Button from '~/components/Button';
+import RunningToggle from '~/components/RunningToggle';
+import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
 import ScalarChart, {xAxisMap, sortingMethodMap} from '~/components/ScalarChart';
 import {Tag} from '~/types';
@@ -24,32 +25,19 @@ const xAxisValues = ['step', 'relative', 'wall'];
 type TooltiopSorting = keyof typeof sortingMethodMap;
 const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
 
-const Divider = styled.hr<{height?: string | number}>`
-    background-color: transparent;
-    margin: 0;
-    border: none;
-    height: ${({height}) => (height ? ('number' === height ? rem(height) : height) : rem(30))};
-`;
-
-const StyledButton = styled(Button)`
-    margin-top: ${rem(40)};
-    width: 100%;
-    text-transform: uppercase;
-`;
-
-type ScalarsProps = {
-    tags: Record<string, string[]>;
-    runs: string[];
-    selectedRuns: string[];
-};
+type ScalarsProps = TagFilterProps & {};
 
 const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns: propSelectedRuns}) => {
     const {t} = useTranslation(['scalars', 'common']);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter(propSelectedRuns, {
-        runs: propRuns,
-        tags: propTags
-    });
+    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter(
+        'scalars',
+        propSelectedRuns,
+        {
+            runs: propRuns,
+            tags: propTags
+        }
+    );
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -63,12 +51,11 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
     const [running, setRunning] = useState(true);
-    const toggleRunning = () => setRunning(r => !r);
 
     const aside = (
         <section>
             <RunSelect runs={runs} value={selectedRuns} onChange={onChangeRuns} />
-            <Divider />
+            <AsideDivider />
             <SmoothingSlider value={smoothing} onChange={setSmoothing} />
             <Field label={t('x-axis')}>
                 <Select
@@ -89,7 +76,7 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
                     {t('ignore-outliers')}
                 </Checkbox>
             </Field>
-            <StyledButton onClick={toggleRunning}>{t(`common:${running ? 'running' : 'stopped'}`)}</StyledButton>
+            <RunningToggle running={running} onToggle={setRunning} />
         </section>
     );
 
@@ -120,19 +107,12 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
 };
 
 Scalars.defaultProps = {
-    tags: {},
-    runs: []
+    ...defaultTagFilterProps
 };
 
-Scalars.getInitialProps = withFetcher(async ({query}, fetcher) => {
-    const [runs, tags] = await Promise.all([fetcher('/runs').then(uniq), fetcher('/scalars/tags')]);
+Scalars.getInitialProps = withFetcher(async (context, fetcher) => {
     return {
-        runs: runs,
-        selectedRuns: query.runs
-            ? intersection(uniq(Array.isArray(query.runs) ? query.runs : query.runs.split(',')), runs)
-            : runs,
-
-        tags,
+        ...(await getTagFilterInitialProps('scalars', context, fetcher)),
         namespacesRequired: ['scalars', 'common']
     };
 });

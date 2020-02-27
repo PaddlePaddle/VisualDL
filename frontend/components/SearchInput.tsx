@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
-import {WithStyled, em, math, textLightColor} from '~/utils/style';
+import {WithStyled, em, math, textLighterColor} from '~/utils/style';
 import Input, {padding, InputProps} from '~/components/Input';
 import Icon from '~/components/Icon';
 
@@ -23,7 +23,7 @@ const SearchIcon = styled(Icon)`
     top: ${padding};
     right: ${padding};
     pointer-events: none;
-    color: ${textLightColor};
+    color: ${textLighterColor};
 `;
 
 const SearchInput: FunctionComponent<InputProps & WithStyled> = ({className, ...props}) => (

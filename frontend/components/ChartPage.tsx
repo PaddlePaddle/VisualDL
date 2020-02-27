@@ -7,6 +7,9 @@ import Pagination from '~/components/Pagination';
 const Wrapper = styled.div`
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: flex-start;
 
     > * {
         margin: 0 ${rem(20)} ${rem(20)} 0;
@@ -15,12 +18,11 @@ const Wrapper = styled.div`
     }
 `;
 
-type ChartPageProps = {
-    // TODO: add types
-    // eslint-disable-next-line
-    items?: any[];
-    // eslint-disable-next-line
-    withChart?: (item: any) => React.ReactNode;
+// TODO: add types
+// eslint-disable-next-line
+type ChartPageProps<T = any> = {
+    items?: T[];
+    withChart?: (item: T) => React.ReactNode;
 };
 
 const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, withChart, className}) => {

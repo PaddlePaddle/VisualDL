@@ -1,3 +1,7 @@
 {
-
+    "image": "Image",
+    "audio": "Audio",
+    "text": "Text",
+    "show-actual-size": "Show actual image size",
+    "step": "Step"
 }
