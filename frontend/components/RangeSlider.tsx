@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
-import {WithStyled, em, size, half, math, primaryColor, backgroundColor} from '~/utils/style';
+import {WithStyled, em, size, half, math, primaryColor, textLighterColor, backgroundColor} from '~/utils/style';
 import InputRange, {Range} from 'react-input-range';
 
 const height = em(20);
@@ -8,7 +8,7 @@ const railHeight = em(4);
 const thumbSize = em(12);
 const railColor = '#DBDEEB';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{disabled?: boolean}>`
     height: ${height};
 
     .input-range {
@@ -20,7 +20,7 @@ const Wrapper = styled.div`
         }
 
         &__track {
-            cursor: pointer;
+            cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 
             &--background {
                 height: ${railHeight};
@@ -35,8 +35,9 @@ const Wrapper = styled.div`
             &--active {
                 height: ${railHeight};
                 position: absolute;
-                background-color: ${primaryColor};
+                background-color: ${props => (props.disabled ? textLighterColor : primaryColor)};
                 border-radius: ${half(railHeight)};
+                outline: none;
             }
         }
 
@@ -48,7 +49,7 @@ const Wrapper = styled.div`
         &__slider {
             ${size(thumbSize)}
             border-radius: ${half(thumbSize)};
-            border: ${em(3)} solid ${primaryColor};
+            border: ${em(3)} solid ${props => (props.disabled ? textLighterColor : primaryColor)};
             background-color: ${backgroundColor};
         }
     }
@@ -59,6 +60,7 @@ type RangeSliderProps = {
     max?: number;
     step?: number;
     value?: number;
+    disabled?: boolean;
     onChange?: (value: number) => unknown;
     onChangeComplete?: () => unknown;
 };
@@ -70,16 +72,22 @@ const RangeSlider: FunctionComponent<RangeSliderProps & WithStyled> = ({
     min,
     max,
     step,
-    value
+    value,
+    disabled
 }) => {
     const onChangeRange = (range: number | Range) => onChange?.(range as number);
 
     return (
-        <Wrapper className={className}>
+        <Wrapper className={className} disabled={disabled}>
             <InputRange
                 minValue={min}
                 maxValue={max}
+                // there may be a warning when `minValue` equals `maxValue` though `allSameValue` is set to TRUE
+                // this is a bug of react-input-range
+                // ignore for now
+                allowSameValues
                 step={step}
+                disabled={disabled}
                 value={value as number}
                 onChange={onChangeRange}
                 onChangeComplete={() => onChangeComplete?.()}

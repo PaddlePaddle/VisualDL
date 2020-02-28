@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import {useTranslation} from '~/utils/i18n';
 import {em, size, ellipsis, textLightColor} from '~/utils/style';
 import StepSlider from '~/components/StepSlider';
+import Image from '~/components/Image';
 
 const width = em(430);
 const height = em(384);
@@ -101,7 +102,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
             <StepSlider value={step} steps={data?.map(item => item.step) ?? []} onChange={setStep} />
             <Container fit={fit}>
                 {!data && !error && <span>{t('loading')}</span>}
-                {data && !error && <img src={getImageUrl(step, run, tag, data[step].wallTime)} />}
+                {data && !error && <Image src={getImageUrl(step, run, tag, data[step].wallTime)} />}
             </Container>
         </Wrapper>
     );

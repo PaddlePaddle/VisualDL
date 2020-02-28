@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-unfetch';
-import {Request} from 'express';
+import {Request, Response} from 'express';
 
 const images = [
     'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1582885214651&di=77163884e9a374391b4302d8bdd4fa1d&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F50124b1944e8887b95154598f8b5212886ddf03641f19-GbcSBV_fw658',
@@ -9,8 +9,11 @@ const images = [
     'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1582890018944&di=d79e0ce4cef39f0ef81cb38c440ca858&imgtype=0&src=http%3A%2F%2Fgss3.bdstatic.com%2F7Po3dSag_xI4khGkpoWK1HF6hhy%2Fbaike%2Fw%3D150%2Fsign%3D074ebdb2367adab43dd01f46bbd5b36b%2F42166d224f4a20a4b974325d90529822730ed0c6.jpg'
 ];
 
-export default async (query: Request['query']) => {
-    const index = (query.index ?? 0) % images.length;
-    const res = await fetch(images[index]);
-    return res.arrayBuffer();
+export default async (req: Request, res: Response) => {
+    const index = (req.query.index ?? 0) % images.length;
+    const result = await fetch(images[index]);
+    if (result.headers.has('Content-Type')) {
+        res.type(result.headers.get('Content-Type') as string);
+    }
+    return result.arrayBuffer();
 };

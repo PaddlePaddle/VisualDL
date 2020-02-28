@@ -1,6 +1,7 @@
-import React, {FunctionComponent, useState, useCallback, useEffect, useRef} from 'react';
+import React, {FunctionComponent, useState, useCallback} from 'react';
 import styled from 'styled-components';
 import without from 'lodash/without';
+import useClickOutside from '~/hooks/useClickOutside';
 import {useTranslation} from '~/utils/i18n';
 import {
     WithStyled,
@@ -30,6 +31,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
     min-width: ${minWidth};
+    display: inline-block;
     position: relative;
     border: 1px solid ${borderColor};
     /* eslint-disable-next-line */
@@ -141,7 +143,8 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
     const {t} = useTranslation('common');
 
     const [isOpened, setIsOpened] = useState(false);
-    const toggleOpened = () => setIsOpened(!isOpened);
+    const toggleOpened = useCallback(() => setIsOpened(!isOpened), [isOpened]);
+    const setIsOpenedFalse = useCallback(() => setIsOpened(false), []);
 
     const [value, setValue] = useState(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue);
     const isSelected = !!(multiple ? value && (value as SelectValueType[]).length !== 0 : (value as SelectValueType));
@@ -164,32 +167,11 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
         setValue(newValue);
         onChange?.(newValue);
         if (!multiple) {
-            setIsOpened(false);
+            setIsOpenedFalse();
         }
     };
 
-    const ref = useRef(null);
-    const escapeListener = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-            setIsOpened(false);
-        }
-    }, []);
-    const clickListener = useCallback((e: MouseEvent) => {
-        // eslint-disable-next-line
-        if (!(ref.current! as Node).contains(e.target as Node)) {
-            setIsOpened(false);
-        }
-    }, []);
-    useEffect(() => {
-        if (process.browser) {
-            document.addEventListener('click', clickListener);
-            document.addEventListener('keyup', escapeListener);
-            return () => {
-                document.removeEventListener('click', clickListener);
-                document.removeEventListener('keyup', escapeListener);
-            };
-        }
-    }, [clickListener, escapeListener]);
+    const ref = useClickOutside(setIsOpenedFalse);
 
     const list = propList?.map(item => ('string' === typeof item ? {value: item, label: item} : item)) ?? [];
     const isListEmpty = list.length === 0;

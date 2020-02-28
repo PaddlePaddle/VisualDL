@@ -4,9 +4,10 @@ import {rem} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
 import Select, {SelectValueType} from '~/components/Select';
 
-const Title = styled.h3`
+const Title = styled.div`
     font-size: ${rem(16)};
     line-height: ${rem(16)};
+    font-weight: 700;
     margin-bottom: ${rem(10)};
 `;
 

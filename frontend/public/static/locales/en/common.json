@@ -1,6 +1,8 @@
 {
     "scalars": "Scalars",
     "samples": "Samples",
+    "high-dimensional": "High Dimensional",
+    "search": "Search",
     "searchTagPlaceholder": "Search tags in RegExp",
     "all": "ALL",
     "empty": "Empty",

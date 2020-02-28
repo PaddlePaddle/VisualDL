@@ -80,7 +80,7 @@ type GetInitialProps = (type: string, context: NextPageContext, f: typeof fetche
 export const getInitialProps: GetInitialProps = async (type, {query}, fetcher) => {
     const [runs, tags] = await Promise.all([fetcher('/runs').then(uniq), fetcher(`/${type}/tags`)]);
     return {
-        runs: runs,
+        runs,
         selectedRuns: query.runs
             ? intersection(uniq(Array.isArray(query.runs) ? query.runs : query.runs.split(',')), runs)
             : runs,

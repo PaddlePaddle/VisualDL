@@ -1,4 +1,4 @@
-import React, {FunctionComponent, createContext} from 'react';
+import React, {FunctionComponent, createContext, useState, useCallback} from 'react';
 import styled from 'styled-components';
 import {WithStyled} from '~/utils/style';
 
@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `;
 
 export const ValueContext = createContext(null as string | number | symbol | undefined | null);
-// eslint-disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export const EventContext = createContext((() => {}) as ((value: string | number | symbol) => unknown) | undefined);
 
 type RadioGroupProps = {
@@ -21,9 +21,18 @@ type RadioGroupProps = {
 };
 
 const RadioGroup: FunctionComponent<RadioGroupProps & WithStyled> = ({value, onChange, children, className}) => {
+    const [selected, setSelected] = useState(value);
+    const onSelectedChange = useCallback(
+        (value: string | number | symbol) => {
+            setSelected(value);
+            onChange?.(value);
+        },
+        [onChange]
+    );
+
     return (
-        <EventContext.Provider value={onChange}>
-            <ValueContext.Provider value={value}>
+        <EventContext.Provider value={onSelectedChange}>
+            <ValueContext.Provider value={selected}>
                 <Wrapper className={className}>{children}</Wrapper>
             </ValueContext.Provider>
         </EventContext.Provider>

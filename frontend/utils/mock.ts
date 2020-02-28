@@ -24,7 +24,7 @@ export default (options: Options) => {
             let {default: mock} = await import(path.resolve(options.path, method));
 
             if ('function' === typeof mock) {
-                mock = await mock(req.query);
+                mock = await mock(req, res);
             }
 
             // sleep
