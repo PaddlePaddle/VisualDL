@@ -65,7 +65,7 @@ const Navbar: FunctionComponent = () => {
         <Nav>
             <Logo href="/">
                 <img alt="PaddlePaddle" src="/images/logo.svg" />
-                <span>Visual DL</span>
+                <span>VisualDL</span>
             </Logo>
             {navItems.map(name => {
                 const href = `/${name}`;

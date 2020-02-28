@@ -71,6 +71,8 @@ const Samples: NextI18NextPage<SamplesProps> = ({tags: propTags, runs: propRuns,
     // const [showAudio, setShowAudio] = useState(true);
     // const [showText, setShowText] = useState(true);
 
+    const [showActualSize, setShowActualSize] = useState(false);
+
     const [running, setRunning] = useState(true);
 
     const aside = (
@@ -85,7 +87,9 @@ const Samples: NextI18NextPage<SamplesProps> = ({tags: propTags, runs: propRuns,
             </Field>
             {showImage && (
                 <SubField>
-                    <Checkbox>{t('show-actual-size')}</Checkbox>
+                    <Checkbox value={showActualSize} onChange={setShowActualSize}>
+                        {t('show-actual-size')}
+                    </Checkbox>
                 </SubField>
             )}
             {/* <AsideDivider />
@@ -106,9 +110,10 @@ const Samples: NextI18NextPage<SamplesProps> = ({tags: propTags, runs: propRuns,
         </section>
     );
 
-    const withChart = useCallback(({run, label}: Item) => <SampleChart run={run} tag={label} running={running} />, [
-        running
-    ]);
+    const withChart = useCallback(
+        ({run, label}: Item) => <SampleChart run={run} tag={label} fit={!showActualSize} running={running} />,
+        [showActualSize, running]
+    );
 
     return (
         <>

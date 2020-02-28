@@ -31,7 +31,7 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, withC
 
     const [page, setPage] = useState(1);
 
-    const pageItems = items?.slice((page - 1) * pageSize, page * pageSize + 1) ?? [];
+    const pageItems = items?.slice((page - 1) * pageSize, page * pageSize) ?? [];
 
     return (
         <div className={className}>

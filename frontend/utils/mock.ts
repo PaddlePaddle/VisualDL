@@ -27,8 +27,6 @@ export default (options: Options) => {
                 mock = await mock(req.query);
             }
 
-            const result = JSON.parse(faker.fake(JSON.stringify(mock, null, 4)));
-
             // sleep
             let delay = 0;
             if ('function' === typeof options.delay) {
@@ -38,9 +36,13 @@ export default (options: Options) => {
             }
             await sleep(delay);
 
-            res.json(result);
+            if (mock instanceof ArrayBuffer) {
+                res.send(new Buffer(mock));
+            } else {
+                res.json(JSON.parse(faker.fake(JSON.stringify(mock, null, 4))));
+            }
         } catch (e) {
             res.status(500).send(e.message);
         }
     };
-}
+};

@@ -1,7 +1,7 @@
 {
     "name": "visual-dl",
     "version": "2.0.0-beta",
-    "title": "Visual DL",
+    "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
