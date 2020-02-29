@@ -1,18 +1,20 @@
-matrix:
+language: cpp
+os:
+  - linux
+    # much bug with osx environment
+    # TODO(ChunweiYan) support osx in the future
+    #- osx
+
+jobs:
   include:
     - language: cpp
       compiler: clang
       cache:
         - pip
         - ccache
-      sudo: required
       dist: trusty
 
-      os:
-        - linux
-          # much bug with osx environment
-          # TODO(ChunweiYan) support osx in the future
-          #- osx
+      os: linux
 
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=check_style"
@@ -38,7 +40,8 @@ matrix:
             - python3-wheel
             - clang-format-3.8
             - ccache
-        ssh_known_hosts: 13.229.163.131
+        ssh_known_hosts:
+          secure: "QBkR72gylM8YPzcEvzIk8Q0B+1AZfVK81S3CgzltRC6T/9oTqrsYVPnr4a/MhIXvXm1yi1O5icb0KBr2VAXhuSvVdTOBtMoraHydNiFgijM71j16AMfbw3VhmHtxp6RtVxaAzZysCHXTp8EsDb3mnxJqmWN2qDeJH9x7JTIRQknMnwnTyBKaM5/X6fJNLvEsd2Qfi7vmRGKcrOMRWXK0znGmutKglH22GB5oqHtkB8Xr1pF3AEV2kspNuxdmuvMjQddm7InTArL993PCRKl8PtCGRkurC1n0BdzWCG85heewcZl09DXlH8GCO84icZeIA5p8fJBS8ADi0ew55Vve8dqHxR739MyzNl/GqM9sOEoChAIJOuJ+MvzglRju7urNfRSCnGs6+OAMU2X1E3cWxHFKFM79C4WSLIRXyEhFyrD2Bp10XnfF2OcXKKJzI7GfFNSNjBOFEsZewzanEUXitK8Y8Coz7yMy4arac/PwH4WSfoz/2f4BMBwkATqOwzZX4h1qGxRFV7q+A6BjVT32qVAL+wKqYU6qiXynBw8pC69usjsWlQ0QsrB/kYMNm/p1wRcPvHeb5tvMpBkdGwv3NudFFhXNYCAWSV4rTlH+f7mb/FAf7uEw0MKkV2eUgOt0SVsJ7XOMsuu8pxuDG6FefUCPLPLAZUVMUVlGMoZ16vo="
 
       before_install:
         - eval "${MATRIX_EVAL}"
@@ -52,21 +55,24 @@ matrix:
         - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; fi
         - if [[ "$JOB" == "test_python3" ]]; then WITH_PYTHON3=ON ./scripts/tests.sh all; fi
         - if [[ "$JOB" == "build_doc" ]]; then ./scripts/deploy_docs_on_travis.sh; fi;
+
     - language: node_js
       dist: trusty
-      node_js:
-        - 12
-      sudo: false
+      node_js: 12
       cache:
         - npm
         - yarn
       env:
-        - NODE_ENV=production
-      before_script:
+        - PUBLIC_PATH=""
+        - API_URL="/api"
+      before_install:
         - cd frontend
+      install:
+        - yarn
       script:
-        - if [[ "$JOB" == "check_style" ]]; then yarn lint; fi
-        - if [[ "$JOB" == "test" ]]; then yarn test; fi
+        - yarn lint
+        - yarn test
+        - ./scripts/build.sh
 
 notifications:
   email:

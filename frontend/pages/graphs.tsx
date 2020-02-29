@@ -13,6 +13,7 @@ import NodeInfo, {NodeInfoProps} from '~/components/GraphPage/NodeInfo';
 import {Graph, collectDagFacts} from '~/resource/graph';
 import {saveSvgAsPng} from 'save-svg-as-png';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 const dumbFn = () => {};
 
 const SubSection = styled.div`
@@ -114,7 +115,7 @@ const useDagreD3 = (graph: Graph | undefined) => {
             dagInfo.edges.forEach(e => g.setEdge(e[0], e[1]));
 
             const render = new dagre.render();
-            const svg = d3.select<HTMLElement, any>('svg');
+            const svg = d3.select<HTMLElement, any>('svg'); // eslint-disable-line @typescript-eslint/no-explicit-any
             const inner = svg.select('svg g');
             render(inner, g);
 
@@ -122,8 +123,8 @@ const useDagreD3 = (graph: Graph | undefined) => {
             const scaleFactor = 1;
             svg.attr('height', Math.max(640, window.innerHeight + 40));
 
-            var zoom = d3
-                .zoom<HTMLElement, any>()
+            const zoom = d3
+                .zoom<HTMLElement, any>() // eslint-disable-line @typescript-eslint/no-explicit-any
                 .scaleExtent([MIN_SCALE, MAX_SCALE])
                 .on('zoom', function() {
                     setScaleValue(d3.event.transform.k / scaleFactor);
@@ -197,6 +198,7 @@ const useDagreD3 = (graph: Graph | undefined) => {
     return {currentNode, displaySwitch, setDisplaySwitch, downloadImage, fitScreen, scale, setScale};
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface GraphsProps {}
 const Graphs: NextI18NextPage<GraphsProps> = () => {
     const {t} = useTranslation(['graphs', 'common']);
