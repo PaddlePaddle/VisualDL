@@ -1,5 +1,5 @@
 <p align="center">
-    <img align="center" style="width:60%" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/public/images/logo-visualdl.svg" />
+    <img align="center" style="width:480px" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/public/images/logo-visualdl.svg?sanitize=true" />
 </p>
 <br />
 
