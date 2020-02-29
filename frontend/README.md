@@ -2,10 +2,12 @@
 
 A platform to visualize the deep learning process and result.
 
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) ![GitHub](https://img.shields.io/github/license/PaddlePaddle/VisualDL?style=flat-square) ![GitHub top language](https://img.shields.io/github/languages/top/PaddlePaddle/VisualDL?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/PaddlePaddle/VisualDL?style=flat-square) ![GitHub issues](https://img.shields.io/github/issues/PaddlePaddle/VisualDL?style=flat-square) ![GitHub All Releases](https://img.shields.io/github/downloads/PaddlePaddle/VisualDL/total?style=flat-square) ![GitHub stars](https://img.shields.io/github/stars/PaddlePaddle/VisualDL?style=social)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![License](https://img.shields.io/github/license/PaddlePaddle/VisualDL?style=flat-square)](https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE) [![GitHub top language](https://img.shields.io/github/languages/top/PaddlePaddle/VisualDL?style=flat-square)](https://github.com/PaddlePaddle/VisualDL) [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/PaddlePaddle/VisualDL?style=flat-square)](https://github.com/PaddlePaddle/VisualDL) [![GitHub issues](https://img.shields.io/github/issues/PaddlePaddle/VisualDL?style=flat-square)](https://github.com/PaddlePaddle/VisualDL/issues) [![GitHub All Releases](https://img.shields.io/github/downloads/PaddlePaddle/VisualDL/total?style=flat-square)](https://github.com/PaddlePaddle/VisualDL/releases) [![GitHub stars](https://img.shields.io/github/stars/PaddlePaddle/VisualDL?style=social)](https://github.com/PaddlePaddle/VisualDL/stargazers)
 
 **🚧UNDER CONSTRUCTION🚧**
+
 **🚧SOME FEATURE MAY NOT WORK PROPERLY🚧**
+
 **🚧PULL REQUESTS WELCOMED🚧**
 
 ## Development
