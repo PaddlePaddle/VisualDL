@@ -2,34 +2,20 @@
 
 set -e
 
-APP='visualdl'
 WORKING_PATH=`pwd`
-DIST_DIR='output'
+DIST_DIR='dist'
 DIST_PATH="$WORKING_PATH/$DIST_DIR"
 
-# generate output
+# generate dist
 rm -rf $DIST_PATH
-mkdir -p $DIST_PATH/client
-mkdir -p $DIST_PATH/server
-mkdir -p $DIST_PATH/maps
+mkdir -p $DIST_PATH
 
-npm i
-# nuxt build
-npm run build:nuxt
+yarn
+# next build
+yarn build:next
 # server build
-npm run build:server
+yarn build:server
 
-# Server: packaging app excluding `node_modules`
-tar zcf $DIST_PATH/server/$APP.tar.gz --exclude="$DIST_DIR" --exclude='./node_modules' .
-
-# Client
-mv .nuxt/dist/client/*.map $DIST_PATH/maps/
-cp -r static/* $DIST_PATH/client/
-cp -r .nuxt/dist/client/* $DIST_PATH/client/
-rm -f $DIST_PATH/client/README.md
-cp -r $DIST_PATH/maps/*.map .nuxt/dist/client/
-
-# clean sourcemaps
-cd $DIST_PATH
-tar zcf maps.tar.gz ./maps
-rm -rf ./maps
+# move static files
+cp next.config.js $DIST_PATH
+cp package.json $DIST_PATH

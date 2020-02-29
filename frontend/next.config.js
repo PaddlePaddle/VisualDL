@@ -1,6 +1,5 @@
-import path from 'path';
-import {Configuration} from 'webpack';
-import pkg from './package.json';
+const path = require('path');
+const pkg = require('./package.json');
 
 const publicPath = process.env.PUBLIC_PATH || '';
 const apiUrl = process.env.API_URL || '/api';
@@ -14,15 +13,16 @@ const APP = {
     keywords: pkg.keywords.join(',')
 };
 
-export default {
+module.exports = {
     assetPrefix: publicPath,
+    distDir: 'dist',
     poweredByHeader: false,
     env: {
         ...APP,
         PUBLIC_PATH: publicPath,
         API_URL: apiUrl
     },
-    webpack: (config: Configuration) => {
+    webpack: config => {
         config.resolve = config.resolve || {};
         config.resolve.alias = config.resolve.alias || {};
         config.resolve.alias['~'] = path.resolve(__dirname);
