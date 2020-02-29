@@ -62,6 +62,9 @@ jobs:
       cache:
         - npm
         - yarn
+      env:
+        - PUBLIC_PATH=""
+        - API_URL="/api"
       before_install:
         - cd frontend
       install:
