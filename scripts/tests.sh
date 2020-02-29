@@ -42,17 +42,12 @@ export PYTHONPATH="${core_path}:${python_path}"
 
 # install the visualdl wheel first
 package() {
-    # some bug with frontend build
-    # a environment variable to skip frontend build
-    export VS_BUILD_MODE="travis-CI"
-
     cd $TOP_DIR/visualdl/server
     # manully install protobuf3
     curl -OL https://github.com/google/protobuf/releases/download/v3.5.0/protoc-3.5.0-linux-x86_64.zip
     unzip protoc-3.5.0-linux-x86_64.zip -d protoc3
     export PATH="$PATH:$(pwd)/protoc3/bin"
     chmod +x protoc3/bin/*
-
 
     cd $TOP_DIR
     $python setup.py bdist_wheel
@@ -70,13 +65,6 @@ backend_test() {
     fi
     make
     make test
-}
-
-frontend_test() {
-    cd $TOP_DIR
-    cd frontend
-    npm install
-    npm run build
 }
 
 server_test() {
@@ -109,8 +97,6 @@ bigfile_reject() {
 clean_env() {
     rm -rf $TOP_DIR/build
     rm -rf $TOP_DIR/dist
-    rm -rf $TOP_DIR/frontend/node_modules
-    rm -rf $TOP_DIR/frontend/dist
     rm -rf $TOP_DIR/visualdl/core.so
     rm -rf $TOP_DIR/visualdl/python/core.so
     rm -rf $TOP_DIR/visualdl/server/protoc3
@@ -127,13 +113,9 @@ elif [ $mode = "all" ]; then
     # bigfile_reject should be tested first, or some files downloaded may fail this test.
     bigfile_reject
     package
-    frontend_test
     backend_test
     server_test
 elif [ $mode = "local" ]; then
-    #frontend_test
     backend_test
     server_test
-else
-    frontend_test
 fi
