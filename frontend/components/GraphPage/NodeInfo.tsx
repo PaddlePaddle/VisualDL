@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
+import {useTranslation} from '~/utils/i18n';
 import {NodeType, TypedNode} from '~/resource/graph';
 
 const typeName: {[k in NodeType]: string} = {
