@@ -1,0 +1,9 @@
+{
+    "display-all-label": "展示所有标签",
+    "dimension": "维度",
+    "2d": "二维",
+    "3d": "三维",
+    "reduction-method": "降维方法",
+    "pca": "PCA",
+    "tsne": "T-SNE"
+}

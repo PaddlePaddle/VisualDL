@@ -1,0 +1,10 @@
+{
+    "node-type": "Node Type",
+    "node-name": "Node Name",
+    "node-data-shape": "Shape",
+    "input": "Input",
+    "output": "Output",
+    "op-type": "Operator Type",
+    "node-data-type": "Data Type",
+    "click-node": "Click a node to display"
+}

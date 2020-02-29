@@ -1,0 +1,16 @@
+{
+    "scalars": "标量数据",
+    "samples": "样本数据",
+    "graphs": "网络结构",
+    "high-dimensional": "高维数据映射",
+    "search": "搜索",
+    "searchTagPlaceholder": "搜索标签（支持正则）",
+    "all": "全部",
+    "empty": "空空如也",
+    "select": "请选择",
+    "runs": "数据流",
+    "select-runs": "选择数据流",
+    "running": "运行中",
+    "stopped": "已停止",
+    "loading": "载入中"
+}

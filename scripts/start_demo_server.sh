@@ -8,17 +8,15 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $SCRIPT_DIR/../frontend
 export PYTHONPATH=$PYTHONPATH:"$SCRIPT_DIR/.."
 
-rm -rf ./dist
-mkdir dist
-npm run build
+./scripts/build.sh
 
-# the config is the only diff from dev_server (webpack.demo.config.js)
-./node_modules/.bin/webpack --watch --config tool/webpack.demo.config.js --output-path=../visualdl/server/dist &
-# Track webpack pid
-WEBPACKPID=$!
+# TODO: use docker to start frontend enviroment
+yarn start
+# Track pid
+FRONTEND_PID=$!
 
 function finish {
-    kill -9 $WEBPACKPID
+    kill -9 $FRONTEND_PID
 }
 
 trap finish EXIT HUP INT QUIT PIPE TERM

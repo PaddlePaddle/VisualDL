@@ -1,23 +1,34 @@
 module.exports = {
-  extends: [
-    'google',
-    'plugin:vue/base',
-    'plugin:vue/essential',
-    'plugin:vue/strongly-recommended',
-  ],
-  parserOptions: {
-    "sourceType": "module",
-  },
-  rules: {
-    // override/add rules settings here, such as:
-    'vue/no-unused-vars': 'warn',
-    'max-len': ["warn", 120],
-    "vue/prop-name-casing": ["error"],
-    'vue/script-indent': 'error',
-
-    // The following rules should apply eventually. Turn them off for now
-    // so we can have pre-commit running
-    'no-invalid-this': 'off',
-    'require-jsdoc': 'off',
-  }
-}
+    env: {
+        browser: true,
+        es6: true,
+        node: true
+    },
+    extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:react/recommended',
+        'prettier/@typescript-eslint',
+        'plugin:prettier/recommended'
+    ],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaFeatures: {
+            jsx: true
+        },
+        ecmaVersion: 2018,
+        sourceType: 'module'
+    },
+    plugins: ['react', 'react-hooks', '@typescript-eslint'],
+    settings: {
+        react: {
+            version: 'detect'
+        }
+    },
+    rules: {
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        'react/prop-types': 'off',
+        'react/react-in-jsx-scope': 'off',
+        'react-hooks/rules-of-hooks': 'error',
+        'react-hooks/exhaustive-deps': 'warn'
+    }
+};
