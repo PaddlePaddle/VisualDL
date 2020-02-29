@@ -1,30 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
+# FrontEnd of VisualDL
 
-## Getting Started
+A platform to visualize the deep learning process and result.
 
-First, run the development server:
+![GitHub](https://img.shields.io/github/license/PaddlePaddle/VisualDL) ![GitHub top language](https://img.shields.io/github/languages/top/PaddlePaddle/VisualDL) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/PaddlePaddle/VisualDL) ![GitHub issues](https://img.shields.io/github/issues/PaddlePaddle/VisualDL) ![GitHub All Releases](https://img.shields.io/github/downloads/PaddlePaddle/VisualDL/total) ![GitHub stars](https://img.shields.io/github/stars/PaddlePaddle/VisualDL?style=social)
+
+**🚧UNDER CONSTRUCTION🚧**
+**🚧SOME FEATURE MAY NOT WORK PROPERLY🚧**
+**🚧PULL REQUESTS WELCOMED🚧**
+
+## Development
+
+> nodejs ≥ 10 and npm ≥ 6 is required.
+
+First, install all dependencies:
 
 ```bash
-npm run dev
+npm install
 # or
+yarn
+```
+
+Then you can start the development server:
+
+```bash
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Now open [http://localhost:8999](http://localhost:8999) with your browser.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+You can change the port with `PORT` environment variable.
+
+```bash
+PORT=3000 yarn dev
+```
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+This project is based on following projects:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [ECharts](https://echarts.apache.org/)
 
-You can check out [the Next.js GitHub repository](https://github.com/zeit/next.js/) - your feedback and contributions are welcome!
+## License
 
-## Deploy on ZEIT Now
-
-The easiest way to deploy your Next.js app is to use the [ZEIT Now Platform](https://zeit.co/) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Apache-2.0
