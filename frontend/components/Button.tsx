@@ -13,7 +13,7 @@ import {
     ellipsis,
     transitions
 } from '~/utils/style';
-import Icon from '~/components/Icon';
+import RawIcon from '~/components/Icon';
 
 const height = em(36);
 
@@ -39,6 +39,10 @@ const Wrapper = styled.a`
     }
 `;
 
+const Icon = styled(RawIcon)`
+    margin-right: 4px;
+`;
+
 type ButtonProps = {
     icon?: string;
     onClick?: () => unknown;
@@ -46,7 +50,7 @@ type ButtonProps = {
 
 const Button: FunctionComponent<ButtonProps & WithStyled> = ({icon, children, className, onClick}) => (
     <Wrapper className={className} onClick={onClick}>
-        {icon && <Icon type="icon"></Icon>}
+        {icon && <Icon type={icon}></Icon>}
         {children}
     </Wrapper>
 );

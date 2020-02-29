@@ -1,6 +1,7 @@
 {
     "scalars": "Scalars",
     "samples": "Samples",
+    "graphs": "Graphs",
     "high-dimensional": "High Dimensional",
     "search": "Search",
     "searchTagPlaceholder": "Search tags in RegExp",
@@ -9,6 +10,10 @@
     "select": "Please Select",
     "runs": "Runs",
     "select-runs": "Select Runs",
+    "scale": "Scale",
+    "download-image": "Download Image",
+    "restore-image": "Restore Image",
+    "node-info": "Node Info",
     "running": "Running",
     "stopped": "Stopped",
     "loading": "Loading"

@@ -1,6 +1,7 @@
 {
     "scalars": "标量数据",
     "samples": "样本数据",
+    "graphs": "网络结构",
     "high-dimensional": "高维数据映射",
     "search": "搜索",
     "searchTagPlaceholder": "搜索标签（支持正则）",
