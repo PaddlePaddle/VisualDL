@@ -4,7 +4,6 @@ os:
     # much bug with osx environment
     # TODO(ChunweiYan) support osx in the future
     #- osx
-sudo: required
 
 jobs:
   include:
@@ -63,10 +62,10 @@ jobs:
       cache:
         - npm
         - yarn
-      env:
-        - NODE_ENV=production
-      before_script:
+      before_install:
         - cd frontend
+      install:
+        - yarn
       script:
         - yarn lint
         - yarn test
