@@ -26,7 +26,7 @@ English | [简体中文](https://github.com/PaddlePaddle/VisualDL/blob/develop/f
 
 ## Development
 
-> nodejs ≥ 10 and npm ≥ 6 is required.
+> nodejs ≥ 10 and npm ≥ 6 are required.
 
 First, install all dependencies:
 
