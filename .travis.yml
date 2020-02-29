@@ -65,8 +65,9 @@ matrix:
       before_script:
         - cd frontend
       script:
-        - if [[ "$JOB" == "check_style" ]]; then yarn lint; fi
-        - if [[ "$JOB" == "test" ]]; then yarn test; fi
+        - yarn lint
+        - yarn test
+        - ./scripts/build.sh
 
 notifications:
   email:

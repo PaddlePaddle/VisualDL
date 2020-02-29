@@ -14,67 +14,67 @@
     <a href="https://github.com/PaddlePaddle/VisualDL/stargazers"><img src="https://img.shields.io/github/stars/PaddlePaddle/VisualDL?style=social" alt="GitHub stars" /></a>
 </p>
 
-# VisualDL FrontEnd
+# VisualDL 前端
 
-English | [简体中文](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/README_cn.md)
+[English](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/README.md) | 简体中文
 
-**🚧UNDER CONSTRUCTION🚧**
+**🚧仍在建设中🚧**
 
-**🚧SOME FEATURE MAY NOT WORK PROPERLY🚧**
+**🚧某些功能可能不能正常工作🚧**
 
-**🚧PULL REQUESTS WELCOMED🚧**
+**🚧欢迎 Pull Request🚧**
 
-## Development
+## 开发
 
-> nodejs ≥ 10 and npm ≥ 6 is required.
+> 要求 nodejs ≥ 10 并且 npm ≥ 6
 
-First, install all dependencies:
+首先，安装所有依赖：
 
 ```bash
 npm install
-# or
+# 或者
 yarn
 ```
 
-Then you can start the development server:
+之后可以启动开发服务：
 
 ```bash
 yarn dev
 ```
 
-Now open [http://localhost:8999](http://localhost:8999) with your browser.
+现在可以用浏览器打开 [http://localhost:8999](http://localhost:8999) 。
 
-You can change the port with `PORT` environment variable:
+你可以使用 `PORT` 环境变量更改服务的端口：
 
 ```bash
 PORT=3000 yarn dev
 ```
 
-## Build & Deploy
+## 编译和部署
 
 ```bash
 ./scripts/build.sh
 
 yarn start
 
-# we are working on deployment now, please wait
+# 我们正在开发部署功能，请耐心等待
 ```
 
-### Browser Compatibility
+### 浏览器兼容性
 
-VisualDL supports the latest version of [Google Chrome](https://www.google.com/chrome/) and [Mozilla Firefox](https://www.mozilla.org/). [Microsoft Edge](https://www.microsoft.com/edge) and [Apple Safari](https://www.apple.com/safari/) may work too but are not tested.
+VisualDL 支持最新版本的 [Google Chrome](https://www.google.com/chrome/) 和 [Mozilla Firefox](https://www.mozilla.org/) 。 [Microsoft Edge](https://www.microsoft.com/edge) 和 [Apple Safari](https://www.apple.com/safari/) 也许可以工作但是并未经过测试。
 
-## Learn More
+## 了解更多
 
-This project is based on following projects:
+本项目基于以下项目：
 
 - [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
 
-## Author
+## 作者
 <table><tr><td align="center"><a href="https://github.com/PeterPanZH"><img src="https://avatars0.githubusercontent.com/u/3366499?s=460&v=4" width="120px;" alt="PeterPanZH"/><br /><sub><b>PeterPanZH</b></sub></a></td><td align="center"><a href="https://github.com/Niandalu"><img src="https://avatars1.githubusercontent.com/u/6406875?s=460&v=4" width="120px;" alt="Niandalu"/><br /><sub><b>Niandalu</b></sub></a></td></tr></table>
 
-## License
+## 许可证
 
 [Apache-2.0](https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE)
