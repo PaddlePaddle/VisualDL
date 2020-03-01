@@ -174,7 +174,6 @@ const useDagreD3 = (graph: Graph | undefined) => {
             svg.selectAll('g.node').on('click', v => {
                 const uid = v as string;
                 const {type, elem: dom} = g.node(uid);
-                (window as any).x = (g as any).nodeEdges(uid);
                 if (prevDom) {
                     prevDom.classList.remove('active');
                 }
