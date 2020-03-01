@@ -181,7 +181,6 @@ const useDagreD3 = (graph: Graph | undefined) => {
                 dom.classList.add('active');
                 prevDom = dom;
                 const node = dagInfo.findNode(type, uid);
-                console.log(node);
                 if (!node) {
                     setCurrentNode({type: 'unknown', guessType: type, msg: uid});
                     return;
