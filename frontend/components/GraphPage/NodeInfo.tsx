@@ -1,6 +1,8 @@
 import React, {FunctionComponent} from 'react';
 import {useTranslation} from '~/utils/i18n';
 import {NodeType, TypedNode} from '~/resource/graph';
+import styled from 'styled-components';
+import {WithStyled} from '~/utils/style';
 
 const typeName: {[k in NodeType]: string} = {
     [NodeType.Input]: 'input',
@@ -11,6 +13,27 @@ const typeName: {[k in NodeType]: string} = {
 export interface NodeInfoProps {
     node?: TypedNode | {type: 'unknown'; guessType: NodeType; msg: string};
 }
+
+const DataList: FunctionComponent<{items: {key: string; value: string | string[]}[]} & WithStyled> = props => {
+    return (
+        <ul className={props.className}>
+            {props.items.map(({key, value}) => (
+                <li key={key}>
+                    {key}: {value}
+                </li>
+            ))}
+        </ul>
+    );
+};
+
+const PropertyList = styled(DataList)`
+    padding: 0;
+    list-style: none;
+    color: #666;
+    li + li {
+        margin-top: 1em;
+    }
+`;
 
 const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
     const {t} = useTranslation(['graphs']);
@@ -23,46 +46,28 @@ const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
         case NodeType.Input:
         case NodeType.Output:
             return (
-                <ul>
-                    <li>
-                        {t('node-type')}: {typeName[node.type]}
-                    </li>
-                    <li>
-                        {t('node-name')}: {node.name}
-                    </li>
-                    <li>
-                        {t('node-data-shape')}: {node.shape}
-                    </li>
-                    <li>
-                        {t('node-data-type')}: {node.data_type}
-                    </li>
-                </ul>
+                <PropertyList
+                    items={[
+                        {key: t('node-type'), value: typeName[node.type]},
+                        {key: t('node-name'), value: node.name},
+                        {key: t('node-data-shape'), value: node.shape},
+                        {key: t('node-data-tyep'), value: node.data_type}
+                    ]}
+                />
             );
         case NodeType.Op:
             return (
-                <ul>
-                    <li>
-                        {t('node-type')}: {typeName[node.type]}
-                    </li>
-                    <li>
-                        {t('input')}: {node.input}
-                    </li>
-                    <li>
-                        {t('op-type')}: {node.opType}
-                    </li>
-                    <li>
-                        {t('output')}: {node.output}
-                    </li>
-                </ul>
+                <PropertyList
+                    items={[
+                        {key: t('node-type'), value: typeName[node.type]},
+                        {key: t('input'), value: node.input},
+                        {key: t('op-type'), value: node.opType},
+                        {key: t('output'), value: node.output}
+                    ]}
+                />
             );
         case 'unknown':
-            return (
-                <ul>
-                    <li>
-                        {t('node-type')}: {typeName[node.guessType]}
-                    </li>
-                </ul>
-            );
+            return <PropertyList items={[{key: t('node-type'), value: typeName[node.guessType]}]} />;
         default:
             return <></>;
     }

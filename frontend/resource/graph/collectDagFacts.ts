@@ -1,5 +1,4 @@
 import {Graph, Node, NodeUID, InputNode, NodeType} from './types';
-import {OpNodeStyle, OutputNodeStyle, InputNodeStyle} from './style';
 
 interface DagNode {
     key: string;
@@ -7,7 +6,6 @@ interface DagNode {
     label: string;
     shape: string;
     class: string;
-    style: string;
 }
 type DagEdge = [string, string];
 
@@ -124,8 +122,7 @@ const expandRelations = (nodeMapping: NodeRelationMapping) => {
             label: bridge,
             shape: 'diamond',
             class: 'output',
-            type: NodeType.Output,
-            style: OutputNodeStyle
+            type: NodeType.Output
         });
 
         detailLayer.edges.push([inputTo, bridge]);
@@ -158,8 +155,7 @@ type: ${inputNode.data_type}
 dims: ${inputNode.shape.join(' × ')}
 `,
             shape: 'rect',
-            class: 'input',
-            style: InputNodeStyle
+            class: 'input'
         });
 
         relations.output.forEach(o => edges.push([inputNodeUID, o]));
@@ -180,8 +176,7 @@ const extractOutputLayer = (nodeRelationMapping: NodeRelationMapping) => {
             type: NodeType.Output,
             label: nodeUID,
             shape: 'diamond',
-            class: 'output',
-            style: OutputNodeStyle
+            class: 'output'
         });
 
         for (const inputNode of relations.input) {
@@ -208,8 +203,7 @@ export const collectDagFacts = (graph?: Graph) => {
         type: NodeType.Op,
         label: n.opType,
         shape: 'rect',
-        class: 'operator',
-        style: OpNodeStyle
+        class: 'operator'
     }));
 
     const {briefLayer: bl, detailLayer: dl} = expandRelations(nodeRelationMapping);

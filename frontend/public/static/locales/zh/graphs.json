@@ -1,1 +1,14 @@
-{}
+{
+    "scale": "比例",
+    "download-image": "下载图片",
+    "restore-image": "还原图片",
+    "node-info": "节点信息",
+    "node-type": "节点类型",
+    "node-name": "节点名称",
+    "node-data-shape": "数据类型",
+    "input": "输入",
+    "output": "输出",
+    "op-type": "算子类型",
+    "node-data-type": "数据类型",
+    "click-node": "点击左侧节点，查看节点信息"
+}
