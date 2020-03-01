@@ -2,10 +2,7 @@ import path from 'path';
 import express from 'express';
 import next from 'next';
 import {setConfig} from 'next/config';
-import nextI18NextMiddleware from 'next-i18next/middleware';
 import config from '../next.config';
-import nextI18next from '../utils/i18n';
-import mock from '../utils/mock';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -20,11 +17,9 @@ const handle = app.getRequestHandler();
     const server = express();
 
     if (isDev) {
+        const {default: mock} = await import('../utils/mock');
         server.use(config.env.API_URL, mock({path: path.resolve(__dirname, '../mock')}));
     }
-
-    await nextI18next.initPromise;
-    server.use(nextI18NextMiddleware(nextI18next));
 
     server.get('*', (req, res) => handle(req, res));
 

@@ -2,6 +2,7 @@
     "extend": "./tsconfig.json",
     "compilerOptions": {
         "module": "commonjs",
+        "target": "ES2018",
         "esModuleInterop": true,
         "typeRoots": ["types"],
         "outDir": "dist"

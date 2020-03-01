@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import uniq from 'lodash/uniq';
 import useSWR from 'swr';
-import {withFetcher} from '~/utils/fetch';
+import {NextPage} from 'next';
+import {useRouter} from 'next/router';
 import {rem, em} from '~/utils/style';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import SearchInput from '~/components/SearchInput';
@@ -43,22 +43,24 @@ type Data = {
     labels: string[];
 };
 
-type HighDimensionalProps = {
-    runs: string[];
-    selectedRun: string;
-};
-
-const HighDimensional: NextI18NextPage<HighDimensionalProps> = ({runs, selectedRun}) => {
+const HighDimensional: NextPage = () => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
+    const {query} = useRouter();
+    const queryRun = Array.isArray(query.run) ? query.run[0] : query.run;
+    const {data: runs} = useSWR<string[]>('/runs');
+    const selectedRun = runs?.includes(queryRun) ? queryRun : runs?.[0];
+
     const [run, setRun] = useState(selectedRun);
+    useEffect(() => setRun(selectedRun), [setRun, selectedRun]);
+
     const [search, setSearch] = useState('');
     const [dimension, setDimension] = useState(dimensions[0] as Dimension);
     const [reduction, setReduction] = useState(reductions[0]);
     const [running, setRunning] = useState(true);
 
     const {data, error} = useSWR<Data>(
-        `/embeddings/embeddings?run=${encodeURIComponent(run)}&dimension=${Number.parseInt(
+        `/embeddings/embeddings?run=${encodeURIComponent(run ?? '')}&dimension=${Number.parseInt(
             dimension
         )}&reduction=${reduction}`,
         {
@@ -127,18 +129,5 @@ const HighDimensional: NextI18NextPage<HighDimensionalProps> = ({runs, selectedR
         </>
     );
 };
-
-HighDimensional.defaultProps = {
-    runs: []
-};
-
-HighDimensional.getInitialProps = withFetcher(async ({query}, fetcher) => {
-    const runs = await fetcher('/runs').then(uniq);
-    return {
-        runs,
-        selectedRun: runs.includes(query.run) ? query.run : runs[0],
-        namespacesRequired: ['high-dimensional', 'common']
-    };
-});
 
 export default HighDimensional;

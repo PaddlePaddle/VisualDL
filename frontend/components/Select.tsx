@@ -1,8 +1,8 @@
-import React, {FunctionComponent, useState, useCallback} from 'react';
+import React, {FunctionComponent, useState, useCallback, useEffect} from 'react';
 import styled from 'styled-components';
 import without from 'lodash/without';
+import {useTranslation} from 'react-i18next';
 import useClickOutside from '~/hooks/useClickOutside';
-import {useTranslation} from '~/utils/i18n';
 import {
     WithStyled,
     em,
@@ -147,6 +147,12 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
     const setIsOpenedFalse = useCallback(() => setIsOpened(false), []);
 
     const [value, setValue] = useState(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue);
+    useEffect(() => setValue(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue), [
+        multiple,
+        propValue,
+        setValue
+    ]);
+
     const isSelected = !!(multiple ? value && (value as SelectValueType[]).length !== 0 : (value as SelectValueType));
     const changeValue = (mutateValue: SelectValueType, checked?: boolean) => {
         let newValue;

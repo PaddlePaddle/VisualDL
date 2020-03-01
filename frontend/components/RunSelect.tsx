@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
 import {rem} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import Select, {SelectValueType} from '~/components/Select';
 
 const Title = styled.div`

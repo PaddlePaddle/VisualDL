@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useCallback} from 'react';
 import styled from 'styled-components';
 import {WithStyled, em, size, half, math, primaryColor, textLighterColor, backgroundColor} from '~/utils/style';
 import InputRange, {Range} from 'react-input-range';
@@ -75,7 +75,7 @@ const RangeSlider: FunctionComponent<RangeSliderProps & WithStyled> = ({
     value,
     disabled
 }) => {
-    const onChangeRange = (range: number | Range) => onChange?.(range as number);
+    const onChangeRange = useCallback((range: number | Range) => onChange?.(range as number), [onChange]);
 
     return (
         <Wrapper className={className} disabled={disabled}>

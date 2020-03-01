@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {
     WithStyled,
@@ -93,6 +93,7 @@ const Checkbox: FunctionComponent<CheckboxProps & WithStyled> = ({
     onChange
 }) => {
     const [checked, setChecked] = useState(!!value);
+    useEffect(() => setChecked(!!value), [setChecked, value]);
     const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (disabled) {
             return;
