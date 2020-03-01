@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import {NodeType, TypedNode} from '~/resource/graph';
 import styled from 'styled-components';
 import {WithStyled} from '~/utils/style';

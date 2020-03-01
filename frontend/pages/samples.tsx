@@ -1,13 +1,9 @@
 import React, {useState, useCallback, useMemo} from 'react';
+import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
+import {NextPage} from 'next';
 import {rem, em} from '~/utils/style';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import useTagFilter, {
-    getInitialProps as getTagFilterInitialProps,
-    defaultProps as defaultTagFilterProps,
-    Props as TagFilterProps
-} from '~/hooks/useTagFilter';
-import {withFetcher} from '~/utils/fetch';
+import useTagFilter from '~/hooks/useTagFilter';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import RunSelect from '~/components/RunSelect';
@@ -42,19 +38,10 @@ type Item = {
     label: string;
 };
 
-type SamplesProps = TagFilterProps & {};
-
-const Samples: NextI18NextPage<SamplesProps> = ({tags: propTags, runs: propRuns, selectedRuns: propSelectedRuns}) => {
+const Samples: NextPage = () => {
     const {t} = useTranslation(['samples', 'common']);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter(
-        'images',
-        propSelectedRuns,
-        {
-            runs: propRuns,
-            tags: propTags
-        }
-    );
+    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter('images');
     const ungroupedSelectedTags = useMemo(
         () =>
             selectedTags.reduce((prev, {runs, ...item}) => {
@@ -125,16 +112,5 @@ const Samples: NextI18NextPage<SamplesProps> = ({tags: propTags, runs: propRuns,
         </>
     );
 };
-
-Samples.defaultProps = {
-    ...defaultTagFilterProps
-};
-
-Samples.getInitialProps = withFetcher(async (context, fetcher) => {
-    return {
-        ...(await getTagFilterInitialProps('images', context, fetcher)),
-        namespacesRequired: ['samples', 'common']
-    };
-});
 
 export default Samples;

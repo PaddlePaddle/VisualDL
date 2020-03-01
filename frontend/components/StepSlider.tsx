@@ -1,7 +1,7 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {em, textLightColor} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import RangeSlider from '~/components/RangeSlider';
 
 const Label = styled.div`
@@ -23,6 +23,7 @@ type StepSliderProps = {
 const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, value, steps}) => {
     const {t} = useTranslation('samples');
     const [step, setStep] = useState(value);
+    useEffect(() => setStep(value), [setStep, value]);
 
     return (
         <>

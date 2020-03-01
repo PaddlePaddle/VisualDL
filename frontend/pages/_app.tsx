@@ -1,26 +1,20 @@
 import '~/public/style/vdl-icon.css';
+import '~/utils/i18n';
 import React from 'react';
-import {NextComponentType, NextPageContext} from 'next';
+import Router from 'next/router';
 import App from 'next/app';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import {SWRConfig} from 'swr';
 import {fetcher} from '~/utils/fetch';
-import {Router, appWithTranslation} from '~/utils/i18n';
 import {GlobalStyle} from '~/utils/style';
-import Title from '~/components/Title';
 import Layout from '~/components/Layout';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-type AppProps<P = {}> = {
-    // eslint-disable-next-line
-    Component: {title?: string} & NextComponentType<NextPageContext, any, P>;
-};
-
-class VDLApp extends App<AppProps> {
+class VDLApp extends App {
     render() {
         const {Component, pageProps} = this.props;
 
@@ -37,7 +31,6 @@ class VDLApp extends App<AppProps> {
                     <meta name="keywords" content={process.env.keywords} />
                     <meta name="author" content={process.env.author} />
                 </Head>
-                <Title>{Component.title}</Title>
                 <GlobalStyle />
                 <SWRConfig
                     value={{
@@ -55,4 +48,4 @@ class VDLApp extends App<AppProps> {
     }
 }
 
-export default appWithTranslation(VDLApp);
+export default VDLApp;

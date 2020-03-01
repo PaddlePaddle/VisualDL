@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useState, useCallback} from 'react';
 import styled from 'styled-components';
 import {rem} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import Button from '~/components/Button';
 
 const StyledButton = styled(Button)`

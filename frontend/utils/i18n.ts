@@ -1,27 +1,59 @@
-import {NextComponentType, NextPageContext} from 'next';
-import NextI18Next from 'next-i18next';
+import i18n, {InitOptions} from 'i18next';
+import {initReactI18next} from 'react-i18next';
+import Backend from 'i18next-chained-backend';
+import LocalStorageBackend from 'i18next-localstorage-backend';
+import XHR from 'i18next-xhr-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const options: InitOptions = {
+    react: {
+        useSuspense: false
+    },
 
-const nextI18Next = new NextI18Next({
-    browserLanguageDetection: isProduction,
-    serverLanguageDetection: isProduction,
+    load: 'languageOnly',
+    fallbackLng: 'en',
     defaultNS: 'common',
-    defaultLanguage: 'en',
-    otherLanguages: ['zh'],
-    localeSubpaths: {
-        zh: 'zh'
+    ns: ['common'],
+
+    interpolation: {
+        escapeValue: false // not needed for react as it escapes by default
     }
-});
+};
 
-// from ~/node_modules/next/types/index.d.ts
-// https://gitlab.com/kachkaev/website-frontend/-/blob/master/src/i18n.ts#L64-68
-export type NextI18NextPage<P = {}, IP = P> = NextComponentType<
-    NextPageContext,
-    IP & {namespacesRequired: string[]},
-    P & {namespacesRequired: string[]}
->;
+if (process.browser) {
+    i18n
+        // load translation using xhr -> see /public/locales (i.e. https://github.com/i18next/react-i18next/tree/master/example/react/public/locales)
+        // learn more: https://github.com/i18next/i18next-xhr-backend
+        .use(Backend)
+        // detect user language
+        // learn more: https://github.com/i18next/i18next-browser-languageDetector
+        .use(LanguageDetector)
+        // pass the i18n instance to react-i18next.
+        .use(initReactI18next)
+        // init i18next
+        // for all options read: https://www.i18next.com/overview/configuration-options
+        .init({
+            backend: {
+                backends: [LocalStorageBackend, XHR],
+                backendOptions: [
+                    {
+                        defaultVersion: '1' // TODO: use build id
+                    },
+                    {
+                        loadPath: `${process.env.PUBLIC_PATH}/locales/{{lng}}/{{ns}}.json`,
+                        allowMultiLoading: false,
+                        crossDomain: true,
+                        overrideMimeType: true
+                    }
+                ]
+            },
 
-export default nextI18Next;
+            detection: {},
 
-export const {i18n, appWithTranslation, withTranslation, useTranslation, Router, Link, Trans} = nextI18Next;
+            ...options
+        });
+} else {
+    i18n.use(initReactI18next).init(options);
+}
+
+export default i18n;

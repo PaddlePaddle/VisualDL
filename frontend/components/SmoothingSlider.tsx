@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useState} from 'react';
 import styled from 'styled-components';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import Field from '~/components/Field';
 import RangeSlider from '~/components/RangeSlider';
 

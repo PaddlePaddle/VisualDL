@@ -1,11 +1,7 @@
 import React, {useState, useCallback} from 'react';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import useTagFilter, {
-    getInitialProps as getTagFilterInitialProps,
-    defaultProps as defaultTagFilterProps,
-    Props as TagFilterProps
-} from '~/hooks/useTagFilter';
-import {withFetcher} from '~/utils/fetch';
+import {useTranslation} from 'react-i18next';
+import {NextPage} from 'next';
+import useTagFilter from '~/hooks/useTagFilter';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import RunSelect from '~/components/RunSelect';
@@ -25,19 +21,10 @@ const xAxisValues = ['step', 'relative', 'wall'];
 type TooltiopSorting = keyof typeof sortingMethodMap;
 const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
 
-type ScalarsProps = TagFilterProps & {};
-
-const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns, selectedRuns: propSelectedRuns}) => {
+const Scalars: NextPage = () => {
     const {t} = useTranslation(['scalars', 'common']);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter(
-        'scalars',
-        propSelectedRuns,
-        {
-            runs: propRuns,
-            tags: propTags
-        }
-    );
+    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter('scalars');
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -105,16 +92,5 @@ const Scalars: NextI18NextPage<ScalarsProps> = ({tags: propTags, runs: propRuns,
         </>
     );
 };
-
-Scalars.defaultProps = {
-    ...defaultTagFilterProps
-};
-
-Scalars.getInitialProps = withFetcher(async (context, fetcher) => {
-    return {
-        ...(await getTagFilterInitialProps('scalars', context, fetcher)),
-        namespacesRequired: ['scalars', 'common']
-    };
-});
 
 export default Scalars;

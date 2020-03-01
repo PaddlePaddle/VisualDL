@@ -1,8 +1,8 @@
-import React, {FunctionComponent, useState, useCallback} from 'react';
+import React, {FunctionComponent, useState, useCallback, useEffect} from 'react';
 import styled from 'styled-components';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import {rem, math, ellipsis} from '~/utils/style';
 import SearchInput from '~/components/SearchInput';
 import Tag from '~/components/Tag';
@@ -52,7 +52,11 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, on
     );
 
     const [matchedCount, setMatchedCount] = useState(propTags?.length ?? 0);
+    useEffect(() => setMatchedCount(propTags?.length ?? 0), [propTags, setMatchedCount]);
+
     const [inputValue, setInputValue] = useState(value || '');
+    useEffect(() => setInputValue(value || ''), [value, setInputValue]);
+
     const [selectedValue, setSelectedValue] = useState('');
     const hasSelectedValue = selectedValue !== '';
     const allText = inputValue || t('all');

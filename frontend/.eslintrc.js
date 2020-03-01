@@ -18,7 +18,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: 'module'
     },
-    plugins: ['react', 'react-hooks', '@typescript-eslint'],
+    plugins: ['react-hooks'],
     settings: {
         react: {
             version: 'detect'
@@ -26,11 +26,11 @@ module.exports = {
     },
     rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/no-explicit-any': 'error',
         'react/prop-types': 'off',
         'react/react-in-jsx-scope': 'off',
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
-        '@typescript-eslint/no-explicit-any': 'error',
         'no-console': 'warn'
     }
 };

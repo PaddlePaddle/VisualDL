@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useEffect, useState, useRef} from 'react';
-import {useTranslation} from '~/utils/i18n';
+import {useTranslation} from 'react-i18next';
 import fetch from 'isomorphic-unfetch';
 
 type ImageProps = {
