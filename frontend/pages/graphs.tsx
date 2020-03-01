@@ -41,6 +41,41 @@ const GraphSvg = styled('svg')`
 
     .node {
         cursor: pointer;
+
+        .label-container {
+            stroke-width: 3px;
+            stroke: #e6e6e6;
+            &.rect {
+                rx: 10;
+                ry: 10;
+            }
+        }
+
+        &.operator {
+            .label-container {
+                fill: #cdd9da;
+            }
+        }
+
+        &.output {
+            .label-container {
+                stroke-dasharray: 5, 5;
+                stroke: #e6e6e6;
+                fill: #cad2d0;
+            }
+        }
+
+        &.input {
+            .label-container {
+                fill: #d5d3d8;
+            }
+        }
+
+        &.active {
+            .label-container {
+                stroke: #25c9ff;
+            }
+        }
     }
 
     .edgePath path.path {
@@ -55,9 +90,9 @@ const MAX_SCALE = 4;
 
 const useDag = (graph?: Graph) => {
     const [displaySwitch, setDisplaySwitch] = useState({
-        detail: true,
-        input: true,
-        output: true
+        detail: false,
+        input: false,
+        output: false
     });
     const facts = useMemo(() => collectDagFacts(graph), [graph]);
 
@@ -134,17 +169,23 @@ const useDagreD3 = (graph: Graph | undefined) => {
                 .on('end', () => svg.classed('grabbing', false));
             svg.call(zoom);
 
+            let prevDom: HTMLElement | undefined;
             // install event listeners
             svg.selectAll('g.node').on('click', v => {
                 const uid = v as string;
-                const {type} = g.node(uid);
-                const dagNode = dagInfo.findNode(type, uid);
-                if (!dagNode) {
+                const {type, elem: dom} = g.node(uid);
+                if (prevDom) {
+                    prevDom.classList.remove('active');
+                }
+                dom.classList.add('active');
+                prevDom = dom;
+                const node = dagInfo.findNode(type, uid);
+                if (!node) {
                     setCurrentNode({type: 'unknown', guessType: type, msg: uid});
                     return;
                 }
 
-                setCurrentNode({...dagNode, type});
+                setCurrentNode({...node, type});
             });
 
             const fitScreen = () => {
@@ -209,21 +250,21 @@ const Graphs: NextI18NextPage<GraphsProps> = () => {
         <section>
             <SubSection>
                 <Button icon="download" onClick={downloadImage}>
-                    {t('common:download-image')}
+                    {t('download-image')}
                 </Button>
                 <Button icon="revert" onClick={fitScreen}>
-                    {t('common:restore-image')}
+                    {t('restore-image')}
                 </Button>
             </SubSection>
 
             <SubSection>
-                <Field label={`${t('common:scale')}:`}>
+                <Field label={`${t('scale')}:`}>
                     <RangeSlider min={MIN_SCALE} max={MAX_SCALE} step={0.1} value={scale} onChange={setScale} />
                 </Field>
             </SubSection>
 
             <SubSection>
-                <Field label={`${t('common:node-info')}:`}></Field>
+                <Field label={`${t('node-info')}:`}></Field>
                 <NodeInfo node={currentNode}></NodeInfo>
             </SubSection>
         </section>

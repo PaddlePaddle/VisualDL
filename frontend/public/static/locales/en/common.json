@@ -10,10 +10,6 @@
     "select": "Please Select",
     "runs": "Runs",
     "select-runs": "Select Runs",
-    "scale": "Scale",
-    "download-image": "Download Image",
-    "restore-image": "Restore Image",
-    "node-info": "Node Info",
     "running": "Running",
     "stopped": "Stopped",
     "loading": "Loading"
