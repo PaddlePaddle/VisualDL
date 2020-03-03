@@ -29,7 +29,9 @@ const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
     loading,
     className
 }) => {
-    const [ref, echart] = useECharts<HTMLDivElement>(!!loading);
+    const [ref, echart] = useECharts<HTMLDivElement>({
+        loading: !!loading
+    });
 
     const xAxisFormatter = useCallback(
         (value: number) => (type === 'time' ? new Date(value).toLocaleTimeString() : value),
