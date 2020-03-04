@@ -2,16 +2,20 @@ import {useRef, useEffect, useCallback, MutableRefObject} from 'react';
 import echarts, {ECharts} from 'echarts';
 import {useTranslation} from 'react-i18next';
 
-const useECharts = <T extends HTMLElement>(
-    loading: boolean
-): [MutableRefObject<T | null>, MutableRefObject<ECharts | null>] => {
+const useECharts = <T extends HTMLElement>(options: {
+    loading: boolean;
+    gl?: boolean;
+}): [MutableRefObject<T | null>, MutableRefObject<ECharts | null>] => {
     const {t} = useTranslation('common');
     const ref = useRef(null);
     const echart = useRef(null as ECharts | null);
 
     const createChart = useCallback(() => {
-        echart.current = echarts.init((ref.current as unknown) as HTMLDivElement);
-    }, []);
+        const loadExtension = options.gl ? import('echarts-gl') : Promise.resolve();
+        loadExtension.then(() => {
+            echart.current = echarts.init((ref.current as unknown) as HTMLDivElement);
+        });
+    }, [options.gl]);
 
     const destroyChart = useCallback(() => {
         echart.current?.dispose();
@@ -26,7 +30,7 @@ const useECharts = <T extends HTMLElement>(
 
     useEffect(() => {
         if (process.browser) {
-            if (loading) {
+            if (options.loading) {
                 echart.current?.showLoading('default', {
                     text: t('loading'),
                     color: '#c23531',
@@ -38,7 +42,7 @@ const useECharts = <T extends HTMLElement>(
                 echart.current?.hideLoading();
             }
         }
-    }, [t, loading]);
+    }, [t, options.loading]);
 
     return [ref, echart];
 };

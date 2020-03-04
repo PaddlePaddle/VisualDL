@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import {NextPage} from 'next';
@@ -58,6 +58,7 @@ const HighDimensional: NextPage = () => {
     const [dimension, setDimension] = useState(dimensions[0] as Dimension);
     const [reduction, setReduction] = useState(reductions[0]);
     const [running, setRunning] = useState(true);
+    const [labelVisibility, setLabelVisibility] = useState(true);
 
     const {data, error} = useSWR<Data>(
         `/embeddings/embeddings?run=${encodeURIComponent(run ?? '')}&dimension=${Number.parseInt(
@@ -67,6 +68,21 @@ const HighDimensional: NextPage = () => {
             refreshInterval: running ? 15 * 1000 : 0
         }
     );
+    const points = useMemo(() => {
+        if (!data) {
+            return [];
+        }
+
+        const {embedding, labels} = data;
+        return embedding.map((value, i) => {
+            const name = labels[i] || '';
+            return {
+                name,
+                showing: labelVisibility,
+                value
+            };
+        });
+    }, [data, labelVisibility]);
 
     const aside = (
         <section>
@@ -81,7 +97,9 @@ const HighDimensional: NextPage = () => {
                 <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
             </Field>
             <Field>
-                <Checkbox>{t('display-all-label')}</Checkbox>
+                <Checkbox value={labelVisibility} onChange={setLabelVisibility}>
+                    {t('display-all-label')}
+                </Checkbox>
             </Field>
             <AsideDivider />
             <AsideTitle>
@@ -119,12 +137,7 @@ const HighDimensional: NextPage = () => {
         <>
             <Title>{t('common:high-dimensional')}</Title>
             <Content aside={aside}>
-                <StyledScatterChart
-                    data={data?.embedding}
-                    labels={data?.labels}
-                    dimension={dimension}
-                    loading={!data && !error}
-                />
+                <StyledScatterChart points={points} dimension={dimension} loading={!data && !error} keyword={search} />
             </Content>
         </>
     );
