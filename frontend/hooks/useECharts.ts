@@ -1,6 +1,6 @@
 import {useRef, useEffect, useCallback, MutableRefObject} from 'react';
 import echarts, {ECharts} from 'echarts';
-import {useTranslation} from 'react-i18next';
+import {useTranslation} from '~/utils/i18n';
 
 const useECharts = <T extends HTMLElement>(options: {
     loading: boolean;

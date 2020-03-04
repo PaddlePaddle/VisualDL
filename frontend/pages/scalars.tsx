@@ -1,6 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {useTranslation} from 'react-i18next';
-import {NextPage} from 'next';
+import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import useTagFilter from '~/hooks/useTagFilter';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
@@ -21,7 +20,7 @@ const xAxisValues = ['step', 'relative', 'wall'];
 type TooltiopSorting = keyof typeof sortingMethodMap;
 const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
 
-const Scalars: NextPage = () => {
+const Scalars: NextI18NextPage = () => {
     const {t} = useTranslation(['scalars', 'common']);
 
     const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter('scalars');
@@ -92,5 +91,9 @@ const Scalars: NextPage = () => {
         </>
     );
 };
+
+Scalars.getInitialProps = () => ({
+    namespacesRequired: ['scalars', 'common']
+});
 
 export default Scalars;

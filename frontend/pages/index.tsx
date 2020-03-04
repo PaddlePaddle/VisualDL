@@ -1,13 +1,18 @@
 import {useEffect} from 'react';
-import {NextPage} from 'next';
-import Router from 'next/router';
+import {NextI18NextPage, Router} from '~/utils/i18n';
 
-const Index: NextPage = () => {
+const Index: NextI18NextPage = () => {
     useEffect(() => {
         Router.replace('/scalars');
     }, []);
 
     return null;
+};
+
+Index.getInitialProps = () => {
+    return {
+        namespacesRequired: []
+    };
 };
 
 export default Index;

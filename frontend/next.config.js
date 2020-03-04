@@ -15,6 +15,7 @@ const APP = {
 };
 
 module.exports = {
+    target: 'serverless',
     assetPrefix: publicPath,
     distDir: 'dist',
     poweredByHeader: false,

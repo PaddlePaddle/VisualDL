@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {em, textLightColor} from '~/utils/style';
-import {useTranslation} from 'react-i18next';
+import {useTranslation} from '~/utils/i18n';
 import RangeSlider from '~/components/RangeSlider';
 
 const Label = styled.div`

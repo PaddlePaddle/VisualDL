@@ -1,7 +1,6 @@
 import React, {useState, useCallback, useMemo} from 'react';
-import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
-import {NextPage} from 'next';
+import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import {rem, em} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
 import Title from '~/components/Title';
@@ -38,7 +37,7 @@ type Item = {
     label: string;
 };
 
-const Samples: NextPage = () => {
+const Samples: NextI18NextPage = () => {
     const {t} = useTranslation(['samples', 'common']);
 
     const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter('images');
@@ -112,5 +111,9 @@ const Samples: NextPage = () => {
         </>
     );
 };
+
+Samples.getInitialProps = () => ({
+    namespacesRequired: ['samples', 'common']
+});
 
 export default Samples;

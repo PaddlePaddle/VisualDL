@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useState} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
-import {useTranslation} from 'react-i18next';
+import {useTranslation} from '~/utils/i18n';
 import {em, size, ellipsis, textLightColor} from '~/utils/style';
 import StepSlider from '~/components/StepSlider';
 import Image from '~/components/Image';

@@ -1,11 +1,10 @@
 import '~/public/style/vdl-icon.css';
-import '~/utils/i18n';
 import React from 'react';
-import Router from 'next/router';
 import App from 'next/app';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import {SWRConfig} from 'swr';
+import {Router, appWithTranslation} from '~/utils/i18n';
 import {fetcher} from '~/utils/fetch';
 import {GlobalStyle} from '~/utils/style';
 import Layout from '~/components/Layout';
@@ -48,4 +47,4 @@ class VDLApp extends App {
     }
 }
 
-export default VDLApp;
+export default appWithTranslation(VDLApp);

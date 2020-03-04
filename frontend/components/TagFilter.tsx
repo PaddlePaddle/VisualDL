@@ -2,7 +2,7 @@ import React, {FunctionComponent, useState, useCallback, useEffect} from 'react'
 import styled from 'styled-components';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
-import {useTranslation} from 'react-i18next';
+import {useTranslation} from '~/utils/i18n';
 import {rem, math, ellipsis} from '~/utils/style';
 import SearchInput from '~/components/SearchInput';
 import Tag from '~/components/Tag';

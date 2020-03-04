@@ -1,10 +1,9 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
-import {NextPage} from 'next';
 import {useRouter} from 'next/router';
 import {rem, em} from '~/utils/style';
-import {useTranslation} from 'react-i18next';
+import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import SearchInput from '~/components/SearchInput';
@@ -43,7 +42,7 @@ type Data = {
     labels: string[];
 };
 
-const HighDimensional: NextPage = () => {
+const HighDimensional: NextI18NextPage = () => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
     const {query} = useRouter();
@@ -142,5 +141,9 @@ const HighDimensional: NextPage = () => {
         </>
     );
 };
+
+HighDimensional.getInitialProps = () => ({
+    namespacesRequired: ['high-dimensional', 'common']
+});
 
 export default HighDimensional;

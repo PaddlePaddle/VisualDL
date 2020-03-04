@@ -7,7 +7,7 @@ import maxBy from 'lodash/maxBy';
 import sortBy from 'lodash/sortBy';
 import {EChartOption} from 'echarts';
 import {em, size} from '~/utils/style';
-import {useTranslation} from 'react-i18next';
+import {useTranslation} from '~/utils/i18n';
 import {cycleFetcher} from '~/utils/fetch';
 import {transform, range, tooltip, TooltipData} from '~/utils/scalars';
 import * as chart from '~/utils/chart';

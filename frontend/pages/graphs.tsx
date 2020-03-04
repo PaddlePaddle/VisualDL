@@ -1,13 +1,12 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import useSWR from 'swr';
 import styled from 'styled-components';
-import {NextPage} from 'next';
 import RawButton from '~/components/Button';
 import RawRangeSlider from '~/components/RangeSlider';
 import Content from '~/components/Content';
 import Title from '~/components/Title';
 import Field from '~/components/Field';
-import {useTranslation} from 'react-i18next';
+import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import {rem} from '~/utils/style';
 import {fetcher} from '~/utils/fetch';
 import NodeInfo, {NodeInfoProps} from '~/components/GraphPage/NodeInfo';
@@ -240,7 +239,7 @@ const useDagreD3 = (graph: Graph | undefined) => {
     return {currentNode, displaySwitch, setDisplaySwitch, downloadImage, fitScreen, scale, setScale};
 };
 
-const Graphs: NextPage = () => {
+const Graphs: NextI18NextPage = () => {
     const {t} = useTranslation(['graphs', 'common']);
     const {data: graph} = useSWR<{data: Graph}>('/graphs/graph', fetcher);
     const {currentNode, downloadImage, fitScreen, scale, setScale} = useDagreD3(graph ? graph.data : undefined);
@@ -281,5 +280,9 @@ const Graphs: NextPage = () => {
         </>
     );
 };
+
+Graphs.getInitialProps = () => ({
+    namespacesRequired: ['graphs', 'common']
+});
 
 export default Graphs;

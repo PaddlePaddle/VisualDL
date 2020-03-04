@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useState, useCallback, useEffect} from 'react';
 import styled from 'styled-components';
 import without from 'lodash/without';
-import {useTranslation} from 'react-i18next';
+import {useTranslation} from '~/utils/i18n';
 import useClickOutside from '~/hooks/useClickOutside';
 import {
     WithStyled,
