@@ -19,6 +19,7 @@ type ScatterChartProps = {
 };
 
 const assemble2D = (points: {highlighted: Point[]; others: Point[]}, label: EChartOption.SeriesBar['label']) => {
+    // eslint-disable-next-line
     const createSeries = (name: string, data: Point[], patch?: {[k: string]: any}) => ({
         name,
         symbolSize: SYMBOL_SIZE,
@@ -50,6 +51,7 @@ const assemble2D = (points: {highlighted: Point[]; others: Point[]}, label: ECha
 };
 
 const assemble3D = (points: {highlighted: Point[]; others: Point[]}, label: EChartOption.SeriesBar['label']) => {
+    // eslint-disable-next-line
     const createSeries = (name: string, data: Point[], patch?: {[k: string]: any}) => ({
         name,
         symbolSize: SYMBOL_SIZE,
