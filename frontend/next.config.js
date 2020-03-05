@@ -4,6 +4,7 @@ const pkg = require('./package.json');
 
 const publicPath = process.env.PUBLIC_PATH || '';
 const apiUrl = process.env.API_URL || '/api';
+const distDir = 'dist';
 
 const APP = {
     name: pkg.name,
@@ -22,7 +23,7 @@ const otherLanguages = LANGUAGES.filter(lang => lang !== DEFAULT_LANGUAGE);
 module.exports = {
     target: 'serverless',
     assetPrefix: publicPath,
-    distDir: 'dist',
+    distDir,
     poweredByHeader: false,
     env: {
         ...APP,
@@ -40,6 +41,9 @@ module.exports = {
                 return prev;
             }, {})
         };
+    },
+    experimental: {
+        basePath: publicPath
     },
     webpack: config => {
         config.resolve = config.resolve || {};

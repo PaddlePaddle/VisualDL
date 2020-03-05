@@ -63,8 +63,8 @@ const Navbar: FunctionComponent = () => {
 
     return (
         <Nav>
-            <Logo href="/">
-                <img alt="PaddlePaddle" src="/images/logo.svg" />
+            <Logo href={process.env.PUBLIC_PATH || '/'}>
+                <img alt="PaddlePaddle" src={`${process.env.PUBLIC_PATH}/images/logo.svg`} />
                 <span>VisualDL</span>
             </Logo>
             {navItems.map(name => {

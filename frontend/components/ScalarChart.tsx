@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useCallback, useMemo} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
+import queryString from 'query-string';
 import compact from 'lodash/compact';
 import minBy from 'lodash/minBy';
 import maxBy from 'lodash/maxBy';
@@ -59,7 +60,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     // TODO: maybe we can create a custom hook here
     const {data: datasets, error} = useSWR<DataSet[]>(
-        runs.map(run => `/scalars/scalars?run=${encodeURIComponent(run)}&tag=${encodeURIComponent(tag)}`),
+        runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
         (...urls) => cycleFetcher(urls),
         {
             refreshInterval: running ? 15 * 1000 : 0

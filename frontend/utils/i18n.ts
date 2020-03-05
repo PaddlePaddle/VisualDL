@@ -1,5 +1,5 @@
 import {NextComponentType, NextPageContext} from 'next';
-import NextI18Next from 'next-i18next';
+import NextI18Next from './i18next';
 import {env} from '../next.config';
 
 const defaultLanguage = env.DEFAULT_LANGUAGE;

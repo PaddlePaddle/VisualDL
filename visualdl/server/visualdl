@@ -19,6 +19,7 @@ import json
 import os
 import time
 import sys
+import re
 from argparse import ArgumentParser
 
 from flask import (Flask, Response, redirect, request, send_file,
@@ -39,7 +40,7 @@ try:
     import exceptions
 except:
     pass
-    
+
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
@@ -147,13 +148,18 @@ def gen_result(status, msg, data):
 
 @app.route("/")
 def index():
-    return redirect('/static/index.html', code=302)
+    language = args.language
+    if not language in support_language:
+        language = default_language
+    if language == default_language:
+        return redirect('/app/index', code=302)
+    return redirect('/app/' + language + '/index', code=302)
 
 
-@app.route('/static/<path:filename>')
+@app.route('/app/<path:filename>')
 def serve_static(filename):
     return send_from_directory(
-        os.path.join(server_path, static_file_path), filename)
+        os.path.join(server_path, static_file_path), filename if re.search(r'\..+$', filename) else filename + '.html')
 
 
 @app.route('/graphs/image')
@@ -161,20 +167,20 @@ def serve_graph():
     return send_file(os.path.join(os.getcwd(), graph_image_path))
 
 
-@app.route('/data/logdir')
+@app.route('/api/logdir')
 def logdir():
     result = gen_result(0, "", {"logdir": args.logdir})
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/runs')
+@app.route('/api/runs')
 def runs():
     data = cache_get('/data/runs', lib.get_modes, log_reader)
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/language')
+@app.route('/api/language')
 def language():
     data = args.language
     if not data in support_language:
@@ -183,7 +189,7 @@ def language():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/data/plugin/scalars/tags")
+@app.route("/api/scalars/tags")
 def scalar_tags():
     data = cache_get("/data/plugin/scalars/tags", try_call,
                      lib.get_scalar_tags, log_reader)
@@ -191,7 +197,7 @@ def scalar_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/data/plugin/images/tags")
+@app.route("/api/images/tags")
 def image_tags():
     data = cache_get("/data/plugin/images/tags", try_call, lib.get_image_tags,
                      log_reader)
@@ -199,7 +205,7 @@ def image_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/data/plugin/audio/tags")
+@app.route("/api/audio/tags")
 def audio_tags():
     data = cache_get("/data/plugin/audio/tags", try_call, lib.get_audio_tags,
                      log_reader)
@@ -207,7 +213,7 @@ def audio_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/data/plugin/histograms/tags")
+@app.route("/api/histograms/tags")
 def histogram_tags():
     data = cache_get("/data/plugin/histograms/tags", try_call,
                      lib.get_histogram_tags, log_reader)
@@ -215,7 +221,7 @@ def histogram_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route("/data/plugin/texts/tags")
+@app.route("/api/texts/tags")
 def texts_tags():
     data = cache_get("/data/plugin/texts/tags", try_call,
                      lib.get_texts_tags, log_reader)
@@ -223,7 +229,7 @@ def texts_tags():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/scalars/scalars')
+@app.route('/api/scalars/list')
 def scalars():
     run = request.args.get('run')
     tag = request.args.get('tag')
@@ -233,7 +239,7 @@ def scalars():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/images/images')
+@app.route('/api/images/list')
 def images():
     mode = request.args.get('run')
     tag = request.args.get('tag')
@@ -246,7 +252,7 @@ def images():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/images/individualImage')
+@app.route('/api/images/image')
 def individual_image():
     mode = request.args.get('run')
     tag = request.args.get('tag')  # include a index
@@ -261,7 +267,7 @@ def individual_image():
     return response
 
 
-@app.route('/data/plugin/histograms/histograms')
+@app.route('/api/histograms/list')
 def histogram():
     run = request.args.get('run')
     tag = request.args.get('tag')
@@ -271,7 +277,7 @@ def histogram():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/texts/texts')
+@app.route('/api/texts/list')
 def texts():
     run = request.args.get('run')
     tag = request.args.get('tag')
@@ -280,7 +286,8 @@ def texts():
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
-@app.route('/data/plugin/embeddings/embeddings')
+
+@app.route('/api/embeddings/embedding')
 def embeddings():
     run = request.args.get('run')
     dimension = request.args.get('dimension')
@@ -290,7 +297,8 @@ def embeddings():
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
-@app.route('/data/plugin/audio/audio')
+
+@app.route('/api/audio/list')
 def audio():
     mode = request.args.get('run')
     tag = request.args.get('tag')
@@ -303,7 +311,7 @@ def audio():
     return Response(json.dumps(result), mimetype='application/json')
 
 
-@app.route('/data/plugin/audio/individualAudio')
+@app.route('/api/audio/audio')
 def individual_audio():
     mode = request.args.get('run')
     tag = request.args.get('tag')  # include a index
@@ -318,7 +326,7 @@ def individual_audio():
     return response
 
 
-@app.route('/data/plugin/graphs/graph')
+@app.route('/api/graphs/graph')
 def graph():
     if model.is_onnx_model(args.model_pb):
         json_str = vdl_graph.draw_onnx_graph(args.model_pb)

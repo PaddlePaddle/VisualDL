@@ -1,8 +1,5 @@
 #!/bin/bash
-set -ex
-
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd $SCRIPT_DIR/..
+set -e
 
 TOP_DIR=$(pwd)
 FRONTEND_DIR=$TOP_DIR/frontend
@@ -13,7 +10,12 @@ mkdir -p $BUILD_DIR
 
 build_frontend() {
     cd $FRONTEND_DIR
-    ./scripts/build.sh
+    PUBLIC_PATH="/app" API_URL="/api" ./scripts/build.sh
+}
+
+build_frontend_fake() {
+    cd $FRONTEND_DIR
+    mkdir -p out
 }
 
 build_backend() {
@@ -28,8 +30,10 @@ build_backend() {
 
 build_onnx_graph() {
     export PATH="$BUILD_DIR/third_party/protobuf/src/extern_protobuf-build/:$PATH"
-    cd $TOP_DIR/visualdl/server/onnx
+    cd $TOP_DIR/visualdl/server/model/onnx
     protoc onnx.proto --python_out .
+    cd $TOP_DIR/visualdl/server/model/paddle
+    protoc framework.proto --python_out .
 }
 
 clean_env() {
@@ -41,15 +45,22 @@ clean_env() {
 }
 
 package() {
-    # deprecated, will use nodejs in docker instead
-    # cp -rf $FRONTEND_DIR/dist $TOP_DIR/visualdl/server/
+    mkdir -p $TOP_DIR/visualdl/server/dist
+    cp -rf $FRONTEND_DIR/out/* $TOP_DIR/visualdl/server/dist
+    cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
+    cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }
 
 ARG=$1
 echo "ARG: " $ARG
 
+if [ "$ARG" = "travis-CI" ]; then
+    build_frontend_fake
+else
+    build_frontend
+fi
+
 clean_env
-build_frontend
 build_backend
 build_onnx_graph
 package

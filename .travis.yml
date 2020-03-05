@@ -63,7 +63,7 @@ jobs:
         - npm
         - yarn
       env:
-        - PUBLIC_PATH=""
+        - PUBLIC_PATH="/app"
         - API_URL="/api"
       before_install:
         - cd frontend

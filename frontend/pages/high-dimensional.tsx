@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
+import queryString from 'query-string';
 import {useRouter} from 'next/router';
 import {rem, em} from '~/utils/style';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
@@ -60,9 +61,11 @@ const HighDimensional: NextI18NextPage = () => {
     const [labelVisibility, setLabelVisibility] = useState(true);
 
     const {data, error} = useSWR<Data>(
-        `/embeddings/embeddings?run=${encodeURIComponent(run ?? '')}&dimension=${Number.parseInt(
-            dimension
-        )}&reduction=${reduction}`,
+        `/embeddings/embedding?${queryString.stringify({
+            run: run ?? '',
+            dimension: Number.parseInt(dimension),
+            reduction
+        })}`,
         {
             refreshInterval: running ? 15 * 1000 : 0
         }

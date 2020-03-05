@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useEffect, useState, useRef} from 'react';
-import {useTranslation} from '~/utils/i18n';
 import fetch from 'isomorphic-unfetch';
+import {useTranslation} from '~/utils/i18n';
 
 type ImageProps = {
     src?: string;

@@ -39,12 +39,7 @@ def get_tags(storage, component):
         with storage.mode(mode) as reader:
             tags = reader.tags(component)
             if tags:
-                result[mode] = {}
-                for tag in tags:
-                    result[mode][tag] = {
-                        'displayName': tag,
-                        'description': "",
-                    }
+                result[mode] = tags
     return result
 
 

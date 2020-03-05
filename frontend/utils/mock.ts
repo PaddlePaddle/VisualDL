@@ -39,7 +39,12 @@ export default (options: Options) => {
             if (mock instanceof ArrayBuffer) {
                 res.send(Buffer.from(mock));
             } else {
-                res.json(JSON.parse(faker.fake(JSON.stringify(mock, null, 4))));
+                const result = JSON.parse(faker.fake(JSON.stringify(mock, null, 4)));
+                if ('status' in result && 'data' in result) {
+                    res.json(result);
+                } else {
+                    res.json({status: 0, msg: '', data: result});
+                }
             }
         } catch (e) {
             res.status(500).send(e.message);

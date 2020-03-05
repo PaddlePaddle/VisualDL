@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useState} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
+import queryString from 'query-string';
 import {useTranslation} from '~/utils/i18n';
 import {em, size, ellipsis, textLightColor} from '~/utils/style';
 import StepSlider from '~/components/StepSlider';
@@ -77,19 +78,14 @@ type SampleChartProps = {
 };
 
 const getImageUrl = (index: number, run: string, tag: string, wallTime: number): string =>
-    `${process.env.API_URL}/images/individualImage?sample=0&index=${index}&ts=${wallTime}&run=${encodeURIComponent(
-        run
-    )}&tag=${encodeURIComponent(tag)}`;
+    `${process.env.API_URL}/images/image?${queryString.stringify({index, ts: wallTime, run, tag})}`;
 
 const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, running}) => {
     const {t} = useTranslation('common');
 
-    const {data, error} = useSWR<ImageData[]>(
-        `/images/images?run=${encodeURIComponent(run)}&tag=${encodeURIComponent(tag)}`,
-        {
-            refreshInterval: running ? 15 * 1000 : 0
-        }
-    );
+    const {data, error} = useSWR<ImageData[]>(`/images/list?${queryString.stringify({run, tag})}`, {
+        refreshInterval: running ? 15 * 1000 : 0
+    });
 
     const [step, setStep] = useState(0);
 

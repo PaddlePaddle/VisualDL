@@ -1,6 +1,6 @@
 import {createGlobalStyle, keyframes} from 'styled-components';
 import {rem as rem16, em as em16, math, normalize, darken, lighten, size} from 'polished';
-
+import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
 export {default as styled} from 'styled-components';
 export * from 'styled-components';
 export * from 'polished';
@@ -53,8 +53,21 @@ export type WithStyled = {
     className?: string;
 };
 
+// prettier-ignore
 export const GlobalStyle = createGlobalStyle`
     ${normalize}
+
+    @font-face {
+        font-family: 'vdl-icon';
+        src: url("${process.env.PUBLIC_PATH}/style/fonts/vdl-icon.ttf?5sp5gl") format('truetype'),
+            url("${process.env.PUBLIC_PATH}/style/fonts/vdl-icon.woff?5sp5gl") format('woff'),
+            url("${process.env.PUBLIC_PATH}/style/fonts/vdl-icon.svg?5sp5gl#vdl-icon") format('svg');
+        font-weight: normal;
+        font-style: normal;
+        font-display: block;
+    }
+
+    ${vdlIcon.toString()}
 
     html {
         font-size: ${fontSize};

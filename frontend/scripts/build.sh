@@ -11,6 +11,9 @@ rm -rf $DIST_PATH
 mkdir -p $DIST_PATH
 
 yarn
+# export
+# WARNING: export FIRST!!! dist files will be deleted by next after export
+yarn export
 # next build
 yarn build:next
 # server build
