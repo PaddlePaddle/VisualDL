@@ -11,7 +11,7 @@ const Index: NextI18NextPage = () => {
 
 Index.getInitialProps = () => {
     return {
-        namespacesRequired: []
+        namespacesRequired: ['common']
     };
 };
 

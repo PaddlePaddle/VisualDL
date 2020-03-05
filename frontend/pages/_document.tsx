@@ -3,6 +3,7 @@ import {ServerStyleSheet} from '~/utils/style';
 
 interface VDLDocumentProps extends DocumentProps {
     language: string;
+    languageDir: string;
 }
 
 export default class VDLDocument extends Document<VDLDocumentProps> {
@@ -18,12 +19,11 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
                 });
 
             const initialProps = await Document.getInitialProps(ctx);
-
             // stealed from https://github.com/isaachinman/next-i18next/issues/20#issuecomment-558799264
             // FIXME: https://github.com/i18next/i18next-express-middleware/blob/master/src/index.js#L23-L26
             const additionalProps = {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                language: (ctx.res as any)?.locals?.language ?? 'en'
+                ...((ctx.res as any)?.locals || {})
             };
 
             return {
@@ -42,9 +42,9 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
     }
 
     render() {
-        const {language} = this.props;
+        const {language, languageDir} = this.props;
         return (
-            <html lang={language}>
+            <html lang={language} dir={languageDir}>
                 <Head />
                 <body>
                     <Main />

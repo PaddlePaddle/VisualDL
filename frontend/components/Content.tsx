@@ -26,6 +26,8 @@ const Aside = styled.aside`
     position: fixed;
     top: ${headerHeight};
     right: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 `;
 
 type ContentProps = {

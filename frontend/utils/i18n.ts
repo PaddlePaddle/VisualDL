@@ -1,17 +1,24 @@
 import {NextComponentType, NextPageContext} from 'next';
 import NextI18Next from 'next-i18next';
+import {env} from '../next.config';
+
+const defaultLanguage = env.DEFAULT_LANGUAGE;
+const allLanguages = env.LANGUAGES;
+const otherLanguages = allLanguages.filter(lang => lang !== defaultLanguage);
 
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextI18Next = new NextI18Next({
-    localePath: 'public/locales',
+    localePath: env.LOCALE_PATH,
     browserLanguageDetection: !isDev,
     serverLanguageDetection: !isDev,
-    defaultLanguage: 'en',
-    otherLanguages: ['zh'],
-    localeSubpaths: {
-        zh: 'zh'
-    }
+    cleanCode: true,
+    defaultLanguage,
+    otherLanguages,
+    localeSubpaths: otherLanguages.reduce((prev, curr) => {
+        prev[curr] = curr;
+        return prev;
+    }, {} as Record<string, string>)
 });
 
 // from ~/node_modules/next/types/index.d.ts

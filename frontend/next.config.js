@@ -14,6 +14,11 @@ const APP = {
     keywords: pkg.keywords.join(',')
 };
 
+const DEFAULT_LANGUAGE = 'en';
+const LOCALE_PATH = 'public/locales';
+const LANGUAGES = ['en', 'zh'];
+const otherLanguages = LANGUAGES.filter(lang => lang !== DEFAULT_LANGUAGE);
+
 module.exports = {
     target: 'serverless',
     assetPrefix: publicPath,
@@ -21,8 +26,20 @@ module.exports = {
     poweredByHeader: false,
     env: {
         ...APP,
+        DEFAULT_LANGUAGE,
+        LOCALE_PATH,
+        LANGUAGES,
         PUBLIC_PATH: publicPath,
         API_URL: apiUrl
+    },
+    exportPathMap: defaultPathMap => {
+        return {
+            ...defaultPathMap,
+            ...Object.entries(defaultPathMap).reduce((prev, [path, router]) => {
+                otherLanguages.forEach(lang => (prev[`/${lang}${path}`] = router));
+                return prev;
+            }, {})
+        };
     },
     webpack: config => {
         config.resolve = config.resolve || {};
