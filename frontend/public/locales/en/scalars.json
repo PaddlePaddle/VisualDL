@@ -1,5 +1,7 @@
 {
     "smoothing": "Smoothing",
+    "value": "Value",
+    "smoothed": "Smoothed",
     "x-axis": "X-Axis",
     "x-axis-value": {
         "step": "Step",

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import queryString from 'query-string';
 import {useRouter} from 'next/router';
+import useSearchValue from '~/hooks/useSearchValue';
 import {rem, em} from '~/utils/style';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import Title from '~/components/Title';
@@ -17,6 +18,7 @@ import RunningToggle from '~/components/RunningToggle';
 import ScatterChart from '~/components/ScatterChart';
 import Select, {SelectValueType} from '~/components/Select';
 import AsideDivider from '~/components/AsideDivider';
+import Preloader from '~/components/Preloader';
 import {Dimension} from '~/types';
 
 const dimensions = ['2d', '3d'];
@@ -55,6 +57,7 @@ const HighDimensional: NextI18NextPage = () => {
     useEffect(() => setRun(selectedRun), [setRun, selectedRun]);
 
     const [search, setSearch] = useState('');
+    const debouncedSearch = useSearchValue(search);
     const [dimension, setDimension] = useState(dimensions[0] as Dimension);
     const [reduction, setReduction] = useState(reductions[0]);
     const [running, setRunning] = useState(true);
@@ -137,9 +140,15 @@ const HighDimensional: NextI18NextPage = () => {
 
     return (
         <>
+            <Preloader url="/runs" />
             <Title>{t('common:high-dimensional')}</Title>
-            <Content aside={aside}>
-                <StyledScatterChart points={points} dimension={dimension} loading={!data && !error} keyword={search} />
+            <Content aside={aside} loading={!runs}>
+                <StyledScatterChart
+                    points={points}
+                    dimension={dimension}
+                    loading={!data && !error}
+                    keyword={debouncedSearch}
+                />
             </Content>
         </>
     );

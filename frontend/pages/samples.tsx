@@ -14,6 +14,7 @@ import RunningToggle from '~/components/RunningToggle';
 import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
 import SampleChart from '~/components/SampleChart';
+import Preloader from '~/components/Preloader';
 
 const StyledIcon = styled(Icon)`
     font-size: ${rem(16)};
@@ -40,7 +41,9 @@ type Item = {
 const Samples: NextI18NextPage = () => {
     const {t} = useTranslation(['samples', 'common']);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter('images');
+    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags, loadingRuns, loadingTags} = useTagFilter(
+        'images'
+    );
     const ungroupedSelectedTags = useMemo(
         () =>
             selectedTags.reduce((prev, {runs, ...item}) => {
@@ -103,10 +106,12 @@ const Samples: NextI18NextPage = () => {
 
     return (
         <>
+            <Preloader url="/runs" />
+            <Preloader url="/images/tags" />
             <Title>{t('common:samples')}</Title>
-            <Content aside={aside}>
+            <Content aside={aside} loading={loadingRuns}>
                 <TagFilter tags={tags} onChange={onFilterTags} />
-                <ChartPage items={ungroupedSelectedTags} withChart={withChart} />
+                <ChartPage items={ungroupedSelectedTags} withChart={withChart} loading={loadingRuns || loadingTags} />
             </Content>
         </>
     );

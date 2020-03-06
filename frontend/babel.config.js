@@ -9,6 +9,7 @@ module.exports = {
                 preprocess: false
             }
         ],
-        ...(process.env.NODE_ENV !== 'production' ? ['babel-plugin-typescript-to-proptypes'] : [])
+        ['emotion'],
+        ...(process.env.NODE_ENV !== 'production' ? ['typescript-to-proptypes'] : [])
     ]
 };

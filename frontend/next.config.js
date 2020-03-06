@@ -27,6 +27,7 @@ module.exports = {
     poweredByHeader: false,
     env: {
         ...APP,
+        BUILD_ID: '',
         DEFAULT_LANGUAGE,
         LOCALE_PATH,
         LANGUAGES,

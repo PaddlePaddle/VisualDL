@@ -1,24 +1,41 @@
-import {useRef, useEffect, useCallback, MutableRefObject} from 'react';
+import {useRef, useEffect, useCallback, useState, MutableRefObject} from 'react';
 import echarts, {ECharts} from 'echarts';
-import {useTranslation} from '~/utils/i18n';
+import {primaryColor, textColor, maskColor} from '~/utils/style';
 
 const useECharts = <T extends HTMLElement>(options: {
-    loading: boolean;
+    loading?: boolean;
     gl?: boolean;
-}): [MutableRefObject<T | null>, MutableRefObject<ECharts | null>] => {
-    const {t} = useTranslation('common');
-    const ref = useRef(null);
-    const echart = useRef(null as ECharts | null);
+    zoom?: boolean;
+}): {
+    ref: MutableRefObject<T | null>;
+    echart: MutableRefObject<ECharts | null> | null;
+} => {
+    const ref = useRef(null as T | null);
+    const echartInstance = useRef(null as ECharts | null);
+    const [echart, setEchart] = useState(null as typeof echartInstance | null);
 
     const createChart = useCallback(() => {
-        const loadExtension = options.gl ? import('echarts-gl') : Promise.resolve();
-        loadExtension.then(() => {
-            echart.current = echarts.init((ref.current as unknown) as HTMLDivElement);
-        });
-    }, [options.gl]);
+        (async () => {
+            if (options.gl) {
+                await import('echarts-gl');
+            }
+            echartInstance.current = echarts.init((ref.current as unknown) as HTMLDivElement);
+            if (options.zoom) {
+                setTimeout(() => {
+                    echartInstance.current?.dispatchAction({
+                        type: 'takeGlobalCursor',
+                        key: 'dataZoomSelect',
+                        dataZoomSelectActive: true
+                    });
+                }, 0);
+            }
+            setEchart(echartInstance);
+        })();
+    }, [options.gl, options.zoom]);
 
     const destroyChart = useCallback(() => {
-        echart.current?.dispose();
+        echartInstance.current?.dispose();
+        setEchart(null);
     }, []);
 
     useEffect(() => {
@@ -29,22 +46,22 @@ const useECharts = <T extends HTMLElement>(options: {
     }, [createChart, destroyChart]);
 
     useEffect(() => {
-        if (process.browser) {
+        if (process.browser && echart) {
             if (options.loading) {
-                echart.current?.showLoading('default', {
-                    text: t('loading'),
-                    color: '#c23531',
-                    textColor: '#000',
-                    maskColor: 'rgba(255, 255, 255, 0.8)',
+                echartInstance.current?.showLoading('default', {
+                    text: '',
+                    color: primaryColor,
+                    textColor,
+                    maskColor,
                     zlevel: 0
                 });
             } else {
-                echart.current?.hideLoading();
+                echartInstance.current?.hideLoading();
             }
         }
-    }, [t, options.loading]);
+    }, [options.loading, echart]);
 
-    return [ref, echart];
+    return {ref, echart};
 };
 
 export default useECharts;

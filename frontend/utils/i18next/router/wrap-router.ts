@@ -9,6 +9,9 @@
   Very important: if you import `Router` from NextJs directly,
   and not this file, your lang subpath routing will break.
 */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import NextRouter, {SingletonRouter} from 'next/router';
 import {lngPathCorrector, subpathIsRequired} from '../utils';
 

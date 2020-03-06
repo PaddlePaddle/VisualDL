@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {defaultConfig} from './default-config';
 import {consoleMessage, isServer} from '../utils';
-import {InitConfig, Config} from '../types';
+import {Config} from '../types';
 
 const deepMergeObjects = ['backend', 'detection'];
 const dedupe = (names: string[]) => names.filter((v, i) => names.indexOf(v) === i);
@@ -12,16 +14,16 @@ export const createConfig = (userConfig: Config): Config => {
     }
 
     /*
-    Initial merge of default and user-provided config
-  */
+        Initial merge of default and user-provided config
+    */
     const combinedConfig = {
         ...defaultConfig,
         ...userConfig
     };
 
     /*
-    Sensible defaults to prevent user duplication
-  */
+        Sensible defaults to prevent user duplication
+    */
     combinedConfig.allLanguages = dedupe(combinedConfig.otherLanguages.concat([combinedConfig.defaultLanguage]));
     combinedConfig.whitelist = combinedConfig.allLanguages;
 
@@ -29,22 +31,22 @@ export const createConfig = (userConfig: Config): Config => {
 
     if (isServer()) {
         const fs = eval("require('fs')");
-        const path = require('path');
+        const path = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
         let serverLocalePath = localePath;
 
         /*
-      Validate defaultNS
-      https://github.com/isaachinman/next-i18next/issues/358
-    */
+            Validate defaultNS
+            https://github.com/isaachinman/next-i18next/issues/358
+        */
         if (typeof combinedConfig.defaultNS === 'string') {
             const defaultFile = `/${defaultLanguage}/${combinedConfig.defaultNS}.${localeExtension}`;
             const defaultNSPath = path.join(process.cwd(), localePath, defaultFile);
             const defaultNSExists = fs.existsSync(defaultNSPath);
             if (!defaultNSExists) {
                 /*
-          If defaultNS doesn't exist, try to fall back to the deprecated static folder
-          https://github.com/isaachinman/next-i18next/issues/523
-        */
+                    If defaultNS doesn't exist, try to fall back to the deprecated static folder
+                    https://github.com/isaachinman/next-i18next/issues/523
+                */
                 const staticDirPath = path.join(process.cwd(), STATIC_LOCALE_PATH, defaultFile);
                 const staticDirExists = fs.existsSync(staticDirPath);
 
@@ -62,16 +64,16 @@ export const createConfig = (userConfig: Config): Config => {
         }
 
         /*
-      Set server side backend
-    */
+            Set server side backend
+        */
         combinedConfig.backend = {
             loadPath: path.join(process.cwd(), `${serverLocalePath}/${localeStructure}.${localeExtension}`),
             addPath: path.join(process.cwd(), `${serverLocalePath}/${localeStructure}.missing.${localeExtension}`)
         };
 
         /*
-      Set server side preload (languages and namespaces)
-    */
+            Set server side preload (languages and namespaces)
+        */
         combinedConfig.preload = allLanguages;
         if (!combinedConfig.ns) {
             const getAllNamespaces = (p: string) =>
@@ -82,15 +84,15 @@ export const createConfig = (userConfig: Config): Config => {
         let clientLocalePath = localePath;
 
         /*
-      Remove public prefix from client site config
-    */
+            Remove public prefix from client site config
+        */
         if (localePath.startsWith('public/')) {
             clientLocalePath = localePath.replace(/^public\//, '');
         }
 
         /*
-      Set client side backend
-    */
+            Set client side backend
+        */
         combinedConfig.backend = {
             loadPath: `${process.env.PUBLIC_PATH}/${clientLocalePath}/${localeStructure}.${localeExtension}`,
             addPath: `${process.env.PUBLIC_PATH}/${clientLocalePath}/${localeStructure}.missing.${localeExtension}`
@@ -100,16 +102,16 @@ export const createConfig = (userConfig: Config): Config => {
     }
 
     /*
-    Set fallback language to defaultLanguage in production
-  */
+        Set fallback language to defaultLanguage in production
+    */
     if (!userConfig.fallbackLng) {
         (combinedConfig as any).fallbackLng =
             process.env.NODE_ENV === 'production' ? combinedConfig.defaultLanguage : false;
     }
 
     /*
-    Deep merge with overwrite - goes last
-  */
+        Deep merge with overwrite - goes last
+    */
     deepMergeObjects.forEach(obj => {
         if ((userConfig as any)[obj]) {
             (combinedConfig as any)[obj] = {

@@ -1,4 +1,5 @@
 import {FallbackLng} from 'i18next';
+
 export const lngsToLoad = (initialLng: string | null, fallbackLng: FallbackLng | false, otherLanguages?: string[]) => {
     const languages = [];
 

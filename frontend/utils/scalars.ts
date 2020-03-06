@@ -3,6 +3,7 @@ import minBy from 'lodash/minBy';
 import maxBy from 'lodash/maxBy';
 import sortBy from 'lodash/sortBy';
 import moment from 'moment';
+import {I18n} from '~/utils/i18next/types';
 
 // https://en.wikipedia.org/wiki/Moving_average
 export const transform = (seriesData: number[][], smoothingWeight: number) => {
@@ -79,8 +80,13 @@ export type TooltipData = {
     item: number[];
 };
 
+export const formatTime = (value: number, language: string, formatter = 'L LTS') =>
+    moment(Math.floor(value), 'x')
+        .locale(language)
+        .format(formatter);
+
 // TODO: make it better, don't concat html
-export const tooltip = (data: TooltipData[]) => {
+export const tooltip = (data: TooltipData[], i18n: I18n) => {
     const indexPropMap = {
         Time: 0,
         Step: 1,
@@ -96,6 +102,14 @@ export const tooltip = (data: TooltipData[]) => {
         Smoothed: 60,
         Relative: 60
     };
+    const translatePropMap = {
+        Run: 'common:runs',
+        Time: 'scalars:x-axis-value.wall',
+        Step: 'scalars:x-axis-value.step',
+        Value: 'scalars:value',
+        Smoothed: 'scalars:smoothed',
+        Relative: 'scalars:x-axis-value.relative'
+    };
     const transformedData = data.map(item => {
         const data = item.item;
         return {
@@ -104,7 +118,7 @@ export const tooltip = (data: TooltipData[]) => {
             Smoothed: data[indexPropMap.Smoothed].toString().slice(0, 6),
             Value: data[indexPropMap.Value].toString().slice(0, 6),
             Step: data[indexPropMap.Step],
-            Time: moment(Math.floor(data[indexPropMap.Time]), 'x').format('YYYY-MM-DD HH:mm:ss'),
+            Time: formatTime(data[indexPropMap.Time], i18n.language),
             // Relative display value should take easy-read into consideration.
             // Better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
             Relative: Math.floor(data[indexPropMap.Relative] * 60 * 60) + 's'
@@ -112,11 +126,11 @@ export const tooltip = (data: TooltipData[]) => {
     });
 
     let headerHtml = '<tr style="font-size:14px;">';
-    headerHtml += Object.keys(transformedData[0])
+    headerHtml += (Object.keys(transformedData[0]) as (keyof typeof transformedData[0])[])
         .map(key => {
-            return `<td style="padding: 0 4px; font-weight: bold; width: ${
-                widthPropMap[key as keyof typeof transformedData[0]]
-            }px;">${key}</td>`;
+            return `<td style="padding: 0 4px; font-weight: bold; width: ${widthPropMap[key]}px;">${i18n.t(
+                translatePropMap[key]
+            )}</td>`;
         })
         .join('');
     headerHtml += '</tr>';

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {format as formatUrl, parse as parseUrl} from 'url';
 
 import {Config} from '../types';
@@ -42,7 +44,7 @@ export const lngPathCorrector = (config: Config, currentRoute: any, currentLangu
         throw new Error('Invalid configuration: Current language is not included in all languages array');
     }
 
-    let href = parseHref(originalHref);
+    const href = parseHref(originalHref);
     let as = parseAs(originalAs, href);
 
     /*
@@ -56,8 +58,8 @@ export const lngPathCorrector = (config: Config, currentRoute: any, currentLangu
     Strip any/all subpaths from the `as` value
   */
     Object.values(localeSubpaths || {}).forEach((subpath: string) => {
-        if (subpathIsPresent(as, subpath)) {
-            as = removeSubpath(as, subpath);
+        if (subpathIsPresent(as as string, subpath)) {
+            as = removeSubpath(as as string, subpath);
         }
     });
 

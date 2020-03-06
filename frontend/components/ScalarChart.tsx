@@ -56,7 +56,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     outlier,
     running
 }) => {
-    const {t} = useTranslation('scalars');
+    const {t, i18n} = useTranslation(['scalars', 'common']);
 
     // TODO: maybe we can create a custom hook here
     const {data: datasets, error} = useSWR<DataSet[]>(
@@ -161,9 +161,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                     };
                 }) ?? [];
             const sort = sortingMethodMap[sortingMethod];
-            return tooltip(sort ? sort(points, data) : points);
+            return tooltip(sort ? sort(points, data) : points, i18n);
         },
-        [smoothedDatasets, runs, sortingMethod]
+        [smoothedDatasets, runs, sortingMethod, i18n]
     );
 
     return (

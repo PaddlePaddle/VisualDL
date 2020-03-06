@@ -1,16 +1,17 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import useSWR from 'swr';
 import styled from 'styled-components';
+import {saveSvgAsPng} from 'save-svg-as-png';
+import {rem} from '~/utils/style';
 import RawButton from '~/components/Button';
 import RawRangeSlider from '~/components/RangeSlider';
 import Content from '~/components/Content';
 import Title from '~/components/Title';
 import Field from '~/components/Field';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import {rem} from '~/utils/style';
 import NodeInfo, {NodeInfoProps} from '~/components/GraphPage/NodeInfo';
+import Preloader from '~/components/Preloader';
 import {Graph, collectDagFacts} from '~/resource/graph';
-import {saveSvgAsPng} from 'save-svg-as-png';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const dumbFn = () => {};
@@ -269,9 +270,10 @@ const Graphs: NextI18NextPage = () => {
 
     return (
         <>
+            <Preloader url="/graphs/graph" />
             <Title>{t('common:graphs')}</Title>
 
-            <Content aside={aside}>
+            <Content aside={aside} loading={!graph}>
                 <GraphSvg>
                     <g></g>
                 </GraphSvg>

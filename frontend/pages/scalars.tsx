@@ -1,6 +1,7 @@
 import React, {useState, useCallback} from 'react';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import useTagFilter from '~/hooks/useTagFilter';
+import useSearchValue from '~/hooks/useSearchValue';
 import Title from '~/components/Title';
 import Content from '~/components/Content';
 import RunSelect from '~/components/RunSelect';
@@ -13,6 +14,7 @@ import RunningToggle from '~/components/RunningToggle';
 import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
 import ScalarChart, {xAxisMap, sortingMethodMap} from '~/components/ScalarChart';
+import Preloader from '~/components/Preloader';
 import {Tag} from '~/types';
 
 type XAxis = keyof typeof xAxisMap;
@@ -23,7 +25,11 @@ const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
 const Scalars: NextI18NextPage = () => {
     const {t} = useTranslation(['scalars', 'common']);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags} = useTagFilter('scalars');
+    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags, loadingRuns, loadingTags} = useTagFilter(
+        'scalars'
+    );
+
+    const debouncedTags = useSearchValue(selectedTags);
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -83,10 +89,12 @@ const Scalars: NextI18NextPage = () => {
 
     return (
         <>
+            <Preloader url="/runs" />
+            <Preloader url="/scalars/tags" />
             <Title>{t('common:scalars')}</Title>
-            <Content aside={aside}>
+            <Content aside={aside} loading={loadingRuns}>
                 <TagFilter tags={tags} onChange={onFilterTags} />
-                <ChartPage items={selectedTags} withChart={withChart} />
+                <ChartPage items={debouncedTags} withChart={withChart} loading={loadingRuns || loadingTags} />
             </Content>
         </>
     );

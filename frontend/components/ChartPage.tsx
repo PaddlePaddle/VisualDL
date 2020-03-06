@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useState} from 'react';
 import styled from 'styled-components';
-import {WithStyled, rem} from '~/utils/style';
+import {WithStyled, rem, primaryColor} from '~/utils/style';
+import BarLoader from 'react-spinners/BarLoader';
 import Chart from '~/components/Chart';
 import Pagination from '~/components/Pagination';
 
@@ -18,14 +19,23 @@ const Wrapper = styled.div`
     }
 `;
 
+const Loading = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: ${rem(200)};
+    padding: ${rem(40)} 0;
+`;
+
 // TODO: add types
 // eslint-disable-next-line
 type ChartPageProps<T = any> = {
     items?: T[];
+    loading?: boolean;
     withChart?: (item: T) => React.ReactNode;
 };
 
-const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, withChart, className}) => {
+const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loading, withChart, className}) => {
     const pageSize = 12;
     const total = Math.ceil((items?.length ?? 0) / pageSize);
 
@@ -35,11 +45,17 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, withC
 
     return (
         <div className={className}>
-            <Wrapper>
-                {pageItems.map((item, index) => (
-                    <Chart key={index}>{withChart?.(item)}</Chart>
-                ))}
-            </Wrapper>
+            {loading ? (
+                <Loading>
+                    <BarLoader color={primaryColor} width="20%" height="4px" />
+                </Loading>
+            ) : (
+                <Wrapper>
+                    {pageItems.map((item, index) => (
+                        <Chart key={index}>{withChart?.(item)}</Chart>
+                    ))}
+                </Wrapper>
+            )}
             <Pagination page={page} total={total} onChange={setPage} />
         </div>
     );

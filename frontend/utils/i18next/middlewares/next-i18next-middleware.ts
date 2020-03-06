@@ -25,10 +25,10 @@ export default function(nexti18next: NextI18Next) {
     const middleware = [];
 
     /*
-    If not using server side language detection,
-    we need to manually set the language for
-    each request
-  */
+        If not using server side language detection,
+        we need to manually set the language for
+        each request
+    */
     if (!config.serverLanguageDetection) {
         middleware.push((req: Request, _res: Response, next: NextFunction) => {
             if (isI18nRoute(req)) {
@@ -39,13 +39,13 @@ export default function(nexti18next: NextI18Next) {
     }
 
     /*
-    This does the bulk of the i18next work
-  */
+        This does the bulk of the i18next work
+    */
     middleware.push(i18nextMiddleware.handle(i18n));
 
     /*
-    This does the locale subpath work
-  */
+        This does the locale subpath work
+    */
     middleware.push((req: Request, res: Response, next: NextFunction) => {
         if (isI18nRoute(req) && req.i18n) {
             let currentLng = lngFromReq(req);
@@ -59,25 +59,25 @@ export default function(nexti18next: NextI18Next) {
 
             if (lngFromCurrentSubpath !== undefined && lngFromCurrentSubpath !== currentLng) {
                 /*
-          If a user has hit a subpath which does not
-          match their language, give preference to
-          the path, and change user language.
-        */
+                    If a user has hit a subpath which does not
+                    match their language, give preference to
+                    the path, and change user language.
+                */
                 req.i18n.changeLanguage(lngFromCurrentSubpath);
                 currentLng = lngFromCurrentSubpath;
             } else if (currentLngRequiresSubpath && !currentLngSubpathIsPresent) {
                 /*
-          If a language subpath is required and
-          not present, prepend correct subpath
-        */
+                    If a language subpath is required and
+                    not present, prepend correct subpath
+                */
                 return redirectWithoutCache(res, addSubpath(req.url, currentLngSubpath));
             }
 
             /*
-        If a locale subpath is present in the URL,
-        modify req.url in place so that NextJs will
-        render the correct route
-      */
+                If a locale subpath is present in the URL,
+                modify req.url in place so that NextJs will
+                render the correct route
+            */
             if (typeof lngFromCurrentSubpath === 'string') {
                 const params = localeSubpathRoute(req.url);
                 if (params !== false) {

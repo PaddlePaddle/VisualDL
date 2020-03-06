@@ -1,5 +1,7 @@
 {
     "smoothing": "平滑度",
+    "value": "值",
+    "smoothed": "平滑值",
     "x-axis": "X轴",
     "x-axis-value": {
         "step": "步",

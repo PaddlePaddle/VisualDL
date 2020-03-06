@@ -1,7 +1,8 @@
 import {Request} from 'express';
 
 export default (req: Request) => {
-    if (req.query.dimension === '3') {
+    const {dimension, run} = req.query;
+    if (dimension === '3') {
         return {
             embedding: [
                 [10.0, 8.04, 3],
@@ -16,7 +17,7 @@ export default (req: Request) => {
                 [7.0, 4.8, 3],
                 [5.0, 5.68, 3]
             ],
-            labels: ['yellow', 'blue', 'red', 'king', 'queen', 'man', 'women', 'kid', 'adult', 'light', 'dark']
+            labels: [`${run}-yellow`, 'blue', 'red', 'king', 'queen', 'man', 'women', 'kid', 'adult', 'light', 'dark']
         };
     }
     return {
@@ -33,6 +34,6 @@ export default (req: Request) => {
             [7.0, 4.8],
             [5.0, 5.68]
         ],
-        labels: ['yellow', 'blue', 'red', 'king', 'queen', 'man', 'women', 'kid', 'adult', 'light', 'dark']
+        labels: [`${run}-yellow`, 'blue', 'red', 'king', 'queen', 'man', 'women', 'kid', 'adult', 'light', 'dark']
     };
 };

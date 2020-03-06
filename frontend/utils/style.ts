@@ -35,6 +35,7 @@ export const backgroundFocusedColor = '#F6F6F6';
 export const borderColor = '#DDD';
 export const borderFocusedColor = darken(0.15, borderColor);
 export const progressBarColor = '#FFF';
+export const maskColor = 'rgba(255, 255, 255, 0.8)';
 
 // transitions
 export const duration = '75ms';

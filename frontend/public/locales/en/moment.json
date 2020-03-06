@@ -1,0 +1,10 @@
+{
+    "longDateFormat": {
+        "LT": "h:mm A",
+        "LTS": "h:mm:ss A",
+        "L": "MM/DD/YYYY",
+        "LL": "MMMM Do YYYY",
+        "LLL": "MMMM Do YYYY LT",
+        "LLLL": "dddd, MMMM Do YYYY LT"
+    }
+}

@@ -1,8 +1,10 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
 import {EChartOption} from 'echarts';
 import {WithStyled} from '~/utils/style';
+import {useTranslation} from '~/utils/i18n';
 import useECharts from '~/hooks/useECharts';
 import * as chart from '~/utils/chart';
+import {formatTime} from '~/utils/scalars';
 
 type LineChartProps = {
     title?: string;
@@ -29,18 +31,21 @@ const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
     loading,
     className
 }) => {
-    const [ref, echart] = useECharts<HTMLDivElement>({
-        loading: !!loading
+    const {i18n} = useTranslation();
+
+    const {ref, echart} = useECharts<HTMLDivElement>({
+        loading: !!loading,
+        zoom: true
     });
 
     const xAxisFormatter = useCallback(
-        (value: number) => (type === 'time' ? new Date(value).toLocaleTimeString() : value),
-        [type]
+        (value: number) => (type === 'time' ? formatTime(value, i18n.language, 'LTS') : value),
+        [type, i18n.language]
     );
 
     useEffect(() => {
         if (process.browser) {
-            echart.current?.setOption(
+            echart?.current?.setOption(
                 {
                     color: chart.color,
                     title: {
@@ -83,18 +88,6 @@ const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
             );
         }
     }, [data, title, legend, xAxis, type, xAxisFormatter, yRange, tooltip, echart]);
-
-    useEffect(() => {
-        if (process.browser) {
-            setTimeout(() => {
-                echart.current?.dispatchAction({
-                    type: 'takeGlobalCursor',
-                    key: 'dataZoomSelect',
-                    dataZoomSelectActive: true
-                });
-            }, 0);
-        }
-    }, [echart]);
 
     return <div className={className} ref={ref}></div>;
 };

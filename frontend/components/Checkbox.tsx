@@ -81,6 +81,7 @@ type CheckboxProps = {
     value?: boolean;
     onChange?: (value: boolean) => unknown;
     size?: 'small';
+    title?: string;
     disabled?: boolean;
 };
 
@@ -90,6 +91,7 @@ const Checkbox: FunctionComponent<CheckboxProps & WithStyled> = ({
     size,
     disabled,
     className,
+    title,
     onChange
 }) => {
     const [checked, setChecked] = useState(!!value);
@@ -103,7 +105,7 @@ const Checkbox: FunctionComponent<CheckboxProps & WithStyled> = ({
     };
 
     return (
-        <Wrapper disabled={disabled} className={className}>
+        <Wrapper disabled={disabled} className={className} title={title}>
             <Input onChange={onChangeInput} checked={checked} disabled={disabled} />
             <Inner checked={checked} size={size} disabled={disabled} />
             <Content disabled={disabled}>{children}</Content>

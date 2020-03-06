@@ -1,10 +1,10 @@
 import {useReducer, useEffect, useCallback, useMemo} from 'react';
+import {useRouter} from 'next/router';
 import useSWR from 'swr';
 import groupBy from 'lodash/groupBy';
 import uniq from 'lodash/uniq';
 import intersection from 'lodash/intersection';
 import {Tag} from '~/types';
-import {useRouter} from 'next/router';
 
 type Runs = string[];
 type Tags = Record<string, string[]>;
@@ -143,7 +143,9 @@ const useTagFilters = (type: string) => {
         selectedRuns: state.runs,
         selectedTags: state.filteredTags,
         onChangeRuns,
-        onFilterTags
+        onFilterTags,
+        loadingRuns: !runs,
+        loadingTags: !tags
     };
 };
 

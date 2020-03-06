@@ -27,14 +27,16 @@ export default (options: Options) => {
                 mock = await mock(req, res);
             }
 
-            // sleep
             let delay = 0;
             if ('function' === typeof options.delay) {
                 delay = options.delay(method);
             } else if (options.delay) {
                 delay = options.delay;
             }
-            await sleep(delay);
+
+            if (delay) {
+                await sleep(delay);
+            }
 
             if (mock instanceof ArrayBuffer) {
                 res.send(Buffer.from(mock));

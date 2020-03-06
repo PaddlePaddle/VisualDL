@@ -27,7 +27,7 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, value, steps}
 
     return (
         <>
-            <Label>{`${t('step')}: ${steps[step]}`}</Label>
+            <Label>{`${t('step')}: ${steps[step] ?? '...'}`}</Label>
             <FullWidthRangeSlider
                 min={0}
                 max={steps.length ? steps.length - 1 : 0}

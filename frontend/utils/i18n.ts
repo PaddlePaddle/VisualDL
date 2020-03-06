@@ -1,4 +1,5 @@
 import {NextComponentType, NextPageContext} from 'next';
+import moment from 'moment';
 import NextI18Next from './i18next';
 import {env} from '../next.config';
 
@@ -7,6 +8,10 @@ const allLanguages = env.LANGUAGES;
 const otherLanguages = allLanguages.filter(lang => lang !== defaultLanguage);
 
 const isDev = process.env.NODE_ENV === 'development';
+
+allLanguages.forEach(async (lang: string) => {
+    moment.updateLocale(lang, await import(`../public/locales/${lang}/moment.json`));
+});
 
 const nextI18Next = new NextI18Next({
     localePath: env.LOCALE_PATH,

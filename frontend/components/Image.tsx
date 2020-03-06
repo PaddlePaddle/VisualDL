@@ -1,44 +1,31 @@
-import React, {FunctionComponent, useEffect, useState, useRef} from 'react';
-import fetch from 'isomorphic-unfetch';
-import {useTranslation} from '~/utils/i18n';
+import React, {FunctionComponent, useLayoutEffect, useState} from 'react';
+import useSWR from 'swr';
+import {primaryColor} from '~/utils/style';
+import {blobFetcher} from '~/utils/fetch';
+import GridLoader from 'react-spinners/GridLoader';
 
 type ImageProps = {
     src?: string;
 };
 
 const Image: FunctionComponent<ImageProps> = ({src}) => {
-    const {t} = useTranslation('common');
-
     const [url, setUrl] = useState('');
-    const [loading, setLoading] = useState(false);
 
-    const controller = useRef(null as AbortController | null);
+    const {data} = useSWR(src ?? null, blobFetcher);
 
-    useEffect(() => {
-        if (process.browser) {
+    // use useLayoutEffect hook to prevent image render after url revoked
+    useLayoutEffect(() => {
+        if (process.browser && data) {
             let objectUrl: string | null = null;
-            (async () => {
-                setLoading(true);
-                controller.current?.abort();
-                controller.current = new AbortController();
-                try {
-                    const result = await fetch(src ?? '', {signal: controller.current.signal});
-                    const blob = await result.blob();
-                    objectUrl = URL.createObjectURL(blob);
-                    setUrl(objectUrl);
-                } catch {
-                    // ignore abort error
-                } finally {
-                    setLoading(false);
-                }
-            })();
+            objectUrl = URL.createObjectURL(data);
+            setUrl(objectUrl);
             return () => {
                 objectUrl && URL.revokeObjectURL(objectUrl);
             };
         }
-    }, [src]);
+    }, [data]);
 
-    return loading ? <span>{t('loading')}</span> : <img src={url} />;
+    return !data ? <GridLoader color={primaryColor} size="10px" /> : <img src={url} />;
 };
 
 export default Image;

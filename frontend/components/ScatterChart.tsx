@@ -112,9 +112,9 @@ const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({
     dimension,
     className
 }) => {
-    const [ref, echart] = useECharts<HTMLDivElement>({
+    const {ref, echart} = useECharts<HTMLDivElement>({
         loading,
-        gl: true
+        gl: dimension === '3d'
     });
     const [highlighted, others] = useMemo(() => dividePoints(points, keyword), [points, keyword]);
     const chartOptions = useMemo(
@@ -130,14 +130,9 @@ const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({
     );
 
     useEffect(() => {
-        if (!process.browser) {
-            return;
+        if (process.browser) {
+            echart?.current?.setOption(chartOptions, {notMerge: true});
         }
-
-        echart.current?.setOption(
-            chartOptions,
-            true // not merged
-        );
     }, [chartOptions, echart]);
 
     return <div className={className} ref={ref}></div>;

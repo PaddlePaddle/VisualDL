@@ -1,4 +1,4 @@
-/* tslint:disable no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as React from 'react';
 import {
@@ -64,6 +64,7 @@ declare class NextI18Next {
 }
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
         interface Request {
             lng?: string;

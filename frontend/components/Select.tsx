@@ -31,6 +31,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
     min-width: ${minWidth};
+    max-width: 100%;
     display: inline-block;
     position: relative;
     border: 1px solid ${borderColor};
@@ -67,6 +68,8 @@ const TriggerIcon = styled(Icon)<{opened?: boolean}>`
 
 const Label = styled.span`
     flex-grow: 1;
+    padding-right: ${em(10)};
+    ${ellipsis()}
 `;
 
 const List = styled.div<{opened?: boolean; empty?: boolean}>`
@@ -204,6 +207,7 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
                                   <MultipleListItem
                                       value={(value as SelectValueType[]).includes(item.value)}
                                       key={index}
+                                      title={item.label}
                                       size="small"
                                       onChange={checked => changeValue(item.value, checked)}
                                   >
@@ -215,6 +219,7 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
                               <ListItem
                                   selected={item.value === value}
                                   key={index}
+                                  title={item.label}
                                   onClick={() => changeValue(item.value)}
                               >
                                   {item.label}

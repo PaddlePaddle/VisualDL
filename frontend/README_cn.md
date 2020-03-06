@@ -18,7 +18,7 @@
 
 [English](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/README.md) | 简体中文
 
-**🚧仍在建设中🚧**
+**🚧开发中🚧**
 
 **🚧某些功能可能不能正常工作🚧**
 

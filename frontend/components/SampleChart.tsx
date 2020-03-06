@@ -2,8 +2,8 @@ import React, {FunctionComponent, useState} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import queryString from 'query-string';
-import {useTranslation} from '~/utils/i18n';
-import {em, size, ellipsis, textLightColor} from '~/utils/style';
+import {em, size, ellipsis, primaryColor, textLightColor} from '~/utils/style';
+import GridLoader from 'react-spinners/GridLoader';
 import StepSlider from '~/components/StepSlider';
 import Image from '~/components/Image';
 
@@ -78,11 +78,9 @@ type SampleChartProps = {
 };
 
 const getImageUrl = (index: number, run: string, tag: string, wallTime: number): string =>
-    `${process.env.API_URL}/images/image?${queryString.stringify({index, ts: wallTime, run, tag})}`;
+    `/images/image?${queryString.stringify({index, ts: wallTime, run, tag})}`;
 
 const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, running}) => {
-    const {t} = useTranslation('common');
-
     const {data, error} = useSWR<ImageData[]>(`/images/list?${queryString.stringify({run, tag})}`, {
         refreshInterval: running ? 15 * 1000 : 0
     });
@@ -97,7 +95,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
             </Title>
             <StepSlider value={step} steps={data?.map(item => item.step) ?? []} onChange={setStep} />
             <Container fit={fit}>
-                {!data && !error && <span>{t('loading')}</span>}
+                {!data && !error && <GridLoader color={primaryColor} size="10px" />}
                 {data && !error && <Image src={getImageUrl(step, run, tag, data[step].wallTime)} />}
             </Container>
         </Wrapper>
