@@ -29,6 +29,7 @@
     "isolatedModules": true
   },
   "exclude": [
+    "server",
     "node_modules"
   ],
   "include": [

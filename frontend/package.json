@@ -30,7 +30,7 @@
         "build": "./scripts/build.sh",
         "export": "yarn build:next && next export",
         "start": "NODE_ENV=production node dist/server/index.js",
-        "lint": "tsc --noEmit && eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
+        "lint": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.server.json --noEmit && eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"  \"**/*.jsx\"",
         "test": "echo \"Error: no test specified\" && exit 0"
     },
