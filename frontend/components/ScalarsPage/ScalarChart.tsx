@@ -2,40 +2,43 @@ import React, {FunctionComponent, useCallback, useMemo} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import queryString from 'query-string';
-import compact from 'lodash/compact';
-import minBy from 'lodash/minBy';
-import maxBy from 'lodash/maxBy';
-import sortBy from 'lodash/sortBy';
 import {EChartOption} from 'echarts';
 import {em, size} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
+import useHeavyWork from '~/hooks/useHeavyWork';
 import {cycleFetcher} from '~/utils/fetch';
-import {transform, range, tooltip, TooltipData} from '~/utils/scalars';
-import * as chart from '~/utils/chart';
+import {
+    transform,
+    chartData,
+    range,
+    tooltip,
+    sortingMethodMap,
+    xAxisMap,
+    Dataset,
+    Range,
+    TransformParams,
+    RangeParams
+} from '~/resource/scalars';
 import LineChart from '~/components/LineChart';
 
 const width = em(430);
 const height = em(320);
 
+const smoothWasm = () =>
+    import('~/wasm/pkg').then(({transform}) => (params: TransformParams) =>
+        (transform(params.datasets, params.smoothing) as unknown) as Dataset[]
+    );
+const rangeWasm = () =>
+    import('~/wasm/pkg').then(({range}) => (params: RangeParams) =>
+        (range(params.datasets, params.outlier) as unknown) as Range
+    );
+
+const smoothWorker = () => new Worker('~/worker/scalars/smooth.worker.ts', {type: 'module'});
+const rangeWorker = () => new Worker('~/worker/scalars/range.worker.ts', {type: 'module'});
+
 const StyledLineChart = styled(LineChart)`
     ${size(height, width)}
 `;
-
-export const xAxisMap = {
-    step: 1,
-    relative: 4,
-    wall: 0
-};
-
-export const sortingMethodMap = {
-    default: null,
-    descending: (points: TooltipData[]) => sortBy(points, point => point.item[3]).reverse(),
-    ascending: (points: TooltipData[]) => sortBy(points, point => point.item[3]),
-    // Compare other ponts width the trigger point, caculate the nearest sort.
-    nearest: (points: TooltipData[], data: number[]) => sortBy(points, point => point.item[3] - data[2])
-};
-
-type DataSet = number[][];
 
 type ScalarChartProps = {
     runs: string[];
@@ -59,7 +62,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
     // TODO: maybe we can create a custom hook here
-    const {data: datasets, error} = useSWR<DataSet[]>(
+    const {data: datasets, error} = useSWR<Dataset[]>(
         runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
         (...urls) => cycleFetcher(urls),
         {
@@ -70,65 +73,34 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const type = xAxis === 'wall' ? 'time' : 'value';
     const smooth = xAxis !== 'wall';
 
-    const smoothedDatasets = useMemo(() => datasets?.map(dataset => transform(dataset, smoothing)), [
-        datasets,
-        smoothing
-    ]);
+    const transformParams = useMemo(
+        () => ({
+            datasets: datasets ?? [],
+            smoothing
+        }),
+        [datasets, smoothing]
+    );
+    const smoothedDatasets = useHeavyWork(smoothWasm, smoothWorker, transform, transformParams) ?? [];
+
+    const rangeParams = useMemo(
+        () => ({
+            datasets: smoothedDatasets,
+            outlier: !!outlier
+        }),
+        [smoothedDatasets, outlier]
+    );
+    const yRange = useHeavyWork(rangeWasm, rangeWorker, range, rangeParams);
 
     const data = useMemo(
         () =>
-            smoothedDatasets
-                ?.map((dataset, i) => {
-                    // smoothed data:
-                    // [0] wall time
-                    // [1] step
-                    // [2] orginal value
-                    // [3] smoothed value
-                    // [4] relative
-                    const name = runs[i];
-                    return [
-                        {
-                            name,
-                            z: i,
-                            lineStyle: {
-                                width: chart.series.lineStyle.width,
-                                opacity: 0.5
-                            },
-                            data: dataset,
-                            encode: {
-                                x: [xAxisMap[xAxis]],
-                                y: [2]
-                            },
-                            smooth
-                        },
-                        {
-                            name,
-                            z: runs.length + i,
-                            data: dataset,
-                            encode: {
-                                x: [xAxisMap[xAxis]],
-                                y: [3]
-                            },
-                            smooth
-                        }
-                    ];
-                })
-                .flat(),
-        [runs, smooth, smoothedDatasets, xAxis]
+            chartData({
+                data: smoothedDatasets,
+                runs,
+                smooth,
+                xAxis
+            }),
+        [smoothedDatasets, runs, smooth, xAxis]
     );
-
-    const yRange = useMemo(() => {
-        const ranges = compact(smoothedDatasets?.map(dataset => range(dataset, outlier)));
-        const min = minBy(ranges, range => range.min)?.min ?? 0;
-        const max = maxBy(ranges, range => range.max)?.max ?? 0;
-
-        if (!(min === 0 && max === 0)) {
-            return {
-                min: min > 0 ? min * 0.9 : min * 1.1,
-                max: max > 0 ? max * 1.1 : max * 0.9
-            };
-        }
-    }, [outlier, smoothedDatasets]);
 
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {

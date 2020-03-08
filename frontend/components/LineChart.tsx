@@ -3,8 +3,8 @@ import {EChartOption} from 'echarts';
 import {WithStyled} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
 import useECharts from '~/hooks/useECharts';
+import {formatTime} from '~/utils';
 import * as chart from '~/utils/chart';
-import {formatTime} from '~/utils/scalars';
 
 type LineChartProps = {
     title?: string;

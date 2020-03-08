@@ -13,7 +13,7 @@ import Checkbox from '~/components/Checkbox';
 import RunningToggle from '~/components/RunningToggle';
 import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
-import SampleChart from '~/components/SampleChart';
+import SampleChart from '~/components/SamplesPage/SampleChart';
 import Preloader from '~/components/Preloader';
 
 const StyledIcon = styled(Icon)`

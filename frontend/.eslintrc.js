@@ -24,6 +24,7 @@ module.exports = {
             version: 'detect'
         }
     },
+    ignorePatterns: ['node_modules/', 'dist/', 'out/', '_next', 'wasm/'],
     rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-explicit-any': 'error',
