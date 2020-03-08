@@ -68,7 +68,7 @@ jobs:
       before_install:
         - cd frontend
       install:
-        - curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly
+        - curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
         - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
         - yarn
       script:
