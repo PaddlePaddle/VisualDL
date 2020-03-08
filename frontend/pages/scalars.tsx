@@ -9,12 +9,13 @@ import TagFilter from '~/components/TagFilter';
 import Select, {SelectValueType} from '~/components/Select';
 import Field from '~/components/Field';
 import Checkbox from '~/components/Checkbox';
-import SmoothingSlider from '~/components/SmoothingSlider';
 import RunningToggle from '~/components/RunningToggle';
 import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
-import ScalarChart, {xAxisMap, sortingMethodMap} from '~/components/ScalarChart';
+import SmoothingSlider from '~/components/ScalarsPage/SmoothingSlider';
+import ScalarChart from '~/components/ScalarsPage/ScalarChart';
 import Preloader from '~/components/Preloader';
+import {xAxisMap, sortingMethodMap} from '~/resource/scalars';
 import {Tag} from '~/types';
 
 type XAxis = keyof typeof xAxisMap;

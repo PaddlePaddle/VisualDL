@@ -9,9 +9,9 @@ import Content from '~/components/Content';
 import Title from '~/components/Title';
 import Field from '~/components/Field';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import NodeInfo, {NodeInfoProps} from '~/components/GraphPage/NodeInfo';
+import NodeInfo, {NodeInfoProps} from '~/components/GraphsPage/NodeInfo';
 import Preloader from '~/components/Preloader';
-import {Graph, collectDagFacts} from '~/resource/graph';
+import {Graph, collectDagFacts} from '~/resource/graphs';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const dumbFn = () => {};

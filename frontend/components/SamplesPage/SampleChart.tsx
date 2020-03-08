@@ -4,8 +4,8 @@ import useSWR from 'swr';
 import queryString from 'query-string';
 import {em, size, ellipsis, primaryColor, textLightColor} from '~/utils/style';
 import GridLoader from 'react-spinners/GridLoader';
-import StepSlider from '~/components/StepSlider';
 import Image from '~/components/Image';
+import StepSlider from '~/components/SamplesPage/StepSlider';
 
 const width = em(430);
 const height = em(384);

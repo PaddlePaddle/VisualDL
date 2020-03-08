@@ -1,7 +1,6 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
-import queryString from 'query-string';
 import {useRouter} from 'next/router';
 import useSearchValue from '~/hooks/useSearchValue';
 import {rem, em} from '~/utils/style';
@@ -15,11 +14,11 @@ import Checkbox from '~/components/Checkbox';
 import RadioGroup from '~/components/RadioGroup';
 import RadioButton from '~/components/RadioButton';
 import RunningToggle from '~/components/RunningToggle';
-import ScatterChart from '~/components/ScatterChart';
 import Select, {SelectValueType} from '~/components/Select';
 import AsideDivider from '~/components/AsideDivider';
 import Preloader from '~/components/Preloader';
-import {Dimension} from '~/types';
+import HighDimensionalChart from '~/components/HighDimensionalPage/HighDimensionalChart';
+import {Dimension, Reduction} from '~/resource/high-dimensional';
 
 const dimensions = ['2d', '3d'];
 const reductions = ['pca', 'tsne'];
@@ -36,15 +35,6 @@ const AsideTitle = styled.div`
     margin-bottom: ${rem(10)};
 `;
 
-const StyledScatterChart = styled(ScatterChart)`
-    height: ${rem(600)};
-`;
-
-type Data = {
-    embedding: ([number, number] | [number, number, number])[];
-    labels: string[];
-};
-
 const HighDimensional: NextI18NextPage = () => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
@@ -59,35 +49,9 @@ const HighDimensional: NextI18NextPage = () => {
     const [search, setSearch] = useState('');
     const debouncedSearch = useSearchValue(search);
     const [dimension, setDimension] = useState(dimensions[0] as Dimension);
-    const [reduction, setReduction] = useState(reductions[0]);
+    const [reduction, setReduction] = useState(reductions[0] as Reduction);
     const [running, setRunning] = useState(true);
     const [labelVisibility, setLabelVisibility] = useState(true);
-
-    const {data, error} = useSWR<Data>(
-        `/embeddings/embedding?${queryString.stringify({
-            run: run ?? '',
-            dimension: Number.parseInt(dimension),
-            reduction
-        })}`,
-        {
-            refreshInterval: running ? 15 * 1000 : 0
-        }
-    );
-    const points = useMemo(() => {
-        if (!data) {
-            return [];
-        }
-
-        const {embedding, labels} = data;
-        return embedding.map((value, i) => {
-            const name = labels[i] || '';
-            return {
-                name,
-                showing: labelVisibility,
-                value
-            };
-        });
-    }, [data, labelVisibility]);
 
     const aside = (
         <section>
@@ -126,7 +90,7 @@ const HighDimensional: NextI18NextPage = () => {
                 {t('reduction-method')}
             </AsideTitle>
             <Field>
-                <RadioGroup value={reduction} onChange={value => setReduction(value as string)}>
+                <RadioGroup value={reduction} onChange={value => setReduction(value as Reduction)}>
                     {reductions.map(item => (
                         <RadioButton key={item} value={item}>
                             {t(item)}
@@ -143,11 +107,13 @@ const HighDimensional: NextI18NextPage = () => {
             <Preloader url="/runs" />
             <Title>{t('common:high-dimensional')}</Title>
             <Content aside={aside} loading={!runs}>
-                <StyledScatterChart
-                    points={points}
+                <HighDimensionalChart
                     dimension={dimension}
-                    loading={!data && !error}
                     keyword={debouncedSearch}
+                    run={run ?? ''}
+                    running={running}
+                    labelVisibility={labelVisibility}
+                    reduction={reduction}
                 />
             </Content>
         </>

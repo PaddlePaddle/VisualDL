@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {useTranslation} from '~/utils/i18n';
-import {NodeType, TypedNode} from '~/resource/graph';
+import {NodeType, TypedNode} from '~/resource/graphs';
 import styled from 'styled-components';
 import {WithStyled} from '~/utils/style';
 

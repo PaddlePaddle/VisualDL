@@ -44,19 +44,19 @@ export const consoleMessage = function(
     }
 
     /*
-    Temporarily set the stacktrace to 0 or errorStackTraceLimit,
-    in order to only display a message
-  */
+        Temporarily set the stacktrace to 0 or errorStackTraceLimit,
+        in order to only display a message
+    */
     Error.stackTraceLimit = errorStackTraceLimit || 0;
 
     /*
-    Make room for new message
-  */
+        Make room for new message
+    */
     console.log();
 
     /*
-    Make sure the message is a string
-  */
+        Make sure the message is a string
+    */
     if (typeof message !== 'string') {
         const metaError = new Error();
         metaError.name = 'Meta';
@@ -74,12 +74,12 @@ export const consoleMessage = function(
     }
 
     /*
-    Log the message to console
-  */
+        Log the message to console
+    */
     logMessage(messageType, message);
 
     /*
-    Reset stack limit
-  */
+        Reset stack limit
+    */
     Error.stackTraceLimit = prevStackLimit;
 };

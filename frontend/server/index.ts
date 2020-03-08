@@ -37,6 +37,11 @@ const handle = app.getRequestHandler();
     await nextI18next.initPromise;
     server.use(nextI18NextMiddleware(nextI18next));
 
+    server.get(/\.wasm/, (_req, res, next) => {
+        res.type('application/wasm');
+        next();
+    });
+
     server.get('*', (req, res) => handle(req, res));
 
     server.listen(port);

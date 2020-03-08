@@ -27,29 +27,55 @@ module.exports = {
     poweredByHeader: false,
     env: {
         ...APP,
-        BUILD_ID: '',
         DEFAULT_LANGUAGE,
         LOCALE_PATH,
         LANGUAGES,
         PUBLIC_PATH: publicPath,
         API_URL: apiUrl
     },
-    exportPathMap: defaultPathMap => {
-        return {
-            ...defaultPathMap,
-            ...Object.entries(defaultPathMap).reduce((prev, [path, router]) => {
-                otherLanguages.forEach(lang => (prev[`/${lang}${path}`] = router));
-                return prev;
-            }, {})
-        };
-    },
+    exportPathMap: defaultPathMap => ({
+        ...defaultPathMap,
+        ...Object.entries(defaultPathMap).reduce((prev, [path, router]) => {
+            otherLanguages.forEach(lang => (prev[`/${lang}${path}`] = router));
+            return prev;
+        }, {})
+    }),
     experimental: {
         basePath: publicPath
     },
-    webpack: config => {
+    webpack: (config, {dev, webpack}) => {
+        const WorkerPlugin = require('worker-plugin');
+
+        config.output.webassemblyModuleFilename = 'static/wasm/[modulehash].wasm';
+
         config.resolve = config.resolve || {};
         config.resolve.alias = config.resolve.alias || {};
         config.resolve.alias['~'] = path.resolve(__dirname);
+
+        config.node = Object.assign({}, config.node, {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            child_process: 'empty',
+            fs: 'empty'
+        });
+
+        config.plugins = [
+            ...(config.plugins || []),
+            new WorkerPlugin({
+                globalObject: 'self'
+            })
+        ];
+
+        if (!dev || !!process.env.WITH_WASM) {
+            const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
+            config.plugins.push(
+                new WasmPackPlugin({
+                    crateDirectory: path.resolve(__dirname, 'wasm')
+                })
+            );
+        } else {
+            config.plugins.push(new webpack.IgnorePlugin(/^~\/wasm\//));
+        }
+
         return config;
     }
 };
