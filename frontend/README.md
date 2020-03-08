@@ -50,6 +50,22 @@ You can change the port with `PORT` environment variable:
 PORT=3000 yarn dev
 ```
 
+### WebAssembly
+
+WebAssembly is **DISABLED** by default under development environment.
+
+If you want to develop wasm features, you must have [Rust](https://www.rust-lang.org/) and [Cargo](https://doc.rust-lang.org/cargo/) installed.
+
+Using [rustup](https://rustup.rs/) to install them.
+
+Then install [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) to build rust code to wasm binaries.
+
+When environment is ready, start the development server with following command:
+
+```bash
+yarn dev:wasm
+```
+
 ## Build & Deploy
 
 ```bash
@@ -71,6 +87,7 @@ This project is based on following projects:
 - [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
+- [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 
 ## Author
 <table><tr><td align="center"><a href="https://github.com/PeterPanZH"><img src="https://avatars0.githubusercontent.com/u/3366499?s=460&v=4" width="120px;" alt="PeterPanZH"/><br /><sub><b>PeterPanZH</b></sub></a></td><td align="center"><a href="https://github.com/Niandalu"><img src="https://avatars1.githubusercontent.com/u/6406875?s=460&v=4" width="120px;" alt="Niandalu"/><br /><sub><b>Niandalu</b></sub></a></td></tr></table>

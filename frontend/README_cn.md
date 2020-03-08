@@ -50,6 +50,22 @@ yarn dev
 PORT=3000 yarn dev
 ```
 
+### WebAssembly
+
+在开发环境中，WebAssembly 默认是**禁用**的。
+
+如果你希望开发 wasm 功能，你必须安装 [Rust](https://www.rust-lang.org/) 和 [Cargo](https://doc.rust-lang.org/cargo/)。
+
+使用 [rustup](https://rustup.rs/) 来安装它们。
+
+然后安装 [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) 来将 rust 代码编译成 wasm 可执行文件。
+
+当环境准备好后，使用下面的命令启动开发环境：
+
+```bash
+yarn dev:wasm
+```
+
 ## 编译和部署
 
 ```bash

@@ -62,12 +62,16 @@ jobs:
       cache:
         - npm
         - yarn
+        - cargo
       env:
         - PUBLIC_PATH="/app"
         - API_URL="/api"
       before_install:
         - cd frontend
       install:
+        - curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
+        - source $HOME/.cargo/env
+        - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
         - yarn
       script:
         - yarn lint
