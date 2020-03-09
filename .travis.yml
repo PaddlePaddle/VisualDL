@@ -71,6 +71,7 @@ jobs:
       install:
         - ./scripts/install.sh
       script:
+        - yarn build:wasm
         - yarn lint
         - yarn test
         - yarn build
