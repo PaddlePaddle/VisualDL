@@ -2,7 +2,8 @@
 
 set -e
 
-echo "$PATH"
+# path from build.sh
+export PATH="`pwd`/build/binaryn/bin:$HOME/.cargo/bin:$PATH"
 
 WORKING_PATH=`pwd`
 SERVER_DIR="dist"
