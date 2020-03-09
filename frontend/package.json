@@ -1,6 +1,6 @@
 {
-    "name": "visual-dl",
-    "version": "2.0.0-beta",
+    "name": "visualdl",
+    "version": "2.0.0-beta.9",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -34,9 +34,22 @@
         "start": "NODE_ENV=production node dist/server/index.js",
         "lint": "tsc -p tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"  \"**/*.jsx\"",
-        "test": "echo \"Error: no test specified\" && exit 0"
+        "test": "echo \"Error: no test specified\" && exit 0",
+        "prepublishOnly": "yarn lint && yarn test && ./scripts/prepare.sh",
+        "preversion": "yarn lint",
+        "version": "yarn format"
     },
+    "main": "index.js",
+    "bin": "cli.js",
+    "files": [
+        "dist",
+        "out",
+        "types",
+        "index.js",
+        "cli.js"
+    ],
     "dependencies": {
+        "app-root-path": "3.0.0",
         "dagre-d3": "0.6.4",
         "detect-node": "2.0.4",
         "echarts": "4.6.0",
@@ -54,7 +67,10 @@
         "moment": "2.24.0",
         "next": "9.2.2",
         "nprogress": "0.2.0",
+        "open": "7.0.3",
+        "ora": "4.0.3",
         "path-match": "1.2.4",
+        "pm2": "4.2.3",
         "polished": "3.4.4",
         "prop-types": "15.7.2",
         "query-string": "6.11.1",

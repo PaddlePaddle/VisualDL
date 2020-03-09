@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import path from 'path';
 import express from 'express';
 import next from 'next';
@@ -16,12 +18,12 @@ const port: string | number = Number.parseInt(argv.port as string, 10) || proces
 const proxy = (argv.proxy as string) || process.env.PROXY;
 const delay = Number.parseInt(argv.delay as string, 10);
 
+const server = express();
 const app = next({dev: isDev, conf: config});
 const handle = app.getRequestHandler();
 
 (async () => {
     await app.prepare();
-    const server = express();
 
     if (proxy) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
@@ -47,3 +49,5 @@ const handle = app.getRequestHandler();
     server.listen(port);
     console.log(`> Ready on http://${host}:${port}`); // eslint-disable-line no-console
 })();
+
+export {server, app};
