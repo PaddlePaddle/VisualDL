@@ -12,7 +12,7 @@ const height = rem(600);
 const divideWasm = () =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    import('~/wasm/pkg').then(({divide}) => (params: DivideParams) =>
+    import('~/wasm/dist').then(({divide}) => (params: DivideParams) =>
         (divide(params.points, params.labels, !!params.visibility, params.keyword ?? '') as unknown) as [
             Point[],
             Point[]

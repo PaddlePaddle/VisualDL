@@ -9,14 +9,6 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 # wasm-pack
 # https://rustwasm.github.io/wasm-pack/installer/
-curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-# binaryen
-# https://github.com/WebAssembly/binaryen
-mkdir build && cd build
-git clone https://github.com/WebAssembly/binaryen.git
-(cd binaryen && cmake . && make)
-export PATH="`pwd`/binaryn/bin:$PATH"
-cd ..
+# curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 yarn

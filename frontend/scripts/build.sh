@@ -3,7 +3,9 @@
 set -e
 
 # path from build.sh
-export PATH="`pwd`/build/binaryn/bin:$HOME/.cargo/bin:$PATH"
+# if ! command -v rustup >/dev/null 2>&1; then
+#     export PATH="$HOME/.cargo/bin:$PATH"
+# fi
 
 WORKING_PATH=`pwd`
 SERVER_DIR="dist"
@@ -25,9 +27,6 @@ mkdir -p $OUTPUT_PATH
 
 # next build
 yarn build:next
-
-# optimize wasm
-./scripts/optimize.sh
 
 # server build
 yarn build:server
