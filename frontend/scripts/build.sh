@@ -2,6 +2,8 @@
 
 set -e
 
+echo "$PATH"
+
 WORKING_PATH=`pwd`
 SERVER_DIR="dist"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"
