@@ -1,8 +1,11 @@
+#!/usr/bin/env node
+
+/* eslint-disable no-console */
+
 import path from 'path';
 import express from 'express';
 import next from 'next';
 import {setConfig} from 'next/config';
-import {argv} from 'yargs';
 import {nextI18NextMiddleware} from '../utils/i18next/middlewares';
 import nextI18next from '../utils/i18n';
 import config from '../next.config';
@@ -11,17 +14,17 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 setConfig(config);
 
-const host = (argv.host as string) || process.env.HOST || 'localhost';
-const port: string | number = Number.parseInt(argv.port as string, 10) || process.env.PORT || 8999;
-const proxy = (argv.proxy as string) || process.env.PROXY;
-const delay = Number.parseInt(argv.delay as string, 10);
+const host = process.env.HOST || 'localhost';
+const port: string | number = Number.parseInt(process.env.PORT, 10) || 8999;
+const proxy = process.env.PROXY;
+const delay = Number.parseInt(process.env.DELAY, 10);
 
+const server = express();
 const app = next({dev: isDev, conf: config});
 const handle = app.getRequestHandler();
 
 (async () => {
     await app.prepare();
-    const server = express();
 
     if (proxy) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
@@ -44,6 +47,18 @@ const handle = app.getRequestHandler();
 
     server.get('*', (req, res) => handle(req, res));
 
-    server.listen(port);
-    console.log(`> Ready on http://${host}:${port}`); // eslint-disable-line no-console
+    const s = server.listen(port, host, () => {
+        process.send?.('ready');
+        console.log(`> Ready on http://${host}:${port}`);
+        process.on('SIGINT', () => {
+            s.close((err: Error) => {
+                if (err) {
+                    throw err;
+                }
+                process.exit(0);
+            });
+        });
+    });
 })();
+
+export {server, app};

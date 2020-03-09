@@ -27,13 +27,13 @@ const height = em(320);
 const smoothWasm = () =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    import('~/wasm/pkg').then(({transform}) => (params: TransformParams) =>
+    import('~/wasm/dist').then(({transform}) => (params: TransformParams) =>
         (transform(params.datasets, params.smoothing) as unknown) as Dataset[]
     );
 const rangeWasm = () =>
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
-    import('~/wasm/pkg').then(({range}) => (params: RangeParams) =>
+    import('~/wasm/dist').then(({range}) => (params: RangeParams) =>
         (range(params.datasets, params.outlier) as unknown) as Range
     );
 

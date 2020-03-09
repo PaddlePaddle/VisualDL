@@ -4,6 +4,8 @@ use wasm_bindgen::prelude::*;
 #[macro_use]
 extern crate serde_derive;
 
+pub fn main() {}
+
 #[derive(Serialize, Deserialize)]
 struct Dataset(f64, i64, f64);
 

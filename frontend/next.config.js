@@ -69,7 +69,9 @@ module.exports = {
             const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
             config.plugins.push(
                 new WasmPackPlugin({
-                    crateDirectory: path.resolve(__dirname, 'wasm')
+                    crateDirectory: path.resolve(__dirname, 'wasm'),
+                    outDir: 'dist',
+                    outName: 'index'
                 })
             );
         } else {

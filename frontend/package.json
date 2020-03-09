@@ -1,6 +1,6 @@
 {
-    "name": "visual-dl",
-    "version": "2.0.0-beta",
+    "name": "visualdl",
+    "version": "2.0.0-beta.11",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -28,15 +28,31 @@
         "dev:wasm": "cross-env NODE_ENV=development WITH_WASM=1 nodemon --watch server --ext ts --exec \"ts-node --project server/tsconfig.json\" server/index.ts",
         "build:next": "next build",
         "build:server": "tsc --project server/tsconfig.json",
-        "build:wasm": "wasm-pack build wasm",
+        "build:wasm": "wasm-pack build --release --out-dir dist --out-name index wasm",
         "build": "./scripts/build.sh",
-        "export": "yarn build:next && next export",
+        "export": "next export",
         "start": "NODE_ENV=production node dist/server/index.js",
         "lint": "tsc -p tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"  \"**/*.jsx\"",
-        "test": "echo \"Error: no test specified\" && exit 0"
+        "test": "echo \"Error: no test specified\" && exit 0",
+        "prepublishOnly": "yarn lint && yarn test && ./scripts/prepare.sh",
+        "preversion": "yarn lint",
+        "version": "yarn format"
     },
+    "main": "index.js",
+    "bin": "cli.js",
+    "files": [
+        "dist",
+        "out",
+        "public",
+        "wasm/dist",
+        "types",
+        "index.js",
+        "cli.js",
+        "ecosystem.config.js"
+    ],
     "dependencies": {
+        "app-root-path": "3.0.0",
         "dagre-d3": "0.6.4",
         "detect-node": "2.0.4",
         "echarts": "4.6.0",
@@ -54,7 +70,10 @@
         "moment": "2.24.0",
         "next": "9.2.2",
         "nprogress": "0.2.0",
+        "open": "7.0.3",
+        "ora": "4.0.3",
         "path-match": "1.2.4",
+        "pm2": "4.2.3",
         "polished": "3.4.4",
         "prop-types": "15.7.2",
         "query-string": "6.11.1",
@@ -108,6 +127,9 @@
         "typescript": "3.8.3",
         "worker-plugin": "3.2.0",
         "yarn": "1.22.1"
+    },
+    "optionalDependencies": {
+        "wasm-pack": "0.9.1"
     },
     "engines": {
         "node": ">=10",
