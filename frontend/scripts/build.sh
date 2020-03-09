@@ -2,10 +2,9 @@
 
 set -e
 
-# path from build.sh
-# if ! command -v rustup >/dev/null 2>&1; then
-#     export PATH="$HOME/.cargo/bin:$PATH"
-# fi
+if [ -f "$HOME/.cargo/env" ] then
+    source $HOME/.cargo/env
+fi
 
 WORKING_PATH=`pwd`
 SERVER_DIR="dist"
