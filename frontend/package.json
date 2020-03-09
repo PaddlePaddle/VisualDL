@@ -30,7 +30,7 @@
         "build:server": "tsc --project server/tsconfig.json",
         "build:wasm": "wasm-pack build wasm",
         "build": "./scripts/build.sh",
-        "export": "yarn build:next && next export",
+        "export": "next export",
         "start": "NODE_ENV=production node dist/server/index.js",
         "lint": "tsc -p tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"  \"**/*.jsx\"",
