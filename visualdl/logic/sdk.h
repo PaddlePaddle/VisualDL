@@ -123,8 +123,11 @@ struct ScalarReader {
   ScalarReader(TabletReader&& reader) : reader_(reader) {}
 
   std::vector<T> records() const;
+  std::vector<T> records_addi(size_t start_index) const;
   std::vector<int> ids() const;
+  std::vector<int> ids_addi(size_t start_index) const;
   std::vector<time_t> timestamps() const;
+  std::vector<time_t> timestamps_addi(size_t start_index) const;
   std::string caption() const;
   size_t total_records() const { return reader_.total_records(); }
   size_t size() const;
@@ -279,9 +282,15 @@ template <typename T>
 struct HistogramReader {
   HistogramReader(TabletReader tablet) : reader_(tablet) {}
 
-  size_t num_records() { return reader_.total_records() - 1; }
+  size_t num_records() const{ return reader_.total_records(); }
 
-  HistogramRecord<T> record(int i);
+  std::vector<HistogramRecord<T>> records() const;
+
+  std::vector<HistogramRecord<T>> records_addi(size_t start_index) const;
+
+  HistogramRecord<T> record(int i) const;
+
+  size_t size() const;
 
 private:
   TabletReader reader_;

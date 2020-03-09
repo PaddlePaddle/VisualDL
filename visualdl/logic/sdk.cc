@@ -110,7 +110,16 @@ namespace components {
 template <typename T>
 std::vector<T> ScalarReader<T>::records() const {
   std::vector<T> res;
-  for (int i = 0; i < total_records(); i++) {
+  for (size_t i = 0; i < total_records(); i++) {
+    res.push_back(reader_.record(i).data(0).template Get<T>());
+  }
+  return res;
+}
+
+template <typename T>
+std::vector<T> ScalarReader<T>::records_addi(size_t start_index) const {
+  std::vector<T> res;
+  for (size_t i = start_index; i < total_records(); i++) {
     res.push_back(reader_.record(i).data(0).template Get<T>());
   }
   return res;
@@ -119,7 +128,16 @@ std::vector<T> ScalarReader<T>::records() const {
 template <typename T>
 std::vector<int> ScalarReader<T>::ids() const {
   std::vector<int> res;
-  for (int i = 0; i < reader_.total_records(); i++) {
+  for (size_t i = 0; i < reader_.total_records(); ++i) {
+    res.push_back(reader_.record(i).id());
+  }
+  return res;
+}
+
+template <typename T>
+std::vector<int> ScalarReader<T>::ids_addi(size_t start_index) const{
+ std::vector<int> res;
+  for (size_t i = start_index; i < reader_.total_records(); ++i) {
     res.push_back(reader_.record(i).id());
   }
   return res;
@@ -128,7 +146,16 @@ std::vector<int> ScalarReader<T>::ids() const {
 template <typename T>
 std::vector<time_t> ScalarReader<T>::timestamps() const {
   std::vector<time_t> res;
-  for (int i = 0; i < reader_.total_records(); i++) {
+  for (size_t i = 0; i < reader_.total_records(); ++i) {
+    res.push_back(reader_.record(i).timestamp());
+  }
+  return res;
+}
+
+template <typename T>
+std::vector<time_t> ScalarReader<T>::timestamps_addi(size_t start_index) const {
+  std::vector<time_t> res;
+  for (size_t i = start_index; i < reader_.total_records(); ++i) {
     res.push_back(reader_.record(i).timestamp());
   }
   return res;
@@ -297,7 +324,7 @@ void Histogram<T>::AddRecord(int step, const std::vector<T>& data) {
 }
 
 template <typename T>
-HistogramRecord<T> HistogramReader<T>::record(int i) {
+HistogramRecord<T> HistogramReader<T>::record(int i) const{
   CHECK_LT(i, num_records());
   auto r = reader_.record(i);
   auto d = r.data(0);
@@ -311,6 +338,32 @@ HistogramRecord<T> HistogramReader<T>::record(int i) {
   auto step = r.id();
 
   return HistogramRecord<T>(timestamp, step, left, right, std::move(frequency));
+}
+
+template <typename T>
+std::vector<HistogramRecord<T>> HistogramReader<T>::records() const{
+  std::vector<HistogramRecord<T>> res;
+  for (size_t i=0; i<reader_.total_records(); ++i){
+    res.push_back(record(i));
+  }
+
+  return res;
+}
+
+template <typename T>
+std::vector<HistogramRecord<T>> HistogramReader<T>::records_addi(size_t start_index) const{
+  std::vector<HistogramRecord<T>> res;
+
+  for (size_t i=start_index; i<reader_.total_records(); ++i){
+    res.push_back(record(i));
+  }
+
+  return res;
+}
+
+template <typename T>
+size_t HistogramReader<T>::size() const {
+  return reader_.total_records();
 }
 
 DECL_BASIC_TYPES_CLASS_IMPL(class, ScalarReader)

@@ -154,11 +154,15 @@ PYBIND11_MODULE(core, m) {
       });
 
 //------------------- components --------------------
-#define ADD_SCALAR_READER(T)                               \
-  py::class_<cp::ScalarReader<T>>(m, "ScalarReader__" #T)  \
-      .def("records", &cp::ScalarReader<T>::records)       \
-      .def("timestamps", &cp::ScalarReader<T>::timestamps) \
-      .def("ids", &cp::ScalarReader<T>::ids)               \
+#define ADD_SCALAR_READER(T)                                    \
+  py::class_<cp::ScalarReader<T>>(m, "ScalarReader__" #T)       \
+      .def("records", &cp::ScalarReader<T>::records)            \
+      .def("records", &cp::ScalarReader<T>::records_addi)       \
+      .def("timestamps", &cp::ScalarReader<T>::timestamps)      \
+      .def("timestamps", &cp::ScalarReader<T>::timestamps_addi) \
+      .def("ids", &cp::ScalarReader<T>::ids)                    \
+      .def("ids", &cp::ScalarReader<T>::ids_addi)               \
+      .def("size", &cp::ScalarReader<T>::size)                  \
       .def("caption", &cp::ScalarReader<T>::caption);
   ADD_SCALAR_READER(int);
   ADD_SCALAR_READER(float);
@@ -393,6 +397,9 @@ PYBIND11_MODULE(core, m) {
 #define ADD_HISTOGRAM_READER(T)                                 \
   py::class_<cp::HistogramReader<T>>(m, "HistogramReader__" #T) \
       .def("num_records", &cp::HistogramReader<T>::num_records) \
+      .def("records", &cp::HistogramReader<T>::records) \
+      .def("records", &cp::HistogramReader<T>::records_addi) \
+      .def("size", &cp::HistogramReader<T>::size) \
       .def("record", &cp::HistogramReader<T>::record);
   ADD_FULL_TYPE_IMPL(ADD_HISTOGRAM_READER)
 #undef ADD_HISTOGRAM_READER
