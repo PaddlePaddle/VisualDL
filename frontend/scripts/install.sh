@@ -4,8 +4,8 @@ set -e
 
 # rust toolchain
 # https://rustup.rs/
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
-PATH="$HOME/.cargo/env:$PATH"
+curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --default-toolchain nightly -y
+export PATH="$HOME/.cargo/env:$PATH"
 
 # wasm-pack
 # https://rustwasm.github.io/wasm-pack/installer/
