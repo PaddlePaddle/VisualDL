@@ -1,6 +1,6 @@
 {
     "name": "visualdl",
-    "version": "2.0.0-beta.9",
+    "version": "2.0.0-beta.11",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -44,9 +44,12 @@
     "files": [
         "dist",
         "out",
+        "public",
+        "wasm/dist",
         "types",
         "index.js",
-        "cli.js"
+        "cli.js",
+        "ecosystem.config.js"
     ],
     "dependencies": {
         "app-root-path": "3.0.0",
