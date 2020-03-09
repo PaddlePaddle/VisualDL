@@ -4,10 +4,10 @@
 <br />
 
 <p align="center">
+    <a href="https://www.npmjs.com/package/visualdl"><img src="https://img.shields.io/npm/v/visualdl?style=flat-square" alt="NPM Version" /></a>
     <a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/PaddlePaddle/VisualDL?style=flat-square" alt="Build Status" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL"><img src="https://img.shields.io/github/languages/top/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub top language" /></a>
     <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" alt="code style: prettier" /></a>
-    <a href="https://github.com/PaddlePaddle/VisualDL"><img src="https://img.shields.io/github/languages/code-size/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub code size in bytes" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/PaddlePaddle/VisualDL?style=flat-square" alt="License" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL/issues"><img src="https://img.shields.io/github/issues/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub issues" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL/graphs/contributors"><img src="https://img.shields.io/github/contributors/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub Contributors" /></a>
