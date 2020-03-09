@@ -57,7 +57,7 @@ jobs:
         - if [[ "$JOB" == "build_doc" ]]; then ./scripts/deploy_docs_on_travis.sh; fi;
 
     - language: node_js
-      dist: trusty
+      dist: bionic
       node_js: 12
       cache:
         - npm
