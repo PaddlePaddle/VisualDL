@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useContext} from 'react';
+import React, {FunctionComponent, useContext, useCallback} from 'react';
 import styled from 'styled-components';
 import {
     WithStyled,
@@ -70,11 +70,11 @@ const RadioButton: FunctionComponent<RadioButtonProps & WithStyled> = ({
     const groupValue = useContext(ValueContext);
     const onChange = useContext(EventContext);
 
-    const onClick = () => {
+    const onClick = useCallback(() => {
         if (value && onChange && groupValue !== value) {
             onChange(value);
         }
-    };
+    }, [value, onChange, groupValue]);
 
     return (
         <Button className={className} title={title} selected={groupValue === value || selected} onClick={onClick}>

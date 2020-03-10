@@ -6,17 +6,23 @@ const argv = require('yargs')
     .usage('Usage: $0 <command> [options]')
     .command('start', 'Start VisualDL server')
     .command('stop', 'Stop VisualDL server')
-    .example('$0 start --host 192.168.0.2 --port 3000', 'Start VisualDL server at http://192.168.0.2:3000')
+    .example(
+        '$0 start --backend="http://172.17.0.82:8040"',
+        'Start VisualDL server with backend address http://172.17.0.82:8040'
+    )
     .alias('p', 'port')
     .nargs('p', 1)
     .nargs('port', 1)
     .describe('p', 'Port of server')
     .nargs('host', 1)
     .describe('host', 'Host of server')
-    .nargs('proxy', 1)
-    .describe('proxy', 'Backend proxy address')
+    .alias('b', 'backend')
+    .nargs('b', 1)
+    .nargs('backend', 1)
+    .describe('b', 'Backend API address')
     .boolean('open')
     .describe('open', 'Open browser when server is ready')
+    .demandOption(['b'])
     .help('h')
     .alias('h', 'help')
     .epilog('Visit https://github.com/PaddlePaddle/VisualDL for more infomation.').argv;
@@ -86,7 +92,7 @@ pm2.connect(err => {
                         NODE_ENV: 'production',
                         HOST: host,
                         PORT: port,
-                        PROXY: argv.proxy
+                        BACKEND: argv.backend
                     }
                 },
                 err => {

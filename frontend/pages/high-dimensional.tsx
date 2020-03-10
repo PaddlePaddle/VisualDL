@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 import {useRouter} from 'next/router';
+import useRequest from '~/hooks/useRequest';
 import useSearchValue from '~/hooks/useSearchValue';
 import {rem, em} from '~/utils/style';
 import {useTranslation, NextI18NextPage} from '~/utils/i18n';
@@ -40,7 +40,7 @@ const HighDimensional: NextI18NextPage = () => {
 
     const {query} = useRouter();
     const queryRun = Array.isArray(query.run) ? query.run[0] : query.run;
-    const {data: runs} = useSWR<string[]>('/runs');
+    const {data: runs, error, loading} = useRequest<string[]>('/runs');
     const selectedRun = runs?.includes(queryRun) ? queryRun : runs?.[0];
 
     const [run, setRun] = useState(selectedRun);
@@ -106,15 +106,19 @@ const HighDimensional: NextI18NextPage = () => {
         <>
             <Preloader url="/runs" />
             <Title>{t('common:high-dimensional')}</Title>
-            <Content aside={aside} loading={!runs}>
-                <HighDimensionalChart
-                    dimension={dimension}
-                    keyword={debouncedSearch}
-                    run={run ?? ''}
-                    running={running}
-                    labelVisibility={labelVisibility}
-                    reduction={reduction}
-                />
+            <Content aside={aside} loading={loading}>
+                {error ? (
+                    <div>{t('common:error')}</div>
+                ) : loading ? null : (
+                    <HighDimensionalChart
+                        dimension={dimension}
+                        keyword={debouncedSearch}
+                        run={run ?? ''}
+                        running={running}
+                        labelVisibility={labelVisibility}
+                        reduction={reduction}
+                    />
+                )}
             </Content>
         </>
     );

@@ -12,5 +12,6 @@
     "select-runs": "选择数据流",
     "running": "运行中",
     "stopped": "已停止",
-    "loading": "载入中"
+    "loading": "载入中",
+    "error": "发生错误"
 }

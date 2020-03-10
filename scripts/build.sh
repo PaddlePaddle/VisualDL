@@ -15,8 +15,9 @@ build_frontend_from_source() {
 
 build_frontend() {
     local PACKAGE_NAME="visualdl"
-    local SRC=`npm view ${PACKAGE_NAME} dist.tarball`
-    wget $SRC -O "$BUILD_DIR/$PACKAGE_NAME.tar.gz"
+    local SRC=`npm view ${PACKAGE_NAME}@latest dist.tarball`
+    # wget $SRC -O "$BUILD_DIR/$PACKAGE_NAME.tar.gz"
+    curl -o "$BUILD_DIR/$PACKAGE_NAME.tar.gz" $SRC
     tar zxf "$BUILD_DIR/$PACKAGE_NAME.tar.gz" -C "$BUILD_DIR"
 }
 

@@ -59,13 +59,15 @@ export const chartData = ({data, runs, smooth, xAxis}: ChartDataParams) =>
             // [3] smoothed value
             // [4] relative
             const name = runs[i];
+            const color = chart.color[i % chart.color.length];
+            const colorAlt = chart.colorAlt[i % chart.colorAlt.length];
             return [
                 {
                     name,
                     z: i,
                     lineStyle: {
-                        width: chart.series.lineStyle.width,
-                        opacity: 0.5
+                        color: colorAlt,
+                        width: chart.series.lineStyle.width
                     },
                     data: dataset,
                     encode: {
@@ -77,6 +79,9 @@ export const chartData = ({data, runs, smooth, xAxis}: ChartDataParams) =>
                 {
                     name,
                     z: runs.length + i,
+                    itemStyle: {
+                        color
+                    },
                     data: dataset,
                     encode: {
                         x: [xAxisMap[xAxis]],

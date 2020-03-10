@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useLayoutEffect, useState} from 'react';
-import useSWR from 'swr';
+import useRequest from '~/hooks/useRequest';
 import {primaryColor} from '~/utils/style';
+import {useTranslation} from '~/utils/i18n';
 import {blobFetcher} from '~/utils/fetch';
 import GridLoader from 'react-spinners/GridLoader';
 
@@ -9,9 +10,11 @@ type ImageProps = {
 };
 
 const Image: FunctionComponent<ImageProps> = ({src}) => {
+    const {t} = useTranslation('common');
+
     const [url, setUrl] = useState('');
 
-    const {data} = useSWR(src ?? null, blobFetcher);
+    const {data, error, loading} = useRequest<Blob>(src ?? null, blobFetcher);
 
     // use useLayoutEffect hook to prevent image render after url revoked
     useLayoutEffect(() => {
@@ -25,7 +28,15 @@ const Image: FunctionComponent<ImageProps> = ({src}) => {
         }
     }, [data]);
 
-    return !data ? <GridLoader color={primaryColor} size="10px" /> : <img src={url} />;
+    if (loading) {
+        return <GridLoader color={primaryColor} size="10px" />;
+    }
+
+    if (error) {
+        return <div>{t('error')}</div>;
+    }
+
+    return <img src={url} />;
 };
 
 export default Image;

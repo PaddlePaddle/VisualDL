@@ -1,9 +1,11 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent, useState, useMemo} from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 import queryString from 'query-string';
-import {em, size, ellipsis, primaryColor, textLightColor} from '~/utils/style';
+import isEmpty from 'lodash/isEmpty';
 import GridLoader from 'react-spinners/GridLoader';
+import {em, size, ellipsis, primaryColor, textLightColor} from '~/utils/style';
+import {useTranslation} from '~/utils/i18n';
+import useRequest from '~/hooks/useRequest';
 import Image from '~/components/Image';
 import StepSlider from '~/components/SamplesPage/StepSlider';
 
@@ -81,11 +83,30 @@ const getImageUrl = (index: number, run: string, tag: string, wallTime: number):
     `/images/image?${queryString.stringify({index, ts: wallTime, run, tag})}`;
 
 const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, running}) => {
-    const {data, error} = useSWR<ImageData[]>(`/images/list?${queryString.stringify({run, tag})}`, {
-        refreshInterval: running ? 15 * 1000 : 0
-    });
+    const {t} = useTranslation('common');
+
+    const {data, error, loading} = useRequest<ImageData[]>(
+        `/images/list?${queryString.stringify({run, tag})}`,
+        undefined,
+        {
+            refreshInterval: running ? 15 * 1000 : 0
+        }
+    );
 
     const [step, setStep] = useState(0);
+
+    const Content = useMemo(() => {
+        if (loading) {
+            return <GridLoader color={primaryColor} size="10px" />;
+        }
+        if (error) {
+            return <span>{t('error')}</span>;
+        }
+        if (isEmpty(data)) {
+            return <span>{t('empty')}</span>;
+        }
+        return <Image src={getImageUrl(step, run, tag, (data as ImageData[])[step].wallTime)} />;
+    }, [loading, error, data, step, run, tag, t]);
 
     return (
         <Wrapper>
@@ -94,10 +115,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
                 <span>{run}</span>
             </Title>
             <StepSlider value={step} steps={data?.map(item => item.step) ?? []} onChange={setStep} />
-            <Container fit={fit}>
-                {!data && !error && <GridLoader color={primaryColor} size="10px" />}
-                {data && !error && <Image src={getImageUrl(step, run, tag, data[step].wallTime)} />}
-            </Container>
+            <Container fit={fit}>{Content}</Container>
         </Wrapper>
     );
 };

@@ -1,10 +1,10 @@
 import React, {FunctionComponent, useCallback, useMemo} from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
 import queryString from 'query-string';
 import {EChartOption} from 'echarts';
 import {em, size} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
+import useRequest from '~/hooks/useRequest';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {cycleFetcher} from '~/utils/fetch';
 import {
@@ -66,7 +66,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
     // TODO: maybe we can create a custom hook here
-    const {data: datasets, error} = useSWR<Dataset[]>(
+    const {data: datasets, error, loading} = useRequest<Dataset[]>(
         runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
         (...urls) => cycleFetcher(urls),
         {
@@ -142,6 +142,10 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [smoothedDatasets, runs, sortingMethod, i18n]
     );
 
+    if (error) {
+        return <span>{t('common:error')}</span>;
+    }
+
     return (
         <StyledLineChart
             title={tag}
@@ -151,7 +155,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             type={type}
             tooltip={formatter}
             data={data}
-            loading={!datasets && !error}
+            loading={loading}
         />
     );
 };
