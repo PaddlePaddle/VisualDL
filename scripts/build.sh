@@ -48,6 +48,8 @@ clean_env() {
     rm -rf $BUILD_DIR/lib*
     rm -rf $BUILD_DIR/temp*
     rm -rf $BUILD_DIR/scripts*
+    rm -rf $BUILD_DIR/*.tar.gz
+    rm -rf $BUILD_DIR/package
 }
 
 package() {
@@ -60,13 +62,14 @@ package() {
 ARG=$1
 echo "ARG: " $ARG
 
+clean_env
+
 if [ "$ARG" = "travis-CI" ]; then
     build_frontend_fake
 else
     build_frontend
 fi
 
-clean_env
 build_backend
 build_onnx_graph
 package

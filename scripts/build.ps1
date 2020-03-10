@@ -16,7 +16,7 @@ function check_duplicated($filename_format) {
     }
 }
 
-function build_frontend() {
+function build_frontend_from_source() {
     cd $FRONTEND_DIR
     npm install
     npm run build
@@ -26,9 +26,16 @@ function build_frontend() {
     }
 }
 
+function build_frontend() {
+    $PACKAGE_NAME="visualdl"
+    $SRC=npm view $PACKAGE_NAME dist.tarball
+    Invoke-WebRequest -Uri "$SRC" -OutFile "$BUILD_DIR/$PACKAGE_NAME.tar.gz"
+    # Need Windows 10 Insider Build 17063 and later
+    tar -zxf "$BUILD_DIR/$PACKAGE_NAME.tar.gz" -C "$BUILD_DIR"
+}
+
 function build_frontend_fake() {
-    cd $FRONTEND_DIR
-    mkdir -p dist
+    mkdir -p "$BUILD_DIR/package/serverless"
 }
 
 function build_backend() {
@@ -56,16 +63,19 @@ function clean_env() {
     rm -Recurse -Force -ErrorAction Ignore $BUILD_DIR/lib*
     rm -Recurse -Force -ErrorAction Ignore $BUILD_DIR/temp*
     rm -Recurse -Force -ErrorAction Ignore $BUILD_DIR/scripts*
+    rm -Recurse -Force -ErrorAction Ignore $BUILD_DIR/*.tar.gz
+    rm -Recurse -Force -ErrorAction Ignore $BUILD_DIR/package
 }
 
 function package() {
-    cp -Recurse $FRONTEND_DIR/dist $TOP_DIR/visualdl/server/
+    mkdir -p $TOP_DIR/visualdl/server/dist
+    cp -Recurse $BUILD_DIR/package/serverless/* $TOP_DIR/visualdl/server/dist
     cp $BUILD_DIR/visualdl/logic/Release/core.pyd $TOP_DIR/visualdl
     cp $BUILD_DIR/visualdl/logic/Release/core.pyd $TOP_DIR/visualdl/python/
 }
 
-build_frontend
 clean_env
+build_frontend
 build_backend
 build_onnx_graph
 package
