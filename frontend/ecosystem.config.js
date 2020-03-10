@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const {resolve} = require('app-root-path');
-
 module.exports = {
     apps: [
         {
             name: 'visualdl',
             script: 'dist/server/index.js',
-            cwd: resolve('/'),
+            cwd: __dirname,
             args: '',
             instances: 'max',
             autorestart: true,

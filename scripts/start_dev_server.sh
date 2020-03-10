@@ -41,16 +41,14 @@ CURRENT_DIR=`pwd`
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd $SCRIPT_DIR/../frontend
 export PYTHONPATH=$PYTHONPATH:"$SCRIPT_DIR/.."
 
 FRONTEND_PORT=8999
-PROXY="http://$HOST:$PORT" PUBLIC_PATH="/app" API_URL="/api" PORT=$FRONTEND_PORT yarn dev &
-# Track pid
-FRONTEND_PID=$!
+VDL_BIN="./build/node_modules/.bin/visualdl"
+$VDL_BIN start --port=$FRONTEND_PORT --host=$HOST --proxy="http://$HOST:$PORT"
 
 function finish {
-    kill -9 $FRONTEND_PID
+    $VDL_BIN stop
 }
 
 trap finish EXIT HUP INT QUIT PIPE TERM

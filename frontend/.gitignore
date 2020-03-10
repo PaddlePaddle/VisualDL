@@ -10,7 +10,7 @@
 
 # next.js
 /.next/
-/out/
+/serverless/
 
 # production
 /build

@@ -2,9 +2,6 @@
 
 set -e
 
-if [ ! -d dist ]; then
-    echo "Please build first!"
-    exit 1
-fi
+./scripts/build.sh
 
 docker build -t paddlepaddle/visualdl .

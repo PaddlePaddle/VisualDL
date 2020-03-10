@@ -75,9 +75,9 @@ class BaseCommand(setuptools.Command):
 
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
-        cmd = ['bash', 'build.sh']
+        cmd = ['bash', 'scripts/build.sh']
         if platform == "win32":
-            cmd = ['powershell', '-NoProfile', './build.ps1']
+            cmd = ['powershell', '-NoProfile', './scripts/build.ps1']
         env = dict(os.environ)
         if MODE == "travis-CI":
             cmd.append('travis-CI')
