@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import styled from 'styled-components';
 import {saveSvgAsPng} from 'save-svg-as-png';
 import {rem} from '~/utils/style';
+import {isTruthy} from '~/utils';
 import RawButton from '~/components/Button';
 import RawRangeSlider from '~/components/RangeSlider';
 import Content from '~/components/Content';
@@ -88,7 +89,7 @@ const loadDagLibs = [import('d3'), import('dagre-d3')] as const;
 const MIN_SCALE = 0.1;
 const MAX_SCALE = 4;
 
-const useDag = (graph?: Graph) => {
+const useDag = (graph?: Partial<Graph>) => {
     const [displaySwitch, setDisplaySwitch] = useState({
         detail: false,
         input: false,
@@ -129,7 +130,7 @@ const useDag = (graph?: Graph) => {
     };
 };
 
-const useDagreD3 = (graph: Graph | undefined) => {
+const useDagreD3 = (graph: Partial<Graph> | undefined) => {
     const [currentNode, setCurrentNode] = useState<NodeInfoProps['node']>(undefined);
     const {dagInfo, displaySwitch, setDisplaySwitch} = useDag(graph);
     const [downloadImage, setDownloadImageFn] = useState<() => void>(() => dumbFn);
@@ -241,8 +242,9 @@ const useDagreD3 = (graph: Graph | undefined) => {
 
 const Graphs: NextI18NextPage = () => {
     const {t} = useTranslation(['graphs', 'common']);
-    const {data: graph} = useSWR<{data: Graph}>('/graphs/graph');
+    const {data: graph} = useSWR<{data: Partial<Graph>}>('/graphs/graph');
     const {currentNode, downloadImage, fitScreen, scale, setScale} = useDagreD3(graph ? graph.data : undefined);
+    const noGraph = graph ? !isTruthy(graph.data.edges) : false;
 
     const aside = (
         <section>
@@ -274,9 +276,13 @@ const Graphs: NextI18NextPage = () => {
             <Title>{t('common:graphs')}</Title>
 
             <Content aside={aside} loading={!graph}>
-                <GraphSvg>
-                    <g></g>
-                </GraphSvg>
+                {noGraph ? (
+                    <p>{t('no-graph')}</p>
+                ) : (
+                    <GraphSvg>
+                        <g></g>
+                    </GraphSvg>
+                )}
             </Content>
         </>
     );

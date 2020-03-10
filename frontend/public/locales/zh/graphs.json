@@ -10,5 +10,6 @@
     "output": "输出",
     "op-type": "算子类型",
     "node-data-type": "数据类型",
-    "click-node": "点击左侧节点，查看节点信息"
+    "click-node": "点击左侧节点，查看节点信息",
+    "no-graph": "没有可用的网络结构信息"
 }

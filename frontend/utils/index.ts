@@ -26,3 +26,15 @@ export const quantile = (
     const value1 = valueOf(values[i0 + 1], i0 + 1, values);
     return value0 + (value1 - value0) * (i - i0);
 };
+
+export const isTruthy = (v: unknown) => {
+    if (Array.isArray(v)) {
+        return v.length > 0;
+    }
+
+    if (typeof v === 'object' && v !== null) {
+        return Object.keys(v).length > 0;
+    }
+
+    return !!v;
+};

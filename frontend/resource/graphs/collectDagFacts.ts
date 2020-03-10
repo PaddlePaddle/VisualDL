@@ -22,6 +22,13 @@ type WithUIDMap<T> = T extends (infer U)[] ? WithUID<U>[] : WithUID<T>;
 
 type NodeFinder = (type: NodeType, uid: NodeUID) => undefined | Node;
 const OP_NODE_PREFIX = 'opNode_';
+const DEFAULT_GRAPH: Graph = {
+    input: [],
+    output: [],
+    name: 'Graph',
+    node: [],
+    edges: []
+};
 
 /* misc */
 const genNodeUID = (type: NodeType, id: number | string) => {
@@ -190,9 +197,13 @@ const extractOutputLayer = (nodeRelationMapping: NodeRelationMapping) => {
     };
 };
 
-export const collectDagFacts = (graph?: Graph) => {
+export const collectDagFacts = (inputGraph?: Partial<Graph>) => {
+    const graph = {
+        ...DEFAULT_GRAPH,
+        ...(inputGraph || {})
+    };
     const findNode = createNodeFinder(graph);
-    const nodeList = assignNodeUID(NodeType.Op, graph ? graph.node : []);
+    const nodeList = assignNodeUID(NodeType.Op, graph.node);
     const nodeRelationMapping = buildNodeRelationMapping(nodeList);
 
     const inputLayer = extractInputLayer(nodeRelationMapping, findNode);

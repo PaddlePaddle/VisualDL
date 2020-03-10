@@ -10,5 +10,6 @@
     "output": "Output",
     "op-type": "Operator Type",
     "node-data-type": "Data Type",
-    "click-node": "Click a node to view its detail"
+    "click-node": "Click a node to view its detail",
+    "no-graph": "No graph info found"
 }
