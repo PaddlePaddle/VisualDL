@@ -32,6 +32,7 @@ export const createConfig = (userConfig: Config): Config => {
     if (isServer()) {
         const fs = eval("require('fs')");
         const path = require('path'); // eslint-disable-line @typescript-eslint/no-var-requires
+        const projectRoot = process.cwd();
         let serverLocalePath = localePath;
 
         /*
@@ -40,14 +41,14 @@ export const createConfig = (userConfig: Config): Config => {
         */
         if (typeof combinedConfig.defaultNS === 'string') {
             const defaultFile = `/${defaultLanguage}/${combinedConfig.defaultNS}.${localeExtension}`;
-            const defaultNSPath = path.join(process.cwd(), localePath, defaultFile);
+            const defaultNSPath = path.join(projectRoot, localePath, defaultFile);
             const defaultNSExists = fs.existsSync(defaultNSPath);
             if (!defaultNSExists) {
                 /*
                     If defaultNS doesn't exist, try to fall back to the deprecated static folder
                     https://github.com/isaachinman/next-i18next/issues/523
                 */
-                const staticDirPath = path.join(process.cwd(), STATIC_LOCALE_PATH, defaultFile);
+                const staticDirPath = path.join(projectRoot, STATIC_LOCALE_PATH, defaultFile);
                 const staticDirExists = fs.existsSync(staticDirPath);
 
                 if (staticDirExists) {
@@ -67,8 +68,8 @@ export const createConfig = (userConfig: Config): Config => {
             Set server side backend
         */
         combinedConfig.backend = {
-            loadPath: path.join(process.cwd(), `${serverLocalePath}/${localeStructure}.${localeExtension}`),
-            addPath: path.join(process.cwd(), `${serverLocalePath}/${localeStructure}.missing.${localeExtension}`)
+            loadPath: path.join(projectRoot, `${serverLocalePath}/${localeStructure}.${localeExtension}`),
+            addPath: path.join(projectRoot, `${serverLocalePath}/${localeStructure}.missing.${localeExtension}`)
         };
 
         /*
@@ -78,7 +79,7 @@ export const createConfig = (userConfig: Config): Config => {
         if (!combinedConfig.ns) {
             const getAllNamespaces = (p: string) =>
                 fs.readdirSync(p).map((file: string) => file.replace(`.${localeExtension}`, ''));
-            combinedConfig.ns = getAllNamespaces(path.join(process.cwd(), `${serverLocalePath}/${defaultLanguage}`));
+            combinedConfig.ns = getAllNamespaces(path.join(projectRoot, `${serverLocalePath}/${defaultLanguage}`));
         }
     } else {
         let clientLocalePath = localePath;

@@ -9,7 +9,7 @@ fi
 WORKING_PATH=`pwd`
 SERVER_DIR="dist"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"
-CLIENT_DIR="out"
+CLIENT_DIR="serverless"
 CLIENT_DIR_PATH="$WORKING_PATH/$CLIENT_DIR"
 OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
@@ -33,6 +33,7 @@ yarn build:server
 # move static files
 cp next.config.js $SERVER_DIR_PATH
 cp package.json $SERVER_DIR_PATH
+cp -r public $SERVER_DIR_PATH
 
 # package server files
 (cd $SERVER_DIR_PATH && tar zcf $OUTPUT_PATH/server.tar.gz .)
@@ -44,6 +45,6 @@ yarn export
 # package client files
 (cd $CLIENT_DIR_PATH && tar zcf $OUTPUT_PATH/client.tar.gz .)
 
-# clean
-rm -rf $SERVER_DIR_PATH
-rm -rf $CLIENT_DIR_PATH
+# bring server back
+rm -rf $SERVER_DIR_PATH/*
+tar zxf $OUTPUT_PATH/server.tar.gz -C $SERVER_DIR_PATH

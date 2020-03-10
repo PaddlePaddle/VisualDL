@@ -4,16 +4,17 @@ from node:12
 WORKDIR /usr/src/app
 
 ENV NODE_ENV production
+ENV PORT 8999
+ENV HOST 0.0.0.0
 
 COPY package.json .
 COPY yarn.lock .
 
-RUN npm i -g pm2
-
-RUN yarn
+RUN yarn install --frozen-lockfile
 
 COPY dist dist
 COPY public public
+COPY ecosystem.config.js ecosystem.config.js
 
 EXPOSE 8999
-CMD ["pm2-runtime", "dist/server/index.js"]
+CMD ["yarn", "start"]

@@ -15,7 +15,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 setConfig(config);
 
 const host = process.env.HOST || 'localhost';
-const port: string | number = Number.parseInt(process.env.PORT, 10) || 8999;
+const port = Number.parseInt(process.env.PORT, 10) || 8999;
 const proxy = process.env.PROXY;
 const delay = Number.parseInt(process.env.DELAY, 10);
 
@@ -23,7 +23,7 @@ const server = express();
 const app = next({dev: isDev, conf: config});
 const handle = app.getRequestHandler();
 
-(async () => {
+async function start() {
     await app.prepare();
 
     if (proxy) {
@@ -59,6 +59,12 @@ const handle = app.getRequestHandler();
             });
         });
     });
-})();
+}
+
+if (require.main === module) {
+    start();
+}
+
+export default start;
 
 export {server, app};
