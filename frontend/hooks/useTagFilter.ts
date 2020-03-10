@@ -1,9 +1,9 @@
 import {useReducer, useEffect, useCallback, useMemo} from 'react';
 import {useRouter} from 'next/router';
-import useSWR from 'swr';
 import groupBy from 'lodash/groupBy';
 import uniq from 'lodash/uniq';
 import intersection from 'lodash/intersection';
+import useRequest from '~/hooks/useRequest';
 import {Tag} from '~/types';
 
 type Runs = string[];
@@ -102,8 +102,8 @@ const reducer = (state: State, action: Action): State => {
 const useTagFilters = (type: string) => {
     const router = useRouter();
 
-    const {data: runs} = useSWR<Runs>('/runs');
-    const {data: tags} = useSWR<Tags>(`/${type}/tags`);
+    const {data: runs, loading: loadingRuns} = useRequest<Runs>('/runs');
+    const {data: tags, loading: loadingTags} = useRequest<Tags>(`/${type}/tags`);
 
     const selectedRuns = useMemo(
         () =>
@@ -144,8 +144,8 @@ const useTagFilters = (type: string) => {
         selectedTags: state.filteredTags,
         onChangeRuns,
         onFilterTags,
-        loadingRuns: !runs,
-        loadingTags: !tags
+        loadingRuns,
+        loadingTags
     };
 };
 

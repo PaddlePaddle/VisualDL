@@ -16,7 +16,7 @@ setConfig(config);
 
 const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT, 10) || 8999;
-const proxy = process.env.PROXY;
+const backend = process.env.BACKEND;
 const delay = Number.parseInt(process.env.DELAY, 10);
 
 const server = express();
@@ -26,9 +26,9 @@ const handle = app.getRequestHandler();
 async function start() {
     await app.prepare();
 
-    if (proxy) {
+    if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
-        server.use(config.env.API_URL, createProxyMiddleware({target: proxy, changeOrigin: true}));
+        server.use(config.env.API_URL, createProxyMiddleware({target: backend, changeOrigin: true}));
     } else if (isDev) {
         const {default: mock} = await import('../utils/mock');
         server.use(

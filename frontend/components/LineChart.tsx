@@ -1,10 +1,31 @@
 import React, {FunctionComponent, useEffect, useCallback} from 'react';
+import styled from 'styled-components';
 import {EChartOption} from 'echarts';
-import {WithStyled} from '~/utils/style';
+import GridLoader from 'react-spinners/GridLoader';
+import {WithStyled, primaryColor} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
 import useECharts from '~/hooks/useECharts';
 import {formatTime} from '~/utils';
 import * as chart from '~/utils/chart';
+
+const Wrapper = styled.div`
+    position: relative;
+
+    > .echarts {
+        height: 100%;
+    }
+
+    > .loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+`;
 
 type LineChartProps = {
     title?: string;
@@ -89,7 +110,16 @@ const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
         }
     }, [data, title, legend, xAxis, type, xAxisFormatter, yRange, tooltip, echart]);
 
-    return <div className={className} ref={ref}></div>;
+    return (
+        <Wrapper className={className}>
+            {!echart && (
+                <div className="loading">
+                    <GridLoader color={primaryColor} size="10px" />
+                </div>
+            )}
+            <div className="echarts" ref={ref}></div>
+        </Wrapper>
+    );
 };
 
 export default LineChart;

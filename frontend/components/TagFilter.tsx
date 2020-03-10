@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState, useCallback, useEffect} from 'react';
+import React, {FunctionComponent, useState, useCallback, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
@@ -43,12 +43,18 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, on
 
     const {t} = useTranslation('common');
 
-    const tagGroups = sortBy(
-        Object.entries(groupBy<TagType>(propTags || [], tag => tag.label.split('/')[0])).map(([label, tags]) => ({
-            label,
-            tags
-        })),
-        tag => tag.label
+    const tagGroups = useMemo(
+        () =>
+            sortBy(
+                Object.entries(groupBy<TagType>(propTags || [], tag => tag.label.split('/')[0])).map(
+                    ([label, tags]) => ({
+                        label,
+                        tags
+                    })
+                ),
+                tag => tag.label
+            ),
+        [propTags]
     );
 
     const [matchedCount, setMatchedCount] = useState(propTags?.length ?? 0);
@@ -58,8 +64,8 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, on
     useEffect(() => setInputValue(value || ''), [value, setInputValue]);
 
     const [selectedValue, setSelectedValue] = useState('');
-    const hasSelectedValue = selectedValue !== '';
-    const allText = inputValue || t('all');
+    const hasSelectedValue = useMemo(() => selectedValue !== '', [selectedValue]);
+    const allText = useMemo(() => inputValue || t('all'), [inputValue, t]);
 
     const onInputChange = useCallback(
         (value: string) => {

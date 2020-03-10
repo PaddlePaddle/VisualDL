@@ -24,9 +24,35 @@ English | [简体中文](https://github.com/PaddlePaddle/VisualDL/blob/develop/f
 
 **🚧PULL REQUESTS WELCOMED🚧**
 
-## Development
+## Usage
 
 > nodejs ≥ 10 and npm ≥ 6 are required.
+
+```bash
+npm install -g visualdl
+# or
+yarn global add visualdl
+```
+
+Then you can start visualdl server by
+
+```bash
+visualdl start --backend="http://127.0.0.1:8040"
+```
+
+To stop visualdl server, just type
+
+```bash
+visualdl stop
+```
+
+For more usage infomation, please type
+
+```bash
+visualdl -h
+```
+
+## Development
 
 First, install all dependencies:
 

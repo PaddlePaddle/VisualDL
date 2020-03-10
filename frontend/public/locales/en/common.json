@@ -12,5 +12,6 @@
     "select-runs": "Select Runs",
     "running": "Running",
     "stopped": "Stopped",
-    "loading": "Loading"
+    "loading": "Loading",
+    "error": "Error occurred"
 }

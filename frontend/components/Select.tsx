@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState, useCallback, useEffect} from 'react';
+import React, {FunctionComponent, useState, useCallback, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import without from 'lodash/without';
 import {useTranslation} from '~/utils/i18n';
@@ -156,41 +156,56 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
         setValue
     ]);
 
-    const isSelected = !!(multiple ? value && (value as SelectValueType[]).length !== 0 : (value as SelectValueType));
-    const changeValue = (mutateValue: SelectValueType, checked?: boolean) => {
-        let newValue;
-        if (multiple) {
-            newValue = value as SelectValueType[];
-            if (checked) {
-                if (!newValue.includes(mutateValue)) {
-                    newValue = [...newValue, mutateValue];
+    const isSelected = useMemo(
+        () => !!(multiple ? value && (value as SelectValueType[]).length !== 0 : (value as SelectValueType)),
+        [multiple, value]
+    );
+    const changeValue = useCallback(
+        (mutateValue: SelectValueType, checked?: boolean) => {
+            let newValue;
+            if (multiple) {
+                newValue = value as SelectValueType[];
+                if (checked) {
+                    if (!newValue.includes(mutateValue)) {
+                        newValue = [...newValue, mutateValue];
+                    }
+                } else {
+                    if (newValue.includes(mutateValue)) {
+                        newValue = without(newValue, mutateValue);
+                    }
                 }
             } else {
-                if (newValue.includes(mutateValue)) {
-                    newValue = without(newValue, mutateValue);
-                }
+                newValue = mutateValue;
             }
-        } else {
-            newValue = mutateValue;
-        }
-        setValue(newValue);
-        onChange?.(newValue);
-        if (!multiple) {
-            setIsOpenedFalse();
-        }
-    };
+            setValue(newValue);
+            onChange?.(newValue);
+            if (!multiple) {
+                setIsOpenedFalse();
+            }
+        },
+        [multiple, value, setIsOpenedFalse, onChange]
+    );
 
     const ref = useClickOutside(setIsOpenedFalse);
 
-    const list = propList?.map(item => ('string' === typeof item ? {value: item, label: item} : item)) ?? [];
-    const isListEmpty = list.length === 0;
+    const list = useMemo(
+        () => propList?.map(item => ('string' === typeof item ? {value: item, label: item} : item)) ?? [],
+        [propList]
+    );
+    const isListEmpty = useMemo(() => list.length === 0, [list]);
 
-    const findLabelByValue = (v: SelectValueType) => list.find(item => item.value === v)?.label ?? '';
-    const label = isSelected
-        ? multiple
-            ? (value as SelectValueType[]).map(findLabelByValue).join(' / ')
-            : findLabelByValue(value as SelectValueType)
-        : placeholder || t('select');
+    const findLabelByValue = useCallback((v: SelectValueType) => list.find(item => item.value === v)?.label ?? '', [
+        list
+    ]);
+    const label = useMemo(
+        () =>
+            isSelected
+                ? multiple
+                    ? (value as SelectValueType[]).map(findLabelByValue).join(' / ')
+                    : findLabelByValue(value as SelectValueType)
+                : placeholder || t('select'),
+        [multiple, value, findLabelByValue, isSelected, placeholder, t]
+    );
 
     return (
         <Wrapper ref={ref} opened={isOpened} className={className}>

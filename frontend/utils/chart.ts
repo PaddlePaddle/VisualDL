@@ -1,4 +1,44 @@
-export const color = ['#2932E1', '#25C9FF', '#981EFF', '#D8DAF6', '#E9F9FF', '#F3E8FF'];
+export const color = [
+    '#2932E1',
+    '#00CC88',
+    '#981EFF',
+    '#066BFF',
+    '#3AEB0D',
+    '#E71ED5',
+    '#25C9FF',
+    '#0DEBB0',
+    '#FF0287',
+    '#00E2FF',
+    '#00FF9D',
+    '#D50505',
+    '#FFAA00',
+    '#A3EB0D',
+    '#FF0900',
+    '#FF6600',
+    '#FFEA00',
+    'FE4A3B'
+];
+
+export const colorAlt = [
+    '#9498F0',
+    '#66E0B8',
+    '#CB8EFF',
+    '#6AA6FF',
+    '#89F36E',
+    '#F178E6',
+    '#7CDFFF',
+    '#6EF3D0',
+    '#FF80C3',
+    '#7FF0FF',
+    '#66FFC4',
+    '#E66969',
+    '#FFD47F',
+    '#A3EB0D',
+    '#E9F9FF',
+    '#FFB27F',
+    '#FFF266',
+    '#FE9289'
+];
 
 export const title = {
     textStyle: {

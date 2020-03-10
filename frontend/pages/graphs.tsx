@@ -1,14 +1,15 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import useSWR from 'swr';
 import styled from 'styled-components';
 import {saveSvgAsPng} from 'save-svg-as-png';
+import isEmpty from 'lodash/isEmpty';
+import useRequest from '~/hooks/useRequest';
 import {rem} from '~/utils/style';
+import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import RawButton from '~/components/Button';
 import RawRangeSlider from '~/components/RangeSlider';
 import Content from '~/components/Content';
 import Title from '~/components/Title';
 import Field from '~/components/Field';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 import NodeInfo, {NodeInfoProps} from '~/components/GraphsPage/NodeInfo';
 import Preloader from '~/components/Preloader';
 import {Graph, collectDagFacts} from '~/resource/graphs';
@@ -26,6 +27,14 @@ const Button = styled(RawButton)`
     & + & {
         margin-top: ${rem(20)};
     }
+`;
+
+const Empty = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: ${rem(20)};
+    height: ${rem(150)};
 `;
 
 const RangeSlider = styled(RawRangeSlider)`
@@ -129,7 +138,7 @@ const useDag = (graph?: Graph) => {
     };
 };
 
-const useDagreD3 = (graph: Graph | undefined) => {
+const useDagreD3 = (graph?: Graph) => {
     const [currentNode, setCurrentNode] = useState<NodeInfoProps['node']>(undefined);
     const {dagInfo, displaySwitch, setDisplaySwitch} = useDag(graph);
     const [downloadImage, setDownloadImageFn] = useState<() => void>(() => dumbFn);
@@ -241,8 +250,9 @@ const useDagreD3 = (graph: Graph | undefined) => {
 
 const Graphs: NextI18NextPage = () => {
     const {t} = useTranslation(['graphs', 'common']);
-    const {data: graph} = useSWR<{data: Graph}>('/graphs/graph');
-    const {currentNode, downloadImage, fitScreen, scale, setScale} = useDagreD3(graph ? graph.data : undefined);
+    const {data, error, loading} = useRequest<{data: Graph}>('/graphs/graph');
+    const graph = useMemo(() => (loading || isEmpty(data?.data) ? undefined : data?.data), [loading, data]);
+    const {currentNode, downloadImage, fitScreen, scale, setScale} = useDagreD3(graph);
 
     const aside = (
         <section>
@@ -268,15 +278,30 @@ const Graphs: NextI18NextPage = () => {
         </section>
     );
 
+    const ContentInner = useMemo(() => {
+        if (loading) {
+            return null;
+        }
+        if (error) {
+            return <Empty>{t('common:error')}</Empty>;
+        }
+        if (!graph) {
+            return <Empty>{t('common:empty')}</Empty>;
+        }
+        return (
+            <GraphSvg>
+                <g></g>
+            </GraphSvg>
+        );
+    }, [loading, error, graph, t]);
+
     return (
         <>
             <Preloader url="/graphs/graph" />
             <Title>{t('common:graphs')}</Title>
 
-            <Content aside={aside} loading={!graph}>
-                <GraphSvg>
-                    <g></g>
-                </GraphSvg>
+            <Content aside={aside} loading={loading}>
+                {ContentInner}
             </Content>
         </>
     );

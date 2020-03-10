@@ -1,5 +1,5 @@
 import {useRef, useEffect, useCallback, useState, MutableRefObject} from 'react';
-import echarts, {ECharts} from 'echarts';
+import {ECharts} from 'echarts';
 import {primaryColor, textColor, maskColor} from '~/utils/style';
 
 const useECharts = <T extends HTMLElement>(options: {
@@ -16,6 +16,7 @@ const useECharts = <T extends HTMLElement>(options: {
 
     const createChart = useCallback(() => {
         (async () => {
+            const echarts = await import('echarts');
             if (options.gl) {
                 await import('echarts-gl');
             }

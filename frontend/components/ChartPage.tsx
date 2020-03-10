@@ -1,7 +1,8 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent, useState, useMemo} from 'react';
 import styled from 'styled-components';
-import {WithStyled, rem, primaryColor} from '~/utils/style';
 import BarLoader from 'react-spinners/BarLoader';
+import {WithStyled, rem, primaryColor} from '~/utils/style';
+import {useTranslation} from '~/utils/i18n';
 import Chart from '~/components/Chart';
 import Pagination from '~/components/Pagination';
 
@@ -27,6 +28,15 @@ const Loading = styled.div`
     padding: ${rem(40)} 0;
 `;
 
+const Empty = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: ${rem(20)};
+    height: ${rem(150)};
+    flex-grow: 1;
+`;
+
 // TODO: add types
 // eslint-disable-next-line
 type ChartPageProps<T = any> = {
@@ -36,12 +46,14 @@ type ChartPageProps<T = any> = {
 };
 
 const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loading, withChart, className}) => {
+    const {t} = useTranslation('common');
+
     const pageSize = 12;
     const total = Math.ceil((items?.length ?? 0) / pageSize);
 
     const [page, setPage] = useState(1);
 
-    const pageItems = items?.slice((page - 1) * pageSize, page * pageSize) ?? [];
+    const pageItems = useMemo(() => items?.slice((page - 1) * pageSize, page * pageSize) ?? [], [items, page]);
 
     return (
         <div className={className}>
@@ -51,9 +63,11 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
                 </Loading>
             ) : (
                 <Wrapper>
-                    {pageItems.map((item, index) => (
-                        <Chart key={index}>{withChart?.(item)}</Chart>
-                    ))}
+                    {pageItems.length ? (
+                        pageItems.map((item, index) => <Chart key={index}>{withChart?.(item)}</Chart>)
+                    ) : (
+                        <Empty>{t('empty')}</Empty>
+                    )}
                 </Wrapper>
             )}
             <Pagination page={page} total={total} onChange={setPage} />

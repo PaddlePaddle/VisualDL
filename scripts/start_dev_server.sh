@@ -45,7 +45,7 @@ export PYTHONPATH=$PYTHONPATH:"$SCRIPT_DIR/.."
 
 FRONTEND_PORT=8999
 VDL_BIN="./build/node_modules/.bin/visualdl"
-$VDL_BIN start --port=$FRONTEND_PORT --host=$HOST --proxy="http://$HOST:$PORT"
+$VDL_BIN start --port=$FRONTEND_PORT --host=$HOST --backend="http://$HOST:$PORT"
 
 function finish {
     $VDL_BIN stop

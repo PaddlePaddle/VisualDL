@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useMemo, useCallback} from 'react';
 import styled from 'styled-components';
 import {
     WithStyled,
@@ -75,32 +75,48 @@ const Pagination: FunctionComponent<PaginationProps & WithStyled> = ({page, tota
     const padding = 2;
     const around = 2;
 
-    const startEllipsis = page - padding - around - 1 > 0;
-    const endEllipsis = page + padding + around < total;
-    const start =
-        page - around - 1 <= 0 ? [] : Array.from(new Array(Math.min(padding, page - around - 1)), (_v, i) => i + 1);
-    const end =
-        page + around >= total
-            ? []
-            : Array.from(
-                  new Array(Math.min(padding, total - page - around)),
-                  (_v, i) => total - padding + i + 1 + Math.max(padding - total + page + around, 0)
-              );
-    const before =
-        page - 1 <= 0
-            ? []
-            : Array.from(
-                  new Array(Math.min(around, page - 1)),
-                  (_v, i) => page - around + i + Math.max(around - page + 1, 0)
-              );
-    const after = page >= total ? [] : Array.from(new Array(Math.min(around, total - page)), (_v, i) => page + i + 1);
+    const startEllipsis = useMemo(() => page - padding - around - 1 > 0, [page]);
+    const endEllipsis = useMemo(() => page + padding + around < total, [page, total]);
+    const start = useMemo(
+        () =>
+            page - around - 1 <= 0 ? [] : Array.from(new Array(Math.min(padding, page - around - 1)), (_v, i) => i + 1),
+        [page]
+    );
+    const end = useMemo(
+        () =>
+            page + around >= total
+                ? []
+                : Array.from(
+                      new Array(Math.min(padding, total - page - around)),
+                      (_v, i) => total - padding + i + 1 + Math.max(padding - total + page + around, 0)
+                  ),
+        [page, total]
+    );
+    const before = useMemo(
+        () =>
+            page - 1 <= 0
+                ? []
+                : Array.from(
+                      new Array(Math.min(around, page - 1)),
+                      (_v, i) => page - around + i + Math.max(around - page + 1, 0)
+                  ),
+        [page]
+    );
+    const after = useMemo(
+        () => (page >= total ? [] : Array.from(new Array(Math.min(around, total - page)), (_v, i) => page + i + 1)),
+        [page, total]
+    );
 
-    const genLink = (arr: number[]) =>
-        arr.map(i => (
-            <Li key={i}>
-                <A onClick={() => onChange?.(i)}>{i}</A>
-            </Li>
-        ));
+    const genLink = useCallback(
+        (arr: number[]) =>
+            arr.map(i => (
+                <Li key={i}>
+                    <A onClick={() => onChange?.(i)}>{i}</A>
+                </Li>
+            )),
+        [onChange]
+    );
+
     const hellip = (
         <Li>
             <Span>&hellip;</Span>
