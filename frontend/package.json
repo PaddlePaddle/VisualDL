@@ -51,7 +51,6 @@
         "ecosystem.config.js"
     ],
     "dependencies": {
-        "app-root-path": "3.0.0",
         "dagre-d3": "0.6.4",
         "detect-node": "2.0.4",
         "echarts": "4.6.0",

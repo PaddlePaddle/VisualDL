@@ -3,7 +3,9 @@ set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd $SCRIPT_DIR/../frontend
+cd $SCRIPT_DIR/..
+mkdir -p build
+cd build
 
 which node >/dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -12,7 +14,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Setting up nodejs dependencies"
-npm install --no-package-lock
+npm install visualdl@latest --no-package-lock
 
 processors=1
 if [ "$(uname)" == "Darwin" ]; then
@@ -22,9 +24,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 fi
 
 echo "Building VisualDL SDK"
-cd $SCRIPT_DIR/..
-mkdir -p build
-cd build
 cmake ..
 
 make -j $processors

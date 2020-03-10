@@ -65,8 +65,7 @@ pm2.connect(err => {
     pm2.list((err, list) => {
         exitIfError(err, 2);
 
-        const appRoot = require('app-root-path');
-        const ecosystem = require(appRoot + '/ecosystem.config');
+        const ecosystem = require('./ecosystem.config');
 
         const app = ecosystem.apps[0];
         const host = argv.host || 'localhost';
