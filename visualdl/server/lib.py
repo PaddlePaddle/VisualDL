@@ -89,17 +89,13 @@ def get_image_tags(storage):
         with storage.mode(mode) as reader:
             tags = reader.tags('image')
             if tags:
-                result[mode] = {}
+                result[mode] = []
                 for tag in tags:
                     image = reader.image(tag)
                     for i in range(max(1, image.num_samples())):
                         caption = tag if image.num_samples(
                         ) <= 1 else '%s/%d' % (tag, i)
-                        result[mode][caption] = {
-                            'displayName': caption,
-                            'description': "",
-                            'samples': 1,
-                        }
+                        result[mode].append(caption)
     return result
 
 
@@ -179,11 +175,7 @@ def get_audio_tags(storage):
                     for i in range(max(1, audio.num_samples())):
                         caption = tag if audio.num_samples(
                         ) <= 1 else '%s/%d' % (tag, i)
-                        result[mode][caption] = {
-                            'displayName': caption,
-                            'description': "",
-                            'samples': 1,
-                        }
+                        result[mode].append(caption)
 
     return result
 
