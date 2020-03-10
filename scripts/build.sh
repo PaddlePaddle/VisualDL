@@ -15,7 +15,7 @@ build_frontend() {
 
 build_frontend_fake() {
     cd $FRONTEND_DIR
-    mkdir -p out
+    mkdir -p serverless
 }
 
 build_backend() {
@@ -46,7 +46,7 @@ clean_env() {
 
 package() {
     mkdir -p $TOP_DIR/visualdl/server/dist
-    cp -rf $FRONTEND_DIR/out/* $TOP_DIR/visualdl/server/dist
+    cp -rf $FRONTEND_DIR/serverless/* $TOP_DIR/visualdl/server/dist
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }
