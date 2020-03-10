@@ -18,12 +18,10 @@ function check_duplicated($filename_format) {
 
 function build_frontend_from_source() {
     cd $FRONTEND_DIR
-    npm install
-    npm run build
-    foreach ($file_name in "manifest.*.js","index.*.js","vendor.*.js") {
-        echo $file_name
-        check_duplicated $file_name
-    }
+    $env:PUBLIC_PATH="/app"
+    $env:API_URL="/api"
+    # TODO:
+    # ./scripts/build.sh
 }
 
 function build_frontend() {
