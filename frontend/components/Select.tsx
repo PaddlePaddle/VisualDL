@@ -17,6 +17,7 @@ import {
     easing,
     ellipsis,
     transitions,
+    math,
     css
 } from '~/utils/style';
 import Checkbox from '~/components/Checkbox';
@@ -76,6 +77,9 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     position: absolute;
     top: 100%;
     width: calc(100% + 2px);
+    max-height: ${math(`4.35 * ${height} + 2 * ${padding}`)};
+    overflow-x: hidden;
+    overflow-y: auto;
     left: -1px;
     padding: ${padding} 0;
     border: inherit;
