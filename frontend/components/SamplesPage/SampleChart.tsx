@@ -96,7 +96,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
         if (loading) {
             return <GridLoader color={primaryColor} size="10px" />;
         }
-        if (error) {
+        if (!data && error) {
             return <span>{t('error')}</span>;
         }
         if (isEmpty(data)) {

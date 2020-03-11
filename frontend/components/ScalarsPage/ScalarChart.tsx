@@ -44,6 +44,13 @@ const StyledLineChart = styled(LineChart)`
     ${size(height, width)}
 `;
 
+const Error = styled.div`
+    ${size(height, width)}
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
 type ScalarChartProps = {
     runs: string[];
     tag: string;
@@ -139,8 +146,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [smoothedDatasets, runs, sortingMethod, i18n]
     );
 
-    if (error) {
-        return <span>{t('common:error')}</span>;
+    // display error only on first fetch
+    if (!data && error) {
+        return <Error>{t('common:error')}</Error>;
     }
 
     return (

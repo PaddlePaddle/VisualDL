@@ -2,6 +2,7 @@ import React, {FunctionComponent, useMemo} from 'react';
 import styled from 'styled-components';
 import queryString from 'query-string';
 import {rem, primaryColor} from '~/utils/style';
+import {useTranslation} from '~/utils/i18n';
 import {useRunningRequest} from '~/hooks/useRequest';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {divide, Dimension, Reduction, DivideParams, Point} from '~/resource/high-dimensional';
@@ -21,6 +22,14 @@ const divideWasm = () =>
 const divideWorker = () => new Worker('~/worker/high-dimensional/divide.worker.ts', {type: 'module'});
 
 const StyledScatterChart = styled(ScatterChart)`
+    height: ${height};
+`;
+
+const Empty = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: ${rem(20)};
     height: ${height};
 `;
 
@@ -52,7 +61,9 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
     reduction,
     dimension
 }) => {
-    const {data, error} = useRunningRequest<Data>(
+    const {t} = useTranslation('common');
+
+    const {data, error, loading} = useRunningRequest<Data>(
         `/embeddings/embedding?${queryString.stringify({
             run: run ?? '',
             dimension: Number.parseInt(dimension),
@@ -88,7 +99,15 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
         ];
     }, [points]);
 
-    return <StyledScatterChart loading={!data && !error} data={chartData} gl={dimension === '3d'} />;
+    if (!data && error) {
+        return <Empty>{t('error')}</Empty>;
+    }
+
+    if (!data && !loading) {
+        return <Empty>{t('empty')}</Empty>;
+    }
+
+    return <StyledScatterChart loading={loading} data={chartData} gl={dimension === '3d'} />;
 };
 
 export default HighDimensionalChart;

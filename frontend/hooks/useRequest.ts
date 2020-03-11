@@ -1,5 +1,5 @@
 import {useMemo, useEffect} from 'react';
-import useSWR, {mutate, responseInterface, keyInterface, ConfigInterface} from 'swr';
+import useSWR, {responseInterface, keyInterface, ConfigInterface} from 'swr';
 import {fetcherFn} from 'swr/dist/types';
 
 type Response<D, E> = responseInterface<D, E> & {
@@ -33,30 +33,34 @@ function useRunningRequest<D = unknown, E = unknown>(
     key: keyInterface,
     running: boolean,
     fetcher?: fetcherFn<D>,
-    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'refreshInterval'>
+    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'refreshInterval' | 'dedupingInterval' | 'errorRetryInterval'>
 ): Response<D, E>;
 function useRunningRequest<D = unknown, E = unknown>(
     key: keyInterface,
     running: boolean,
     fetcher?: fetcherFn<D>,
-    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'refreshInterval'>
+    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'refreshInterval' | 'dedupingInterval' | 'errorRetryInterval'>
 ) {
-    const c = useMemo(
+    const c = useMemo<ConfigInterface<D, E, fetcherFn<D>>>(
         () => ({
             ...config,
-            refreshInterval: running ? 15 * 1000 : 0
+            refreshInterval: running ? 15 * 1000 : 0,
+            dedupingInterval: 15 * 1000,
+            errorRetryInterval: 15 * 1000
         }),
         [running, config]
     );
 
+    const {mutate, ...others} = useRequest(key, fetcher, c);
+
     // revalidate immediately when running is set to true
     useEffect(() => {
         if (running) {
-            mutate(key);
+            mutate();
         }
-    }, [running, key]);
+    }, [running, mutate]);
 
-    return useRequest(key, fetcher, c);
+    return {mutate, ...others};
 }
 
 export default useRequest;
