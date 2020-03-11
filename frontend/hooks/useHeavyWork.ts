@@ -6,10 +6,10 @@ const useHeavyWork = <T = unknown, P = unknown>(
     fallback: ((arg: P) => T) | null,
     params: P
 ) => {
-    const wasm = useRef(null as Promise<(arg: P) => T> | null);
-    const worker = useRef(null as Worker | null);
+    const wasm = useRef<ReturnType<NonNullable<typeof createWasm>>>(null);
+    const worker = useRef<ReturnType<NonNullable<typeof createWorker>>>(null);
 
-    const [result, setResult] = useState(undefined as T | undefined);
+    const [result, setResult] = useState<T | undefined>(undefined);
 
     const runFallback = useCallback((p: P) => fallback && setResult(fallback(p)), [fallback]);
 

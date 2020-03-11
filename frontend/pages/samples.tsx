@@ -46,13 +46,13 @@ const Samples: NextI18NextPage = () => {
     );
     const ungroupedSelectedTags = useMemo(
         () =>
-            selectedTags.reduce((prev, {runs, ...item}) => {
+            selectedTags.reduce<Item[]>((prev, {runs, ...item}) => {
                 Array.prototype.push.apply(
                     prev,
                     runs.map(run => ({...item, run}))
                 );
                 return prev;
-            }, [] as Item[]),
+            }, []),
         [selectedTags]
     );
 

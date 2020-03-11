@@ -11,9 +11,9 @@ const Wrapper = styled.div`
     }
 `;
 
-export const ValueContext = createContext(null as string | number | symbol | undefined | null);
+export const ValueContext = createContext<string | number | symbol | undefined | null>(null);
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export const EventContext = createContext((() => {}) as ((value: string | number | symbol) => unknown) | undefined);
+export const EventContext = createContext<((value: string | number | symbol) => unknown) | undefined>(() => {});
 
 type RadioGroupProps = {
     value?: string | number | symbol;

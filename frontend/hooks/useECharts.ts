@@ -10,9 +10,9 @@ const useECharts = <T extends HTMLElement>(options: {
     ref: MutableRefObject<T | null>;
     echart: MutableRefObject<ECharts | null> | null;
 } => {
-    const ref = useRef(null as T | null);
-    const echartInstance = useRef(null as ECharts | null);
-    const [echart, setEchart] = useState(null as typeof echartInstance | null);
+    const ref = useRef<T | null>(null);
+    const echartInstance = useRef<ECharts | null>(null);
+    const [echart, setEchart] = useState<typeof echartInstance | null>(null);
 
     const createChart = useCallback(() => {
         (async () => {

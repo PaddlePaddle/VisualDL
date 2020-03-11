@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState, useCallback} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {rem} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
@@ -19,12 +19,12 @@ const RunningToggle: FunctionComponent<RunningToggleProps> = ({running, onToggle
     const {t} = useTranslation('common');
 
     const [state, setState] = useState(!!running);
-    const onClick = useCallback(() => {
-        setState(s => !s);
-        onToggle?.(state);
-    }, [state, onToggle]);
 
-    return <StyledButton onClick={onClick}>{t(state ? 'running' : 'stopped')}</StyledButton>;
+    useEffect(() => {
+        onToggle?.(state);
+    }, [onToggle, state]);
+
+    return <StyledButton onClick={() => setState(s => !s)}>{t(state ? 'running' : 'stopped')}</StyledButton>;
 };
 
 export default RunningToggle;

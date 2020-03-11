@@ -103,7 +103,6 @@ def get_image_tag_steps(storage, mode, tag):
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
     sample_index = 0
-    origin_tag = tag
     if res:
         tag = tag[:tag.rfind('/')]
         sample_index = int(res.groups()[0])
@@ -114,23 +113,10 @@ def get_image_tag_steps(storage, mode, tag):
 
     for step_index in range(image.num_records()):
         record = image.record(step_index, sample_index)
-        shape = record.shape()
-        # TODO(ChunweiYan) remove this trick, some shape will be empty
-        if not shape:
-            continue
         try:
-            query = urlencode({
-                'sample': 0,
-                'index': step_index,
-                'tag': origin_tag,
-                'run': mode,
-            })
             res.append({
-                'height': shape[0],
-                'width': shape[1],
                 'step': record.step_id(),
-                'wall_time': image.timestamp(step_index),
-                'query': query,
+                'wallTime': image.timestamp(step_index),
             })
         except Exception:
             logger.error("image sample out of range")
@@ -184,7 +170,6 @@ def get_audio_tag_steps(storage, mode, tag):
     # remove suffix '/x'
     res = re.search(r".*/([0-9]+$)", tag)
     sample_index = 0
-    origin_tag = tag
     if res:
         tag = tag[:tag.rfind('/')]
         sample_index = int(res.groups()[0])
@@ -196,16 +181,9 @@ def get_audio_tag_steps(storage, mode, tag):
     for step_index in range(audio.num_records()):
         record = audio.record(step_index, sample_index)
 
-        query = urlencode({
-            'sample': 0,
-            'index': step_index,
-            'tag': origin_tag,
-            'run': mode,
-        })
         res.append({
             'step': record.step_id(),
-            'wall_time': audio.timestamp(step_index),
-            'query': query,
+            'wallTime': audio.timestamp(step_index),
         })
 
     return res
