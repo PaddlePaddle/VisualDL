@@ -23,7 +23,7 @@ type StepSliderProps = {
 const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, value, steps}) => {
     const {t} = useTranslation('samples');
     const [step, setStep] = useState(value);
-    const timer = useRef(null as NodeJS.Timeout | null);
+    const timer = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => setStep(value), [value]);
 
