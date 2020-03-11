@@ -1,12 +1,12 @@
 {
     "smoothing": "平滑度",
-    "value": "值",
-    "smoothed": "平滑值",
+    "value": "Value",
+    "smoothed": "Smoothed",
     "x-axis": "X轴",
     "x-axis-value": {
-        "step": "步",
-        "relative": "相对值",
-        "wall": "时间"
+        "step": "Step",
+        "relative": "Relative",
+        "wall": "Wall Time"
     },
     "tooltip-sorting": "标签排序方法",
     "tooltip-sorting-value": {
@@ -15,10 +15,5 @@
         "ascending": "升序",
         "nearest": "最近"
     },
-    "ignore-outliers": "图表缩放时忽略极端值",
-    "mode": "模式",
-    "mode-value": {
-        "overlay": "概览",
-        "offset": "偏移"
-    }
+    "ignore-outliers": "图表缩放时忽略极端值"
 }
