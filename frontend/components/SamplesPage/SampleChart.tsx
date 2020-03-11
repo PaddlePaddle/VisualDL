@@ -5,7 +5,7 @@ import isEmpty from 'lodash/isEmpty';
 import GridLoader from 'react-spinners/GridLoader';
 import {em, size, ellipsis, primaryColor, textLightColor} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
-import useRequest from '~/hooks/useRequest';
+import {useRunningRequest} from '~/hooks/useRequest';
 import Image from '~/components/Image';
 import StepSlider from '~/components/SamplesPage/StepSlider';
 
@@ -85,12 +85,9 @@ const getImageUrl = (index: number, run: string, tag: string, wallTime: number):
 const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, running}) => {
     const {t} = useTranslation('common');
 
-    const {data, error, loading} = useRequest<ImageData[]>(
+    const {data, error, loading} = useRunningRequest<ImageData[]>(
         `/images/list?${queryString.stringify({run, tag})}`,
-        undefined,
-        {
-            refreshInterval: running ? 15 * 1000 : 0
-        }
+        !!running
     );
 
     const [step, setStep] = useState(0);

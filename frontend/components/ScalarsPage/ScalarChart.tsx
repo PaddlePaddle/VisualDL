@@ -4,7 +4,7 @@ import queryString from 'query-string';
 import {EChartOption} from 'echarts';
 import {em, size} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
-import useRequest from '~/hooks/useRequest';
+import {useRunningRequest} from '~/hooks/useRequest';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {cycleFetcher} from '~/utils/fetch';
 import {
@@ -65,13 +65,10 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 }) => {
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
-    // TODO: maybe we can create a custom hook here
-    const {data: datasets, error, loading} = useRequest<Dataset[]>(
+    const {data: datasets, error, loading} = useRunningRequest<Dataset[]>(
         runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
-        (...urls) => cycleFetcher(urls),
-        {
-            refreshInterval: running ? 15 * 1000 : 0
-        }
+        !!running,
+        (...urls) => cycleFetcher(urls)
     );
 
     const type = xAxis === 'wall' ? 'time' : 'value';

@@ -2,7 +2,7 @@ import React, {FunctionComponent, useMemo} from 'react';
 import styled from 'styled-components';
 import queryString from 'query-string';
 import {rem, primaryColor} from '~/utils/style';
-import useRequest from '~/hooks/useRequest';
+import {useRunningRequest} from '~/hooks/useRequest';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {divide, Dimension, Reduction, DivideParams, Point} from '~/resource/high-dimensional';
 import ScatterChart from '~/components/ScatterChart';
@@ -52,16 +52,13 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
     reduction,
     dimension
 }) => {
-    const {data, error} = useRequest<Data>(
+    const {data, error} = useRunningRequest<Data>(
         `/embeddings/embedding?${queryString.stringify({
             run: run ?? '',
             dimension: Number.parseInt(dimension),
             reduction
         })}`,
-        undefined,
-        {
-            refreshInterval: running ? 15 * 1000 : 0
-        }
+        !!running
     );
 
     const divideParams = useMemo(
