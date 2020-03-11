@@ -14,7 +14,10 @@ const Image: FunctionComponent<ImageProps> = ({src}) => {
 
     const [url, setUrl] = useState('');
 
-    const {data, error, loading} = useRequest<Blob>(src ?? null, blobFetcher);
+    const {data, error, loading} = useRequest<Blob>(src ?? null, blobFetcher, {
+        // cache image for 5 minutes
+        dedupingInterval: 5 * 60 * 1000
+    });
 
     // use useLayoutEffect hook to prevent image render after url revoked
     useLayoutEffect(() => {
