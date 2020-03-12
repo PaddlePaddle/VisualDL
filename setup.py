@@ -111,7 +111,6 @@ if platform == 'win32':
 
 
 
-
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
