@@ -118,6 +118,7 @@ def frontend_package_files(directory):
             paths.append(os.path.join(path, filename).replace(basepath, './'))
     return paths
 
+
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
