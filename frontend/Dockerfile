@@ -1,4 +1,4 @@
-from node:12
+from node:12-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -17,4 +17,4 @@ COPY public public
 COPY ecosystem.config.js ecosystem.config.js
 
 EXPOSE 8999
-CMD ["yarn", "start"]
+ENTRYPOINT ["yarn", "start"]
