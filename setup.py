@@ -110,13 +110,6 @@ if platform == 'win32':
     scripts.append('visualdl/server/visualDL.bat')
 
 
-def frontend_package_files(directory):
-    basepath = 'visualdl/server/'
-    paths = []
-    for (path, directories, filenames) in os.walk(basepath + directory):
-        for filename in filenames:
-            paths.append(os.path.join(path, filename).replace(basepath, './'))
-    return paths
 
 
 setup(
@@ -130,7 +123,7 @@ setup(
     install_requires=install_requires,
     package_data={
         'visualdl': libraries,
-        'visualdl.server': frontend_package_files('dist'),
+        'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)],
         'visualdl.python': libraries + ['dog.jpg', 'testing.wav']
     },
     packages=packages,
