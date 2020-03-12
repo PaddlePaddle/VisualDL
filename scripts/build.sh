@@ -15,7 +15,21 @@ build_frontend_from_source() {
 
 build_frontend() {
     local PACKAGE_NAME="visualdl"
+    echo "Donwloading npm package, please wait..."
     local PACKAGE=`(cd $BUILD_DIR && npm pack ${PACKAGE_NAME}@latest)`
+    local SHA1SUM=`npm view ${PACKAGE_NAME}@latest dist.shasum`
+    if [ "$?" -ne "0" ]; then
+        echo "Cannot get sha1sum"
+        exit 1
+    fi
+    echo "${SHA1SUM} ${PACKAGE}" > "$BUILD_DIR/${PACKAGE}.sha1"
+    (cd $BUILD_DIR && sha1sum -c "${PACKAGE}.sha1")
+    if [ "$?" -ne "0" ]; then
+        echo "Check sum failed, download may not finish correctly."
+        exit 1
+    else
+        echo "Check sum pass."
+    fi
     tar zxf "$BUILD_DIR/$PACKAGE" -C "$BUILD_DIR"
 }
 
@@ -48,6 +62,7 @@ clean_env() {
     rm -rf $BUILD_DIR/temp*
     rm -rf $BUILD_DIR/scripts*
     rm -rf $BUILD_DIR/*.tgz
+    rm -rf $BUILD_DIR/*.sha1
     rm -rf $BUILD_DIR/package
 }
 

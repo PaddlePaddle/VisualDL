@@ -109,12 +109,14 @@ scripts = ['visualdl/server/visualdl', 'demo/vdl_create_scratch_log']
 if platform == 'win32':
     scripts.append('visualdl/server/visualDL.bat')
 
+
 def frontend_package_files(directory):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
             paths.append(os.path.join(path, filename))
     return paths
+
 
 setup(
     name="visualdl",
@@ -126,12 +128,9 @@ setup(
     long_description=read('README.md'),
     install_requires=install_requires,
     package_data={
-        'visualdl.server':
-        [s[len('visualdl/server/'):] for s in frontend_package_files('visualdl/server/dist')],
-        'visualdl':
-        libraries,
-        'visualdl.python':
-        libraries + ['dog.jpg', 'testing.wav']
+        'visualdl': libraries,
+        'visualdl.server': [s[len('visualdl/server/'):] for s in frontend_package_files('visualdl/server/dist')],
+        'visualdl.python': libraries + ['dog.jpg', 'testing.wav']
     },
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
