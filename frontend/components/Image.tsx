@@ -7,16 +7,16 @@ import GridLoader from 'react-spinners/GridLoader';
 
 type ImageProps = {
     src?: string;
+    cache?: number;
 };
 
-const Image: FunctionComponent<ImageProps> = ({src}) => {
+const Image: FunctionComponent<ImageProps> = ({src, cache}) => {
     const {t} = useTranslation('common');
 
     const [url, setUrl] = useState('');
 
     const {data, error, loading} = useRequest<Blob>(src ?? null, blobFetcher, {
-        // cache image for 5 minutes
-        dedupingInterval: 5 * 60 * 1000
+        dedupingInterval: cache ?? 2000
     });
 
     // use useLayoutEffect hook to prevent image render after url revoked

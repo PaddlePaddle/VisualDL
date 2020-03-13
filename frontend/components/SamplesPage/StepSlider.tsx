@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState, useEffect, useCallback, useRef} from 'react';
+import React, {FunctionComponent, useState, useEffect, useCallback} from 'react';
 import styled from 'styled-components';
 import {em, textLightColor} from '~/utils/style';
 import {useTranslation} from '~/utils/i18n';
@@ -18,35 +18,22 @@ type StepSliderProps = {
     value: number;
     steps: number[];
     onChange?: (value: number) => unknown;
+    onChangeComplete?: () => unknown;
 };
 
-const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, value, steps}) => {
+const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeComplete, value, steps}) => {
     const {t} = useTranslation('samples');
     const [step, setStep] = useState(value);
-    const timer = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => setStep(value), [value]);
 
-    const clearTimer = useCallback(() => {
-        if (timer.current) {
-            clearTimeout(timer.current);
-            timer.current = null;
-        }
-    }, []);
-
-    // debounce for backend performance consideration
-    useEffect(() => {
-        timer.current = setTimeout(() => {
-            onChange?.(step);
-        }, 500);
-        return clearTimer;
-    }, [step, onChange, clearTimer]);
-
-    // trigger immediately when mouse up
-    const changeComplate = useCallback(() => {
-        clearTimer();
-        onChange?.(step);
-    }, [onChange, clearTimer, step]);
+    const changeStep = useCallback(
+        (num: number) => {
+            setStep(num);
+            onChange?.(num);
+        },
+        [onChange]
+    );
 
     return (
         <>
@@ -56,8 +43,8 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, value, steps}
                 max={steps.length ? steps.length - 1 : 0}
                 step={1}
                 value={step}
-                onChange={setStep}
-                onChangeComplete={changeComplate}
+                onChange={changeStep}
+                onChangeComplete={onChangeComplete}
             />
         </>
     );

@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState, useMemo} from 'react';
+import React, {FunctionComponent, useState, useMemo, useRef, useEffect, useCallback} from 'react';
 import styled from 'styled-components';
 import queryString from 'query-string';
 import isEmpty from 'lodash/isEmpty';
@@ -82,6 +82,8 @@ type SampleChartProps = {
 const getImageUrl = (index: number, run: string, tag: string, wallTime: number): string =>
     `/images/image?${queryString.stringify({index, ts: wallTime, run, tag})}`;
 
+const cacheValidity = 5 * 60 * 1000;
+
 const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, running}) => {
     const {t} = useTranslation('common');
 
@@ -91,9 +93,49 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
     );
 
     const [step, setStep] = useState(0);
+    const [src, setSrc] = useState<string>();
+
+    const cached = useRef<Record<number, {src: string; timer: NodeJS.Timeout}>>({});
+    const timer = useRef<NodeJS.Timeout | null>(null);
+
+    // clear cache if tag or run changed
+    useEffect(() => {
+        Object.values(cached.current).forEach(({timer}) => clearTimeout(timer));
+        cached.current = {};
+    }, [tag, run]);
+
+    const cacheImageSrc = useCallback(() => {
+        if (!data) {
+            return;
+        }
+        const imageUrl = getImageUrl(step, run, tag, data[step].wallTime);
+        cached.current[step] = {
+            src: imageUrl,
+            timer: setTimeout(() => {
+                ((s: number) => delete cached.current[s])(step);
+            }, cacheValidity)
+        };
+        setSrc(imageUrl);
+    }, [step, run, tag, data]);
+
+    useEffect(() => {
+        if (cached.current[step]) {
+            // cached, return immediately
+            setSrc(cached.current[step].src);
+        } else if (isEmpty(cached.current)) {
+            // first load, return immediately
+            cacheImageSrc();
+        } else {
+            timer.current = setTimeout(cacheImageSrc, 500);
+            return () => {
+                timer.current && clearTimeout(timer.current);
+            };
+        }
+    }, [step, cacheImageSrc]);
 
     const Content = useMemo(() => {
-        if (loading) {
+        // show loading when deferring
+        if (loading || !cached.current[step]) {
             return <GridLoader color={primaryColor} size="10px" />;
         }
         if (!data && error) {
@@ -102,8 +144,8 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
         if (isEmpty(data)) {
             return <span>{t('empty')}</span>;
         }
-        return <Image src={getImageUrl(step, run, tag, (data as ImageData[])[step].wallTime)} />;
-    }, [loading, error, data, step, run, tag, t]);
+        return <Image src={src} cache={cacheValidity} />;
+    }, [loading, error, data, step, src, t]);
 
     return (
         <Wrapper>
@@ -111,7 +153,12 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
                 <h4>{tag}</h4>
                 <span>{run}</span>
             </Title>
-            <StepSlider value={step} steps={data?.map(item => item.step) ?? []} onChange={setStep} />
+            <StepSlider
+                value={step}
+                steps={data?.map(item => item.step) ?? []}
+                onChange={setStep}
+                onChangeComplete={cacheImageSrc}
+            />
             <Container fit={fit}>{Content}</Container>
         </Wrapper>
     );
