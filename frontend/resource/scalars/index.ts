@@ -155,8 +155,8 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         return {
             Run: item.run,
             // Keep six number for easy-read.
-            Smoothed: data[indexPropMap.Smoothed].toString().slice(0, 6),
-            Value: data[indexPropMap.Value].toString().slice(0, 6),
+            Smoothed: data[indexPropMap.Smoothed]?.toString().slice(0, 6),
+            Value: data[indexPropMap.Value]?.toString().slice(0, 6),
             Step: data[indexPropMap.Step],
             Time: formatTime(data[indexPropMap.Time], i18n.language),
             // Relative display value should take easy-read into consideration.
