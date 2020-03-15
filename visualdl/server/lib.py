@@ -22,6 +22,7 @@ import numpy as np
 from PIL import Image
 from .log import logger
 import wave
+from .data_manager import default_data_manager
 
 try:
     from urllib.parse import urlencode
@@ -48,38 +49,31 @@ def get_scalar_tags(storage):
 
 
 def get_scalar(storage, mode, tag, num_records=300):
-    assert num_records > 1
-
     with storage.mode(mode) as reader:
         scalar = reader.scalar(tag)
 
-        records = scalar.records()
-        ids = scalar.ids()
-        timestamps = scalar.timestamps()
+        data_reservoir = default_data_manager.get_reservoir("scalar")
+        if not data_reservoir.exist_in_keys(mode=mode, tag=tag):
+            records = scalar.records()
+            ids = scalar.ids()
+            timestamps = scalar.timestamps()
 
-        data = list(zip(timestamps, ids, records))
-        data_size = len(data)
+            data = list(zip(timestamps, ids, records))
 
-        if data_size <= num_records:
-            return data
+            for index in range(len(data)):
+                data_reservoir.add_item(mode=mode, tag=tag, item=data[index])
+        else:
+            num_items_index = data_reservoir.get_num_items_index(mode, tag)
+            if num_items_index != scalar.size():
+                records = scalar.records(num_items_index)
+                ids = scalar.ids(num_items_index)
+                timestamps = scalar.timestamps(num_items_index)
 
-        span = float(data_size) / (num_records - 1)
-        span_offset = 0
+                data = list(zip(timestamps, ids, records))
 
-        data_idx = int(span_offset * span)
-        sampled_data = []
-
-        while data_idx < data_size:
-            sampled_data.append(data[data_size - data_idx - 1])
-            span_offset += 1
-            data_idx = int(span_offset * span)
-
-        sampled_data.append(data[0])
-        res = sampled_data[::-1]
-        # TODO(Superjomn) some bug here, sometimes there are zero here.
-        if res[-1] == 0.:
-            res = res[:-1]
-        return res
+                for index in range(len(data)):
+                    data_reservoir.add_item(mode=mode, tag=tag, item=data[index])
+        return data_reservoir.get_items(mode, tag)
 
 
 def get_image_tags(storage):
@@ -111,15 +105,27 @@ def get_image_tag_steps(storage, mode, tag):
         image = reader.image(tag)
         res = []
 
-    for step_index in range(image.num_records()):
-        record = image.record(step_index, sample_index)
-        try:
+    image_num_records = image.num_records()
+    num_samples = 10
+    if image_num_records <= num_samples:
+        for step_index in range(image_num_records):
+            record = image.record(step_index, sample_index)
+
             res.append({
                 'step': record.step_id(),
-                'wallTime': image.timestamp(step_index),
+                'wallTime': image.timestamp(step_index)
             })
-        except Exception:
-            logger.error("image sample out of range")
+
+    else:
+        span = float(image_num_records) / num_samples
+        for index in range(num_samples):
+            step_index = round(span * index)
+            record = image.record(step_index, sample_index)
+
+            res.append({
+                'step': record.step_id(),
+                'wallTime': image.timestamp(step_index)
+            })
 
     return res
 
@@ -291,45 +297,30 @@ def get_embeddings(storage, mode, reduction, dimension=2, num_records=5000):
 def get_histogram(storage, mode, tag):
     with storage.mode(mode) as reader:
         histogram = reader.histogram(tag)
-        res = []
+        data_reservoir = default_data_manager.get_reservoir("histogram")
+        if not data_reservoir.exist_in_keys(mode=mode, tag=tag):
+            records = histogram.records()
 
-        for i in range(histogram.num_records()):
-            try:
-                # some bug with protobuf, some times may overflow
-                record = histogram.record(i)
-            except Exception:
-                continue
+            for record in records:
+                data = []
+                for j in range(record.num_instances()):
+                    instance = record.instance(j)
+                    data.append(
+                        [instance.left(), instance.right(), instance.frequency()])
+                data_reservoir.add_item(mode, tag, [record.timestamp(), record.step(), data])
+        else:
+            num_items_index = data_reservoir.get_num_items_index(mode, tag)
+            if num_items_index != histogram.size():
+                records = histogram.records(num_items_index)
 
-            res.append([])
-            py_record = res[-1]
-            py_record.append(record.timestamp())
-            py_record.append(record.step())
-            py_record.append([])
-
-            data = py_record[-1]
-            for j in range(record.num_instances()):
-                instance = record.instance(j)
-                data.append(
-                    [instance.left(), instance.right(), instance.frequency()])
-
-        # num_samples: We will only return 100 samples.
-        num_samples = 100
-        if len(res) < num_samples:
-            return res
-
-        # sample some steps
-        span = float(len(res)) / (num_samples - 1)
-        span_offset = 0
-        data_idx = 0
-
-        sampled_data = []
-        data_size = len(res)
-        while data_idx < data_size:
-            sampled_data.append(res[data_size - data_idx - 1])
-            span_offset += 1
-            data_idx = int(span_offset * span)
-        sampled_data.append(res[0])
-        return sampled_data[::-1]
+                for record in records:
+                    data = []
+                    for j in range(record.num_instances()):
+                        instance = record.instance(j)
+                        data.append(
+                            [instance.left(), instance.right(), instance.frequency()])
+                    data_reservoir.add_item(mode, tag, [record.timestamp(), record.step(), data])
+        return data_reservoir.get_items(mode, tag)
 
 
 def retry(ntimes, function, time2sleep, *args, **kwargs):
