@@ -1,3 +1,21 @@
+# 2.0.0-alpha.0
+
+**This is a PRE-RELEASE version of VisualDL 2.0. Please DO NOT use it in production environment.**
+
+## Improvements
+
+- **backend:** improve performance of plugin scalar and image by uploading logs incrementally
+
+## Features
+
+- **frontend:** completely newly-designed web user interface (for more information, please refer to [Frontend Readme](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/README.md))
+
+## BREAKING CHANGES
+
+- `Histogram` is not available in this version.
+- Audio and text samples are not available in this version.
+- Plugin image displays 10pcs sampled images in this version.
+
 # RELEASE 1.3.0
 
 ## New Features
