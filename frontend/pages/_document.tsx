@@ -1,4 +1,4 @@
-import Document, {Head, Main, NextScript, DocumentContext, DocumentProps} from 'next/document';
+import Document, {Html, Head, Main, NextScript, DocumentContext, DocumentProps} from 'next/document';
 import {ServerStyleSheet} from '~/utils/style';
 
 interface VDLDocumentProps extends DocumentProps {
@@ -44,13 +44,13 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
     render() {
         const {language, languageDir} = this.props;
         return (
-            <html lang={language} dir={languageDir}>
+            <Html lang={language} dir={languageDir}>
                 <Head />
                 <body>
                     <Main />
                     <NextScript />
                 </body>
-            </html>
+            </Html>
         );
     }
 }
