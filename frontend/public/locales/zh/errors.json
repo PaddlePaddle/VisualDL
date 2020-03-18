@@ -1,4 +1,5 @@
 {
     "error-with-status": "服务器发生了一个 {{statusCode}} 错误",
-    "error-without-status": "服务器发生了一个错误"
+    "error-without-status": "服务器发生了一个错误",
+    "page-not-found": "页面不存在"
 }
