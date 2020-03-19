@@ -32,7 +32,7 @@ VisualDL有三个功能模块.
 任何在 ```server``` 文件夹里代码的改动，都可以通过运行以下命令
 
 ```
-python visualdl/server/visualdl --logdir={LOG_DIR} --port=8080
+python visualdl/server/app --logdir={LOG_DIR} --port=8080
 ```
 来重启 Flask 服务器
 
