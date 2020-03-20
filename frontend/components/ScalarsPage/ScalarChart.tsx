@@ -78,8 +78,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         (...urls) => cycleFetcher(urls)
     );
 
-    const type = xAxis === 'wall' ? 'time' : 'value';
-    const smooth = xAxis !== 'wall';
+    const smooth = false;
+    const type = useMemo(() => (xAxis === 'wall' ? 'time' : 'value'), [xAxis]);
+    const xAxisLabel = useMemo(() => (xAxis === 'step' ? '' : t(`x-axis-value.${xAxis}`)), [xAxis, t]);
 
     const transformParams = useMemo(
         () => ({
@@ -154,8 +155,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     return (
         <StyledLineChart
             title={tag}
-            legend={runs}
-            xAxis={t(`x-axis-value.${xAxis}`)}
+            xAxis={xAxisLabel}
             yRange={yRange}
             type={type}
             tooltip={formatter}
