@@ -42,7 +42,7 @@ export default (options: Options) => {
                 res.send(Buffer.from(mock));
             } else {
                 const result = JSON.parse(faker.fake(JSON.stringify(mock, null, 4)));
-                if ('status' in result && 'data' in result) {
+                if (result && 'status' in result && 'data' in result) {
                     res.json(result);
                 } else {
                     res.json({status: 0, msg: '', data: result});
@@ -50,6 +50,8 @@ export default (options: Options) => {
             }
         } catch (e) {
             res.status(500).send(e.message);
+            // eslint-disable-next-line no-console
+            console.error(e);
         }
     };
 };

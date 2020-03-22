@@ -103,11 +103,8 @@ ENV/
 
 .DS_Store
 
-# frontend
-node_modules
-/.vscode
-package-lock.json
-
 # PyCharm IDE
 .idea/
 
+/.vscode
+.tool-versions
