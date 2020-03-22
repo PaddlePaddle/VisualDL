@@ -1,24 +1,25 @@
-import React, {useState, useEffect} from 'react';
-import styled from 'styled-components';
-import {useRouter} from 'next/router';
-import useRequest from '~/hooks/useRequest';
-import useSearchValue from '~/hooks/useSearchValue';
-import {rem, em} from '~/utils/style';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import Title from '~/components/Title';
-import Content from '~/components/Content';
-import SearchInput from '~/components/SearchInput';
-import Icon from '~/components/Icon';
-import Field from '~/components/Field';
-import Checkbox from '~/components/Checkbox';
-import RadioGroup from '~/components/RadioGroup';
-import RadioButton from '~/components/RadioButton';
-import RunningToggle from '~/components/RunningToggle';
-import Select, {SelectValueType} from '~/components/Select';
-import AsideDivider from '~/components/AsideDivider';
-import Preloader from '~/components/Preloader';
-import HighDimensionalChart from '~/components/HighDimensionalPage/HighDimensionalChart';
 import {Dimension, Reduction} from '~/resource/high-dimensional';
+import {NextI18NextPage, useTranslation} from '~/utils/i18n';
+import React, {useEffect, useState} from 'react';
+import Select, {SelectValueType} from '~/components/Select';
+import {em, rem} from '~/utils/style';
+
+import AsideDivider from '~/components/AsideDivider';
+import Checkbox from '~/components/Checkbox';
+import Content from '~/components/Content';
+import Field from '~/components/Field';
+import HighDimensionalChart from '~/components/HighDimensionalPage/HighDimensionalChart';
+import Icon from '~/components/Icon';
+import Preloader from '~/components/Preloader';
+import RadioButton from '~/components/RadioButton';
+import RadioGroup from '~/components/RadioGroup';
+import RunningToggle from '~/components/RunningToggle';
+import SearchInput from '~/components/SearchInput';
+import Title from '~/components/Title';
+import styled from 'styled-components';
+import useRequest from '~/hooks/useRequest';
+import {useRouter} from 'next/router';
+import useSearchValue from '~/hooks/useSearchValue';
 
 const dimensions = ['2d', '3d'];
 const reductions = ['pca', 'tsne'];
@@ -47,7 +48,7 @@ const HighDimensional: NextI18NextPage = () => {
     useEffect(() => setRun(selectedRun), [setRun, selectedRun]);
 
     const [search, setSearch] = useState('');
-    const debouncedSearch = useSearchValue(search);
+    const debounceSearch = useSearchValue(search);
     const [dimension, setDimension] = useState(dimensions[0] as Dimension);
     const [reduction, setReduction] = useState(reductions[0] as Reduction);
     const [running, setRunning] = useState(true);
@@ -112,7 +113,7 @@ const HighDimensional: NextI18NextPage = () => {
                 ) : loading ? null : (
                     <HighDimensionalChart
                         dimension={dimension}
-                        keyword={debouncedSearch}
+                        keyword={debounceSearch}
                         run={run ?? ''}
                         running={running}
                         labelVisibility={labelVisibility}

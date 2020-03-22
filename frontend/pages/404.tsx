@@ -1,6 +1,7 @@
+import {NextI18NextPage, useTranslation} from '~/utils/i18n';
+import {headerHeight, rem} from '~/utils/style';
+
 import styled from 'styled-components';
-import {rem, headerHeight} from '~/utils/style';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
 
 const Error = styled.div`
     height: calc(100vh - ${headerHeight});

@@ -1,7 +1,8 @@
 import {NextComponentType, NextPageContext} from 'next';
-import moment from 'moment';
+
 import NextI18Next from './i18next';
 import {env} from '../next.config';
+import moment from 'moment';
 
 const defaultLanguage = env.DEFAULT_LANGUAGE;
 const allLanguages = env.LANGUAGES;

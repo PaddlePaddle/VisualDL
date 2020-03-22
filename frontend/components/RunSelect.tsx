@@ -1,8 +1,9 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
-import {rem} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
 import Select, {SelectValueType} from '~/components/Select';
+
+import {rem} from '~/utils/style';
+import styled from 'styled-components';
+import {useTranslation} from '~/utils/i18n';
 
 const Title = styled.div`
     font-size: ${rem(16)};

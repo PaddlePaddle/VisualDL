@@ -1,4 +1,5 @@
 import React, {FunctionComponent} from 'react';
+
 import Head from 'next/head';
 
 type PreloaderProps = {

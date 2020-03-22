@@ -1,5 +1,6 @@
-import {useMemo, useEffect} from 'react';
-import useSWR, {responseInterface, keyInterface, ConfigInterface} from 'swr';
+import {useEffect, useMemo} from 'react';
+import useSWR, {ConfigInterface, keyInterface, responseInterface} from 'swr';
+
 import {fetcherFn} from 'swr/dist/types';
 
 type Response<D, E> = responseInterface<D, E> & {

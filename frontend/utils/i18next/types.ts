@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as React from 'react';
+
+import {TFunction as I18NextTFunction, InitOptions, i18n} from 'i18next';
 import {
-    useTranslation,
+    WithTranslation as ReactI18nextWithTranslation,
     TransProps,
-    withTranslation,
-    WithTranslation as ReactI18nextWithTranslation
+    useTranslation,
+    withTranslation
 } from 'react-i18next';
+
 import {LinkProps} from 'next/link';
 import {SingletonRouter} from 'next/router';
-import {InitOptions, i18n, TFunction as I18NextTFunction} from 'i18next';
 
 export type InitConfig = {
     browserLanguageDetection?: boolean;

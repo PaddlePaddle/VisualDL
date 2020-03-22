@@ -1,25 +1,26 @@
-import React, {FunctionComponent, useCallback, useMemo} from 'react';
-import styled from 'styled-components';
-import queryString from 'query-string';
-import {EChartOption} from 'echarts';
-import {em, size} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
-import {useRunningRequest} from '~/hooks/useRequest';
-import useHeavyWork from '~/hooks/useHeavyWork';
-import {cycleFetcher} from '~/utils/fetch';
 import {
-    transform,
-    chartData,
-    range,
-    tooltip,
-    sortingMethodMap,
-    xAxisMap,
     Dataset,
     Range,
+    RangeParams,
     TransformParams,
-    RangeParams
+    chartData,
+    range,
+    sortingMethodMap,
+    tooltip,
+    transform,
+    xAxisMap
 } from '~/resource/scalars';
+import React, {FunctionComponent, useCallback, useMemo} from 'react';
+import {em, size} from '~/utils/style';
+
+import {EChartOption} from 'echarts';
 import LineChart from '~/components/LineChart';
+import {cycleFetcher} from '~/utils/fetch';
+import queryString from 'query-string';
+import styled from 'styled-components';
+import useHeavyWork from '~/hooks/useHeavyWork';
+import {useRunningRequest} from '~/hooks/useRequest';
+import {useTranslation} from '~/utils/i18n';
 
 const width = em(430);
 const height = em(320);

@@ -1,6 +1,7 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
+
 import {rem} from '~/utils/style';
+import styled from 'styled-components';
 
 const Divider = styled.hr<{height?: string | number}>`
     background-color: transparent;

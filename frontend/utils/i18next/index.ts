@@ -1,23 +1,24 @@
-import {withTranslation, useTranslation, Trans} from 'react-i18next';
-import hoistNonReactStatics from 'hoist-non-react-statics';
-import {createConfig} from './config/create-config';
-import createI18NextClient from './create-i18next-client';
-import {appWithTranslation, withInternals} from './hocs';
-import {consoleMessage} from './utils';
-import {Link} from './components';
-import {wrapRouter} from './router';
 import {
     AppWithTranslation,
     Config,
-    InitConfig,
-    Trans as TransType,
-    Link as LinkType,
     I18n,
+    InitConfig,
     InitPromise,
+    Link as LinkType,
+    Router,
+    Trans as TransType,
     UseTranslation,
-    WithTranslationHocType,
-    Router
+    WithTranslationHocType
 } from './types';
+import {Trans, useTranslation, withTranslation} from 'react-i18next';
+import {appWithTranslation, withInternals} from './hocs';
+
+import {Link} from './components';
+import {consoleMessage} from './utils';
+import {createConfig} from './config/create-config';
+import createI18NextClient from './create-i18next-client';
+import hoistNonReactStatics from 'hoist-non-react-statics';
+import {wrapRouter} from './router';
 
 export {withTranslation} from 'react-i18next';
 

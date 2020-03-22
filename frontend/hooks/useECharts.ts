@@ -1,6 +1,7 @@
-import {useRef, useEffect, useCallback, useState, MutableRefObject} from 'react';
+import {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
+import {maskColor, primaryColor, textColor} from '~/utils/style';
+
 import {ECharts} from 'echarts';
-import {primaryColor, textColor, maskColor} from '~/utils/style';
 
 const useECharts = <T extends HTMLElement>(options: {
     loading?: boolean;

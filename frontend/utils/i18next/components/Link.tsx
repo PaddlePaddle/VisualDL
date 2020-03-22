@@ -18,13 +18,13 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import {Config, I18n} from '../types';
 import NextLink, {LinkProps} from 'next/link';
-import {withTranslation} from 'react-i18next';
-
-import {I18n, Config} from '../types';
 import {lngPathCorrector, subpathIsRequired} from '../utils';
+
+import PropTypes from 'prop-types';
+import React from 'react';
+import {withTranslation} from 'react-i18next';
 
 const removeWithTranslationProps = (props: any) => {
     const strippedProps = Object.assign({}, props);

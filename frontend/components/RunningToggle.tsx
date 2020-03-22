@@ -1,8 +1,9 @@
-import React, {FunctionComponent, useState, useEffect} from 'react';
-import styled from 'styled-components';
-import {rem} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
+import React, {FunctionComponent, useEffect, useState} from 'react';
+
 import Button from '~/components/Button';
+import {rem} from '~/utils/style';
+import styled from 'styled-components';
+import {useTranslation} from '~/utils/i18n';
 
 const StyledButton = styled(Button)`
     margin-top: ${rem(40)};

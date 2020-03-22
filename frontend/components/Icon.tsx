@@ -1,4 +1,5 @@
 import React, {FunctionComponent} from 'react';
+
 import {WithStyled} from '~/utils/style';
 
 type IconProps = {

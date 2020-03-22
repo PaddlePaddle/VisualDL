@@ -1,20 +1,18 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
-import {headerHeight} from '~/utils/style';
+import {headerHeight, position, size} from '~/utils/style';
+
 import Navbar from '~/components/Navbar';
+import styled from 'styled-components';
 
 const Main = styled.main`
     padding-top: ${headerHeight};
 `;
 
 const Header = styled.header`
-    position: fixed;
     z-index: 10000;
-    width: 100%;
-    height: ${headerHeight};
-    top: 0;
-    left: 0;
-    right: 0;
+
+    ${size(headerHeight, '100%')}
+    ${position('fixed', 0, 0, null, 0)}
 `;
 
 const Layout: FunctionComponent = ({children}) => (

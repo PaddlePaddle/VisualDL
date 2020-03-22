@@ -1,20 +1,21 @@
-import React, {FunctionComponent, useMemo, useCallback} from 'react';
-import styled from 'styled-components';
+// cSpell:words hellip
+
+import React, {FunctionComponent, useCallback, useMemo} from 'react';
 import {
     WithStyled,
-    em,
-    primaryColor,
     backgroundColor,
     borderColor,
-    textInvertColor,
-    textColor,
-    borderRadius,
     borderFocusedColor,
-    duration,
-    easing,
-    transitions,
-    size
+    em,
+    primaryColor,
+    sameBorder,
+    size,
+    textColor,
+    textInvertColor,
+    transitionProps
 } from '~/utils/style';
+
+import styled from 'styled-components';
 
 const height = em(36);
 
@@ -49,9 +50,8 @@ const A = styled.a<{current?: boolean}>`
     min-width: ${height};
     padding: 0 ${em(10)};
     text-align: center;
-    border: 1px solid ${props => (props.current ? primaryColor : borderColor)};
-    border-radius: ${borderRadius};
-    ${transitions(['color', 'border-color', 'background-color'], `${duration} ${easing}`)}
+    ${props => sameBorder({color: props.current ? primaryColor : borderColor, radius: true})};
+    ${transitionProps(['color', 'border-color', 'background-color'])}
 
     &:hover {
         border-color: ${props => (props.current ? primaryColor : borderFocusedColor)};

@@ -2,13 +2,13 @@
 
 /* eslint-disable no-console */
 
-import path from 'path';
+import config from '../next.config';
 import express from 'express';
 import next from 'next';
-import {setConfig} from 'next/config';
 import {nextI18NextMiddleware} from '../utils/i18next/middlewares';
 import nextI18next from '../utils/i18n';
-import config from '../next.config';
+import path from 'path';
+import {setConfig} from 'next/config';
 
 const isDev = process.env.NODE_ENV !== 'production';
 

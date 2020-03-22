@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, useCallback} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
 const useHeavyWork = <T = unknown, P = unknown>(
     createWasm: (() => Promise<(arg: P) => T> | null) | null,

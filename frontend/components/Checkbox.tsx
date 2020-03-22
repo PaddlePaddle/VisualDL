@@ -1,21 +1,23 @@
-import React, {FunctionComponent, useState, useEffect, useCallback} from 'react';
-import styled from 'styled-components';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import {
     WithStyled,
-    em,
-    textLighterColor,
-    textInvertColor,
     backgroundColor,
-    primaryColor,
-    duration,
-    size,
-    easing,
-    ellipsis,
-    transitions,
-    math,
     darken,
-    lighten
+    ellipsis,
+    em,
+    half,
+    lighten,
+    math,
+    position,
+    primaryColor,
+    sameBorder,
+    size,
+    textInvertColor,
+    textLighterColor,
+    transitionProps
 } from '~/utils/style';
+
+import styled from 'styled-components';
 
 const height = em(20);
 const checkSize = em(16);
@@ -34,10 +36,8 @@ const Input = styled.input.attrs<{disabled?: boolean}>(props => ({
     type: 'checkbox',
     disabled: !!props.disabled
 }))`
-    ${size(0, 0)}
-    position: absolute;
-    left: 0;
-    top: 0;
+    ${size(0)}
+    ${position('absolute', 0, null, null, 0)}
     opacity: 0;
     pointer-events: none;
 `;
@@ -46,14 +46,14 @@ const Inner = styled.div<{checked?: boolean; size?: string; disabled?: boolean}>
     color: ${props => (props.checked ? textInvertColor : 'transparent')};
     flex-shrink: 0;
     ${props => size(math(`${checkSize} * ${props.size === 'small' ? 0.875 : 1}`))}
-    margin: ${math(`(${height} - ${checkSize}) / 2`)} 0;
+    margin: ${half(`${height} - ${checkSize}`)} 0;
     margin-right: ${em(4)};
-    border: 1px solid ${props => (props.disabled || !props.checked ? textLighterColor : primaryColor)};
+    ${props => sameBorder({color: props.disabled || !props.checked ? textLighterColor : primaryColor})};
     background-color: ${props =>
         props.disabled
             ? props.checked
                 ? textLighterColor
-                : lighten(0.333, textLighterColor)
+                : lighten(1 / 3, textLighterColor)
             : props.checked
             ? primaryColor
             : backgroundColor};
@@ -62,7 +62,7 @@ const Inner = styled.div<{checked?: boolean; size?: string; disabled?: boolean}>
     background-position: center center;
     background-size: ${em(10)} ${em(8)};
     position: relative;
-    ${transitions(['border-color', 'background-color', 'color'], `${duration} ${easing}`)}
+    ${transitionProps(['border-color', 'background-color', 'color'])}
 
     ${Wrapper}:hover > & {
         border-color: ${props =>

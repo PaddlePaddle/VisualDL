@@ -1,10 +1,11 @@
-import {useReducer, useEffect, useCallback, useMemo} from 'react';
-import {useRouter} from 'next/router';
-import groupBy from 'lodash/groupBy';
-import uniq from 'lodash/uniq';
-import intersection from 'lodash/intersection';
-import useRequest from '~/hooks/useRequest';
+import {useCallback, useEffect, useMemo, useReducer} from 'react';
+
 import {Tag} from '~/types';
+import groupBy from 'lodash/groupBy';
+import intersection from 'lodash/intersection';
+import uniq from 'lodash/uniq';
+import useRequest from '~/hooks/useRequest';
+import {useRouter} from 'next/router';
 
 type Runs = string[];
 type Tags = Record<string, string[]>;
@@ -45,14 +46,16 @@ type ActionSetFilteredTags = {
 
 type Action = ActionSetRuns | ActionInitTags | ActionSetTags | ActionSetFilteredTags;
 
+type SingleTag = {label: Tag['label']; run: Tag['runs'][number]};
+
 const groupTags = (runs: Runs, tags?: Tags): Tag[] =>
     Object.entries(
-        groupBy<{label: Tag['label']; run: Tag['runs'][number]}>(
+        groupBy<SingleTag>(
             runs
                 // get tags of selected runs
                 .filter(run => runs.includes(run))
                 // group by runs
-                .reduce((prev, run) => {
+                .reduce<SingleTag[]>((prev, run) => {
                     if (tags && tags[run]) {
                         Array.prototype.push.apply(
                             prev,

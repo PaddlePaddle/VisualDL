@@ -1,7 +1,8 @@
 import React, {FunctionComponent, useEffect, useMemo} from 'react';
-import styled from 'styled-components';
+import {WithStyled, position, primaryColor, size} from '~/utils/style';
+
 import GridLoader from 'react-spinners/GridLoader';
-import {WithStyled, primaryColor} from '~/utils/style';
+import styled from 'styled-components';
 import useECharts from '~/hooks/useECharts';
 
 const Wrapper = styled.div`
@@ -12,11 +13,8 @@ const Wrapper = styled.div`
     }
 
     > .loading {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
+        ${position('absolute', 0, null, null, 0)}
+        ${size('100%')}
         display: flex;
         justify-content: center;
         align-items: center;

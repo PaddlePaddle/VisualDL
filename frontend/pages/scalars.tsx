@@ -1,26 +1,27 @@
-import React, {useState, useCallback} from 'react';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
-import useTagFilter from '~/hooks/useTagFilter';
-import useSearchValue from '~/hooks/useSearchValue';
-import Title from '~/components/Title';
-import Content from '~/components/Content';
-import RunSelect from '~/components/RunSelect';
-import TagFilter from '~/components/TagFilter';
+import {NextI18NextPage, useTranslation} from '~/utils/i18n';
+import React, {useCallback, useState} from 'react';
 import Select, {SelectValueType} from '~/components/Select';
-import Field from '~/components/Field';
-import Checkbox from '~/components/Checkbox';
-import RunningToggle from '~/components/RunningToggle';
+import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
+
 import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
-import SmoothingSlider from '~/components/ScalarsPage/SmoothingSlider';
-import ScalarChart from '~/components/ScalarsPage/ScalarChart';
+import Checkbox from '~/components/Checkbox';
+import Content from '~/components/Content';
+import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
-import {xAxisMap, sortingMethodMap} from '~/resource/scalars';
+import RunSelect from '~/components/RunSelect';
+import RunningToggle from '~/components/RunningToggle';
+import ScalarChart from '~/components/ScalarsPage/ScalarChart';
+import SmoothingSlider from '~/components/ScalarsPage/SmoothingSlider';
 import {Tag} from '~/types';
+import TagFilter from '~/components/TagFilter';
+import Title from '~/components/Title';
+import useSearchValue from '~/hooks/useSearchValue';
+import useTagFilter from '~/hooks/useTagFilter';
 
 type XAxis = keyof typeof xAxisMap;
 const xAxisValues = ['step', 'relative', 'wall'];
-type TooltiopSorting = keyof typeof sortingMethodMap;
+type TooltipSorting = keyof typeof sortingMethodMap;
 const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
 
 const Scalars: NextI18NextPage = () => {
@@ -30,16 +31,16 @@ const Scalars: NextI18NextPage = () => {
         'scalars'
     );
 
-    const debouncedTags = useSearchValue(selectedTags);
+    const debounceTags = useSearchValue(selectedTags);
 
     const [smoothing, setSmoothing] = useState(0.6);
 
     const [xAxis, setXAxis] = useState(xAxisValues[0] as XAxis);
     const onChangeXAxis = (value: SelectValueType | SelectValueType[]) => setXAxis(value as XAxis);
 
-    const [tooltipSorting, setTooltipSorting] = useState(toolTipSortingValues[0] as TooltiopSorting);
+    const [tooltipSorting, setTooltipSorting] = useState(toolTipSortingValues[0] as TooltipSorting);
     const onChangeTooltipSorting = (value: SelectValueType | SelectValueType[]) =>
-        setTooltipSorting(value as TooltiopSorting);
+        setTooltipSorting(value as TooltipSorting);
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
@@ -55,7 +56,7 @@ const Scalars: NextI18NextPage = () => {
                     list={xAxisValues.map(value => ({label: t(`x-axis-value.${value}`), value}))}
                     value={xAxis}
                     onChange={onChangeXAxis}
-                ></Select>
+                />
             </Field>
             <Field label={t('tooltip-sorting')}>
                 <Select
@@ -95,7 +96,7 @@ const Scalars: NextI18NextPage = () => {
             <Title>{t('common:scalars')}</Title>
             <Content aside={aside} loading={loadingRuns}>
                 <TagFilter tags={tags} onChange={onFilterTags} />
-                <ChartPage items={debouncedTags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                <ChartPage items={debounceTags} withChart={withChart} loading={loadingRuns || loadingTags} />
             </Content>
         </>
     );

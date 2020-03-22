@@ -1,8 +1,9 @@
+import Input, {InputProps, padding} from '~/components/Input';
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
-import {WithStyled, em, math, textLighterColor} from '~/utils/style';
-import Input, {padding, InputProps} from '~/components/Input';
+import {WithStyled, backgroundColor, em, math, position, textLighterColor} from '~/utils/style';
+
 import Icon from '~/components/Icon';
+import styled from 'styled-components';
 
 const iconSize = em(16);
 
@@ -12,16 +13,14 @@ const StyledInput = styled(Input)`
 `;
 
 const Control = styled.div`
-    background-color: #fff;
+    background-color: ${backgroundColor};
     position: relative;
 `;
 
 const SearchIcon = styled(Icon)`
     font-size: ${iconSize};
     display: block;
-    position: absolute;
-    top: ${padding};
-    right: ${padding};
+    ${position('absolute', padding, padding, null, null)}
     pointer-events: none;
     color: ${textLighterColor};
 `;

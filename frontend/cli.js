@@ -25,7 +25,7 @@ const argv = require('yargs')
     .demandOption(['b'])
     .help('h')
     .alias('h', 'help')
-    .epilog('Visit https://github.com/PaddlePaddle/VisualDL for more infomation.').argv;
+    .epilog('Visit https://github.com/PaddlePaddle/VisualDL for more information.').argv;
 
 const command = argv._[0];
 

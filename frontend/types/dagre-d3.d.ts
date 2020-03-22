@@ -1,8 +1,10 @@
 // dagre-d.ts
 // Copied from existing type definition @types/dagre-d3, with some modification
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 declare module 'dagre-d3' {
-    import {Selection, BaseType} from 'd3';
     import * as dagre from 'dagre';
+    import {BaseType, Selection} from 'd3';
     export const graphlib = dagre.graphlib;
 
     export const render: {new (): Render};

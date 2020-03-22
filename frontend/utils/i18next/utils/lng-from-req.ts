@@ -1,5 +1,5 @@
-import {Request} from 'express';
 import {Config} from '../types';
+import {Request} from 'express';
 
 export const lngFromReq = (req: Request) => {
     if (!req.i18n) {

@@ -1,12 +1,13 @@
+import {Dimension, DivideParams, Point, Reduction, divide} from '~/resource/high-dimensional';
 import React, {FunctionComponent, useMemo} from 'react';
-import styled from 'styled-components';
-import queryString from 'query-string';
-import {rem, primaryColor} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
-import {useRunningRequest} from '~/hooks/useRequest';
-import useHeavyWork from '~/hooks/useHeavyWork';
-import {divide, Dimension, Reduction, DivideParams, Point} from '~/resource/high-dimensional';
+import {primaryColor, rem} from '~/utils/style';
+
 import ScatterChart from '~/components/ScatterChart';
+import queryString from 'query-string';
+import styled from 'styled-components';
+import useHeavyWork from '~/hooks/useHeavyWork';
+import {useRunningRequest} from '~/hooks/useRequest';
+import {useTranslation} from '~/utils/i18n';
 
 const height = rem(600);
 

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {format as formatUrl, parse as parseUrl} from 'url';
+import {removeSubpath, subpathFromLng, subpathIsPresent, subpathIsRequired} from './index';
 
 import {Config} from '../types';
-import {removeSubpath, subpathIsPresent, subpathIsRequired, subpathFromLng} from './index';
 
 const parseAs = (originalAs: string | undefined, href: any) => {
     const asType = typeof originalAs;

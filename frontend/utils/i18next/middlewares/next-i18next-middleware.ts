@@ -1,8 +1,4 @@
 import {NextFunction, Request, Response} from 'express';
-import i18nextMiddleware from 'i18next-express-middleware';
-import pathMatch from 'path-match';
-import NextI18Next from '../index';
-
 import {
     addSubpath,
     lngFromReq,
@@ -12,6 +8,10 @@ import {
     subpathIsPresent,
     subpathIsRequired
 } from '../utils';
+
+import NextI18Next from '../index';
+import i18nextMiddleware from 'i18next-express-middleware';
+import pathMatch from 'path-match';
 
 const route = pathMatch();
 

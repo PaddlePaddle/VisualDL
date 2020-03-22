@@ -1,6 +1,7 @@
-import React, {FunctionComponent, createContext, useState, useCallback} from 'react';
-import styled from 'styled-components';
+import React, {FunctionComponent, createContext, useCallback, useState} from 'react';
+
 import {WithStyled} from '~/utils/style';
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
     display: inline-flex;

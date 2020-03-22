@@ -1,13 +1,14 @@
-import React, {FunctionComponent, useState, useMemo, useRef, useEffect, useCallback} from 'react';
-import styled from 'styled-components';
-import queryString from 'query-string';
-import isEmpty from 'lodash/isEmpty';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {ellipsis, em, primaryColor, size, textLightColor} from '~/utils/style';
+
 import GridLoader from 'react-spinners/GridLoader';
-import {em, size, ellipsis, primaryColor, textLightColor} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
-import {useRunningRequest} from '~/hooks/useRequest';
 import Image from '~/components/Image';
 import StepSlider from '~/components/SamplesPage/StepSlider';
+import isEmpty from 'lodash/isEmpty';
+import queryString from 'query-string';
+import styled from 'styled-components';
+import {useRunningRequest} from '~/hooks/useRequest';
+import {useTranslation} from '~/utils/i18n';
 
 const width = em(430);
 const height = em(384);
@@ -60,8 +61,7 @@ const Container = styled.div<{fit?: boolean}>`
     overflow: hidden;
 
     > img {
-        width: 100%;
-        height: 100%;
+        ${size('100%')}
         object-fit: ${props => (props.fit ? 'contain' : 'scale-down')};
         flex-shrink: 1;
     }

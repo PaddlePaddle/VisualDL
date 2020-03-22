@@ -1,8 +1,9 @@
-import React, {FunctionComponent} from 'react';
-import {useTranslation} from '~/utils/i18n';
 import {NodeType, TypedNode} from '~/resource/graphs';
+import React, {FunctionComponent} from 'react';
+import {WithStyled, textLightColor} from '~/utils/style';
+
 import styled from 'styled-components';
-import {WithStyled} from '~/utils/style';
+import {useTranslation} from '~/utils/i18n';
 
 const typeName: {[k in NodeType]: string} = {
     [NodeType.Input]: 'input',
@@ -29,14 +30,15 @@ const DataList: FunctionComponent<{items: {key: string; value: string | string[]
 const PropertyList = styled(DataList)`
     padding: 0;
     list-style: none;
-    color: #666;
+    color: ${textLightColor};
+
     li + li {
         margin-top: 1em;
     }
 `;
 
 const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
-    const {t} = useTranslation(['graphs']);
+    const {t} = useTranslation('graphs');
     if (!props.node) {
         return <p>{t('click-node')}</p>;
     }
@@ -51,7 +53,7 @@ const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
                         {key: t('node-type'), value: typeName[node.type]},
                         {key: t('node-name'), value: node.name},
                         {key: t('node-data-shape'), value: node.shape},
-                        {key: t('node-data-tyep'), value: node.data_type}
+                        {key: t('node-data-type'), value: node.data_type}
                     ]}
                 />
             );
@@ -69,7 +71,7 @@ const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
         case 'unknown':
             return <PropertyList items={[{key: t('node-type'), value: typeName[node.guessType]}]} />;
         default:
-            return <></>;
+            return null;
     }
 };
 

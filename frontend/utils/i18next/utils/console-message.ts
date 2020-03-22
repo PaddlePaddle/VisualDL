@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-import NextI18Next from '../index';
 import {Config} from '../types';
+import NextI18Next from '../index';
 
 type MessageType = 'error' | 'info' | 'warn';
 
