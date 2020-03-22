@@ -24,6 +24,7 @@ from argparse import ArgumentParser
 
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
+from flask_babel import Babel
 
 import visualdl
 import visualdl.server
@@ -41,24 +42,26 @@ try:
 except:
     pass
 
+support_language = ["en", "zh"]
+default_language = support_language[0]
+
 app = Flask(__name__, static_url_path="")
 # set static expires in a short time to reduce browser's memory usage.
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
+app.config['BABEL_DEFAULT_LOCALE'] = default_language
+babel = Babel(app)
 
 error_retry_times = 3
 error_sleep_time = 2  # seconds
 
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
-support_language = ["en", "zh"]
-default_language = support_language[0]
-
 
 def try_call(function, *args, **kwargs):
     res = lib.retry(error_retry_times, function, error_sleep_time, *args,
                     **kwargs)
     if not res:
-        logger.error("server temporary error, will retry latter.")
+        logger.error("Internal server error. Retry later.")
     return res
 
 
@@ -107,7 +110,6 @@ def parse_args():
         "-L",
         "--language",
         type=str,
-        default=default_language,
         action="store",
         help="set the default language")
 
@@ -146,11 +148,17 @@ def gen_result(status, msg, data):
     return result
 
 
+@babel.localeselector
+def get_locale():
+    language = args.language
+    if not language or not language in support_language:
+        language = request.accept_languages.best_match(support_language)
+    return language
+
+
 @app.route("/")
 def index():
-    language = args.language
-    if not language in support_language:
-        language = default_language
+    language = get_locale()
     if language == default_language:
         return redirect('/app/index', code=302)
     return redirect('/app/' + language + '/index', code=302)
@@ -182,9 +190,7 @@ def runs():
 
 @app.route('/api/language')
 def language():
-    data = args.language
-    if not data in support_language:
-        data = default_language
+    data = get_locale()
     result = gen_result(0, "", data)
     return Response(json.dumps(result), mimetype='application/json')
 
