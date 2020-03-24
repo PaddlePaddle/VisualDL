@@ -1,7 +1,18 @@
-import React, {FunctionComponent, useCallback} from 'react';
-import styled from 'styled-components';
-import {WithStyled, em, size, half, math, primaryColor, textLighterColor, backgroundColor} from '~/utils/style';
 import InputRange, {Range} from 'react-input-range';
+import React, {FunctionComponent, useCallback} from 'react';
+import {
+    WithStyled,
+    backgroundColor,
+    em,
+    half,
+    position,
+    primaryColor,
+    sameBorder,
+    size,
+    textLighterColor
+} from '~/utils/style';
+
+import styled from 'styled-components';
 
 const height = em(20);
 const railHeight = em(4);
@@ -23,10 +34,8 @@ const Wrapper = styled.div<{disabled?: boolean}>`
             cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
 
             &--background {
-                height: ${railHeight};
-                width: 100%;
-                position: absolute;
-                top: 50%;
+                ${size(railHeight, '100%')}
+                ${position('absolute', '50%', null, null, null)}
                 margin-top: -${half(railHeight)};
                 background-color: ${railColor};
                 border-radius: ${half(railHeight)};
@@ -42,14 +51,18 @@ const Wrapper = styled.div<{disabled?: boolean}>`
         }
 
         &__slider-container {
-            top: -${math(`(${thumbSize} - ${railHeight}) / 2`)};
+            top: -${half(`${thumbSize} - ${railHeight}`)};
             margin-left: -${half(thumbSize)};
         }
 
         &__slider {
             ${size(thumbSize)}
-            border-radius: ${half(thumbSize)};
-            border: ${em(3)} solid ${props => (props.disabled ? textLighterColor : primaryColor)};
+            ${props =>
+                sameBorder({
+                    width: em(3),
+                    color: props.disabled ? textLighterColor : primaryColor,
+                    radius: half(thumbSize)
+                })}
             background-color: ${backgroundColor};
         }
     }

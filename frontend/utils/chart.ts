@@ -16,9 +16,8 @@ export const color = [
     '#FF0900',
     '#FF6600',
     '#FFEA00',
-    'FE4A3B'
+    '#FE4A3B'
 ];
-
 export const colorAlt = [
     '#9498F0',
     '#66E0B8',

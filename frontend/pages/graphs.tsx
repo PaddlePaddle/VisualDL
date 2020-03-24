@@ -1,18 +1,19 @@
-import React, {useState, useEffect, useMemo} from 'react';
-import styled from 'styled-components';
-import {saveSvgAsPng} from 'save-svg-as-png';
-import isEmpty from 'lodash/isEmpty';
-import useRequest from '~/hooks/useRequest';
-import {rem} from '~/utils/style';
-import {useTranslation, NextI18NextPage} from '~/utils/i18n';
+import {Graph, collectDagFacts} from '~/resource/graphs';
+import {NextI18NextPage, useTranslation} from '~/utils/i18n';
+import NodeInfo, {NodeInfoProps} from '~/components/GraphsPage/NodeInfo';
+import React, {useEffect, useMemo, useState} from 'react';
+
+import Content from '~/components/Content';
+import Field from '~/components/Field';
+import Preloader from '~/components/Preloader';
 import RawButton from '~/components/Button';
 import RawRangeSlider from '~/components/RangeSlider';
-import Content from '~/components/Content';
 import Title from '~/components/Title';
-import Field from '~/components/Field';
-import NodeInfo, {NodeInfoProps} from '~/components/GraphsPage/NodeInfo';
-import Preloader from '~/components/Preloader';
-import {Graph, collectDagFacts} from '~/resource/graphs';
+import isEmpty from 'lodash/isEmpty';
+import {rem} from '~/utils/style';
+import {saveSvgAsPng} from 'save-svg-as-png';
+import styled from 'styled-components';
+import useRequest from '~/hooks/useRequest';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const dumbFn = () => {};
@@ -40,6 +41,7 @@ const Empty = styled.div`
 const RangeSlider = styled(RawRangeSlider)`
     width: 100%;
 `;
+
 const GraphSvg = styled('svg')`
     width: 100%;
 
@@ -272,8 +274,8 @@ const Graphs: NextI18NextPage = () => {
             </SubSection>
 
             <SubSection>
-                <Field label={`${t('node-info')}:`}></Field>
-                <NodeInfo node={currentNode}></NodeInfo>
+                <Field label={`${t('node-info')}:`} />
+                <NodeInfo node={currentNode} />
             </SubSection>
         </section>
     );

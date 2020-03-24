@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {defaultConfig} from './default-config';
 import {consoleMessage, isServer} from '../utils';
+
 import {Config} from '../types';
+import {defaultConfig} from './default-config';
 
 const deepMergeObjects = ['backend', 'detection'];
 const dedupe = (names: string[]) => names.filter((v, i) => names.indexOf(v) === i);

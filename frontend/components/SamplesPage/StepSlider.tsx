@@ -1,8 +1,9 @@
-import React, {FunctionComponent, useState, useEffect, useCallback} from 'react';
-import styled from 'styled-components';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import {em, textLightColor} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
+
 import RangeSlider from '~/components/RangeSlider';
+import styled from 'styled-components';
+import {useTranslation} from '~/utils/i18n';
 
 const Label = styled.div`
     color: ${textLightColor};

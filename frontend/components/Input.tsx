@@ -1,16 +1,7 @@
 import React, {FunctionComponent} from 'react';
+import {WithStyled, borderFocusedColor, em, half, sameBorder, textLighterColor, transitionProps} from '~/utils/style';
+
 import styled from 'styled-components';
-import {
-    WithStyled,
-    em,
-    textLighterColor,
-    borderColor,
-    borderFocusedColor,
-    borderRadius,
-    duration,
-    easing,
-    math
-} from '~/utils/style';
 
 export const padding = em(10);
 export const height = em(36);
@@ -20,10 +11,9 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     height: ${height};
     line-height: ${height};
     display: inline-block;
-    border: 1px solid ${borderColor};
-    border-radius: ${props => (props.rounded ? math(`${height} / 2`) : borderRadius)};
-    transition: border-color ${duration} ${easing};
     outline: none;
+    ${props => sameBorder({radius: !props.rounded || half(height)})};
+    ${transitionProps('border-color')}
 
     &:hover,
     &:focus {

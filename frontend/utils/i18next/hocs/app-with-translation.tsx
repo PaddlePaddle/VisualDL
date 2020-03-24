@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
-import {NextPageContext} from 'next';
-import {AppContext} from 'next/app';
-import {withRouter} from 'next/router';
 
-import hoistNonReactStatics from 'hoist-non-react-statics';
 import {I18nextProvider, withSSR} from 'react-i18next';
-
 import {isServer, lngFromReq, lngPathCorrector, lngsToLoad} from '../utils';
-import {NextStaticProvider} from '../components';
-import NextI18Next from '../index';
+
+import {AppContext} from 'next/app';
 import {I18n} from '../types';
+import NextI18Next from '../index';
+import {NextPageContext} from 'next';
+import {NextStaticProvider} from '../components';
+import React from 'react';
+import hoistNonReactStatics from 'hoist-non-react-statics';
+import {withRouter} from 'next/router';
 
 interface Props {
     initialLanguage: string;
@@ -168,7 +168,7 @@ export const appWithTranslation = function(this: NextI18Next, WrappedComponent: 
                 const languagesToLoad = lngsToLoad(initialLanguage, fallbackLng, config.otherLanguages);
 
                 /*
-                    Initialise the store with the languagesToLoad and
+                    Initialize the store with the languagesToLoad and
                     necessary namespaces needed to render this specific tree
                 */
                 languagesToLoad.forEach(lng => {
@@ -180,7 +180,7 @@ export const appWithTranslation = function(this: NextI18Next, WrappedComponent: 
                 });
             } else if (Array.isArray(i18n.languages) && i18n.languages.length > 0) {
                 /*
-                    Load newly-required translations if changing route clientside
+                    Load newly-required translations if changing route client side
                 */
                 await clientLoadNamespaces(i18n.languages[0], namespacesRequired as string[]);
 

@@ -1,23 +1,27 @@
+import * as polished from 'polished';
 import {createGlobalStyle, keyframes} from 'styled-components';
-import {rem as rem16, em as em16, math, normalize, darken, lighten, size} from 'polished';
+
 import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
+
 export {default as styled} from 'styled-components';
 export * from 'styled-components';
 export * from 'polished';
+// rename conflict shorthands
+export {borderRadius as borderRadiusShortHand, borderColor as borderColorShortHand} from 'polished';
 
-const fontSize = '14px';
-export const rem = (pxval: string | number): string => rem16(pxval, fontSize);
-export const em = (pxval: string | number, base?: string | number): string => em16(pxval, base || fontSize);
-export const half = (value: string | number): string => math(`${value} / 2`);
+const {math, size, lighten, darken, normalize, fontFace, transitions, border, position} = polished;
 
 // sizes
+const fontSize = '14px';
+export const rem = (pxval: string | number): string => polished.rem(pxval, fontSize);
+export const em = (pxval: string | number, base?: string | number): string => polished.em(pxval, base || fontSize);
+export const half = (value: string | number): string => math(`(${value}) / 2`);
 export const headerHeight = rem(60);
 export const asideWidth = rem(260);
 export const borderRadius = '4px';
 export const progressSpinnerSize = '20px';
 
 // colors
-export const headerColor = '#1527C2';
 export const primaryColor = '#2932E1';
 export const primaryFocusedColor = lighten(0.08, primaryColor);
 export const primaryActiveColor = lighten(0.12, primaryColor);
@@ -34,12 +38,47 @@ export const backgroundColor = '#FFF';
 export const backgroundFocusedColor = '#F6F6F6';
 export const borderColor = '#DDD';
 export const borderFocusedColor = darken(0.15, borderColor);
+export const navbarBackgroundColor = '#1527C2';
+export const navbarHoverBackgroundColor = lighten(0.05, navbarBackgroundColor);
+export const navbarHighlightColor = '#596cd6';
 export const progressBarColor = '#FFF';
 export const maskColor = 'rgba(255, 255, 255, 0.8)';
 
 // transitions
 export const duration = '75ms';
 export const easing = 'ease-in';
+
+// mixins
+export const sameBorder = (
+    width = '1px' as
+        | string
+        | number
+        | {width?: string | number; type?: string; color?: string; radius?: string | boolean},
+    type = 'solid',
+    color = borderColor,
+    radius?: string | boolean
+) => {
+    if ('object' === typeof width) {
+        type = width.type ?? 'solid';
+        color = width.color ?? borderColor;
+        radius = width.radius === true ? borderRadius : width.radius;
+        width = width.width ?? '1px';
+    }
+    return Object.assign(
+        {},
+        border(width, type, color),
+        radius ? {borderRadius: radius === true ? borderRadius : radius} : undefined
+    );
+};
+export const transitionProps = (props: string | string[], args?: string) => {
+    if ('string' === typeof props) {
+        props = [props];
+    }
+    if (!args) {
+        args = `${duration} ${easing}`;
+    }
+    return transitions(props, args);
+};
 
 const spinner = keyframes`
     0% {
@@ -58,15 +97,14 @@ export type WithStyled = {
 export const GlobalStyle = createGlobalStyle`
     ${normalize}
 
-    @font-face {
-        font-family: 'vdl-icon';
-        src: url("${process.env.PUBLIC_PATH}/style/fonts/vdl-icon.ttf?5sp5gl") format('truetype'),
-            url("${process.env.PUBLIC_PATH}/style/fonts/vdl-icon.woff?5sp5gl") format('woff'),
-            url("${process.env.PUBLIC_PATH}/style/fonts/vdl-icon.svg?5sp5gl#vdl-icon") format('svg');
-        font-weight: normal;
-        font-style: normal;
-        font-display: block;
-    }
+    ${fontFace({
+        fontFamily: 'vdl-icon',
+        fontFilePath: `${process.env.PUBLIC_PATH}/style/fonts/vdl-icon`,
+        fileFormats: ['ttf', 'woff', 'svg'],
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        fontDisplay: 'block'
+    })}
 
     ${vdlIcon.toString()}
 
@@ -103,22 +141,15 @@ export const GlobalStyle = createGlobalStyle`
 
     #nprogress .bar {
         background: ${progressBarColor};
-
-        position: fixed;
         z-index: 99999;
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: 2px;
+        ${position('fixed', 0, null, null, 0)}
+        ${size('2px', '100%')}
     }
 
     #nprogress .peg {
         display: block;
-        position: absolute;
-        right: 0;
-        width: ${rem(100)};
-        height: 100%;
+        ${position('absolute', null, 0, null, null)}
+        ${size('100%', rem(100))}
         box-shadow: 0 0 rem(10) ${progressBarColor}, 0 0 ${rem(5)} ${progressBarColor};
         opacity: 1;
         transform: rotate(3deg) translate(0px, -${rem(4)});
@@ -126,10 +157,8 @@ export const GlobalStyle = createGlobalStyle`
 
     #nprogress .spinner {
         display: block;
-        position: fixed;
         z-index: 99999;
-        top: ${progressSpinnerSize};
-        right: ${progressSpinnerSize};
+        ${position('fixed', progressSpinnerSize, progressSpinnerSize, null, null)}
     }
 
     #nprogress .spinner-icon {

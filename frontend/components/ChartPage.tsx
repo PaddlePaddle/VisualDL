@@ -1,10 +1,11 @@
-import React, {FunctionComponent, useState, useMemo} from 'react';
-import styled from 'styled-components';
+import React, {FunctionComponent, useMemo, useState} from 'react';
+import {WithStyled, primaryColor, rem} from '~/utils/style';
+
 import BarLoader from 'react-spinners/BarLoader';
-import {WithStyled, rem, primaryColor} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
 import Chart from '~/components/Chart';
 import Pagination from '~/components/Pagination';
+import styled from 'styled-components';
+import {useTranslation} from '~/utils/i18n';
 
 const Wrapper = styled.div`
     display: flex;
@@ -38,7 +39,7 @@ const Empty = styled.div`
 `;
 
 // TODO: add types
-// eslint-disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ChartPageProps<T = any> = {
     items?: T[];
     loading?: boolean;

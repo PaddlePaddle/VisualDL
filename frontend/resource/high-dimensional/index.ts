@@ -1,4 +1,4 @@
-import {Point, DivideParams} from './types';
+import {DivideParams, Point} from './types';
 
 export * from './types';
 

@@ -1,17 +1,17 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
 import {
     WithStyled,
+    backgroundColor,
     em,
-    primaryColor,
+    half,
+    lightActiveColor,
     lightColor,
     lightFocusedColor,
-    lightActiveColor,
-    duration,
-    easing,
-    math,
-    transitions
+    primaryColor,
+    transitionProps
 } from '~/utils/style';
+
+import styled from 'styled-components';
 
 const height = em(36);
 
@@ -20,11 +20,11 @@ const Span = styled.span<{active?: boolean}>`
     height: ${height};
     line-height: ${height};
     display: inline-block;
-    border-radius: ${math(`${height} / 2`)};
-    ${transitions(['color', 'background-color'], `${duration} ${easing}`)}
-    color: ${prop => (prop.active ? '#FFF' : primaryColor)};
+    border-radius: ${half(height)};
+    color: ${prop => (prop.active ? backgroundColor : primaryColor)};
     background-color: ${prop => (prop.active ? primaryColor : lightColor)};
     cursor: pointer;
+    ${transitionProps(['color', 'background-color'])}
 
     &:hover {
         background-color: ${prop => (prop.active ? primaryColor : lightFocusedColor)};

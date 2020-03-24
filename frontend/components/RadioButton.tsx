@@ -1,21 +1,22 @@
-import React, {FunctionComponent, useContext, useCallback} from 'react';
-import styled from 'styled-components';
+import {EventContext, ValueContext} from '~/components/RadioGroup';
+import React, {FunctionComponent, useCallback, useContext} from 'react';
 import {
     WithStyled,
+    backgroundColor,
+    borderColor,
+    borderFocusedColor,
+    borderRadius,
+    borderRadiusShortHand,
+    ellipsis,
     em,
+    primaryColor,
+    sameBorder,
     textColor,
     textInvertColor,
-    borderColor,
-    borderRadius,
-    backgroundColor,
-    primaryColor,
-    duration,
-    easing,
-    ellipsis,
-    transitions,
-    borderFocusedColor
+    transitionProps
 } from '~/utils/style';
-import {ValueContext, EventContext} from '~/components/RadioGroup';
+
+import styled from 'styled-components';
 
 const height = em(36);
 const minWidth = em(72);
@@ -28,10 +29,11 @@ const Button = styled.a<{selected?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
     min-width: ${minWidth};
-    ${ellipsis(maxWidth)}
     text-align: center;
-    border: 1px solid ${props => (props.selected ? primaryColor : borderColor)};
-    ${transitions(['color', 'border-color', 'background-color'], `${duration} ${easing}`)}
+    ${ellipsis(maxWidth)}
+    ${props => sameBorder({color: props.selected ? primaryColor : borderColor})};
+    ${transitionProps(['color', 'border-color', 'background-color'])}
+
     /* bring selected one to top in order to cover the sibling's border */
     ${props => (props.selected ? 'position: relative;' : '')}
 
@@ -40,13 +42,11 @@ const Button = styled.a<{selected?: boolean}>`
     }
 
     &:first-of-type {
-        border-top-left-radius: ${borderRadius};
-        border-bottom-left-radius: ${borderRadius};
+        ${borderRadiusShortHand('left', borderRadius)}
     }
 
     &:last-of-type {
-        border-top-right-radius: ${borderRadius};
-        border-bottom-right-radius: ${borderRadius};
+        ${borderRadiusShortHand('right', borderRadius)}
     }
 
     & + & {

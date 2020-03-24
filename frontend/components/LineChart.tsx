@@ -1,12 +1,14 @@
-import React, {FunctionComponent, useEffect, useCallback} from 'react';
-import styled from 'styled-components';
+import * as chart from '~/utils/chart';
+
+import React, {FunctionComponent, useCallback, useEffect} from 'react';
+import {WithStyled, position, primaryColor, size} from '~/utils/style';
+
 import {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
-import {WithStyled, primaryColor} from '~/utils/style';
-import {useTranslation} from '~/utils/i18n';
-import useECharts from '~/hooks/useECharts';
 import {formatTime} from '~/utils';
-import * as chart from '~/utils/chart';
+import styled from 'styled-components';
+import useECharts from '~/hooks/useECharts';
+import {useTranslation} from '~/utils/i18n';
 
 const Wrapper = styled.div`
     position: relative;
@@ -16,11 +18,8 @@ const Wrapper = styled.div`
     }
 
     > .loading {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
         display: flex;
         justify-content: center;
         align-items: center;

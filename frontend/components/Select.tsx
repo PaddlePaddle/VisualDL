@@ -1,33 +1,34 @@
-import React, {FunctionComponent, useState, useCallback, useEffect, useMemo} from 'react';
-import styled from 'styled-components';
-import without from 'lodash/without';
-import {useTranslation} from '~/utils/i18n';
-import useClickOutside from '~/hooks/useClickOutside';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import {
     WithStyled,
-    em,
     backgroundColor,
     backgroundFocusedColor,
-    textLighterColor,
-    selectedColor,
     borderColor,
     borderFocusedColor,
     borderRadius,
-    duration,
-    easing,
+    borderRadiusShortHand,
+    css,
     ellipsis,
-    transitions,
+    em,
     math,
-    css
+    sameBorder,
+    selectedColor,
+    size,
+    textLighterColor,
+    transitionProps
 } from '~/utils/style';
+
 import Checkbox from '~/components/Checkbox';
 import Icon from '~/components/Icon';
+import styled from 'styled-components';
+import useClickOutside from '~/hooks/useClickOutside';
+import {useTranslation} from '~/utils/i18n';
+import without from 'lodash/without';
 
 export const padding = em(10);
 export const height = em(36);
 const minWidth = em(160);
 
-// prettier-ignore
 const Wrapper = styled.div<{opened?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
@@ -35,11 +36,10 @@ const Wrapper = styled.div<{opened?: boolean}>`
     max-width: 100%;
     display: inline-block;
     position: relative;
-    border: 1px solid ${borderColor};
-    /* eslint-disable-next-line */
-    border-radius: ${borderRadius} ${borderRadius} ${props => (props.opened ? '0 0' : `${borderRadius} ${borderRadius}`)};
-    transition: border-color ${duration} ${easing};
     background-color: ${backgroundColor};
+    ${sameBorder({radius: true})}
+    ${props => (props.opened ? borderRadiusShortHand('bottom', '0') : '')}
+    ${transitionProps('border-color')}
 
     &:hover {
         border-color: ${borderFocusedColor};
@@ -49,8 +49,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
 const Trigger = styled.div<{selected?: boolean}>`
     padding: ${padding};
     display: inline-flex;
-    width: 100%;
-    height: 100%;
+    ${size('100%')}
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
@@ -58,13 +57,12 @@ const Trigger = styled.div<{selected?: boolean}>`
 `;
 
 const TriggerIcon = styled(Icon)<{opened?: boolean}>`
-    width: ${em(14)};
-    height: ${em(14)};
+    ${size(em(14))}
     text-align: center;
     display: block;
     flex-shrink: 0;
     transform: rotate(${props => (props.opened ? '180' : '0')}deg) scale(${10 / 14});
-    transition: transform ${duration} ${easing};
+    ${transitionProps('transform')}
 `;
 
 const Label = styled.span`
@@ -84,7 +82,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     padding: ${padding} 0;
     border: inherit;
     border-top-color: ${borderColor};
-    border-radius: 0 0 ${borderRadius} ${borderRadius};
+    ${borderRadiusShortHand('bottom', borderRadius)}
     display: ${props => (props.opened ? 'block' : 'none')};
     z-index: 9999;
     line-height: 1;
@@ -92,10 +90,10 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
     ${props =>
         props.empty
-            ? `
-                color: ${textLighterColor};
-                text-align: center;
-            `
+            ? {
+                  color: textLighterColor,
+                  textAlign: 'center'
+              }
             : ''}
 `;
 
@@ -103,10 +101,10 @@ const listItem = css`
     display: block;
     cursor: pointer;
     padding: 0 ${padding};
-    height: ${height};
+    ${size(height, '100%')}
     line-height: ${height};
-    width: 100%;
-    ${transitions(['color', 'background-color'], `${duration} ${easing}`)}
+    ${transitionProps(['color', 'background-color'])}
+
     &:hover {
         background-color: ${backgroundFocusedColor};
     }

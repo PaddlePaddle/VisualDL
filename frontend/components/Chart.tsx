@@ -1,22 +1,20 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
 import {
     WithStyled,
-    primaryColor,
     backgroundColor,
-    borderColor,
     borderRadius,
-    duration,
-    easing,
-    transitions,
-    math
+    math,
+    primaryColor,
+    sameBorder,
+    transitionProps
 } from '~/utils/style';
+
+import styled from 'styled-components';
 
 const Div = styled.div`
     background-color: ${backgroundColor};
-    border: 1px solid ${borderColor};
-    border-radius: ${math(`${borderRadius} * 2`)};
-    ${transitions(['border-color', 'box-shadow'], `${duration} ${easing}`)}
+    ${sameBorder({radius: math(`${borderRadius} * 2`)})}
+    ${transitionProps(['border-color', 'box-shadow'])}
 
     &:hover {
         border-color: ${primaryColor};

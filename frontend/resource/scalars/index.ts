@@ -1,12 +1,14 @@
-import cloneDeep from 'lodash/cloneDeep';
-import minBy from 'lodash/minBy';
-import maxBy from 'lodash/maxBy';
-import sortBy from 'lodash/sortBy';
-import compact from 'lodash/compact';
-import {formatTime, quantile} from '~/utils';
 import * as chart from '~/utils/chart';
+
+import {ChartDataParams, RangeParams, TooltipData, TransformParams, xAxisMap} from './types';
+import {formatTime, quantile} from '~/utils';
+
 import {I18n} from '~/utils/i18next/types';
-import {xAxisMap, TooltipData, TransformParams, ChartDataParams, RangeParams} from './types';
+import cloneDeep from 'lodash/cloneDeep';
+import compact from 'lodash/compact';
+import maxBy from 'lodash/maxBy';
+import minBy from 'lodash/minBy';
+import sortBy from 'lodash/sortBy';
 
 export * from './types';
 

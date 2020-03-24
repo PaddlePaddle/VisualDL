@@ -1,4 +1,5 @@
-import Document, {Html, Head, Main, NextScript, DocumentContext, DocumentProps} from 'next/document';
+import Document, {DocumentContext, DocumentProps, Head, Html, Main, NextScript} from 'next/document';
+
 import {ServerStyleSheet} from '~/utils/style';
 
 interface VDLDocumentProps extends DocumentProps {
@@ -19,7 +20,7 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
                 });
 
             const initialProps = await Document.getInitialProps(ctx);
-            // stealed from https://github.com/isaachinman/next-i18next/issues/20#issuecomment-558799264
+            // steal from https://github.com/isaachinman/next-i18next/issues/20#issuecomment-558799264
             // FIXME: https://github.com/i18next/i18next-express-middleware/blob/master/src/index.js#L23-L26
             const additionalProps = {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any

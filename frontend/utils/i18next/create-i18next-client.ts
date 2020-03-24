@@ -1,9 +1,9 @@
-import isNode from 'detect-node';
+import {Config, InitPromise} from './types';
+
+import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import i18n from 'i18next';
 import i18nextXHRBackend from 'i18next-xhr-backend';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-
-import {InitPromise, Config} from './types';
+import isNode from 'detect-node';
 
 export default (config: Config) => {
     let initPromise: InitPromise | null = null;

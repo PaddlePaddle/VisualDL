@@ -1,8 +1,9 @@
 import React, {FunctionComponent, useState} from 'react';
-import styled from 'styled-components';
-import {useTranslation} from '~/utils/i18n';
+
 import Field from '~/components/Field';
 import RangeSlider from '~/components/RangeSlider';
+import styled from 'styled-components';
+import {useTranslation} from '~/utils/i18n';
 
 const FullWidthRangeSlider = styled(RangeSlider)`
     width: 100%;

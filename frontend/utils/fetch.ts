@@ -1,8 +1,9 @@
 // TODO: use this instead
 // https://github.com/zeit/swr/blob/master/examples/axios-typescript/libs/useRequest.ts
-import fetch from 'isomorphic-unfetch';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import fetch from 'isomorphic-unfetch';
 
 export const fetcher = async <T = any>(url: string, options?: any): Promise<T> => {
     const res = await fetch(process.env.API_URL + url, options);

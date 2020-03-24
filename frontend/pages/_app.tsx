@@ -1,12 +1,13 @@
-import React from 'react';
-import App from 'next/app';
-import Head from 'next/head';
-import NProgress from 'nprogress';
-import {SWRConfig} from 'swr';
 import {Router, appWithTranslation} from '~/utils/i18n';
-import {fetcher} from '~/utils/fetch';
+
+import App from 'next/app';
 import {GlobalStyle} from '~/utils/style';
+import Head from 'next/head';
 import Layout from '~/components/Layout';
+import NProgress from 'nprogress';
+import React from 'react';
+import {SWRConfig} from 'swr';
+import {fetcher} from '~/utils/fetch';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());

@@ -1,4 +1,4 @@
-import {Graph, Node, NodeUID, InputNode, NodeType} from './types';
+import {Graph, InputNode, Node, NodeType, NodeUID} from './types';
 
 interface DagNode {
     key: string;

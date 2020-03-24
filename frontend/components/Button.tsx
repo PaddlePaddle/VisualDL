@@ -1,19 +1,18 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
 import {
     WithStyled,
+    ellipsis,
     em,
     half,
-    textInvertColor,
+    primaryActiveColor,
     primaryColor,
     primaryFocusedColor,
-    primaryActiveColor,
-    duration,
-    easing,
-    ellipsis,
-    transitions
+    textInvertColor,
+    transitionProps
 } from '~/utils/style';
+
 import RawIcon from '~/components/Icon';
+import styled from 'styled-components';
 
 const height = em(36);
 
@@ -26,7 +25,7 @@ const Wrapper = styled.a`
     color: ${textInvertColor};
     display: block;
     text-align: center;
-    ${transitions('background-color', `${duration} ${easing}`)}
+    ${transitionProps('background-color')}
     ${ellipsis()}
 
     &:hover,
