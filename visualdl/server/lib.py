@@ -73,7 +73,12 @@ def get_scalar(storage, mode, tag, num_records=300):
 
                 for index in range(len(data)):
                     data_reservoir.add_item(mode=mode, tag=tag, item=data[index])
-        return data_reservoir.get_items(mode, tag)
+        results = data_reservoir.get_items(mode, tag)
+        # TODO(Superjomn) some bug here, sometimes there are zero here.
+        if results[-1][-1] == 0:
+            data_reservoir.cut_tail(mode=mode, tag=tag)
+            results = data_reservoir.get_items(mode, tag)
+        return results
 
 
 def get_image_tags(storage):
