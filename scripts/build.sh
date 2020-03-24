@@ -8,9 +8,19 @@ BUILD_DIR=$TOP_DIR/build
 
 mkdir -p $BUILD_DIR
 
+build_frontend_fake() {
+    mkdir -p "$BUILD_DIR/package/serverless"
+}
+
 build_frontend_from_source() {
+    build_frontend_fake
+
     cd $FRONTEND_DIR
-    PUBLIC_PATH="/app" API_URL="/api" ./scripts/build.sh
+    ./scripts/install.sh
+    ./scripts/build.sh
+
+    # extract
+    tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$BUILD_DIR/package/serverless"
 }
 
 build_frontend() {
@@ -68,10 +78,6 @@ build_frontend() {
 
     # extract
     tar zxf "$BUILD_DIR/$FILENAME" -C "$BUILD_DIR"
-}
-
-build_frontend_fake() {
-    mkdir -p "$BUILD_DIR/package/serverless"
 }
 
 build_backend() {
