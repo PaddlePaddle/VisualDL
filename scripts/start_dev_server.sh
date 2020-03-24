@@ -58,4 +58,4 @@ cd $CURRENT_DIR
 echo "Development server ready on http://$HOST:$FRONTEND_PORT"
 
 # Run the visualDL with local PATH
-python ${SCRIPT_DIR}/../visualdl/server/visualdl "$ORIGINAL_ARGS"
+python ${SCRIPT_DIR}/../visualdl/server/app.py "$ORIGINAL_ARGS"

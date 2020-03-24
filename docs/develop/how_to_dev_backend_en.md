@@ -32,7 +32,7 @@ All backend and sdk logic is under visualdl sub directory
 Any code changes in ```server``` folder, simply run
 
 ```
-python visualdl/server/visualdl --logdir={LOG_DIR} --port=8080
+python visualdl/server/app.py --logdir={LOG_DIR} --port=8080
 ```
 to restart flask server
 
