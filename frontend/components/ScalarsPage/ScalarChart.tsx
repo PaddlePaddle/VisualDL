@@ -5,6 +5,7 @@ import {
     TransformParams,
     chartData,
     range,
+    singlePointRange,
     sortingMethodMap,
     tooltip,
     transform,
@@ -101,6 +102,20 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     );
     const yRange = useHeavyWork(rangeWasm, rangeWorker, range, rangeParams);
 
+    const ranges: Record<'x' | 'y', Range | undefined> = useMemo(() => {
+        let x: Range | undefined = undefined;
+        let y: Range | undefined = yRange;
+
+        // if there is only one point, place it in the middle
+        if (smoothedDatasets.length === 1 && smoothedDatasets[0].length === 1) {
+            if (['value', 'log'].includes(type)) {
+                x = singlePointRange(smoothedDatasets[0][0][xAxisMap[xAxis]]);
+            }
+            y = singlePointRange(smoothedDatasets[0][0][2]);
+        }
+        return {x, y};
+    }, [smoothedDatasets, yRange, type, xAxis]);
+
     const data = useMemo(
         () =>
             chartData({
@@ -157,7 +172,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         <StyledLineChart
             title={tag}
             xAxis={xAxisLabel}
-            yRange={yRange}
+            xRange={ranges.x}
+            yRange={ranges.y}
             type={type}
             tooltip={formatter}
             data={data}

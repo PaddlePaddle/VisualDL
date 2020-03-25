@@ -26,16 +26,20 @@ const Wrapper = styled.div`
     }
 `;
 
+type Range = {
+    min: EChartOption.BasicComponents.CartesianAxis['min'];
+    max: EChartOption.BasicComponents.CartesianAxis['max'];
+};
+
 type LineChartProps = {
     title?: string;
     legend?: string[];
     data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
     xAxis?: string;
+    yAxis?: string;
     type?: EChartOption.BasicComponents.CartesianAxis.Type;
-    yRange?: {
-        min: number;
-        max: number;
-    };
+    xRange?: Range;
+    yRange?: Range;
     tooltip?: string | EChartOption.Tooltip.Formatter;
     loading?: boolean;
 };
@@ -45,7 +49,9 @@ const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
     legend,
     data,
     xAxis,
+    yAxis,
     type,
+    xRange,
     yRange,
     tooltip,
     loading,
@@ -93,21 +99,25 @@ const LineChart: FunctionComponent<LineChartProps & WithStyled> = ({
                         axisLabel: {
                             ...chart.xAxis.axisLabel,
                             formatter: xAxisFormatter
-                        }
+                        },
+                        ...(xRange || {})
                     },
                     yAxis: {
                         ...chart.yAxis,
+                        name: yAxis || '',
                         ...(yRange || {})
                     },
                     series: data?.map(item => ({
                         ...chart.series,
+                        // show symbol if there is only one point
+                        showSymbol: (item?.data?.length ?? 0) <= 1,
                         ...item
                     }))
                 } as EChartOption,
                 {notMerge: true}
             );
         }
-    }, [data, title, legend, xAxis, type, xAxisFormatter, yRange, tooltip, echart]);
+    }, [data, title, legend, xAxis, yAxis, type, xAxisFormatter, xRange, yRange, tooltip, echart]);
 
     return (
         <Wrapper className={className}>

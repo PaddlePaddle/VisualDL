@@ -134,6 +134,7 @@ export const xAxis = {
 
 export const yAxis = {
     type: 'value',
+    name: '',
     splitNumber: 4,
     axisLine: {
         lineStyle: {
@@ -146,7 +147,7 @@ export const yAxis = {
     axisLabel: {
         fontSize: 12,
         color: '#666',
-        formatter: (v: number) => v.toString().slice(0, 5)
+        formatter: (v: number) => Number.parseFloat(v.toPrecision(5))
     },
     splitLine: {
         lineStyle: {
@@ -157,7 +158,6 @@ export const yAxis = {
 
 export const series = {
     type: 'line',
-    showSymbol: false,
     hoverAnimation: false,
     animationDuration: 100,
     lineStyle: {
