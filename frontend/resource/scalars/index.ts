@@ -38,7 +38,7 @@ export const transform = ({datasets, smoothing}: TransformParams) =>
             }
             // Relative time, millisecond to hours.
             d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
-            if (nextVal.isFinite()) {
+            if (!nextVal.isFinite()) {
                 d[3] = nextVal.toNumber();
             } else {
                 // last = last * smoothing + (1 - smoothing) * nextVal;
@@ -100,19 +100,24 @@ export const chartData = ({data, runs, smooth, xAxis}: ChartDataParams) =>
         })
         .flat();
 
+export const singlePointRange = (value: number) => ({
+    min: value ? Math.min(value * 2, 0) : -0.5,
+    max: value ? Math.max(value * 2, 0) : 0.5
+});
+
 export const range = ({datasets, outlier}: RangeParams) => {
     const ranges = compact(
         datasets?.map(dataset => {
             if (dataset.length == 0) return;
+            const values = dataset.map(v => v[2]);
             if (!outlier) {
                 // Get the orgin data range.
                 return {
-                    min: minBy(dataset, items => items[2])?.[2] ?? 0,
-                    max: maxBy(dataset, items => items[2])?.[2] ?? 0
+                    min: Math.min(...values) ?? 0,
+                    max: Math.max(...values) ?? 0
                 };
             } else {
                 // Get the quantile range.
-                const values = dataset.map(v => v[2]);
                 const sorted = dataset.map(v => v[2]).sort();
                 return {
                     min: quantile(sorted, 0.05),

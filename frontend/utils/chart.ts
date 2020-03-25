@@ -134,6 +134,7 @@ export const xAxis = {
 
 export const yAxis = {
     type: 'value',
+    name: '',
     splitNumber: 4,
     axisLine: {
         lineStyle: {
@@ -157,7 +158,6 @@ export const yAxis = {
 
 export const series = {
     type: 'line',
-    showSymbol: false,
     hoverAnimation: false,
     animationDuration: 100,
     lineStyle: {
