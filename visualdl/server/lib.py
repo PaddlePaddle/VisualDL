@@ -65,9 +65,14 @@ def get_scalar(storage, mode, tag, num_records=300):
         else:
             num_items_index = data_reservoir.get_num_items_index(mode, tag)
             if num_items_index != scalar.size():
-                records = scalar.records(num_items_index)
-                ids = scalar.ids(num_items_index)
-                timestamps = scalar.timestamps(num_items_index)
+                try:
+                    records = scalar.records(num_items_index)
+                    ids = scalar.ids(num_items_index)
+                    timestamps = scalar.timestamps(num_items_index)
+                except Exception:
+                    error_info = '\n'.join(map(str, sys.exc_info()))
+                    logger.error("Unexpected error: %s" % error_info)
+                    return data_reservoir.get_items(mode, tag)
 
                 data = list(zip(timestamps, ids, records))
 
