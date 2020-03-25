@@ -38,7 +38,7 @@ type I18nRes = {
     };
 };
 
-export const appWithTranslation = function(this: NextI18Next, WrappedComponent: any) {
+export const appWithTranslation = function (this: NextI18Next, WrappedComponent: any) {
     const WrappedComponentWithSSR = withSSR()(WrappedComponent);
     const {config, i18n} = this;
     const consoleMessage = this.consoleMessage.bind(this);
@@ -140,10 +140,9 @@ export const appWithTranslation = function(this: NextI18Next, WrappedComponent: 
             } else {
                 consoleMessage(
                     'warn',
-                    `You have not declared a namespacesRequired array on your page-level component: ${ctx.Component
-                        .displayName ||
-                        ctx.Component.name ||
-                        'Component'}. This will cause all namespaces to be sent down to the client, possibly negatively impacting the performance of your app. For more info, see: https://github.com/isaachinman/next-i18next#4-declaring-namespace-dependencies`
+                    `You have not declared a namespacesRequired array on your page-level component: ${
+                        ctx.Component.displayName || ctx.Component.name || 'Component'
+                    }. This will cause all namespaces to be sent down to the client, possibly negatively impacting the performance of your app. For more info, see: https://github.com/isaachinman/next-i18next#4-declaring-namespace-dependencies`
                 );
             }
 

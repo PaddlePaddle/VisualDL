@@ -1,6 +1,6 @@
 {
     "name": "visualdl",
-    "version": "2.0.0-beta.24",
+    "version": "2.0.0-beta.25",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -33,7 +33,7 @@
         "export": "next export -o serverless",
         "start": "pm2-runtime ecosystem.config.js",
         "lint": "tsc -p tsconfig.json --noEmit && tsc -p server/tsconfig.json --noEmit && eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
-        "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"  \"**/*.jsx\"",
+        "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"",
         "test": "echo \"Error: no test specified\" && exit 0",
         "prepublishOnly": "yarn lint && yarn test && ./scripts/build.sh",
         "preversion": "yarn lint",

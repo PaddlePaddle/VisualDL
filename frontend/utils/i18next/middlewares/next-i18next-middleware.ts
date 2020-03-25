@@ -15,7 +15,7 @@ import pathMatch from 'path-match';
 
 const route = pathMatch();
 
-export default function(nexti18next: NextI18Next) {
+export default function (nexti18next: NextI18Next) {
     const {config, i18n} = nexti18next;
     const {allLanguages, ignoreRoutes, localeSubpaths} = config;
 

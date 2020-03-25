@@ -21,7 +21,7 @@ const logMessage = (messageType: MessageType, message: string) => {
     }
 };
 
-export const consoleMessage = function(
+export const consoleMessage = function (
     this: NextI18Next | void,
     messageType: MessageType,
     message: string,
