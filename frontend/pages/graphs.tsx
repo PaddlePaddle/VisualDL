@@ -1,4 +1,4 @@
-import {Graph, collectDagFacts} from '~/resource/graphs';
+import {Graph, NodeType, TypedNode, collectDagFacts} from '~/resource/graphs';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import NodeInfo, {NodeInfoProps} from '~/components/GraphsPage/NodeInfo';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -154,7 +154,7 @@ const useDagreD3 = (graph?: Graph) => {
                 return;
             }
 
-            const g = new dagre.graphlib.Graph();
+            const g = new dagre.graphlib.Graph<{type: NodeType; elem: HTMLElement}>();
             g.setGraph({}).setDefaultEdgeLabel(() => ({}));
 
             dagInfo.nodes.forEach(n => g.setNode(n.key, n));
@@ -172,7 +172,7 @@ const useDagreD3 = (graph?: Graph) => {
             const zoom = d3
                 .zoom<HTMLElement, any>() // eslint-disable-line @typescript-eslint/no-explicit-any
                 .scaleExtent([MIN_SCALE, MAX_SCALE])
-                .on('zoom', function() {
+                .on('zoom', function () {
                     setScaleValue(d3.event.transform.k / scaleFactor);
                     inner.attr('transform', d3.event.transform);
                 })
@@ -196,7 +196,7 @@ const useDagreD3 = (graph?: Graph) => {
                     return;
                 }
 
-                setCurrentNode({...node, type});
+                setCurrentNode({...node, type} as TypedNode);
             });
 
             const fitScreen = () => {

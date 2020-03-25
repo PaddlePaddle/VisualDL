@@ -146,7 +146,7 @@ export const yAxis = {
     axisLabel: {
         fontSize: 12,
         color: '#666',
-        formatter: (v: number) => v.toString().slice(0, 5)
+        formatter: (v: number) => Number.parseFloat(v.toPrecision(5))
     },
     splitLine: {
         lineStyle: {

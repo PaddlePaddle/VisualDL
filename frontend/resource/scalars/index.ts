@@ -3,6 +3,7 @@ import * as chart from '~/utils/chart';
 import {ChartDataParams, RangeParams, TooltipData, TransformParams, xAxisMap} from './types';
 import {formatTime, quantile} from '~/utils';
 
+import BigNumber from 'bignumber.js';
 import {I18n} from '~/utils/i18next/types';
 import cloneDeep from 'lodash/cloneDeep';
 import compact from 'lodash/compact';
@@ -24,11 +25,12 @@ export const transform = ({datasets, smoothing}: TransformParams) =>
     // https://en.wikipedia.org/wiki/Moving_average
     datasets.map(seriesData => {
         const data = cloneDeep(seriesData);
-        let last = data.length > 0 ? 0 : Number.NaN;
+        let last = new BigNumber(data.length > 0 ? 0 : Number.NaN);
         let numAccum = 0;
         let startValue = 0;
+        const bigSmoothing = new BigNumber(smoothing);
         data.forEach((d, i) => {
-            const nextVal = d[2];
+            const nextVal = new BigNumber(d[2]);
             // second to millisecond.
             const millisecond = (d[0] = Math.floor(d[0] * 1000));
             if (i === 0) {
@@ -36,16 +38,19 @@ export const transform = ({datasets, smoothing}: TransformParams) =>
             }
             // Relative time, millisecond to hours.
             d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
-            if (!isFinite(nextVal)) {
-                d[3] = nextVal;
+            if (nextVal.isFinite()) {
+                d[3] = nextVal.toNumber();
             } else {
-                last = last * smoothing + (1 - smoothing) * nextVal;
+                // last = last * smoothing + (1 - smoothing) * nextVal;
+                last = last.multipliedBy(bigSmoothing).plus(bigSmoothing.minus(1).negated().multipliedBy(nextVal));
                 numAccum++;
-                let debiasWeight = 1;
-                if (smoothing !== 1.0) {
-                    debiasWeight = 1.0 - Math.pow(smoothing, numAccum);
+                let debiasWeight = new BigNumber(1);
+                if (!bigSmoothing.isEqualTo(1)) {
+                    //debiasWeight = 1.0 - Math.pow(smoothing, numAccum);
+                    debiasWeight = bigSmoothing.exponentiatedBy(numAccum).minus(1).negated();
                 }
-                d[3] = last / debiasWeight;
+                // d[3] = last / debiasWeight;
+                d[3] = last.dividedBy(debiasWeight).toNumber();
             }
         });
         return data;
@@ -107,10 +112,11 @@ export const range = ({datasets, outlier}: RangeParams) => {
                 };
             } else {
                 // Get the quantile range.
-                const sorted = sortBy(dataset, [item => item[2]]);
+                const values = dataset.map(v => v[2]);
+                const sorted = dataset.map(v => v[2]).sort();
                 return {
-                    min: quantile(sorted, 0.05, item => item[2]),
-                    max: quantile(dataset, 0.95, item => item[2])
+                    min: quantile(sorted, 0.05),
+                    max: quantile(values, 0.95)
                 };
             }
         })
@@ -129,6 +135,8 @@ export const range = ({datasets, outlier}: RangeParams) => {
 
 // TODO: make it better, don't concat html
 export const tooltip = (data: TooltipData[], i18n: I18n) => {
+    BigNumber.config({EXPONENTIAL_AT: [-6, 7]});
+
     const indexPropMap = {
         Time: 0,
         Step: 1,
@@ -140,7 +148,7 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         Run: 60,
         Time: 120,
         Step: 40,
-        Value: 50,
+        Value: 60,
         Smoothed: 60,
         Relative: 60
     };
@@ -156,9 +164,9 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         const data = item.item;
         return {
             Run: item.run,
-            // Keep six number for easy-read.
-            Smoothed: data[indexPropMap.Smoothed]?.toString().slice(0, 6),
-            Value: data[indexPropMap.Value]?.toString().slice(0, 6),
+            // use precision then toString to remove trailling 0
+            Smoothed: new BigNumber(data[indexPropMap.Smoothed] ?? Number.NaN).precision(5).toString(),
+            Value: new BigNumber(data[indexPropMap.Smoothed] ?? Number.NaN).precision(5).toString(),
             Step: data[indexPropMap.Step],
             Time: formatTime(data[indexPropMap.Time], i18n.language),
             // Relative display value should take easy-read into consideration.
