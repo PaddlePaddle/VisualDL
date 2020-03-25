@@ -354,7 +354,7 @@ def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, lang
 
     p = multiprocessing.Process(target=_run, kwargs=kwarg)
     p.start()
-    time.sleep(3)
+    return p.pid
 
 
 def main():
