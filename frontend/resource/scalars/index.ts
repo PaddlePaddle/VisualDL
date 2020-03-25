@@ -11,6 +11,8 @@ import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
 import sortBy from 'lodash/sortBy';
 
+BigNumber.config({EXPONENTIAL_AT: [-6, 7]});
+
 export * from './types';
 
 export const sortingMethodMap = {
@@ -140,8 +142,6 @@ export const range = ({datasets, outlier}: RangeParams) => {
 
 // TODO: make it better, don't concat html
 export const tooltip = (data: TooltipData[], i18n: I18n) => {
-    BigNumber.config({EXPONENTIAL_AT: [-6, 7]});
-
     const indexPropMap = {
         Time: 0,
         Step: 1,
