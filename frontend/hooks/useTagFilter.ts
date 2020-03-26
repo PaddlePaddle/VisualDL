@@ -4,8 +4,8 @@ import {Tag} from '~/types';
 import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
 import uniq from 'lodash/uniq';
-import useRequest from '~/hooks/useRequest';
 import {useRouter} from 'next/router';
+import {useRunningRequest} from '~/hooks/useRequest';
 
 type Runs = string[];
 type Tags = Record<string, string[]>;
@@ -102,11 +102,11 @@ const reducer = (state: State, action: Action): State => {
     }
 };
 
-const useTagFilters = (type: string) => {
+const useTagFilter = (type: string, running: boolean) => {
     const router = useRouter();
 
-    const {data: runs, loading: loadingRuns} = useRequest<Runs>('/runs');
-    const {data: tags, loading: loadingTags} = useRequest<Tags>(`/${type}/tags`);
+    const {data: runs, loading: loadingRuns} = useRunningRequest<Runs>('/runs', running);
+    const {data: tags, loading: loadingTags} = useRunningRequest<Tags>(`/${type}/tags`, running);
 
     const selectedRuns = useMemo(
         () =>
@@ -152,4 +152,4 @@ const useTagFilters = (type: string) => {
     };
 };
 
-export default useTagFilters;
+export default useTagFilter;

@@ -17,8 +17,8 @@ import RunningToggle from '~/components/RunningToggle';
 import SearchInput from '~/components/SearchInput';
 import Title from '~/components/Title';
 import styled from 'styled-components';
-import useRequest from '~/hooks/useRequest';
 import {useRouter} from 'next/router';
+import {useRunningRequest} from '~/hooks/useRequest';
 import useSearchValue from '~/hooks/useSearchValue';
 
 const dimensions = ['2d', '3d'];
@@ -39,9 +39,11 @@ const AsideTitle = styled.div`
 const HighDimensional: NextI18NextPage = () => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
+    const [running, setRunning] = useState(true);
+
     const {query} = useRouter();
     const queryRun = Array.isArray(query.run) ? query.run[0] : query.run;
-    const {data: runs, error, loading} = useRequest<string[]>('/runs');
+    const {data: runs, error, loading} = useRunningRequest<string[]>('/runs', running);
     const selectedRun = runs?.includes(queryRun) ? queryRun : runs?.[0];
 
     const [run, setRun] = useState(selectedRun);
@@ -51,7 +53,6 @@ const HighDimensional: NextI18NextPage = () => {
     const debounceSearch = useSearchValue(search);
     const [dimension, setDimension] = useState(dimensions[0] as Dimension);
     const [reduction, setReduction] = useState(reductions[0] as Reduction);
-    const [running, setRunning] = useState(true);
     const [labelVisibility, setLabelVisibility] = useState(true);
 
     const aside = (

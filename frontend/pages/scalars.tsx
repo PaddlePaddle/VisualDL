@@ -27,8 +27,11 @@ const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
 const Scalars: NextI18NextPage = () => {
     const {t} = useTranslation(['scalars', 'common']);
 
+    const [running, setRunning] = useState(true);
+
     const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags, loadingRuns, loadingTags} = useTagFilter(
-        'scalars'
+        'scalars',
+        running
     );
 
     const debounceTags = useSearchValue(selectedTags);
@@ -43,8 +46,6 @@ const Scalars: NextI18NextPage = () => {
         setTooltipSorting(value as TooltipSorting);
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
-
-    const [running, setRunning] = useState(true);
 
     const aside = (
         <section>
