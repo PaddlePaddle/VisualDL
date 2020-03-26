@@ -28,6 +28,7 @@ from argparse import ArgumentParser
 
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
+from flask_babel import Babel
 
 import visualdl
 import visualdl.server
@@ -57,7 +58,7 @@ mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 
 class ParseArgs(object):
-    def __init__(self, logdir, host="0.0.0.0", port=8040, model_pb="", cache_timeout=20, language=default_language):
+    def __init__(self, logdir, host="0.0.0.0", port=8040, model_pb="", cache_timeout=20, language=None):
         self.logdir = logdir
         self.host = host
         self.port = port
@@ -70,7 +71,7 @@ def try_call(function, *args, **kwargs):
     res = lib.retry(error_retry_times, function, error_sleep_time, *args,
                     **kwargs)
     if not res:
-        logger.error("server temporary error, will retry latter.")
+        logger.error("Internal server error. Retry later.")
     return res
 
 
@@ -119,7 +120,6 @@ def parse_args():
         "-L",
         "--language",
         type=str,
-        default=default_language,
         action="store",
         help="set the default language")
 
@@ -149,6 +149,9 @@ def create_app(args):
     # set static expires in a short time to reduce browser's memory usage.
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
+    app.config['BABEL_DEFAULT_LOCALE'] = default_language
+    babel = Babel(app)
+
     log_reader = LogReader(args.logdir)
 
     # mannully put graph's image on this path also works.
@@ -157,11 +160,16 @@ def create_app(args):
     CACHE = MemCache(timeout=args.cache_timeout)
     cache_get = lib.cache_get(CACHE)
 
+    @babel.localeselector
+    def get_locale():
+        language = args.language
+        if not language or not language in support_language:
+            language = request.accept_languages.best_match(support_language)
+        return language
+
     @app.route("/")
     def index():
-        language = args.language
-        if not language in support_language:
-            language = default_language
+        language = get_locale()
         if language == default_language:
             return redirect('/app/index', code=302)
         return redirect('/app/' + language + '/index', code=302)
@@ -188,9 +196,7 @@ def create_app(args):
 
     @app.route('/api/language')
     def language():
-        data = args.language
-        if not data in support_language:
-            data = default_language
+        data = get_locale()
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
@@ -331,7 +337,7 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=default_language, open_browser=False):
+def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=None, open_browser=False):
     args = ParseArgs(logdir=logdir, host=host, port=port, model_pb=model_pb, cache_timeout=cache_timeout, language=language)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
@@ -341,7 +347,7 @@ def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, lan
     app.run(debug=False, host=args.host, port=args.port, threaded=True)
 
 
-def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=default_language, open_browser=False):
+def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=None, open_browser=False):
     kwarg = {
         "logdir": logdir,
         "host": host,
@@ -360,5 +366,5 @@ def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, lang
 def main():
     args = parse_args()
     logger.info(" port=" + str(args.port))
-    app = create_app(args=parse_args())
+    app = create_app(args=args)
     app.run(debug=False, host=args.host, port=args.port, threaded=True)

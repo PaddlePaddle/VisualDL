@@ -2,35 +2,36 @@
 
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
-import {em, rem} from '~/utils/style';
+// import {em, rem} from '~/utils/style';
 
 import AsideDivider from '~/components/AsideDivider';
 import ChartPage from '~/components/ChartPage';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
-import Icon from '~/components/Icon';
+// import Icon from '~/components/Icon';
 import Preloader from '~/components/Preloader';
 import RunSelect from '~/components/RunSelect';
 import RunningToggle from '~/components/RunningToggle';
 import SampleChart from '~/components/SamplesPage/SampleChart';
 import TagFilter from '~/components/TagFilter';
 import Title from '~/components/Title';
+import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import useTagFilter from '~/hooks/useTagFilter';
 
-const StyledIcon = styled(Icon)`
-    font-size: ${rem(16)};
-    margin-left: ${em(6)};
-    margin-right: ${em(4)};
-    vertical-align: middle;
-`;
+// const StyledIcon = styled(Icon)`
+//     font-size: ${rem(16)};
+//     margin-left: ${em(6)};
+//     margin-right: ${em(4)};
+//     vertical-align: middle;
+// `;
 
-const CheckboxTitle = styled.span`
-    font-size: ${rem(16)};
-    font-weight: 700;
-    vertical-align: text-top;
-`;
+// const CheckboxTitle = styled.span`
+//     font-size: ${rem(16)};
+//     font-weight: 700;
+//     vertical-align: text-top;
+// `;
 
 const SubField = styled(Field)`
     margin-left: ${rem(26)};
@@ -44,8 +45,11 @@ type Item = {
 const Samples: NextI18NextPage = () => {
     const {t} = useTranslation(['samples', 'common']);
 
+    const [running, setRunning] = useState(true);
+
     const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags, loadingRuns, loadingTags} = useTagFilter(
-        'images'
+        'images',
+        running
     );
     const ungroupedSelectedTags = useMemo(
         () =>
@@ -59,24 +63,23 @@ const Samples: NextI18NextPage = () => {
         [selectedTags]
     );
 
-    const [showImage, setShowImage] = useState(true);
+    const showImage = true;
+    // const [showImage, setShowImage] = useState(true);
     // const [showAudio, setShowAudio] = useState(true);
     // const [showText, setShowText] = useState(true);
 
     const [showActualSize, setShowActualSize] = useState(false);
 
-    const [running, setRunning] = useState(true);
-
     const aside = (
         <section>
             <RunSelect runs={runs} value={selectedRuns} onChange={onChangeRuns} />
             <AsideDivider />
-            <Field>
+            {/* <Field>
                 <Checkbox value={showImage} onChange={setShowImage} disabled>
                     <StyledIcon type="image" />
                     <CheckboxTitle>{t('image')}</CheckboxTitle>
                 </Checkbox>
-            </Field>
+            </Field> */}
             {showImage && (
                 <SubField>
                     <Checkbox value={showActualSize} onChange={setShowActualSize}>
