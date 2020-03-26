@@ -23,8 +23,11 @@ export const progressSpinnerSize = '20px';
 
 // colors
 export const primaryColor = '#2932E1';
+export const dangerColor = '#FF3912';
 export const primaryFocusedColor = lighten(0.08, primaryColor);
 export const primaryActiveColor = lighten(0.12, primaryColor);
+export const dangerFocusedColor = lighten(0.08, dangerColor);
+export const dangerActiveColor = lighten(0.12, dangerColor);
 export const selectedColor = '#1A73E8';
 export const lightColor = '#F4F5FC';
 export const lightFocusedColor = darken(0.03, lightColor);
