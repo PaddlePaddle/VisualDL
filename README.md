@@ -242,7 +242,7 @@ int main() {
 
 ## Launch Visual DL
 After some logs have been generated during training, users can launch Visual DL application to see real-time data visualization by:
-
+### Startup in command line
 
 ```
 visualdl --logdir <some log dir>
@@ -254,6 +254,13 @@ visualDL also supports following optional parameters:
 - `--port` set port
 - `-m / --model_pb` specify ONNX format for model file to view graph
 
+### Startup in python script
+```python
+>>> from visualdl.server import app
+
+>>> app.run(logdir="SOME_LOG_DIR")
+```
+`app.run()` support all parameters for command line startup, in addition, you can also specify `pen_browser=True` to open browser automatically。
 
 ### Contribute
 

@@ -75,7 +75,7 @@ VisualDL的graph支持paddle program的展示，同时兼容 ONNX(Open Neural Ne
 请使用下面的命令，来快速测试 VisualDL。
 
 ```
-# 安装，建議是在虚拟环境或anaconda下。
+# 安装，建议是在虚拟环境或anaconda下。
 pip install --upgrade visualdl
 
 # 运行一个例子，vdl_create_scratch_log 将创建测试日志
@@ -230,17 +230,24 @@ int main() {
 ```
 ## 启动Board
 当训练过程中已经产生了日志数据，就可以启动board进行实时预览可视化信息
+### 在命令行中启动
 
 ```
 visualdl --logdir <some log dir>
 ```
 
-board 还支持一下参数来实现远程的访问：
+board 还支持一些参数来实现远程的访问：
 
 - `--host` 设定IP
 - `--port` 设定端口
 - `-m / --model_pb` 指定 ONNX 格式的模型文件
+### 在Python脚本中启动
+```python
+>>> from visualdl.server import app
 
+>>> app.run(logdir="SOME_LOG_DIR")
+```
+`app.run()`支持命令行启动的所有参数，除此之外，还可以通过指定`open_browser=True`，自动打开浏览器。
 ### 贡献
 
 VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和

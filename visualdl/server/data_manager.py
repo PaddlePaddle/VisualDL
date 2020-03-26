@@ -48,8 +48,8 @@ class Reservoir(object):
             raise ValueError("Max_size must be nonnegative integer.")
         self._max_size = max_size
         self._buckets = collections.defaultdict(
-            lambda : _ReservoirBucket(max_size=self._max_size,
-                                      random_instance=random.Random(seed))
+            lambda: _ReservoirBucket(max_size=self._max_size,
+                                     random_instance=random.Random(seed))
         )
         self._mutex = threading.Lock()
 
@@ -117,7 +117,7 @@ class Reservoir(object):
 
     def get_items(self, mode, tag):
         """Get items with tag 'mode_tag'
-        
+
         For usage habits of VisualDL, actually call self._get_items()
 
         Args:
@@ -161,6 +161,23 @@ class Reservoir(object):
         """
         key = mode + "_" + tag
         self._add_item(key, item)
+
+    def _cut_tail(self, key):
+        with self._mutex:
+            self._buckets[key].cut_tail()
+
+    def cut_tail(self, mode, tag):
+        """Pop the last item in reservoir buckets.
+        
+        Sometimes the tail of the retrieved data is abnormal 0. This
+        method is used to handle this problem.
+
+        Args:
+            mode: Identity of one tablet.
+            tag: Identity of one record in tablet.
+        """
+        key = mode + "_" + tag
+        self._cut_tail(key)
 
 
 class _ReservoirBucket(object):
@@ -222,6 +239,16 @@ class _ReservoirBucket(object):
         with self._mutex:
             return self._num_items_index
 
+    def cut_tail(self):
+        """Pop the last item in reservoir buckets.
+
+        Sometimes the tail of the retrieved data is abnormal 0. This
+        method is used to handle this problem.
+        """
+        with self._mutex:
+            self._items.pop()
+            self._num_items_index -= 1
+
 
 class DataManager(object):
     """Data manager for all plugin.
@@ -238,8 +265,8 @@ class DataManager(object):
         self._image_reservoir = Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["image"])
 
         self._reservoirs = {"scalar": self._scalar_reservoir,
-                           "histogram": self._histogram_reservoir,
-                           "image": self._image_reservoir}
+                            "histogram": self._histogram_reservoir,
+                            "image": self._image_reservoir}
         self._mutex = threading.Lock()
 
     def get_reservoir(self, plugin):
@@ -299,7 +326,6 @@ if __name__ == '__main__':
     print(b)
     c = d.get_reservoir("scalar").get_num_items_index("train", "loss")
     print(c)
-    print("***")
     b = d.get_reservoir("scalar").get_items("train", "accu")
     print(b)
     print(d.get_reservoir("scalar").get_num_items_index("train", "accu"))

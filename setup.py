@@ -103,9 +103,9 @@ packages = [
 
 libraries = ['core.so']
 if platform == 'win32':
-    libraries = ['core.pyd', 'libprotobuf.dll']
+    libraries = ['core.pyd', 'libprotobuf.dll', 'zlib.dll']
 
-scripts = ['visualdl/server/visualdl', 'demo/vdl_create_scratch_log']
+scripts = ['visualdl/server/app.py', 'demo/vdl_create_scratch_log']
 if platform == 'win32':
     scripts.append('visualdl/server/visualDL.bat')
 
@@ -128,4 +128,5 @@ setup(
     packages=packages,
     ext_modules=[Extension('_foo', ['stub.cc'])],
     scripts=scripts,
-    cmdclass=cmdclass)
+    cmdclass=cmdclass,
+    entry_points={'console_scripts': ['visualdl=visualdl.server.app:main']})
