@@ -337,7 +337,7 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, open_browser=False, language=None):
+def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=None, open_browser=False):
     args = ParseArgs(logdir=logdir, host=host, port=port, model_pb=model_pb, cache_timeout=cache_timeout, language=language)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
@@ -347,7 +347,7 @@ def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, ope
     app.run(debug=False, host=args.host, port=args.port, threaded=True)
 
 
-def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, open_browser=False, language=None):
+def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=None, open_browser=False):
     kwarg = {
         "logdir": logdir,
         "host": host,
