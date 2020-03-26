@@ -58,7 +58,7 @@ mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 
 class ParseArgs(object):
-    def __init__(self, logdir, language, host="0.0.0.0", port=8040, model_pb="", cache_timeout=20):
+    def __init__(self, logdir, host="0.0.0.0", port=8040, model_pb="", cache_timeout=20, language=None):
         self.logdir = logdir
         self.host = host
         self.port = port
@@ -337,7 +337,7 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def _run(logdir, language, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, open_browser=False):
+def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, open_browser=False, language=None):
     args = ParseArgs(logdir=logdir, host=host, port=port, model_pb=model_pb, cache_timeout=cache_timeout, language=language)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
@@ -347,7 +347,7 @@ def _run(logdir, language, host="127.0.0.1", port=8080, model_pb="", cache_timeo
     app.run(debug=False, host=args.host, port=args.port, threaded=True)
 
 
-def run(logdir, language, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, open_browser=False):
+def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, open_browser=False, language=None):
     kwarg = {
         "logdir": logdir,
         "host": host,
