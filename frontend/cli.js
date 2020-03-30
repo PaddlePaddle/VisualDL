@@ -22,7 +22,6 @@ const argv = require('yargs')
     .describe('b', 'Backend API address')
     .boolean('open')
     .describe('open', 'Open browser when server is ready')
-    .demandOption(['b'])
     .help('h')
     .alias('h', 'help')
     .epilog('Visit https://github.com/PaddlePaddle/VisualDL for more information.').argv;
