@@ -147,7 +147,7 @@ export const yAxis = {
     axisLabel: {
         fontSize: 12,
         color: '#666',
-        formatter: (v: number) => Number.parseFloat(v.toPrecision(5))
+        formatter: (v: number) => (v < 0.0001 ? v.toExponential(1) : Number.parseFloat(v.toFixed(4)))
     },
     splitLine: {
         lineStyle: {
