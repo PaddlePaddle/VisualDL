@@ -31,6 +31,7 @@ module.exports = {
         DEFAULT_LANGUAGE,
         LOCALE_PATH,
         LANGUAGES,
+        NAV_ITEMS: process.env.NAV_ITEMS,
         PUBLIC_PATH: publicPath,
         API_URL: apiUrl
     },

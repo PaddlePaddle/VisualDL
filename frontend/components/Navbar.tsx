@@ -11,10 +11,18 @@ import {
     transitionProps
 } from '~/utils/style';
 
+import intersection from 'lodash/intersection';
 import styled from 'styled-components';
 import {useRouter} from 'next/router';
 
-const navItems = ['scalars', 'samples', 'graphs', 'high-dimensional'];
+const buildNavItems = process.env.NAV_ITEMS;
+const allNavItems = ['scalars', 'samples', 'graphs', 'high-dimensional'];
+const navItems = buildNavItems
+    ? intersection(
+          buildNavItems.split(',').map(item => item.trim()),
+          allNavItems
+      )
+    : allNavItems;
 
 const Nav = styled.nav`
     background-color: ${navbarBackgroundColor};
