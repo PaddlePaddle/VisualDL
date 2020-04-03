@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 # rust toolchain
 # https://rustup.rs/

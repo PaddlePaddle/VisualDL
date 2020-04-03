@@ -1,14 +1,13 @@
 {
-    "extend": "../tsconfig.json",
     "compilerOptions": {
-        "jsx": "react",
         "module": "commonjs",
         "target": "ES2018",
+        "skipLibCheck": true,
         "esModuleInterop": true,
-        "typeRoots": ["../types"],
-        "outDir": "../dist"
+        "declaration": true,
+        "outDir": "dist"
     },
-    "include": [
-        "**/*"
+    "files": [
+        "index.ts"
     ]
 }

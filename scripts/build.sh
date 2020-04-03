@@ -9,7 +9,7 @@ BUILD_DIR=$TOP_DIR/build
 mkdir -p $BUILD_DIR
 
 build_frontend_fake() {
-    mkdir -p "$BUILD_DIR/package/serverless"
+    mkdir -p "$BUILD_DIR/package/dist"
 }
 
 build_frontend_from_source() {
@@ -24,7 +24,7 @@ build_frontend_from_source() {
 }
 
 build_frontend() {
-    local PACKAGE="visualdl"
+    local PACKAGE="@visualdl/serverless"
     local TAG="latest"
     local TARBALL="${PACKAGE}@${TAG}"
 
@@ -108,8 +108,7 @@ clean_env() {
 }
 
 package() {
-    mkdir -p $TOP_DIR/visualdl/server/dist
-    cp -rf $BUILD_DIR/package/serverless/* $TOP_DIR/visualdl/server/dist
+    cp -rf $BUILD_DIR/package/dist $TOP_DIR/visualdl/server/
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }

@@ -18,14 +18,12 @@ function check_duplicated($filename_format) {
 
 function build_frontend_from_source() {
     cd $FRONTEND_DIR
-    $env:PUBLIC_PATH="/app"
-    $env:API_URL="/api"
     # TODO:
     # ./scripts/build.sh
 }
 
 function build_frontend() {
-    $PACKAGE_NAME="visualdl"
+    $PACKAGE_NAME="@visualdl/serverless"
     $SRC=npm view $PACKAGE_NAME dist.tarball
     Invoke-WebRequest -Uri "$SRC" -OutFile "$BUILD_DIR/$PACKAGE_NAME.tar.gz"
     # Need Windows 10 Insider Build 17063 and later
@@ -33,7 +31,7 @@ function build_frontend() {
 }
 
 function build_frontend_fake() {
-    mkdir -p "$BUILD_DIR/package/serverless"
+    mkdir -p "$BUILD_DIR/package/dist"
 }
 
 function build_backend() {
@@ -66,8 +64,7 @@ function clean_env() {
 }
 
 function package() {
-    mkdir -p $TOP_DIR/visualdl/server/dist
-    cp -Recurse $BUILD_DIR/package/serverless/* $TOP_DIR/visualdl/server/dist
+    cp -Recurse $BUILD_DIR/package/dist $TOP_DIR/visualdl/server/
     cp $BUILD_DIR/visualdl/logic/Release/core.pyd $TOP_DIR/visualdl
     cp $BUILD_DIR/visualdl/logic/Release/core.pyd $TOP_DIR/visualdl/python/
 }

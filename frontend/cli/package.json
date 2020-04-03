@@ -1,0 +1,59 @@
+{
+    "name": "@visualdl/cli",
+    "version": "2.0.0-beta.26",
+    "description": "A platform to visualize the deep learning process and result.",
+    "keywords": [
+        "visualdl",
+        "paddlepaddle",
+        "visualization",
+        "deep learning"
+    ],
+    "homepage": "https://github.com/PaddlePaddle/VisualDL",
+    "bugs": {
+        "url": "https://github.com/PaddlePaddle/VisualDL/issues"
+    },
+    "license": "Apache-2.0",
+    "author": "PeterPanZH <littlepanzh@gmail.com> (https://github.com/PeterPanZH)",
+    "contributors": [
+        "Niandalu <littlepanzh@gmail.com> (https://github.com/Niandalu)"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PaddlePaddle/VisualDL.git",
+        "directory": "frontend/cli"
+    },
+    "scripts": {
+        "dev": "cross-env NODE_ENV=development ts-node index.ts",
+        "build": "tsc",
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 0"
+    },
+    "bin": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@visualdl/server": "2.0.0-beta.26",
+        "open": "7.0.3",
+        "ora": "4.0.3",
+        "pm2": "4.2.3",
+        "yargs": "15.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "13.9.3",
+        "@types/yargs": "15.0.4",
+        "cross-env": "7.0.2",
+        "ts-node": "8.8.1",
+        "typescript": "3.8.3"
+    },
+    "engines": {
+        "node": ">=10",
+        "npm": ">=6"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
+}
