@@ -37,7 +37,8 @@
         "build": "./scripts/build.sh",
         "lint": "eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"",
-        "prepublishOnly": "yarn lint && yarn workspaces run test && yarn build",
+        "test": "yarn workspaces run test",
+        "prepublishOnly": "yarn lint && yarn test && yarn build",
         "preversion": "yarn lint",
         "version": "yarn format && git add -A"
     },

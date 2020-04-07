@@ -69,6 +69,9 @@ jobs:
         - cd frontend
       install:
         - ./scripts/install.sh
+      before_script:
+        - source $HOME/.cargo/env
+        - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
       script:
         - yarn lint
         - yarn test

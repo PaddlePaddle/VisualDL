@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 # rust toolchain
 # https://rustup.rs/
@@ -17,7 +17,7 @@ fi
 
 # yarn
 curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
-export PATH="$HOME/.yarn/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # yarn install
 yarn install --frozen-lockfile
