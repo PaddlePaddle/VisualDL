@@ -6,6 +6,10 @@ if [ -f "$HOME/.cargo/env" ]; then
     source $HOME/.cargo/env
 fi
 
+if [ -d "$HOME/.yarn/bin" ]; then
+    export PATH="$HOME/.yarn/bin:$PATH"
+fi
+
 WORKING_PATH=`pwd`
 SERVER_DIR="server/dist"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"

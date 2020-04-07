@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # rust toolchain
 # https://rustup.rs/
@@ -14,6 +14,10 @@ fi
 if ! hash wasm-pack 2>/dev/null; then
     curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 fi
+
+# yarn
+curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+export PATH="$HOME/.yarn/bin:$PATH"
 
 # yarn install
 yarn install --frozen-lockfile
