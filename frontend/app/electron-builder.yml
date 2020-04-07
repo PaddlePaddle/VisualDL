@@ -21,3 +21,4 @@ linux:
         - AppImage
 nsis:
     perMachine: true
+publish: null
