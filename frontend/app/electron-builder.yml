@@ -11,7 +11,6 @@ mac:
     hardenedRuntime: true
     gatekeeperAssess: false
     target:
-        - dmg
         - zip
 win:
     target:
