@@ -63,8 +63,6 @@ jobs:
         - npm
         - yarn
         - cargo
-      env:
-        - NODE_ENV=production
       before_install:
         - cd frontend
       install:
