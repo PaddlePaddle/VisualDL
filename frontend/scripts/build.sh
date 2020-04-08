@@ -3,9 +3,9 @@
 set -e
 
 WORKING_PATH=`pwd`
-SERVER_DIR="server/dist"
+SERVER_DIR="packages/server/dist"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"
-SERVERLESS_DIR="serverless/dist"
+SERVERLESS_DIR="packages/serverless/dist"
 SERVERLESS_DIR_PATH="$WORKING_PATH/$SERVERLESS_DIR"
 OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"

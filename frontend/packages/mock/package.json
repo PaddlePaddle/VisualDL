@@ -53,5 +53,5 @@
             "pre-commit": "lint-staged"
         }
     },
-    "gitHead": "d97f3aab64cfe4b5f0a3207c6adece65bb5a6265"
+    "gitHead": "4c26f999583ffa333d43760b05f6e4b3a69eec38"
 }
