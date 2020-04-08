@@ -45,5 +45,6 @@
         "hooks": {
             "pre-commit": "lint-staged"
         }
-    }
+    },
+    "gitHead": "751656db5ae1cab7b4e9e183d9ee311966f8c57c"
 }

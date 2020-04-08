@@ -1,1 +1,1 @@
-SEE ../README.md
+../../README.md
