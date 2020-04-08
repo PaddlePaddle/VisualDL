@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/serverless",
-    "version": "2.0.0-beta.31",
+    "version": "2.0.0-beta.32",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -33,7 +33,7 @@
     "devDependencies": {
         "@types/node": "13.11.0",
         "@types/rimraf": "3.0.0",
-        "@visualdl/core": "^2.0.0-beta.31",
+        "@visualdl/core": "^2.0.0-beta.32",
         "cross-env": "7.0.2",
         "rimraf": "3.0.2",
         "ts-node": "8.8.2",
