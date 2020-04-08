@@ -48,10 +48,13 @@
         "node": ">=10",
         "npm": ">=6"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged"
         }
     },
-    "gitHead": "4c26f999583ffa333d43760b05f6e4b3a69eec38"
+    "gitHead": "d9641c770d9bc4037b2f1cb644fba198bd11a752"
 }

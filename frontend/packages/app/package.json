@@ -40,6 +40,9 @@
         "node": ">=10",
         "npm": ">=6"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged"
