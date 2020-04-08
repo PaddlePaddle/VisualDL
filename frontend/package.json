@@ -31,7 +31,7 @@
         "clean": "rimraf output */dist wasm/target",
         "lint": "eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"",
-        "test": "yarn workspaces foreach run test",
+        "test": "yarn workspaces run test",
         "prepublishOnly": "yarn lint && yarn test && yarn build",
         "preversion": "yarn lint",
         "version": "yarn format && git add -A"
