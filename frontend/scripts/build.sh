@@ -11,7 +11,7 @@ OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
 
 # build
-yarn workspaces run build
+npx lerna run build
 
 # generate output
 rm -rf $OUTPUT_PATH

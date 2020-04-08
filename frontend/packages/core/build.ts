@@ -5,7 +5,7 @@ import path from 'path';
 import {spawn} from 'child_process';
 import {writeFileSync} from 'fs';
 
-const next = './node_modules/.bin/next';
+const next = require.resolve('next/dist/bin/next');
 export const projectRoot = path.dirname(require.resolve('@visualdl/core'));
 
 export default function (action: string, ...args: string[]): Promise<number> {

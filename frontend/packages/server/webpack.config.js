@@ -12,7 +12,12 @@ module.exports = {
     },
     target: 'node',
     module: {
-        rules: [{test: /\.ts$/, use: 'ts-loader'}]
+        rules: [
+            {
+                test: /\.ts$/,
+                use: require.resolve('ts-loader')
+            }
+        ]
     },
     resolve: {
         extensions: ['.wasm', '.ts', '.mjs', '.js', '.json']

@@ -43,6 +43,7 @@
         "i18next-node-fs-backend": "2.1.3",
         "i18next-xhr-backend": "3.2.2",
         "path-match": "1.2.4",
+        "prop-types": "15.7.2",
         "react-i18next": "11.3.4",
         "url": "0.11.0"
     },

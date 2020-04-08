@@ -2,14 +2,7 @@
     "name": "visualdl",
     "private": true,
     "workspaces": [
-        "mock",
-        "i18n",
-        "wasm",
-        "core",
-        "server",
-        "serverless",
-        "cli",
-        "app"
+        "packages/*"
     ],
     "version": "2.0.0-beta.26",
     "description": "A platform to visualize the deep learning process and result.",
@@ -35,9 +28,10 @@
     },
     "scripts": {
         "build": "./scripts/build.sh",
+        "clean": "rimraf output */dist wasm/target",
         "lint": "eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"",
-        "test": "yarn workspaces run test",
+        "test": "yarn workspaces foreach run test",
         "prepublishOnly": "yarn lint && yarn test && yarn build",
         "preversion": "yarn lint",
         "version": "yarn format && git add -A"
@@ -51,8 +45,10 @@
         "eslint-plugin-react": "7.19.0",
         "eslint-plugin-react-hooks": "3.0.0",
         "husky": "4.2.3",
+        "lerna": "^3.20.2",
         "lint-staged": "10.1.2",
         "prettier": "2.0.4",
+        "rimraf": "3.0.2",
         "typescript": "3.8.3",
         "yarn": "1.22.4"
     },
