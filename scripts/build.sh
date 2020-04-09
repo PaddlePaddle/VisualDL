@@ -9,7 +9,7 @@ BUILD_DIR=$TOP_DIR/build
 mkdir -p $BUILD_DIR
 
 build_frontend_fake() {
-    mkdir -p "$BUILD_DIR/package/serverless"
+    mkdir -p "$BUILD_DIR/package/dist"
 }
 
 build_frontend_from_source() {
@@ -24,7 +24,10 @@ build_frontend_from_source() {
 }
 
 build_frontend() {
-    local PACKAGE="visualdl"
+    local PACKAGE="@visualdl/serverless"
+    local NAME=${PACKAGE#*@}
+    local NAME=${NAME////-}
+    echo $NAME
     local TAG="latest"
     local TARBALL="${PACKAGE}@${TAG}"
 
@@ -34,7 +37,7 @@ build_frontend() {
         echo "Cannot get version"
         exit 1
     fi
-    local FILENAME="${PACKAGE}-${VERSION}.tgz"
+    local FILENAME="${NAME}-${VERSION}.tgz"
 
     # get sha1sum
     local SHA1SUM=`npm view ${TARBALL} dist.shasum`
@@ -42,7 +45,7 @@ build_frontend() {
         echo "Cannot get sha1sum"
         exit 1
     fi
-    rm -f "$BUILD_DIR/${PACKAGE}-*.tgz.sha1"
+    rm -f "$BUILD_DIR/${NAME}-*.tgz.sha1"
     echo "${SHA1SUM} ${FILENAME}" > "$BUILD_DIR/${FILENAME}.sha1"
 
     local DOWNLOAD="1"
@@ -61,7 +64,7 @@ build_frontend() {
         echo "Donwloading npm package, please wait..."
 
         # remove cache
-        rm -f "$BUILD_DIR/${PACKAGE}-*.tgz"
+        rm -f "$BUILD_DIR/${NAME}-*.tgz"
 
         # download file
         FILENAME=`(cd $BUILD_DIR && npm pack ${TARBALL})`
@@ -108,8 +111,7 @@ clean_env() {
 }
 
 package() {
-    mkdir -p $TOP_DIR/visualdl/server/dist
-    cp -rf $BUILD_DIR/package/serverless/* $TOP_DIR/visualdl/server/dist
+    cp -rf $BUILD_DIR/package/dist $TOP_DIR/visualdl/server/
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
     cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }

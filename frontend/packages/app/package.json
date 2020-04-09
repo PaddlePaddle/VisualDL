@@ -1,0 +1,51 @@
+{
+    "name": "@visualdl/app",
+    "version": "2.0.0-beta.32",
+    "private": true,
+    "description": "A platform to visualize the deep learning process and result.",
+    "keywords": [
+        "visualdl",
+        "paddlepaddle",
+        "visualization",
+        "deep learning"
+    ],
+    "homepage": "https://github.com/PaddlePaddle/VisualDL",
+    "bugs": {
+        "url": "https://github.com/PaddlePaddle/VisualDL/issues"
+    },
+    "license": "Apache-2.0",
+    "author": "PeterPanZH <littlepanzh@gmail.com> (https://github.com/PeterPanZH)",
+    "contributors": [
+        "Niandalu <littlepanzh@gmail.com> (https://github.com/Niandalu)"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PaddlePaddle/VisualDL.git",
+        "directory": "frontend/app"
+    },
+    "scripts": {
+        "dev": "electron index.js",
+        "build": "electron-builder -mwl",
+        "test": "echo \"Error: no test specified\" && exit 0"
+    },
+    "dependencies": {
+        "@visualdl/server": "^2.0.0-beta.32",
+        "pm2": "4.2.3"
+    },
+    "devDependencies": {
+        "electron": "8.2.1",
+        "electron-builder": "22.4.1"
+    },
+    "engines": {
+        "node": ">=10",
+        "npm": ">=6"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
+}

@@ -63,14 +63,15 @@ jobs:
         - npm
         - yarn
         - cargo
-      env:
-        - PUBLIC_PATH="/app"
-        - API_URL="/api"
       before_install:
         - cd frontend
       install:
         - ./scripts/install.sh
+      before_script:
+        - source $HOME/.cargo/env
+        - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
       script:
+        - yarn clean
         - yarn lint
         - yarn test
         - yarn build

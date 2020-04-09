@@ -1,0 +1,24 @@
+appId: org.paddlepaddle.visualdl
+productName: VisualDL
+files:
+    - 'index.js'
+    - 'resources/**/*'
+directories:
+    buildResources: ./resources
+mac:
+    category: public.app-category.developer-tools
+    darkModeSupport: false
+    hardenedRuntime: true
+    gatekeeperAssess: false
+    target:
+        - zip
+win:
+    target:
+        - nsis
+    verifyUpdateCodeSignature: false
+linux:
+    target:
+        - AppImage
+nsis:
+    perMachine: true
+publish: null

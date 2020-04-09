@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES2018",
+        "skipLibCheck": true,
+        "esModuleInterop": true
+    },
+    "files": [
+        "build.ts"
+    ]
+}

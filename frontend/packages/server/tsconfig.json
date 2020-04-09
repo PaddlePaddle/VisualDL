@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES2018",
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "outDir": "dist"
+    },
+    "files": [
+        "index.ts"
+    ]
+}
