@@ -23,8 +23,7 @@
         "directory": "frontend/server"
     },
     "scripts": {
-        "dev": "cross-env NODE_ENV=development nodemon --watch . --ext ts --exec \"ts-node index.ts\"",
-        "dev:wasm": "cross-env WITH_WASM=1 yarn dev",
+        "dev": "cross-env NODE_ENV=development nodemon --watch index.ts --watch webpack.config.js --exec \"ts-node index.ts\"",
         "build": "cross-env API_URL=/api ts-node build.ts",
         "start": "pm2-runtime ecosystem.config.js",
         "test": "echo \"Error: no test specified\" && exit 0"
@@ -56,7 +55,8 @@
         "ts-node": "8.8.2",
         "typescript": "3.8.3",
         "webpack": "4.42.1",
-        "webpack-cli": "3.3.11"
+        "webpack-cli": "3.3.11",
+        "webpack-dev-middleware": "3.7.2"
     },
     "engines": {
         "node": ">=10",

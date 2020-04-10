@@ -27,6 +27,7 @@
         "directory": "frontend"
     },
     "scripts": {
+        "bootstrap": "lerna bootstrap",
         "build": "./scripts/build.sh",
         "clean": "rimraf output */dist wasm/target",
         "lint": "eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",

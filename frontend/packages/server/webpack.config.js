@@ -2,10 +2,9 @@
 
 const path = require('path');
 
-// TODO: add dev server
 module.exports = {
     mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
-    entry: './index.ts',
+    entry: path.resolve(__dirname, './index.ts'),
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'index.js'
