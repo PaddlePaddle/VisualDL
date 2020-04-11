@@ -7,7 +7,7 @@ import nextI18NextMiddleware from '@visualdl/i18n/middleware';
 import path from 'path';
 import {setConfig} from 'next/config';
 
-const isDev = process.env.NODE_ENV !== 'production';
+const isDev = process.env.NODE_ENV === 'development';
 
 const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT || '', 10) || 8999;
@@ -23,7 +23,7 @@ async function start() {
 
     await app.prepare();
 
-    if (process.env.NODE_ENV === 'development') {
+    if (isDev) {
         const {default: webpack} = await import('webpack');
         const {default: webpackDevMiddleware} = await import('webpack-dev-middleware');
         const {default: webpackConfig} = await import('./webpack.config');
@@ -72,10 +72,10 @@ async function start() {
 if (require.main === module) {
     const cwd = process.cwd();
     const wd = path.dirname(require.resolve('@visualdl/core'));
-    console.log(wd);
     process.chdir(wd);
     process.on('exit', () => process.chdir(cwd));
     process.on('uncaughtException', () => process.chdir(cwd));
+    process.on('unhandledRejection', () => process.chdir(cwd));
     start();
 }
 
