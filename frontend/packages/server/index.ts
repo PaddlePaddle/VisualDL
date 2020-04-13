@@ -3,13 +3,11 @@
 import config from '@visualdl/core/next.config';
 import express from 'express';
 import next from 'next';
-import nextI18Next from '@visualdl/core/utils/i18n';
 import nextI18NextMiddleware from '@visualdl/i18n/middleware';
+import path from 'path';
 import {setConfig} from 'next/config';
 
-const isDev = process.env.NODE_ENV !== 'production';
-
-setConfig(config);
+const isDev = process.env.NODE_ENV === 'development';
 
 const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT || '', 10) || 8999;
@@ -17,11 +15,26 @@ const backend = process.env.BACKEND;
 const delay = Number.parseInt(process.env.DELAY || '', 10);
 
 const server = express();
-const app = next({dev: isDev, conf: config});
-const handle = app.getRequestHandler();
 
 async function start() {
+    setConfig(config);
+    const app = next({dev: isDev, conf: config});
+    const handle = app.getRequestHandler();
+
     await app.prepare();
+
+    if (isDev) {
+        const {default: webpack} = await import('webpack');
+        const {default: webpackDevMiddleware} = await import('webpack-dev-middleware');
+        const {default: webpackConfig} = await import('./webpack.config');
+
+        const compiler = webpack(webpackConfig);
+        server.use(
+            webpackDevMiddleware(compiler, {
+                publicPath: '/'
+            })
+        );
+    }
 
     if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
@@ -31,6 +44,7 @@ async function start() {
         server.use(config.env.API_URL, mock({delay: delay ? () => Math.random() * delay : 0}));
     }
 
+    const {default: nextI18Next} = await import('@visualdl/core/utils/i18n');
     await nextI18Next.initPromise;
     server.use(nextI18NextMiddleware(nextI18Next));
 
@@ -56,9 +70,15 @@ async function start() {
 }
 
 if (require.main === module) {
+    const cwd = process.cwd();
+    const wd = path.dirname(require.resolve('@visualdl/core'));
+    process.chdir(wd);
+    process.on('exit', () => process.chdir(cwd));
+    process.on('uncaughtException', () => process.chdir(cwd));
+    process.on('unhandledRejection', () => process.chdir(cwd));
     start();
 }
 
 export default start;
 
-export {server, app};
+export {server};

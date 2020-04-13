@@ -27,6 +27,7 @@
         "directory": "frontend"
     },
     "scripts": {
+        "bootstrap": "lerna bootstrap",
         "build": "./scripts/build.sh",
         "clean": "rimraf output */dist wasm/target",
         "lint": "eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
@@ -44,9 +45,9 @@
         "eslint-plugin-prettier": "3.1.2",
         "eslint-plugin-react": "7.19.0",
         "eslint-plugin-react-hooks": "3.0.0",
-        "husky": "4.2.3",
+        "husky": "4.2.5",
         "lerna": "^3.20.2",
-        "lint-staged": "10.1.2",
+        "lint-staged": "10.1.3",
         "prettier": "2.0.4",
         "rimraf": "3.0.2",
         "typescript": "3.8.3",

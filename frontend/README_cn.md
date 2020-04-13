@@ -1,15 +1,14 @@
 <p align="center">
-    <a href="https://github.com/PaddlePaddle/VisualDL"><img align="center" style="width:480px" width="480" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/public/images/logo-visualdl.svg?sanitize=true" alt="VisualDL" /></a>
+    <a href="https://github.com/PaddlePaddle/VisualDL"><img align="center" style="width:480px" width="480" src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/packages/core/public/images/logo-visualdl.svg?sanitize=true" alt="VisualDL" /></a>
 </p>
 <br />
 
 <p align="center">
-    <a href="https://www.npmjs.com/package/visualdl"><img src="https://img.shields.io/npm/v/visualdl?style=flat-square" alt="NPM Version" /></a>
     <a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/PaddlePaddle/VisualDL?style=flat-square" alt="Build Status" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL"><img src="https://img.shields.io/github/languages/top/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub top language" /></a>
     <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" alt="code style: prettier" /></a>
+    <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="lerna"></a>
     <a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/PaddlePaddle/VisualDL?style=flat-square" alt="License" /></a>
-    <a href="https://github.com/PaddlePaddle/VisualDL/issues"><img src="https://img.shields.io/github/issues/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub issues" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL/graphs/contributors"><img src="https://img.shields.io/github/contributors/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub Contributors" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL/stargazers"><img src="https://img.shields.io/github/stars/PaddlePaddle/VisualDL?style=social" alt="GitHub stars" /></a>
 </p>
@@ -18,63 +17,90 @@
 
 [English](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/README.md) | 简体中文
 
-**🚧开发中🚧**
-
-**🚧某些功能可能不能正常工作🚧**
-
-**🚧欢迎 Pull Request🚧**
-
-## 开发
+## 使用
 
 > 要求 nodejs ≥ 10 并且 npm ≥ 6
 
-首先，安装所有依赖：
+```bash
+npm install -g @visualdl/cli
+# or
+yarn global add @visualdl/cli
+```
+
+之后可以启动 VisualDL 服务：
 
 ```bash
-npm install
-# 或者
+visualdl start --backend="http://127.0.0.1:8040"
+```
+
+要停止 VisualDL 服务：
+
+```bash
+visualdl stop
+```
+
+更多详情：
+
+```bash
+visualdl -h
+```
+
+## 开发
+
+```bash
+npm install && npm run bootstrap
+# or
 yarn
 ```
 
-之后可以启动开发服务：
+> 注意：如果你全局安装了 yarn，你不需要运行 bootstrap。因为 yarn 会帮你完成这一步。
 
-```bash
-yarn dev
-```
+## Packages
 
-现在可以用浏览器打开 [http://localhost:8999](http://localhost:8999) 。
-
-你可以使用 `PORT` 环境变量更改服务的端口：
-
-```bash
-PORT=3000 yarn dev
-```
-
-### WebAssembly
-
-在开发环境中，WebAssembly 默认是**禁用**的。
-
-如果你希望开发 wasm 功能，你必须安装 [Rust](https://www.rust-lang.org/) 和 [Cargo](https://doc.rust-lang.org/cargo/)。
-
-使用 [rustup](https://rustup.rs/) 来安装它们。
-
-然后安装 [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) 来将 rust 代码编译成 wasm 可执行文件。
-
-当环境准备好后，使用下面的命令启动开发环境：
-
-```bash
-yarn dev:wasm
-```
+[core](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/core/README.md)
+[server](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/server/README.md)
+[serverless](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/serverless/README.md)
+[cli](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/cli/README.md)
+[app](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/app/README.md)
+[i18n](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/i18n/README.md)
+[wasm](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/wasm/README.md)
+[mock](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/mock/README.md)
 
 ## 编译和部署
 
+> 目前仅支持 Linux/MacOS 上编译。
+
+运行：
+
 ```bash
-./scripts/build.sh
-
-yarn start
-
-# 我们正在开发部署功能，请耐心等待
+yarn build
 ```
+
+你会在 `output` 文件夹中得到 `server.tar.gz` 和 `serverless.tar.gz`。
+
+### Server 部署
+
+> 要求 nodejs ≥ 10 并且 npm ≥ 6
+
+解压 `server.tar.gz` 到任何地方。
+`cd` 到那个文件夹然后运行：
+
+```bash
+npm install --production
+```
+
+然后使用：
+
+```bash
+npm start
+```
+
+来启动生产服务。
+
+### Serverless 部署
+
+解压 `serverless.tar.gz` 到你的 `webroot` 中。
+之后即可启动你的 Web 服务器并享受了。
 
 ### 浏览器兼容性
 

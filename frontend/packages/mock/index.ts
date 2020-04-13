@@ -16,7 +16,11 @@ export default (options: Options) => {
     return async (req: Request, res: Response) => {
         let method = req.path;
         if (!method) {
-            method = Array.isArray(req.query.method) ? req.query.method.join('/') : req.query.method;
+            method = Array.isArray(req.query.method)
+                ? req.query.method.join('/')
+                : 'string' === typeof req.query.method
+                ? req.query.method
+                : '';
         } else {
             method = method.replace(/^\//, '');
         }
