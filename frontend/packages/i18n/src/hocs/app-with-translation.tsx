@@ -101,7 +101,7 @@ export const appWithTranslation = function (this: NextI18Next, WrappedComponent:
             if (req && !req.i18n) {
                 const {router} = ctx;
                 const result = router.asPath.match(/^\/(.*?)\//);
-                const lng = result ? result[1] : process.env.DEFAULT_LANGUAGE;
+                const lng = result ? result[1] : config.defaultLanguage;
                 req.i18n = i18n.cloneInstance({initImmediate: false, lng});
                 const res = ctx.ctx.res as (NextPageContext['res'] & I18nRes) | undefined;
                 const setContextLocale = (lng?: string) => {
