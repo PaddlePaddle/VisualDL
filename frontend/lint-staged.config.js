@@ -15,7 +15,13 @@ module.exports = {
             )
         ]
             .map(p => path.join(process.cwd(), 'packages', p, 'tsconfig.json'))
-            .filter(p => fs.statSync(p).isFile())
+            .filter(p => {
+                try {
+                    return fs.statSync(p).isFile();
+                } catch (e) {
+                    return false;
+                }
+            })
             .map(p => `tsc -p ${p} --noEmit`),
 
     // lint changed files
