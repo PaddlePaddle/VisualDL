@@ -1,6 +1,7 @@
 import {useEffect, useMemo} from 'react';
 import useSWR, {ConfigInterface, keyInterface, responseInterface} from 'swr';
 
+import ee from '~/utils/event';
 import {fetcherFn} from 'swr/dist/types';
 
 type Response<D, E> = responseInterface<D, E> & {
@@ -60,6 +61,13 @@ function useRunningRequest<D = unknown, E = unknown>(
             mutate();
         }
     }, [running, mutate]);
+
+    useEffect(() => {
+        ee.on('refresh-running', mutate);
+        return () => {
+            ee.off('refresh-running', mutate);
+        };
+    }, [mutate]);
 
     return {mutate, ...others};
 }

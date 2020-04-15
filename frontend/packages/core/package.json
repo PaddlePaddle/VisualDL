@@ -37,6 +37,7 @@
         "dagre-d3": "0.6.4",
         "echarts": "4.7.0",
         "echarts-gl": "1.1.1",
+        "eventemitter3": "4.0.0",
         "isomorphic-unfetch": "3.0.0",
         "lodash": "4.17.15",
         "moment": "2.24.0",
