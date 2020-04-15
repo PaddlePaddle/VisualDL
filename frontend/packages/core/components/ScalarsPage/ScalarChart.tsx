@@ -78,7 +78,6 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const smooth = false;
     const type = useMemo(() => (xAxis === 'wall' ? 'time' : 'value'), [xAxis]);
-    const xAxisLabel = useMemo(() => (xAxis === 'step' ? '' : t(`x-axis-value.${xAxis}`)), [xAxis, t]);
 
     const transformParams = useMemo(
         () => ({
@@ -167,7 +166,6 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     return (
         <StyledLineChart
             title={tag}
-            xAxis={xAxisLabel}
             xRange={ranges.x}
             yRange={ranges.y}
             type={type}
