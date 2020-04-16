@@ -69,13 +69,13 @@ export const tooltip = {
 
 export const toolbox = {
     show: true,
-    orient: 'vertical',
     showTitle: false,
-    top: 50,
-    right: 8,
+    itemSize: 0,
     feature: {
         saveAsImage: {
-            show: true
+            show: true,
+            type: 'png',
+            pixelRatio: 2
         },
         dataZoom: {
             show: true
@@ -83,9 +83,6 @@ export const toolbox = {
         restore: {
             show: true
         }
-    },
-    tooltip: {
-        show: true
     }
 };
 
@@ -103,8 +100,8 @@ export const legend = {
 export const grid = {
     left: 50,
     top: 60,
-    right: 50,
-    bottom: 50
+    right: 30,
+    bottom: 30
 };
 
 export const xAxis = {

@@ -11,11 +11,23 @@ import {
     transform,
     xAxisMap
 } from '~/resource/scalars';
-import React, {FunctionComponent, useCallback, useMemo} from 'react';
-import {em, size} from '~/utils/style';
+import LineChart, {LineChartRef} from '~/components/LineChart';
+import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
+import {
+    em,
+    primaryActiveColor,
+    primaryColor,
+    primaryFocusedColor,
+    rem,
+    size,
+    textColor,
+    textLightColor,
+    textLighterColor,
+    transitionProps
+} from '~/utils/style';
 
 import {EChartOption} from 'echarts';
-import LineChart from '~/components/LineChart';
+import Icon from '~/components/Icon';
 import {cycleFetcher} from '~/utils/fetch';
 import queryString from 'query-string';
 import styled from 'styled-components';
@@ -24,7 +36,7 @@ import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
 
 const width = em(430);
-const height = em(320);
+const height = em(337);
 
 const smoothWasm = () =>
     import('@visualdl/wasm').then(({transform}) => (params: TransformParams) =>
@@ -38,8 +50,42 @@ const rangeWasm = () =>
 const smoothWorker = () => new Worker('~/worker/scalars/smooth.worker.ts', {type: 'module'});
 const rangeWorker = () => new Worker('~/worker/scalars/range.worker.ts', {type: 'module'});
 
-const StyledLineChart = styled(LineChart)`
+const Wrapper = styled.div`
     ${size(height, width)}
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+`;
+
+const StyledLineChart = styled(LineChart)`
+    flex-grow: 1;
+`;
+
+const Toolbox = styled.div`
+    font-size: ${em(16)};
+    height: 1em;
+    line-height: 1;
+    margin: 0 ${rem(20)} ${rem(18)};
+    display: flex;
+`;
+
+const ToolboxItem = styled.a<{active?: boolean}>`
+    cursor: pointer;
+    color: ${props => (props.active ? primaryColor : textLighterColor)};
+    ${transitionProps('color')}
+
+    &:hover {
+        color: ${props => (props.active ? primaryFocusedColor : textLightColor)};
+    }
+
+    &:active {
+        color: ${props => (props.active ? primaryActiveColor : textColor)};
+    }
+
+    & + & {
+        margin-left: ${rem(14)};
+    }
 `;
 
 const Error = styled.div`
@@ -59,6 +105,17 @@ type ScalarChartProps = {
     running?: boolean;
 };
 
+enum XAxisType {
+    value = 'value',
+    log = 'log',
+    time = 'time'
+}
+
+enum YAxisType {
+    value = 'value',
+    log = 'log'
+}
+
 const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     runs,
     tag,
@@ -70,6 +127,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 }) => {
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
+    const echart = useRef<LineChartRef>(null);
+
     const {data: datasets, error, loading} = useRunningRequest<(Dataset | null)[]>(
         runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
         !!running,
@@ -77,7 +136,13 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     );
 
     const smooth = false;
-    const type = useMemo(() => (xAxis === 'wall' ? 'time' : 'value'), [xAxis]);
+
+    const xAxisType = useMemo(() => (xAxis === 'wall' ? XAxisType.time : XAxisType.value), [xAxis]);
+
+    const [yAxisType, setYAxisType] = useState<YAxisType>(YAxisType.value);
+    const toggleYAxisType = useCallback(() => {
+        setYAxisType(t => (t === YAxisType.log ? YAxisType.value : YAxisType.log));
+    }, [setYAxisType]);
 
     const transformParams = useMemo(
         () => ({
@@ -103,13 +168,13 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
         // if there is only one point, place it in the middle
         if (smoothedDatasets.length === 1 && smoothedDatasets[0].length === 1) {
-            if (['value', 'log'].includes(type)) {
+            if ([XAxisType.value, XAxisType.log].includes(xAxisType)) {
                 x = singlePointRange(smoothedDatasets[0][0][xAxisMap[xAxis]]);
             }
             y = singlePointRange(smoothedDatasets[0][0][2]);
         }
         return {x, y};
-    }, [smoothedDatasets, yRange, type, xAxis]);
+    }, [smoothedDatasets, yRange, xAxisType, xAxis]);
 
     const data = useMemo(
         () =>
@@ -164,15 +229,33 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     }
 
     return (
-        <StyledLineChart
-            title={tag}
-            xRange={ranges.x}
-            yRange={ranges.y}
-            type={type}
-            tooltip={formatter}
-            data={data}
-            loading={loading}
-        />
+        <Wrapper>
+            <StyledLineChart
+                ref={echart}
+                title={tag}
+                xRange={ranges.x}
+                yRange={ranges.y}
+                xType={xAxisType}
+                yType={yAxisType}
+                tooltip={formatter}
+                data={data}
+                loading={loading}
+            />
+            <Toolbox>
+                <ToolboxItem>
+                    <Icon type="maximize" />
+                </ToolboxItem>
+                <ToolboxItem onClick={() => echart.current?.restore()}>
+                    <Icon type="restore-size" />
+                </ToolboxItem>
+                <ToolboxItem onClick={toggleYAxisType} active={yAxisType === YAxisType.log}>
+                    <Icon type="log-axis" />
+                </ToolboxItem>
+                <ToolboxItem onClick={() => echart.current?.saveAsImage()}>
+                    <Icon type="download" />
+                </ToolboxItem>
+            </Toolbox>
+        </Wrapper>
     );
 };
 
