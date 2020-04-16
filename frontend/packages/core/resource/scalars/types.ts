@@ -1,14 +1,10 @@
+import {xAxisMap} from './index';
+
 export type Dataset = number[][];
 
 export type Range = {
     min: number;
     max: number;
-};
-
-export const xAxisMap = {
-    step: 1,
-    relative: 4,
-    wall: 0
 };
 
 export type TooltipData = {

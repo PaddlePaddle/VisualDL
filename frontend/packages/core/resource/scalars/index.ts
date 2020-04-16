@@ -1,6 +1,6 @@
 import * as chart from '~/utils/chart';
 
-import {ChartDataParams, RangeParams, TooltipData, TransformParams, xAxisMap} from './types';
+import {ChartDataParams, RangeParams, TooltipData, TransformParams} from './types';
 import {formatTime, quantile} from '~/utils';
 
 import BigNumber from 'bignumber.js';
@@ -14,6 +14,12 @@ import sortBy from 'lodash/sortBy';
 BigNumber.config({EXPONENTIAL_AT: [-6, 7]});
 
 export * from './types';
+
+export const xAxisMap = {
+    step: 1,
+    relative: 4,
+    wall: 0
+};
 
 export const sortingMethodMap = {
     default: null,
