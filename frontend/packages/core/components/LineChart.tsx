@@ -1,6 +1,6 @@
 import * as chart from '~/utils/chart';
 
-import React, {useCallback, useEffect, useImperativeHandle} from 'react';
+import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef} from 'react';
 import {WithStyled, position, primaryColor, size} from '~/utils/style';
 
 import {EChartOption} from 'echarts';
@@ -132,8 +132,22 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             }
         }, [data, title, legend, xAxis, yAxis, xType, yType, xAxisFormatter, xRange, yRange, tooltip, echart]);
 
+        const wrapperRef = useRef<HTMLDivElement>(null);
+        useLayoutEffect(() => {
+            if (process.browser) {
+                const wrapper = wrapperRef.current;
+                if (wrapper) {
+                    const observer = new ResizeObserver(() => {
+                        echart?.current?.resize();
+                    });
+                    observer.observe(wrapper);
+                    return () => observer.unobserve(wrapper);
+                }
+            }
+        });
+
         return (
-            <Wrapper className={className}>
+            <Wrapper ref={wrapperRef} className={className}>
                 {!echart && (
                     <div className="loading">
                         <GridLoader color={primaryColor} size="10px" />

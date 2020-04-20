@@ -35,9 +35,6 @@ import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
 
-const width = em(430);
-const height = em(337);
-
 const smoothWasm = () =>
     import('@visualdl/wasm').then(({transform}) => (params: TransformParams) =>
         (transform(params.datasets, params.smoothing) as unknown) as Dataset[]
@@ -51,7 +48,7 @@ const smoothWorker = () => new Worker('~/worker/scalars/smooth.worker.ts', {type
 const rangeWorker = () => new Worker('~/worker/scalars/range.worker.ts', {type: 'module'});
 
 const Wrapper = styled.div`
-    ${size(height, width)}
+    ${size('100%', '100%')}
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -89,21 +86,11 @@ const ToolboxItem = styled.a<{active?: boolean}>`
 `;
 
 const Error = styled.div`
-    ${size(height, width)}
+    ${size('100%', '100%')}
     display: flex;
     justify-content: center;
     align-items: center;
 `;
-
-type ScalarChartProps = {
-    runs: string[];
-    tag: string;
-    smoothing: number;
-    xAxis: keyof typeof xAxisMap;
-    sortingMethod: keyof typeof sortingMethodMap;
-    outlier?: boolean;
-    running?: boolean;
-};
 
 enum XAxisType {
     value = 'value',
@@ -116,6 +103,17 @@ enum YAxisType {
     log = 'log'
 }
 
+type ScalarChartProps = {
+    runs: string[];
+    tag: string;
+    smoothing: number;
+    xAxis: keyof typeof xAxisMap;
+    sortingMethod: keyof typeof sortingMethodMap;
+    outlier?: boolean;
+    running?: boolean;
+    onToggleMaximized?: (maximized: boolean) => void;
+};
+
 const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     runs,
     tag,
@@ -123,7 +121,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     xAxis,
     sortingMethod,
     outlier,
-    running
+    running,
+    onToggleMaximized
 }) => {
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
@@ -136,6 +135,11 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     );
 
     const smooth = false;
+    const [maximized, setMaximized] = useState<boolean>(false);
+    const toggleMaximized = useCallback(() => {
+        onToggleMaximized?.(!maximized);
+        setMaximized(m => !m);
+    }, [onToggleMaximized, maximized, setMaximized]);
 
     const xAxisType = useMemo(() => (xAxis === 'wall' ? XAxisType.time : XAxisType.value), [xAxis]);
 
@@ -242,8 +246,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 loading={loading}
             />
             <Toolbox>
-                <ToolboxItem>
-                    <Icon type="maximize" />
+                <ToolboxItem onClick={toggleMaximized}>
+                    <Icon type={maximized ? 'minimize' : 'maximize'} />
                 </ToolboxItem>
                 <ToolboxItem onClick={() => echart.current?.restore()}>
                     <Icon type="restore-size" />

@@ -38,15 +38,26 @@ const Empty = styled.div`
     flex-grow: 1;
 `;
 
+export interface WithChart<T> {
+    (item: T, index: number): React.ReactNode;
+}
+
 // TODO: add types
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ChartPageProps<T = any> = {
     items?: T[];
     loading?: boolean;
-    withChart?: (item: T) => React.ReactNode;
+    maximized?: boolean[];
+    withChart?: WithChart<T>;
 };
 
-const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loading, withChart, className}) => {
+const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({
+    items,
+    maximized,
+    loading,
+    withChart,
+    className
+}) => {
     const {t} = useTranslation('common');
 
     const pageSize = 12;
@@ -65,7 +76,11 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
             ) : (
                 <Wrapper>
                     {pageItems.length ? (
-                        pageItems.map((item, index) => <Chart key={index}>{withChart?.(item)}</Chart>)
+                        pageItems.map((item, index) => (
+                            <Chart maximized={maximized?.[index]} key={index}>
+                                {withChart?.(item, index)}
+                            </Chart>
+                        ))
                     ) : (
                         <Empty>{t('empty')}</Empty>
                     )}

@@ -1,10 +1,10 @@
+import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Select, {SelectValueType} from '~/components/Select';
 import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
 
 import AsideDivider from '~/components/AsideDivider';
-import ChartPage from '~/components/ChartPage';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
@@ -75,8 +75,22 @@ const Scalars: NextI18NextPage = () => {
         </section>
     );
 
-    const withChart = useCallback(
-        (item: Tag) => (
+    const [maximized, setMaximized] = useState<boolean[]>(new Array(debounceTags.length).fill(false));
+    useEffect(() => {
+        setMaximized(new Array(debounceTags.length).fill(false));
+    }, [debounceTags]);
+    const toggleMaximized = useCallback(
+        (value: boolean, index: number) =>
+            setMaximized(m => {
+                const n = [...m];
+                n.splice(index, 1, value);
+                return n;
+            }),
+        [setMaximized]
+    );
+
+    const withChart = useCallback<WithChart<Tag>>(
+        (item, index) => (
             <ScalarChart
                 runs={item.runs}
                 tag={item.label}
@@ -85,9 +99,10 @@ const Scalars: NextI18NextPage = () => {
                 sortingMethod={tooltipSorting}
                 outlier={ignoreOutliers}
                 running={running}
+                onToggleMaximized={value => toggleMaximized(value, index)}
             />
         ),
-        [smoothing, xAxis, tooltipSorting, ignoreOutliers, running]
+        [smoothing, xAxis, tooltipSorting, ignoreOutliers, running, toggleMaximized]
     );
 
     return (
@@ -97,7 +112,12 @@ const Scalars: NextI18NextPage = () => {
             <Title>{t('common:scalars')}</Title>
             <Content aside={aside} loading={loadingRuns}>
                 <TagFilter tags={tags} onChange={onFilterTags} />
-                <ChartPage items={debounceTags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                <ChartPage
+                    items={debounceTags}
+                    maximized={maximized}
+                    withChart={withChart}
+                    loading={loadingRuns || loadingTags}
+                />
             </Content>
         </>
     );
