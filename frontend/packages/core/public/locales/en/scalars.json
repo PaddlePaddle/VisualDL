@@ -15,5 +15,10 @@
         "ascending": "Ascending",
         "nearest": "Nearest"
     },
-    "ignore-outliers": "Ignore outliers in chart scaling"
+    "ignore-outliers": "Ignore outliers in chart scaling",
+    "maximize": "Maximize",
+    "minimize": "Minimize",
+    "restore": "Restore",
+    "axis": "Axis",
+    "download-image": "Download image"
 }

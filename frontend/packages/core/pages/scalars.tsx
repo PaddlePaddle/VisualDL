@@ -75,6 +75,7 @@ const Scalars: NextI18NextPage = () => {
         </section>
     );
 
+    // TODO: find a better way to wrap maximize in chart component and DONOT raise it to page
     const [maximized, setMaximized] = useState<boolean[]>(new Array(debounceTags.length).fill(false));
     useEffect(() => {
         setMaximized(new Array(debounceTags.length).fill(false));

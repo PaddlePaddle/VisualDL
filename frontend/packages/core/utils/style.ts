@@ -46,6 +46,8 @@ export const navbarHoverBackgroundColor = lighten(0.05, navbarBackgroundColor);
 export const navbarHighlightColor = '#596cd6';
 export const progressBarColor = '#FFF';
 export const maskColor = 'rgba(255, 255, 255, 0.8)';
+export const tooltipBackgroundColor = 'rgba(0, 0, 0, 0.6)';
+export const tooltipTextColor = '#FFF';
 
 // transitions
 export const duration = '75ms';

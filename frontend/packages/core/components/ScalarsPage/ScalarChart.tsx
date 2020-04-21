@@ -13,23 +13,12 @@ import {
 } from '~/resource/scalars';
 import LineChart, {LineChartRef} from '~/components/LineChart';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
-import {
-    em,
-    primaryActiveColor,
-    primaryColor,
-    primaryFocusedColor,
-    rem,
-    size,
-    textColor,
-    textLightColor,
-    textLighterColor,
-    transitionProps
-} from '~/utils/style';
 
+import ChartToolbox from '~/components/ChartToolbox';
 import {EChartOption} from 'echarts';
-import Icon from '~/components/Icon';
 import {cycleFetcher} from '~/utils/fetch';
 import queryString from 'query-string';
+import {size} from '~/utils/style';
 import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
@@ -57,32 +46,6 @@ const Wrapper = styled.div`
 
 const StyledLineChart = styled(LineChart)`
     flex-grow: 1;
-`;
-
-const Toolbox = styled.div`
-    font-size: ${em(16)};
-    height: 1em;
-    line-height: 1;
-    margin: 0 ${rem(20)} ${rem(18)};
-    display: flex;
-`;
-
-const ToolboxItem = styled.a<{active?: boolean}>`
-    cursor: pointer;
-    color: ${props => (props.active ? primaryColor : textLighterColor)};
-    ${transitionProps('color')}
-
-    &:hover {
-        color: ${props => (props.active ? primaryFocusedColor : textLightColor)};
-    }
-
-    &:active {
-        color: ${props => (props.active ? primaryActiveColor : textColor)};
-    }
-
-    & + & {
-        margin-left: ${rem(14)};
-    }
 `;
 
 const Error = styled.div`
@@ -245,20 +208,34 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 data={data}
                 loading={loading}
             />
-            <Toolbox>
-                <ToolboxItem onClick={toggleMaximized}>
-                    <Icon type={maximized ? 'minimize' : 'maximize'} />
-                </ToolboxItem>
-                <ToolboxItem onClick={() => echart.current?.restore()}>
-                    <Icon type="restore-size" />
-                </ToolboxItem>
-                <ToolboxItem onClick={toggleYAxisType} active={yAxisType === YAxisType.log}>
-                    <Icon type="log-axis" />
-                </ToolboxItem>
-                <ToolboxItem onClick={() => echart.current?.saveAsImage()}>
-                    <Icon type="download" />
-                </ToolboxItem>
-            </Toolbox>
+            <ChartToolbox
+                items={[
+                    {
+                        icon: 'maximize',
+                        activeIcon: 'minimize',
+                        tooltip: t('maximize'),
+                        activeTooltip: t('minimize'),
+                        toggle: true,
+                        onClick: toggleMaximized
+                    },
+                    {
+                        icon: 'restore-size',
+                        tooltip: t('restore'),
+                        onClick: () => echart.current?.restore()
+                    },
+                    {
+                        icon: 'log-axis',
+                        tooltip: t('axis'),
+                        toggle: true,
+                        onClick: toggleYAxisType
+                    },
+                    {
+                        icon: 'download',
+                        tooltip: t('download-image'),
+                        onClick: () => echart.current?.saveAsImage()
+                    }
+                ]}
+            />
         </Wrapper>
     );
 };
