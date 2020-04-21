@@ -44,7 +44,7 @@ const HighDimensional: NextI18NextPage = () => {
     const {query} = useRouter();
     const queryRun = Array.isArray(query.run) ? query.run[0] : query.run;
     const {data: runs, error, loading} = useRunningRequest<string[]>('/runs', running);
-    const selectedRun = runs?.includes(queryRun) ? queryRun : runs?.[0];
+    const selectedRun = queryRun && runs?.includes(queryRun) ? queryRun : runs?.[0];
 
     const [run, setRun] = useState(selectedRun);
     useEffect(() => setRun(selectedRun), [setRun, selectedRun]);

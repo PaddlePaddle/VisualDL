@@ -10,7 +10,7 @@ import {
 } from '../utils';
 
 import NextI18Next from '../index';
-import i18nextMiddleware from 'i18next-express-middleware';
+import i18nextMiddleware from 'i18next-http-middleware';
 import pathMatch from 'path-match';
 
 const route = pathMatch();

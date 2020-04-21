@@ -2,6 +2,7 @@
 
 declare module 'detect-node';
 declare module 'path-match';
+declare module 'i18next-http-middleware';
 
 import * as React from 'react';
 
@@ -73,6 +74,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
         interface Request {
+            i18n: I18n;
             lng?: string;
         }
     }
