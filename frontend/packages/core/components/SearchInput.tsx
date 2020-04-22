@@ -8,7 +8,7 @@ import styled from 'styled-components';
 const iconSize = em(16);
 
 const StyledInput = styled(Input)`
-    padding-right: ${math(`${iconSize} + ${padding} * 2`)};
+    padding-left: ${math(`${iconSize} + ${padding} * 2`)};
     width: 100%;
 `;
 
@@ -19,15 +19,15 @@ const Control = styled.div`
 const SearchIcon = styled(Icon)`
     font-size: ${iconSize};
     display: block;
-    ${position('absolute', padding, padding, null, null)}
+    ${position('absolute', padding, null, null, padding)}
     pointer-events: none;
     color: ${textLighterColor};
 `;
 
 const SearchInput: FunctionComponent<InputProps & WithStyled> = ({className, ...props}) => (
     <Control className={className}>
-        <StyledInput {...props} />
         <SearchIcon type="search" />
+        <StyledInput {...props} />
     </Control>
 );
 

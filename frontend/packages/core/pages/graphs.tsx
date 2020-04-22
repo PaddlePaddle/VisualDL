@@ -259,10 +259,10 @@ const Graphs: NextI18NextPage = () => {
     const aside = (
         <section>
             <SubSection>
-                <Button icon="download" onClick={downloadImage}>
+                <Button rounded type="primary" icon="download" onClick={downloadImage}>
                     {t('download-image')}
                 </Button>
-                <Button icon="revert" onClick={fitScreen}>
+                <Button rounded type="primary" icon="revert" onClick={fitScreen}>
                     {t('restore-image')}
                 </Button>
             </SubSection>

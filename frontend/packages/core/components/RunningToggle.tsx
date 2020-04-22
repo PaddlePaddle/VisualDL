@@ -26,7 +26,7 @@ const RunningToggle: FunctionComponent<RunningToggleProps> = ({running, onToggle
     }, [onToggle, state]);
 
     return (
-        <StyledButton onClick={() => setState(s => !s)} type={state ? 'primary' : 'danger'}>
+        <StyledButton onClick={() => setState(s => !s)} type={state ? 'primary' : 'danger'} rounded>
             {t(state ? 'running' : 'stopped')}
         </StyledButton>
     );
