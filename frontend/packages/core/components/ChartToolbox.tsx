@@ -64,10 +64,11 @@ type ToggleChartToolboxItem = {
 export type ChartTooboxItem = NormalChartToolboxItem | ToggleChartToolboxItem;
 
 type ChartToolboxProps = {
+    cid?: string;
     items: ChartTooboxItem[];
 };
 
-const ChartToolbox: FunctionComponent<ChartToolboxProps> = ({items}) => {
+const ChartToolbox: FunctionComponent<ChartToolboxProps> = ({cid, items}) => {
     const [activeStatus, setActiveStatus] = useState<boolean[]>(new Array(items.length).fill(false));
     const onClick = useCallback(
         (index: number) => {
@@ -86,7 +87,7 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps> = ({items}) => {
         [items, activeStatus]
     );
 
-    const [id] = useState(`chart-toolbox-tooltip-${nanoid()}`);
+    const [id] = useState(`chart-toolbox-tooltip-${cid || nanoid()}`);
 
     return (
         <>

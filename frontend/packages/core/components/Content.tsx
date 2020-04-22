@@ -15,8 +15,6 @@ const Section = styled.section`
 const Article = styled.article<{aside?: boolean}>`
     margin: ${margin};
     margin-right: ${props => (props.aside ? math(`${margin} + ${asideWidth}`) : margin)};
-    padding: ${padding};
-    background-color: ${backgroundColor};
     min-height: calc(100vh - ${math(`${margin} * 2 + ${headerHeight}`)});
 `;
 

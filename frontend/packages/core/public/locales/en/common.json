@@ -4,7 +4,9 @@
     "graphs": "Graphs",
     "high-dimensional": "High Dimensional",
     "search": "Search",
-    "searchTagPlaceholder": "Search tags in RegExp",
+    "search-tags": "Search tags in RegExp",
+    "search-result": "Search Result",
+    "search-empty": "Nothing found. Please try again with another word. <1/>Or you can <3>see all charts</3>.",
     "all": "ALL",
     "empty": "Empty",
     "select": "Please Select",
@@ -13,5 +15,10 @@
     "running": "Running",
     "stopped": "Stopped",
     "loading": "Loading",
-    "error": "Error occurred"
+    "error": "Error occurred",
+    "previous-page": "Prev Page",
+    "next-page": "Next Page",
+    "total-page": "{{count}} page, jump to",
+    "total-page_plural": "{{count}} pages, jump to",
+    "confirm": "Confirm"
 }

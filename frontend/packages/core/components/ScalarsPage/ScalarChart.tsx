@@ -17,6 +17,7 @@ import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from '
 import ChartToolbox from '~/components/ChartToolbox';
 import {EChartOption} from 'echarts';
 import {cycleFetcher} from '~/utils/fetch';
+import ee from '~/utils/event';
 import queryString from 'query-string';
 import {size} from '~/utils/style';
 import styled from 'styled-components';
@@ -67,6 +68,7 @@ enum YAxisType {
 }
 
 type ScalarChartProps = {
+    cid: symbol;
     runs: string[];
     tag: string;
     smoothing: number;
@@ -78,14 +80,14 @@ type ScalarChartProps = {
 };
 
 const ScalarChart: FunctionComponent<ScalarChartProps> = ({
+    cid,
     runs,
     tag,
     smoothing,
     xAxis,
     sortingMethod,
     outlier,
-    running,
-    onToggleMaximized
+    running
 }) => {
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
@@ -100,9 +102,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const smooth = false;
     const [maximized, setMaximized] = useState<boolean>(false);
     const toggleMaximized = useCallback(() => {
-        onToggleMaximized?.(!maximized);
+        ee.emit('toggle-chart-size', cid, !maximized);
         setMaximized(m => !m);
-    }, [onToggleMaximized, maximized, setMaximized]);
+    }, [cid, maximized]);
 
     const xAxisType = useMemo(() => (xAxis === 'wall' ? XAxisType.time : XAxisType.value), [xAxis]);
 

@@ -1,6 +1,6 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import Select, {SelectValueType} from '~/components/Select';
 import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
 
@@ -14,9 +14,7 @@ import RunningToggle from '~/components/RunningToggle';
 import ScalarChart from '~/components/ScalarsPage/ScalarChart';
 import SmoothingSlider from '~/components/ScalarsPage/SmoothingSlider';
 import {Tag} from '~/types';
-import TagFilter from '~/components/TagFilter';
 import Title from '~/components/Title';
-import useSearchValue from '~/hooks/useSearchValue';
 import useTagFilter from '~/hooks/useTagFilter';
 
 type XAxis = keyof typeof xAxisMap;
@@ -29,12 +27,7 @@ const Scalars: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags, loadingRuns, loadingTags} = useTagFilter(
-        'scalars',
-        running
-    );
-
-    const debounceTags = useSearchValue(selectedTags);
+    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('scalars', running);
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -75,35 +68,20 @@ const Scalars: NextI18NextPage = () => {
         </section>
     );
 
-    // TODO: find a better way to wrap maximize in chart component and DONOT raise it to page
-    const [maximized, setMaximized] = useState<boolean[]>(new Array(debounceTags.length).fill(false));
-    useEffect(() => {
-        setMaximized(new Array(debounceTags.length).fill(false));
-    }, [debounceTags]);
-    const toggleMaximized = useCallback(
-        (value: boolean, index: number) =>
-            setMaximized(m => {
-                const n = [...m];
-                n.splice(index, 1, value);
-                return n;
-            }),
-        [setMaximized]
-    );
-
     const withChart = useCallback<WithChart<Tag>>(
-        (item, index) => (
+        ({label, runs, ...args}) => (
             <ScalarChart
-                runs={item.runs}
-                tag={item.label}
+                runs={runs}
+                tag={label}
+                {...args}
                 smoothing={smoothing}
                 xAxis={xAxis}
                 sortingMethod={tooltipSorting}
                 outlier={ignoreOutliers}
                 running={running}
-                onToggleMaximized={value => toggleMaximized(value, index)}
             />
         ),
-        [smoothing, xAxis, tooltipSorting, ignoreOutliers, running, toggleMaximized]
+        [smoothing, xAxis, tooltipSorting, ignoreOutliers, running]
     );
 
     return (
@@ -112,13 +90,7 @@ const Scalars: NextI18NextPage = () => {
             <Preloader url="/scalars/tags" />
             <Title>{t('common:scalars')}</Title>
             <Content aside={aside} loading={loadingRuns}>
-                <TagFilter tags={tags} onChange={onFilterTags} />
-                <ChartPage
-                    items={debounceTags}
-                    maximized={maximized}
-                    withChart={withChart}
-                    loading={loadingRuns || loadingTags}
-                />
+                <ChartPage items={tags} withChart={withChart} loading={loadingRuns || loadingTags} />
             </Content>
         </>
     );

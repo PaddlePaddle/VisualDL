@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import {
     WithStyled,
     backgroundColor,
@@ -12,6 +12,7 @@ import {
     transitionProps
 } from '~/utils/style';
 
+import ee from '~/utils/event';
 import styled from 'styled-components';
 
 const width = rem(430);
@@ -32,10 +33,26 @@ const Div = styled.div<{maximized?: boolean}>`
 `;
 
 type ChartProps = {
-    maximized?: boolean;
+    cid: symbol;
 };
 
-const Chart: FunctionComponent<ChartProps & WithStyled> = ({maximized, className, children}) => {
+const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, className, children}) => {
+    const [maximized, setMaximized] = useState(false);
+    const toggleMaximze = useCallback(
+        (id: symbol, value: boolean) => {
+            if (id === cid) {
+                setMaximized(value);
+            }
+        },
+        [cid]
+    );
+    useEffect(() => {
+        ee.on('toggle-chart-size', toggleMaximze);
+        return () => {
+            ee.off('toggle-chart-size', toggleMaximze);
+        };
+    }, [toggleMaximze]);
+
     return (
         <Div maximized={maximized} className={className}>
             {children}

@@ -36,10 +36,11 @@ const SearchTagLabel = styled.span`
 type TagFilterProps = {
     value?: string;
     tags?: TagType[];
+    selectable?: boolean;
     onChange?: (value: TagType[]) => unknown;
 };
 
-const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, onChange}) => {
+const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, selectable, onChange}) => {
     type NonNullTags = NonNullable<typeof propTags>;
 
     const {t} = useTranslation('common');
@@ -98,19 +99,23 @@ const TagFilter: FunctionComponent<TagFilterProps> = ({value, tags: propTags, on
     return (
         <Wrapper>
             <Search placeholder={t('searchTagPlaceholder')} rounded onChange={onInputChange}></Search>
-            <SearchTag active={!hasSelectedValue} onClick={onClickAllTag} title={allText}>
-                <SearchTagLabel>{allText}</SearchTagLabel> ({inputValue ? matchedCount : propTags?.length ?? 0})
-            </SearchTag>
-            {tagGroups.map(group => (
-                <SearchTag
-                    active={hasSelectedValue && group.label === selectedValue}
-                    onClick={() => onClickTag(group)}
-                    key={group.label}
-                    title={group.label}
-                >
-                    <SearchTagLabel>{group.label}</SearchTagLabel> ({group.tags.length})
-                </SearchTag>
-            ))}
+            {selectable ? (
+                <>
+                    <SearchTag active={!hasSelectedValue} onClick={onClickAllTag} title={allText}>
+                        <SearchTagLabel>{allText}</SearchTagLabel> ({inputValue ? matchedCount : propTags?.length ?? 0})
+                    </SearchTag>
+                    {tagGroups.map(group => (
+                        <SearchTag
+                            active={hasSelectedValue && group.label === selectedValue}
+                            onClick={() => onClickTag(group)}
+                            key={group.label}
+                            title={group.label}
+                        >
+                            <SearchTagLabel>{group.label}</SearchTagLabel> ({group.tags.length})
+                        </SearchTag>
+                    ))}
+                </>
+            ) : null}
         </Wrapper>
     );
 };

@@ -1,6 +1,10 @@
 import React, {FunctionComponent} from 'react';
 import {
     WithStyled,
+    borderActiveColor,
+    borderColor,
+    borderFocusedColor,
+    borderRadius,
     dangerActiveColor,
     dangerColor,
     dangerFocusedColor,
@@ -10,7 +14,10 @@ import {
     primaryActiveColor,
     primaryColor,
     primaryFocusedColor,
+    sameBorder,
+    textColor,
     textInvertColor,
+    textLighterColor,
     transitionProps
 } from '~/utils/style';
 
@@ -31,26 +38,36 @@ const colors = {
     }
 };
 
-const Wrapper = styled.a<{type: keyof typeof colors}>`
+const Wrapper = styled.a<{type?: keyof typeof colors; rounded?: boolean; disabled?: boolean}>`
     cursor: pointer;
     height: ${height};
     line-height: ${height};
-    border-radius: ${half(height)};
-    background-color: ${props => colors[props.type].default};
-    color: ${textInvertColor};
-    display: block;
+    border-radius: ${props => (props.rounded ? half(height) : borderRadius)};
+    ${props => (props.type ? '' : sameBorder({color: borderColor}))}
+    background-color: ${props => (props.type ? colors[props.type].default : 'transparent')};
+    color: ${props => (props.disabled ? textLighterColor : props.type ? textInvertColor : textColor)};
+    cursor: ${props => (props.disabled ? 'not-allowed' : 'cursor')};
+    display: inline-block;
+    vertical-align: top;
     text-align: center;
-    ${transitionProps('background-color')}
+    padding: 0 ${em(20)};
+    ${transitionProps(['background-color', 'border-color'])}
     ${ellipsis()}
 
-    &:hover,
-    &:focus {
-        background-color: ${props => colors[props.type].focused};
-    }
+    ${props =>
+        props.disabled
+            ? ''
+            : `
+                &:hover,
+                &:focus {
+                    ${props.type ? '' : sameBorder({color: borderFocusedColor})}
+                    background-color: ${props.type ? colors[props.type].focused : 'transparent'};
+                }
 
-    &:active {
-        background-color: ${props => colors[props.type].active};
-    }
+                &:active {
+                    ${props.type ? '' : sameBorder({color: borderActiveColor})}
+                    background-color: ${props.type ? colors[props.type].active : 'transparent'};
+                }`}
 `;
 
 const Icon = styled(RawIcon)`
@@ -58,13 +75,23 @@ const Icon = styled(RawIcon)`
 `;
 
 type ButtonProps = {
+    rounded?: boolean;
     icon?: string;
     type?: keyof typeof colors;
+    disabled?: boolean;
     onClick?: () => unknown;
 };
 
-const Button: FunctionComponent<ButtonProps & WithStyled> = ({icon, type, children, className, onClick}) => (
-    <Wrapper className={className} onClick={onClick} type={type || 'primary'}>
+const Button: FunctionComponent<ButtonProps & WithStyled> = ({
+    disabled,
+    rounded,
+    icon,
+    type,
+    children,
+    className,
+    onClick
+}) => (
+    <Wrapper className={className} onClick={onClick} type={type} rounded={rounded} disabled={disabled}>
         {icon && <Icon type={icon}></Icon>}
         {children}
     </Wrapper>

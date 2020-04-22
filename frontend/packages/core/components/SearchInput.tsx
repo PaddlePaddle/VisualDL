@@ -1,6 +1,6 @@
 import Input, {InputProps, padding} from '~/components/Input';
 import React, {FunctionComponent} from 'react';
-import {WithStyled, backgroundColor, em, math, position, textLighterColor} from '~/utils/style';
+import {WithStyled, em, math, position, textLighterColor} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import styled from 'styled-components';
@@ -13,7 +13,6 @@ const StyledInput = styled(Input)`
 `;
 
 const Control = styled.div`
-    background-color: ${backgroundColor};
     position: relative;
 `;
 
