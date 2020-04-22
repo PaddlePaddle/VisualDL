@@ -127,7 +127,7 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
                         charts.map((item, j) => {
                             const cid = Symbol(item.label);
                             return (
-                                <Chart cid={cid} key={j}>
+                                <Chart cid={cid} key={item.label}>
                                     {withChart?.({...item, cid}, j)}
                                 </Chart>
                             );
