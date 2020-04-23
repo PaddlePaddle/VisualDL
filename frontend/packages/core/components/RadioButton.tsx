@@ -29,6 +29,7 @@ const Button = styled.a<{selected?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
     min-width: ${minWidth};
+    padding: 0 ${em(8)};
     text-align: center;
     ${ellipsis(maxWidth)}
     ${props => sameBorder({color: props.selected ? primaryColor : borderColor})};

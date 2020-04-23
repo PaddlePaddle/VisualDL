@@ -27,12 +27,10 @@ import without from 'lodash/without';
 
 export const padding = em(10);
 export const height = em(36);
-const minWidth = em(160);
 
 const Wrapper = styled.div<{opened?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
-    min-width: ${minWidth};
     max-width: 100%;
     display: inline-block;
     position: relative;

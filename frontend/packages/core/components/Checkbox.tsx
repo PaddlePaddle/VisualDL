@@ -47,7 +47,7 @@ const Inner = styled.div<{checked?: boolean; size?: string; disabled?: boolean}>
     flex-shrink: 0;
     ${props => size(math(`${checkSize} * ${props.size === 'small' ? 0.875 : 1}`))}
     margin: ${half(`${height} - ${checkSize}`)} 0;
-    margin-right: ${em(4)};
+    margin-right: ${em(10)};
     ${props => sameBorder({color: props.disabled || !props.checked ? textLighterColor : primaryColor})};
     background-color: ${props =>
         props.disabled

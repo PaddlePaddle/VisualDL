@@ -5,7 +5,6 @@ import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
 
 const margin = rem(20);
-const padding = rem(20);
 
 const Section = styled.section`
     /* trigger BFC */
@@ -19,7 +18,6 @@ const Article = styled.article<{aside?: boolean}>`
 `;
 
 const Aside = styled.aside`
-    padding: ${padding};
     background-color: ${backgroundColor};
     ${size(`calc(100vh - ${headerHeight})`, asideWidth)}
     ${position('fixed', headerHeight, 0, null, null)}
