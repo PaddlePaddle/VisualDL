@@ -4,7 +4,6 @@ import React, {useCallback, useState} from 'react';
 import Select, {SelectValueType} from '~/components/Select';
 import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
 
-
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
