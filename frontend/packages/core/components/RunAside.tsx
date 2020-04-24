@@ -3,10 +3,11 @@ import {borderColor, ellipsis, em, rem, size} from '~/utils/style';
 
 import Checkbox from '~/components/Checkbox';
 import Field from '~/components/Field';
+import {Run} from '~/types';
 import RunningToggle from '~/components/RunningToggle';
 import SearchInput from '~/components/SearchInput';
-import {color} from '~/utils/chart';
 import styled from 'styled-components';
+import uniqBy from 'lodash/uniqBy';
 import {useTranslation} from '~/utils/i18n';
 
 const Aside = styled.div`
@@ -85,9 +86,9 @@ const Aside = styled.div`
 `;
 
 type RunAsideProps = {
-    runs?: string[];
-    selectedRuns?: string[];
-    onChangeRuns?: (runs: string[]) => unknown;
+    runs?: Run[];
+    selectedRuns?: Run[];
+    onChangeRuns?: (runs: Run[]) => unknown;
     running?: boolean;
     onToggleRunning?: (running: boolean) => unknown;
 };
@@ -112,18 +113,18 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
         [onChangeRuns, runs]
     );
 
-    const filteredRuns = useMemo(() => (search ? runs?.filter(run => run.indexOf(search) >= 0) : runs) ?? [], [
+    const filteredRuns = useMemo(() => (search ? runs?.filter(run => run.label.indexOf(search) >= 0) : runs) ?? [], [
         runs,
         search
     ]);
 
     const setSelectedRuns = useCallback(
-        (run: string, toggle) => {
+        (run: Run, toggle) => {
             let selected = selectedRuns ?? [];
             if (toggle) {
-                selected = [...new Set([...selected, run])];
+                selected = uniqBy([...selected, run], r => r.label);
             } else {
-                selected = selected.filter(r => r !== run);
+                selected = selected.filter(r => r.label !== run.label);
             }
             onChangeRuns?.(selected);
         },
@@ -149,13 +150,13 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
                         {filteredRuns.map((run, index) => (
                             <div key={index}>
                                 <Checkbox
-                                    value={selectedRuns?.includes(run)}
-                                    title={run}
+                                    value={selectedRuns?.map(r => r.label)?.includes(run.label)}
+                                    title={run.label}
                                     onChange={value => setSelectedRuns(run, value)}
                                 >
                                     <span className="run-item">
-                                        <i style={{backgroundColor: color[index % color.length]}}></i>
-                                        {run}
+                                        <i style={{backgroundColor: run.colors[0]}}></i>
+                                        {run.label}
                                     </span>
                                 </Checkbox>
                             </div>

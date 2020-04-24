@@ -73,9 +73,9 @@ export const chartData = ({data, runs, smooth, xAxis}: ChartDataParams) =>
             // [2] orginal value
             // [3] smoothed value
             // [4] relative
-            const name = runs[i];
-            const color = chart.color[i % chart.color.length];
-            const colorAlt = chart.colorAlt[i % chart.colorAlt.length];
+            const name = runs[i].label;
+            const color = runs[i].colors[0];
+            const colorAlt = runs[i].colors[1];
             return [
                 {
                     name,

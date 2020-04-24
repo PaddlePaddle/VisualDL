@@ -1,4 +1,9 @@
+export interface Run {
+    label: string;
+    colors: [string, string];
+}
+
 export interface Tag {
-    runs: string[];
+    runs: Run[];
     label: string;
 }

@@ -7,7 +7,7 @@ module.exports = {
         `eslint --ext .tsx,.jsx.ts,.js --ignore-path ${path.join(__dirname, '.gitignore')} ${__dirname}`,
 
     // check types when ts file or package.json changes.
-    './packages/*/(package.json|**/*.ts?(x))': filenames =>
+    './(packages/*/package.json|packages/*/**/*.ts?(x))': filenames =>
         [
             ...new Set(
                 filenames.map(filename => path.relative(path.join(__dirname, 'packages'), filename).split(path.sep)[0])

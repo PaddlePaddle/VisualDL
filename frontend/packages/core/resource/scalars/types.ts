@@ -1,3 +1,4 @@
+import {Run} from '~/types';
 import {xAxisMap} from './index';
 
 export type Dataset = number[][];
@@ -19,7 +20,7 @@ export type TransformParams = {
 
 export type ChartDataParams = {
     data: Dataset[];
-    runs: string[];
+    runs: Run[];
     smooth: boolean;
     xAxis: keyof typeof xAxisMap;
 };

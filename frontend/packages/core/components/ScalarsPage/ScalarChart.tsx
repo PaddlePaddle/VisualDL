@@ -16,6 +16,7 @@ import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from '
 
 import ChartToolbox from '~/components/ChartToolbox';
 import {EChartOption} from 'echarts';
+import {Run} from '~/types';
 import {cycleFetcher} from '~/utils/fetch';
 import ee from '~/utils/event';
 import queryString from 'query-string';
@@ -69,7 +70,7 @@ enum YAxisType {
 
 type ScalarChartProps = {
     cid: symbol;
-    runs: string[];
+    runs: Run[];
     tag: string;
     smoothing: number;
     xAxis: keyof typeof xAxisMap;
@@ -94,7 +95,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const echart = useRef<LineChartRef>(null);
 
     const {data: datasets, error, loading} = useRunningRequest<(Dataset | null)[]>(
-        runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
+        runs.map(run => `/scalars/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
@@ -148,7 +149,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const data = useMemo(
         () =>
             chartData({
-                data: smoothedDatasets,
+                data: smoothedDatasets.slice(0, runs.length),
                 runs,
                 smooth,
                 xAxis
@@ -182,7 +183,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                         }
                     }
                     return {
-                        run: runs[index],
+                        run: runs[index].label,
                         item: nearestItem || []
                     };
                 }) ?? [];
