@@ -1,17 +1,17 @@
 numpy == 1.16.6; python_version < "3.0"
-numpy == 1.18.2; python_version >= "3.0"
-recommonmark == 0.6.0
+numpy ; python_version >= "3.0"
+recommonmark >= 0.6.0
 scipy == 1.2.3; python_version < "3.0"
-scipy == 1.4.1; python_version >= "3.0"
+scipy >= 1.4.1; python_version >= "3.0"
 Sphinx == 1.8.5; python_version < "3.0"
-Sphinx == 2.4.4; python_version >= "3.0"
-sphinx-rtd-theme == 0.4.3
-flake8 == 3.7.9
+Sphinx >= 2.4.4; python_version >= "3.0"
+sphinx-rtd-theme >= 0.4.3
+flake8 >= 3.7.9
 Pillow == 6.2.2; python_version < "3.0"
-Pillow == 7.0.0; python_version >= "3.0"
+Pillow >= 7.0.0; python_version >= "3.0"
 pre-commit == 1.21.0; python_version <= "3.5"
-pre-commit == 2.2.0; python_version > "3.5"
-flask == 1.1.1
-Flask-Babel === 1.0.0
-six == 1.14.0
-protobuf == 3.11.3
+pre-commit >= 2.2.0; python_version > "3.5"
+flask >= 1.1.1
+Flask-Babel >= 1.0.0
+six >= 1.14.0
+protobuf >= 3.1.0

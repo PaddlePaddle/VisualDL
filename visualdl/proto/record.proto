@@ -1,0 +1,46 @@
+syntax = "proto3";
+package visualdl;
+
+message Record {
+
+  message Image {
+    bytes encoded_image_string = 4;
+  }
+
+  message Audio {
+    float sample_rate = 1;
+    int64 num_channels = 2;
+    int64 length_frames = 3;
+    bytes encoded_audio_string = 4;
+    string content_type = 5;
+  }
+
+  message Embedding {
+    string label = 1;
+    repeated float vectors = 2;
+  }
+
+  message Embeddings {
+    repeated Embedding embeddings = 1;
+  }
+
+  message bytes_embeddings {
+    bytes encoded_labels = 1;
+    bytes encoded_vectors = 2;
+  }
+
+  message Value {
+    int64 id = 1;
+    string tag = 2;
+    int64 timestamp = 3;
+    oneof one_value {
+      float value = 4;
+      Image image = 5;
+      Audio audio = 6;
+      Embeddings embeddings = 7;
+    }
+  }
+
+  repeated Value values = 1;
+  //RecordMetaData meta_data = 2;
+}
