@@ -13,6 +13,21 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-refresh:before {
+    content: '\e90c';
+}
+.icon-restore-size:before {
+    content: '\e90d';
+}
+.icon-minimize:before {
+    content: '\e90e';
+}
+.icon-log-axis:before {
+    content: '\e90f';
+}
+.icon-maximize:before {
+    content: '\e910';
+}
 .icon-chevron-down:before {
     content: '\e90a';
 }

@@ -1,7 +1,7 @@
 import {Dimension, Reduction} from '~/resource/high-dimensional';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useEffect, useState} from 'react';
-import Select, {SelectValueType} from '~/components/Select';
+import Select, {SelectProps} from '~/components/Select';
 import {em, rem} from '~/utils/style';
 
 import AsideDivider from '~/components/AsideDivider';
@@ -24,6 +24,14 @@ import useSearchValue from '~/hooks/useSearchValue';
 const dimensions = ['2d', '3d'];
 const reductions = ['pca', 'tsne'];
 
+const AsideSection = styled.section`
+    padding: ${rem(20)};
+`;
+
+const StyledSelect = styled<React.FunctionComponent<SelectProps<string>>>(Select)`
+    min-width: ${em(160)};
+`;
+
 const StyledIcon = styled(Icon)`
     margin-right: ${em(4)};
     vertical-align: middle;
@@ -44,7 +52,7 @@ const HighDimensional: NextI18NextPage = () => {
     const {query} = useRouter();
     const queryRun = Array.isArray(query.run) ? query.run[0] : query.run;
     const {data: runs, error, loading} = useRunningRequest<string[]>('/runs', running);
-    const selectedRun = runs?.includes(queryRun) ? queryRun : runs?.[0];
+    const selectedRun = queryRun && runs?.includes(queryRun) ? queryRun : runs?.[0];
 
     const [run, setRun] = useState(selectedRun);
     useEffect(() => setRun(selectedRun), [setRun, selectedRun]);
@@ -56,12 +64,12 @@ const HighDimensional: NextI18NextPage = () => {
     const [labelVisibility, setLabelVisibility] = useState(true);
 
     const aside = (
-        <section>
+        <AsideSection>
             <AsideTitle>{t('common:select-runs')}</AsideTitle>
-            <Select
+            <StyledSelect
                 list={runs}
                 value={run}
-                onChange={(value: SelectValueType | SelectValueType[]) => setRun(value as string)}
+                onChange={(value: NonNullable<typeof runs>[number]) => setRun(value)}
             />
             <AsideDivider />
             <Field>
@@ -78,7 +86,7 @@ const HighDimensional: NextI18NextPage = () => {
                 {t('dimension')}
             </AsideTitle>
             <Field>
-                <RadioGroup value={dimension} onChange={value => setDimension(value as Dimension)}>
+                <RadioGroup value={dimension} onChange={value => setDimension(value)}>
                     {dimensions.map(item => (
                         <RadioButton key={item} value={item}>
                             {t(item)}
@@ -92,7 +100,7 @@ const HighDimensional: NextI18NextPage = () => {
                 {t('reduction-method')}
             </AsideTitle>
             <Field>
-                <RadioGroup value={reduction} onChange={value => setReduction(value as Reduction)}>
+                <RadioGroup value={reduction} onChange={value => setReduction(value)}>
                     {reductions.map(item => (
                         <RadioButton key={item} value={item}>
                             {t(item)}
@@ -101,7 +109,7 @@ const HighDimensional: NextI18NextPage = () => {
                 </RadioGroup>
             </Field>
             <RunningToggle running={running} onToggle={setRunning} />
-        </section>
+        </AsideSection>
     );
 
     return (

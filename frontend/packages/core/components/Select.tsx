@@ -27,12 +27,10 @@ import without from 'lodash/without';
 
 export const padding = em(10);
 export const height = em(36);
-const minWidth = em(160);
 
 const Wrapper = styled.div<{opened?: boolean}>`
     height: ${height};
     line-height: calc(${height} - 2px);
-    min-width: ${minWidth};
     max-width: 100%;
     display: inline-block;
     position: relative;
@@ -122,29 +120,38 @@ const MultipleListItem = styled(Checkbox)<{selected?: boolean}>`
     align-items: center;
 `;
 
-export type SelectValueType = string | number | symbol;
-
 type SelectListItem<T> = {
     value: T;
     label: string;
 };
 
-type SelectProps<T> = {
-    list?: (SelectListItem<T> | string)[];
-    value?: T | T[];
-    onChange?: (value: T | T[]) => unknown;
-    multiple?: boolean;
-    placeholder?: string;
-};
+type OnSingleChange<T> = (value: T) => unknown;
+type OnMultipleChange<T> = (value: T[]) => unknown;
 
-const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
+export type SelectProps<T> = {
+    list?: (SelectListItem<T> | T)[];
+    placeholder?: string;
+} & (
+    | {
+          value?: T;
+          onChange?: OnSingleChange<T>;
+          multiple?: false;
+      }
+    | {
+          value?: T[];
+          onChange?: OnMultipleChange<T>;
+          multiple: true;
+      }
+);
+
+const Select = <T extends unknown>({
     list: propList,
     value: propValue,
     placeholder,
     multiple,
     className,
     onChange
-}) => {
+}: SelectProps<T> & WithStyled): ReturnType<FunctionComponent> => {
     const {t} = useTranslation('common');
 
     const [isOpened, setIsOpened] = useState(false);
@@ -158,53 +165,56 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
         setValue
     ]);
 
-    const isSelected = useMemo(
-        () => !!(multiple ? value && (value as SelectValueType[]).length !== 0 : (value as SelectValueType)),
-        [multiple, value]
-    );
+    const isSelected = useMemo(() => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : (value as T)), [
+        multiple,
+        value
+    ]);
     const changeValue = useCallback(
-        (mutateValue: SelectValueType, checked?: boolean) => {
-            let newValue;
-            if (multiple) {
-                newValue = value as SelectValueType[];
-                if (checked) {
-                    if (!newValue.includes(mutateValue)) {
-                        newValue = [...newValue, mutateValue];
-                    }
-                } else {
-                    if (newValue.includes(mutateValue)) {
-                        newValue = without(newValue, mutateValue);
-                    }
+        (mutateValue: T) => {
+            setValue(mutateValue);
+            (onChange as OnSingleChange<T>)?.(mutateValue);
+            setIsOpenedFalse();
+        },
+        [setIsOpenedFalse, onChange]
+    );
+    const changeMultipleValue = useCallback(
+        (mutateValue: T, checked: boolean) => {
+            let newValue = value as T[];
+            if (checked) {
+                if (!newValue.includes(mutateValue)) {
+                    newValue = [...newValue, mutateValue];
                 }
             } else {
-                newValue = mutateValue;
+                if (newValue.includes(mutateValue)) {
+                    newValue = without(newValue, mutateValue);
+                }
             }
             setValue(newValue);
-            onChange?.(newValue);
-            if (!multiple) {
-                setIsOpenedFalse();
-            }
+            (onChange as OnMultipleChange<T>)?.(newValue);
         },
-        [multiple, value, setIsOpenedFalse, onChange]
+        [value, onChange]
     );
 
     const ref = useClickOutside(setIsOpenedFalse);
 
-    const list = useMemo(
-        () => propList?.map(item => ('string' === typeof item ? {value: item, label: item} : item)) ?? [],
+    const list = useMemo<SelectListItem<T>[]>(
+        () =>
+            propList?.map(item =>
+                ['string', 'number'].includes(typeof item)
+                    ? {value: item as T, label: item + ''}
+                    : (item as SelectListItem<T>)
+            ) ?? [],
         [propList]
     );
     const isListEmpty = useMemo(() => list.length === 0, [list]);
 
-    const findLabelByValue = useCallback((v: SelectValueType) => list.find(item => item.value === v)?.label ?? '', [
-        list
-    ]);
+    const findLabelByValue = useCallback((v: T) => list.find(item => item.value === v)?.label ?? '', [list]);
     const label = useMemo(
         () =>
             isSelected
                 ? multiple
-                    ? (value as SelectValueType[]).map(findLabelByValue).join(' / ')
-                    : findLabelByValue(value as SelectValueType)
+                    ? (value as T[]).map(findLabelByValue).join(' / ')
+                    : findLabelByValue(value as T)
                 : placeholder || t('select'),
         [multiple, value, findLabelByValue, isSelected, placeholder, t]
     );
@@ -222,11 +232,11 @@ const Select: FunctionComponent<SelectProps<SelectValueType> & WithStyled> = ({
                           if (multiple) {
                               return (
                                   <MultipleListItem
-                                      value={(value as SelectValueType[]).includes(item.value)}
+                                      value={(value as T[]).includes(item.value)}
                                       key={index}
                                       title={item.label}
                                       size="small"
-                                      onChange={checked => changeValue(item.value, checked)}
+                                      onChange={checked => changeMultipleValue(item.value, checked)}
                                   >
                                       {item.label}
                                   </MultipleListItem>

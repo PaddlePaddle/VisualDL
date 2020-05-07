@@ -1,37 +1,23 @@
 // cSpell:words ungrouped
 
+import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
-// import {em, rem} from '~/utils/style';
 
-import AsideDivider from '~/components/AsideDivider';
-import ChartPage from '~/components/ChartPage';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
-// import Field from '~/components/Field';
-// import Icon from '~/components/Icon';
+import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
-import RunSelect from '~/components/RunSelect';
-import RunningToggle from '~/components/RunningToggle';
+import RunAside from '~/components/RunAside';
 import SampleChart from '~/components/SamplesPage/SampleChart';
-import TagFilter from '~/components/TagFilter';
+import Slider from '~/components/Slider';
 import Title from '~/components/Title';
-// import {rem} from '~/utils/style';
-// import styled from 'styled-components';
+import {rem} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
 
-// const StyledIcon = styled(Icon)`
-//     font-size: ${rem(16)};
-//     margin-left: ${em(6)};
-//     margin-right: ${em(4)};
-//     vertical-align: middle;
-// `;
-
-// const CheckboxTitle = styled.span`
-//     font-size: ${rem(16)};
-//     font-weight: 700;
-//     vertical-align: text-top;
-// `;
+const chartSize = {
+    height: rem(406)
+};
 
 type Item = {
     run: string;
@@ -43,65 +29,62 @@ const Samples: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, selectedTags, onChangeRuns, onFilterTags, loadingRuns, loadingTags} = useTagFilter(
-        'images',
-        running
-    );
+    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('images', running);
+
     const ungroupedSelectedTags = useMemo(
         () =>
-            selectedTags.reduce<Item[]>((prev, {runs, ...item}) => {
+            tags.reduce<Item[]>((prev, {runs, ...item}) => {
                 Array.prototype.push.apply(
                     prev,
-                    runs.map(run => ({...item, run}))
+                    runs.map(run => ({...item, run: run.label, id: `${item.label}-${run.label}`}))
                 );
                 return prev;
             }, []),
-        [selectedTags]
+        [tags]
     );
 
-    const showImage = true;
-    // const [showImage, setShowImage] = useState(true);
-    // const [showAudio, setShowAudio] = useState(true);
-    // const [showText, setShowText] = useState(true);
-
     const [showActualSize, setShowActualSize] = useState(false);
+    const [brightness, setBrightness] = useState(1);
+    const [contrast, setContrast] = useState(1);
 
     const aside = (
-        <section>
-            <RunSelect runs={runs} value={selectedRuns} onChange={onChangeRuns} />
-            <AsideDivider />
-            {/* <Field>
-                <Checkbox value={showImage} onChange={setShowImage} disabled>
-                    <StyledIcon type="image" />
-                    <CheckboxTitle>{t('image')}</CheckboxTitle>
-                </Checkbox>
-            </Field> */}
-            {showImage && (
+        <RunAside
+            runs={runs}
+            selectedRuns={selectedRuns}
+            onChangeRuns={onChangeRuns}
+            running={running}
+            onToggleRunning={setRunning}
+        >
+            <section>
                 <Checkbox value={showActualSize} onChange={setShowActualSize}>
                     {t('show-actual-size')}
                 </Checkbox>
-            )}
-            {/* <AsideDivider />
-            <Field>
-                <Checkbox value={showAudio} onChange={setShowAudio}>
-                    <StyledIcon type="audio" />
-                    <CheckboxTitle>{t('audio')}</CheckboxTitle>
-                </Checkbox>
-            </Field>
-            <AsideDivider />
-            <Field>
-                <Checkbox value={showText} onChange={setShowText}>
-                    <StyledIcon type="text" />
-                    <CheckboxTitle>{t('text')}</CheckboxTitle>
-                </Checkbox>
-            </Field> */}
-            <RunningToggle running={running} onToggle={setRunning} />
-        </section>
+            </section>
+            <section>
+                <Field label={t('brightness')}>
+                    <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
+                </Field>
+            </section>
+            <section>
+                <Field label={t('contrast')}>
+                    <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
+                </Field>
+            </section>
+        </RunAside>
     );
 
-    const withChart = useCallback(
-        ({run, label}: Item) => <SampleChart run={run} tag={label} fit={!showActualSize} running={running} />,
-        [showActualSize, running]
+    const withChart = useCallback<WithChart<Item>>(
+        ({run, label}) => (
+            <SampleChart
+                run={run}
+                tag={label}
+                fit={!showActualSize}
+                running={running}
+                brightness={brightness}
+                contrast={contrast}
+            />
+        ),
+        [showActualSize, running, brightness, contrast]
     );
 
     return (
@@ -110,8 +93,12 @@ const Samples: NextI18NextPage = () => {
             <Preloader url="/images/tags" />
             <Title>{t('common:samples')}</Title>
             <Content aside={aside} loading={loadingRuns}>
-                <TagFilter tags={tags} onChange={onFilterTags} />
-                <ChartPage items={ungroupedSelectedTags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                <ChartPage
+                    items={ungroupedSelectedTags}
+                    chartSize={chartSize}
+                    withChart={withChart}
+                    loading={loadingRuns || loadingTags}
+                />
             </Content>
         </>
     );

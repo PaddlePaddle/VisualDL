@@ -18,6 +18,10 @@ import useRequest from '~/hooks/useRequest';
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const dumbFn = () => {};
 
+const AsideSection = styled.section`
+    padding: ${rem(20)};
+`;
+
 const SubSection = styled.div`
     margin-bottom: ${rem(30)};
 `;
@@ -257,12 +261,12 @@ const Graphs: NextI18NextPage = () => {
     const {currentNode, downloadImage, fitScreen, scale, setScale} = useDagreD3(graph);
 
     const aside = (
-        <section>
+        <AsideSection>
             <SubSection>
-                <Button icon="download" onClick={downloadImage}>
+                <Button rounded type="primary" icon="download" onClick={downloadImage}>
                     {t('download-image')}
                 </Button>
-                <Button icon="revert" onClick={fitScreen}>
+                <Button rounded type="primary" icon="revert" onClick={fitScreen}>
                     {t('restore-image')}
                 </Button>
             </SubSection>
@@ -277,7 +281,7 @@ const Graphs: NextI18NextPage = () => {
                 <Field label={`${t('node-info')}:`} />
                 <NodeInfo node={currentNode} />
             </SubSection>
-        </section>
+        </AsideSection>
     );
 
     const ContentInner = useMemo(() => {

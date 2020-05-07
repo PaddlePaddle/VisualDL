@@ -30,11 +30,11 @@
     },
     "dependencies": {
         "@visualdl/server": "^2.0.0-beta.32",
-        "pm2": "4.2.3"
+        "pm2": "4.4.0"
     },
     "devDependencies": {
-        "electron": "8.2.1",
-        "electron-builder": "22.4.1"
+        "electron": "8.2.5",
+        "electron-builder": "22.6.0"
     },
     "engines": {
         "node": ">=10",

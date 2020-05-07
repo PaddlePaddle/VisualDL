@@ -15,5 +15,10 @@
         "ascending": "升序",
         "nearest": "最近"
     },
-    "ignore-outliers": "图表缩放时忽略极端值"
+    "ignore-outliers": "图表缩放时忽略极端值",
+    "maximize": "最大化",
+    "minimize": "最小化",
+    "restore": "还原",
+    "axis": "坐标轴",
+    "download-image": "下载图片"
 }

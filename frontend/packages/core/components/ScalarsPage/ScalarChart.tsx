@@ -4,6 +4,7 @@ import {
     RangeParams,
     TransformParams,
     chartData,
+    nearestPoint,
     range,
     singlePointRange,
     sortingMethodMap,
@@ -11,20 +12,20 @@ import {
     transform,
     xAxisMap
 } from '~/resource/scalars';
-import React, {FunctionComponent, useCallback, useMemo} from 'react';
-import {em, size} from '~/utils/style';
+import LineChart, {LineChartRef} from '~/components/LineChart';
+import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
+import {rem, size} from '~/utils/style';
 
+import ChartToolbox from '~/components/ChartToolbox';
 import {EChartOption} from 'echarts';
-import LineChart from '~/components/LineChart';
+import {Run} from '~/types';
 import {cycleFetcher} from '~/utils/fetch';
+import ee from '~/utils/event';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
-
-const width = em(430);
-const height = em(320);
 
 const smoothWasm = () =>
     import('@visualdl/wasm').then(({transform}) => (params: TransformParams) =>
@@ -38,28 +39,63 @@ const rangeWasm = () =>
 const smoothWorker = () => new Worker('~/worker/scalars/smooth.worker.ts', {type: 'module'});
 const rangeWorker = () => new Worker('~/worker/scalars/range.worker.ts', {type: 'module'});
 
+const Wrapper = styled.div`
+    ${size('100%', '100%')}
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+
+    .echarts td.run .run-indicator {
+        ${size(12, 12)}
+        display: inline-block;
+        border-radius: 6px;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+`;
+
 const StyledLineChart = styled(LineChart)`
-    ${size(height, width)}
+    flex-grow: 1;
+`;
+
+const Toolbox = styled(ChartToolbox)`
+    margin-left: ${rem(20)};
+    margin-right: ${rem(20)};
 `;
 
 const Error = styled.div`
-    ${size(height, width)}
+    ${size('100%', '100%')}
     display: flex;
     justify-content: center;
     align-items: center;
 `;
 
+enum XAxisType {
+    value = 'value',
+    log = 'log',
+    time = 'time'
+}
+
+enum YAxisType {
+    value = 'value',
+    log = 'log'
+}
+
 type ScalarChartProps = {
-    runs: string[];
+    cid: symbol;
+    runs: Run[];
     tag: string;
     smoothing: number;
     xAxis: keyof typeof xAxisMap;
     sortingMethod: keyof typeof sortingMethodMap;
     outlier?: boolean;
     running?: boolean;
+    onToggleMaximized?: (maximized: boolean) => void;
 };
 
 const ScalarChart: FunctionComponent<ScalarChartProps> = ({
+    cid,
     runs,
     tag,
     smoothing,
@@ -70,15 +106,27 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 }) => {
     const {t, i18n} = useTranslation(['scalars', 'common']);
 
+    const echart = useRef<LineChartRef>(null);
+
     const {data: datasets, error, loading} = useRunningRequest<(Dataset | null)[]>(
-        runs.map(run => `/scalars/list?${queryString.stringify({run, tag})}`),
+        runs.map(run => `/scalars/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
 
     const smooth = false;
-    const type = useMemo(() => (xAxis === 'wall' ? 'time' : 'value'), [xAxis]);
-    const xAxisLabel = useMemo(() => (xAxis === 'step' ? '' : t(`x-axis-value.${xAxis}`)), [xAxis, t]);
+    const [maximized, setMaximized] = useState<boolean>(false);
+    const toggleMaximized = useCallback(() => {
+        ee.emit('toggle-chart-size', cid, !maximized);
+        setMaximized(m => !m);
+    }, [cid, maximized]);
+
+    const xAxisType = useMemo(() => (xAxis === 'wall' ? XAxisType.time : XAxisType.value), [xAxis]);
+
+    const [yAxisType, setYAxisType] = useState<YAxisType>(YAxisType.value);
+    const toggleYAxisType = useCallback(() => {
+        setYAxisType(t => (t === YAxisType.log ? YAxisType.value : YAxisType.log));
+    }, [setYAxisType]);
 
     const transformParams = useMemo(
         () => ({
@@ -104,18 +152,18 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
         // if there is only one point, place it in the middle
         if (smoothedDatasets.length === 1 && smoothedDatasets[0].length === 1) {
-            if (['value', 'log'].includes(type)) {
+            if ([XAxisType.value, XAxisType.log].includes(xAxisType)) {
                 x = singlePointRange(smoothedDatasets[0][0][xAxisMap[xAxis]]);
             }
             y = singlePointRange(smoothedDatasets[0][0][2]);
         }
         return {x, y};
-    }, [smoothedDatasets, yRange, type, xAxis]);
+    }, [smoothedDatasets, yRange, xAxisType, xAxis]);
 
     const data = useMemo(
         () =>
             chartData({
-                data: smoothedDatasets,
+                data: smoothedDatasets.slice(0, runs.length),
                 runs,
                 smooth,
                 xAxis
@@ -127,32 +175,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const data = Array.isArray(params) ? params[0].data : params.data;
             const step = data[1];
-            const points =
-                smoothedDatasets?.map((series, index) => {
-                    let nearestItem;
-                    if (step === 0) {
-                        nearestItem = series[0];
-                    } else {
-                        for (let i = 0; i < series.length; i++) {
-                            const item = series[i];
-                            if (item[1] === step) {
-                                nearestItem = item;
-                                break;
-                            }
-                            if (item[1] > step) {
-                                nearestItem = series[i - 1 >= 0 ? i - 1 : 0];
-                                break;
-                            }
-                            if (!nearestItem) {
-                                nearestItem = series[series.length - 1];
-                            }
-                        }
-                    }
-                    return {
-                        run: runs[index],
-                        item: nearestItem || []
-                    };
-                }) ?? [];
+            const points = nearestPoint(smoothedDatasets ?? [], runs, step);
             const sort = sortingMethodMap[sortingMethod];
             return tooltip(sort ? sort(points, data) : points, i18n);
         },
@@ -165,16 +188,47 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     }
 
     return (
-        <StyledLineChart
-            title={tag}
-            xAxis={xAxisLabel}
-            xRange={ranges.x}
-            yRange={ranges.y}
-            type={type}
-            tooltip={formatter}
-            data={data}
-            loading={loading}
-        />
+        <Wrapper>
+            <StyledLineChart
+                ref={echart}
+                title={tag}
+                xRange={ranges.x}
+                yRange={ranges.y}
+                xType={xAxisType}
+                yType={yAxisType}
+                tooltip={formatter}
+                data={data}
+                loading={loading}
+            />
+            <Toolbox
+                items={[
+                    {
+                        icon: 'maximize',
+                        activeIcon: 'minimize',
+                        tooltip: t('maximize'),
+                        activeTooltip: t('minimize'),
+                        toggle: true,
+                        onClick: toggleMaximized
+                    },
+                    {
+                        icon: 'restore-size',
+                        tooltip: t('restore'),
+                        onClick: () => echart.current?.restore()
+                    },
+                    {
+                        icon: 'log-axis',
+                        tooltip: t('axis'),
+                        toggle: true,
+                        onClick: toggleYAxisType
+                    },
+                    {
+                        icon: 'download',
+                        tooltip: t('download-image'),
+                        onClick: () => echart.current?.saveAsImage()
+                    }
+                ]}
+            />
+        </Wrapper>
     );
 };
 

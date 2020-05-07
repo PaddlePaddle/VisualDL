@@ -29,7 +29,7 @@ const nextI18Next = new NextI18Next({
 
 export default nextI18Next;
 
-export const {i18n, appWithTranslation, withTranslation, useTranslation, Router, Link, Trans} = nextI18Next;
+export const {i18n, config, appWithTranslation, withTranslation, useTranslation, Router, Link, Trans} = nextI18Next;
 
 // from ~/node_modules/next/types/index.d.ts
 // https://gitlab.com/kachkaev/website-frontend/-/blob/master/src/i18n.ts#L64-68

@@ -32,7 +32,9 @@ export type InputProps = {
     onChange?: (value: string) => unknown;
 };
 
-const Input: FunctionComponent<InputProps & WithStyled> = ({rounded, placeholder, value, onChange, className}) => (
+const Input: FunctionComponent<
+    InputProps & WithStyled & Omit<React.ComponentPropsWithoutRef<'input'>, keyof InputProps>
+> = ({rounded, placeholder, value, onChange, className, ...props}) => (
     <StyledInput
         rounded={rounded}
         placeholder={placeholder}
@@ -40,7 +42,8 @@ const Input: FunctionComponent<InputProps & WithStyled> = ({rounded, placeholder
         type="text"
         className={className}
         onChange={e => onChange?.(e.target.value)}
-    ></StyledInput>
+        {...props}
+    />
 );
 
 export default Input;

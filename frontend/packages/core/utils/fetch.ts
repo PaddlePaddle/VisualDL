@@ -12,9 +12,15 @@ export const fetcher = async <T = any>(url: string, options?: any): Promise<T> =
     return response && 'data' in response ? response.data : response;
 };
 
-export const blobFetcher = async (url: string, options?: any): Promise<Blob> => {
+export type BlobResponse = {
+    data: Blob;
+    type: string | null;
+};
+
+export const blobFetcher = async (url: string, options?: any): Promise<BlobResponse> => {
     const res = await fetch(process.env.API_URL + url, options);
-    return await res.blob();
+    const data = await res.blob();
+    return {data, type: res.headers.get('Content-Type')};
 };
 
 export const cycleFetcher = async <T = any>(urls: string[], options?: any): Promise<T[]> => {

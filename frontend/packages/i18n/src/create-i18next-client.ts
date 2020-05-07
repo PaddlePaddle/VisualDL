@@ -2,7 +2,7 @@ import {Config, InitPromise} from '../types';
 
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import i18n from 'i18next';
-import i18nextXHRBackend from 'i18next-xhr-backend';
+import i18nextHttpBackend from 'i18next-http-backend';
 import isNode from 'detect-node';
 
 export default (config: Config) => {
@@ -10,8 +10,8 @@ export default (config: Config) => {
 
     if (!i18n.isInitialized) {
         if (isNode) {
-            const i18nextNodeBackend = eval("require('i18next-node-fs-backend')");
-            const i18nextMiddleware = eval("require('i18next-express-middleware')");
+            const i18nextNodeBackend = eval('require("i18next-fs-backend")');
+            const i18nextMiddleware = eval('require("i18next-http-middleware")');
             i18n.use(i18nextNodeBackend);
             if (config.serverLanguageDetection) {
                 const serverDetectors = new i18nextMiddleware.LanguageDetector();
@@ -19,7 +19,7 @@ export default (config: Config) => {
                 i18n.use(serverDetectors);
             }
         } else {
-            i18n.use(i18nextXHRBackend);
+            i18n.use(i18nextHttpBackend);
             if (config.browserLanguageDetection) {
                 const browserDetectors = new I18nextBrowserLanguageDetector();
                 config.customDetectors?.forEach(detector => browserDetectors.addDetector(detector));

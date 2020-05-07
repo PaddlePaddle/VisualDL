@@ -6,9 +6,15 @@ import styled from 'styled-components';
 import {useTranslation} from '~/utils/i18n';
 
 const Label = styled.div`
+    display: flex;
+    justify-content: space-between;
     color: ${textLightColor};
     font-size: ${em(12)};
     margin-bottom: ${em(5)};
+
+    > :not(:first-child) {
+        flex-grow: 0;
+    }
 `;
 
 const FullWidthRangeSlider = styled(RangeSlider)`
@@ -22,7 +28,7 @@ type StepSliderProps = {
     onChangeComplete?: () => unknown;
 };
 
-const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeComplete, value, steps}) => {
+const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeComplete, value, steps, children}) => {
     const {t} = useTranslation('samples');
     const [step, setStep] = useState(value);
 
@@ -38,7 +44,10 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeCompl
 
     return (
         <>
-            <Label>{`${t('step')}: ${steps[step] ?? '...'}`}</Label>
+            <Label>
+                <span>{`${t('step')}: ${steps[step] ?? '...'}`}</span>
+                {children && <span>{children}</span>}
+            </Label>
             <FullWidthRangeSlider
                 min={0}
                 max={steps.length ? steps.length - 1 : 0}

@@ -1,10 +1,11 @@
 import * as chart from '~/utils/chart';
 
-import {ChartDataParams, RangeParams, TooltipData, TransformParams, xAxisMap} from './types';
+import {ChartDataParams, Dataset, RangeParams, TooltipData, TransformParams} from './types';
 import {formatTime, quantile} from '~/utils';
 
 import BigNumber from 'bignumber.js';
 import {I18n} from '@visualdl/i18n';
+import {Run} from '~/types';
 import cloneDeep from 'lodash/cloneDeep';
 import compact from 'lodash/compact';
 import maxBy from 'lodash/maxBy';
@@ -14,6 +15,12 @@ import sortBy from 'lodash/sortBy';
 BigNumber.config({EXPONENTIAL_AT: [-6, 7]});
 
 export * from './types';
+
+export const xAxisMap = {
+    step: 1,
+    relative: 4,
+    wall: 0
+};
 
 export const sortingMethodMap = {
     default: null,
@@ -38,7 +45,7 @@ export const transform = ({datasets, smoothing}: TransformParams) =>
             if (i === 0) {
                 startValue = millisecond;
             }
-            // Relative time, millisecond to hours.
+            // relative time, millisecond to hours.
             d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
             if (!nextVal.isFinite()) {
                 d[3] = nextVal.toNumber();
@@ -67,9 +74,9 @@ export const chartData = ({data, runs, smooth, xAxis}: ChartDataParams) =>
             // [2] orginal value
             // [3] smoothed value
             // [4] relative
-            const name = runs[i];
-            const color = chart.color[i % chart.color.length];
-            const colorAlt = chart.colorAlt[i % chart.colorAlt.length];
+            const name = runs[i].label;
+            const color = runs[i].colors[0];
+            const colorAlt = runs[i].colors[1];
             return [
                 {
                     name,
@@ -140,52 +147,87 @@ export const range = ({datasets, outlier}: RangeParams) => {
     }
 };
 
+export const nearestPoint = (data: Dataset[], runs: Run[], step: number) =>
+    data.map((series, index) => {
+        let nearestItem;
+        if (step === 0) {
+            nearestItem = series[0];
+        } else {
+            for (let i = 0; i < series.length; i++) {
+                const item = series[i];
+                if (item[1] === step) {
+                    nearestItem = item;
+                    break;
+                }
+                if (item[1] > step) {
+                    nearestItem = series[i - 1 >= 0 ? i - 1 : 0];
+                    break;
+                }
+                if (!nearestItem) {
+                    nearestItem = series[series.length - 1];
+                }
+            }
+        }
+        return {
+            run: runs[index],
+            item: nearestItem || []
+        };
+    });
+
 // TODO: make it better, don't concat html
 export const tooltip = (data: TooltipData[], i18n: I18n) => {
     const indexPropMap = {
-        Time: 0,
-        Step: 1,
-        Value: 2,
-        Smoothed: 3,
-        Relative: 4
-    };
+        time: 0,
+        step: 1,
+        value: 2,
+        smoothed: 3,
+        relative: 4
+    } as const;
     const widthPropMap = {
-        Run: 60,
-        Time: 120,
-        Step: 40,
-        Value: 60,
-        Smoothed: 60,
-        Relative: 60
-    };
+        run: [60, 180] as [number, number],
+        time: 150,
+        step: 40,
+        value: 60,
+        smoothed: 70,
+        relative: 60
+    } as const;
     const translatePropMap = {
-        Run: 'common:runs',
-        Time: 'scalars:x-axis-value.wall',
-        Step: 'scalars:x-axis-value.step',
-        Value: 'scalars:value',
-        Smoothed: 'scalars:smoothed',
-        Relative: 'scalars:x-axis-value.relative'
-    };
+        run: 'common:runs',
+        time: 'scalars:x-axis-value.wall',
+        step: 'scalars:x-axis-value.step',
+        value: 'scalars:value',
+        smoothed: 'scalars:smoothed',
+        relative: 'scalars:x-axis-value.relative'
+    } as const;
     const transformedData = data.map(item => {
         const data = item.item;
         return {
-            Run: item.run,
+            run: item.run,
             // use precision then toString to remove trailling 0
-            Smoothed: new BigNumber(data[indexPropMap.Smoothed] ?? Number.NaN).precision(5).toString(),
-            Value: new BigNumber(data[indexPropMap.Smoothed] ?? Number.NaN).precision(5).toString(),
-            Step: data[indexPropMap.Step],
-            Time: formatTime(data[indexPropMap.Time], i18n.language),
+            smoothed: new BigNumber(data[indexPropMap.smoothed] ?? Number.NaN).precision(5).toString(),
+            value: new BigNumber(data[indexPropMap.smoothed] ?? Number.NaN).precision(5).toString(),
+            step: data[indexPropMap.step],
+            time: formatTime(data[indexPropMap.time], i18n.language),
             // Relative display value should take easy-read into consideration.
             // Better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
-            Relative: Math.floor(data[indexPropMap.Relative] * 60 * 60) + 's'
-        };
+            relative: Math.floor(data[indexPropMap.relative] * 60 * 60) + 's'
+        } as const;
     });
+
+    const renderContent = (content: string, width: number | [number, number]) =>
+        `<div style="overflow: hidden; ${
+            Array.isArray(width)
+                ? `min-width:${(width as [number, number])[0]};max-width:${(width as [number, number])[1]};`
+                : `width:${width as number}px;`
+        }">${content}</div>`;
 
     let headerHtml = '<tr style="font-size:14px;">';
     headerHtml += (Object.keys(transformedData[0]) as (keyof typeof transformedData[0])[])
         .map(key => {
-            return `<td style="padding: 0 4px; font-weight: bold; width: ${widthPropMap[key]}px;">${i18n.t(
-                translatePropMap[key]
-            )}</td>`;
+            return `<th style="padding: 0 4px; font-weight: bold;" class="${key}">${renderContent(
+                i18n.t(translatePropMap[key]),
+                widthPropMap[key]
+            )}</th>`;
         })
         .join('');
     headerHtml += '</tr>';
@@ -194,8 +236,20 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         .map(item => {
             let str = '<tr style="font-size:12px;">';
             str += Object.keys(item)
-                .map(val => {
-                    return `<td style="padding: 0 4px; overflow: hidden;">${item[val as keyof typeof item]}</td>`;
+                .map(key => {
+                    let content = '';
+                    if (key === 'run') {
+                        content += `<span class="run-indicator" style="background-color:${
+                            item[key].colors?.[0] ?? 'transpanent'
+                        }"></span>`;
+                        content += `<span title="${item[key].label}">${item[key].label}</span>`;
+                    } else {
+                        content += item[key as keyof typeof item];
+                    }
+                    return `<td style="padding: 0 4px;" class="${key}">${renderContent(
+                        content,
+                        widthPropMap[key as keyof typeof item]
+                    )}</td>`;
                 })
                 .join('');
             str += '</tr>';
@@ -203,6 +257,5 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         })
         .join('');
 
-    // eslint-disable-next-line
-    return `<table style="text-align: left;table-layout: fixed;width: 500px;"><thead>${headerHtml}</thead><tbody>${content}</tbody><table>`;
+    return `<table style="text-align: left;table-layout: fixed;"><thead>${headerHtml}</thead><tbody>${content}</tbody><table>`;
 };

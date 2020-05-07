@@ -31,12 +31,12 @@
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {
-        "@types/node": "13.11.1",
+        "@types/node": "13.13.5",
         "@types/rimraf": "3.0.0",
         "@visualdl/core": "^2.0.0-beta.32",
         "cross-env": "7.0.2",
         "rimraf": "3.0.2",
-        "ts-node": "8.8.2",
+        "ts-node": "8.10.1",
         "typescript": "3.8.3"
     },
     "engines": {

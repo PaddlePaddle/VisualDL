@@ -21,6 +21,9 @@ const useECharts = <T extends HTMLElement>(options: {
             if (options.gl) {
                 await import('echarts-gl');
             }
+            if (!ref.current) {
+                return;
+            }
             echartInstance.current = echarts.init((ref.current as unknown) as HTMLDivElement);
             if (options.zoom) {
                 setTimeout(() => {

@@ -1,30 +1,45 @@
-import React, {FunctionComponent, useLayoutEffect, useState} from 'react';
+import {BlobResponse, blobFetcher} from '~/utils/fetch';
+import React, {useImperativeHandle, useLayoutEffect, useState} from 'react';
 
 import GridLoader from 'react-spinners/GridLoader';
-import {blobFetcher} from '~/utils/fetch';
+import mime from 'mime-types';
 import {primaryColor} from '~/utils/style';
+import {saveAs} from 'file-saver';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
+
+export type ImageRef = {
+    save(filename: string): void;
+};
 
 type ImageProps = {
     src?: string;
     cache?: number;
 };
 
-const Image: FunctionComponent<ImageProps> = ({src, cache}) => {
+const Image = React.forwardRef<ImageRef, ImageProps>(({src, cache}, ref) => {
     const {t} = useTranslation('common');
 
     const [url, setUrl] = useState('');
 
-    const {data, error, loading} = useRequest<Blob>(src ?? null, blobFetcher, {
+    const {data, error, loading} = useRequest<BlobResponse>(src ?? null, blobFetcher, {
         dedupingInterval: cache ?? 2000
     });
+
+    useImperativeHandle(ref, () => ({
+        save: (filename: string) => {
+            if (data) {
+                const ext = data.type ? mime.extension(data.type) : null;
+                saveAs(data.data, filename.replace(/[/\\?%*:|"<>]/g, '_') + (ext ? `.${ext}` : ''));
+            }
+        }
+    }));
 
     // use useLayoutEffect hook to prevent image render after url revoked
     useLayoutEffect(() => {
         if (process.browser && data) {
             let objectUrl: string | null = null;
-            objectUrl = URL.createObjectURL(data);
+            objectUrl = URL.createObjectURL(data.data);
             setUrl(objectUrl);
             return () => {
                 objectUrl && URL.revokeObjectURL(objectUrl);
@@ -41,6 +56,6 @@ const Image: FunctionComponent<ImageProps> = ({src, cache}) => {
     }
 
     return <img src={url} />;
-};
+});
 
 export default Image;

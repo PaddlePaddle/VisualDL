@@ -1,3 +1,6 @@
+import {Run} from '~/types';
+import {xAxisMap} from './index';
+
 export type Dataset = number[][];
 
 export type Range = {
@@ -5,14 +8,8 @@ export type Range = {
     max: number;
 };
 
-export const xAxisMap = {
-    step: 1,
-    relative: 4,
-    wall: 0
-};
-
 export type TooltipData = {
-    run: string;
+    run: Run;
     item: number[];
 };
 
@@ -23,7 +20,7 @@ export type TransformParams = {
 
 export type ChartDataParams = {
     data: Dataset[];
-    runs: string[];
+    runs: Run[];
     smooth: boolean;
     xAxis: keyof typeof xAxisMap;
 };

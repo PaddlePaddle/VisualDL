@@ -1,32 +1,41 @@
+import {Run, Tag} from '~/types';
+import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
-import {Tag} from '~/types';
 import groupBy from 'lodash/groupBy';
-import intersection from 'lodash/intersection';
+import intersectionBy from 'lodash/intersectionBy';
 import uniq from 'lodash/uniq';
 import {useRouter} from 'next/router';
 import {useRunningRequest} from '~/hooks/useRequest';
 
-type Runs = string[];
 type Tags = Record<string, string[]>;
 
 type State = {
-    runs: Runs;
+    initRuns: string[];
+    runs: Run[];
+    selectedRuns: Run[];
     initTags: Tags;
     tags: Tag[];
-    filteredTags: Tag[];
+    selectedTags: Tag[];
 };
 
 enum ActionType {
+    initRuns,
     setRuns,
+    setSelectedRuns,
     initTags,
     setTags,
-    setFilteredTags
+    setSelectedTags
 }
 
+type ActionInitRuns = {
+    type: ActionType.initRuns;
+    payload: string[];
+};
+
 type ActionSetRuns = {
-    type: ActionType.setRuns;
-    payload: Runs;
+    type: ActionType.setRuns | ActionType.setSelectedRuns;
+    payload: Run[];
 };
 
 type ActionInitTags = {
@@ -35,31 +44,26 @@ type ActionInitTags = {
 };
 
 type ActionSetTags = {
-    type: ActionType.setTags;
+    type: ActionType.setTags | ActionType.setSelectedTags;
     payload: Tag[];
 };
 
-type ActionSetFilteredTags = {
-    type: ActionType.setFilteredTags;
-    payload: Tag[];
-};
-
-type Action = ActionSetRuns | ActionInitTags | ActionSetTags | ActionSetFilteredTags;
+type Action = ActionInitRuns | ActionSetRuns | ActionInitTags | ActionSetTags;
 
 type SingleTag = {label: Tag['label']; run: Tag['runs'][number]};
 
-const groupTags = (runs: Runs, tags?: Tags): Tag[] =>
+const groupTags = (runs: Run[], tags?: Tags): Tag[] =>
     Object.entries(
         groupBy<SingleTag>(
             runs
                 // get tags of selected runs
-                .filter(run => runs.includes(run))
+                .filter(run => !!runs.find(r => r.label === run.label))
                 // group by runs
                 .reduce<SingleTag[]>((prev, run) => {
-                    if (tags && tags[run]) {
+                    if (tags && tags[run.label]) {
                         Array.prototype.push.apply(
                             prev,
-                            tags[run].map(label => ({label, run}))
+                            tags[run.label].map(label => ({label, run}))
                         );
                     }
                     return prev;
@@ -68,34 +72,66 @@ const groupTags = (runs: Runs, tags?: Tags): Tag[] =>
         )
     ).map(([label, tags]) => ({label, runs: tags.map(tag => tag.run)}));
 
+const attachRunColor = (runs: string[]): Run[] =>
+    runs?.map((run, index) => {
+        const i = index % color.length;
+        return {
+            label: run,
+            colors: [color[i], colorAlt[i]]
+        };
+    });
+
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
+        case ActionType.initRuns:
+            const initRuns = action.payload;
+            const initRunsRuns = attachRunColor(initRuns);
+            const initRunsSelectedRuns = state.selectedRuns.filter(run => initRuns.includes(run.label));
+            const initRunsTags = groupTags(initRunsSelectedRuns, state.initTags);
+            return {
+                ...state,
+                initRuns,
+                runs: initRunsRuns,
+                selectedRuns: initRunsSelectedRuns,
+                tags: initRunsTags,
+                selectedTags: initRunsTags
+            };
         case ActionType.setRuns:
-            const runTags = groupTags(action.payload, state.initTags);
+            const setRunsSelectedRuns = intersectionBy(state.selectedRuns, action.payload, r => r.label);
+            const setRunsTags = groupTags(setRunsSelectedRuns, state.initTags);
             return {
                 ...state,
                 runs: action.payload,
-                tags: runTags,
-                filteredTags: runTags
+                selectedRuns: setRunsSelectedRuns,
+                tags: setRunsTags,
+                selectedTags: setRunsTags
+            };
+        case ActionType.setSelectedRuns:
+            const setSelectedRunsTags = groupTags(action.payload, state.initTags);
+            return {
+                ...state,
+                selectedRuns: action.payload,
+                tags: setSelectedRunsTags,
+                selectedTags: setSelectedRunsTags
             };
         case ActionType.initTags:
-            const newTags = groupTags(state.runs, action.payload);
+            const initTagsTags = groupTags(state.selectedRuns, action.payload);
             return {
                 ...state,
                 initTags: action.payload,
-                tags: newTags,
-                filteredTags: newTags
+                tags: initTagsTags,
+                selectedTags: initTagsTags
             };
         case ActionType.setTags:
             return {
                 ...state,
                 tags: action.payload,
-                filteredTags: action.payload
+                selectedTags: action.payload
             };
-        case ActionType.setFilteredTags:
+        case ActionType.setSelectedTags:
             return {
                 ...state,
-                filteredTags: action.payload
+                selectedTags: action.payload
             };
         default:
             throw new Error();
@@ -105,48 +141,42 @@ const reducer = (state: State, action: Action): State => {
 const useTagFilter = (type: string, running: boolean) => {
     const router = useRouter();
 
-    const {data: runs, loading: loadingRuns} = useRunningRequest<Runs>('/runs', running);
+    const {data: runs, loading: loadingRuns} = useRunningRequest<string[]>('/runs', running);
     const {data: tags, loading: loadingTags} = useRunningRequest<Tags>(`/${type}/tags`, running);
 
-    const selectedRuns = useMemo(
+    const [state, dispatch] = useReducer(reducer, {
+        initRuns: [],
+        runs: [],
+        selectedRuns: [],
+        initTags: {},
+        tags: [],
+        selectedTags: []
+    });
+
+    const queryRuns = useMemo(
         () =>
-            runs
-                ? router.query.runs
-                    ? intersection(
-                          uniq(Array.isArray(router.query.runs) ? router.query.runs : router.query.runs.split(',')),
-                          runs
-                      )
-                    : runs
+            router.query.runs
+                ? uniq(Array.isArray(router.query.runs) ? router.query.runs : router.query.runs.split(','))
                 : [],
-        [router, runs]
+        [router]
     );
 
-    const [state, dispatch] = useReducer(
-        reducer,
-        {
-            runs: selectedRuns,
-            initTags: {},
-            tags: groupTags(selectedRuns, tags)
-        },
-        initArgs => ({...initArgs, filteredTags: initArgs.tags})
+    const runsFromQuery = useMemo(
+        () => (queryRuns.length ? state.runs.filter(run => queryRuns.includes(run.label)) : state.runs),
+        [state.runs, queryRuns]
     );
 
-    const onChangeRuns = useCallback((runs: Runs) => dispatch({type: ActionType.setRuns, payload: runs}), [dispatch]);
-    const onInitTags = useCallback((tags: Tags) => dispatch({type: ActionType.initTags, payload: tags}), [dispatch]);
-    const onFilterTags = useCallback((tags: Tag[]) => dispatch({type: ActionType.setFilteredTags, payload: tags}), [
-        dispatch
-    ]);
+    const onChangeRuns = useCallback((runs: Run[]) => dispatch({type: ActionType.setSelectedRuns, payload: runs}), []);
+    const onChangeTags = useCallback((tags: Tag[]) => dispatch({type: ActionType.setSelectedTags, payload: tags}), []);
 
-    useEffect(() => onInitTags(tags || {}), [onInitTags, tags]);
-    useEffect(() => onChangeRuns(selectedRuns), [onChangeRuns, selectedRuns]);
+    useEffect(() => dispatch({type: ActionType.initRuns, payload: runs || []}), [runs]);
+    useEffect(() => dispatch({type: ActionType.setSelectedRuns, payload: runsFromQuery}), [runsFromQuery]);
+    useEffect(() => dispatch({type: ActionType.initTags, payload: tags || {}}), [tags]);
 
     return {
-        runs,
-        tags: state.tags,
-        selectedRuns: state.runs,
-        selectedTags: state.filteredTags,
+        ...state,
         onChangeRuns,
-        onFilterTags,
+        onChangeTags,
         loadingRuns,
         loadingTags
     };

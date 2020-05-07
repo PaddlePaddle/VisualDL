@@ -1,21 +1,21 @@
+import Image, {ImageRef} from '~/components/Image';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ellipsis, em, primaryColor, size, textLightColor} from '~/utils/style';
+import {ellipsis, em, primaryColor, size, textLightColor, transitionProps} from '~/utils/style';
 
+import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
-import Image from '~/components/Image';
 import StepSlider from '~/components/SamplesPage/StepSlider';
+import {formatTime} from '~/utils';
 import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
 
-const width = em(430);
-const height = em(384);
-
 const Wrapper = styled.div`
-    ${size(height, width)}
+    height: 100%;
     padding: ${em(20)};
+    padding-bottom: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -51,10 +51,10 @@ const Title = styled.div`
     }
 `;
 
-const Container = styled.div<{fit?: boolean}>`
+const Container = styled.div<{brightness?: number; contrast?: number; fit?: boolean}>`
     flex-grow: 1;
     flex-shrink: 1;
-    margin-top: ${em(20)};
+    margin: ${em(20)} 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -62,6 +62,8 @@ const Container = styled.div<{fit?: boolean}>`
 
     > img {
         ${size('100%')}
+        filter: brightness(${props => props.brightness ?? 1}) contrast(${props => props.contrast ?? 1});
+        ${transitionProps('filter')}
         object-fit: ${props => (props.fit ? 'contain' : 'scale-down')};
         flex-shrink: 1;
     }
@@ -75,6 +77,8 @@ type ImageData = {
 type SampleChartProps = {
     run: string;
     tag: string;
+    brightness?: number;
+    contrast?: number;
     fit?: boolean;
     running?: boolean;
 };
@@ -84,13 +88,17 @@ const getImageUrl = (index: number, run: string, tag: string, wallTime: number):
 
 const cacheValidity = 5 * 60 * 1000;
 
-const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, running}) => {
-    const {t} = useTranslation('common');
+const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness, contrast, fit, running}) => {
+    const {t, i18n} = useTranslation(['samples', 'common']);
+
+    const image = useRef<ImageRef>(null);
 
     const {data, error, loading} = useRunningRequest<ImageData[]>(
         `/images/list?${queryString.stringify({run, tag})}`,
         !!running
     );
+
+    const steps = useMemo(() => data?.map(item => item.step) ?? [], [data]);
 
     const [step, setStep] = useState(0);
     const [src, setSrc] = useState<string>();
@@ -104,11 +112,13 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
         cached.current = {};
     }, [tag, run]);
 
+    const wallTime = useMemo(() => data?.[step].wallTime ?? 0, [data, step]);
+
     const cacheImageSrc = useCallback(() => {
         if (!data) {
             return;
         }
-        const imageUrl = getImageUrl(step, run, tag, data[step].wallTime);
+        const imageUrl = getImageUrl(step, run, tag, wallTime);
         cached.current[step] = {
             src: imageUrl,
             timer: setTimeout(() => {
@@ -116,7 +126,11 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
             }, cacheValidity)
         };
         setSrc(imageUrl);
-    }, [step, run, tag, data]);
+    }, [step, run, tag, wallTime, data]);
+
+    const saveImage = useCallback(() => {
+        image.current?.save(`${run}-${tag}-${steps[step]}-${wallTime.toString().replace(/\./, '_')}`);
+    }, [run, tag, steps, step, wallTime]);
 
     useEffect(() => {
         if (cached.current[step]) {
@@ -139,12 +153,12 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
             return <GridLoader color={primaryColor} size="10px" />;
         }
         if (!data && error) {
-            return <span>{t('error')}</span>;
+            return <span>{t('common:error')}</span>;
         }
         if (isEmpty(data)) {
-            return <span>{t('empty')}</span>;
+            return <span>{t('common:empty')}</span>;
         }
-        return <Image src={src} cache={cacheValidity} />;
+        return <Image ref={image} src={src} cache={cacheValidity} />;
     }, [loading, error, data, step, src, t]);
 
     return (
@@ -153,13 +167,21 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, fit, runnin
                 <h4>{tag}</h4>
                 <span>{run}</span>
             </Title>
-            <StepSlider
-                value={step}
-                steps={data?.map(item => item.step) ?? []}
-                onChange={setStep}
-                onChangeComplete={cacheImageSrc}
+            <StepSlider value={step} steps={steps} onChange={setStep} onChangeComplete={cacheImageSrc}>
+                {formatTime(wallTime, i18n.language)}
+            </StepSlider>
+            <Container brightness={brightness} contrast={contrast} fit={fit}>
+                {Content}
+            </Container>
+            <ChartToolbox
+                items={[
+                    {
+                        icon: 'download',
+                        tooltip: t('download-image'),
+                        onClick: saveImage
+                    }
+                ]}
             />
-            <Container fit={fit}>{Content}</Container>
         </Wrapper>
     );
 };

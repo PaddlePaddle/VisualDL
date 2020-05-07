@@ -14,7 +14,8 @@ export default async (req: Request, res: Response) => {
     const index = (+req.query.index ?? 0) % images.length;
     const result = await fetch(images[index]);
     if (result.headers.has('Content-Type')) {
-        res.type(result.headers.get('Content-Type') as string);
+        const ct = result.headers.get('Content-Type');
+        res.setHeader('Content-Type', ct);
     }
     return result.arrayBuffer();
 };

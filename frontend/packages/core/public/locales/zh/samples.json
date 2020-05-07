@@ -3,5 +3,8 @@
     "audio": "音频",
     "text": "文本",
     "show-actual-size": "按真实大小展示",
-    "step": "Step"
+    "step": "Step",
+    "download-image": "下载$t(image)",
+    "brightness": "亮度",
+    "contrast": "对比度"
 }
