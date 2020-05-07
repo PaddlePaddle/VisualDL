@@ -83,24 +83,6 @@ build_frontend() {
     tar zxf "$BUILD_DIR/$FILENAME" -C "$BUILD_DIR"
 }
 
-build_backend() {
-    cd $BUILD_DIR
-    if [[ $WITH_PYTHON3 ]]; then
-        cmake -DWITH_PYTHON3=ON .. ${PYTHON_FLAGS}
-    else
-        cmake .. ${PYTHON_FLAGS}
-    fi
-    make -j2
-}
-
-build_onnx_graph() {
-    export PATH="$BUILD_DIR/third_party/protobuf/src/extern_protobuf-build/:$PATH"
-    cd $TOP_DIR/visualdl/server/model/onnx
-    protoc onnx.proto --python_out .
-    cd $TOP_DIR/visualdl/server/model/paddle
-    protoc framework.proto --python_out .
-}
-
 clean_env() {
     rm -rf $TOP_DIR/visualdl/server/dist
     rm -rf $BUILD_DIR/bdist*
@@ -112,8 +94,6 @@ clean_env() {
 
 package() {
     cp -rf $BUILD_DIR/package/dist $TOP_DIR/visualdl/server/
-    cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl
-    cp $BUILD_DIR/visualdl/logic/core.so $TOP_DIR/visualdl/python/
 }
 
 ARG=$1
@@ -127,6 +107,4 @@ else
     build_frontend
 fi
 
-build_backend
-build_onnx_graph
 package

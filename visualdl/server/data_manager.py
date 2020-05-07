@@ -21,7 +21,9 @@ import collections
 DEFAULT_PLUGIN_MAXSIZE = {
     "scalar": 300,
     "image": 10,
-    "histogram": 100
+    "histogram": 100,
+    "embeddings": 50000,
+    "audio": 10
 }
 
 
@@ -75,19 +77,19 @@ class Reservoir(object):
         """
         return True if key in self._buckets.keys() else False
 
-    def exist_in_keys(self, mode, tag):
-        """Determine if mode_tag exists.
+    def exist_in_keys(self, run, tag):
+        """Determine if run_tag exists.
 
         For usage habits of VisualDL, actually call self._exist_in_keys()
 
         Args:
-            mode: Identity of one tablet.
+            run: Identity of one tablet.
             tag: Identity of one record in tablet.
 
         Returns:
-            True if mode_tag exists in buckets.keys, otherwise False.
+            True if run_tag exists in buckets.keys, otherwise False.
         """
-        key = mode + "_" + tag
+        key = run + "/" + tag
         return self._exist_in_keys(key)
 
     def _get_num_items_index(self, key):
@@ -96,8 +98,8 @@ class Reservoir(object):
             raise KeyError("Key %s not in buckets.keys()" % key)
         return self._buckets[key].num_items_index
 
-    def get_num_items_index(self, mode, tag):
-        key = mode + "_" + tag
+    def get_num_items_index(self, run, tag):
+        key = run + "/" + tag
         return self._get_num_items_index(key)
 
     def _get_items(self, key):
@@ -115,19 +117,19 @@ class Reservoir(object):
                 raise KeyError("Key %s not in buckets.keys()" % key)
             return self._buckets[key].items
 
-    def get_items(self, mode, tag):
-        """Get items with tag 'mode_tag'
+    def get_items(self, run, tag):
+        """Get items with tag 'run_tag'
 
         For usage habits of VisualDL, actually call self._get_items()
 
         Args:
-            mode: Identity of one tablet.
+            run: Identity of one tablet.
             tag: Identity of one record in tablet.
 
         Returns:
-            One bucket in reservoir buckets by mode and tag.
+            One bucket in reservoir buckets by run and tag.
         """
-        key = mode + "_" + tag
+        key = run + "/" + tag
         return self._get_items(key)
 
     def _add_item(self, key, item):
@@ -149,40 +151,41 @@ class Reservoir(object):
         with self._mutex:
             self._buckets[key].add_item(item)
 
-    def add_item(self, mode, tag, item):
+    def add_item(self, run, tag, item):
         """Add a new item to reservoir buckets with given tag as key.
 
         For usage habits of VisualDL, actually call self._add_items()
 
         Args:
-            mode: Identity of one tablet.
+            run: Identity of one tablet.
             tag: Identity of one record in tablet.
             item: New item to add to bucket.
         """
-        key = mode + "_" + tag
+        key = run + "/" + tag
         self._add_item(key, item)
 
     def _cut_tail(self, key):
         with self._mutex:
             self._buckets[key].cut_tail()
 
-    def cut_tail(self, mode, tag):
+    def cut_tail(self, run, tag):
         """Pop the last item in reservoir buckets.
-        
+
         Sometimes the tail of the retrieved data is abnormal 0. This
         method is used to handle this problem.
 
         Args:
-            mode: Identity of one tablet.
+            run: Identity of one tablet.
             tag: Identity of one record in tablet.
         """
-        key = mode + "_" + tag
+        key = run + "/" + tag
         self._cut_tail(key)
 
 
 class _ReservoirBucket(object):
     """Data manager for sampling data, use reservoir sampling.
     """
+
     def __init__(self, max_size, random_instance=None):
         """Create a _ReservoirBucket instance.
 
@@ -253,6 +256,7 @@ class _ReservoirBucket(object):
 class DataManager(object):
     """Data manager for all plugin.
     """
+
     def __init__(self):
         """Create a data manager for all plugin.
 
@@ -260,14 +264,34 @@ class DataManager(object):
         name as key.
 
         """
-        self._scalar_reservoir = Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["scalar"])
-        self._histogram_reservoir = Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["histogram"])
-        self._image_reservoir = Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["image"])
-
-        self._reservoirs = {"scalar": self._scalar_reservoir,
-                            "histogram": self._histogram_reservoir,
-                            "image": self._image_reservoir}
+        self._reservoirs = {
+            "scalar":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["scalar"]),
+            "histogram":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["histogram"]),
+            "image":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["image"]),
+            "embeddings":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["embeddings"]),
+            "audio":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["audio"])
+        }
         self._mutex = threading.Lock()
+
+    def add_reservoir(self, plugin):
+        """Add reservoir to reservoirs.
+
+        Every reservoir is attached to one plugin.
+
+        Args:
+            plugin: Key to get one reservoir bucket for one specified plugin.
+        """
+        with self._mutex:
+            if plugin not in self._reservoirs.keys():
+                self._reservoirs.update({
+                    plugin:
+                    Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE[plugin])
+                })
 
     def get_reservoir(self, plugin):
         """Get reservoir by plugin as key.
@@ -283,19 +307,19 @@ class DataManager(object):
                 raise KeyError("Key %s not in reservoirs." % plugin)
             return self._reservoirs[plugin]
 
-    def add_item(self, plugin, mode, tag, item):
+    def add_item(self, plugin, run, tag, item):
         """Add item to one plugin reservoir bucket.
 
-        Use 'mode', 'tag' for usage habits of VisualDL.
+        Use 'run', 'tag' for usage habits of VisualDL.
 
         Args:
             plugin: Key to get one reservoir bucket.
-            mode: Each tablet has different 'mode'.
+            run: Each tablet has different 'run'.
             tag: Tag will be used to generate paths of tablets.
             item: The item to add to reservoir bucket.
         """
         with self._mutex:
-            self._reservoirs[plugin].add_item(mode, tag, item)
+            self._reservoirs[plugin].add_item(run, tag, item)
 
     def get_keys(self):
         """Get all plugin buckets name.
@@ -308,34 +332,3 @@ class DataManager(object):
 
 
 default_data_manager = DataManager()
-
-
-if __name__ == '__main__':
-    d = DataManager()
-    d.add_item("scalar", "train", "loss", 3)
-    d.add_item("scalar", "train", "loss", 4)
-    d.add_item("scalar", "train", "loss", 5)
-
-    d.add_item("scalar", "train", "accu", 5)
-    d.add_item("scalar", "train", "accu", 6)
-    d.add_item("scalar", "train", "accu", 7)
-    d.add_item("scalar", "train", "accu", 8)
-    a = d.get_keys()
-    print(a)
-    b = d.get_reservoir("scalar").get_items("train", "loss")
-    print(b)
-    c = d.get_reservoir("scalar").get_num_items_index("train", "loss")
-    print(c)
-    b = d.get_reservoir("scalar").get_items("train", "accu")
-    print(b)
-    print(d.get_reservoir("scalar").get_num_items_index("train", "accu"))
-
-    d.add_item("scalar", "train", "loss", 3)
-    d.add_item("scalar", "train", "loss", 4)
-    d.add_item("scalar", "train", "loss", 5)
-
-    c = d.get_reservoir("scalar").get_num_items_index("train", "loss")
-    print(c)
-
-    print(d.get_reservoir("scalar").exist_in_keys("train", "loss"))
-    print(d.get_reservoir("scalar").exist_in_keys("train", "loss2"))

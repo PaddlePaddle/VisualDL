@@ -22,7 +22,8 @@ from distutils.spawn import find_executable
 from distutils import log
 import setuptools.command.build_py
 import setuptools
-from setuptools import setup, Extension
+from setuptools import setup
+from setuptools import find_packages
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -43,7 +44,8 @@ VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
-install_requires = ['Flask', 'numpy', 'Pillow', 'protobuf >= 3.1.0', 'scipy']
+REQUIRED_PACKAGES = read("requirements.txt")
+
 execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
 if platform == "win32":
     execute_requires = ['node', 'powershell', 'cmake']
@@ -91,26 +93,6 @@ cmdclass = {
     'build_py': build_py,
 }
 
-packages = [
-    'visualdl',
-    'visualdl.python',
-    'visualdl.server',
-    'visualdl.server.mock',
-    'visualdl.server.model',
-    'visualdl.server.model.onnx',
-    'visualdl.server.model.paddle',
-]
-
-libraries = ['core.so']
-if platform == 'win32':
-    libraries = ['core.pyd', 'libprotobuf.dll', 'zlib.dll']
-
-scripts = ['visualdl/server/app.py', 'demo/vdl_create_scratch_log']
-if platform == 'win32':
-    scripts.append('visualdl/server/visualDL.bat')
-
-
-
 setup(
     name="visualdl",
     version=VERSION_NUMBER,
@@ -119,14 +101,11 @@ setup(
     license=LICENSE,
     keywords="visualization deeplearning",
     long_description=read('README.md'),
-    install_requires=install_requires,
+    install_requires=REQUIRED_PACKAGES,
     package_data={
-        'visualdl': libraries,
         'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)],
-        'visualdl.python': libraries + ['dog.jpg', 'testing.wav']
+        'visualdl.python': ['dog.jpg', 'testing.wav']
     },
-    packages=packages,
-    ext_modules=[Extension('_foo', ['stub.cc'])],
-    scripts=scripts,
+    packages=find_packages(),
     cmdclass=cmdclass,
     entry_points={'console_scripts': ['visualdl=visualdl.server.app:main']})

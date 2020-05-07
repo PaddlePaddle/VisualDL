@@ -24,25 +24,17 @@ import threading
 import re
 import webbrowser
 import requests
+from visualdl.reader.reader import LogReader
 from argparse import ArgumentParser
 
 from flask import (Flask, Response, redirect, request, send_file,
                    send_from_directory)
 from flask_babel import Babel
 
-import visualdl
 import visualdl.server
 from visualdl.server import lib
 from visualdl.server.log import logger
-from visualdl.server.mock import data as mock_data
-from visualdl.server.mock import data as mock_tags
 from visualdl.python.cache import MemCache
-from visualdl.python.storage import (LogWriter, LogReader)
-
-try:
-    import exceptions
-except:
-    pass
 
 error_retry_times = 3
 error_sleep_time = 2  # seconds
@@ -58,7 +50,13 @@ mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 
 class ParseArgs(object):
-    def __init__(self, logdir, host="0.0.0.0", port=8040, model_pb="", cache_timeout=20, language=None):
+    def __init__(self,
+                 logdir,
+                 host="0.0.0.0",
+                 port=8040,
+                 model_pb="",
+                 cache_timeout=20,
+                 language=None):
         self.logdir = logdir
         self.host = host
         self.port = port
@@ -114,8 +112,7 @@ def parse_args():
         dest="cache_timeout",
         type=float,
         default=20,
-        help="memory cache timeout duration in seconds, default 20",
-    )
+        help="memory cache timeout duration in seconds, default 20", )
     parser.add_argument(
         "-L",
         "--language",
@@ -163,7 +160,7 @@ def create_app(args):
     @babel.localeselector
     def get_locale():
         language = args.language
-        if not language or not language in support_language:
+        if not language or language not in support_language:
             language = request.accept_languages.best_match(support_language)
         return language
 
@@ -177,7 +174,8 @@ def create_app(args):
     @app.route('/app/<path:filename>')
     def serve_static(filename):
         return send_from_directory(
-            os.path.join(server_path, static_file_path), filename if re.search(r'\..+$', filename) else filename + '.html')
+            os.path.join(server_path, static_file_path), filename
+            if re.search(r'\..+$', filename) else filename + '.html')
 
     @app.route('/graphs/image')
     def serve_graph():
@@ -188,15 +186,33 @@ def create_app(args):
         result = gen_result(0, "", {"logdir": args.logdir})
         return Response(json.dumps(result), mimetype='application/json')
 
-    @app.route('/api/runs')
-    def runs():
-        data = cache_get('/data/runs', lib.get_modes, log_reader)
-        result = gen_result(0, "", data)
-        return Response(json.dumps(result), mimetype='application/json')
-
     @app.route('/api/language')
     def language():
         data = get_locale()
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
+    @app.route("/api/components")
+    def components():
+        data = cache_get('/data/components', lib.get_components, log_reader)
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
+    @app.route('/api/runs')
+    def runs():
+        data = cache_get('/data/runs', lib.get_runs, log_reader)
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
+    @app.route('/api/tags')
+    def tags():
+        data = cache_get('/data/tags', lib.get_tags, log_reader)
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
+    @app.route('/api/logs')
+    def logs():
+        data = cache_get('/data/logs', lib.get_logs, log_reader)
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
@@ -209,29 +225,15 @@ def create_app(args):
 
     @app.route("/api/images/tags")
     def image_tags():
-        data = cache_get("/data/plugin/images/tags", try_call, lib.get_image_tags,
-                         log_reader)
+        data = cache_get("/data/plugin/images/tags", try_call,
+                         lib.get_image_tags, log_reader)
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
     @app.route("/api/audio/tags")
     def audio_tags():
-        data = cache_get("/data/plugin/audio/tags", try_call, lib.get_audio_tags,
-                         log_reader)
-        result = gen_result(0, "", data)
-        return Response(json.dumps(result), mimetype='application/json')
-
-    @app.route("/api/histograms/tags")
-    def histogram_tags():
-        data = cache_get("/data/plugin/histograms/tags", try_call,
-                         lib.get_histogram_tags, log_reader)
-        result = gen_result(0, "", data)
-        return Response(json.dumps(result), mimetype='application/json')
-
-    @app.route("/api/texts/tags")
-    def texts_tags():
-        data = cache_get("/data/plugin/texts/tags", try_call,
-                         lib.get_texts_tags, log_reader)
+        data = cache_get("/data/plugin/audio/tags", try_call,
+                         lib.get_audio_tags, log_reader)
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
@@ -250,8 +252,8 @@ def create_app(args):
         tag = request.args.get('tag')
         key = os.path.join('/data/plugin/images/images', mode, tag)
 
-        data = cache_get(key, try_call, lib.get_image_tag_steps, log_reader, mode,
-                         tag)
+        data = cache_get(key, try_call, lib.get_image_tag_steps, log_reader,
+                         mode, tag)
         result = gen_result(0, "", data)
 
         return Response(json.dumps(result), mimetype='application/json')
@@ -264,62 +266,44 @@ def create_app(args):
 
         key = os.path.join('/data/plugin/images/individualImage', mode, tag,
                            str(step_index))
-        data = cache_get(key, try_call, lib.get_invididual_image, log_reader, mode,
-                         tag, step_index)
-        response = send_file(
-            data, as_attachment=True, attachment_filename='img.png')
-        return response
-
-    @app.route('/api/histograms/list')
-    def histogram():
-        run = request.args.get('run')
-        tag = request.args.get('tag')
-        key = os.path.join('/data/plugin/histograms/histograms', run, tag)
-        data = cache_get(key, try_call, lib.get_histogram, log_reader, run, tag)
-        result = gen_result(0, "", data)
-        return Response(json.dumps(result), mimetype='application/json')
-
-    @app.route('/api/texts/list')
-    def texts():
-        run = request.args.get('run')
-        tag = request.args.get('tag')
-        key = os.path.join('/data/plugin/texts/texts', run, tag)
-        data = cache_get(key, try_call, lib.get_texts, log_reader, run, tag)
-        result = gen_result(0, "", data)
-        return Response(json.dumps(result), mimetype='application/json')
+        data = cache_get(key, try_call, lib.get_individual_image, log_reader,
+                         mode, tag, step_index)
+        return Response(data, mimetype="image/png")
 
     @app.route('/api/embeddings/embedding')
     def embeddings():
         run = request.args.get('run')
         dimension = request.args.get('dimension')
         reduction = request.args.get('reduction')
-        key = os.path.join('/data/plugin/embeddings/embeddings', run, dimension, reduction)
-        data = cache_get(key, try_call, lib.get_embeddings, log_reader, run, reduction, int(dimension))
+        key = os.path.join('/data/plugin/embeddings/embeddings', run,
+                           dimension, reduction)
+        data = cache_get(key, try_call, lib.get_embeddings, log_reader, run,
+                         reduction, int(dimension))
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
     @app.route('/api/audio/list')
     def audio():
-        mode = request.args.get('run')
+        run = request.args.get('run')
         tag = request.args.get('tag')
-        key = os.path.join('/data/plugin/audio/audio', mode, tag)
+        key = os.path.join('/data/plugin/audio/audio', run, tag)
 
-        data = cache_get(key, try_call, lib.get_audio_tag_steps, log_reader, mode,
-                         tag)
+        data = cache_get(key, try_call, lib.get_audio_tag_steps, log_reader,
+                         run, tag)
         result = gen_result(0, "", data)
 
         return Response(json.dumps(result), mimetype='application/json')
 
     @app.route('/api/audio/audio')
     def individual_audio():
-        mode = request.args.get('run')
+        run = request.args.get('run')
         tag = request.args.get('tag')  # include a index
         step_index = int(request.args.get('index'))  # index of step
 
-        key = os.path.join('/data/plugin/audio/individualAudio', mode, tag,
+        key = os.path.join('/data/plugin/audio/individualAudio', run, tag,
                            str(step_index))
-        data = cache_get(key, try_call, lib.get_individual_audio, log_reader, mode,
-                         tag, step_index)
+        data = cache_get(key, try_call, lib.get_individual_audio, log_reader,
+                         run, tag, step_index)
         response = send_file(
             data, as_attachment=True, attachment_filename='audio.wav')
         return response
@@ -332,22 +316,42 @@ def _open_browser(app, index_url):
         try:
             requests.get(index_url)
             break
-        except Exception as e:
+        except Exception:
             time.sleep(0.5)
     webbrowser.open(index_url)
 
 
-def _run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=None, open_browser=False):
-    args = ParseArgs(logdir=logdir, host=host, port=port, model_pb=model_pb, cache_timeout=cache_timeout, language=language)
+def _run(logdir,
+         host="127.0.0.1",
+         port=8080,
+         model_pb="",
+         cache_timeout=20,
+         language=None,
+         open_browser=False):
+    args = ParseArgs(
+        logdir=logdir,
+        host=host,
+        port=port,
+        model_pb=model_pb,
+        cache_timeout=cache_timeout,
+        language=language)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     index_url = "http://" + host + ":" + str(port)
     if open_browser:
-        threading.Thread(target=_open_browser, kwargs={"app": app, "index_url": index_url}).start()
+        threading.Thread(
+            target=_open_browser, kwargs={"app": app,
+                                          "index_url": index_url}).start()
     app.run(debug=False, host=args.host, port=args.port, threaded=True)
 
 
-def run(logdir, host="127.0.0.1", port=8080, model_pb="", cache_timeout=20, language=None, open_browser=False):
+def run(logdir,
+        host="127.0.0.1",
+        port=8080,
+        model_pb="",
+        cache_timeout=20,
+        language=None,
+        open_browser=False):
     kwarg = {
         "logdir": logdir,
         "host": host,
@@ -368,3 +372,11 @@ def main():
     logger.info(" port=" + str(args.port))
     app = create_app(args=args)
     app.run(debug=False, host=args.host, port=args.port, threaded=True)
+
+
+if __name__ == "__main__":
+
+    args = parse_args()
+    logger.info(" port=" + str(args.port))
+    app = create_app(args=args)
+    app.run(debug=False, host=args.host, port=args.port, threaded=False)
