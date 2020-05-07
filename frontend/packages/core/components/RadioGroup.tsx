@@ -1,4 +1,4 @@
-import React, {FunctionComponent, createContext, useCallback, useState} from 'react';
+import React, {FunctionComponent, PropsWithChildren, createContext, useCallback, useState} from 'react';
 
 import {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
@@ -12,19 +12,24 @@ const Wrapper = styled.div`
     }
 `;
 
-export const ValueContext = createContext<string | number | symbol | undefined | null>(null);
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export const EventContext = createContext<((value: string | number | symbol) => unknown) | undefined>(() => {});
+export const EventContext = createContext<(<V extends unknown>(value: V) => unknown) | undefined>(() => {});
+export const ValueContext = createContext<unknown>(null);
 
-type RadioGroupProps = {
-    value?: string | number | symbol;
-    onChange?: (value: string | number | symbol) => unknown;
+type RadioGroupProps<T> = {
+    value?: T;
+    onChange?: (value: T) => unknown;
 };
 
-const RadioGroup: FunctionComponent<RadioGroupProps & WithStyled> = ({value, onChange, children, className}) => {
+const RadioGroup = <T extends unknown>({
+    value,
+    onChange,
+    children,
+    className
+}: PropsWithChildren<RadioGroupProps<T>> & WithStyled): ReturnType<FunctionComponent> => {
     const [selected, setSelected] = useState(value);
     const onSelectedChange = useCallback(
-        (value: string | number | symbol) => {
+        (value: T) => {
             setSelected(value);
             onChange?.(value);
         },
@@ -32,7 +37,7 @@ const RadioGroup: FunctionComponent<RadioGroupProps & WithStyled> = ({value, onC
     );
 
     return (
-        <EventContext.Provider value={onSelectedChange}>
+        <EventContext.Provider value={v => onSelectedChange(v as T)}>
             <ValueContext.Provider value={selected}>
                 <Wrapper className={className}>{children}</Wrapper>
             </ValueContext.Provider>

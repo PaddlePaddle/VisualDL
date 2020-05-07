@@ -33,6 +33,7 @@ module.exports = {
             extends: [
                 'plugin:@typescript-eslint/recommended',
                 'plugin:react/recommended',
+                'plugin:react-hooks/recommended',
                 'prettier/@typescript-eslint',
                 'plugin:prettier/recommended'
             ],
@@ -44,7 +45,6 @@ module.exports = {
                 ecmaVersion: 2018,
                 sourceType: 'module'
             },
-            plugins: ['react-hooks'],
             settings: {
                 react: {
                     version: 'detect'
@@ -54,9 +54,7 @@ module.exports = {
                 '@typescript-eslint/explicit-function-return-type': 'off',
                 '@typescript-eslint/no-explicit-any': 'error',
                 'react/prop-types': 'off',
-                'react/react-in-jsx-scope': 'off',
-                'react-hooks/rules-of-hooks': 'error',
-                'react-hooks/exhaustive-deps': 'warn'
+                'react/react-in-jsx-scope': 'off'
             }
         }
     ]

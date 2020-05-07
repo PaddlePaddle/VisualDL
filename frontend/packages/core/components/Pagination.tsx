@@ -64,7 +64,11 @@ const Pagination: FunctionComponent<PaginationProps & WithStyled> = ({page, tota
             </div>
             <div>
                 <span>{t('total-page', {count: total})}</span>
-                <Input value={jumpPage} onChange={value => setJumpPage(value)} />
+                <Input
+                    value={jumpPage}
+                    onChange={value => setJumpPage(value)}
+                    onKeyDown={e => e.key === 'Enter' && setPage(jumpPage)}
+                />
                 <Button onClick={() => setPage(jumpPage)} type="primary">
                     {t('confirm')}
                 </Button>

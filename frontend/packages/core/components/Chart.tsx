@@ -15,12 +15,12 @@ import {
 import ee from '~/utils/event';
 import styled from 'styled-components';
 
-const width = rem(430);
-const height = rem(337);
-
-const Div = styled.div<{maximized?: boolean}>`
+const Div = styled.div<{maximized?: boolean; width?: string; height?: string}>`
     ${props =>
-        size(props.maximized ? `calc(100vh - ${headerHeight} - ${rem(40)})` : height, props.maximized ? '100%' : width)}
+        size(
+            props.maximized ? `calc(100vh - ${headerHeight} - ${rem(40)})` : props.height || 'auto',
+            props.maximized ? '100%' : props.width || '100%'
+        )}
     background-color: ${backgroundColor};
     ${sameBorder({radius: math(`${borderRadius} * 2`)})}
     ${transitionProps(['border-color', 'box-shadow'])}
@@ -34,9 +34,11 @@ const Div = styled.div<{maximized?: boolean}>`
 
 type ChartProps = {
     cid: symbol;
+    width?: string;
+    height?: string;
 };
 
-const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, className, children}) => {
+const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, width, height, className, children}) => {
     const [maximized, setMaximized] = useState(false);
     const toggleMaximze = useCallback(
         (id: symbol, value: boolean) => {
@@ -54,7 +56,7 @@ const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, className, chil
     }, [toggleMaximze]);
 
     return (
-        <Div maximized={maximized} className={className}>
+        <Div maximized={maximized} width={width} height={height} className={className}>
             {children}
         </Div>
     );

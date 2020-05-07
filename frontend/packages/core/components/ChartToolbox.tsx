@@ -1,5 +1,6 @@
 import React, {FunctionComponent, useCallback, useState} from 'react';
 import {
+    WithStyled,
     em,
     primaryActiveColor,
     primaryColor,
@@ -22,7 +23,7 @@ const Toolbox = styled.div`
     font-size: ${em(16)};
     height: 1em;
     line-height: 1;
-    margin: 0 ${rem(20)} ${rem(18)};
+    margin-bottom: ${rem(18)};
     display: flex;
 `;
 
@@ -68,7 +69,7 @@ type ChartToolboxProps = {
     items: ChartTooboxItem[];
 };
 
-const ChartToolbox: FunctionComponent<ChartToolboxProps> = ({cid, items}) => {
+const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({cid, items, className}) => {
     const [activeStatus, setActiveStatus] = useState<boolean[]>(new Array(items.length).fill(false));
     const onClick = useCallback(
         (index: number) => {
@@ -91,7 +92,7 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps> = ({cid, items}) => {
 
     return (
         <>
-            <Toolbox>
+            <Toolbox className={className}>
                 {items.map((item, index) => (
                     <ToolboxItem
                         key={index}

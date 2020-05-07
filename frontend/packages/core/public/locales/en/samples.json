@@ -1,7 +1,10 @@
 {
-    "image": "Image",
-    "audio": "Audio",
-    "text": "Text",
+    "image": "image",
+    "audio": "audio",
+    "text": "text",
     "show-actual-size": "Show Actual Image Size",
-    "step": "Step"
+    "step": "Step",
+    "download-image": "Download $t(image)",
+    "brightness": "Brightness",
+    "contrast": "Contrast"
 }

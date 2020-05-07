@@ -33,8 +33,8 @@
         "pm2": "4.4.0"
     },
     "devDependencies": {
-        "electron": "8.2.3",
-        "electron-builder": "22.5.1"
+        "electron": "8.2.5",
+        "electron-builder": "22.6.0"
     },
     "engines": {
         "node": ">=10",

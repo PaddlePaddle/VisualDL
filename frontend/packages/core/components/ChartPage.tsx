@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from '~/utils/i18n';
 import {WithStyled, link, primaryColor, rem, textLighterColor} from '~/utils/style';
 
@@ -7,7 +7,6 @@ import Chart from '~/components/Chart';
 import ChartCollapse from '~/components/ChartCollapse';
 import Pagination from '~/components/Pagination';
 import SearchInput from '~/components/SearchInput';
-import {Tag} from '~/types';
 import groupBy from 'lodash/groupBy';
 import styled from 'styled-components';
 import useSearchValue from '~/hooks/useSearchValue';
@@ -59,18 +58,33 @@ const Empty = styled.div`
     ${link}
 `;
 
-export interface WithChart<T> {
+type Item = {
+    id?: string;
+    label: string;
+};
+
+export interface WithChart<T extends Item> {
     (item: T & {cid: symbol}, index: number): React.ReactNode;
 }
 
-type ChartPageProps<T extends Tag = Tag> = {
+type ChartPageProps<T extends Item> = {
     items?: T[];
     running?: boolean;
     loading?: boolean;
+    chartSize?: {
+        width?: string;
+        height?: string;
+    };
     withChart?: WithChart<T>;
 };
 
-const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loading, withChart, className}) => {
+const ChartPage = <T extends Item>({
+    items,
+    loading,
+    chartSize,
+    withChart,
+    className
+}: PropsWithChildren<ChartPageProps<T> & WithStyled>): ReturnType<FunctionComponent> => {
     const {t} = useTranslation('common');
 
     const [page, setPage] = useState(1);
@@ -99,7 +113,7 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
 
     const groupedItems = useMemo(
         () =>
-            Object.entries(groupBy<Tag>(items ?? [], (item: Tag) => item.label.split('/')[0])).sort(([a], [b]) => {
+            Object.entries(groupBy<T>(items ?? [], item => item.label.split('/')[0])).sort(([a], [b]) => {
                 const ua = a.toUpperCase();
                 const ub = b.toUpperCase();
                 if (ua < ub) {
@@ -116,7 +130,7 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
     const total = useMemo(() => Math.ceil(matchedTags.length / pageSize), [matchedTags]);
 
     const withCharts = useCallback(
-        (charts: Tag[], search?: boolean) =>
+        (charts: T[], search?: boolean) =>
             loading ? (
                 <Loading>
                     <BarLoader color={primaryColor} width="20%" height="4px" />
@@ -127,7 +141,12 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
                         charts.map((item, j) => {
                             const cid = Symbol(item.label);
                             return (
-                                <Chart cid={cid} key={item.label}>
+                                <Chart
+                                    cid={cid}
+                                    key={item.id || item.label}
+                                    width={chartSize?.width ?? rem(430)}
+                                    height={chartSize?.height ?? rem(337)}
+                                >
                                     {withChart?.({...item, cid}, j)}
                                 </Chart>
                             );
@@ -147,7 +166,7 @@ const ChartPage: FunctionComponent<ChartPageProps & WithStyled> = ({items, loadi
                     )}
                 </Wrapper>
             ),
-        [withChart, loading, t]
+        [withChart, loading, chartSize, t]
     );
 
     return (

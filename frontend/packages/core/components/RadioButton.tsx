@@ -1,5 +1,5 @@
 import {EventContext, ValueContext} from '~/components/RadioGroup';
-import React, {FunctionComponent, useCallback, useContext} from 'react';
+import React, {FunctionComponent, PropsWithChildren, useCallback, useContext} from 'react';
 import {
     WithStyled,
     backgroundColor,
@@ -55,19 +55,19 @@ const Button = styled.a<{selected?: boolean}>`
     }
 `;
 
-type RadioButtonProps = {
+type RadioButtonProps<T> = {
     selected?: boolean;
     title?: string;
-    value?: string | number | symbol;
+    value?: T;
 };
 
-const RadioButton: FunctionComponent<RadioButtonProps & WithStyled> = ({
+const RadioButton = <T extends unknown>({
     className,
     value,
     selected,
     title,
     children
-}) => {
+}: PropsWithChildren<RadioButtonProps<T>> & WithStyled): ReturnType<FunctionComponent> => {
     const groupValue = useContext(ValueContext);
     const onChange = useContext(EventContext);
 

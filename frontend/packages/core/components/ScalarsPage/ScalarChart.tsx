@@ -13,6 +13,7 @@ import {
 } from '~/resource/scalars';
 import LineChart, {LineChartRef} from '~/components/LineChart';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
+import {rem, size} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import {EChartOption} from 'echarts';
@@ -20,7 +21,6 @@ import {Run} from '~/types';
 import {cycleFetcher} from '~/utils/fetch';
 import ee from '~/utils/event';
 import queryString from 'query-string';
-import {size} from '~/utils/style';
 import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
@@ -48,6 +48,11 @@ const Wrapper = styled.div`
 
 const StyledLineChart = styled(LineChart)`
     flex-grow: 1;
+`;
+
+const Toolbox = styled(ChartToolbox)`
+    margin-left: ${rem(20)};
+    margin-right: ${rem(20)};
 `;
 
 const Error = styled.div`
@@ -211,7 +216,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 data={data}
                 loading={loading}
             />
-            <ChartToolbox
+            <Toolbox
                 items={[
                     {
                         icon: 'maximize',

@@ -5,8 +5,9 @@ import {WithStyled, position, primaryColor, size} from '~/utils/style';
 
 import {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
-import {downloadFromBase64} from '~/utils/image';
+import {dataURL2Blob} from '~/utils/image';
 import {formatTime} from '~/utils';
+import {saveAs} from 'file-saver';
 import styled from 'styled-components';
 import useECharts from '~/hooks/useECharts';
 import {useTranslation} from '~/utils/i18n';
@@ -68,10 +69,10 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             },
             saveAsImage: () => {
                 if (echart?.current) {
-                    downloadFromBase64(
-                        `${title || 'scalar'}.png`,
+                    const blob = dataURL2Blob(
                         echart.current.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'})
                     );
+                    saveAs(blob, `${title?.replace(/[/\\?%*:|"<>]/g, '_') || 'scalar'}.png`);
                 }
             }
         }));

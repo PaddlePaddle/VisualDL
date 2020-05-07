@@ -1,7 +1,6 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useState} from 'react';
-import Select, {SelectValueType} from '~/components/Select';
 import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
 
 import Checkbox from '~/components/Checkbox';
@@ -12,7 +11,8 @@ import RadioButton from '~/components/RadioButton';
 import RadioGroup from '~/components/RadioGroup';
 import RunAside from '~/components/RunAside';
 import ScalarChart from '~/components/ScalarsPage/ScalarChart';
-import SmoothingSlider from '~/components/ScalarsPage/SmoothingSlider';
+import Select from '~/components/Select';
+import Slider from '~/components/Slider';
 import {Tag} from '~/types';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
@@ -20,9 +20,9 @@ import styled from 'styled-components';
 import useTagFilter from '~/hooks/useTagFilter';
 
 type XAxis = keyof typeof xAxisMap;
-const xAxisValues = ['step', 'relative', 'wall'];
+const xAxisValues = ['step', 'relative', 'wall'] as const;
 type TooltipSorting = keyof typeof sortingMethodMap;
-const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'];
+const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'] as const;
 
 const TooltipSortingDiv = styled.div`
     margin-top: ${rem(20)};
@@ -45,12 +45,10 @@ const Scalars: NextI18NextPage = () => {
 
     const [smoothing, setSmoothing] = useState(0.6);
 
-    const [xAxis, setXAxis] = useState(xAxisValues[0] as XAxis);
-    const onChangeXAxis = (value: SelectValueType | SelectValueType[]) => setXAxis(value as XAxis);
+    const [xAxis, setXAxis] = useState<XAxis>(xAxisValues[0]);
 
-    const [tooltipSorting, setTooltipSorting] = useState(toolTipSortingValues[0] as TooltipSorting);
-    const onChangeTooltipSorting = (value: SelectValueType | SelectValueType[]) =>
-        setTooltipSorting(value as TooltipSorting);
+    const [tooltipSorting, setTooltipSorting] = useState<TooltipSorting>(toolTipSortingValues[0]);
+    const onChangeTooltipSorting = (value: TooltipSorting) => setTooltipSorting(value);
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
@@ -76,11 +74,13 @@ const Scalars: NextI18NextPage = () => {
                 </TooltipSortingDiv>
             </section>
             <section>
-                <SmoothingSlider value={smoothing} onChange={setSmoothing} />
+                <Field label={t('smoothing')}>
+                    <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
+                </Field>
             </section>
             <section>
                 <Field label={t('x-axis')}>
-                    <RadioGroup value={xAxis} onChange={onChangeXAxis}>
+                    <RadioGroup value={xAxis} onChange={setXAxis}>
                         {xAxisValues.map(value => (
                             <RadioButton key={value} value={value}>
                                 {t(`x-axis-value.${value}`)}
