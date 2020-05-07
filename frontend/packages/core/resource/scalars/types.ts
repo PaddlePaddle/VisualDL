@@ -9,7 +9,7 @@ export type Range = {
 };
 
 export type TooltipData = {
-    run: string;
+    run: Run;
     item: number[];
 };
 

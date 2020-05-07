@@ -4,6 +4,7 @@ import {
     RangeParams,
     TransformParams,
     chartData,
+    nearestPoint,
     range,
     singlePointRange,
     sortingMethodMap,
@@ -44,6 +45,14 @@ const Wrapper = styled.div`
     flex-direction: column;
     align-items: stretch;
     justify-content: space-between;
+
+    .echarts td.run .run-indicator {
+        ${size(12, 12)}
+        display: inline-block;
+        border-radius: 6px;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
 `;
 
 const StyledLineChart = styled(LineChart)`
@@ -166,32 +175,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const data = Array.isArray(params) ? params[0].data : params.data;
             const step = data[1];
-            const points =
-                smoothedDatasets?.map((series, index) => {
-                    let nearestItem;
-                    if (step === 0) {
-                        nearestItem = series[0];
-                    } else {
-                        for (let i = 0; i < series.length; i++) {
-                            const item = series[i];
-                            if (item[1] === step) {
-                                nearestItem = item;
-                                break;
-                            }
-                            if (item[1] > step) {
-                                nearestItem = series[i - 1 >= 0 ? i - 1 : 0];
-                                break;
-                            }
-                            if (!nearestItem) {
-                                nearestItem = series[series.length - 1];
-                            }
-                        }
-                    }
-                    return {
-                        run: runs[index].label,
-                        item: nearestItem || []
-                    };
-                }) ?? [];
+            const points = nearestPoint(smoothedDatasets ?? [], runs, step);
             const sort = sortingMethodMap[sortingMethod];
             return tooltip(sort ? sort(points, data) : points, i18n);
         },

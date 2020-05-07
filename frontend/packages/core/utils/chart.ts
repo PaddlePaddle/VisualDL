@@ -50,7 +50,10 @@ export const title = {
 
 export const tooltip = {
     trigger: 'axis',
-    position: ['10%', '95%'],
+    position: ['10%', '100%'],
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    hideDelay: 100,
+    enterable: false,
     axisPointer: {
         type: 'cross',
         label: {
