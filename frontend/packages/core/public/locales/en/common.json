@@ -7,6 +7,7 @@
     "search-tags": "Search tags in RegExp",
     "search-result": "Search Result",
     "search-empty": "Nothing found. Please try again with another word. <1/>Or you can <3>see all charts</3>.",
+    "unselected-empty": "Nothing selected. <1/>Please select display data from right side.",
     "empty": "Empty",
     "select": "Please Select",
     "select-all": "Select All",

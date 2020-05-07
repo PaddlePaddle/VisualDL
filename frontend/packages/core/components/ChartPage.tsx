@@ -1,6 +1,6 @@
 import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from '~/utils/i18n';
-import {WithStyled, link, primaryColor, rem, textLighterColor} from '~/utils/style';
+import {WithStyled, backgroundColor, headerHeight, link, primaryColor, rem, textLighterColor} from '~/utils/style';
 
 import BarLoader from 'react-spinners/BarLoader';
 import Chart from '~/components/Chart';
@@ -43,14 +43,15 @@ const Loading = styled.div`
     padding: ${rem(40)} 0;
 `;
 
-const Empty = styled.div`
+const Empty = styled.div<{height?: string}>`
     width: 100%;
     text-align: center;
     font-size: ${rem(16)};
     color: ${textLighterColor};
     line-height: ${rem(24)};
-    height: ${rem(500)};
-    padding-top: ${rem(320)};
+    height: ${props => props.height ?? 'auto'};
+    padding: ${rem(320)} 0 ${rem(70)};
+    background-color: ${backgroundColor};
     background-image: url(${`${process.env.PUBLIC_PATH}/images/empty.svg`});
     background-repeat: no-repeat;
     background-position: calc(50% + ${rem(25)}) ${rem(70)};
@@ -152,7 +153,7 @@ const ChartPage = <T extends Item>({
                             );
                         })
                     ) : (
-                        <Empty>
+                        <Empty height={rem(500)}>
                             {search ? (
                                 <Trans i18nKey="search-empty">
                                     Nothing found. Please try again with another word.
@@ -184,7 +185,7 @@ const ChartPage = <T extends Item>({
                     {withCharts(pageMatchedTags, true)}
                     {pageMatchedTags.length ? <StyledPagination page={page} total={total} onChange={setPage} /> : null}
                 </ChartCollapse>
-            ) : (
+            ) : groupedItems.length ? (
                 groupedItems.map((groupedItem, i) => (
                     <ChartCollapse
                         title={groupedItem[0]}
@@ -195,6 +196,14 @@ const ChartPage = <T extends Item>({
                         {withCharts(groupedItem[1])}
                     </ChartCollapse>
                 ))
+            ) : (
+                <Empty height={`calc(100vh - ${headerHeight} - ${rem(96)})`}>
+                    <Trans i18nKey="unselected-empty">
+                        Nothing selected.
+                        <br />
+                        Please select display data from right side.
+                    </Trans>
+                </Empty>
             )}
         </div>
     );
