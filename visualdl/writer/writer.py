@@ -157,10 +157,11 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             image(tag=tag, image_array=img, step=step, walltime=walltime))
 
-    def add_embeddings(self, labels, hot_vectors, walltime=None):
+    def add_embeddings(self, tag, labels, hot_vectors, walltime=None):
         """Add embeddings to vdl record file.
 
         Args:
+            tag (string): Data identifier
             labels (numpy.array or list): A list of labels.
             hot_vectors (numpy.array or list): A matrix which each row is
                 feature of labels.
@@ -179,7 +180,6 @@ class LogWriter(object):
             writer.add_embedding(labels=labels, vectors=hot_vectors,
                                  walltime=round(time.time()))
         """
-        tag = "default"
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
         if isinstance(hot_vectors, np.ndarray):

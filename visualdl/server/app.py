@@ -105,6 +105,7 @@ def parse_args():
         required=True,
         action="store",
         dest="logdir",
+        nargs="+",
         help="log file directory")
     parser.add_argument(
         "--cache_timeout",
@@ -148,11 +149,8 @@ def create_app(args):
 
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
     babel = Babel(app)
-
     log_reader = LogReader(args.logdir)
 
-    # mannully put graph's image on this path also works.
-    graph_image_path = os.path.join(args.logdir, 'graph.jpg')
     # use a memory cache to reduce disk reading frequency.
     CACHE = MemCache(timeout=args.cache_timeout)
     cache_get = lib.cache_get(CACHE)
@@ -237,6 +235,13 @@ def create_app(args):
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
+    @app.route("/api/embeddings/tags")
+    def embeddings_tags():
+        data = cache_get("/data/plugin/embeddings/tags", try_call,
+                         lib.get_embeddings_tags, log_reader)
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
     @app.route('/api/scalars/list')
     def scalars():
         run = request.args.get('run')
@@ -273,12 +278,13 @@ def create_app(args):
     @app.route('/api/embeddings/embedding')
     def embeddings():
         run = request.args.get('run')
+        tag = request.args.get('tag')
         dimension = request.args.get('dimension')
         reduction = request.args.get('reduction')
         key = os.path.join('/data/plugin/embeddings/embeddings', run,
                            dimension, reduction)
         data = cache_get(key, try_call, lib.get_embeddings, log_reader, run,
-                         reduction, int(dimension))
+                         tag, reduction, int(dimension))
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
@@ -347,7 +353,7 @@ def _run(logdir,
 
 def run(logdir,
         host="127.0.0.1",
-        port=8080,
+        port=8040,
         model_pb="",
         cache_timeout=20,
         language=None,
@@ -371,7 +377,7 @@ def main():
     args = parse_args()
     logger.info(" port=" + str(args.port))
     app = create_app(args=args)
-    app.run(debug=False, host=args.host, port=args.port, threaded=True)
+    app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
 if __name__ == "__main__":

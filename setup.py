@@ -101,6 +101,7 @@ setup(
     license=LICENSE,
     keywords="visualization deeplearning",
     long_description=read('README.md'),
+    long_description_content_type='text/markdown',
     install_requires=REQUIRED_PACKAGES,
     package_data={
         'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)],

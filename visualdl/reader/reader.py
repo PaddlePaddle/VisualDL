@@ -45,7 +45,11 @@ class LogReader(object):
         Args:
             logdir: The dir include vdl log files, multiple subfolders allowed.
         """
-        self.dir = logdir
+        if isinstance(logdir, str):
+            self.dir = [logdir]
+        else:
+            self.dir = logdir
+
         self.reader = None
         self.readers = {}
         self.walks = None
@@ -87,8 +91,9 @@ class LogReader(object):
 
     def get_all_walk(self):
         self.walks = {}
-        for root, dirs, files in bfile.walk(self.dir):
-            self.walks.update({root: files})
+        for dir in self.dir:
+            for root, dirs, files in bfile.walk(dir):
+                self.walks.update({root: files})
 
     def components_listing(self):
         """Get available component types.
@@ -195,6 +200,8 @@ class LogReader(object):
         return self._tags
 
     def components(self):
+        """Get components type used by vdl.
+        """
         return list(set(self._tags.values()))
 
     def load_new_data(self, update=True):
