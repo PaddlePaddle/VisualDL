@@ -112,7 +112,10 @@ class BFile(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+        self.close()
+        self.buff = None
+        self.buff_offset = 0
+        self.continuation_token = None
 
     def __iter__(self):
         return self

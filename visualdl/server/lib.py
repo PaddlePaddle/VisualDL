@@ -104,8 +104,11 @@ def get_individual_audio(log_reader, run, tag, step_index):
     return result
 
 
-def get_embeddings(log_reader, run, reduction, dimension=2):
-    tag = "default"
+def get_embeddings_tags(log_reader):
+    return get_logs(log_reader, "embeddings")
+
+
+def get_embeddings(log_reader, run, tag, reduction, dimension=2):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("embeddings").get_items(
         run, decode_tag(tag))

@@ -4,177 +4,79 @@
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/vs-logo.png" width="60%" />
+  <img src="/frontend/packages/core/public/images/logo-visualdl.svg" width="60%"/>
 </p>
 
-## Introduction
-VisualDL is a deep learning visualization tool that can help design deep learning jobs.
-It includes features such as scalar, parameter distribution, model structure and image visualization.
-Currently it is being developed at a high pace.
-New features will be continuously added.
+## 介绍
+VisualDL是一个面向深度学习任务设计的可视化工具，利用丰富的图表展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-At present, most DNN frameworks use Python as their primary language. VisualDL supports Python by nature.
-Users can get plentiful visualization results by simply add a few lines of Python code into their model before training.
+目前，VisualDL支持Scalar, Image, High Dimensional, Graph 这四个组件，项目正处于高速迭代中，新的组件会不断加入。
 
-Besides Python SDK, VisualDL was writen in C++ on the low level. It also provides C++ SDK that
-can be integrated into other platforms.  
+由于大多数DNN平台均使用Python作为配置语言，VisualDL原生支持python的使用，
+通过在模型的Python配置中添加几行，便可以为训练过程提供丰富的可视化支持。
 
 
-## Component
-VisualDL provides following components:
+## 组件
+VisualDL 目前支持以下组件：
 
 - scalar
-- histogram
 - image
-- audio
-- graph
 - high dimensional
+- graph
 
 ### Scalar
-Scalar can be used to show the trends of error during training.
+可以用于展示训练测试的指标变化趋势
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_scalar.gif" width="60%"/>
+<img src="/docs/images/scalar_test.png" width="100%"/>
 </p>
 
-### Histogram
-Histogram can be used to visualize parameter distribution and trends for any tensor.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/histogram.gif" width="60%"/>
-</p>
 
 ### Image
-Image can be used to visualize any tensor or intermediate generated image.
+可以用于可视化任何图片，包括模型训练和预测得到的结果
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/daming-lu/large_files/master/loss_image.gif" width="60%"/>
+<img src="/docs/images/image_test.png" width="100%"/>
 </p>
-
-### Audio
-Audio can be used to play input audio samples or generated audio samples.
-
-### Graph
-VisualDL graph supports displaying paddle model, furthermore is compatible with ONNX ([Open Neural Network Exchange](https://github.com/onnx/onnx)),
-Cooperated with Python SDK, VisualDL can be compatible with most major DNN frameworks, including
-PaddlePaddle, PyTorch and MXNet.
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/images/graph_demo.gif" width="60%" />
-</p>
-
-To display the paddle model, all you have to do is:
-
-1. call the `fluid.io.save_inference_model()`interface to save paddle model
-2. use `visualdl --model_pb [paddle_model_dir]` to load paddle model in command line
 
 ### High Dimensional
 
-High Dimensional can be used to visualize data embeddings by projecting high-dimensional data into 2D / 3D.
+可以用于将高维度数据映射到2D/3D可实现可视化
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/docs/getting_started/high_dimensional_3d.png" width="60%"/>
+<img src="/docs/images/high_dimensional_test.png" width="100%"/>
 </p>
 
-## Quick Start
-To give the VisualDL a quick test, please use the following commands.
+## 安装
+### 使用 Anaconda 安装
 
+Anaconda是一个用于科学计算的Python发行版，提供了包管理与环境管理的功能，可以很方便地解决多版本python并存、切换以及各种第三方包安装问题。
+
+请根据[Anaconda下载网站](https://www.anaconda.com/download) 的指示去下载和安装Anaconda.
+下载Python 3.6版本的command-Line installer.
+
+创建conda环境名字为```vdl```或任何名字:
 ```
-# Install the VisualDL. Preferably under a virtual environment or anaconda.
-pip install --upgrade visualdl
-
-# run a demo, vdl_create_scratch_log will create logs for testing.
-vdl_create_scratch_log
-visualdl --logdir=scratch_log --port=8080
-
-# visit http://127.0.0.1:8080
-```
-
-If you encounter the error `TypeError: __init__() got an unexpected keyword argument 'file'`, that is due to protobuf version is not 3.5+，simply run `pip install --upgrade protobuf` will fix the issue.
-
-If you run into any other issues in above steps, it could be error caused by environmental issues by different python or pip versions.
-Following installation methods might fix the issues.
-
-## Install with Virtualenv
-
-[Virtualenv](https://virtualenv.pypa.io/en/stable/) creates isolated Python environment that prevents interfering
-by other Python programs on the same machine and make sure Python and pip are located properly.
-
-On macOS, install pip and virtualenv by:
-```
-sudo easy_install pip
-pip install --upgrade virtualenv
+conda create -n vdl python=3.7
 ```
 
-On Linux, install pip and virtualenv by:
-```
-sudo apt-get install python3-pip python3-dev python-virtualenv
-```
-
-Then create a Virtualenv environment by one of following command:
-```
-virtualenv ~/vdl  # for Python2.7
-virtualenv -p python3 ~/vdl for Python 3.x
-```
-
-```~/vdl``` will be your Virtualenv directory, you may choose to install anywhere.
-
-Activate your Virtualenv environment by:
-```
-source ~/vdl/bin/activate
-```
-
-Now you should be able to install VisualDL and run our demo:
-
-```
-pip install --upgrade visualdl
-
-# run a demo, vdl_create_scratch_log will create logs for testing.
-vdl_create_scratch_log
-visualdl --logdir=scratch_log --port=8080
-
-# visit http://127.0.0.1:8080
-```
-
-If you still have issues installing VisualDL from Virtualenv, try following installation method.
-
-
-## Install with Anaconda
-
-Anaconda is a python distribution, with installation and package management tools. Also it is an environment manager,
-which provides the facility to create different python environments, each with their own settings.
-
-Follow the instructions on the [Anaconda download site](https://www.anaconda.com/download) to download and install Anaconda.
-Download Python 3.6 version command-Line installer.
-
-Create a conda environment named ```vdl``` or anything you want by:
-```
-conda create -n vdl pip python=2.7 # or python=3.3, etc.
-```
-
-Activate the conda environment by:
+激活conda环境如下:
 ```
 source activate vdl
 ```
 
-Now you should be able to install VisualDL and run our demo:
+现在再安装 VisualDL 和运行范例：
 
-```
+```shell
 pip install --upgrade visualdl
-
-# run a demo, vdl_create_scratch_log will create logs for testing.
-vdl_create_scratch_log
-visualdl --logdir=scratch_log --port=8080
-
-# visit http://127.0.0.1:8080
 ```
 
-If you still have issues installing VisualDL, try installing from sources as in following section.
+也可以使用源代码安装方式，能够获取最新的VisualDL更新。
 
+### 使用代码安装
 
-### Install from source
-```
-#Preferably under a virtualenv or anaconda.
+建议在anaconda环境下进行安装。
+```shell
 git clone https://github.com/PaddlePaddle/VisualDL.git
 cd VisualDL
 
@@ -182,94 +84,43 @@ python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-*.whl
 ```
 
-If there are still issues regarding the ```pip install```, you can still start Visual DL by starting the dev server
-[here](https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/how_to_dev_frontend_en.md)
-
-
 ## SDK
-VisualDL provides both Python SDK and C++ SDK in order to fit more use cases.
-
-
-### Python SDK
-VisualDL now supports both Python 2 and Python 3.
-Below is an example of creating a simple Scalar component and inserting data from different timestamps:
+以最简单的Scalar组件为例，尝试创建一个日志记录多个scalar的数据步骤如下：
 
 ```python
-import random
 from visualdl import LogWriter
 
-logdir = "./tmp"
-logger = LogWriter(logdir, sync_cycle=10000)
-
-# mark the components with 'train' label.
-with logger.mode("train"):
-    # create a scalar component called 'scalars/scalar0'
-    scalar0 = logger.scalar("scalars/scalar0")
-
-# add some records during DL model running.
-for step in range(100):
-    scalar0.add_record(step, random.random())
+with LogWriter(logdir="./tmp") as writer:
+    for step in range(100):
+        writer.add_scalar(step=step, value=step*2)
 ```
 
-### C++ SDK
-Here is the C++ SDK identical to the Python SDK example above:
 
-```c++
-#include <cstdlib>
-#include <string>
-#include "visualdl/logic/sdk.h"
-
-namespace vs = visualdl;
-namespace cp = visualdl::components;
-
-int main() {
-  const std::string dir = "./tmp";
-  vs::LogWriter logger(dir, 10000);
-
-  logger.SetMode("train");
-  auto tablet = logger.AddTablet("scalars/scalar0");
-
-  cp::Scalar<float> scalar0(tablet);
-
-  for (int step = 0; step < 1000; step++) {
-    float v = (float)std::rand() / RAND_MAX;
-    scalar0.AddRecord(step, v);
-  }
-
-  return 0;
-}
-```
-
-## Launch Visual DL
-After some logs have been generated during training, users can launch Visual DL application to see real-time data visualization by:
-### Startup in command line
+## 启动Board
+当训练过程中已经产生了日志数据，就可以启动board进行实时预览可视化信息
+### 在命令行中启动
 
 ```
 visualdl --logdir <some log dir>
 ```
 
-visualDL also supports following optional parameters:
+board 还支持一些参数来实现远程的访问：
 
-- `--host` set IP
-- `--port` set port
-- `-m / --model_pb` specify ONNX format for model file to view graph
-
-### Startup in python script
+- `--host` 设定IP
+- `--port` 设定端口
+### 在Python脚本中启动
 ```python
 >>> from visualdl.server import app
 
 >>> app.run(logdir="SOME_LOG_DIR")
 ```
-`app.run()` support all parameters for command line startup, in addition, you can also specify `pen_browser=True` to open browser automatically。
+`app.run()`支持命令行启动的所有参数，除此之外，还可以通过指定`open_browser=True`，自动打开浏览器。
+## 贡献
 
-### Contribute
-
-VisualDL is initially created by [PaddlePaddle](http://www.paddlepaddle.org/) and
-[ECharts](http://echarts.baidu.com/).
-We welcome everyone to use, comment and contribute to Visual DL :)
+VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和 [ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。
 
 
 
-## More details
+## 更多细节
 
-For more details about how to use VisualDL, please take a look at [documents](https://github.com/PaddlePaddle/VisualDL/tree/develop/demo)
+想了解更多关于VisualDL的使用介绍，请查看[文档](./docs/README.md)
