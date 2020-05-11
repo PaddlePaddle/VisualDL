@@ -96,8 +96,10 @@ with LogWriter(logdir="./tmp") as writer:
 ```
 
 
-## 启动Board
-当训练过程中已经产生了日志数据，就可以启动board进行实时预览可视化信息
+## 启动VisualDL服务
+
+当训练过程中已经产生了日志数据，就可以启动VisualDL服务进行实时预览可视化信息。
+
 ### 在命令行中启动
 
 ```
@@ -118,7 +120,6 @@ board 还支持一些参数来实现远程的访问：
 ## 贡献
 
 VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和 [ECharts](http://echarts.baidu.com/) 合作推出的开源项目。我们欢迎所有人使用，提意见以及贡献代码。
-
 
 
 ## 更多细节
