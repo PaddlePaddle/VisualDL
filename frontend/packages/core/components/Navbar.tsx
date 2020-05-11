@@ -1,5 +1,5 @@
 import {Link, config, i18n, useTranslation} from '~/utils/i18n';
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useMemo} from 'react';
 import {
     border,
     navbarBackgroundColor,
@@ -12,6 +12,7 @@ import {
 } from '~/utils/style';
 
 import Icon from '~/components/Icon';
+import {InitConfig} from '@visualdl/i18n';
 import Language from '~/components/Language';
 import ee from '~/utils/event';
 import intersection from 'lodash/intersection';
@@ -99,13 +100,23 @@ const changeLanguage = () => {
 };
 
 const Navbar: FunctionComponent = () => {
-    const {t} = useTranslation('common');
+    const {t, i18n} = useTranslation('common');
     const {pathname} = useRouter();
+
+    const indexUrl = useMemo(() => {
+        // TODO: fix type
+        const subpath = (i18n.options as InitConfig).localeSubpaths?.[i18n.language];
+        let path = process.env.PUBLIC_PATH ?? '';
+        if (subpath) {
+            path += `/${subpath}`;
+        }
+        return `${path}/index`;
+    }, [i18n.options, i18n.language]);
 
     return (
         <Nav>
             <div className="left">
-                <Logo href={(process.env.PUBLIC_PATH ?? '') + '/'}>
+                <Logo href={indexUrl}>
                     <img alt="PaddlePaddle" src={`${process.env.PUBLIC_PATH}/images/logo.svg`} />
                     <span>VisualDL</span>
                 </Logo>
