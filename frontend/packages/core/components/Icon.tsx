@@ -7,7 +7,7 @@ type IconProps = {
 };
 
 const Icon: FunctionComponent<IconProps & WithStyled> = ({type, className}) => {
-    return <i className={`vdl-icon icon-${type} ${className}`} />;
+    return <i className={`vdl-icon icon-${type} ${className ?? ''}`} />;
 };
 
 export default Icon;

@@ -39,14 +39,13 @@ const colors = {
 };
 
 const Wrapper = styled.a<{type?: keyof typeof colors; rounded?: boolean; disabled?: boolean}>`
-    cursor: pointer;
     height: ${height};
     line-height: ${height};
     border-radius: ${props => (props.rounded ? half(height) : borderRadius)};
     ${props => (props.type ? '' : sameBorder({color: borderColor}))}
     background-color: ${props => (props.type ? colors[props.type].default : 'transparent')};
     color: ${props => (props.disabled ? textLighterColor : props.type ? textInvertColor : textColor)};
-    cursor: ${props => (props.disabled ? 'not-allowed' : 'cursor')};
+    cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
     display: inline-block;
     vertical-align: top;
     text-align: center;
