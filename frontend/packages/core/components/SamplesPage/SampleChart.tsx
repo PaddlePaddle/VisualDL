@@ -168,7 +168,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
                 <span>{run}</span>
             </Title>
             <StepSlider value={step} steps={steps} onChange={setStep} onChangeComplete={cacheImageSrc}>
-                {formatTime(wallTime, i18n.language)}
+                {formatTime(wallTime * 1000, i18n.language)}
             </StepSlider>
             <Container brightness={brightness} contrast={contrast} fit={fit}>
                 {Content}
