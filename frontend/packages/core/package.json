@@ -21,7 +21,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/PaddlePaddle/VisualDL.git",
-        "directory": "frontend/core"
+        "directory": "frontend/packages/core"
     },
     "scripts": {
         "dev": "next",

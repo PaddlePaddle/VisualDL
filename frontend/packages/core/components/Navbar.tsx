@@ -105,7 +105,7 @@ const Navbar: FunctionComponent = () => {
     return (
         <Nav>
             <div className="left">
-                <Logo href={process.env.PUBLIC_PATH || '/'}>
+                <Logo href={(process.env.PUBLIC_PATH ?? '') + '/'}>
                     <img alt="PaddlePaddle" src={`${process.env.PUBLIC_PATH}/images/logo.svg`} />
                     <span>VisualDL</span>
                 </Logo>
