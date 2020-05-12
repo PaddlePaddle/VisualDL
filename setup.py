@@ -24,6 +24,7 @@ import setuptools.command.build_py
 import setuptools
 from setuptools import setup
 from setuptools import find_packages
+from visualdl import __version__
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -40,7 +41,6 @@ def readlines(name):
     return read(name).split('\n')
 
 
-VERSION_NUMBER = read('VERSION_NUMBER')
 LICENSE = readlines('LICENSE')[0].strip()
 
 # use memcache to reduce disk read frequency.
@@ -95,7 +95,7 @@ cmdclass = {
 
 setup(
     name="visualdl",
-    version=VERSION_NUMBER,
+    version=__version__,
     author="PaddlePaddle and Echarts team",
     description="Visualize Deep Learning",
     license=LICENSE,
