@@ -9,8 +9,7 @@ sphinx-rtd-theme >= 0.4.3
 flake8 >= 3.7.9
 Pillow == 6.2.2; python_version < "3.0"
 Pillow >= 7.0.0; python_version >= "3.0"
-pre-commit == 1.21.0; python_version <= "3.5"
-pre-commit >= 2.2.0; python_version > "3.5"
+pre-commit
 flask >= 1.1.1
 Flask-Babel >= 1.0.0
 six >= 1.14.0
