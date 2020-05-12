@@ -1,4 +1,4 @@
-# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+# Copyright (c) 2020 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,11 +13,5 @@
 # limitations under the License.
 # =======================================================================
 
-from __future__ import absolute_import
+vdl_version = '2.0.0-alpha.2'
 
-import os
-
-from visualdl.writer.writer import LogWriter  # noqa
-from visualdl.version import vdl_version as __version__
-
-ROOT = os.path.dirname(__file__)

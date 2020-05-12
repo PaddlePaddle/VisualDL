@@ -278,7 +278,7 @@ def create_app(args):
     @app.route('/api/embeddings/embedding')
     def embeddings():
         run = request.args.get('run')
-        tag = request.args.get('tag')
+        tag = request.args.get('tag', 'default')
         dimension = request.args.get('dimension')
         reduction = request.args.get('reduction')
         key = os.path.join('/data/plugin/embeddings/embeddings', run,
