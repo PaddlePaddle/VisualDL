@@ -14,11 +14,11 @@ OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
 npx lerna run build
 
 # generate output
-rm -rf $OUTPUT_PATH
-mkdir -p $OUTPUT_PATH
+rm -rf ${OUTPUT_PATH}
+mkdir -p ${OUTPUT_PATH}
 
 # package server files
-(cd $SERVER_DIR_PATH && tar zcf $OUTPUT_PATH/server.tar.gz .)
+(cd ${SERVER_DIR_PATH} && tar zcf ${OUTPUT_PATH}/server.tar.gz .)
 
 # package serverless files
-(cd $SERVERLESS_DIR_PATH && tar zcf $OUTPUT_PATH/serverless.tar.gz .)
+(cd ${SERVERLESS_DIR_PATH} && tar zcf ${OUTPUT_PATH}/serverless.tar.gz .)
