@@ -215,7 +215,7 @@ const Select = <T extends unknown>({
                 ? multiple
                     ? (value as T[]).map(findLabelByValue).join(' / ')
                     : findLabelByValue(value as T)
-                : placeholder || t('select'),
+                : placeholder || t('common:select'),
         [multiple, value, findLabelByValue, isSelected, placeholder, t]
     );
 
@@ -227,7 +227,7 @@ const Select = <T extends unknown>({
             </Trigger>
             <List opened={isOpened} empty={isListEmpty}>
                 {isListEmpty
-                    ? t('empty')
+                    ? t('common:empty')
                     : list.map((item, index) => {
                           if (multiple) {
                               return (

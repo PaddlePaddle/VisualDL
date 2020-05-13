@@ -52,7 +52,7 @@ const Image = React.forwardRef<ImageRef, ImageProps>(({src, cache}, ref) => {
     }
 
     if (error) {
-        return <div>{t('error')}</div>;
+        return <div>{t('common:error')}</div>;
     }
 
     return <img src={url} />;

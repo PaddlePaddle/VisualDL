@@ -77,13 +77,13 @@ const HighDimensional: NextI18NextPage = () => {
             </Field>
             <Field>
                 <Checkbox value={labelVisibility} onChange={setLabelVisibility}>
-                    {t('display-all-label')}
+                    {t('high-dimensional:display-all-label')}
                 </Checkbox>
             </Field>
             <AsideDivider />
             <AsideTitle>
                 <StyledIcon type="dimension" />
-                {t('dimension')}
+                {t('high-dimensional:dimension')}
             </AsideTitle>
             <Field>
                 <RadioGroup value={dimension} onChange={value => setDimension(value)}>
@@ -97,7 +97,7 @@ const HighDimensional: NextI18NextPage = () => {
             <AsideDivider />
             <AsideTitle>
                 <StyledIcon type="reduction" />
-                {t('reduction-method')}
+                {t('high-dimensional:reduction-method')}
             </AsideTitle>
             <Field>
                 <RadioGroup value={reduction} onChange={value => setReduction(value)}>

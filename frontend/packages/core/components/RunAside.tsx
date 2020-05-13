@@ -135,16 +135,16 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
         <Aside>
             {children}
             <section className="run-section">
-                <Field className="run-select" label={t('select-runs')}>
+                <Field className="run-select" label={t('common:select-runs')}>
                     <SearchInput
                         className="search-input"
                         value={search}
                         onChange={setSearch}
-                        placeholder={t('search-runs')}
+                        placeholder={t('common:search-runs')}
                         rounded
                     />
                     <Checkbox value={selectAll} onChange={toggleSelectAll}>
-                        {t('select-all')}
+                        {t('common:select-all')}
                     </Checkbox>
                     <div className="run-list">
                         {filteredRuns.map((run, index) => (

@@ -101,11 +101,11 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
     }, [points]);
 
     if (!data && error) {
-        return <Empty>{t('error')}</Empty>;
+        return <Empty>{t('common:error')}</Empty>;
     }
 
     if (!data && !loading) {
-        return <Empty>{t('empty')}</Empty>;
+        return <Empty>{t('common:empty')}</Empty>;
     }
 
     return <StyledScatterChart loading={loading} data={chartData} gl={dimension === '3d'} />;

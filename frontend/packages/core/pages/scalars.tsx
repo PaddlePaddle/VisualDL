@@ -48,7 +48,6 @@ const Scalars: NextI18NextPage = () => {
     const [xAxis, setXAxis] = useState<XAxis>(xAxisValues[0]);
 
     const [tooltipSorting, setTooltipSorting] = useState<TooltipSorting>(toolTipSortingValues[0]);
-    const onChangeTooltipSorting = (value: TooltipSorting) => setTooltipSorting(value);
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
@@ -62,24 +61,24 @@ const Scalars: NextI18NextPage = () => {
         >
             <section>
                 <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
-                    {t('ignore-outliers')}
+                    {t('scalars:ignore-outliers')}
                 </Checkbox>
                 <TooltipSortingDiv>
-                    <span>{t('tooltip-sorting')}</span>
+                    <span>{t('scalars:tooltip-sorting')}</span>
                     <Select
                         list={toolTipSortingValues.map(value => ({label: t(`tooltip-sorting-value.${value}`), value}))}
                         value={tooltipSorting}
-                        onChange={onChangeTooltipSorting}
+                        onChange={setTooltipSorting}
                     />
                 </TooltipSortingDiv>
             </section>
             <section>
-                <Field label={t('smoothing')}>
+                <Field label={t('scalars:smoothing')}>
                     <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
                 </Field>
             </section>
             <section>
-                <Field label={t('x-axis')}>
+                <Field label={t('scalars:x-axis')}>
                     <RadioGroup value={xAxis} onChange={setXAxis}>
                         {xAxisValues.map(value => (
                             <RadioButton key={value} value={value}>

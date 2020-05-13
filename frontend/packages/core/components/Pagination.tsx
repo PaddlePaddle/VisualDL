@@ -56,21 +56,21 @@ const Pagination: FunctionComponent<PaginationProps & WithStyled> = ({page, tota
         <Wrapper className={className}>
             <div>
                 <Button disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>
-                    {t('previous-page')}
+                    {t('common:previous-page')}
                 </Button>
                 <Button disabled={currentPage >= total} onClick={() => setPage(currentPage + 1)}>
-                    {t('next-page')}
+                    {t('common:next-page')}
                 </Button>
             </div>
             <div>
-                <span>{t('total-page', {count: total})}</span>
+                <span>{t('common:total-page', {count: total})}</span>
                 <Input
                     value={jumpPage}
                     onChange={value => setJumpPage(value)}
                     onKeyDown={e => e.key === 'Enter' && setPage(jumpPage)}
                 />
                 <Button onClick={() => setPage(jumpPage)} type="primary">
-                    {t('confirm')}
+                    {t('common:confirm')}
                 </Button>
             </div>
         </Wrapper>

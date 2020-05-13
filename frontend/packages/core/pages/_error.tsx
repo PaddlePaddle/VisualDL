@@ -18,7 +18,11 @@ interface ErrorProps {
 const Error: NextI18NextPage<ErrorProps> = ({statusCode}) => {
     const {t} = useTranslation('errors');
 
-    return <ErrorDiv>{statusCode ? t('error-with-status', {statusCode}) : t('error-without-status')}</ErrorDiv>;
+    return (
+        <ErrorDiv>
+            {statusCode ? t('errors:error-with-status', {statusCode}) : t('errors:error-without-status')}
+        </ErrorDiv>
+    );
 };
 
 Error.getInitialProps = ({res, err}) => {

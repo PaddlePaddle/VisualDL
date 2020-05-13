@@ -45,7 +45,7 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeCompl
     return (
         <>
             <Label>
-                <span>{`${t('step')}: ${steps[step] ?? '...'}`}</span>
+                <span>{`${t('samples:step')}: ${steps[step] ?? '...'}`}</span>
                 {children && <span>{children}</span>}
             </Label>
             <FullWidthRangeSlider

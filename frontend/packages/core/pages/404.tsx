@@ -14,7 +14,7 @@ const Error = styled.div`
 const Error404: NextI18NextPage = () => {
     const {t} = useTranslation('errors');
 
-    return <Error>404 - {t('page-not-found')}</Error>;
+    return <Error>404 - {t('errors:page-not-found')}</Error>;
 };
 
 // 404 page cannot have getInitialProps or getServerSideProps
