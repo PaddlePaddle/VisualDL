@@ -15,7 +15,7 @@ build_frontend() {
     mkdir -p "$BUILD_DIR/package/dist"
 
     cd "$FRONTEND_DIR"
-    SCOPE="serverless" ./scripts/install.sh
+    ./scripts/install.sh
     SCOPE="serverless" PUBLIC_PATH="/{{PUBLIC_PATH}}" API_URL="/{{PUBLIC_PATH}}/api" ./scripts/build.sh
 
     # extract
