@@ -104,8 +104,7 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=REQUIRED_PACKAGES,
     package_data={
-        'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)] + [('static' + ('/*' * n)) for n in
-                                                                            range(1, 20)],
+        'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)],
         'visualdl.python': ['dog.jpg', 'testing.wav']
     },
     packages=find_packages(),

@@ -18,8 +18,7 @@ from shutil import (copytree, rmtree)
 
 
 def render(path, dest, **context):
-    if os.path.exists(dest):
-        rmtree(dest)
+    clean(dest)
     copytree(path, dest)
     for root, dirs, files in os.walk(dest):
         for file in files:
@@ -32,3 +31,8 @@ def render(path, dest, **context):
                     content = content.replace("{{" + key + "}}", value)
                 with open(file_path, "w") as f:
                     f.write(content)
+
+
+def clean(path):
+    if os.path.exists(path):
+        rmtree(path)

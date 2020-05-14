@@ -19,6 +19,7 @@ import json
 import os
 import time
 import sys
+import signal
 import multiprocessing
 import threading
 import re
@@ -387,19 +388,27 @@ def run(logdir,
     return p.pid
 
 
-def main():
-    args = parse_args()
+def render_template(args):
     template.render(
         template_file_path,
         static_file_path,
         PUBLIC_PATH=args.public_path.strip('/'))
+
+
+def clean_template(signalnum, frame):
+    template.clean(static_file_path)
+    sys.exit(0)
+
+
+def main():
+    args = parse_args()
+    render_template(args)
+    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
+        signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args=args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    logger.info(" port=" + str(args.port))
-    app = create_app(args=args)
-    app.run(debug=False, host=args.host, port=args.port, threaded=False)
+    main()
