@@ -29,7 +29,7 @@ build_frontend() {
     npm install --no-package-lock
     npm run build
 
-    cp -a dist/. "$BUILD_DIR/package/dist/"
+    cp -a "$FRONTEND_DIR/packages/serverless/dist/." "$BUILD_DIR/package/dist/"
 }
 
 clean_env() {

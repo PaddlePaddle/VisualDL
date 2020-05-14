@@ -7,10 +7,9 @@ const {spawn} = require('child_process');
 const {writeFileSync} = require('fs');
 
 const next = require.resolve('next/dist/bin/next');
+const projectRoot = path.dirname(require.resolve('@visualdl/core'));
 
-module.exports.projectRoot = path.dirname(require.resolve('@visualdl/core'));
-
-module.exports.default = function (action, ...args) {
+module.exports = function (action, ...args) {
     return new Promise((resolve, reject) => {
         const capitalizedAction = action.replace(/^./, w => w.toUpperCase());
 
@@ -42,3 +41,5 @@ module.exports.default = function (action, ...args) {
         });
     });
 };
+
+module.exports.projectRoot = projectRoot;
