@@ -1,14 +1,16 @@
 /* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-var-requires */
 
-import ora from 'ora';
-import path from 'path';
-import {spawn} from 'child_process';
-import {writeFileSync} from 'fs';
+const ora = require('ora');
+const path = require('path');
+const {spawn} = require('child_process');
+const {writeFileSync} = require('fs');
 
 const next = require.resolve('next/dist/bin/next');
-export const projectRoot = path.dirname(require.resolve('@visualdl/core'));
 
-export default function (action, ...args) {
+module.exports.projectRoot = path.dirname(require.resolve('@visualdl/core'));
+
+module.exports.default = function (action, ...args) {
     return new Promise((resolve, reject) => {
         const capitalizedAction = action.replace(/^./, w => w.toUpperCase());
 
@@ -39,4 +41,4 @@ export default function (action, ...args) {
             }
         });
     });
-}
+};
