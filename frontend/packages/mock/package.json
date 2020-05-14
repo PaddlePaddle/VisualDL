@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/mock",
-    "version": "2.0.0-beta.36",
+    "version": "2.0.0-beta.37",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -56,5 +56,5 @@
             "pre-commit": "lint-staged"
         }
     },
-    "gitHead": "262ca2da5ed71ae2963aeee3497c10272ffdca71"
+    "gitHead": "24f28bc4cca3d5fae2d1131730978c5f81e4566c"
 }

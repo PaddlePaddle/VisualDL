@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/core",
-    "version": "2.0.0-beta.36",
+    "version": "2.0.0-beta.37",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -40,12 +40,12 @@
         "@types/mime-types": "2.1.0",
         "@types/node": "13.13.5",
         "@types/nprogress": "0.2.0",
-        "@types/react-dom": "16.9.7",
         "@types/react": "16.9.34",
+        "@types/react-dom": "16.9.7",
         "@types/styled-components": "5.1.0",
-        "@visualdl/i18n": "2.0.0-beta.36",
-        "@visualdl/mock": "2.0.0-beta.36",
-        "@visualdl/wasm": "2.0.0-beta.36",
+        "@visualdl/i18n": "2.0.0-beta.37",
+        "@visualdl/mock": "2.0.0-beta.37",
+        "@visualdl/wasm": "2.0.0-beta.37",
         "babel-plugin-emotion": "10.0.33",
         "babel-plugin-styled-components": "1.10.7",
         "babel-plugin-typescript-to-proptypes": "1.3.2",
@@ -54,8 +54,8 @@
         "cross-env": "7.0.2",
         "css-loader": "3.5.3",
         "dagre-d3": "0.6.4",
-        "echarts-gl": "1.1.1",
         "echarts": "4.7.0",
+        "echarts-gl": "1.1.1",
         "eventemitter3": "4.0.0",
         "file-saver": "2.0.2",
         "isomorphic-unfetch": "3.0.0",
@@ -69,13 +69,13 @@
         "polished": "3.6.2",
         "prop-types": "15.7.2",
         "query-string": "6.12.1",
+        "react": "16.13.1",
         "react-dom": "16.13.1",
         "react-hooks-worker": "0.9.0",
         "react-input-range": "1.3.0",
         "react-is": "16.13.1",
         "react-spinners": "0.8.3",
         "react-tooltip": "4.2.6",
-        "react": "16.13.1",
         "save-svg-as-png": "1.4.17",
         "styled-components": "5.1.0",
         "swr": "0.2.0",
@@ -94,5 +94,5 @@
             "pre-commit": "lint-staged"
         }
     },
-    "gitHead": "262ca2da5ed71ae2963aeee3497c10272ffdca71"
+    "gitHead": "24f28bc4cca3d5fae2d1131730978c5f81e4566c"
 }
