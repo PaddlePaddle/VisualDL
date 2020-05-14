@@ -189,17 +189,6 @@ def create_app(args):
             os.path.join(server_path, static_file_path), filename
             if re.search(r'\..+$', filename) else filename + '.html')
 
-    @app.route(api_path + '/logdir')
-    def logdir():
-        result = gen_result(0, "", {"logdir": args.logdir})
-        return Response(json.dumps(result), mimetype='application/json')
-
-    @app.route(api_path + '/language')
-    def language():
-        data = get_locale()
-        result = gen_result(0, "", data)
-        return Response(json.dumps(result), mimetype='application/json')
-
     @app.route(api_path + "/components")
     def components():
         data = cache_get('/data/components', lib.get_components, log_reader)
