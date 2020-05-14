@@ -11,25 +11,15 @@ build_frontend_fake() {
     mkdir -p "$BUILD_DIR/package/dist"
 }
 
-build_frontend_from_source() {
+build_frontend() {
     mkdir -p "$BUILD_DIR/package/dist"
 
     cd "$FRONTEND_DIR"
-    ./scripts/install.sh
+    SCOPE="serverless" ./scripts/install.sh
     SCOPE="serverless" PUBLIC_PATH="/{{PUBLIC_PATH}}" API_URL="/{{PUBLIC_PATH}}/api" ./scripts/build.sh
 
     # extract
     tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$BUILD_DIR/package/dist"
-}
-
-build_frontend() {
-    mkdir -p "$BUILD_DIR/package/dist"
-
-    cd "$FRONTEND_DIR/packages/serverless"
-    npm install --no-package-lock
-    npm run build
-
-    cp -a "$FRONTEND_DIR/packages/serverless/dist/." "$BUILD_DIR/package/dist/"
 }
 
 clean_env() {
@@ -52,11 +42,6 @@ clean_env
 
 if [[ "$ARG" = "travis-CI" ]]; then
     build_frontend_fake
-elif [[ "$ARG" = "from-source" ]]; then
-    build_frontend_from_source
-elif [[ "$ARG" = "no-build" ]]; then
-    build_frontend_fake
-    echo "skipping build frontend"
 else
     build_frontend
 fi

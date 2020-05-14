@@ -21,8 +21,6 @@ elif [ "$SCOPE" = "server" ]; then
     npx lerna run --scope "@visualdl/server" --include-dependencies build
 elif [ "$SCOPE" = "cli" ]; then
     npx lerna run --scope "@visualdl/cli" --include-dependencies build
-elif [ "$SCOPE" = "app" ]; then
-    npx lerna run --scope "@visualdl/app" --include-dependencies build
 else
     npx lerna run build
 fi
