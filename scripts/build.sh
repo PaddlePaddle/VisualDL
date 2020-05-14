@@ -12,80 +12,24 @@ build_frontend_fake() {
 }
 
 build_frontend_from_source() {
-    build_frontend_fake
+    mkdir -p "$BUILD_DIR/package/dist"
 
     cd "$FRONTEND_DIR"
     ./scripts/install.sh
-    ./scripts/build.sh
+    SCOPE="serverless" PUBLIC_PATH="/{{PUBLIC_PATH}}" API_URL="/{{PUBLIC_PATH}}/api" ./scripts/build.sh
 
     # extract
-    tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$BUILD_DIR/package/serverless"
+    tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$BUILD_DIR/package/dist"
 }
 
 build_frontend() {
-    local PACKAGE="@visualdl/serverless"
-    local NAME=${PACKAGE#*@}
-    local NAME=${NAME////-}
-    echo ${NAME}
-    local TAG="latest"
-    local TARBALL="${PACKAGE}@${TAG}"
+    mkdir -p "$BUILD_DIR/package/dist"
 
-    # get version
-    local VERSION
-    VERSION=$(npm view ${TARBALL} dist-tags.${TAG})
-    # shellcheck disable=SC2181
-    if [[ "$?" -ne "0" ]]; then
-        echo "Cannot get version"
-        exit 1
-    fi
-    local FILENAME="${NAME}-${VERSION}.tgz"
+    cd "$FRONTEND_DIR/packages/serverless"
+    npm install --no-package-lock
+    npm run build
 
-    # get sha1sum
-    local SHA1SUM;
-    SHA1SUM=$(npm view ${TARBALL} dist.shasum)
-    # shellcheck disable=SC2181
-    if [[ "$?" -ne "0" ]]; then
-        echo "Cannot get sha1sum"
-        exit 1
-    fi
-    rm -f "$BUILD_DIR/${NAME}-*.tgz.sha1"
-    echo "${SHA1SUM} ${FILENAME}" > "$BUILD_DIR/${FILENAME}.sha1"
-
-    local DOWNLOAD="1"
-    # cached file exists
-    if [[ -f "$BUILD_DIR/$FILENAME" ]]; then
-        # check sha1sum
-        (cd "$BUILD_DIR" && sha1sum -c "${FILENAME}.sha1")
-        # check pass, use cached file
-        # shellcheck disable=SC2181
-        if [[ "$?" -eq "0" ]]; then
-            echo "Using cached npm package file ${FILENAME}"
-            DOWNLOAD="0"
-        fi
-    fi
-
-    if [[ "$DOWNLOAD" -eq "1" ]]; then
-        echo "Downloading npm package, please wait..."
-
-        # remove cache
-        rm -f "$BUILD_DIR/${NAME}-*.tgz"
-
-        # download file
-        FILENAME=$( (cd "$BUILD_DIR" && npm pack ${TARBALL}) )
-
-        # check sha1sum of downloaded file
-        (cd "BUILD_DIR" && sha1sum -c "${FILENAME}.sha1")
-        # shellcheck disable=SC2181
-        if [[ "$?" -ne "0" ]]; then
-            echo "Check sum failed, download may not finish correctly."
-            exit 1
-        else
-            echo "Check sum pass."
-        fi
-    fi
-
-    # extract
-    tar zxf "$BUILD_DIR/$FILENAME" -C "$BUILD_DIR"
+    cp -a dist/. "$BUILD_DIR/package/dist/"
 }
 
 clean_env() {
@@ -110,6 +54,9 @@ if [[ "$ARG" = "travis-CI" ]]; then
     build_frontend_fake
 elif [[ "$ARG" = "from-source" ]]; then
     build_frontend_from_source
+elif [[ "$ARG" = "no-build" ]]; then
+    build_frontend_fake
+    echo "skipping build frontend"
 else
     build_frontend
 fi

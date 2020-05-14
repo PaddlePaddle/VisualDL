@@ -48,6 +48,9 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
             <Html lang={language} dir={languageDir}>
                 <Head />
                 <body>
+                    <script
+                        dangerouslySetInnerHTML={{__html: `__vdl_public_path__='${process.env.PUBLIC_PATH}'`}}
+                    ></script>
                     <Main />
                     <NextScript />
                 </body>

@@ -2,7 +2,7 @@
 
 set -e
 
-WORKING_PATH=`pwd`
+WORKING_PATH=$(pwd)
 SERVER_DIR="packages/server/dist"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"
 SERVERLESS_DIR="packages/serverless/dist"
@@ -10,15 +10,33 @@ SERVERLESS_DIR_PATH="$WORKING_PATH/$SERVERLESS_DIR"
 OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
 
+# clean
+rm -rf "$SERVER_DIR_PATH"
+rm -rf "$SERVERLESS_DIR_PATH"
+
 # build
-npx lerna run build
+if [ "$SCOPE" = "serverless" ]; then
+    npx lerna run --scope "@visualdl/serverless" --include-dependencies build
+elif [ "$SCOPE" = "server" ]; then
+    npx lerna run --scope "@visualdl/server" --include-dependencies build
+elif [ "$SCOPE" = "cli" ]; then
+    npx lerna run --scope "@visualdl/cli" --include-dependencies build
+elif [ "$SCOPE" = "app" ]; then
+    npx lerna run --scope "@visualdl/app" --include-dependencies build
+else
+    npx lerna run build
+fi
 
 # generate output
-rm -rf ${OUTPUT_PATH}
-mkdir -p ${OUTPUT_PATH}
+rm -rf "$OUTPUT_PATH"
+mkdir -p "$OUTPUT_PATH"
 
 # package server files
-(cd ${SERVER_DIR_PATH} && tar zcf ${OUTPUT_PATH}/server.tar.gz .)
+if [ -d "$SERVER_DIR_PATH" ]; then
+    (cd "$SERVER_DIR_PATH" && tar zcf "${OUTPUT_PATH}/server.tar.gz" .)
+fi
 
 # package serverless files
-(cd ${SERVERLESS_DIR_PATH} && tar zcf ${OUTPUT_PATH}/serverless.tar.gz .)
+if [ -d "$SERVERLESS_DIR_PATH" ]; then
+    (cd "$SERVERLESS_DIR_PATH" && tar zcf "${OUTPUT_PATH}/serverless.tar.gz" .)
+fi

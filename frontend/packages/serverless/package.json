@@ -27,7 +27,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "cross-env PUBLIC_PATH=/app API_URL=/api ts-node build.ts",
+        "build": "cross-env ts-node build.ts",
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {

@@ -31,6 +31,7 @@ TOP_DIR = os.path.realpath(os.path.dirname(__file__))
 PYTHON_SDK_DIR = os.path.join(TOP_DIR, 'visualdl/python')
 BUILD_DIR = os.path.join(TOP_DIR, 'build')
 MODE = os.environ.get('VS_BUILD_MODE', 'RELEASE')
+FRONTEND = os.environ.get('BUILD_FRONTEND')
 
 
 def read(name):
@@ -83,6 +84,10 @@ class build_py(setuptools.command.build_py.build_py):
         env = dict(os.environ)
         if MODE == "travis-CI":
             cmd.append('travis-CI')
+        elif FRONTEND == "source":
+            cmd.append('from-source')
+        elif FRONTEND == "none":
+            cmd.append('no-build')
         if sys.version_info[0] >= 3:
             env["WITH_PYTHON3"] = "ON"
         subprocess.check_call(cmd, env=env)
@@ -104,7 +109,8 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=REQUIRED_PACKAGES,
     package_data={
-        'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)],
+        'visualdl.server': [('dist' + ('/*' * n)) for n in range(1, 20)] + [('static' + ('/*' * n)) for n in
+                                                                            range(1, 20)],
         'visualdl.python': ['dog.jpg', 'testing.wav']
     },
     packages=find_packages(),

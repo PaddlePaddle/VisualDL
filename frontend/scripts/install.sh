@@ -6,7 +6,7 @@ set -e
 # https://rustup.rs/
 if ! hash rustup 2>/dev/null; then
     curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --default-toolchain nightly -y
-    source $HOME/.cargo/env
+    source "$HOME/.cargo/env"
 fi
 
 
@@ -20,23 +20,28 @@ fi
 
 # wine
 if hash apt 2>/dev/null; then
-    sudo dpkg --add-architecture i386
-    wget -nc https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
-    sudo apt-key add Release.key
-    sudo apt-add-repository 'deb https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/ ./'
+    SYSTEM=$(uname -s);
+    if [ "$SYSTEM" = "Linux" ]; then
+        sudo dpkg --add-architecture i386
+        wget -nc https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key
+        sudo apt-key add Release.key
+        sudo apt-add-repository 'deb https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/ ./'
 
-    wget -nc https://dl.winehq.org/wine-builds/winehq.key
-    sudo apt-key add winehq.key
-    sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
+        wget -nc https://dl.winehq.org/wine-builds/winehq.key
+        sudo apt-key add winehq.key
+        sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
 
-    sudo apt update
-    sudo apt install --install-recommends winehq-stable
+        sudo apt update
+        sudo apt install --install-recommends winehq-stable
+    fi
 fi
 
 
 # yarn
-curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+if ! hash yarn 2>/dev/null; then
+    curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+    export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+fi
 
 # yarn install
 yarn install --frozen-lockfile
