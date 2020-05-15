@@ -22,7 +22,7 @@ const useNavItems = () => {
         refreshWhenOffline: false
     });
 
-    const navItems = useMemo(() => intersection(components?.map(component => navMap[component]) ?? [], allNavItems), [
+    const navItems = useMemo(() => intersection(allNavItems, components?.map(component => navMap[component]) ?? []), [
         components
     ]);
 
