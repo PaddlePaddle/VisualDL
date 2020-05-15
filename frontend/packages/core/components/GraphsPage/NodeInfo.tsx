@@ -40,7 +40,7 @@ const PropertyList = styled(DataList)`
 const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
     const {t} = useTranslation('graphs');
     if (!props.node) {
-        return <p>{t('click-node')}</p>;
+        return <p>{t('graphs:click-node')}</p>;
     }
 
     const node = props.node;
@@ -50,10 +50,10 @@ const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
             return (
                 <PropertyList
                     items={[
-                        {key: t('node-type'), value: typeName[node.type]},
-                        {key: t('node-name'), value: node.name},
-                        {key: t('node-data-shape'), value: node.shape},
-                        {key: t('node-data-type'), value: node.data_type}
+                        {key: t('graphs:node-type'), value: typeName[node.type]},
+                        {key: t('graphs:node-name'), value: node.name},
+                        {key: t('graphs:node-data-shape'), value: node.shape},
+                        {key: t('graphs:node-data-type'), value: node.data_type}
                     ]}
                 />
             );
@@ -61,15 +61,15 @@ const NodeInfo: FunctionComponent<NodeInfoProps> = props => {
             return (
                 <PropertyList
                     items={[
-                        {key: t('node-type'), value: typeName[node.type]},
-                        {key: t('input'), value: node.input},
-                        {key: t('op-type'), value: node.opType},
-                        {key: t('output'), value: node.output}
+                        {key: t('graphs:node-type'), value: typeName[node.type]},
+                        {key: t('graphs:input'), value: node.input},
+                        {key: t('graphs:op-type'), value: node.opType},
+                        {key: t('graphs:output'), value: node.output}
                     ]}
                 />
             );
         case 'unknown':
-            return <PropertyList items={[{key: t('node-type'), value: typeName[node.guessType]}]} />;
+            return <PropertyList items={[{key: t('graphs:node-type'), value: typeName[node.guessType]}]} />;
         default:
             return null;
     }

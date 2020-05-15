@@ -205,25 +205,25 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                     {
                         icon: 'maximize',
                         activeIcon: 'minimize',
-                        tooltip: t('maximize'),
-                        activeTooltip: t('minimize'),
+                        tooltip: t('scalars:maximize'),
+                        activeTooltip: t('scalars:minimize'),
                         toggle: true,
                         onClick: toggleMaximized
                     },
                     {
                         icon: 'restore-size',
-                        tooltip: t('restore'),
+                        tooltip: t('scalars:restore'),
                         onClick: () => echart.current?.restore()
                     },
                     {
                         icon: 'log-axis',
-                        tooltip: t('axis'),
+                        tooltip: t('scalars:axis'),
                         toggle: true,
                         onClick: toggleYAxisType
                     },
                     {
                         icon: 'download',
-                        tooltip: t('download-image'),
+                        tooltip: t('scalars:download-image'),
                         onClick: () => echart.current?.saveAsImage()
                     }
                 ]}

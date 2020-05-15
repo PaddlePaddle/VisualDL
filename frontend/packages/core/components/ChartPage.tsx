@@ -155,13 +155,13 @@ const ChartPage = <T extends Item>({
                     ) : (
                         <Empty height={rem(500)}>
                             {search ? (
-                                <Trans i18nKey="search-empty">
+                                <Trans i18nKey="common:search-empty">
                                     Nothing found. Please try again with another word.
                                     <br />
                                     Or you can <a onClick={() => setInputValue('')}>see all charts</a>.
                                 </Trans>
                             ) : (
-                                t('empty')
+                                t('common:empty')
                             )}
                         </Empty>
                     )}
@@ -174,14 +174,14 @@ const ChartPage = <T extends Item>({
         <div className={className}>
             <Search>
                 <SearchInput
-                    placeholder={t('search-tags')}
+                    placeholder={t('common:search-tags')}
                     rounded
                     value={inputValue}
                     onChange={(value: string) => setInputValue(value)}
                 />
             </Search>
             {searchValue ? (
-                <ChartCollapse title={t('search-result')} total={matchedTags.length}>
+                <ChartCollapse title={t('common:search-result')} total={matchedTags.length}>
                     {withCharts(pageMatchedTags, true)}
                     {pageMatchedTags.length ? <StyledPagination page={page} total={total} onChange={setPage} /> : null}
                 </ChartCollapse>
@@ -198,7 +198,7 @@ const ChartPage = <T extends Item>({
                 ))
             ) : (
                 <Empty height={`calc(100vh - ${headerHeight} - ${rem(96)})`}>
-                    <Trans i18nKey="unselected-empty">
+                    <Trans i18nKey="common:unselected-empty">
                         Nothing selected.
                         <br />
                         Please select display data from right side.

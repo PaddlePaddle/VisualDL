@@ -57,16 +57,16 @@ const Samples: NextI18NextPage = () => {
         >
             <section>
                 <Checkbox value={showActualSize} onChange={setShowActualSize}>
-                    {t('show-actual-size')}
+                    {t('samples:show-actual-size')}
                 </Checkbox>
             </section>
             <section>
-                <Field label={t('brightness')}>
+                <Field label={t('samples:brightness')}>
                     <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
                 </Field>
             </section>
             <section>
-                <Field label={t('contrast')}>
+                <Field label={t('samples:contrast')}>
                     <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
                 </Field>
             </section>

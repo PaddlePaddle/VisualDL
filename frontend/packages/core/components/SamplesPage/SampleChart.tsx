@@ -177,7 +177,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
                 items={[
                     {
                         icon: 'download',
-                        tooltip: t('download-image'),
+                        tooltip: t('samples:download-image'),
                         onClick: saveImage
                     }
                 ]}

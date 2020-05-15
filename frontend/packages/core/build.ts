@@ -8,7 +8,7 @@ import {writeFileSync} from 'fs';
 const next = require.resolve('next/dist/bin/next');
 export const projectRoot = path.dirname(require.resolve('@visualdl/core'));
 
-export default function (action: string, ...args: string[]): Promise<number> {
+export default function (action: 'build' | 'export', ...args: string[]): Promise<number> {
     return new Promise((resolve, reject) => {
         const capitalizedAction = action.replace(/^./, w => w.toUpperCase());
 

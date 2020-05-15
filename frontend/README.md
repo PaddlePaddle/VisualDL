@@ -61,7 +61,6 @@ yarn
 [server](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/server/README.md)
 [serverless](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/serverless/README.md)
 [cli](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/cli/README.md)
-[app](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/app/README.md)
 [i18n](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/i18n/README.md)
 [wasm](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/wasm/README.md)
 [mock](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/mock/README.md)

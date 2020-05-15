@@ -264,21 +264,21 @@ const Graphs: NextI18NextPage = () => {
         <AsideSection>
             <SubSection>
                 <Button rounded type="primary" icon="download" onClick={downloadImage}>
-                    {t('download-image')}
+                    {t('graphs:download-image')}
                 </Button>
                 <Button rounded type="primary" icon="revert" onClick={fitScreen}>
-                    {t('restore-image')}
+                    {t('graphs:restore-image')}
                 </Button>
             </SubSection>
 
             <SubSection>
-                <Field label={`${t('scale')}:`}>
+                <Field label={`${t('graphs:scale')}:`}>
                     <RangeSlider min={MIN_SCALE} max={MAX_SCALE} step={0.1} value={scale} onChange={setScale} />
                 </Field>
             </SubSection>
 
             <SubSection>
-                <Field label={`${t('node-info')}:`} />
+                <Field label={`${t('graphs:node-info')}:`} />
                 <NodeInfo node={currentNode} />
             </SubSection>
         </AsideSection>

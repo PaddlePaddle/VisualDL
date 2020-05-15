@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/cli",
-    "version": "2.0.0-beta.35",
+    "version": "2.0.0-beta.40",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -34,7 +34,7 @@
         "dist"
     ],
     "dependencies": {
-        "@visualdl/server": "2.0.0-beta.35",
+        "@visualdl/server": "2.0.0-beta.40",
         "open": "7.0.3",
         "ora": "4.0.4",
         "pm2": "4.4.0",
@@ -59,5 +59,5 @@
             "pre-commit": "lint-staged"
         }
     },
-    "gitHead": "d9641c770d9bc4037b2f1cb644fba198bd11a752"
+    "gitHead": "ed915e4590c1527836cc802d7c6f5011a5b9a4a3"
 }

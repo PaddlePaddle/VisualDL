@@ -28,7 +28,11 @@ async function start() {
         await builder('build');
         await builder('export', '-o', dist);
     } catch (e) {
-        process.exit(e);
+        if ('number' === typeof e) {
+            process.exit(e);
+        }
+        console.error(e);
+        process.exit(1);
     }
     process.exit(0);
 }
