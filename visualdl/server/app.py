@@ -176,6 +176,10 @@ def create_app(args):
             lang = request.accept_languages.best_match(support_language)
         return lang
 
+    @app.route("/")
+    def base():
+        return redirect(public_path, code=302)
+
     @app.route(public_path + "/")
     def index():
         lang = get_locale()
