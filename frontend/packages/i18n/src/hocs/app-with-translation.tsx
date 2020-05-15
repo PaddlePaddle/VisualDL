@@ -52,7 +52,19 @@ export const appWithTranslation = function (this: NextI18Next, WrappedComponent:
             if (!isServer()) {
                 const changeLanguageCallback = (prevLng: string, newLng: string) => {
                     const {router} = props;
-                    const {pathname, asPath, query} = router;
+                    const {query} = router;
+                    let {pathname, asPath} = router;
+
+                    if (process.env.PUBLIC_PATH) {
+                        const publicPath = process.env.PUBLIC_PATH;
+                        if (pathname.indexOf(publicPath) === 0) {
+                            pathname = pathname.replace(publicPath, '');
+                        }
+                        if (asPath.indexOf(publicPath) === 0) {
+                            asPath = asPath.replace(publicPath, '');
+                        }
+                    }
+
                     const routeInfo = {pathname, query};
 
                     if ((i18n as any).initializedLanguageOnce && typeof newLng === 'string' && prevLng !== newLng) {
