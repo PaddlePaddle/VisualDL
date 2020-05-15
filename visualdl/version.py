@@ -13,5 +13,4 @@
 # limitations under the License.
 # =======================================================================
 
-vdl_version = '2.0.0-alpha.2'
-
+vdl_version = '2.0.0-alpha.4'

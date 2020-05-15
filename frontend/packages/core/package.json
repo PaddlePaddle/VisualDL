@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/core",
-    "version": "2.0.0-beta.40",
+    "version": "2.0.0-beta.42",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -31,8 +31,8 @@
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "dependencies": {
-        "@visualdl/i18n": "2.0.0-beta.40",
-        "@visualdl/wasm": "2.0.0-beta.40",
+        "@visualdl/i18n": "2.0.0-beta.42",
+        "@visualdl/wasm": "2.0.0-beta.42",
         "bignumber.js": "9.0.0",
         "dagre-d3": "0.6.4",
         "echarts": "4.7.0",
@@ -73,7 +73,7 @@
         "@types/react": "16.9.34",
         "@types/react-dom": "16.9.7",
         "@types/styled-components": "5.1.0",
-        "@visualdl/mock": "2.0.0-beta.40",
+        "@visualdl/mock": "2.0.0-beta.42",
         "babel-plugin-emotion": "10.0.33",
         "babel-plugin-styled-components": "1.10.7",
         "babel-plugin-typescript-to-proptypes": "1.3.2",

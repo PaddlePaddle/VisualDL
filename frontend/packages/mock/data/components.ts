@@ -1,1 +1,1 @@
-export default ['scalar', 'image', 'embeddings'];
+export default ['embeddings', 'scalar', 'image'];
