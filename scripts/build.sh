@@ -26,8 +26,6 @@ clean_env() {
     rm -rf "$TOP_DIR/visualdl/server/dist"
     rm -rf "$BUILD_DIR/bdist*"
     rm -rf "$BUILD_DIR/lib*"
-    rm -rf "$BUILD_DIR/temp*"
-    rm -rf "$BUILD_DIR/scripts*"
     rm -rf "$BUILD_DIR/package"
 }
 

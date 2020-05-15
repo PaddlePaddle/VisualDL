@@ -71,6 +71,5 @@
         "hooks": {
             "pre-commit": "lint-staged"
         }
-    },
-    "gitHead": "ed915e4590c1527836cc802d7c6f5011a5b9a4a3"
+    }
 }
