@@ -15,18 +15,9 @@ import Icon from '~/components/Icon';
 import {InitConfig} from '@visualdl/i18n';
 import Language from '~/components/Language';
 import ee from '~/utils/event';
-import intersection from 'lodash/intersection';
 import styled from 'styled-components';
+import useNavItems from '~/hooks/useNavItems';
 import {useRouter} from 'next/router';
-
-const buildNavItems = process.env.NAV_ITEMS;
-const allNavItems = ['scalars', 'samples', 'graphs', 'high-dimensional'];
-const navItems = buildNavItems
-    ? intersection(
-          buildNavItems.split(',').map(item => item.trim()),
-          allNavItems
-      )
-    : allNavItems;
 
 const Nav = styled.nav`
     background-color: ${navbarBackgroundColor};
@@ -102,6 +93,8 @@ const changeLanguage = () => {
 const Navbar: FunctionComponent = () => {
     const {t, i18n} = useTranslation('common');
     const {pathname, basePath} = useRouter();
+
+    const navItems = useNavItems();
 
     const path = useMemo(() => pathname.replace(basePath, ''), [pathname, basePath]);
 
