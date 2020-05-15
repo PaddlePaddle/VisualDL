@@ -101,7 +101,9 @@ const changeLanguage = () => {
 
 const Navbar: FunctionComponent = () => {
     const {t, i18n} = useTranslation('common');
-    const {pathname} = useRouter();
+    const {pathname, basePath} = useRouter();
+
+    const path = useMemo(() => pathname.replace(basePath, ''), [pathname, basePath]);
 
     const indexUrl = useMemo(() => {
         // TODO: fix type
@@ -125,7 +127,7 @@ const Navbar: FunctionComponent = () => {
                     return (
                         // https://nextjs.org/docs/api-reference/next/link#if-the-child-is-a-custom-component-that-wraps-an-a-tag
                         <Link href={href} key={name} passHref>
-                            <NavItem active={pathname === href}>
+                            <NavItem active={path === href}>
                                 <span className="nav-text">{t(name)}</span>
                             </NavItem>
                         </Link>
