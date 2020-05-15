@@ -63,9 +63,9 @@ function useRunningRequest<D = unknown, E = unknown>(
     }, [running, mutate]);
 
     useEffect(() => {
-        ee.on('refresh-running', mutate);
+        ee.on('refresh', mutate);
         return () => {
-            ee.off('refresh-running', mutate);
+            ee.off('refresh', mutate);
         };
     }, [mutate]);
 

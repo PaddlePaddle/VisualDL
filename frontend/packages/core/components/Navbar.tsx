@@ -131,7 +131,7 @@ const Navbar: FunctionComponent = () => {
                 <NavItem onClick={changeLanguage}>
                     <Language />
                 </NavItem>
-                <NavItem onClick={() => ee.emit('refresh-running')}>
+                <NavItem onClick={() => ee.emit('refresh')}>
                     <Icon type="refresh" />
                 </NavItem>
             </div>
