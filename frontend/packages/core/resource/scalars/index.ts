@@ -205,7 +205,7 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
             run: item.run,
             // use precision then toString to remove trailling 0
             smoothed: new BigNumber(data[indexPropMap.smoothed] ?? Number.NaN).precision(5).toString(),
-            value: new BigNumber(data[indexPropMap.smoothed] ?? Number.NaN).precision(5).toString(),
+            value: new BigNumber(data[indexPropMap.value] ?? Number.NaN).precision(5).toString(),
             step: data[indexPropMap.step],
             time: formatTime(data[indexPropMap.time], i18n.language),
             // Relative display value should take easy-read into consideration.
