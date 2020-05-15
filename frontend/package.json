@@ -29,7 +29,7 @@
     "scripts": {
         "bootstrap": "lerna bootstrap",
         "build": "./scripts/build.sh",
-        "clean": "rimraf output */dist wasm/target",
+        "clean": "rimraf output packages/*/dist packages/wasm/target",
         "lint": "eslint --ext .tsx,.jsx.ts,.js --ignore-path .gitignore .",
         "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.js\"",
         "test": "yarn workspaces run test",
