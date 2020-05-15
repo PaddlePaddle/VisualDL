@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useEffect, useMemo} from 'react';
-import {WithStyled, position, primaryColor, size} from '~/utils/style';
+import {WithStyled, backgroundColor, position, primaryColor, size} from '~/utils/style';
 
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import useECharts from '~/hooks/useECharts';
 
 const Wrapper = styled.div`
     position: relative;
+    background-color: ${backgroundColor};
 
     > .echarts {
         height: 100%;
