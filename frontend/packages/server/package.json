@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/server",
-    "version": "2.0.0-beta.38",
+    "version": "2.0.0-beta.39",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -36,8 +36,8 @@
         "ecosystem.config.d.ts"
     ],
     "dependencies": {
-        "@visualdl/core": "2.0.0-beta.38",
-        "@visualdl/i18n": "2.0.0-beta.38",
+        "@visualdl/core": "2.0.0-beta.39",
+        "@visualdl/i18n": "2.0.0-beta.39",
         "express": "4.17.1",
         "http-proxy-middleware": "1.0.3",
         "next": "9.3.6",
@@ -49,7 +49,7 @@
         "@types/shelljs": "0.8.7",
         "@types/webpack": "4.41.12",
         "@types/webpack-dev-middleware": "3.7.0",
-        "@visualdl/mock": "2.0.0-beta.38",
+        "@visualdl/mock": "2.0.0-beta.39",
         "cross-env": "7.0.2",
         "nodemon": "2.0.3",
         "shelljs": "0.8.4",
@@ -72,5 +72,5 @@
             "pre-commit": "lint-staged"
         }
     },
-    "gitHead": "9bc69c4af2e8c1bbd5f38001e8b143fd8b008396"
+    "gitHead": "ed915e4590c1527836cc802d7c6f5011a5b9a4a3"
 }
