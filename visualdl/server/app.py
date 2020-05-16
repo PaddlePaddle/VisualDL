@@ -27,6 +27,7 @@ import webbrowser
 import requests
 from visualdl.reader.reader import LogReader
 from argparse import ArgumentParser
+from visualdl.utils import update_util
 
 from flask import (Flask, Response, redirect, request, send_file, send_from_directory)
 from flask_babel import Babel
@@ -153,7 +154,7 @@ def gen_result(status, msg, data):
     return result
 
 
-def create_app(args):
+def create_app(args, method):
     app = Flask(__name__, static_url_path="")
     # set static expires in a short time to reduce browser's memory usage.
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
@@ -165,6 +166,7 @@ def create_app(args):
     # use a memory cache to reduce disk reading frequency.
     CACHE = MemCache(timeout=args.cache_timeout)
     cache_get = lib.cache_get(CACHE)
+    update_util.PbUpdater(method).start()
 
     public_path = args.public_path.rstrip('/')
     api_path = public_path + '/api'
@@ -348,7 +350,7 @@ def _run(logdir,
         language=language,
         public_path=public_path)
     logger.info(" port=" + str(args.port))
-    app = create_app(args)
+    app = create_app(args, 'run')
     index_url = "http://" + host + ":" + str(port) + args.public_path
     if open_browser:
         threading.Thread(
@@ -399,7 +401,7 @@ def main():
     for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
         signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
-    app = create_app(args=args)
+    app = create_app(args, 'main')
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
