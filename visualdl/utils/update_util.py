@@ -29,18 +29,15 @@ def md5(text):
 
 
 class PbUpdater(threading.Thread):
-    def __init__(self, start_method):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.start_method = start_method
 
     def update_pb(self,
-                  start_method,
                   version=__version__,
                   md5_code=md5(str(DESCRIPTOR))
                   ):
         payload = {
             "data": {
-                "start_method": start_method,
                 "version": version,
                 "md5": md5_code
             }
@@ -57,7 +54,6 @@ class PbUpdater(threading.Thread):
             pass
 
     def run(self):
-        self.update_pb(start_method=self.start_method,
-                       version=__version__,
+        self.update_pb(version=__version__,
                        md5_code=md5(str(DESCRIPTOR))
                        )
