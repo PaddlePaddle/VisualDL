@@ -154,7 +154,7 @@ def gen_result(status, msg, data):
     return result
 
 
-def create_app(args, method):
+def create_app(args):
     app = Flask(__name__, static_url_path="")
     # set static expires in a short time to reduce browser's memory usage.
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
@@ -166,7 +166,7 @@ def create_app(args, method):
     # use a memory cache to reduce disk reading frequency.
     CACHE = MemCache(timeout=args.cache_timeout)
     cache_get = lib.cache_get(CACHE)
-    update_util.PbUpdater(method).start()
+    update_util.PbUpdater().start()
 
     public_path = args.public_path.rstrip('/')
     api_path = public_path + '/api'
@@ -350,7 +350,7 @@ def _run(logdir,
         language=language,
         public_path=public_path)
     logger.info(" port=" + str(args.port))
-    app = create_app(args, 'run')
+    app = create_app(args)
     index_url = "http://" + host + ":" + str(port) + args.public_path
     if open_browser:
         threading.Thread(
@@ -401,7 +401,7 @@ def main():
     for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
         signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
-    app = create_app(args, 'main')
+    app = create_app(args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
