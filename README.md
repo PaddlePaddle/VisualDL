@@ -3,6 +3,10 @@
   <img src="http://visualdl.bj.bcebos.com/images/vdl-logo.png" width="70%"/>
 </p>
 
+[![Build Status](https://travis-ci.org/PaddlePaddle/VisualDL.svg?branch=develop)](https://travis-ci.org/PaddlePaddle/VisualDL)
+[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs)
+[![Release](https://img.shields.io/github/release/PaddlePaddle/VisualDL.svg)](https://github.com/PaddlePaddle/VisualDL/releases)
+[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](LICENSE)
 
 ## 介绍
 VisualDL是深度学习模型可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
@@ -66,15 +70,13 @@ VisualDL将训练过程中的数据、参数等信息储存至日志文件中后
 VisualDL的后端提供了Python SDK，可通过LogWriter定制一个日志记录器，接口如下：
 
 ```python
-class LogWriter(
-                logdir=None,
+class LogWriter(logdir=None,
                 comment='',
                 max_queue=10,
                 flush_secs=120,
                 filename_suffix='',
                 write_to_disk=True,
-                **kwargs
-                )
+                **kwargs)
 ```
 
 #### 接口参数
