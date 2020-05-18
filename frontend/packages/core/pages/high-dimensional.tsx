@@ -70,7 +70,7 @@ const HighDimensional: NextI18NextPage = () => {
             return [];
         }
         return runs.reduce<Item[]>(
-            (p, run) => [...p, ...(tags[run].map(tag => ({run, tag, label: `${run}/${tag}`})) ?? [])],
+            (p, run) => [...p, ...(tags[run]?.map(tag => ({run, tag, label: `${run}/${tag}`})) ?? [])],
             []
         );
     }, [runs, tags]);

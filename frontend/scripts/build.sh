@@ -11,8 +11,7 @@ OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
 
 # clean
-rm -rf "$SERVER_DIR_PATH"
-rm -rf "$SERVERLESS_DIR_PATH"
+yarn clean
 
 # build
 if [ "$SCOPE" = "serverless" ]; then

@@ -191,6 +191,7 @@ def create_app(args):
 
     @app.route(public_path + '/<path:filename>')
     def serve_static(filename):
+        print(static_file_path, filename)
         return send_from_directory(
             os.path.join(server_path, static_file_path), filename
             if re.search(r'\..+$', filename) else filename + '.html')
@@ -333,6 +334,18 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
+def render_template(args):
+    template.render(
+        template_file_path,
+        static_file_path,
+        PUBLIC_PATH=args.public_path.strip('/'))
+
+
+def clean_template(signalnum, frame):
+    template.clean(static_file_path)
+    sys.exit(0)
+
+
 def _run(logdir,
          host="127.0.0.1",
          port=8080,
@@ -349,6 +362,10 @@ def _run(logdir,
         cache_timeout=cache_timeout,
         language=language,
         public_path=public_path)
+    args = parse_args()
+    render_template(args)
+    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
+        signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     index_url = "http://" + host + ":" + str(port) + args.public_path
@@ -383,18 +400,6 @@ def run(logdir,
     return p.pid
 
 
-def render_template(args):
-    template.render(
-        template_file_path,
-        static_file_path,
-        PUBLIC_PATH=args.public_path.strip('/'))
-
-
-def clean_template(signalnum, frame):
-    template.clean(static_file_path)
-    sys.exit(0)
-
-
 def main():
     args = parse_args()
     render_template(args)
@@ -402,7 +407,7 @@ def main():
         signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
-    app.run(debug=False, host=args.host, port=args.port, threaded=False)
+    app.run(debug=False, host=args.host, port=args.port, threaded=True)
 
 
 if __name__ == "__main__":
