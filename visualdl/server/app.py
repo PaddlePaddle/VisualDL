@@ -356,7 +356,7 @@ def _run(logdir,
         threading.Thread(
             target=_open_browser, kwargs={"app": app,
                                           "index_url": index_url}).start()
-    app.run(debug=False, host=args.host, port=args.port, threaded=True)
+    app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
 def run(logdir,
