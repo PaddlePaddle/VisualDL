@@ -11,7 +11,6 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 from recommonmark.parser import CommonMarkParser
-from visualdl.version import vdl_version
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../visualdl'))
@@ -24,7 +23,7 @@ copyright = '2020, PaddlePaddle'
 author = 'PaddlePaddle'
 
 # The full version, including alpha/beta/rc tags
-release = vdl_version
+release = '2.0.0.beta1'
 
 
 # -- General configuration ---------------------------------------------------
