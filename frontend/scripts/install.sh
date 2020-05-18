@@ -6,7 +6,7 @@ set -e
 # https://rustup.rs/
 if ! hash rustup 2>/dev/null; then
     curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --default-toolchain nightly -y
-    source "$HOME/.cargo/env"
+    PATH="$HOME/.cargo/bin:$PATH"
 fi
 
 
@@ -21,8 +21,10 @@ fi
 # yarn
 if ! hash yarn 2>/dev/null; then
     curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
-    export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+    PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 fi
+
+export $PATH
 
 # yarn install
 yarn install --frozen-lockfile
