@@ -24,7 +24,7 @@ if ! hash yarn 2>/dev/null; then
     PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 fi
 
-export $PATH
+export PATH=$PATH
 
 # yarn install
 yarn install --frozen-lockfile
