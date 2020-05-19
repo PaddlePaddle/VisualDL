@@ -98,12 +98,6 @@ def parse_args():
         action="store",
         help="api service ip")
     parser.add_argument(
-        "-m",
-        "--model_pb",
-        type=str,
-        action="store",
-        help="model proto in ONNX format or in Paddle framework format")
-    parser.add_argument(
         "--logdir",
         required=True,
         action="store",
