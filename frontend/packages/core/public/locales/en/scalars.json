@@ -1,24 +1,24 @@
 {
-    "smoothing": "Smoothing",
-    "value": "Value",
-    "smoothed": "Smoothed",
-    "x-axis": "X-Axis",
-    "x-axis-value": {
-        "step": "Step",
-        "relative": "Relative",
-        "wall": "Wall Time"
-    },
-    "tooltip-sorting": "Tooltip Sorting",
-    "tooltip-sorting-value": {
-        "default": "Default",
-        "descending": "Descending",
-        "ascending": "Ascending",
-        "nearest": "Nearest"
-    },
+    "axis": "Axis",
+    "download-image": "Download image",
     "ignore-outliers": "Ignore outliers in chart scaling",
     "maximize": "Maximize",
     "minimize": "Minimize",
     "restore": "Restore",
-    "axis": "Axis",
-    "download-image": "Download image"
+    "smoothed": "Smoothed",
+    "smoothing": "Smoothing",
+    "tooltip-sorting": "Tooltip Sorting",
+    "tooltip-sorting-value": {
+        "ascending": "Ascending",
+        "default": "Default",
+        "descending": "Descending",
+        "nearest": "Nearest"
+    },
+    "value": "Value",
+    "x-axis": "X-Axis",
+    "x-axis-value": {
+        "relative": "Relative",
+        "step": "Step",
+        "wall": "Wall Time"
+    }
 }
