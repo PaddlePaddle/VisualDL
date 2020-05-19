@@ -362,7 +362,6 @@ def _run(logdir,
         cache_timeout=cache_timeout,
         language=language,
         public_path=public_path)
-    args = parse_args()
     render_template(args)
     for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
         signal.signal(sig, clean_template)
@@ -407,7 +406,7 @@ def main():
         signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
-    app.run(debug=False, host=args.host, port=args.port, threaded=True)
+    app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
 if __name__ == "__main__":
