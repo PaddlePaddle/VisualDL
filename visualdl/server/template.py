@@ -31,7 +31,7 @@ class Template(object):
             for file in files:
                 if any(file.endswith(name) for name in self.extname):
                     file_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(file_path, path)
+                    rel_path = os.path.relpath(file_path, path).replace(os.path.sep, '/')
                     with open(file_path, "r", encoding="UTF-8") as f:
                         content = f.read()
                         for key, value in context.items():
