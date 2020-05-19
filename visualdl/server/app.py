@@ -19,7 +19,6 @@ import json
 import os
 import time
 import sys
-import signal
 import multiprocessing
 import threading
 import re
@@ -29,12 +28,13 @@ from visualdl.reader.reader import LogReader
 from argparse import ArgumentParser
 from visualdl.utils import update_util
 
-from flask import (Flask, Response, redirect, request, send_file, send_from_directory)
+from flask import (Flask, Response, redirect, request, send_file)
 from flask_babel import Babel
 
 import visualdl.server
-from visualdl.server import (lib, template)
+from visualdl.server import lib
 from visualdl.server.log import logger
+from visualdl.server.template import Template
 from visualdl.python.cache import MemCache
 
 error_retry_times = 3
@@ -46,7 +46,6 @@ support_language = ["en", "zh"]
 default_language = support_language[0]
 
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-static_file_path = os.path.join(SERVER_DIR, "./static")
 template_file_path = os.path.join(SERVER_DIR, "./dist")
 mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
@@ -171,6 +170,8 @@ def create_app(args):
     public_path = args.public_path.rstrip('/')
     api_path = public_path + '/api'
 
+    template = Template(os.path.join(server_path, template_file_path), PUBLIC_PATH=public_path.strip('/'))
+
     @babel.localeselector
     def get_locale():
         lang = args.language
@@ -182,6 +183,13 @@ def create_app(args):
     def base():
         return redirect(public_path, code=302)
 
+    @app.route("/favicon.ico")
+    def favicon():
+        icon = os.path.join(template_file_path, 'favicon.ico')
+        if os.path.exists(icon):
+            return send_file(icon)
+        return "file not found", 404
+
     @app.route(public_path + "/")
     def index():
         lang = get_locale()
@@ -191,10 +199,7 @@ def create_app(args):
 
     @app.route(public_path + '/<path:filename>')
     def serve_static(filename):
-        print(static_file_path, filename)
-        return send_from_directory(
-            os.path.join(server_path, static_file_path), filename
-            if re.search(r'\..+$', filename) else filename + '.html')
+        return template.render(filename if re.search(r'\..+$', filename) else filename + '.html')
 
     @app.route(api_path + "/components")
     def components():
@@ -334,18 +339,6 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def render_template(args):
-    template.render(
-        template_file_path,
-        static_file_path,
-        PUBLIC_PATH=args.public_path.strip('/'))
-
-
-def clean_template(signalnum, frame):
-    template.clean(static_file_path)
-    sys.exit(0)
-
-
 def _run(logdir,
          host="127.0.0.1",
          port=8080,
@@ -362,9 +355,6 @@ def _run(logdir,
         cache_timeout=cache_timeout,
         language=language,
         public_path=public_path)
-    render_template(args)
-    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
-        signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     index_url = "http://" + host + ":" + str(port) + args.public_path
@@ -401,9 +391,6 @@ def run(logdir,
 
 def main():
     args = parse_args()
-    render_template(args)
-    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
-        signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
