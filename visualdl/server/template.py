@@ -32,8 +32,7 @@ class Template(object):
                 if any(file.endswith(name) for name in self.extname):
                     file_path = os.path.join(root, file)
                     rel_path = os.path.relpath(file_path, path)
-                    content = ""
-                    with open(file_path, "r") as f:
+                    with open(file_path, "r", encoding="UTF-8") as f:
                         content = f.read()
                         for key, value in context.items():
                             content = content.replace("{{" + key + "}}", value)
