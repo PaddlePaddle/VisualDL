@@ -26,7 +26,6 @@ class Template(object):
             raise Exception("template file does not exist.")
         self.path = path
         self.files = {}
-        self.mimetypes = {}
         for root, dirs, files in os.walk(path):
             for file in files:
                 if any(file.endswith(name) for name in self.extname):
@@ -36,10 +35,9 @@ class Template(object):
                         content = f.read()
                         for key, value in context.items():
                             content = content.replace("{{" + key + "}}", value)
-                    self.files[rel_path] = content
-                    self.mimetypes[rel_path] = mimetypes.guess_type(file)[0]
+                    self.files[rel_path] = content, mimetypes.guess_type(file)[0]
 
     def render(self, file):
         if file in self.files:
-            return Response(response=self.files[file], mimetype=self.mimetypes[file])
+            return Response(response=self.files[file][0], mimetype=self.files[file][1])
         return send_from_directory(self.path, file)
