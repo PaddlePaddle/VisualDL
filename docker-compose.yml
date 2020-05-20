@@ -2,8 +2,8 @@ version: '3.8'
 services:
   backend:
     build: .
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - "log:/home/visualdl/log"
     command: ["--api-only", "--host=0.0.0.0", "--port=8000"]
