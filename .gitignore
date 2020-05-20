@@ -101,10 +101,14 @@ ENV/
 # mypy
 .mypy_cache/
 
+# macOS
 .DS_Store
 
 # PyCharm IDE
 .idea/
 
+# VSCode
 /.vscode
+
+# asdf
 .tool-versions
