@@ -166,7 +166,7 @@ app.run(logdir="./log")
 在使用任意一种方式启动VisualDL面板后，打开浏览器访问VisualDL面板，即可查看日志的可视化结果，如图：
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/3points_demo.png" width="60%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/82395889-1ca01a00-9a7f-11ea-8e80-4a81393d0234.png" width="60%"/>
 </p>
 
 
@@ -207,7 +207,7 @@ app.run(logdir="./log")
 将高维数据进行降维展示，目前支持T-SNE、PCA两种降维方式，用于深入分析高维数据间的关系，方便用户根据数据特征进行算法优化。
 
 <p align="center">
-<img src="http://visualdl.bj.bcebos.com/images/high_dimensional_test.png" width="100%"/>
+<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="100%"/>
 </p>
 
 ## 开源贡献
