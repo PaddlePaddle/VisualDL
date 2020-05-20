@@ -60,7 +60,7 @@ visualdl --logdir ./log --port 8080
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看以下折线图。
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/scalar-globalstatic.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/82397559-478c6d00-9a83-11ea-80db-a0844dcaca35.png" width="100%"/>
 </p>
 
 
@@ -171,7 +171,7 @@ visualdl --logdir ./log --port 8080
 在浏览器输入`http://127.0.0.1:8080`，即可查看图片数据。
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/image-static.png" width="90%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/82397685-86babe00-9a83-11ea-870e-502f313bdc7c.png" width="90%"/>
 </p>
 
 
