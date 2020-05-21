@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/vdl-logo.png" width="70%"/>
+  <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/packages/core/public/images/logo-visualdl.svg?sanitize=true" width="70%"/>
 </p>
 
 [![Build Status](https://travis-ci.org/PaddlePaddle/VisualDL.svg?branch=develop)](https://travis-ci.org/PaddlePaddle/VisualDL)
