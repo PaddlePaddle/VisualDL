@@ -11,7 +11,7 @@
 ## 介绍
 VisualDL是深度学习模型可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持实时训练参数分析、图结构、数据样本可视化及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持实时训练参数分析、图结构、数据样本可视化及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL原生支持python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
@@ -53,12 +53,21 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
 ## 安装方式
 
-使用pip安装 VisualDL 运行范例：
+### 使用pip安装
 
 ```shell
-pip install --upgrade visualdl==2.0.0a2
+pip install --upgrade visualdl==2.0.0b3
 ```
 
+### 使用代码安装
+
+```
+git clone https://github.com/PaddlePaddle/VisualDL.git
+cd VisualDL
+
+python setup.py bdist_wheel
+pip install --upgrade dist/visualdl-*.whl
+```
 
 
 ## 使用方式
@@ -207,7 +216,7 @@ app.run(logdir="./log")
 将高维数据进行降维展示，目前支持T-SNE、PCA两种降维方式，用于深入分析高维数据间的关系，方便用户根据数据特征进行算法优化。
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="100%"/>
+<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
 </p>
 
 ## 开源贡献
@@ -217,4 +226,12 @@ VisualDL 是由 [PaddlePaddle](http://www.paddlepaddle.org/) 和 [ECharts](http:
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs/components/README.md)。
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README.md)。
+
+## 学习技术与交流
+
+欢迎您加入VisualDL官方qq群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/82522691-c2758680-9b5c-11ea-9aee-fca994aba175.png" width="20%"/>
+</p>
