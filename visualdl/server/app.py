@@ -19,7 +19,6 @@ import json
 import os
 import time
 import sys
-import signal
 import multiprocessing
 import threading
 import re
@@ -29,12 +28,13 @@ from visualdl.reader.reader import LogReader
 from argparse import ArgumentParser
 from visualdl.utils import update_util
 
-from flask import (Flask, Response, redirect, request, send_file, send_from_directory)
+from flask import (Flask, Response, redirect, request, send_file)
 from flask_babel import Babel
 
 import visualdl.server
-from visualdl.server import (lib, template)
+from visualdl.server import lib
 from visualdl.server.log import logger
+from visualdl.server.template import Template
 from visualdl.python.cache import MemCache
 
 error_retry_times = 3
@@ -46,7 +46,6 @@ support_language = ["en", "zh"]
 default_language = support_language[0]
 
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-static_file_path = os.path.join(SERVER_DIR, "./static")
 template_file_path = os.path.join(SERVER_DIR, "./dist")
 mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
@@ -56,17 +55,17 @@ class ParseArgs(object):
                  logdir,
                  host="0.0.0.0",
                  port=8040,
-                 model_pb="",
                  cache_timeout=20,
                  language=None,
-                 public_path=None):
+                 public_path=None,
+                 api_only=False):
         self.logdir = logdir
         self.host = host
         self.port = port
-        self.model_pb = model_pb
         self.cache_timeout = cache_timeout
         self.language = language
         self.public_path = public_path
+        self.api_only = api_only
 
 
 def try_call(function, *args, **kwargs):
@@ -99,12 +98,6 @@ def parse_args():
         action="store",
         help="api service ip")
     parser.add_argument(
-        "-m",
-        "--model_pb",
-        type=str,
-        action="store",
-        help="model proto in ONNX format or in Paddle framework format")
-    parser.add_argument(
         "--logdir",
         required=True,
         action="store",
@@ -129,8 +122,13 @@ def parse_args():
         "--public-path",
         type=str,
         action="store",
-        default="/app",
+        default="/",
         help="set public path"
+    )
+    parser.add_argument(
+        "--api-only",
+        action="store_true",
+        help="serve api only"
     )
 
     args = parser.parse_args()
@@ -178,23 +176,31 @@ def create_app(args):
             lang = request.accept_languages.best_match(support_language)
         return lang
 
-    @app.route("/")
-    def base():
-        return redirect(public_path, code=302)
+    if not args.api_only:
 
-    @app.route(public_path + "/")
-    def index():
-        lang = get_locale()
-        if lang == default_language:
-            return redirect(public_path + '/index', code=302)
-        return redirect(public_path + '/' + lang + '/index', code=302)
+        template = Template(os.path.join(server_path, template_file_path), PUBLIC_PATH=public_path.strip('/'))
 
-    @app.route(public_path + '/<path:filename>')
-    def serve_static(filename):
-        print(static_file_path, filename)
-        return send_from_directory(
-            os.path.join(server_path, static_file_path), filename
-            if re.search(r'\..+$', filename) else filename + '.html')
+        @app.route("/")
+        def base():
+            return redirect(public_path, code=302)
+
+        @app.route("/favicon.ico")
+        def favicon():
+            icon = os.path.join(template_file_path, 'favicon.ico')
+            if os.path.exists(icon):
+                return send_file(icon)
+            return "file not found", 404
+
+        @app.route(public_path + "/")
+        def index():
+            lang = get_locale()
+            if lang == default_language:
+                return redirect(public_path + '/index', code=302)
+            return redirect(public_path + '/' + lang + '/index', code=302)
+
+        @app.route(public_path + '/<path:filename>')
+        def serve_static(filename):
+            return template.render(filename if re.search(r'\..+$', filename) else filename + '.html')
 
     @app.route(api_path + "/components")
     def components():
@@ -334,37 +340,22 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def render_template(args):
-    template.render(
-        template_file_path,
-        static_file_path,
-        PUBLIC_PATH=args.public_path.strip('/'))
-
-
-def clean_template(signalnum, frame):
-    template.clean(static_file_path)
-    sys.exit(0)
-
-
 def _run(logdir,
          host="127.0.0.1",
          port=8080,
-         model_pb="",
          cache_timeout=20,
          language=None,
          public_path="/app",
+         api_only=False,
          open_browser=False):
     args = ParseArgs(
         logdir=logdir,
         host=host,
         port=port,
-        model_pb=model_pb,
         cache_timeout=cache_timeout,
         language=language,
-        public_path=public_path)
-    render_template(args)
-    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
-        signal.signal(sig, clean_template)
+        public_path=public_path,
+        api_only=api_only)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     index_url = "http://" + host + ":" + str(port) + args.public_path
@@ -378,19 +369,19 @@ def _run(logdir,
 def run(logdir,
         host="127.0.0.1",
         port=8040,
-        model_pb="",
         cache_timeout=20,
         language=None,
         public_path="/app",
+        api_only=False,
         open_browser=False):
     kwarg = {
         "logdir": logdir,
         "host": host,
         "port": port,
-        "model_pb": model_pb,
         "cache_timeout": cache_timeout,
         "language": language,
         "public_path": public_path,
+        "api_only": api_only,
         "open_browser": open_browser
     }
 
@@ -401,9 +392,6 @@ def run(logdir,
 
 def main():
     args = parse_args()
-    render_template(args)
-    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
-        signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)

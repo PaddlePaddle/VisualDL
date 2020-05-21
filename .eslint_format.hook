@@ -2,10 +2,8 @@
 
 set -e
 
-cd frontend
-`npm bin`/lint-staged
+(cd frontend && npm run lint)
 RESULT=$?
-cd ..
 
 [ $RESULT -ne 0 ] && exit 1
 exit 0

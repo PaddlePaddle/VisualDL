@@ -103,35 +103,22 @@ ENV/
 
 .DS_Store
 
-# PyCharm IDE
+# IDE
 .idea/
+.vscode/
 
-/.vscode
+# vcs
 .tool-versions
 
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# frontend dependencies
 node_modules
 .pnp
 .pnp.js
 
-# testing
-coverage
-
 # next.js
 .next
 
-# production
-build
-dist
-
-# misc
-.DS_Store
-.env*
-.vscode
-
-# debug
+# frontend debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

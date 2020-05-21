@@ -42,6 +42,8 @@ async function start() {
     } else if (isDev) {
         const {default: mock} = await import('@visualdl/mock');
         server.use(config.env.API_URL, mock({delay: delay ? () => Math.random() * delay : 0}));
+    } else {
+        console.warn('Server is running in production mode but no backend address specified.');
     }
 
     const {default: nextI18Next} = await import('@visualdl/core/utils/i18n');
@@ -70,12 +72,16 @@ async function start() {
 }
 
 if (require.main === module) {
-    const cwd = process.cwd();
-    const wd = path.dirname(require.resolve('@visualdl/core'));
-    process.chdir(wd);
-    process.on('exit', () => process.chdir(cwd));
-    process.on('uncaughtException', () => process.chdir(cwd));
-    process.on('unhandledRejection', () => process.chdir(cwd));
+    const core = require.resolve('@visualdl/core');
+    // after webpack building, we dont need to chdir
+    if ('string' === typeof core) {
+        const cwd = process.cwd();
+        const wd = path.dirname(core);
+        process.chdir(wd);
+        process.on('exit', () => process.chdir(cwd));
+        process.on('uncaughtException', () => process.chdir(cwd));
+        process.on('unhandledRejection', () => process.chdir(cwd));
+    }
     start();
 }
 

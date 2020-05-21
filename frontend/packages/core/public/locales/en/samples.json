@@ -1,10 +1,10 @@
 {
-    "image": "image",
     "audio": "audio",
-    "text": "text",
+    "brightness": "Brightness",
+    "contrast": "Contrast",
+    "download-image": "Download $t(image)",
+    "image": "image",
     "show-actual-size": "Show Actual Image Size",
     "step": "Step",
-    "download-image": "Download $t(image)",
-    "brightness": "Brightness",
-    "contrast": "Contrast"
+    "text": "text"
 }

@@ -1,3 +1,0 @@
-[submodule "demo/pytorch-CycleGAN-and-pix2pix"]
-	path = demo/pytorch-CycleGAN-and-pix2pix
-	url = https://github.com/Superjomn/pytorch-CycleGAN-and-pix2pix.git

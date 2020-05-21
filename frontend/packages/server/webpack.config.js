@@ -22,6 +22,12 @@ module.exports = {
         extensions: ['.wasm', '.ts', '.mjs', '.js', '.json']
     },
     externals: (context, request, callback) => {
+        if (request.indexOf(__dirname) === 0) {
+            return callback();
+        }
+        if (/node_modules\/webpack\/buildin/.test(request)) {
+            return callback();
+        }
         if (/^\./.test(request)) {
             return callback();
         }

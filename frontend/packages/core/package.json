@@ -25,7 +25,8 @@
     },
     "scripts": {
         "dev": "next",
-        "build": "next build",
+        "build": "echo 'This package does not need to build. Please use @visualdl/server or @visualdl/serverless to build from source.'; echo 'If you want to test build function, please run `build:next` instead.'",
+        "build:next": "next build",
         "export": "next export",
         "start": "next start",
         "test": "echo \"Error: no test specified\" && exit 0"
