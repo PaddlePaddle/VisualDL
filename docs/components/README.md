@@ -8,10 +8,10 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 
 目前，VisualDL 支持 scalar, image, high dimensional 三个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
-|                           组件名称                           |  展示图表  | 作用                                                         |
-| :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
-|      <a href="#1">[Scalar](#Scalar--折线图组件)</a>       |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
-|      <a href="#3">[Image](#Image--图片可视化组件)</a>      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
+|                               组件名称                               |  展示图表  |                               作用                                |
+| :------------------------------------------------------------------: | :--------: | :---------------------------------------------------------------- |
+|            <a href="#1">[Scalar](#Scalar--折线图组件)</a>            |   折线图   | 动态展示损失函数值、准确率等标量数据                              |
+|           <a href="#3">[Image](#Image--图片可视化组件)</a>           | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化    |
 | <a href="#6">[High Dimensional](#High-Dimensional--数据降维组件)</a> |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
 
@@ -30,12 +30,12 @@ Scalar 组件的记录接口如下：
 add_scalar(tag, value, step, walltime=None)
 ```
 接口参数说明如下：
-|参数|格式|含义|
-|-|-|-|
-|tag|string|记录指标的标志，如`train/loss`，不能含有`%`|
-|value|float|要记录的数据值|
-|step|int|记录的步数|
-|walltime|int|记录数据的时间戳，默认为当前时间戳|
+|   参数   |  格式  |                    含义                     |
+| -------- | ------ | ------------------------------------------- |
+| tag      | string | 记录指标的标志，如`train/loss`，不能含有`%` |
+| value    | float  | 要记录的数据值                              |
+| step     | int    | 记录的步数                                  |
+| walltime | int    | 记录数据的时间戳，默认为当前时间戳          |
 
 ### Demo
 下面展示了使用 Scalar 组件记录数据的示例，代码见[Scalar组件](../../demo/components/scalar_test.py)
@@ -70,7 +70,7 @@ visualdl --logdir ./log --port 8080
 * 支持数据卡片「最大化」、「还原」、「坐标系转化」（y轴对数坐标）、「下载」折线图
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/scalar-icon.png" width="55%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/scalar-icon.png" width="55%"/>
 </p>
 
 
@@ -78,7 +78,7 @@ visualdl --logdir ./log --port 8080
 * 数据点Hover展示详细信息
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/scalar-tooltip.png" width="60%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/scalar-tooltip.png" width="60%"/>
 </p>
 
 
@@ -86,7 +86,7 @@ visualdl --logdir ./log --port 8080
 * 可搜索卡片标签，展示目标图像
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/scalar-searchlabel.png" width="90%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/scalar-searchlabel.png" width="90%"/>
 </p>
 
 
@@ -94,7 +94,7 @@ visualdl --logdir ./log --port 8080
 * 可搜索打点数据标签，展示特定数据
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/scalar-searchstream.png" width="40%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/scalar-searchstream.png" width="40%"/>
 </p>
 
 
@@ -105,12 +105,12 @@ visualdl --logdir ./log --port 8080
 3. Relative：训练时长
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/x-axis.png" width="40%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/x-axis.png" width="40%"/>
 </p>
 * 可调整曲线平滑度，以便更好的展现参数整体的变化趋势
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/scalar-smooth.png" width="37%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/scalar-smooth.png" width="37%"/>
 </p>
 
 
@@ -128,12 +128,12 @@ Image 组件的记录接口如下：
 add_image(tag, img, step, walltime=None)
 ```
 接口参数说明如下：
-|参数|格式|含义|
-|-|-|-|
-|tag|string|记录指标的标志，如`train/loss`，不能含有`%`|
-|img|numpy.ndarray|以ndarray格式表示的图片|
-|step|int|记录的步数|
-|walltime|int|记录数据的时间戳，默认为当前时间戳|
+|   参数   |     格式      |                    含义                     |
+| -------- | ------------- | ------------------------------------------- |
+| tag      | string        | 记录指标的标志，如`train/loss`，不能含有`%` |
+| img      | numpy.ndarray | 以ndarray格式表示的图片                     |
+| step     | int           | 记录的步数                                  |
+| walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
 
 ### Demo
 下面展示了使用 Image 组件记录数据的示例，代码文件请见[Image组件](../../demo/components/image_test.py)
@@ -180,14 +180,14 @@ visualdl --logdir ./log --port 8080
 可搜索图片标签显示对应图片数据
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
 </p>
 
 
 支持滑动Step/迭代次数查看不同迭代次数下的图片数据
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
 </p>
 
 
@@ -208,12 +208,12 @@ High Dimensional 组件的记录接口如下：
 add_embeddings(tag, labels, hot_vectors, walltime=None)
 ```
 接口参数说明如下：
-|参数|格式|含义|
-|-|-|-|
-|tag|string|记录指标的标志，如`default`，不能含有`%`|
-|labels|numpy.array 或 list|一维数组表示的标签，每个元素是一个string类型的字符串|
-|hot_vectors|numpy.array or list|与labels一一对应，每个元素可以看作是某个标签的特征|
-|walltime|int|记录数据的时间戳，默认为当前时间戳|
+|    参数     |        格式         |                         含义                         |
+| ----------- | ------------------- | ---------------------------------------------------- |
+| tag         | string              | 记录指标的标志，如`default`，不能含有`%`             |
+| labels      | numpy.array 或 list | 一维数组表示的标签，每个元素是一个string类型的字符串 |
+| hot_vectors | numpy.array or list | 与labels一一对应，每个元素可以看作是某个标签的特征   |
+| walltime    | int                 | 记录数据的时间戳，默认为当前时间戳                   |
 
 ### Demo
 下面展示了使用 High Dimensional 组件记录数据的示例，代码见[High Dimensional组件](../../demo/components/high_dimensional_test.py)
@@ -245,5 +245,5 @@ visualdl --logdir ./log --port 8080
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看降维后的可视化数据。
 
 <p align="center">
-  <img src="http://visualdl.bj.bcebos.com/images/dynamic_high_dimensional.gif" width="80%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/dynamic_high_dimensional.gif" width="80%"/>
 </p>
