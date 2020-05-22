@@ -199,9 +199,11 @@ class LogReader(object):
             self.add_remain()
         return self._tags
 
-    def components(self):
+    def components(self, update=False):
         """Get components type used by vdl.
         """
+        if update is True:
+            self.load_new_data(update=update)
         return list(set(self._tags.values()))
 
     def load_new_data(self, update=True):
@@ -210,5 +212,5 @@ class LogReader(object):
         Make sure all readers for every vdl log file are registered, load all
         remain data.
         """
-        self.register_readers(update=True)
+        self.register_readers(update=update)
         self.add_remain()

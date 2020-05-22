@@ -23,7 +23,7 @@ copyright = '2020, PaddlePaddle'
 author = 'PaddlePaddle'
 
 # The full version, including alpha/beta/rc tags
-release = '2.0.0.beta1'
+release = '2.0.0.beta4'
 
 
 # -- General configuration ---------------------------------------------------
