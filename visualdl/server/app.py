@@ -277,7 +277,11 @@ def _run(**kwargs):
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
-def run(**kwargs):
+def run(logdir, **options):
+    kwargs = {
+        'logdir': logdir
+    }
+    kwargs.update(options)
     p = multiprocessing.Process(target=_run, kwargs=kwargs)
     p.start()
     return p.pid
