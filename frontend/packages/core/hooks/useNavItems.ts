@@ -1,4 +1,4 @@
-import {useEffect, useMemo} from 'react';
+import {useEffect, useState} from 'react';
 
 import ee from '~/utils/event';
 import {fetcher} from '~/utils/fetch';
@@ -13,10 +13,12 @@ export const navMap = {
 } as const;
 
 const useNavItems = () => {
-    const {data: components, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
-        refreshInterval: 61 * 1000,
-        dedupingInterval: 29 * 1000,
-        errorRetryInterval: 29 * 1000,
+    const [components, setComponents] = useState<string[]>([]);
+
+    const {data, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
+        refreshInterval: components.length ? 61 * 1000 : 15 * 1000,
+        dedupingInterval: 14 * 1000,
+        errorRetryInterval: 15 * 1000,
         errorRetryCount: Number.POSITIVE_INFINITY,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
@@ -31,11 +33,11 @@ const useNavItems = () => {
         };
     }, [mutate]);
 
-    const navItems = useMemo(() => intersection(allNavItems, components?.map(component => navMap[component]) ?? []), [
-        components
-    ]);
+    useEffect(() => {
+        setComponents(intersection(allNavItems, data?.map(component => navMap[component]) ?? []));
+    }, [data]);
 
-    return navItems;
+    return components;
 };
 
 export default useNavItems;

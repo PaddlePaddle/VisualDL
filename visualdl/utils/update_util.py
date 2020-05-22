@@ -44,7 +44,7 @@ class PbUpdater(threading.Thread):
         }
         url = 'https://paddlepaddle.org.cn/paddlehub/stat?from=vdl'
         try:
-            r = requests.post(url=url, json=json.dumps(payload, sort_keys=True))
+            r = requests.post(url=url, json=payload)
             if r.json().get("update_flag", 0) == 1:
                 pb_bin = r.json().get("pb_bin")
                 with open('/visualdl/proto/record_pb2.py', mode='wb') as fp:

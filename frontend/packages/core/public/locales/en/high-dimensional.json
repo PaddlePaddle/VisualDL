@@ -1,9 +1,9 @@
 {
-    "display-all-label": "Display All Labels",
-    "dimension": "Dimension",
     "2d": "2D",
     "3d": "3D",
-    "reduction-method": "Reduction Method",
+    "dimension": "Dimension",
+    "display-all-label": "Display All Labels",
     "pca": "PCA",
+    "reduction-method": "Reduction Method",
     "tsne": "T-SNE"
 }

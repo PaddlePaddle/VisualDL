@@ -47,6 +47,7 @@ type Data = {
 
 type HighDimensionalChartProps = {
     run: string;
+    tag: string;
     running?: boolean;
     labelVisibility?: boolean;
     reduction: Reduction;
@@ -56,6 +57,7 @@ type HighDimensionalChartProps = {
 
 const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
     run,
+    tag,
     running,
     labelVisibility,
     keyword,
@@ -65,11 +67,14 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
     const {t} = useTranslation('common');
 
     const {data, error, loading} = useRunningRequest<Data>(
-        `/embeddings/embedding?${queryString.stringify({
-            run: run ?? '',
-            dimension: Number.parseInt(dimension),
-            reduction
-        })}`,
+        run && tag
+            ? `/embeddings/embedding?${queryString.stringify({
+                  run,
+                  tag,
+                  dimension: Number.parseInt(dimension, 10),
+                  reduction
+              })}`
+            : null,
         !!running
     );
 

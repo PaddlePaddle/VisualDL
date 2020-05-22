@@ -147,9 +147,31 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
         }
     }, [step, cacheImageSrc]);
 
+    const [viewed, setViewed] = useState<boolean>(false);
+
+    const container = useRef<HTMLDivElement>(null);
+    const observer = useRef(
+        process.browser
+            ? new IntersectionObserver(entries => {
+                  if (entries[0].intersectionRatio > 0) {
+                      setViewed(true);
+                      observer.current?.disconnect();
+                  }
+              })
+            : null
+    );
+
+    useEffect(() => {
+        const o = observer.current;
+        if (process.browser && container.current && o) {
+            o.observe(container.current);
+            return () => o.disconnect();
+        }
+    }, []);
+
     const Content = useMemo(() => {
         // show loading when deferring
-        if (loading || !cached.current[step]) {
+        if (loading || !cached.current[step] || !viewed) {
             return <GridLoader color={primaryColor} size="10px" />;
         }
         if (!data && error) {
@@ -159,7 +181,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
             return <span>{t('common:empty')}</span>;
         }
         return <Image ref={image} src={src} cache={cacheValidity} />;
-    }, [loading, error, data, step, src, t]);
+    }, [viewed, loading, error, data, step, src, t]);
 
     return (
         <Wrapper>
@@ -170,7 +192,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
             <StepSlider value={step} steps={steps} onChange={setStep} onChangeComplete={cacheImageSrc}>
                 {formatTime(wallTime * 1000, i18n.language)}
             </StepSlider>
-            <Container brightness={brightness} contrast={contrast} fit={fit}>
+            <Container ref={container} brightness={brightness} contrast={contrast} fit={fit}>
                 {Content}
             </Container>
             <ChartToolbox

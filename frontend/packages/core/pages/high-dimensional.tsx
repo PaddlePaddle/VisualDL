@@ -1,6 +1,6 @@
 import {Dimension, Reduction} from '~/resource/high-dimensional';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {em, rem} from '~/utils/style';
 
@@ -44,18 +44,51 @@ const AsideTitle = styled.div`
     margin-bottom: ${rem(10)};
 `;
 
+type Item = {
+    run: string;
+    tag: string;
+    label: string;
+};
+
 const HighDimensional: NextI18NextPage = () => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
     const [running, setRunning] = useState(true);
 
-    const {query} = useRouter();
-    const queryRun = Array.isArray(query.run) ? query.run[0] : query.run;
-    const {data: runs, error, loading} = useRunningRequest<string[]>('/runs', running);
-    const selectedRun = queryRun && runs?.includes(queryRun) ? queryRun : runs?.[0];
+    const {data: runs, error: runsError, loading: runsLoading} = useRunningRequest<string[]>('/runs', running);
 
-    const [run, setRun] = useState(selectedRun);
-    useEffect(() => setRun(selectedRun), [setRun, selectedRun]);
+    const {data: tags, error: tagsError, loading: tagsLoading} = useRunningRequest<Record<string, string[]>>(
+        '/embeddings/tags',
+        running
+    );
+
+    const error = useMemo(() => runsError || tagsError, [runsError, tagsError]);
+    const loading = useMemo(() => runsLoading || tagsLoading, [runsLoading, tagsLoading]);
+
+    const list = useMemo(() => {
+        if (!runs || !tags) {
+            return [];
+        }
+        return runs.reduce<Item[]>(
+            (p, run) => [...p, ...(tags[run]?.map(tag => ({run, tag, label: `${run}/${tag}`})) ?? [])],
+            []
+        );
+    }, [runs, tags]);
+    const labelList = useMemo(() => list.map(item => item.label), [list]);
+
+    const {query} = useRouter();
+    const selectedLabel = useMemo(() => {
+        const run = Array.isArray(query.run) ? query.run[0] : query.run;
+        return (run && list.find(item => item.run === run)?.label) ?? list[0]?.label;
+    }, [query.run, list]);
+
+    const [label, setLabel] = useState(selectedLabel);
+    useEffect(() => setLabel(selectedLabel), [selectedLabel]);
+
+    const selectedItem = useMemo(() => list.find(item => item.label === label) ?? {run: '', tag: '', label: ''}, [
+        list,
+        label
+    ]);
 
     const [search, setSearch] = useState('');
     const debounceSearch = useSearchValue(search);
@@ -66,11 +99,7 @@ const HighDimensional: NextI18NextPage = () => {
     const aside = (
         <AsideSection>
             <AsideTitle>{t('common:select-runs')}</AsideTitle>
-            <StyledSelect
-                list={runs}
-                value={run}
-                onChange={(value: NonNullable<typeof runs>[number]) => setRun(value)}
-            />
+            <StyledSelect list={labelList} value={label} onChange={setLabel} />
             <AsideDivider />
             <Field>
                 <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
@@ -123,7 +152,8 @@ const HighDimensional: NextI18NextPage = () => {
                     <HighDimensionalChart
                         dimension={dimension}
                         keyword={debounceSearch}
-                        run={run ?? ''}
+                        run={selectedItem.run}
+                        tag={selectedItem.tag}
                         running={running}
                         labelVisibility={labelVisibility}
                         reduction={reduction}

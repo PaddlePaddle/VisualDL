@@ -11,7 +11,7 @@
 ## 介绍
 VisualDL是深度学习模型可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持实时训练参数分析、图结构、数据样本可视化及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持实时训练参数分析、图结构、数据样本可视化及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL原生支持python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
@@ -33,19 +33,19 @@ VisualDL原生支持python的使用， 通过在模型的Python配置中添加�
 
 ## 核心亮点
 
-### 简单易用
+#### 简单易用
 
 API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
-### 功能丰富
+#### 功能丰富
 
 功能覆盖训练参数、图结构、数据样本及数据降维可视化。
 
-### 高兼容性
+#### 高兼容性
 
 全面支持Paddle、ONNX、Caffe等市面主流模型结构可视化，广泛支持各类用户进行可视化分析。
 
-### 全面支持
+#### 全面支持
 
 与飞桨服务平台及工具组件全面打通，为您在飞桨生态系统中提供最佳使用体验。
 
@@ -53,31 +53,12 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
 ## 安装方式
 
-### 使用pip安装
+使用pip安装 VisualDL 运行范例：
 
 ```shell
-pip install --upgrade visualdl==2.0.0b3
-```
-### 使用代码安装
-
-```
-git clone https://github.com/PaddlePaddle/VisualDL.git
-cd VisualDL
-
-python setup.py bdist_wheel
-pip install --upgrade dist/visualdl-*.whl
+pip install --upgrade visualdl==2.0.0b4
 ```
 
-
-### 使用代码安装
-
-```
-git clone https://github.com/PaddlePaddle/VisualDL.git
-cd VisualDL
-
-python setup.py bdist_wheel
-pip install --upgrade dist/visualdl-*.whl
-```
 
 
 ## 使用方式
@@ -100,14 +81,14 @@ class LogWriter(logdir=None,
 
 #### 接口参数
 
-| 参数            | 格式    | 含义                                                         |
-| --------------- | ------- | ------------------------------------------------------------ |
+|      参数       |  格式   |                                                  含义                                                  |
+| --------------- | ------- | ------------------------------------------------------------------------------------------------------ |
 | logdir          | string  | 日志文件所在的路径，VisualDL将在此路径下建立日志文件并进行记录，如果不填则默认为`runs/${CURRENT_TIME}` |
-| comment         | string  | 为日志文件夹名添加后缀，如果制定了logdir则此项无效           |
-| max_queue       | int     | 日志记录消息队列的最大容量，达到此容量则立即写入到日志文件   |
-| flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件 |
-| filename_suffix | string  | 为默认的日志文件名添加后缀                                   |
-| write_to_disk   | boolean | 是否写入到磁盘                                               |
+| comment         | string  | 为日志文件夹名添加后缀，如果制定了logdir则此项无效                                                     |
+| max_queue       | int     | 日志记录消息队列的最大容量，达到此容量则立即写入到日志文件                                             |
+| flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件                                         |
+| filename_suffix | string  | 为默认的日志文件名添加后缀                                                                             |
+| write_to_disk   | boolean | 是否写入到磁盘                                                                                         |
 
 #### 示例
 
@@ -187,7 +168,7 @@ visualdl.server.app.run(logdir,
 ```python
 from visualdl.server import app
 
-app.run(logdir="./log")
+app.run("./log")
 ```
 
 在使用任意一种方式启动VisualDL面板后，打开浏览器访问VisualDL面板，即可查看日志的可视化结果，如图：
@@ -234,7 +215,7 @@ app.run(logdir="./log")
 将高维数据进行降维展示，目前支持T-SNE、PCA两种降维方式，用于深入分析高维数据间的关系，方便用户根据数据特征进行算法优化。
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+<img src="https://visualdl.bj.bcebos.com/images/high_dimensional_test.png" width="100%"/>
 </p>
 
 ## 开源贡献
@@ -244,12 +225,4 @@ VisualDL 是由 [PaddlePaddle](https://www.paddlepaddle.org/) 和 [ECharts](http
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README.md)。
-
-## 技术交流
-
-欢迎您加入VisualDL官方qq群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。
-
-<p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/82522691-c2758680-9b5c-11ea-9aee-fca994aba175.png" width="20%"/>
-</p>
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./components/README.md)。

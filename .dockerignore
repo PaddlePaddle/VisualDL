@@ -101,14 +101,31 @@ ENV/
 # mypy
 .mypy_cache/
 
-# macOS
 .DS_Store
 
-# PyCharm IDE
+# IDE
 .idea/
+.vscode/
 
-# VSCode
-/.vscode
-
-# asdf
+# vcs
 .tool-versions
+
+# frontend dependencies
+node_modules
+.pnp
+.pnp.js
+
+# next.js
+.next
+
+# frontend debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# output
+output
+
+# wasm target
+frontend/packages/wasm/target

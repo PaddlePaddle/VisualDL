@@ -22,7 +22,7 @@ from visualdl.utils.string_util import encode_tag, decode_tag
 
 
 def get_components(log_reader):
-    return log_reader.components()
+    return log_reader.components(update=True)
 
 
 def get_runs(log_reader):

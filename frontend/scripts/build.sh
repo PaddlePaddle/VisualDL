@@ -3,16 +3,19 @@
 set -e
 
 WORKING_PATH=$(pwd)
-SERVER_DIR="packages/server/dist"
+SERVER_DIR="packages/server"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"
 SERVERLESS_DIR="packages/serverless/dist"
 SERVERLESS_DIR_PATH="$WORKING_PATH/$SERVERLESS_DIR"
 OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
 
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
+
 # clean
-rm -rf "$SERVER_DIR_PATH"
-rm -rf "$SERVERLESS_DIR_PATH"
+yarn clean
 
 # build
 if [ "$SCOPE" = "serverless" ]; then
@@ -31,10 +34,10 @@ mkdir -p "$OUTPUT_PATH"
 
 # package server files
 if [ -d "$SERVER_DIR_PATH" ]; then
-    (cd "$SERVER_DIR_PATH" && tar zcf "${OUTPUT_PATH}/server.tar.gz" .)
+    tar zcf "${OUTPUT_PATH}/server.tar.gz" --exclude="node_modules" --exclude="*.log" --exclude=".gitignore" --exclude=".DS_Store" --dereference -C "$SERVER_DIR_PATH" .
 fi
 
 # package serverless files
 if [ -d "$SERVERLESS_DIR_PATH" ]; then
-    (cd "$SERVERLESS_DIR_PATH" && tar zcf "${OUTPUT_PATH}/serverless.tar.gz" .)
+    tar zcf "${OUTPUT_PATH}/serverless.tar.gz" -C "$SERVERLESS_DIR_PATH" .
 fi

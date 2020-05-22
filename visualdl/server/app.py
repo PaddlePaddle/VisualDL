@@ -19,22 +19,23 @@ import json
 import os
 import time
 import sys
-import signal
 import multiprocessing
 import threading
 import re
 import webbrowser
 import requests
 from visualdl.reader.reader import LogReader
-from argparse import ArgumentParser
+
 from visualdl.utils import update_util
 
-from flask import (Flask, Response, redirect, request, send_file, send_from_directory)
+from flask import (Flask, Response, redirect, request, send_file)
 from flask_babel import Babel
 
 import visualdl.server
-from visualdl.server import (lib, template)
+from visualdl.server import lib
+from visualdl.server.args import (ParseArgs, parse_args)
 from visualdl.server.log import logger
+from visualdl.server.template import Template
 from visualdl.python.cache import MemCache
 
 error_retry_times = 3
@@ -46,27 +47,8 @@ support_language = ["en", "zh"]
 default_language = support_language[0]
 
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
-static_file_path = os.path.join(SERVER_DIR, "./static")
 template_file_path = os.path.join(SERVER_DIR, "./dist")
 mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
-
-
-class ParseArgs(object):
-    def __init__(self,
-                 logdir,
-                 host="0.0.0.0",
-                 port=8040,
-                 model_pb="",
-                 cache_timeout=20,
-                 language=None,
-                 public_path=None):
-        self.logdir = logdir
-        self.host = host
-        self.port = port
-        self.model_pb = model_pb
-        self.cache_timeout = cache_timeout
-        self.language = language
-        self.public_path = public_path
 
 
 def try_call(function, *args, **kwargs):
@@ -77,74 +59,12 @@ def try_call(function, *args, **kwargs):
     return res
 
 
-def parse_args():
-    """
-    :return:
-    """
-    parser = ArgumentParser(
-        description="VisualDL, a tool to visualize deep learning.")
-    parser.add_argument(
-        "-p",
-        "--port",
-        type=int,
-        default=8040,
-        action="store",
-        dest="port",
-        help="api service port")
-    parser.add_argument(
-        "-t",
-        "--host",
-        type=str,
-        default="0.0.0.0",
-        action="store",
-        help="api service ip")
-    parser.add_argument(
-        "-m",
-        "--model_pb",
-        type=str,
-        action="store",
-        help="model proto in ONNX format or in Paddle framework format")
-    parser.add_argument(
-        "--logdir",
-        required=True,
-        action="store",
-        dest="logdir",
-        nargs="+",
-        help="log file directory")
-    parser.add_argument(
-        "--cache_timeout",
-        action="store",
-        dest="cache_timeout",
-        type=float,
-        default=20,
-        help="memory cache timeout duration in seconds, default 20", )
-    parser.add_argument(
-        "-L",
-        "--language",
-        type=str,
-        action="store",
-        help="set the default language")
-    parser.add_argument(
-        "-P",
-        "--public-path",
-        type=str,
-        action="store",
-        default="/app",
-        help="set public path"
-    )
-
-    args = parser.parse_args()
-    if not args.logdir:
-        parser.print_help()
-        sys.exit(-1)
-    return args
-
-
 # status, msg, data
 def gen_result(status, msg, data):
     """
     :param status:
     :param msg:
+    :param data:
     :return:
     """
     result = dict()
@@ -155,7 +75,7 @@ def gen_result(status, msg, data):
 
 
 def create_app(args):
-    app = Flask(__name__, static_url_path="")
+    app = Flask('visualdl', static_folder=None)
     # set static expires in a short time to reduce browser's memory usage.
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
@@ -168,8 +88,11 @@ def create_app(args):
     cache_get = lib.cache_get(CACHE)
     update_util.PbUpdater().start()
 
-    public_path = args.public_path.rstrip('/')
+    public_path = args.public_path
     api_path = public_path + '/api'
+
+    if args.api_only:
+        logger.info('Running in API mode, only {}/* will be served.'.format(api_path))
 
     @babel.localeselector
     def get_locale():
@@ -178,22 +101,31 @@ def create_app(args):
             lang = request.accept_languages.best_match(support_language)
         return lang
 
-    @app.route("/")
-    def base():
-        return redirect(public_path, code=302)
+    if not args.api_only:
 
-    @app.route(public_path + "/")
-    def index():
-        lang = get_locale()
-        if lang == default_language:
-            return redirect(public_path + '/index', code=302)
-        return redirect(public_path + '/' + lang + '/index', code=302)
+        template = Template(os.path.join(server_path, template_file_path), PUBLIC_PATH=public_path.lstrip('/'))
 
-    @app.route(public_path + '/<path:filename>')
-    def serve_static(filename):
-        return send_from_directory(
-            os.path.join(server_path, static_file_path), filename
-            if re.search(r'\..+$', filename) else filename + '.html')
+        @app.route("/")
+        def base():
+            return redirect(public_path, code=302)
+
+        @app.route("/favicon.ico")
+        def favicon():
+            icon = os.path.join(template_file_path, 'favicon.ico')
+            if os.path.exists(icon):
+                return send_file(icon)
+            return "file not found", 404
+
+        @app.route(public_path + '/')
+        def index():
+            lang = get_locale()
+            if lang == default_language:
+                return redirect(public_path + '/index', code=302)
+            return redirect(public_path + '/' + lang + '/index', code=302)
+
+        @app.route(public_path + '/<path:filename>')
+        def serve_static(filename):
+            return template.render(filename if re.search(r'\..+$', filename) else filename + '.html')
 
     @app.route(api_path + "/components")
     def components():
@@ -333,73 +265,30 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def _run(logdir,
-         host="127.0.0.1",
-         port=8080,
-         model_pb="",
-         cache_timeout=20,
-         language=None,
-         public_path="/app",
-         open_browser=False):
-    args = ParseArgs(
-        logdir=logdir,
-        host=host,
-        port=port,
-        model_pb=model_pb,
-        cache_timeout=cache_timeout,
-        language=language,
-        public_path=public_path)
+def _run(**kwargs):
+    args = ParseArgs(**kwargs)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
-    index_url = "http://" + host + ":" + str(port) + args.public_path
-    if open_browser:
-        threading.Thread(
-            target=_open_browser, kwargs={"app": app,
-                                          "index_url": index_url}).start()
-    app.run(debug=False, host=args.host, port=args.port, threaded=True)
+    if not args.api_only:
+        index_url = "http://" + args.host + ":" + str(args.port) + args.public_path
+        if kwargs.get('open_browser', False):
+            threading.Thread(
+                target=_open_browser, kwargs={"app": app, "index_url": index_url}).start()
+    app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
-def run(logdir,
-        host="127.0.0.1",
-        port=8040,
-        model_pb="",
-        cache_timeout=20,
-        language=None,
-        public_path="/app",
-        open_browser=False):
-    kwarg = {
-        "logdir": logdir,
-        "host": host,
-        "port": port,
-        "model_pb": model_pb,
-        "cache_timeout": cache_timeout,
-        "language": language,
-        "public_path": public_path,
-        "open_browser": open_browser
+def run(logdir=None, **options):
+    kwargs = {
+        'logdir': logdir
     }
-
-    p = multiprocessing.Process(target=_run, kwargs=kwarg)
+    kwargs.update(options)
+    p = multiprocessing.Process(target=_run, kwargs=kwargs)
     p.start()
     return p.pid
 
 
-def render_template(args):
-    template.render(
-        template_file_path,
-        static_file_path,
-        PUBLIC_PATH=args.public_path.strip('/'))
-
-
-def clean_template(signalnum, frame):
-    template.clean(static_file_path)
-    sys.exit(0)
-
-
 def main():
     args = parse_args()
-    render_template(args)
-    for sig in [signal.SIGINT, signal.SIGHUP, signal.SIGTERM]:
-        signal.signal(sig, clean_template)
     logger.info(" port=" + str(args.port))
     app = create_app(args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)

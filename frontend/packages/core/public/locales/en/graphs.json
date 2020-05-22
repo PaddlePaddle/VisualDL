@@ -1,14 +1,14 @@
 {
-    "scale": "Scale",
+    "click-node": "Click a node to view its detail",
     "download-image": "Download Image",
-    "restore-image": "Restore Image",
-    "node-info": "Node Info",
-    "node-type": "Node Type",
-    "node-name": "Node Name",
-    "node-data-shape": "Shape",
     "input": "Input",
-    "output": "Output",
-    "op-type": "Operator Type",
+    "node-data-shape": "Shape",
     "node-data-type": "Data Type",
-    "click-node": "Click a node to view its detail"
+    "node-info": "Node Info",
+    "node-name": "Node Name",
+    "node-type": "Node Type",
+    "op-type": "Operator Type",
+    "output": "Output",
+    "restore-image": "Restore Image",
+    "scale": "Scale"
 }

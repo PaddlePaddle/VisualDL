@@ -14,25 +14,30 @@
 # =======================================================================
 
 import os
-from shutil import (copytree, rmtree)
+import mimetypes
+from flask import (Response, send_from_directory)
 
 
-def render(path, dest, **context):
-    clean(dest)
-    copytree(path, dest)
-    for root, dirs, files in os.walk(dest):
-        for file in files:
-            if file.endswith(".html") or file.endswith(".js") or file.endswith(".css"):
-                file_path = os.path.join(root, file)
-                content = ""
-                with open(file_path, "r") as f:
-                    content = f.read()
-                for key, value in context.items():
-                    content = content.replace("{{" + key + "}}", value)
-                with open(file_path, "w") as f:
-                    f.write(content)
+class Template(object):
+    extname = [".html", ".js", ".css"]
 
+    def __init__(self, path, **context):
+        if not os.path.exists(path):
+            raise Exception("template file does not exist.")
+        self.path = path
+        self.files = {}
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if any(file.endswith(name) for name in self.extname):
+                    file_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(file_path, path).replace(os.path.sep, '/')
+                    with open(file_path, "r", encoding="UTF-8") as f:
+                        content = f.read()
+                        for key, value in context.items():
+                            content = content.replace("{{" + key + "}}", value)
+                    self.files[rel_path] = content, mimetypes.guess_type(file)[0]
 
-def clean(path):
-    if os.path.exists(path):
-        rmtree(path)
+    def render(self, file):
+        if file in self.files:
+            return Response(response=self.files[file][0], mimetype=self.files[file][1])
+        return send_from_directory(self.path, file)
