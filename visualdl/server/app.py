@@ -277,7 +277,7 @@ def _run(**kwargs):
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
-def run(logdir, **options):
+def run(logdir=None, **options):
     kwargs = {
         'logdir': logdir
     }
