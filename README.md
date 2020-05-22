@@ -58,6 +58,16 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 ```shell
 pip install --upgrade visualdl==2.0.0b3
 ```
+### 使用代码安装
+
+```
+git clone https://github.com/PaddlePaddle/VisualDL.git
+cd VisualDL
+
+python setup.py bdist_wheel
+pip install --upgrade dist/visualdl-*.whl
+```
+
 
 ### 使用代码安装
 
@@ -236,7 +246,7 @@ VisualDL 是由 [PaddlePaddle](https://www.paddlepaddle.org/) 和 [ECharts](http
 
 想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README.md)。
 
-## 学习技术与交流
+## 技术交流
 
 欢迎您加入VisualDL官方qq群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。
 
