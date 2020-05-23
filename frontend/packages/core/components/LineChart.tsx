@@ -64,15 +64,13 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
 
         useImperativeHandle(ref, () => ({
             restore: () => {
-                echart?.current?.dispatchAction({
+                echart?.dispatchAction({
                     type: 'restore'
                 });
             },
             saveAsImage: () => {
-                if (echart?.current) {
-                    const blob = dataURL2Blob(
-                        echart.current.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'})
-                    );
+                if (echart) {
+                    const blob = dataURL2Blob(echart.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'}));
                     saveAs(blob, `${title?.replace(/[/\\?%*:|"<>]/g, '_') || 'scalar'}.png`);
                 }
             }
@@ -85,7 +83,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
 
         useEffect(() => {
             if (process.browser) {
-                echart?.current?.setOption(
+                echart?.setOption(
                     {
                         color: chart.color,
                         title: {

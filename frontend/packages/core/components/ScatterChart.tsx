@@ -85,8 +85,7 @@ const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({data, 
 
     useEffect(() => {
         if (process.browser) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            echart?.current?.setOption(chartOptions as any, {notMerge: true});
+            echart?.setOption(chartOptions);
         }
     }, [chartOptions, echart]);
 

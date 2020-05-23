@@ -10,12 +10,12 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     autoFit?: boolean;
 }): {
     ref: MutableRefObject<T | null>;
-    echart: MutableRefObject<ECharts | null> | null;
     wrapper: MutableRefObject<W | null>;
+    echart: ECharts | null;
 } => {
     const ref = useRef<T | null>(null);
     const echartInstance = useRef<ECharts | null>(null);
-    const [echart, setEchart] = useState<typeof echartInstance | null>(null);
+    const [echart, setEchart] = useState<ECharts | null>(null);
 
     const createChart = useCallback(() => {
         (async () => {
@@ -36,7 +36,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                     });
                 }, 0);
             }
-            setEchart(echartInstance);
+            setEchart(echartInstance.current);
         })();
     }, [options.gl, options.zoom]);
 
@@ -48,12 +48,12 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     useEffect(() => {
         if (process.browser) {
             createChart();
-            return () => destroyChart();
+            return destroyChart;
         }
     }, [createChart, destroyChart]);
 
     useEffect(() => {
-        if (process.browser && echart) {
+        if (process.browser) {
             if (options.loading) {
                 echartInstance.current?.showLoading('default', {
                     text: '',
@@ -66,11 +66,11 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 echartInstance.current?.hideLoading();
             }
         }
-    }, [options.loading, echart]);
+    }, [options.loading]);
 
     const wrapper = useRef<W | null>(null);
     useLayoutEffect(() => {
-        if (options.autoFit && process.browser && echart) {
+        if (options.autoFit && process.browser) {
             const w = wrapper.current;
             if (w) {
                 const observer = new ResizeObserver(() => {
@@ -80,7 +80,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 return () => observer.unobserve(w);
             }
         }
-    }, [options.autoFit, echart]);
+    }, [options.autoFit]);
 
     return {ref, echart, wrapper};
 };
