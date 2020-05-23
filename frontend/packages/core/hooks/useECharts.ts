@@ -1,15 +1,17 @@
-import {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
+import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {maskColor, primaryColor, textColor} from '~/utils/style';
 
 import {ECharts} from 'echarts';
 
-const useECharts = <T extends HTMLElement>(options: {
+const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(options: {
     loading?: boolean;
     gl?: boolean;
     zoom?: boolean;
+    autoFit?: boolean;
 }): {
     ref: MutableRefObject<T | null>;
     echart: MutableRefObject<ECharts | null> | null;
+    wrapper: MutableRefObject<W | null>;
 } => {
     const ref = useRef<T | null>(null);
     const echartInstance = useRef<ECharts | null>(null);
@@ -66,7 +68,21 @@ const useECharts = <T extends HTMLElement>(options: {
         }
     }, [options.loading, echart]);
 
-    return {ref, echart};
+    const wrapper = useRef<W | null>(null);
+    useLayoutEffect(() => {
+        if (options.autoFit && process.browser && echart) {
+            const w = wrapper.current;
+            if (w) {
+                const observer = new ResizeObserver(() => {
+                    echartInstance.current?.resize();
+                });
+                observer.observe(w);
+                return () => observer.unobserve(w);
+            }
+        }
+    }, [options.autoFit, echart]);
+
+    return {ref, echart, wrapper};
 };
 
 export default useECharts;

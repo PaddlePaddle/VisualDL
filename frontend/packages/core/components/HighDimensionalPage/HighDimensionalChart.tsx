@@ -1,6 +1,6 @@
 import {Dimension, DivideParams, Point, Reduction, divide} from '~/resource/high-dimensional';
 import React, {FunctionComponent, useMemo} from 'react';
-import {primaryColor, rem} from '~/utils/style';
+import {headerHeight, math, primaryColor, rem} from '~/utils/style';
 
 import ScatterChart from '~/components/ScatterChart';
 import queryString from 'query-string';
@@ -9,7 +9,7 @@ import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
 
-const height = rem(600);
+const height = `calc(100vh - ${math(`${rem(20)} * 2 + ${headerHeight}`)})`;
 
 const divideWasm = () =>
     import('@visualdl/wasm').then(({divide}) => (params: DivideParams) =>

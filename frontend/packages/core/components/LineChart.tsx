@@ -56,9 +56,10 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({title, legend, data, xAxis, yAxis, xType, yType, xRange, yRange, tooltip, loading, className}, ref) => {
         const {i18n} = useTranslation();
 
-        const {ref: echartRef, echart} = useECharts<HTMLDivElement>({
+        const {ref: echartRef, echart, wrapper} = useECharts<HTMLDivElement>({
             loading: !!loading,
-            zoom: true
+            zoom: true,
+            autoFit: true
         });
 
         useImperativeHandle(ref, () => ({
@@ -133,22 +134,8 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             }
         }, [data, title, legend, xAxis, yAxis, xType, yType, xAxisFormatter, xRange, yRange, tooltip, echart]);
 
-        const wrapperRef = useRef<HTMLDivElement>(null);
-        useLayoutEffect(() => {
-            if (process.browser) {
-                const wrapper = wrapperRef.current;
-                if (wrapper) {
-                    const observer = new ResizeObserver(() => {
-                        echart?.current?.resize();
-                    });
-                    observer.observe(wrapper);
-                    return () => observer.unobserve(wrapper);
-                }
-            }
-        });
-
         return (
-            <Wrapper ref={wrapperRef} className={className}>
+            <Wrapper ref={wrapper} className={className}>
                 {!echart && (
                     <div className="loading">
                         <GridLoader color={primaryColor} size="10px" />

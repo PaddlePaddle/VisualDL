@@ -65,9 +65,10 @@ type ScatterChartProps = {
 };
 
 const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({data, loading, gl, className}) => {
-    const {ref, echart} = useECharts<HTMLDivElement>({
+    const {ref, echart, wrapper} = useECharts<HTMLDivElement>({
         loading,
-        gl
+        gl,
+        autoFit: true
     });
 
     const chartOptions = useMemo(
@@ -90,7 +91,7 @@ const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({data, 
     }, [chartOptions, echart]);
 
     return (
-        <Wrapper className={className}>
+        <Wrapper ref={wrapper} className={className}>
             {!echart && (
                 <div className="loading">
                     <GridLoader color={primaryColor} size="10px" />
