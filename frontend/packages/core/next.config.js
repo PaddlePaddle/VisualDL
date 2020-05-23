@@ -52,7 +52,7 @@ module.exports = {
         config.resolve.alias['~'] = path.resolve(__dirname);
 
         config.node = Object.assign({}, config.node, {
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             child_process: 'empty',
             fs: 'empty'
         });

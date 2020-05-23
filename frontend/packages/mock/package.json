@@ -37,9 +37,9 @@
     },
     "devDependencies": {
         "@types/express": "4.17.6",
-        "@types/faker": "4.1.11",
-        "@types/node": "13.13.5",
-        "typescript": "3.8.3"
+        "@types/faker": "4.1.12",
+        "@types/node": "14.0.5",
+        "typescript": "3.9.3"
     },
     "peerDependencies": {
         "express": "^4.17.1"

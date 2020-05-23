@@ -12,8 +12,6 @@ import {useTranslation} from '~/utils/i18n';
 const height = rem(600);
 
 const divideWasm = () =>
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     import('@visualdl/wasm').then(({divide}) => (params: DivideParams) =>
         (divide(params.points, params.labels, !!params.visibility, params.keyword ?? '') as unknown) as [
             Point[],
