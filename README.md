@@ -39,11 +39,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
 ### 功能丰富
 
-功能覆盖训练参数、图结构、数据样本及数据降维可视化。
-
-### 高兼容性
-
-全面支持Paddle、ONNX、Caffe等市面主流模型结构可视化，广泛支持各类用户进行可视化分析。
+功能覆盖训练参数、数据样本及数据降维可视化。
 
 ### 全面支持
 
@@ -67,18 +63,6 @@ cd VisualDL
 python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-*.whl
 ```
-
-
-### 使用代码安装
-
-```
-git clone https://github.com/PaddlePaddle/VisualDL.git
-cd VisualDL
-
-python setup.py bdist_wheel
-pip install --upgrade dist/visualdl-*.whl
-```
-
 
 ## 使用方式
 
@@ -193,7 +177,7 @@ app.run(logdir="./log")
 在使用任意一种方式启动VisualDL面板后，打开浏览器访问VisualDL面板，即可查看日志的可视化结果，如图：
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/3points_demo.png" width="60%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/82786044-67ae9880-9e96-11ea-8a2b-3a0951a6ec19.png" width="60%"/>
 </p>
 
 
