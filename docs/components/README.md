@@ -247,3 +247,29 @@ visualdl --logdir ./log --port 8080
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/dynamic_high_dimensional.gif" width="80%"/>
 </p>
+
+### 功能操作说明
+
+* 支持展示特定打点数据
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/83006541-f6f9ae80-a044-11ea-82d9-03f1c99a310a.png" width="30%"/>
+  </p>
+
+* 可搜索展示特定数据标签或展示所有数据标签
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/83006580-0842bb00-a045-11ea-9f7b-776f80ae8b90.png" width="30%"/>
+  </p>
+
+* 支持「二维」或「三维」展示高维数据分布
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/83006687-2f998800-a045-11ea-888e-2b59e16a92b9.png" width="27%"/>
+  </p>
+
+* 可选择「PCA」或「T-SNE」作为降维方式
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/83006747-3fb16780-a045-11ea-83e0-a314b7765108.png" width="27%"/>
+  </p>
