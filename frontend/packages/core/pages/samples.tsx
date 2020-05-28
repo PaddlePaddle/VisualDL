@@ -4,6 +4,7 @@ import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
 
+import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
@@ -47,30 +48,33 @@ const Samples: NextI18NextPage = () => {
     const [brightness, setBrightness] = useState(1);
     const [contrast, setContrast] = useState(1);
 
-    const aside = (
-        <RunAside
-            runs={runs}
-            selectedRuns={selectedRuns}
-            onChangeRuns={onChangeRuns}
-            running={running}
-            onToggleRunning={setRunning}
-        >
-            <section>
-                <Checkbox value={showActualSize} onChange={setShowActualSize}>
-                    {t('samples:show-actual-size')}
-                </Checkbox>
-            </section>
-            <section>
-                <Field label={t('samples:brightness')}>
-                    <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
-                </Field>
-            </section>
-            <section>
-                <Field label={t('samples:contrast')}>
-                    <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
-                </Field>
-            </section>
-        </RunAside>
+    const aside = useMemo(
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+            >
+                <AsideSection>
+                    <Checkbox value={showActualSize} onChange={setShowActualSize}>
+                        {t('samples:show-actual-size')}
+                    </Checkbox>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('samples:brightness')}>
+                        <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('samples:contrast')}>
+                        <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
+                    </Field>
+                </AsideSection>
+            </RunAside>
+        ),
+        [t, brightness, contrast, onChangeRuns, running, runs, selectedRuns, showActualSize]
     );
 
     const withChart = useCallback<WithChart<Item>>(

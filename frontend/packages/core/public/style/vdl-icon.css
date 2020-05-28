@@ -13,6 +13,12 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-zoom-out:before {
+    content: '\e911';
+}
+.icon-zoom-in:before {
+    content: '\e912';
+}
 .icon-refresh:before {
     content: '\e90c';
 }

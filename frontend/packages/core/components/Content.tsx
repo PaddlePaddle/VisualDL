@@ -1,10 +1,18 @@
 import React, {FunctionComponent} from 'react';
-import {asideWidth, backgroundColor, headerHeight, math, position, primaryColor, rem, size} from '~/utils/style';
+import {
+    asideWidth,
+    backgroundColor,
+    contentHeight,
+    contentMargin,
+    headerHeight,
+    math,
+    position,
+    primaryColor,
+    size
+} from '~/utils/style';
 
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
-
-const margin = rem(20);
 
 const Section = styled.section`
     /* trigger BFC */
@@ -12,9 +20,9 @@ const Section = styled.section`
 `;
 
 const Article = styled.article<{aside?: boolean}>`
-    margin: ${margin};
-    margin-right: ${props => (props.aside ? math(`${margin} + ${asideWidth}`) : margin)};
-    min-height: calc(100vh - ${math(`${margin} * 2 + ${headerHeight}`)});
+    margin: ${contentMargin};
+    margin-right: ${props => (props.aside ? math(`${contentMargin} + ${asideWidth}`) : contentMargin)};
+    min-height: ${contentHeight};
 `;
 
 const Aside = styled.aside`

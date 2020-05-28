@@ -1,6 +1,6 @@
 import {Dimension, DivideParams, Point, Reduction, divide} from '~/resource/high-dimensional';
 import React, {FunctionComponent, useMemo} from 'react';
-import {headerHeight, math, primaryColor, rem} from '~/utils/style';
+import {contentHeight, primaryColor, rem} from '~/utils/style';
 
 import ScatterChart from '~/components/ScatterChart';
 import queryString from 'query-string';
@@ -8,8 +8,6 @@ import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
-
-const height = `calc(100vh - ${math(`${rem(20)} * 2 + ${headerHeight}`)})`;
 
 const divideWasm = () =>
     import('@visualdl/wasm').then(({divide}) => (params: DivideParams) =>
@@ -21,7 +19,7 @@ const divideWasm = () =>
 const divideWorker = () => new Worker('~/worker/high-dimensional/divide.worker.ts', {type: 'module'});
 
 const StyledScatterChart = styled(ScatterChart)`
-    height: ${height};
+    height: ${contentHeight};
 `;
 
 const Empty = styled.div`
@@ -29,7 +27,7 @@ const Empty = styled.div`
     justify-content: center;
     align-items: center;
     font-size: ${rem(20)};
-    height: ${height};
+    height: ${contentHeight};
 `;
 
 const label = {

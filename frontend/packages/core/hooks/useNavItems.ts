@@ -5,10 +5,11 @@ import {fetcher} from '~/utils/fetch';
 import intersection from 'lodash/intersection';
 import useRequest from '~/hooks/useRequest';
 
-const allNavItems = ['scalars', 'samples', 'high-dimensional'];
+const allNavItems = ['scalars', 'samples', 'graphs', 'high-dimensional'];
 export const navMap = {
     scalar: 'scalars',
     image: 'samples',
+    graph: 'graphs',
     embeddings: 'high-dimensional'
 } as const;
 
