@@ -1,6 +1,8 @@
 {
     "change-model": "更换模型",
     "model-properties": "模型属性",
+    "node-properties": "节点属性",
+    "node-documentation": "文档",
     "display-data": "选择展示数据",
     "show-attributes": "显示参数",
     "show-initializers": "显示初始化参数",
@@ -26,6 +28,21 @@
         "license": "许可证",
         "domain": "域名",
         "imports": "导入",
-        "runtime": "运行时"
+        "runtime": "运行时",
+        "type": "类型",
+        "tags": "标签",
+        "inputs": "输入",
+        "outputs": "输出",
+        "attributes": "属性"
+    },
+    "documentation": {
+        "attributes": "属性",
+        "inputs": "输入",
+        "outputs": "输出",
+        "type-constraints": "类型约束",
+        "examples": "示例",
+        "references": "参考",
+        "support": "支持",
+        "support-info": "从 <3>{{since_version}}</3> 版本起域名 <1>{{domain}}</1> 的支持等级为 <5>{{support_level}}</5>。"
     }
 }

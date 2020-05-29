@@ -315,7 +315,7 @@ view.View = class {
                         const content = this.showNames && node.name ? node.name : type.split('.').pop();
                         const tooltip = this.showNames && node.name ? type : node.name;
                         header.add(null, styles, content, tooltip, () => {
-                            this.showNodeProperties(node, null);
+                            this.showNodeProperties(node);
                         });
 
                         if (node.function) {
@@ -775,40 +775,15 @@ view.View = class {
 
     showModelProperties() {
         if (this._model) {
-            const model = [
-                'format',
-                'producer',
-                'source',
-                'name',
-                'version',
-                'description',
-                'author',
-                'company',
-                'license',
-                'domain',
-                'imports',
-                'runtime'
-            ].reduce((p, c) => {
-                if (this._model[c]) {
-                    p.push({name: c, value: this._model[c]});
-                }
-                return p;
-            }, []);
-            this._host.message('show-model-properties', model);
-            // const modelSidebar = new sidebar.ModelSidebar(this._host, this._model, this._activeGraph);
-            // modelSidebar.on('update-active-graph', (sender, name) => {
-            //     this._updateActiveGraph(name);
-            // });
-            // this._sidebar.open(modelSidebar.render(), 'Model Properties');
+            const modelSidebar = new sidebar.ModelSidebar(this._host, this._model, this._activeGraph);
+            this._host.message('show-model-properties', modelSidebar.render());
         }
     }
 
-    showNodeProperties(node, input) {
+    showNodeProperties(node) {
         if (node) {
-            // const nodeSidebar = new sidebar.NodeSidebar(this._host, node);
-            // nodeSidebar.on('show-documentation', (/* sender, e */) => {
-            //     this.showNodeDocumentation(node);
-            // });
+            const nodeSidebar = new sidebar.NodeSidebar(this._host, node);
+            // TODO: export
             // nodeSidebar.on('export-tensor', (sender, tensor) => {
             //     this._host
             //         .require('./numpy')
@@ -850,21 +825,15 @@ view.View = class {
             //         })
             //         .catch(() => {});
             // });
-            // if (input) {
-            //     nodeSidebar.toggleInput(input.name);
-            // }
-            // this._sidebar.open(nodeSidebar.render(), 'Node Properties');
+            this._host.message('show-node-properties', {...nodeSidebar.render(), metadata: node.metadata});
         }
     }
 
     showNodeDocumentation(node) {
         const metadata = node.metadata;
         if (metadata) {
-            // const documentationSidebar = new sidebar.DocumentationSidebar(this._host, metadata);
-            // documentationSidebar.on('navigate', (sender, e) => {
-            //     this._host.openURL(e.link);
-            // });
-            // this._sidebar.push(documentationSidebar.render(), 'Documentation');
+            const documentationSidebar = new sidebar.DocumentationSidebar(this._host, metadata);
+            this._host.message('show-node-documentation', documentationSidebar.render());
         }
     }
 };

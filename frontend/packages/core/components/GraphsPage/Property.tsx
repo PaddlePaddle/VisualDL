@@ -1,36 +1,29 @@
+import {Argument as ArgumentType, NameValues, Property as PropertyType} from '~/resource/graphs/types';
 import React, {FunctionComponent} from 'react';
-import {em, sameBorder} from '~/utils/style';
+import {ellipsis, em, sameBorder} from '~/utils/style';
 
+import Argument from '~/components/GraphsPage/Argument';
 import styled from 'styled-components';
-import {useTranslation} from '~/utils/i18n';
 
-const Row = styled.div`
+const Wrapper = styled.div`
     display: flex;
-    align-items: center;
+    align-items: top;
     justify-content: space-between;
+    width: 100%;
 
     > .property-name {
         flex: 0 0 auto;
         text-align: right;
         width: ${em(80)};
+        padding: ${em(8)} 0;
+        ${sameBorder({color: 'transparent'})}
+        ${ellipsis()}
     }
 
-    > .property-value {
+    > .property-values {
         flex: 1 1 auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: ${em(8)} ${em(10)};
+        width: calc(100% - ${em(90)});
         margin-left: ${em(10)};
-        ${sameBorder({radius: true})}
-
-        > .property-value-text {
-            flex: 1 1 auto;
-        }
-
-        > .property-operation {
-            flex: 0 0 auto;
-        }
     }
 
     & + & {
@@ -38,21 +31,23 @@ const Row = styled.div`
     }
 `;
 
-type PropertyProps = {
-    name: string;
-    value: string;
+type PropertyProps = NameValues<ArgumentType | PropertyType> & {
+    expand?: boolean;
+    showNodeDodumentation?: () => unknown;
 };
 
-const Property: FunctionComponent<PropertyProps> = ({name, value}) => {
-    const {t} = useTranslation('graphs');
-
+const Property: FunctionComponent<PropertyProps> = ({name, values, expand, showNodeDodumentation}) => {
     return (
-        <Row>
-            <span className="property-name">{t(`graphs:properties.${name}`)}</span>
-            <span className="property-value">
-                <span className="property-value-text">{value}</span>
-            </span>
-        </Row>
+        <Wrapper>
+            <label className="property-name" title={name}>
+                {name}
+            </label>
+            <div className="property-values">
+                {values.map((value, index) => (
+                    <Argument key={index} value={value} expand={expand} showNodeDodumentation={showNodeDodumentation} />
+                ))}
+            </div>
+        </Wrapper>
     );
 };
 

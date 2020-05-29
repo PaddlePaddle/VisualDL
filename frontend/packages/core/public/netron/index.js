@@ -40,73 +40,6 @@ host.BrowserHost = class {
     }
 
     start() {
-        // this._menu = new host.Dropdown(this.document, 'menu-button', 'menu-dropdown');
-        // this._menu.add({
-        //     label: 'Properties...',
-        //     accelerator: 'CmdOrCtrl+Enter',
-        //     click: () => this._view.showModelProperties()
-        // });
-        // this._menu.add({});
-        // this._menu.add({
-        //     label: 'Find...',
-        //     accelerator: 'CmdOrCtrl+F',
-        //     click: () => this._view.find()
-        // });
-        // this._menu.add({});
-        // this._menu.add({
-        //     label: () => (this._view.showAttributes ? 'Hide Attributes' : 'Show Attributes'),
-        //     accelerator: 'CmdOrCtrl+D',
-        //     click: () => this._view.toggleAttributes()
-        // });
-        // this._menu.add({
-        //     label: () => (this._view.showInitializers ? 'Hide Initializers' : 'Show Initializers'),
-        //     accelerator: 'CmdOrCtrl+I',
-        //     click: () => this._view.toggleInitializers()
-        // });
-        // this._menu.add({
-        //     label: () => (this._view.showNames ? 'Hide Names' : 'Show Names'),
-        //     accelerator: 'CmdOrCtrl+U',
-        //     click: () => this._view.toggleNames()
-        // });
-        // this._menu.add({});
-        // this._menu.add({
-        //     label: 'Zoom In',
-        //     accelerator: 'Shift+Up',
-        //     click: () => this.document.getElementById('zoom-in-button').click()
-        // });
-        // this._menu.add({
-        //     label: 'Zoom Out',
-        //     accelerator: 'Shift+Down',
-        //     click: () => this.document.getElementById('zoom-out-button').click()
-        // });
-        // this._menu.add({
-        //     label: 'Actual Size',
-        //     accelerator: 'Shift+Backspace',
-        //     click: () => this._view.resetZoom()
-        // });
-        // this._menu.add({});
-        // this._menu.add({
-        //     label: 'Export as PNG',
-        //     accelerator: 'CmdOrCtrl+Shift+E',
-        //     click: () => this._view.export(document.title + '.png')
-        // });
-        // this._menu.add({
-        //     label: 'Export as SVG',
-        //     accelerator: 'CmdOrCtrl+Alt+E',
-        //     click: () => this._view.export(document.title + '.svg')
-        // });
-        // this.document.getElementById('menu-button').addEventListener('click', e => {
-        //     this._menu.toggle();
-        //     e.preventDefault();
-        // });
-        // this._menu.add({});
-        // this._menu.add({
-        //     label: 'About ' + this.document.title,
-        //     click: () => this._about()
-        // });
-
-        // this.document.getElementById('version').innerText = this.version;
-
         window.addEventListener(
             'message',
             event => {
@@ -133,6 +66,8 @@ host.BrowserHost = class {
                             return this._view.export(`${document.title}.${data}`);
                         case 'show-model-properties':
                             return this._view.showModelProperties();
+                        case 'show-node-documentation':
+                            return this._view.showNodeDocumentation(data);
                     }
                 }
             },
@@ -140,22 +75,6 @@ host.BrowserHost = class {
         );
 
         this.status('ready');
-        // this.document.addEventListener('dragover', e => {
-        //     e.preventDefault();
-        // });
-        // this.document.addEventListener('drop', e => {
-        //     e.preventDefault();
-        // });
-        // this.document.body.addEventListener('drop', e => {
-        //     e.preventDefault();
-        //     if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        //         const files = Array.from(e.dataTransfer.files);
-        //         const file = files.find(file => this._view.accept(file.name));
-        //         if (file) {
-        //             this._open(file, files);
-        //         }
-        //     }
-        // });
     }
 
     message(type, data) {
@@ -539,36 +458,6 @@ class BrowserFileContext {
                 reader.readAsArrayBuffer(blob);
             }
         });
-    }
-}
-
-class BrowserContext {
-    constructor(host, url, identifier, buffer) {
-        this._host = host;
-        this._buffer = buffer;
-        if (identifier) {
-            this._identifier = identifier;
-            this._base = url;
-            if (this._base.endsWith('/')) {
-                this._base.substring(0, this._base.length - 1);
-            }
-        } else {
-            const parts = url.split('?')[0].split('/');
-            this._identifier = parts.pop();
-            this._base = parts.join('/');
-        }
-    }
-
-    request(file, encoding) {
-        return this._host.request(this._base, file, encoding);
-    }
-
-    get identifier() {
-        return this._identifier;
-    }
-
-    get buffer() {
-        return this._buffer;
     }
 }
 

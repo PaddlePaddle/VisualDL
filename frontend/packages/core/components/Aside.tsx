@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {WithStyled, borderColor, rem} from '~/utils/style';
+import {WithStyled, asideWidth, borderColor, rem, size} from '~/utils/style';
 
 import styled from 'styled-components';
 
@@ -12,8 +12,8 @@ export const AsideSection = styled.section`
     }
 `;
 
-const Wrapper = styled.div`
-    height: 100%;
+const Wrapper = styled.div<{width?: string | number}>`
+    ${props => size('100%', props.width == null ? asideWidth : props.width)}
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -38,12 +38,13 @@ const Wrapper = styled.div`
 `;
 
 type AsideProps = {
+    width?: string | number;
     bottom?: React.ReactNode;
 };
 
-const Aside: FunctionComponent<AsideProps & WithStyled> = ({bottom, className, children}) => {
+const Aside: FunctionComponent<AsideProps & WithStyled> = ({width, bottom, className, children}) => {
     return (
-        <Wrapper className={className}>
+        <Wrapper width={width} className={className}>
             <div className="aside-top">{children}</div>
             {bottom && <div className="aside-bottom">{bottom}</div>}
         </Wrapper>

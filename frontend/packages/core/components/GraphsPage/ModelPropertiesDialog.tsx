@@ -1,12 +1,13 @@
 import React, {FunctionComponent} from 'react';
 import {backgroundColor, em, size} from '~/utils/style';
 
-import Property from '~/components/GraphsPage/Property';
+import Icon from '~/components/Icon';
+import Properties from '~/components/GraphsPage/Properties';
+import {Properties as PropertiesType} from '~/resource/graphs/types';
 import styled from 'styled-components';
 import {useTranslation} from '~/utils/i18n';
 
-const Dialog = styled.div<{open?: boolean}>`
-    display: ${props => (props.open ? 'block' : 'none')};
+const Dialog = styled.div`
     position: fixed;
     top: 0;
     left: 0;
@@ -22,7 +23,7 @@ const Dialog = styled.div<{open?: boolean}>`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.08);
 
         > .modal-header {
             padding: 0 ${em(40, 18)};
@@ -39,8 +40,8 @@ const Dialog = styled.div<{open?: boolean}>`
 
             > .modal-close {
                 flex: 0 0 auto;
-                ${size(em(20), em(20))}
-                font-size: ${em(20, 18)};
+                ${size(em(14, 18), em(14, 18))}
+                font-size: ${em(14, 18)};
                 text-align: center;
                 cursor: pointer;
             }
@@ -49,36 +50,35 @@ const Dialog = styled.div<{open?: boolean}>`
         > .modal-body {
             padding: ${em(40)};
             background-color: ${backgroundColor};
+            overflow: auto;
+            max-height: calc(80vh - ${em(47)});
         }
     }
 `;
 
-type Property = {
-    name: string;
-    value: string;
-};
-
 type ModelPropertiesDialogProps = {
-    properties?: Property[];
+    data?: PropertiesType | null;
     onClose?: () => unknown;
 };
 
-const ModelPropertiesDialog: FunctionComponent<ModelPropertiesDialogProps> = ({properties, onClose}) => {
+const ModelPropertiesDialog: FunctionComponent<ModelPropertiesDialogProps> = ({data, onClose}) => {
     const {t} = useTranslation('graphs');
 
+    if (!data) {
+        return null;
+    }
+
     return (
-        <Dialog open={!!properties}>
+        <Dialog>
             <div className="modal">
                 <div className="modal-header">
                     <span className="modal-title">{t('graphs:model-properties')}</span>
                     <a className="modal-close" onClick={() => onClose?.()}>
-                        X
+                        <Icon type="close" />
                     </a>
                 </div>
                 <div className="modal-body">
-                    {properties?.map((property, index) => (
-                        <Property {...property} key={index} />
-                    ))}
+                    <Properties {...data} expand />
                 </div>
             </div>
         </Dialog>

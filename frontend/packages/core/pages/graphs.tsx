@@ -1,4 +1,5 @@
 import Aside, {AsideSection} from '~/components/Aside';
+import {Documentation, Properties} from '~/resource/graphs/types';
 import Graph, {GraphRef} from '~/components/GraphsPage/Graph';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useRef, useState} from 'react';
@@ -8,6 +9,8 @@ import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
 import ModelPropertiesDialog from '~/components/GraphsPage/ModelPropertiesDialog';
+import NodeDocumentationSidebar from '~/components/GraphsPage/NodeDocumentationSidebar';
+import NodePropertiesSidebar from '~/components/GraphsPage/NodePropertiesSidebar';
 import SearchInput from '~/components/SearchInput';
 import Title from '~/components/Title';
 import Uploader from '~/components/GraphsPage/Uploader';
@@ -55,7 +58,9 @@ const Graphs: NextI18NextPage = () => {
     const [showInitializers, setShowInitializers] = useState(true);
     const [showNames, setShowNames] = useState(false);
 
-    const [modelProperties, setModelProperties] = useState(null);
+    const [modelData, setModelData] = useState<Properties | null>(null);
+    const [nodeData, setNodeData] = useState<Properties | null>(null);
+    const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
 
     const bottom = useMemo(
         () => (
@@ -71,6 +76,24 @@ const Graphs: NextI18NextPage = () => {
     const aside = useMemo(() => {
         if (!rendered) {
             return null;
+        }
+        if (nodeDocumentation) {
+            return (
+                <Aside width={rem(360)}>
+                    <NodeDocumentationSidebar data={nodeDocumentation} onClose={() => setNodeDocumentation(null)} />
+                </Aside>
+            );
+        }
+        if (nodeData) {
+            return (
+                <Aside width={rem(360)}>
+                    <NodePropertiesSidebar
+                        data={nodeData}
+                        onClose={() => setNodeData(null)}
+                        showNodeDodumentation={() => graph.current?.showNodeDocumentation(nodeData)}
+                    />
+                </Aside>
+            );
         }
         return (
             <Aside bottom={bottom}>
@@ -113,14 +136,14 @@ const Graphs: NextI18NextPage = () => {
                 </AsideSection>
             </Aside>
         );
-    }, [t, bottom, search, showAttributes, showInitializers, showNames, rendered]);
+    }, [t, bottom, search, showAttributes, showInitializers, showNames, rendered, nodeData, nodeDocumentation]);
 
     const uploader = useMemo(() => <Uploader onClickUpload={onClickFile} onDropFiles={setFiles} />, [onClickFile]);
 
     return (
         <>
             <Title>{t('common:graphs')}</Title>
-            <ModelPropertiesDialog properties={modelProperties} onClose={() => setModelProperties(null)} />
+            <ModelPropertiesDialog data={modelData} onClose={() => setModelData(null)} />
             <Content aside={aside}>
                 <Graph
                     ref={graph}
@@ -130,7 +153,12 @@ const Graphs: NextI18NextPage = () => {
                     showInitializers={showInitializers}
                     showNames={showNames}
                     onRendered={() => setRendered(true)}
-                    onShowModelProperties={properties => setModelProperties(properties)}
+                    onShowModelProperties={data => setModelData(data)}
+                    onShowNodeProperties={data => {
+                        setNodeData(data);
+                        setNodeDocumentation(null);
+                    }}
+                    onShowNodeDocumentation={data => setNodeDocumentation(data)}
                 />
                 <input
                     ref={file}

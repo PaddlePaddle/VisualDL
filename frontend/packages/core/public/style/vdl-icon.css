@@ -13,6 +13,21 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-question-circle:before {
+    content: '\e913';
+}
+.icon-minus:before {
+    content: '\e914';
+}
+.icon-plus:before {
+    content: '\e915';
+}
+.icon-close:before {
+    content: '\e916';
+}
+.icon-upload:before {
+    content: '\e917';
+}
 .icon-zoom-out:before {
     content: '\e911';
 }

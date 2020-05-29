@@ -91,7 +91,7 @@ const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}
                 onDragEnter={() => setActived(true)}
                 onDragLeave={onDragLeave}
             >
-                <Icon type="histogram" className="upload-icon" />
+                <Icon type="upload" className="upload-icon" />
                 <span>{t('upload-tip')}</span>
                 <Button type="primary" rounded className="upload-button" onClick={onClick}>
                     {t('upload-model')}

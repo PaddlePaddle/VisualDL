@@ -1,3 +1,4 @@
+import {Documentation, Properties} from '~/resource/graphs/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {backgroundColor, borderColor, contentHeight, primaryColor, rem, size, textLighterColor} from '~/utils/style';
 
@@ -75,6 +76,7 @@ const Loading = styled.div`
 export type GraphRef = {
     export(type: 'svg' | 'png'): void;
     showModelProperties(): void;
+    showNodeDocumentation: (data: Properties) => unknown;
 };
 
 type GraphProps = {
@@ -84,11 +86,26 @@ type GraphProps = {
     showInitializers: boolean;
     showNames: boolean;
     onRendered?: () => unknown;
-    onShowModelProperties?: (properties: any) => unknown;
+    onShowModelProperties?: (data: Properties) => unknown;
+    onShowNodeProperties?: (data: Properties) => unknown;
+    onShowNodeDocumentation?: (data: Documentation) => unknown;
 };
 
 const Graph = React.forwardRef<GraphRef, GraphProps>(
-    ({files, uploader, showAttributes, showInitializers, showNames, onRendered, onShowModelProperties}, ref) => {
+    (
+        {
+            files,
+            uploader,
+            showAttributes,
+            showInitializers,
+            showNames,
+            onRendered,
+            onShowModelProperties,
+            onShowNodeProperties,
+            onShowNodeDocumentation
+        },
+        ref
+    ) => {
         const [ready, setReady] = useState(false);
         const [loading, setLoading] = useState(false);
         const [rendered, setRendered] = useState(false);
@@ -114,10 +131,14 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             return;
                         case 'show-model-properties':
                             return onShowModelProperties?.(data);
+                        case 'show-node-properties':
+                            return onShowNodeProperties?.(data);
+                        case 'show-node-documentation':
+                            return onShowNodeDocumentation?.(data);
                     }
                 }
             },
-            [onRendered, onShowModelProperties]
+            [onRendered, onShowModelProperties, onShowNodeProperties, onShowNodeDocumentation]
         );
         useEffect(() => {
             if (process.browser) {
@@ -149,6 +170,9 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             },
             showModelProperties() {
                 dispatch('show-model-properties');
+            },
+            showNodeDocumentation(data) {
+                dispatch('show-node-documentation', data);
             }
         }));
 
