@@ -41,10 +41,10 @@
         "yargs": "15.3.1"
     },
     "devDependencies": {
-        "@types/node": "14.0.5",
+        "@types/node": "14.0.9",
         "@types/yargs": "15.0.5",
         "cross-env": "7.0.2",
-        "ts-node": "8.10.1",
+        "ts-node": "8.10.2",
         "typescript": "3.9.3"
     },
     "engines": {
