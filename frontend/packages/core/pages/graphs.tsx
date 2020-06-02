@@ -169,6 +169,8 @@ const Graphs: NextI18NextPage = () => {
         bottom,
         searching,
         searchResult,
+        onSearch,
+        onSelect,
         showAttributes,
         showInitializers,
         showNames,

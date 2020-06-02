@@ -5,6 +5,7 @@ import {
     borderColor,
     borderFocusedColor,
     borderRadius,
+    css,
     dangerActiveColor,
     dangerColor,
     dangerFocusedColor,
@@ -18,8 +19,7 @@ import {
     textColor,
     textInvertColor,
     textLighterColor,
-    transitionProps,
-    css
+    transitionProps
 } from '~/utils/style';
 
 import RawIcon from '~/components/Icon';

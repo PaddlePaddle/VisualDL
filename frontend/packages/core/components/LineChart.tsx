@@ -1,6 +1,6 @@
 import * as chart from '~/utils/chart';
 
-import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useImperativeHandle} from 'react';
 import {WithStyled, position, primaryColor, size} from '~/utils/style';
 
 import {EChartOption} from 'echarts';
