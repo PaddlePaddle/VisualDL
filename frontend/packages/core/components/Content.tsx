@@ -9,13 +9,13 @@ const Section = styled.section`
 `;
 
 const Article = styled.article`
-    flex: 1 1 auto;
+    flex: auto;
     margin: ${contentMargin};
     min-height: ${contentHeight};
 `;
 
 const Aside = styled.aside`
-    flex: 0 0 auto;
+    flex: none;
     background-color: ${backgroundColor};
     height: ${`calc(100vh - ${headerHeight})`};
     ${position('sticky', headerHeight, 0, null, null)}

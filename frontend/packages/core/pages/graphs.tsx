@@ -1,5 +1,5 @@
 import Aside, {AsideSection} from '~/components/Aside';
-import {Documentation, Properties} from '~/resource/graphs/types';
+import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
 import Graph, {GraphRef} from '~/components/GraphsPage/Graph';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useRef, useState} from 'react';
@@ -11,7 +11,7 @@ import Field from '~/components/Field';
 import ModelPropertiesDialog from '~/components/GraphsPage/ModelPropertiesDialog';
 import NodeDocumentationSidebar from '~/components/GraphsPage/NodeDocumentationSidebar';
 import NodePropertiesSidebar from '~/components/GraphsPage/NodePropertiesSidebar';
-import SearchInput from '~/components/SearchInput';
+import Search from '~/components/GraphsPage/Search';
 import Title from '~/components/Title';
 import Uploader from '~/components/GraphsPage/Uploader';
 import {rem} from '~/utils/style';
@@ -34,6 +34,17 @@ const ExportButtonWrapper = styled.div`
     }
 `;
 
+// TODO: better way to auto fit height
+const SearchSection = styled(AsideSection)`
+    max-height: calc(100% - ${rem(40)});
+    display: flex;
+    flex-direction: column;
+
+    &:not(:last-child) {
+        padding-bottom: 0;
+    }
+`;
+
 const Graphs: NextI18NextPage = () => {
     const {t} = useTranslation(['graphs', 'common']);
 
@@ -53,7 +64,11 @@ const Graphs: NextI18NextPage = () => {
         }
     }, []);
 
-    const [search, setSearch] = useState('');
+    const [searching, setSearching] = useState(false);
+    const [searchResult, setSearchResult] = useState<SearchResult>({text: '', result: []});
+    const onSearch = useCallback((value: string) => graph.current?.search(value), []);
+    const onSelect = useCallback((item: SearchItem) => graph.current?.select(item), []);
+
     const [showAttributes, setShowAttributes] = useState(false);
     const [showInitializers, setShowInitializers] = useState(true);
     const [showNames, setShowNames] = useState(false);
@@ -63,12 +78,13 @@ const Graphs: NextI18NextPage = () => {
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
 
     const bottom = useMemo(
-        () => (
-            <FullWidthButton type="primary" rounded onClick={onClickFile}>
-                {t('graphs:change-model')}
-            </FullWidthButton>
-        ),
-        [t, onClickFile]
+        () =>
+            searching ? null : (
+                <FullWidthButton type="primary" rounded onClick={onClickFile}>
+                    {t('graphs:change-model')}
+                </FullWidthButton>
+            ),
+        [t, onClickFile, searching]
     );
 
     const [rendered, setRendered] = useState(false);
@@ -97,46 +113,69 @@ const Graphs: NextI18NextPage = () => {
         }
         return (
             <Aside bottom={bottom}>
-                <AsideSection>
-                    <Field>
-                        <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
-                    </Field>
-                </AsideSection>
-                <AsideSection>
-                    <FullWidthButton onClick={() => graph.current?.showModelProperties()}>
-                        {t('graphs:model-properties')}
-                    </FullWidthButton>
-                </AsideSection>
-                <AsideSection>
-                    <Field label={t('graphs:display-data')}>
-                        <div>
-                            <Checkbox value={showAttributes} onChange={setShowAttributes}>
-                                {t('graphs:show-attributes')}
-                            </Checkbox>
-                        </div>
-                        <div>
-                            <Checkbox value={showInitializers} onChange={setShowInitializers}>
-                                {t('graphs:show-initializers')}
-                            </Checkbox>
-                        </div>
-                        <div>
-                            <Checkbox value={showNames} onChange={setShowNames}>
-                                {t('graphs:show-node-names')}
-                            </Checkbox>
-                        </div>
-                    </Field>
-                </AsideSection>
-                <AsideSection>
-                    <Field label={t('graphs:export-file')}>
-                        <ExportButtonWrapper>
-                            <Button onClick={() => graph.current?.export('png')}>{t('graphs:export-png')}</Button>
-                            <Button onClick={() => graph.current?.export('svg')}>{t('graphs:export-svg')}</Button>
-                        </ExportButtonWrapper>
-                    </Field>
-                </AsideSection>
+                <SearchSection>
+                    <Search
+                        data={searchResult}
+                        onChange={onSearch}
+                        onSelect={onSelect}
+                        onActive={() => setSearching(true)}
+                        onDeactive={() => setSearching(false)}
+                    />
+                </SearchSection>
+                {!searching && (
+                    <>
+                        <AsideSection>
+                            <FullWidthButton onClick={() => graph.current?.showModelProperties()}>
+                                {t('graphs:model-properties')}
+                            </FullWidthButton>
+                        </AsideSection>
+                        <AsideSection>
+                            <Field label={t('graphs:display-data')}>
+                                <div>
+                                    <Checkbox value={showAttributes} onChange={setShowAttributes}>
+                                        {t('graphs:show-attributes')}
+                                    </Checkbox>
+                                </div>
+                                <div>
+                                    <Checkbox value={showInitializers} onChange={setShowInitializers}>
+                                        {t('graphs:show-initializers')}
+                                    </Checkbox>
+                                </div>
+                                <div>
+                                    <Checkbox value={showNames} onChange={setShowNames}>
+                                        {t('graphs:show-node-names')}
+                                    </Checkbox>
+                                </div>
+                            </Field>
+                        </AsideSection>
+                        <AsideSection>
+                            <Field label={t('graphs:export-file')}>
+                                <ExportButtonWrapper>
+                                    <Button onClick={() => graph.current?.export('png')}>
+                                        {t('graphs:export-png')}
+                                    </Button>
+                                    <Button onClick={() => graph.current?.export('svg')}>
+                                        {t('graphs:export-svg')}
+                                    </Button>
+                                </ExportButtonWrapper>
+                            </Field>
+                        </AsideSection>
+                    </>
+                )}
             </Aside>
         );
-    }, [t, bottom, search, showAttributes, showInitializers, showNames, rendered, nodeData, nodeDocumentation]);
+    }, [
+        t,
+        bottom,
+        searching,
+        searchResult,
+        showAttributes,
+        showInitializers,
+        showNames,
+        rendered,
+        nodeData,
+        nodeDocumentation
+    ]);
 
     const uploader = useMemo(() => <Uploader onClickUpload={onClickFile} onDropFiles={setFiles} />, [onClickFile]);
 
@@ -153,6 +192,7 @@ const Graphs: NextI18NextPage = () => {
                     showInitializers={showInitializers}
                     showNames={showNames}
                     onRendered={() => setRendered(true)}
+                    onSearch={data => setSearchResult(data)}
                     onShowModelProperties={data => setModelData(data)}
                     onShowNodeProperties={data => {
                         setNodeData(data);

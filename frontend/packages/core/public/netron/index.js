@@ -64,6 +64,10 @@ host.BrowserHost = class {
                             return this._view.toggleNames(data);
                         case 'export':
                             return this._view.export(`${document.title}.${data}`);
+                        case 'search':
+                            return this._view.find(data);
+                        case 'select':
+                            return this._view.select(data);
                         case 'show-model-properties':
                             return this._view.showModelProperties();
                         case 'show-node-documentation':

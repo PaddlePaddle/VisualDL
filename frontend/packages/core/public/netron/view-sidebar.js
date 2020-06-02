@@ -5,125 +5,6 @@ var sidebar = sidebar || {};
 var long = long || {Long: require('long')};
 var marked = marked || require('marked');
 
-sidebar.Sidebar = class {
-    constructor(host) {
-        this._host = host;
-        this._stack = [];
-        this._closeSidebarHandler = () => {
-            this._pop();
-        };
-        this._closeSidebarKeyDownHandler = e => {
-            if (e.keyCode == 27) {
-                e.preventDefault();
-                this._pop();
-            }
-        };
-        this._resizeSidebarHandler = () => {
-            let contentElement = this._host.document.getElementById('sidebar-content');
-            if (contentElement) {
-                contentElement.style.height = window.innerHeight - 60;
-            }
-        };
-    }
-
-    open(content, title, width) {
-        this.close();
-        this.push(content, title, width);
-    }
-
-    close() {
-        this._deactivate();
-        this._stack = [];
-        this._hide();
-    }
-
-    push(content, title, width) {
-        let item = {title: title, content: content, width: width};
-        this._stack.push(item);
-        this._activate(item);
-    }
-
-    _pop() {
-        this._deactivate();
-        if (this._stack.length > 0) {
-            this._stack.pop();
-        }
-        if (this._stack.length > 0) {
-            this._activate(this._stack[this._stack.length - 1]);
-        } else {
-            this._hide();
-        }
-    }
-
-    _hide() {
-        let sidebarElement = this._host.document.getElementById('sidebar');
-        if (sidebarElement) {
-            sidebarElement.style.width = '0';
-        }
-    }
-
-    _deactivate() {
-        let sidebarElement = this._host.document.getElementById('sidebar');
-        if (sidebarElement) {
-            let closeButton = this._host.document.getElementById('sidebar-closebutton');
-            if (closeButton) {
-                closeButton.removeEventListener('click', this._closeSidebarHandler);
-                closeButton.style.color = '#f8f8f8';
-            }
-
-            this._host.document.removeEventListener('keydown', this._closeSidebarKeyDownHandler);
-            sidebarElement.removeEventListener('resize', this._resizeSidebarHandler);
-        }
-    }
-
-    _activate(item) {
-        let sidebarElement = this._host.document.getElementById('sidebar');
-        if (sidebarElement) {
-            sidebarElement.innerHTML = '';
-
-            let titleElement = this._host.document.createElement('h1');
-            titleElement.classList.add('sidebar-title');
-            titleElement.innerHTML = item.title ? item.title.toUpperCase() : '';
-            sidebarElement.appendChild(titleElement);
-
-            let closeButton = this._host.document.createElement('a');
-            closeButton.classList.add('sidebar-closebutton');
-            closeButton.setAttribute('id', 'sidebar-closebutton');
-            closeButton.setAttribute('href', 'javascript:void(0)');
-            closeButton.innerHTML = '&times;';
-            closeButton.addEventListener('click', this._closeSidebarHandler);
-            sidebarElement.appendChild(closeButton);
-
-            let contentElement = this._host.document.createElement('div');
-            contentElement.classList.add('sidebar-content');
-            contentElement.setAttribute('id', 'sidebar-content');
-            sidebarElement.appendChild(contentElement);
-
-            contentElement.style.height = window.innerHeight - 60;
-
-            if (typeof content == 'string') {
-                contentElement.innerHTML = item.content;
-            } else if (item.content instanceof Array) {
-                for (const element of item.content) {
-                    contentElement.appendChild(element);
-                }
-            } else {
-                contentElement.appendChild(item.content);
-            }
-
-            sidebarElement.style.width = item.width ? item.width : '500px';
-            if (item.width && item.width.endsWith('%')) {
-                contentElement.style.width = '100%';
-            } else {
-                contentElement.style.width = 'calc(' + sidebarElement.style.width + ' - 40px)';
-            }
-
-            window.addEventListener('resize', this._resizeSidebarHandler);
-            this._host.document.addEventListener('keydown', this._closeSidebarKeyDownHandler);
-        }
-    }
-};
-
 sidebar.NodeSidebar = class {
     constructor(host, node) {
         this._host = host;
@@ -348,46 +229,46 @@ sidebar.NameValueView = class {
     }
 };
 
-sidebar.SelectView = class {
-    constructor(host, values, selected) {
-        this._host = host;
-        this._elements = [];
+// sidebar.SelectView = class {
+//     constructor(host, values, selected) {
+//         this._host = host;
+//         this._elements = [];
 
-        const selectElement = this._host.document.createElement('select');
-        selectElement.setAttribute('class', 'sidebar-view-item-select');
-        selectElement.addEventListener('change', e => {
-            this._raise('change', e.target.value);
-        });
-        this._elements.push(selectElement);
+//         const selectElement = this._host.document.createElement('select');
+//         selectElement.setAttribute('class', 'sidebar-view-item-select');
+//         selectElement.addEventListener('change', e => {
+//             this._raise('change', e.target.value);
+//         });
+//         this._elements.push(selectElement);
 
-        for (const value of values) {
-            const optionElement = this._host.document.createElement('option');
-            optionElement.innerText = value;
-            if (value == selected) {
-                optionElement.setAttribute('selected', 'selected');
-            }
-            selectElement.appendChild(optionElement);
-        }
-    }
+//         for (const value of values) {
+//             const optionElement = this._host.document.createElement('option');
+//             optionElement.innerText = value;
+//             if (value == selected) {
+//                 optionElement.setAttribute('selected', 'selected');
+//             }
+//             selectElement.appendChild(optionElement);
+//         }
+//     }
 
-    render() {
-        return this._elements;
-    }
+//     render() {
+//         return this._elements;
+//     }
 
-    on(event, callback) {
-        this._events = this._events || {};
-        this._events[event] = this._events[event] || [];
-        this._events[event].push(callback);
-    }
+//     on(event, callback) {
+//         this._events = this._events || {};
+//         this._events[event] = this._events[event] || [];
+//         this._events[event].push(callback);
+//     }
 
-    _raise(event, data) {
-        if (this._events && this._events[event]) {
-            for (const callback of this._events[event]) {
-                callback(this, data);
-            }
-        }
-    }
-};
+//     _raise(event, data) {
+//         if (this._events && this._events[event]) {
+//             for (const callback of this._events[event]) {
+//                 callback(this, data);
+//             }
+//         }
+//     }
+// };
 
 sidebar.ValueTextView = class {
     constructor(host, value, action) {
@@ -736,134 +617,6 @@ sidebar.DocumentationSidebar = class {
 
     render() {
         return sidebar.DocumentationSidebar.formatDocumentation(this._metadata);
-        // if (!this._elements) {
-        //     this._elements = [];
-
-        //     const documentation = sidebar.DocumentationSidebar.formatDocumentation(this._metadata);
-
-        //     const element = this._host.document.createElement('div');
-        //     element.setAttribute('class', 'sidebar-view-documentation');
-
-        //     this._append(element, 'h1', documentation.name);
-
-        //     if (documentation.summary) {
-        //         this._append(element, 'p', documentation.summary);
-        //     }
-
-        //     if (documentation.description) {
-        //         this._append(element, 'p', documentation.description);
-        //     }
-
-        //     if (documentation.attributes) {
-        //         this._append(element, 'h2', 'Attributes');
-        //         const attributes = this._append(element, 'dl');
-        //         for (const attribute of documentation.attributes) {
-        //             this._append(
-        //                 attributes,
-        //                 'dt',
-        //                 attribute.name + (attribute.type ? ': <tt>' + attribute.type + '</tt>' : '')
-        //             );
-        //             this._append(attributes, 'dd', attribute.description);
-        //         }
-        //         element.appendChild(attributes);
-        //     }
-
-        //     if (documentation.inputs) {
-        //         this._append(
-        //             element,
-        //             'h2',
-        //             'Inputs' + (documentation.inputs_range ? ' (' + documentation.inputs_range + ')' : '')
-        //         );
-        //         const inputs = this._append(element, 'dl');
-        //         for (const input of documentation.inputs) {
-        //             this._append(
-        //                 inputs,
-        //                 'dt',
-        //                 input.name +
-        //                     (input.type ? ': <tt>' + input.type + '</tt>' : '') +
-        //                     (input.option ? ' (' + input.option + ')' : '')
-        //             );
-        //             this._append(inputs, 'dd', input.description);
-        //         }
-        //     }
-
-        //     if (documentation.outputs) {
-        //         this._append(
-        //             element,
-        //             'h2',
-        //             'Outputs' + (documentation.outputs_range ? ' (' + documentation.outputs_range + ')' : '')
-        //         );
-        //         const outputs = this._append(element, 'dl');
-        //         for (const output of documentation.outputs) {
-        //             this._append(
-        //                 outputs,
-        //                 'dt',
-        //                 output.name +
-        //                     (output.type ? ': <tt>' + output.type + '</tt>' : '') +
-        //                     (output.option ? ' (' + output.option + ')' : '')
-        //             );
-        //             this._append(outputs, 'dd', output.description);
-        //         }
-        //     }
-
-        //     if (documentation.type_constraints) {
-        //         this._append(element, 'h2', 'Type Constraints');
-        //         const type_constraints = this._append(element, 'dl');
-        //         for (const type_constraint of documentation.type_constraints) {
-        //             this._append(
-        //                 type_constraints,
-        //                 'dt',
-        //                 type_constraint.type_param_str +
-        //                     ': ' +
-        //                     type_constraint.allowed_type_strs.map(item => '<tt>' + item + '</tt>').join(', ')
-        //             );
-        //             this._append(type_constraints, 'dd', type_constraint.description);
-        //         }
-        //     }
-
-        //     if (documentation.examples) {
-        //         this._append(element, 'h2', 'Examples');
-        //         for (const example of documentation.examples) {
-        //             this._append(element, 'h3', example.summary);
-        //             this._append(element, 'pre', example.code);
-        //         }
-        //     }
-
-        //     if (documentation.references) {
-        //         this._append(element, 'h2', 'References');
-        //         const references = this._append(element, 'ul');
-        //         for (const reference of documentation.references) {
-        //             this._append(references, 'li', reference.description);
-        //         }
-        //     }
-
-        //     if (documentation.domain && documentation.since_version && documentation.support_level) {
-        //         this._append(element, 'h2', 'Support');
-        //         this._append(
-        //             element,
-        //             'dl',
-        //             'In domain <tt>' +
-        //                 documentation.domain +
-        //                 '</tt> since version <tt>' +
-        //                 documentation.since_version +
-        //                 '</tt> at support level <tt>' +
-        //                 documentation.support_level +
-        //                 '</tt>.'
-        //         );
-        //     }
-
-        //     element.addEventListener('click', e => {
-        //         if (e.target && e.target.href) {
-        //             let link = e.target.href;
-        //             if (link.startsWith('http://') || link.startsWith('https://')) {
-        //                 e.preventDefault();
-        //                 this._raise('navigate', {link: link});
-        //             }
-        //         }
-        //     });
-        //     this._elements = [element];
-        // }
-        // return this._elements;
     }
 
     static formatDocumentation(data) {
@@ -914,44 +667,13 @@ sidebar.FindSidebar = class {
         this._host = host;
         this._graphElement = graphElement;
         this._graph = graph;
-        this._contentElement = this._host.document.createElement('div');
-        this._contentElement.setAttribute('class', 'sidebar-view-find');
-        this._searchElement = this._host.document.createElement('input');
-        this._searchElement.setAttribute('id', 'search');
-        this._searchElement.setAttribute('type', 'text');
-        this._searchElement.setAttribute('placeholder', 'Search...');
-        this._searchElement.setAttribute('style', 'width: 100%');
-        this._searchElement.addEventListener('input', e => {
-            this.update(e.target.value);
-            this._raise('search-text-changed', e.target.value);
-        });
-        this._resultElement = this._host.document.createElement('ol');
-        this._resultElement.addEventListener('click', e => {
-            this.select(e);
-        });
-        this._contentElement.appendChild(this._searchElement);
-        this._contentElement.appendChild(this._resultElement);
     }
 
-    on(event, callback) {
-        this._events = this._events || {};
-        this._events[event] = this._events[event] || [];
-        this._events[event].push(callback);
-    }
+    static selection(item, graphElement) {
+        const selection = [];
+        const id = item.id;
 
-    _raise(event, data) {
-        if (this._events && this._events[event]) {
-            for (const callback of this._events[event]) {
-                callback(this, data);
-            }
-        }
-    }
-
-    select(e) {
-        let selection = [];
-        let id = e.target.id;
-
-        let nodesElement = this._graphElement.getElementById('nodes');
+        const nodesElement = graphElement.getElementById('nodes');
         let nodeElement = nodesElement.firstChild;
         while (nodeElement) {
             if (nodeElement.id == id) {
@@ -960,7 +682,7 @@ sidebar.FindSidebar = class {
             nodeElement = nodeElement.nextSibling;
         }
 
-        let edgePathsElement = this._graphElement.getElementById('edge-paths');
+        const edgePathsElement = graphElement.getElementById('edge-paths');
         let edgePathElement = edgePathsElement.firstChild;
         while (edgePathElement) {
             if (edgePathElement.id == id) {
@@ -969,7 +691,7 @@ sidebar.FindSidebar = class {
             edgePathElement = edgePathElement.nextSibling;
         }
 
-        let initializerElement = this._graphElement.getElementById(id);
+        let initializerElement = graphElement.getElementById(id);
         if (initializerElement) {
             while (initializerElement.parentElement) {
                 initializerElement = initializerElement.parentElement;
@@ -981,29 +703,22 @@ sidebar.FindSidebar = class {
         }
 
         if (selection.length > 0) {
-            this._raise('select', selection);
+            return selection;
         }
-    }
 
-    focus(searchText) {
-        this._searchElement.focus();
-        this._searchElement.value = '';
-        this._searchElement.value = searchText;
-        this.update(searchText);
+        return null;
     }
 
     update(searchText) {
-        while (this._resultElement.lastChild) {
-            this._resultElement.removeChild(this._resultElement.lastChild);
-        }
+        const text = searchText.toLowerCase();
 
-        let text = searchText.toLowerCase();
+        const nodeMatches = new Set();
+        const edgeMatches = new Set();
 
-        let nodeMatches = new Set();
-        let edgeMatches = new Set();
+        const result = [];
 
         for (const node of this._graph.nodes) {
-            let initializers = [];
+            const initializers = [];
 
             for (const input of node.inputs) {
                 for (const argument of input.arguments) {
@@ -1013,10 +728,11 @@ sidebar.FindSidebar = class {
                         !edgeMatches.has(argument.name)
                     ) {
                         if (!argument.initializer) {
-                            let inputItem = this._host.document.createElement('li');
-                            inputItem.innerText = '\u2192 ' + argument.name.split('\n').shift(); // custom argument id
-                            inputItem.id = 'edge-' + argument.name;
-                            this._resultElement.appendChild(inputItem);
+                            result.push({
+                                type: 'input',
+                                name: argument.name.split('\n').shift(), // custom argument id
+                                id: 'edge-' + argument.name
+                            });
                             edgeMatches.add(argument.name);
                         } else {
                             initializers.push(argument.initializer);
@@ -1032,18 +748,20 @@ sidebar.FindSidebar = class {
                 name &&
                 (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
             ) {
-                let nameItem = this._host.document.createElement('li');
-                nameItem.innerText = '\u25A2 ' + node.name;
-                nameItem.id = 'node-' + node.name;
-                this._resultElement.appendChild(nameItem);
+                result.push({
+                    type: 'node',
+                    name: node.name,
+                    id: 'node-' + node.name
+                });
                 nodeMatches.add(node.name);
             }
 
             for (const initializer of initializers) {
-                let initializeItem = this._host.document.createElement('li');
-                initializeItem.innerText = '\u25A0 ' + initializer.name;
-                initializeItem.id = 'initializer-' + initializer.name;
-                this._resultElement.appendChild(initializeItem);
+                result.push({
+                    type: 'initializer',
+                    name: initializer.name,
+                    id: 'initializer-' + initializer.name
+                });
             }
         }
 
@@ -1053,23 +771,23 @@ sidebar.FindSidebar = class {
                     if (
                         argument.name &&
                         argument.name.toLowerCase().indexOf(text) != -1 &&
-                        !edgeMatches[argument.name]
+                        !edgeMatches.has(argument.name)
                     ) {
-                        let outputItem = this._host.document.createElement('li');
-                        outputItem.innerText = '\u2192 ' + argument.name.split('\n').shift(); // custom argument id
-                        outputItem.id = 'edge-' + argument.name;
-                        this._resultElement.appendChild(outputItem);
-                        edgeMatches[argument.name] = true;
+                        result.push({
+                            type: 'output',
+                            name: argument.name.split('\n').shift(), // custom argument id
+                            id: 'edge-' + argument.name
+                        });
+                        edgeMatches.add(argument.name);
                     }
                 }
             }
         }
 
-        this._resultElement.style.display = this._resultElement.childNodes.length != 0 ? 'block' : 'none';
-    }
-
-    get content() {
-        return this._contentElement;
+        return {
+            text: searchText,
+            result: result
+        };
     }
 };
 

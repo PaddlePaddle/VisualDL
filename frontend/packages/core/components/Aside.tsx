@@ -4,11 +4,12 @@ import {WithStyled, asideWidth, borderColor, rem, size} from '~/utils/style';
 import styled from 'styled-components';
 
 export const AsideSection = styled.section`
-    margin: ${rem(20)} ${rem(20)} 0;
+    margin: ${rem(20)};
 
     &:not(:last-child) {
         border-bottom: 1px solid ${borderColor};
         padding-bottom: ${rem(20)};
+        margin-bottom: 0;
     }
 `;
 
@@ -19,19 +20,21 @@ const Wrapper = styled.div<{width?: string | number}>`
     flex-direction: column;
 
     > .aside-top {
-        flex: 1 1 auto;
+        flex: auto;
         display: flex;
         flex-direction: column;
         height: 100%;
-        overflow: hidden;
+        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
 
         > ${AsideSection} {
-            flex: 0 0 auto;
+            flex: none;
         }
     }
 
     > .aside-bottom {
-        flex: 0 0 auto;
+        flex: none;
         box-shadow: 0 -${rem(5)} ${rem(16)} 0 rgba(0, 0, 0, 0.03);
         padding: ${rem(20)};
     }

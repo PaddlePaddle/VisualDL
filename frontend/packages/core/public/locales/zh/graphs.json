@@ -3,6 +3,7 @@
     "model-properties": "模型属性",
     "node-properties": "节点属性",
     "node-documentation": "文档",
+    "nothing-matched": "无匹配的内容",
     "display-data": "选择展示数据",
     "show-attributes": "显示参数",
     "show-initializers": "显示初始化参数",
@@ -44,5 +45,8 @@
         "references": "参考",
         "support": "支持",
         "support-info": "从 <3>{{since_version}}</3> 版本起域名 <1>{{domain}}</1> 的支持等级为 <5>{{support_level}}</5>。"
-    }
+    },
+    "restore-size": "重置大小",
+    "zoom-in": "放大",
+    "zoom-out": "缩小"
 }

@@ -20,7 +20,7 @@ const Wrapper = styled.div`
         line-height: 1.5;
 
         > .argument-text {
-            flex: 1 1 auto;
+            flex: auto;
             overflow: hidden;
             word-break: break-all;
         }
@@ -35,7 +35,7 @@ const Wrapper = styled.div`
         }
 
         > .argument-operation {
-            flex: 0 0 auto;
+            flex: none;
             cursor: pointer;
             font-size: ${em(14)};
             margin-left: ${em(10)};

@@ -35,11 +35,11 @@ const Dialog = styled.div`
             font-size: ${em(18)};
 
             > .modal-title {
-                flex: 1 1 auto;
+                flex: auto;
             }
 
             > .modal-close {
-                flex: 0 0 auto;
+                flex: none;
                 ${size(em(14, 18), em(14, 18))}
                 font-size: ${em(14, 18)};
                 text-align: center;

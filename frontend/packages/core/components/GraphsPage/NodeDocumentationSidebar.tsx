@@ -162,7 +162,7 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                         <h2>{t('graphs:documentation.references')}</h2>
                         <ul>
                             {data.references.map((reference, index) => (
-                                <li key={index}>{reference.description}</li>
+                                <li key={index} dangerouslySetInnerHTML={{__html: reference.description}}></li>
                             ))}
                         </ul>
                     </>

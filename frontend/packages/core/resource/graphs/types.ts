@@ -27,6 +27,17 @@ export type Properties = {
     metadata?: unknown;
 };
 
+export type SearchItem = {
+    type: 'input' | 'output' | 'node' | 'initializer';
+    name: string;
+    id: string;
+};
+
+export type SearchResult = {
+    text: string;
+    result: SearchItem[];
+};
+
 type IO = {
     name: string;
     type: string;

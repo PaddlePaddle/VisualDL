@@ -3,6 +3,7 @@
     "model-properties": "Model Properties",
     "node-properties": "Node Properties",
     "node-documentation": "Documentation",
+    "nothing-matched": "Nothing matched",
     "display-data": "Select Display Data",
     "show-attributes": "Show Attributes",
     "show-initializers": "Show Initializers",
@@ -44,5 +45,8 @@
         "references": "References",
         "support": "Support",
         "support-info": "In domain <1>{{domain}}</1> since version <3>{{since_version}}</3> at support level <5>{{support_level}}</5>."
-    }
+    },
+    "restore-size": "Restore Size",
+    "zoom-in": "Zoom In",
+    "zoom-out": "Zoom Out"
 }

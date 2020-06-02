@@ -1,10 +1,11 @@
-import {Documentation, Properties} from '~/resource/graphs/types';
+import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {backgroundColor, borderColor, contentHeight, primaryColor, rem, size, textLighterColor} from '~/utils/style';
+import {backgroundColor, borderColor, contentHeight, primaryColor, rem, size} from '~/utils/style';
 
+import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
-import Icon from '~/components/Icon';
 import styled from 'styled-components';
+import {useTranslation} from '~/utils/i18n';
 
 const toolboxHeight = rem(40);
 
@@ -28,28 +29,10 @@ const RenderContent = styled.div<{show: boolean}>`
     pointer-events: ${props => (props.show ? 'auto' : 'none')};
 `;
 
-const Toolbox = styled.div`
+const Toolbox = styled(ChartToolbox)`
     height: ${toolboxHeight};
     border-bottom: 1px solid ${borderColor};
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
     padding: 0 ${rem(20)};
-    font-size: ${rem(16)};
-`;
-
-const ToolboxItem = styled.a`
-    cursor: pointer;
-    color: ${textLighterColor};
-    ${size(rem(16), rem(16))}
-
-    &:hover {
-        color: ${primaryColor};
-    }
-
-    & + & {
-        margin-right: ${rem(20)};
-    }
 `;
 
 const Content = styled.div`
@@ -75,8 +58,10 @@ const Loading = styled.div`
 
 export type GraphRef = {
     export(type: 'svg' | 'png'): void;
+    search(value: string): void;
+    select(item: SearchItem): void;
     showModelProperties(): void;
-    showNodeDocumentation: (data: Properties) => unknown;
+    showNodeDocumentation: (data: Properties) => void;
 };
 
 type GraphProps = {
@@ -86,6 +71,7 @@ type GraphProps = {
     showInitializers: boolean;
     showNames: boolean;
     onRendered?: () => unknown;
+    onSearch?: (data: SearchResult) => unknown;
     onShowModelProperties?: (data: Properties) => unknown;
     onShowNodeProperties?: (data: Properties) => unknown;
     onShowNodeDocumentation?: (data: Documentation) => unknown;
@@ -100,12 +86,15 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             showInitializers,
             showNames,
             onRendered,
+            onSearch,
             onShowModelProperties,
             onShowNodeProperties,
             onShowNodeDocumentation
         },
         ref
     ) => {
+        const {t} = useTranslation('graphs');
+
         const [ready, setReady] = useState(false);
         const [loading, setLoading] = useState(false);
         const [rendered, setRendered] = useState(false);
@@ -129,6 +118,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                     return;
                             }
                             return;
+                        case 'search':
+                            return onSearch?.(data);
                         case 'show-model-properties':
                             return onShowModelProperties?.(data);
                         case 'show-node-properties':
@@ -138,7 +129,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     }
                 }
             },
-            [onRendered, onShowModelProperties, onShowNodeProperties, onShowNodeDocumentation]
+            [onRendered, onSearch, onShowModelProperties, onShowNodeProperties, onShowNodeDocumentation]
         );
         useEffect(() => {
             if (process.browser) {
@@ -168,6 +159,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             export(type) {
                 dispatch('export', type);
             },
+            search(value) {
+                dispatch('search', value);
+            },
+            select(item) {
+                dispatch('select', item);
+            },
             showModelProperties() {
                 dispatch('show-model-properties');
             },
@@ -194,17 +191,27 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             <Wrapper>
                 {content}
                 <RenderContent show={!loading && rendered}>
-                    <Toolbox>
-                        <ToolboxItem onClick={() => dispatch('zoom-reset')}>
-                            <Icon type="restore-size" />
-                        </ToolboxItem>
-                        <ToolboxItem onClick={() => dispatch('zoom-out')}>
-                            <Icon type="zoom-out" />
-                        </ToolboxItem>
-                        <ToolboxItem onClick={() => dispatch('zoom-in')}>
-                            <Icon type="zoom-in" />
-                        </ToolboxItem>
-                    </Toolbox>
+                    <Toolbox
+                        items={[
+                            {
+                                icon: 'restore-size',
+                                tooltip: t('graphs:restore-size'),
+                                onClick: () => dispatch('zoom-reset')
+                            },
+                            {
+                                icon: 'zoom-out',
+                                tooltip: t('graphs:zoom-out'),
+                                onClick: () => dispatch('zoom-out')
+                            },
+                            {
+                                icon: 'zoom-in',
+                                tooltip: t('graphs:zoom-in'),
+                                onClick: () => dispatch('zoom-in')
+                            }
+                        ]}
+                        reversed
+                        tooltipPlace="bottom"
+                    />
                     <Content>
                         <iframe
                             ref={iframe}

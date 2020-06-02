@@ -13,21 +13,21 @@ import {useTranslation} from '~/utils/i18n';
 
 const StyledAside = styled(Aside)`
     ${AsideSection}.run-section {
-        flex: 1 1 auto;
+        flex: auto;
         overflow-x: hidden;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
 
         .run-select {
-            flex: 1 1 auto;
+            flex: auto;
             overflow-x: hidden;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
 
             > * {
-                flex: 0 0 auto;
+                flex: none;
             }
 
             .search-input {
@@ -35,7 +35,7 @@ const StyledAside = styled(Aside)`
             }
 
             .run-list {
-                flex: 1 1 auto;
+                flex: auto;
                 overflow-x: hidden;
                 overflow-y: auto;
 

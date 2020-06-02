@@ -22,12 +22,10 @@ view.View = class {
             .then(() => {
                 this._model = null;
                 this._selection = [];
-                // this._sidebar = new sidebar.Sidebar(this._host);
                 this._host.start();
                 this._showAttributes = false;
                 this._showInitializers = true;
                 this._showNames = false;
-                this._searchText = '';
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
                 this._host.document.addEventListener('keydown', () => {
                     this.clearSelection();
@@ -54,20 +52,12 @@ view.View = class {
         this._host.document.execCommand('selectall');
     }
 
-    find() {
+    find(value) {
         if (this._activeGraph) {
             this.clearSelection();
-            // const graphElement = document.getElementById('canvas');
-            // const view = new sidebar.FindSidebar(this._host, graphElement, this._activeGraph);
-            // view.on('search-text-changed', (sender, text) => {
-            //     this._searchText = text;
-            // });
-            // view.on('select', (sender, selection) => {
-            //     this._sidebar.close();
-            //     this.select(selection);
-            // });
-            // this._sidebar.open(view.content, 'Find');
-            view.focus(this._searchText);
+            const graphElement = document.getElementById('canvas');
+            const view = new sidebar.FindSidebar(this._host, graphElement, this._activeGraph);
+            this._host.message('search', view.update(value));
         }
     }
 
@@ -135,8 +125,10 @@ view.View = class {
         }
     }
 
-    select(selection) {
+    select(item) {
         this.clearSelection();
+        const graphElement = document.getElementById('canvas');
+        const selection = sidebar.FindSidebar.selection(item, graphElement);
         if (selection && selection.length > 0) {
             const graphElement = this._host.document.getElementById('canvas');
             const graphRect = graphElement.getBoundingClientRect();
@@ -169,9 +161,6 @@ view.View = class {
     }
 
     error(message, err) {
-        // if (this._sidebar) {
-        //     this._sidebar.close();
-        // }
         this._host.error(message, err.toString());
     }
 
@@ -180,7 +169,6 @@ view.View = class {
     }
 
     open(context) {
-        // this._sidebar.close();
         return this._timeout(2).then(() => {
             return this._modelFactoryService.open(context).then(model => {
                 return this._timeout(20).then(() => {
@@ -192,7 +180,6 @@ view.View = class {
     }
 
     _updateActiveGraph(name) {
-        // this._sidebar.close();
         if (this._model) {
             const model = this._model;
             const graph = model.graphs.filter(graph => name == graph.name).shift();
@@ -220,7 +207,6 @@ view.View = class {
                             'This graph contains a large number of nodes and might take a long time to render. Do you want to continue?'
                         )
                     ) {
-                        // this.show(null);
                         return null;
                     }
                 }
@@ -579,7 +565,7 @@ view.View = class {
                     if (tuple.from != null) {
                         for (const to of tuple.to) {
                             let text = '';
-                            let type = tuple.from.type;
+                            const type = tuple.from.type;
                             if (type && type.shape && type.shape.dimensions && type.shape.dimensions.length > 0) {
                                 text = type.shape.dimensions.join('\u00D7');
                             }
@@ -738,12 +724,10 @@ view.View = class {
 
             const data = new XMLSerializer().serializeToString(exportElement);
 
-            if (extension == 'svg') {
+            if (extension === 'svg') {
                 const blob = new Blob([data], {type: 'image/svg'});
                 this._host.export(file, blob);
-            }
-
-            if (extension == 'png') {
+            } else if (extension === 'png') {
                 const imageElement = new Image();
                 imageElement.onload = () => {
                     const max = Math.max(width, height);

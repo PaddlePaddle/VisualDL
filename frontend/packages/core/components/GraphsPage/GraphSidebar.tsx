@@ -19,7 +19,7 @@ const Title = styled.div`
     margin: 0 ${rem(20)};
 
     > .close {
-        flex: 0 0 auto;
+        flex: none;
         color: ${textLightColor};
         cursor: pointer;
     }

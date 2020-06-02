@@ -12,7 +12,7 @@ const Wrapper = styled.div`
     width: 100%;
 
     > .property-name {
-        flex: 0 0 auto;
+        flex: none;
         text-align: right;
         width: ${em(80)};
         padding: ${em(8)} 0;
@@ -21,7 +21,7 @@ const Wrapper = styled.div`
     }
 
     > .property-values {
-        flex: 1 1 auto;
+        flex: auto;
         width: calc(100% - ${em(90)});
         margin-left: ${em(10)};
     }
