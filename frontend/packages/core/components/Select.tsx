@@ -195,7 +195,7 @@ const Select = <T extends unknown>({
         [value, onChange]
     );
 
-    const ref = useClickOutside(setIsOpenedFalse);
+    const ref = useClickOutside<HTMLDivElement>(setIsOpenedFalse);
 
     const list = useMemo<SelectListItem<T>[]>(
         () =>
