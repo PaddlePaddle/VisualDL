@@ -31,7 +31,7 @@
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {
-        "@types/node": "14.0.9",
+        "@types/node": "14.0.10",
         "@types/rimraf": "3.0.0",
         "@visualdl/core": "2.0.0-beta.43",
         "cross-env": "7.0.2",
