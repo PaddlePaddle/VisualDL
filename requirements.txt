@@ -8,3 +8,4 @@ Flask-Babel >= 1.0.0
 six >= 1.14.0
 protobuf >= 3.1.0
 opencv-python
+hdfs

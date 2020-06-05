@@ -131,3 +131,11 @@ def audio(tag, audio_array, sample_rate, step, walltime):
     return Record(values=[
         Record.Value(id=step, tag=tag, timestamp=walltime, audio=audio_data)
     ])
+
+
+def histogram(tag, hist, bin_edges, step, walltime):
+    histogram = Record.Histogram(hist=hist, bin_edges=bin_edges)
+    return Record(values=[
+        Record.Value(
+            id=step, tag=tag, timestamp=walltime, histogram=histogram)
+    ])

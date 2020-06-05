@@ -15,6 +15,7 @@
 
 import os
 import tempfile
+import hdfs
 
 # Note: Some codes here refer to TensorBoardX.
 # A good default block size depends on the system in question.
@@ -88,6 +89,48 @@ class LocalFileSystem(object):
 
 
 default_file_factory.register_filesystem("", LocalFileSystem())
+
+
+class HDFileSystem(object):
+    def __init__(self):
+        self.cli = hdfs.config.Config().get_client('dev')
+
+    def exists(self, path):
+        if self.cli.status(hdfs_path=path[7:], strict=False) is None:
+            return False
+        else:
+            return True
+
+    def makedirs(self, path):
+        self.cli.makedirs(hdfs_path=path[7:])
+
+    @staticmethod
+    def join(path, *paths):
+        return os.path.join(path, *paths)
+
+    def read(self, filename, binary_mode=False, size=0, continue_from=None):
+        offset = 0
+        if continue_from is not None:
+            offset = continue_from.get("last_offset", 0)
+
+        encoding = None if binary_mode else "utf-8"
+        with self.cli.read(hdfs_path=filename[7:], offset=offset, encoding=encoding) as reader:
+            data = reader.read()
+            continue_from_token = {"last_offset": offset + len(data)}
+            return data, continue_from_token
+
+    def append(self, filename, file_content, binary_mode=False):
+        self.cli.write(hdfs_path=filename[7:], data=file_content, append=True)
+
+    def write(self, filename, file_content, binary_mode=False):
+        self.cli.write(hdfs_path=filename[7:], data=file_content)
+
+    def walk(self, dir):
+        walks = self.cli.walk(hdfs_path=dir[7:])
+        return (['hdfs://'+root, dirs, files] for root, dirs, files in walks)
+
+
+default_file_factory.register_filesystem("hdfs", HDFileSystem())
 
 
 class BFile(object):

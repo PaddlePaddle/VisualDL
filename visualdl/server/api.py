@@ -123,6 +123,7 @@ class Api(object):
         key = os.path.join('data/plugin/audio/audio', run, tag)
         return self._get_with_retry(key, lib.get_audio_tag_steps, run, tag)
 
+    @result()
     def audio_audio(self, run, tag, index=0):
         index = int(index)
         key = os.path.join('data/plugin/audio/individualAudio', run, tag, str(index))
@@ -133,6 +134,15 @@ class Api(object):
         dimension = int(dimension)
         key = os.path.join('data/plugin/embeddings/embeddings', run, str(dimension), reduction)
         return self._get_with_retry(key, lib.get_embeddings, run, tag, reduction, dimension)
+
+    @result()
+    def histogram_tags(self):
+        return self._get_with_retry('data/plugin/histogram/tags', lib.get_histogram_tags)
+
+    @result()
+    def histogram_histogram(self, run, tag):
+        key = os.path.join('data/plugin/embeddings/embeddings', run, tag)
+        return self._get_with_retry(key, lib.get_embeddings, run, tag)
 
 
 def create_api_call(logdir, cache_timeout):
@@ -146,12 +156,14 @@ def create_api_call(logdir, cache_timeout):
         'images/tags': (api.images_tags, []),
         'audio/tags': (api.audio_tags, []),
         'embeddings/tags': (api.embeddings_tags, []),
+        'histogram/tags': (api.histogram_tags, []),
         'scalars/list': (api.scalars_list, ['run', 'tag']),
         'images/list': (api.images_list, ['run', 'tag']),
         'images/image': (api.images_image, ['run', 'tag', 'index']),
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
-        'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension'])
+        'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension']),
+        'histogram/histogram': (api.histogram_histogram, ['run', 'tag'])
     }
 
     def call(path: str, args):

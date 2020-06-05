@@ -22,7 +22,9 @@ from visualdl.utils.string_util import encode_tag, decode_tag
 
 
 def get_components(log_reader):
-    return log_reader.components(update=True)
+    components = set(log_reader.components(update=True))
+    components.add('graph')
+    return list(components)
 
 
 def get_runs(log_reader):
@@ -108,6 +110,10 @@ def get_embeddings_tags(log_reader):
     return get_logs(log_reader, "embeddings")
 
 
+def get_histogram_tags(log_reader):
+    return get_logs(log_reader, "histogram")
+
+
 def get_embeddings(log_reader, run, tag, reduction, dimension=2):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("embeddings").get_items(
@@ -129,6 +135,24 @@ def get_embeddings(log_reader, run, tag, reduction, dimension=2):
         low_dim_embs = simple_pca(vectors, dimension)
 
     return {"embedding": low_dim_embs.tolist(), "labels": labels}
+
+
+def get_histogram(log_reader, run, tag):
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("histogram").get_items(
+        run, decode_tag(tag))
+
+    results = []
+    for item in records:
+        histogram = item.histogram
+        hist = histogram.hist
+        bin_edges = histogram.bin_edges
+        histogram_data = []
+        for index in range(len(hist)):
+            histogram_data.append([bin_edges[index], bin_edges[index+1], hist[index]])
+        results.append([item.timestamp, item.id, histogram_data])
+
+    return results
 
 
 def retry(ntimes, function, time2sleep, *args, **kwargs):

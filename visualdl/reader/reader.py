@@ -83,6 +83,8 @@ class LogReader(object):
                 component = "embeddings"
             elif "audio" == value_type:
                 component = "audio"
+            elif "histogram" == value_type:
+                component = "histogram"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component
@@ -204,7 +206,7 @@ class LogReader(object):
         """
         if update is True:
             self.load_new_data(update=update)
-        return list(set(self._tags.values()))
+        return set(self._tags.values())
 
     def load_new_data(self, update=True):
         """Load remain data.
