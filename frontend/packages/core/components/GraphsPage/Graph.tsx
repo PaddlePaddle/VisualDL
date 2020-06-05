@@ -215,7 +215,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Content>
                         <iframe
                             ref={iframe}
-                            src="/netron/index.html"
+                            src={`${process.env.PUBLIC_PATH ?? ''}/netron/index.html`}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}
