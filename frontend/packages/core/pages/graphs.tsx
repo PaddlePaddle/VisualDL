@@ -2,7 +2,7 @@ import Aside, {AsideSection} from '~/components/Aside';
 import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
 import Graph, {GraphRef} from '~/components/GraphsPage/Graph';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import Button from '~/components/Button';
 import Checkbox from '~/components/Checkbox';
@@ -64,10 +64,17 @@ const Graphs: NextI18NextPage = () => {
         }
     }, []);
 
+    const [search, setSearch] = useState('');
     const [searching, setSearching] = useState(false);
     const [searchResult, setSearchResult] = useState<SearchResult>({text: '', result: []});
-    const onSearch = useCallback((value: string) => graph.current?.search(value), []);
-    const onSelect = useCallback((item: SearchItem) => graph.current?.select(item), []);
+    const onSearch = useCallback((value: string) => {
+        setSearch(value);
+        graph.current?.search(value);
+    }, []);
+    const onSelect = useCallback((item: SearchItem) => {
+        setSearch(item.name);
+        graph.current?.select(item);
+    }, []);
 
     const [showAttributes, setShowAttributes] = useState(false);
     const [showInitializers, setShowInitializers] = useState(true);
@@ -76,6 +83,8 @@ const Graphs: NextI18NextPage = () => {
     const [modelData, setModelData] = useState<Properties | null>(null);
     const [nodeData, setNodeData] = useState<Properties | null>(null);
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
+
+    useEffect(() => setSearch(''), [showAttributes, showInitializers, showNames]);
 
     const bottom = useMemo(
         () =>
@@ -115,6 +124,7 @@ const Graphs: NextI18NextPage = () => {
             <Aside bottom={bottom}>
                 <SearchSection>
                     <Search
+                        text={search}
                         data={searchResult}
                         onChange={onSearch}
                         onSelect={onSelect}
@@ -167,6 +177,7 @@ const Graphs: NextI18NextPage = () => {
     }, [
         t,
         bottom,
+        search,
         searching,
         searchResult,
         onSearch,

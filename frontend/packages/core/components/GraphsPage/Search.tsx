@@ -136,6 +136,7 @@ const icons = {
 } as const;
 
 type SearchProps = {
+    text?: string;
     data: SearchResult;
     onChange?: (value: string) => unknown;
     onSelect?: (item: SearchItem) => unknown;
@@ -143,13 +144,14 @@ type SearchProps = {
     onDeactive?: () => unknown;
 };
 
-const Search: FunctionComponent<SearchProps> = ({data, onChange, onSelect, onActive, onDeactive}) => {
+const Search: FunctionComponent<SearchProps> = ({text, data, onChange, onSelect, onActive, onDeactive}) => {
     const {t} = useTranslation(['graphs', 'common']);
 
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(text ?? '');
     const [searching, setSearching] = useState(false);
     const [searchResult, setSearchResult] = useState<SearchItem[]>(data.result);
     const debouncedSearchText = useSearchValue(search);
+    useEffect(() => setSearch(text ?? ''), [text]);
     useEffect(() => {
         if (searching) {
             onChange?.(debouncedSearchText);

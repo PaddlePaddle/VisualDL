@@ -27,9 +27,6 @@ view.View = class {
                 this._showInitializers = true;
                 this._showNames = false;
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
-                this._host.document.addEventListener('keydown', () => {
-                    this.clearSelection();
-                });
             })
             .catch(err => {
                 this.error(err.message, err);
