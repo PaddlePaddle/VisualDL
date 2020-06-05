@@ -1,6 +1,6 @@
 import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {backgroundColor, borderColor, contentHeight, primaryColor, rem, size} from '~/utils/style';
+import {backgroundColor, borderColor, contentHeight, position, primaryColor, rem, size} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
@@ -36,11 +36,26 @@ const Toolbox = styled(ChartToolbox)`
 `;
 
 const Content = styled.div`
+    position: relative;
     height: calc(100% - ${toolboxHeight});
 
     > iframe {
         ${size('100%', '100%')}
         border: none;
+    }
+
+    > .powered-by {
+        display: block;
+        ${position('absolute', null, null, rem(20), rem(30))}
+        color: #ddd;
+        font-size: ${rem(14)};
+        user-select: none;
+
+        img {
+            height: 1em;
+            opacity: 0.5;
+            vertical-align: middle;
+        }
     }
 `;
 
@@ -221,6 +236,14 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             marginWidth={0}
                             marginHeight={0}
                         ></iframe>
+                        <a
+                            className="powered-by"
+                            href="https://github.com/lutzroeder/netron"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Powered by <img src={`${process.env.PUBLIC_PATH ?? ''}/images/netron.png`} alt="netron" />
+                        </a>
                     </Content>
                 </RenderContent>
             </Wrapper>

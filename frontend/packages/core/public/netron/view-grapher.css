@@ -17,6 +17,15 @@ text {
 
 .node-item path {
     fill: #fff;
+    fill-opacity: 1;
+    stroke: none;
+}
+.node:hover .node-item path {
+    fill: #2932E1;
+    fill-opacity: 1;
+}
+.node:hover .node-item text {
+    fill: #fff;
 }
 
 .node-item-function path {
@@ -106,9 +115,6 @@ text {
 .node-attribute:hover {
     cursor: pointer;
 }
-.node-attribute:hover line {
-    cursor: pointer;
-}
 .node-attribute text {
     font-size: 9px;
     font-weight: normal;
@@ -159,7 +165,24 @@ text {
 
 .select .node.border {
     stroke: #1527C2;
+    stroke-width: 2px;
+    stroke-dasharray: 6px 3px;
+    stroke-dashoffset: 0;
+    animation: pulse 4s infinite linear;
 }
 .select.edge-path {
     stroke: #1527C2;
+    stroke-width: 2px;
+    stroke-dasharray: 6px 3px;
+    stroke-dashoffset: 0;
+    animation: pulse 4s infinite linear;
+}
+
+@keyframes pulse {
+    from {
+        stroke-dashoffset: 100px;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
 }
