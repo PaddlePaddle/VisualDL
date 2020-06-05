@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        />
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+        <title>Netron</title>
+        <link rel="stylesheet" type="text/css" href="view-grapher.css" />
+        <style>
+            html {
+                -ms-text-size-adjust: 100%;
+                -moz-text-size-adjust: 100%;
+                -webkit-text-size-adjust: 100%;
+                text-rendering: optimizeLegibility;
+                -webkit-text-rendering: optimizeLegibility;
+                -moz-text-rendering: optimizeLegibility;
+                -ms-text-rendering: optimizeLegibility;
+                -o-text-rendering: optimizeLegibility;
+                -webkit-font-smoothing: antialiased;
+                -moz-font-smoothing: antialiased;
+                -ms-font-smoothing: antialiased;
+                -o-font-smoothing: antialiased;
+            }
+            body {
+                overflow: hidden;
+                margin: 0;
+                width: 100vw;
+                height: 100vh;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans',
+                    sans-serif, 'PingFang SC';
+                font-size: 12px;
+                text-rendering: geometricPrecision;
+            }
+            .graph {
+                overflow: auto;
+                width: 100%;
+                height: 100%;
+            }
+            .canvas {
+                display: block;
+                position: absolute;
+                text-rendering: geometricPrecision;
+                user-select: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="graph" class="graph">
+            <svg id="canvas" class="canvas" preserveaspectratio="xMidYMid meet" width="100%" height="100%"></svg>
+        </div>
+        <script type="text/javascript" src="deps/d3.min.js"></script>
+        <script type="text/javascript" src="deps/dagre.min.js"></script>
+        <script type="text/javascript" src="deps/protobuf.min.js"></script>
+        <script type="text/javascript" src="deps/prototxt.js"></script>
+        <script type="text/javascript" src="deps/flatbuffers.js"></script>
+        <script type="text/javascript" src="deps/marked.min.js"></script>
+        <script type="text/javascript" src="deps/pako.min.js"></script>
+        <script type="text/javascript" src="deps/long.js"></script>
+        <script type="text/javascript" src="base.js"></script>
+        <script type="text/javascript" src="zip.js"></script>
+        <script type="text/javascript" src="gzip.js"></script>
+        <script type="text/javascript" src="tar.js"></script>
+        <script type="text/javascript" src="view-grapher.js"></script>
+        <script type="text/javascript" src="view-sidebar.js"></script>
+        <script type="text/javascript" src="view.js"></script>
+        <script type="text/javascript" src="index.js"></script>
+    </body>
+</html>

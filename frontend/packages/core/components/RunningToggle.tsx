@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import {useTranslation} from '~/utils/i18n';
 
 const Wrapper = styled.div`
-    padding: ${rem(20)} 0;
     display: flex;
     align-items: center;
 

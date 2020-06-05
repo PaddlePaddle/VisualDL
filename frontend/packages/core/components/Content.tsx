@@ -1,26 +1,24 @@
 import React, {FunctionComponent} from 'react';
-import {asideWidth, backgroundColor, headerHeight, math, position, primaryColor, rem, size} from '~/utils/style';
+import {backgroundColor, contentHeight, contentMargin, headerHeight, position, primaryColor, size} from '~/utils/style';
 
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
 
-const margin = rem(20);
-
 const Section = styled.section`
-    /* trigger BFC */
-    overflow: hidden;
+    display: flex;
 `;
 
-const Article = styled.article<{aside?: boolean}>`
-    margin: ${margin};
-    margin-right: ${props => (props.aside ? math(`${margin} + ${asideWidth}`) : margin)};
-    min-height: calc(100vh - ${math(`${margin} * 2 + ${headerHeight}`)});
+const Article = styled.article`
+    flex: auto;
+    margin: ${contentMargin};
+    min-height: ${contentHeight};
 `;
 
 const Aside = styled.aside`
+    flex: none;
     background-color: ${backgroundColor};
-    ${size(`calc(100vh - ${headerHeight})`, asideWidth)}
-    ${position('fixed', headerHeight, 0, null, null)}
+    height: ${`calc(100vh - ${headerHeight})`};
+    ${position('sticky', headerHeight, 0, null, null)}
     overflow-x: hidden;
     overflow-y: auto;
 `;
@@ -43,7 +41,7 @@ type ContentProps = {
 
 const Content: FunctionComponent<ContentProps> = ({children, aside, loading}) => (
     <Section>
-        <Article aside={!!aside}>{children}</Article>
+        <Article>{children}</Article>
         {aside && <Aside>{aside}</Aside>}
         {loading && (
             <Loading>

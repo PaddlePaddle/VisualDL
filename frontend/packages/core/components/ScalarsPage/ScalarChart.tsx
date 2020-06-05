@@ -62,6 +62,7 @@ const StyledLineChart = styled(LineChart)`
 const Toolbox = styled(ChartToolbox)`
     margin-left: ${rem(20)};
     margin-right: ${rem(20)};
+    margin-bottom: ${rem(18)};
 `;
 
 const Error = styled.div`

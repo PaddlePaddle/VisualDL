@@ -38,6 +38,7 @@ type I18nRes = {
     };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const appWithTranslation = function (this: NextI18Next, WrappedComponent: any) {
     const WrappedComponentWithSSR = withSSR()(WrappedComponent);
     const {config, i18n} = this;

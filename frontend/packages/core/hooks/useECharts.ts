@@ -1,19 +1,21 @@
-import {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
+import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {maskColor, primaryColor, textColor} from '~/utils/style';
 
 import {ECharts} from 'echarts';
 
-const useECharts = <T extends HTMLElement>(options: {
+const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(options: {
     loading?: boolean;
     gl?: boolean;
     zoom?: boolean;
+    autoFit?: boolean;
 }): {
     ref: MutableRefObject<T | null>;
-    echart: MutableRefObject<ECharts | null> | null;
+    wrapper: MutableRefObject<W | null>;
+    echart: ECharts | null;
 } => {
     const ref = useRef<T | null>(null);
     const echartInstance = useRef<ECharts | null>(null);
-    const [echart, setEchart] = useState<typeof echartInstance | null>(null);
+    const [echart, setEchart] = useState<ECharts | null>(null);
 
     const createChart = useCallback(() => {
         (async () => {
@@ -34,7 +36,7 @@ const useECharts = <T extends HTMLElement>(options: {
                     });
                 }, 0);
             }
-            setEchart(echartInstance);
+            setEchart(echartInstance.current);
         })();
     }, [options.gl, options.zoom]);
 
@@ -46,12 +48,12 @@ const useECharts = <T extends HTMLElement>(options: {
     useEffect(() => {
         if (process.browser) {
             createChart();
-            return () => destroyChart();
+            return destroyChart;
         }
     }, [createChart, destroyChart]);
 
     useEffect(() => {
-        if (process.browser && echart) {
+        if (process.browser) {
             if (options.loading) {
                 echartInstance.current?.showLoading('default', {
                     text: '',
@@ -64,9 +66,23 @@ const useECharts = <T extends HTMLElement>(options: {
                 echartInstance.current?.hideLoading();
             }
         }
-    }, [options.loading, echart]);
+    }, [options.loading]);
 
-    return {ref, echart};
+    const wrapper = useRef<W | null>(null);
+    useLayoutEffect(() => {
+        if (options.autoFit && process.browser) {
+            const w = wrapper.current;
+            if (w) {
+                const observer = new ResizeObserver(() => {
+                    echartInstance.current?.resize();
+                });
+                observer.observe(w);
+                return () => observer.unobserve(w);
+            }
+        }
+    }, [options.autoFit]);
+
+    return {ref, echart, wrapper};
 };
 
 export default useECharts;

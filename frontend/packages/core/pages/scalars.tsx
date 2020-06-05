@@ -1,8 +1,9 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
 
+import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
@@ -51,44 +52,50 @@ const Scalars: NextI18NextPage = () => {
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
-    const aside = (
-        <RunAside
-            runs={runs}
-            selectedRuns={selectedRuns}
-            onChangeRuns={onChangeRuns}
-            running={running}
-            onToggleRunning={setRunning}
-        >
-            <section>
-                <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
-                    {t('scalars:ignore-outliers')}
-                </Checkbox>
-                <TooltipSortingDiv>
-                    <span>{t('scalars:tooltip-sorting')}</span>
-                    <Select
-                        list={toolTipSortingValues.map(value => ({label: t(`tooltip-sorting-value.${value}`), value}))}
-                        value={tooltipSorting}
-                        onChange={setTooltipSorting}
-                    />
-                </TooltipSortingDiv>
-            </section>
-            <section>
-                <Field label={t('scalars:smoothing')}>
-                    <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
-                </Field>
-            </section>
-            <section>
-                <Field label={t('scalars:x-axis')}>
-                    <RadioGroup value={xAxis} onChange={setXAxis}>
-                        {xAxisValues.map(value => (
-                            <RadioButton key={value} value={value}>
-                                {t(`x-axis-value.${value}`)}
-                            </RadioButton>
-                        ))}
-                    </RadioGroup>
-                </Field>
-            </section>
-        </RunAside>
+    const aside = useMemo(
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+            >
+                <AsideSection>
+                    <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
+                        {t('scalars:ignore-outliers')}
+                    </Checkbox>
+                    <TooltipSortingDiv>
+                        <span>{t('scalars:tooltip-sorting')}</span>
+                        <Select
+                            list={toolTipSortingValues.map(value => ({
+                                label: t(`tooltip-sorting-value.${value}`),
+                                value
+                            }))}
+                            value={tooltipSorting}
+                            onChange={setTooltipSorting}
+                        />
+                    </TooltipSortingDiv>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('scalars:smoothing')}>
+                        <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('scalars:x-axis')}>
+                        <RadioGroup value={xAxis} onChange={setXAxis}>
+                            {xAxisValues.map(value => (
+                                <RadioButton key={value} value={value}>
+                                    {t(`x-axis-value.${value}`)}
+                                </RadioButton>
+                            ))}
+                        </RadioGroup>
+                    </Field>
+                </AsideSection>
+            </RunAside>
+        ),
+        [t, ignoreOutliers, onChangeRuns, running, runs, selectedRuns, smoothing, tooltipSorting, xAxis]
     );
 
     const withChart = useCallback<WithChart<Tag>>(

@@ -1,4 +1,12 @@
-import Document, {DocumentContext, DocumentProps, Head, Html, Main, NextScript} from 'next/document';
+import Document, {
+    DocumentContext,
+    DocumentInitialProps,
+    DocumentProps,
+    Head,
+    Html,
+    Main,
+    NextScript
+} from 'next/document';
 
 import {ServerStyleSheet} from '~/utils/style';
 
@@ -8,7 +16,7 @@ interface VDLDocumentProps extends DocumentProps {
 }
 
 export default class VDLDocument extends Document<VDLDocumentProps> {
-    static async getInitialProps(ctx: DocumentContext) {
+    static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
         // https://github.com/zeit/next.js/blob/canary/examples/with-typescript-styled-components/pages/_document.tsx
         const sheet = new ServerStyleSheet();
         const originalRenderPage = ctx.renderPage;
@@ -42,7 +50,7 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const {language, languageDir} = this.props;
         return (
             <Html lang={language} dir={languageDir}>

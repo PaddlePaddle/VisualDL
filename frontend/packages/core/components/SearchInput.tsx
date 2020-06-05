@@ -1,14 +1,16 @@
 import Input, {InputProps, padding} from '~/components/Input';
-import React, {FunctionComponent} from 'react';
-import {WithStyled, em, math, position, textLighterColor} from '~/utils/style';
+import React, {FunctionComponent, useCallback, useRef} from 'react';
+import {WithStyled, math, position, textColor, textLightColor, textLighterColor} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import styled from 'styled-components';
 
-const iconSize = em(16);
+const searchIconSize = '1.142857143';
+const closeIconSize = '0.857142857';
 
 const StyledInput = styled(Input)`
-    padding-left: ${math(`${iconSize} + ${padding} * 2`)};
+    padding-left: ${math(`1em * ${searchIconSize} + ${padding} * 2`)};
+    padding-right: ${math(`1em * ${closeIconSize} + ${padding} * 2`)};
     width: 100%;
 `;
 
@@ -17,18 +19,45 @@ const Control = styled.div`
 `;
 
 const SearchIcon = styled(Icon)`
-    font-size: ${iconSize};
     display: block;
-    ${position('absolute', padding, null, null, padding)}
+    transform: translateY(-50%) scale(${searchIconSize});
+    transform-origin: center;
+    ${position('absolute', '50%', null, null, padding)}
     pointer-events: none;
     color: ${textLighterColor};
 `;
 
-const SearchInput: FunctionComponent<InputProps & WithStyled> = ({className, ...props}) => (
-    <Control className={className}>
-        <SearchIcon type="search" />
-        <StyledInput {...props} />
-    </Control>
-);
+const CloseIcon = styled(Icon)`
+    display: block;
+    transform: translateY(-50%) scale(${closeIconSize});
+    transform-origin: center;
+    ${position('absolute', '50%', padding, null, null)}
+    cursor: pointer;
+    color: ${textLighterColor};
+
+    &:hover {
+        color: ${textLightColor};
+    }
+
+    &:active {
+        color: ${textColor};
+    }
+`;
+
+const SearchInput: FunctionComponent<InputProps & WithStyled> = ({className, value, onChange, ...props}) => {
+    const input = useRef<HTMLInputElement | null>(null);
+    const clear = useCallback(() => {
+        onChange?.('');
+        input.current?.focus();
+    }, [onChange]);
+
+    return (
+        <Control className={className}>
+            <SearchIcon type="search" />
+            <StyledInput ref={input} value={value} onChange={onChange} {...props} />
+            {!!value && <CloseIcon type="close" onClick={clear} />}
+        </Control>
+    );
+};
 
 export default SearchInput;
