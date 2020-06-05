@@ -83,6 +83,8 @@ class LogReader(object):
                 component = "embeddings"
             elif "audio" == value_type:
                 component = "audio"
+            elif "histogram" == value_type:
+                component = "histogram"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component

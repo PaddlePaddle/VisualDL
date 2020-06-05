@@ -15,6 +15,7 @@
 
 import os
 import tempfile
+import hdfs
 
 # Note: Some codes here refer to TensorBoardX.
 # A good default block size depends on the system in question.
@@ -88,6 +89,54 @@ class LocalFileSystem(object):
 
 
 default_file_factory.register_filesystem("", LocalFileSystem())
+
+
+class HDFileSystem(object):
+    def __init__(self):
+        self.cli = hdfs.Client("http://182.61.50.230:50070")
+
+    def exists(self, path):
+        if self.cli.status(hdfs_path=path[7:], strict=False) is None:
+            return False
+        else:
+            return True
+
+    def makedirs(self, path):
+        self.cli.makedirs(hdfs_path=path[7:])
+
+    @staticmethod
+    def join(path, *paths):
+        return os.path.join(path, *paths)
+
+    def read(self, filename, binary_mode=False, size=None, continue_from=None):
+        offset = None
+        if continue_from is not None:
+            offset = continue_from.get("last_offset", 0)
+
+        encoding = None if binary_mode else "utf-8"
+        with self.cli.read(hdfs_path=filename[7:], offset=offset, length=size, encoding=encoding) as reader:
+            data = reader.read()
+            continue_from_token = offset + size
+            return data, continue_from_token
+
+    def _write(self, filename, file_content, mode):
+        encoding = None if "b" in mode else "utf-8"
+        with open(filename[7:], mode, encoding=encoding) as fp:
+            fp.write(file_content)
+
+    def append(self, filename, file_content, binary_mode=False):
+        encoding = None if 'b' in binary_mode else 'utf-8'
+        self.cli.write(hdfs_path=filename[7:], data=file_content, encoding=encoding, append=True)
+
+    def write(self, filename, file_content, binary_mode=False):
+        encoding = None if 'b' in binary_mode else 'utf-8'
+        self.cli.write(hdfs_path=filename[7:], data=file_content, encoding=encoding)
+
+    def walk(self, dir):
+        return self.cli.walk(hdfs_path=dir[7:])
+
+
+default_file_factory.register_filesystem("hdfs", HDFileSystem())
 
 
 class BFile(object):

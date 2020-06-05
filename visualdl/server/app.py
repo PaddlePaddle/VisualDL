@@ -179,6 +179,22 @@ def create_app(args):
         result = gen_result(0, "", data)
         return Response(json.dumps(result), mimetype='application/json')
 
+    @app.route(api_path + "/histogram/tags")
+    def histogram_tags():
+        data = cache_get("/data/plugin/histogram/tags", try_call,
+                         lib.get_histogram_tags, log_reader)
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
+    @app.route(api_path + '/histogram/histogram')
+    def histogram():
+        run = request.args.get('run')
+        tag = request.args.get('tag')
+        key = os.path.join('/data/plugin/histogram/histogram', run, tag)
+        data = cache_get(key, try_call, lib.get_histogram, log_reader, run, tag)
+        result = gen_result(0, "", data)
+        return Response(json.dumps(result), mimetype='application/json')
+
     @app.route(api_path + '/scalars/list')
     def scalars():
         run = request.args.get('run')
