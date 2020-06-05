@@ -1,80 +1,36 @@
-language: cpp
-os:
-  - linux
-    # much bug with osx environment
-    # TODO(ChunweiYan) support osx in the future
-    #- osx
+language: python
+python:
+  - "3.8.3"
 
 jobs:
   include:
-    - language: cpp
-      compiler: clang
-      cache:
-        - pip
-        - ccache
-      dist: trusty
-
-      os: linux
-
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=check_style"
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=test"
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=test_python3"
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0 && JOB=build_doc"
-
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - clang-5.0
-            - gcc-4.8
-            - g++-4.8
-            - git
-            - python
-            - python-pip
-            - python2.7-dev
-            - python-wheel
-            - python3-pip
-            - python3-dev
-            - python3-wheel
-            - clang-format-3.8
-            - ccache
-        ssh_known_hosts:
-          secure: "QBkR72gylM8YPzcEvzIk8Q0B+1AZfVK81S3CgzltRC6T/9oTqrsYVPnr4a/MhIXvXm1yi1O5icb0KBr2VAXhuSvVdTOBtMoraHydNiFgijM71j16AMfbw3VhmHtxp6RtVxaAzZysCHXTp8EsDb3mnxJqmWN2qDeJH9x7JTIRQknMnwnTyBKaM5/X6fJNLvEsd2Qfi7vmRGKcrOMRWXK0znGmutKglH22GB5oqHtkB8Xr1pF3AEV2kspNuxdmuvMjQddm7InTArL993PCRKl8PtCGRkurC1n0BdzWCG85heewcZl09DXlH8GCO84icZeIA5p8fJBS8ADi0ew55Vve8dqHxR739MyzNl/GqM9sOEoChAIJOuJ+MvzglRju7urNfRSCnGs6+OAMU2X1E3cWxHFKFM79C4WSLIRXyEhFyrD2Bp10XnfF2OcXKKJzI7GfFNSNjBOFEsZewzanEUXitK8Y8Coz7yMy4arac/PwH4WSfoz/2f4BMBwkATqOwzZX4h1qGxRFV7q+A6BjVT32qVAL+wKqYU6qiXynBw8pC69usjsWlQ0QsrB/kYMNm/p1wRcPvHeb5tvMpBkdGwv3NudFFhXNYCAWSV4rTlH+f7mb/FAf7uEw0MKkV2eUgOt0SVsJ7XOMsuu8pxuDG6FefUCPLPLAZUVMUVlGMoZ16vo="
-
-      before_install:
-        - eval "${MATRIX_EVAL}"
-        - if [[ "$JOB" == "check_style" ]]; then sudo ln -s /usr/bin/clang-format-3.8 /usr/bin/clang-format; sudo pip install pre-commit flake8; fi
-        - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-        - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
-        - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install brew-pip; fi
-
-      script:
-        - if [[ "$JOB" == "check_style" ]]; then ./scripts/check_style.sh; fi
-        - if [[ "$JOB" == "test" ]]; then ./scripts/tests.sh all; fi
-        - if [[ "$JOB" == "test_python3" ]]; then WITH_PYTHON3=ON ./scripts/tests.sh all; fi
-        - if [[ "$JOB" == "build_doc" ]]; then ./scripts/deploy_docs_on_travis.sh; fi;
-
-    - language: node_js
+    - name: "Bionic Linux"
       dist: bionic
-      node_js: 12
-      cache:
-        - npm
-        - yarn
-        - cargo
       before_install:
-        - cd frontend
-      install:
-        - ./scripts/install.sh
-      before_script:
-        - source $HOME/.cargo/env
-        - export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-      script:
-        - yarn clean
-        - yarn lint
-        - yarn test
-        # - yarn build
+        - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+    - name: "MacOS"
+      osx_image: xcode11.5
+      before_install:
+        - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+#    - name: "Windows"
+#      os: windows
+#      language: shell
+#      before_install:
+#        - choco install nvm.portable
+#        - choco install python --version 3.8.3
+#        - python -m pip install --upgrade pip
+#      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+
+install:
+  - nvm install 12.18.0
+  - pip3 install --upgrade pip
+  - pip3 install -r requirements.txt
+
+before_script:
+  - nvm use 12.18.0
+
+script:
+  - python3 setup.py bdist_wheel || python setup.py bdist_wheel
 
 notifications:
   email:
