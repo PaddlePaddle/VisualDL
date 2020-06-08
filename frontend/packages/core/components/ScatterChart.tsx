@@ -65,9 +65,10 @@ type ScatterChartProps = {
 };
 
 const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({data, loading, gl, className}) => {
-    const {ref, echart} = useECharts<HTMLDivElement>({
+    const {ref, echart, wrapper} = useECharts<HTMLDivElement>({
         loading,
-        gl
+        gl,
+        autoFit: true
     });
 
     const chartOptions = useMemo(
@@ -84,13 +85,12 @@ const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({data, 
 
     useEffect(() => {
         if (process.browser) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            echart?.current?.setOption(chartOptions as any, {notMerge: true});
+            echart?.setOption(chartOptions);
         }
     }, [chartOptions, echart]);
 
     return (
-        <Wrapper className={className}>
+        <Wrapper ref={wrapper} className={className}>
             {!echart && (
                 <div className="loading">
                     <GridLoader color={primaryColor} size="10px" />

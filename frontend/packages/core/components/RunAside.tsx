@@ -1,5 +1,6 @@
+import Aside, {AsideSection} from '~/components/Aside';
 import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
-import {borderColor, ellipsis, em, rem, size} from '~/utils/style';
+import {ellipsis, em, rem, size} from '~/utils/style';
 
 import Checkbox from '~/components/Checkbox';
 import Field from '~/components/Field';
@@ -10,73 +11,53 @@ import styled from 'styled-components';
 import uniqBy from 'lodash/uniqBy';
 import {useTranslation} from '~/utils/i18n';
 
-const Aside = styled.div`
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+const StyledAside = styled(Aside)`
+    ${AsideSection}.run-section {
+        flex: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
 
-    > section {
-        margin: ${rem(20)} ${rem(20)} 0;
-        flex: 0 0 auto;
-
-        &:not(:last-child) {
-            border-bottom: 1px solid ${borderColor};
-            padding-bottom: ${rem(20)};
-        }
-
-        &.run-section {
-            flex: 1 1 auto;
+        .run-select {
+            flex: auto;
             overflow-x: hidden;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
 
-            .running-toggle {
-                flex: 0 0 auto;
-                box-shadow: 0 -${rem(5)} ${rem(16)} 0 rgba(0, 0, 0, 0.03);
+            > * {
+                flex: none;
             }
 
-            .run-select {
-                flex: 1 1 auto;
+            .search-input {
+                margin-bottom: ${rem(15)};
+            }
+
+            .run-list {
+                flex: auto;
                 overflow-x: hidden;
                 overflow-y: auto;
-                display: flex;
-                flex-direction: column;
 
-                > * {
-                    flex: 0 0 auto;
-                }
+                margin-top: ${rem(5)};
 
-                .search-input {
-                    margin-bottom: ${rem(15)};
-                }
+                > div {
+                    margin-top: ${rem(11)};
 
-                .run-list {
-                    flex: 1 1 auto;
-                    overflow-x: hidden;
-                    overflow-y: auto;
+                    > * {
+                        width: 100%;
+                    }
 
-                    margin-top: ${rem(5)};
+                    .run-item {
+                        display: flex;
+                        align-items: center;
+                        ${ellipsis()}
 
-                    > div {
-                        margin-top: ${rem(11)};
-
-                        > * {
-                            width: 100%;
-                        }
-
-                        .run-item {
-                            display: flex;
-                            align-items: center;
-                            ${ellipsis()}
-
-                            > i {
-                                display: inline-block;
-                                ${size(em(12), em(12))};
-                                border-radius: ${em(6)};
-                                margin-right: ${em(8)};
-                            }
+                        > i {
+                            display: inline-block;
+                            ${size(em(12), em(12))};
+                            border-radius: ${em(6)};
+                            margin-right: ${em(8)};
                         }
                     }
                 }
@@ -131,10 +112,15 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
         [onChangeRuns, selectedRuns]
     );
 
+    const bottom = useMemo(
+        () => <RunningToggle className="running-toggle" running={running} onToggle={onToggleRunning} />,
+        [running, onToggleRunning]
+    );
+
     return (
-        <Aside>
+        <StyledAside bottom={bottom}>
             {children}
-            <section className="run-section">
+            <AsideSection className="run-section">
                 <Field className="run-select" label={t('common:select-runs')}>
                     <SearchInput
                         className="search-input"
@@ -163,9 +149,8 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
                         ))}
                     </div>
                 </Field>
-                <RunningToggle className="running-toggle" running={running} onToggle={onToggleRunning} />
-            </section>
-        </Aside>
+            </AsideSection>
+        </StyledAside>
     );
 };
 

@@ -19,6 +19,8 @@ export const rem = (pxval: string | number): string => polished.rem(pxval, fontS
 export const em = (pxval: string | number, base?: string | number): string => polished.em(pxval, base || fontSize);
 export const half = (value: string | number): string => math(`(${value}) / 2`);
 export const headerHeight = rem(60);
+export const contentMargin = rem(20);
+export const contentHeight = `calc(100vh - ${math(`${contentMargin} * 2 + ${headerHeight}`)})`;
 export const asideWidth = rem(260);
 export const borderRadius = '4px';
 export const progressSpinnerSize = '20px';

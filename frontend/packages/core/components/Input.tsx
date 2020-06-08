@@ -1,6 +1,6 @@
-import React, {FunctionComponent} from 'react';
 import {WithStyled, borderFocusedColor, em, half, sameBorder, textLighterColor, transitionProps} from '~/utils/style';
 
+import React from 'react';
 import styled from 'styled-components';
 
 export const padding = em(10);
@@ -25,25 +25,29 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     }
 `;
 
-export type InputProps = {
+type CustomeInputProps = {
     rounded?: boolean;
-    placeholder?: string;
     value?: string;
     onChange?: (value: string) => unknown;
 };
 
-const Input: FunctionComponent<
-    InputProps & WithStyled & Omit<React.ComponentPropsWithoutRef<'input'>, keyof InputProps>
-> = ({rounded, placeholder, value, onChange, className, ...props}) => (
-    <StyledInput
-        rounded={rounded}
-        placeholder={placeholder}
-        value={value}
-        type="text"
-        className={className}
-        onChange={e => onChange?.(e.target.value)}
-        {...props}
-    />
+export type InputProps = Omit<React.ComponentPropsWithoutRef<'input'>, keyof CustomeInputProps | 'type' | 'className'> &
+    CustomeInputProps;
+
+const Input = React.forwardRef<HTMLInputElement, InputProps & WithStyled>(
+    ({rounded, value, onChange, className, ...props}, ref) => (
+        <StyledInput
+            ref={ref}
+            rounded={rounded}
+            value={value}
+            type="text"
+            className={className}
+            onChange={e => onChange?.(e.target.value)}
+            {...props}
+        />
+    )
 );
+
+Input.displayName = 'Input';
 
 export default Input;

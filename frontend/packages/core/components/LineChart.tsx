@@ -1,6 +1,6 @@
 import * as chart from '~/utils/chart';
 
-import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useImperativeHandle} from 'react';
 import {WithStyled, position, primaryColor, size} from '~/utils/style';
 
 import {EChartOption} from 'echarts';
@@ -56,22 +56,21 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({title, legend, data, xAxis, yAxis, xType, yType, xRange, yRange, tooltip, loading, className}, ref) => {
         const {i18n} = useTranslation();
 
-        const {ref: echartRef, echart} = useECharts<HTMLDivElement>({
+        const {ref: echartRef, echart, wrapper} = useECharts<HTMLDivElement>({
             loading: !!loading,
-            zoom: true
+            zoom: true,
+            autoFit: true
         });
 
         useImperativeHandle(ref, () => ({
             restore: () => {
-                echart?.current?.dispatchAction({
+                echart?.dispatchAction({
                     type: 'restore'
                 });
             },
             saveAsImage: () => {
-                if (echart?.current) {
-                    const blob = dataURL2Blob(
-                        echart.current.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'})
-                    );
+                if (echart) {
+                    const blob = dataURL2Blob(echart.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'}));
                     saveAs(blob, `${title?.replace(/[/\\?%*:|"<>]/g, '_') || 'scalar'}.png`);
                 }
             }
@@ -84,7 +83,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
 
         useEffect(() => {
             if (process.browser) {
-                echart?.current?.setOption(
+                echart?.setOption(
                     {
                         color: chart.color,
                         title: {
@@ -133,22 +132,8 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             }
         }, [data, title, legend, xAxis, yAxis, xType, yType, xAxisFormatter, xRange, yRange, tooltip, echart]);
 
-        const wrapperRef = useRef<HTMLDivElement>(null);
-        useLayoutEffect(() => {
-            if (process.browser) {
-                const wrapper = wrapperRef.current;
-                if (wrapper) {
-                    const observer = new ResizeObserver(() => {
-                        echart?.current?.resize();
-                    });
-                    observer.observe(wrapper);
-                    return () => observer.unobserve(wrapper);
-                }
-            }
-        });
-
         return (
-            <Wrapper ref={wrapperRef} className={className}>
+            <Wrapper ref={wrapper} className={className}>
                 {!echart && (
                     <div className="loading">
                         <GridLoader color={primaryColor} size="10px" />

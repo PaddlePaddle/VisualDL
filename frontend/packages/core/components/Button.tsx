@@ -5,6 +5,7 @@ import {
     borderColor,
     borderFocusedColor,
     borderRadius,
+    css,
     dangerActiveColor,
     dangerColor,
     dangerFocusedColor,
@@ -38,11 +39,26 @@ const colors = {
     }
 };
 
-const Wrapper = styled.a<{type?: keyof typeof colors; rounded?: boolean; disabled?: boolean}>`
+const defaultColor = {
+    default: borderColor,
+    active: borderActiveColor,
+    focused: borderFocusedColor
+} as const;
+
+type colorTypes = keyof typeof colors;
+
+const statusButtonColor: (
+    status: 'focused' | 'active'
+) => (props: {disabled?: boolean; type?: colorTypes}) => ReturnType<typeof css> = status => ({disabled, type}) => css`
+    ${disabled || type ? '' : sameBorder({color: defaultColor[status]})}
+    background-color: ${disabled ? '' : type ? colors[type][status] : 'transparent'};
+`;
+
+const Wrapper = styled.a<{type?: colorTypes; rounded?: boolean; disabled?: boolean}>`
     height: ${height};
     line-height: ${height};
     border-radius: ${props => (props.rounded ? half(height) : borderRadius)};
-    ${props => (props.type ? '' : sameBorder({color: borderColor}))}
+    ${props => (props.type ? '' : sameBorder({color: defaultColor.default}))}
     background-color: ${props => (props.type ? colors[props.type].default : 'transparent')};
     color: ${props => (props.disabled ? textLighterColor : props.type ? textInvertColor : textColor)};
     cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
@@ -53,20 +69,14 @@ const Wrapper = styled.a<{type?: keyof typeof colors; rounded?: boolean; disable
     ${transitionProps(['background-color', 'border-color'])}
     ${ellipsis()}
 
-    ${props =>
-        props.disabled
-            ? ''
-            : `
-                &:hover,
-                &:focus {
-                    ${props.type ? '' : sameBorder({color: borderFocusedColor})}
-                    background-color: ${props.type ? colors[props.type].focused : 'transparent'};
-                }
+    &:hover,
+    &:focus {
+        ${statusButtonColor('focused')}
+    }
 
-                &:active {
-                    ${props.type ? '' : sameBorder({color: borderActiveColor})}
-                    background-color: ${props.type ? colors[props.type].active : 'transparent'};
-                }`}
+    &:active {
+        ${statusButtonColor('active')}
+    }
 `;
 
 const Icon = styled(RawIcon)`
@@ -76,7 +86,7 @@ const Icon = styled(RawIcon)`
 type ButtonProps = {
     rounded?: boolean;
     icon?: string;
-    type?: keyof typeof colors;
+    type?: colorTypes;
     disabled?: boolean;
     onClick?: () => unknown;
 };

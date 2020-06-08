@@ -1,6 +1,6 @@
 import Image, {ImageRef} from '~/components/Image';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ellipsis, em, primaryColor, size, textLightColor, transitionProps} from '~/utils/style';
+import {ellipsis, em, primaryColor, rem, size, textLightColor, transitionProps} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
@@ -67,6 +67,10 @@ const Container = styled.div<{brightness?: number; contrast?: number; fit?: bool
         object-fit: ${props => (props.fit ? 'contain' : 'scale-down')};
         flex-shrink: 1;
     }
+`;
+
+const Toolbox = styled(ChartToolbox)`
+    margin-bottom: ${rem(18)};
 `;
 
 type ImageData = {
@@ -195,7 +199,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
             <Container ref={container} brightness={brightness} contrast={contrast} fit={fit}>
                 {Content}
             </Container>
-            <ChartToolbox
+            <Toolbox
                 items={[
                     {
                         icon: 'download',

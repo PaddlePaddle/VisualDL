@@ -63,6 +63,7 @@ cd VisualDL
 python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-*.whl
 ```
+需要注意，官方自2020年1月1日起不再维护Python2，为了保障代码可用性，VisualDL现仅支持Python3
 
 ## 使用方式
 

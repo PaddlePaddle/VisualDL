@@ -1,10 +1,10 @@
+import Aside, {AsideSection} from '~/components/Aside';
 import {Dimension, Reduction} from '~/resource/high-dimensional';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useEffect, useMemo, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {em, rem} from '~/utils/style';
 
-import AsideDivider from '~/components/AsideDivider';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
@@ -23,10 +23,6 @@ import useSearchValue from '~/hooks/useSearchValue';
 
 const dimensions = ['2d', '3d'];
 const reductions = ['pca', 'tsne'];
-
-const AsideSection = styled.section`
-    padding: ${rem(20)};
-`;
 
 const StyledSelect = styled<React.FunctionComponent<SelectProps<string>>>(Select)`
     min-width: ${em(160)};
@@ -96,49 +92,58 @@ const HighDimensional: NextI18NextPage = () => {
     const [reduction, setReduction] = useState(reductions[0] as Reduction);
     const [labelVisibility, setLabelVisibility] = useState(true);
 
-    const aside = (
-        <AsideSection>
-            <AsideTitle>{t('common:select-runs')}</AsideTitle>
-            <StyledSelect list={labelList} value={label} onChange={setLabel} />
-            <AsideDivider />
-            <Field>
-                <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
-            </Field>
-            <Field>
-                <Checkbox value={labelVisibility} onChange={setLabelVisibility}>
-                    {t('high-dimensional:display-all-label')}
-                </Checkbox>
-            </Field>
-            <AsideDivider />
-            <AsideTitle>
-                <StyledIcon type="dimension" />
-                {t('high-dimensional:dimension')}
-            </AsideTitle>
-            <Field>
-                <RadioGroup value={dimension} onChange={value => setDimension(value)}>
-                    {dimensions.map(item => (
-                        <RadioButton key={item} value={item}>
-                            {t(item)}
-                        </RadioButton>
-                    ))}
-                </RadioGroup>
-            </Field>
-            <AsideDivider />
-            <AsideTitle>
-                <StyledIcon type="reduction" />
-                {t('high-dimensional:reduction-method')}
-            </AsideTitle>
-            <Field>
-                <RadioGroup value={reduction} onChange={value => setReduction(value)}>
-                    {reductions.map(item => (
-                        <RadioButton key={item} value={item}>
-                            {t(item)}
-                        </RadioButton>
-                    ))}
-                </RadioGroup>
-            </Field>
-            <RunningToggle running={running} onToggle={setRunning} />
-        </AsideSection>
+    const bottom = useMemo(() => <RunningToggle running={running} onToggle={setRunning} />, [running, setRunning]);
+
+    const aside = useMemo(
+        () => (
+            <Aside bottom={bottom}>
+                <AsideSection>
+                    <AsideTitle>{t('common:select-runs')}</AsideTitle>
+                    <StyledSelect list={labelList} value={label} onChange={setLabel} />
+                </AsideSection>
+                <AsideSection>
+                    <Field>
+                        <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
+                    </Field>
+                    <Field>
+                        <Checkbox value={labelVisibility} onChange={setLabelVisibility}>
+                            {t('high-dimensional:display-all-label')}
+                        </Checkbox>
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <AsideTitle>
+                        <StyledIcon type="dimension" />
+                        {t('high-dimensional:dimension')}
+                    </AsideTitle>
+                    <Field>
+                        <RadioGroup value={dimension} onChange={value => setDimension(value)}>
+                            {dimensions.map(item => (
+                                <RadioButton key={item} value={item}>
+                                    {t(item)}
+                                </RadioButton>
+                            ))}
+                        </RadioGroup>
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <AsideTitle>
+                        <StyledIcon type="reduction" />
+                        {t('high-dimensional:reduction-method')}
+                    </AsideTitle>
+                    <Field>
+                        <RadioGroup value={reduction} onChange={value => setReduction(value)}>
+                            {reductions.map(item => (
+                                <RadioButton key={item} value={item}>
+                                    {t(item)}
+                                </RadioButton>
+                            ))}
+                        </RadioGroup>
+                    </Field>
+                </AsideSection>
+            </Aside>
+        ),
+        [t, bottom, dimension, label, labelList, labelVisibility, reduction, search]
     );
 
     return (

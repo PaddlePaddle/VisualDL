@@ -19,15 +19,15 @@ import ReactTooltip from 'react-tooltip';
 import {nanoid} from 'nanoid';
 import styled from 'styled-components';
 
-const Toolbox = styled.div`
+const Toolbox = styled.div<{reversed?: boolean}>`
     font-size: ${em(16)};
-    height: 1em;
     line-height: 1;
-    margin-bottom: ${rem(18)};
     display: flex;
+    flex-direction: ${props => (props.reversed ? 'row-reverse' : 'row')};
+    align-items: center;
 `;
 
-const ToolboxItem = styled.a<{active?: boolean}>`
+const ToolboxItem = styled.a<{active?: boolean; reversed?: boolean}>`
     cursor: pointer;
     color: ${props => (props.active ? primaryColor : textLighterColor)};
     ${transitionProps('color')}
@@ -41,7 +41,7 @@ const ToolboxItem = styled.a<{active?: boolean}>`
     }
 
     & + & {
-        margin-left: ${rem(14)};
+        ${props => `margin-${props.reversed ? 'right' : 'left'}: ${rem(14)};`}
     }
 `;
 
@@ -67,9 +67,17 @@ export type ChartTooboxItem = NormalChartToolboxItem | ToggleChartToolboxItem;
 type ChartToolboxProps = {
     cid?: string;
     items: ChartTooboxItem[];
+    reversed?: boolean;
+    tooltipPlace?: 'top' | 'bottom' | 'left' | 'right';
 };
 
-const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({cid, items, className}) => {
+const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
+    cid,
+    items,
+    reversed,
+    tooltipPlace,
+    className
+}) => {
     const [activeStatus, setActiveStatus] = useState<boolean[]>(new Array(items.length).fill(false));
     const onClick = useCallback(
         (index: number) => {
@@ -92,10 +100,11 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({cid, i
 
     return (
         <>
-            <Toolbox className={className}>
+            <Toolbox className={className} reversed={reversed}>
                 {items.map((item, index) => (
                     <ToolboxItem
                         key={index}
+                        reversed={reversed}
                         active={item.toggle && !item.activeIcon && activeStatus[index]}
                         onClick={() => onClick(index)}
                         data-for={item.tooltip ? id : null}
@@ -113,7 +122,7 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({cid, i
             </Toolbox>
             <ReactTooltip
                 id={id}
-                place="top"
+                place={tooltipPlace ?? 'top'}
                 textColor={tooltipTextColor}
                 backgroundColor={tooltipBackgroundColor}
                 effect="solid"
