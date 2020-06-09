@@ -61,6 +61,10 @@ class LogReader(object):
         self.load_new_data(update=True)
         self._a_tags = {}
 
+    @property
+    def logdir(self):
+        return self.dir
+
     def parse_from_bin(self, record_bin):
         """Register to self._tags by component type.
 
@@ -204,9 +208,14 @@ class LogReader(object):
     def components(self, update=False):
         """Get components type used by vdl.
         """
+        if self.logdir is None:
+            return set()
         if update is True:
             self.load_new_data(update=update)
-        return set(self._tags.values())
+        components_set = set(self._tags.values())
+        if 0 == len(components_set):
+            return {'scalar'}
+        return components_set
 
     def load_new_data(self, update=True):
         """Load remain data.
@@ -214,5 +223,6 @@ class LogReader(object):
         Make sure all readers for every vdl log file are registered, load all
         remain data.
         """
-        self.register_readers(update=update)
-        self.add_remain()
+        if self.logdir is not None:
+            self.register_readers(update=update)
+            self.add_remain()
