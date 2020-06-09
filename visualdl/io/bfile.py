@@ -130,7 +130,10 @@ class HDFileSystem(object):
         return (['hdfs://'+root, dirs, files] for root, dirs, files in walks)
 
 
-default_file_factory.register_filesystem("hdfs", HDFileSystem())
+try:
+    default_file_factory.register_filesystem("hdfs", HDFileSystem())
+except hdfs.util.HdfsError:
+    print("HDFS initialization failed, please check if .hdfscli，cfg exists.")
 
 
 class BFile(object):
