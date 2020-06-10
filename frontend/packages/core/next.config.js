@@ -46,6 +46,7 @@ module.exports = {
     },
     webpack: config => {
         const WorkerPlugin = require('worker-plugin');
+        const CopyWebpackPlugin = require('copy-webpack-plugin');
 
         config.resolve = config.resolve || {};
         config.resolve.alias = config.resolve.alias || {};
@@ -61,6 +62,16 @@ module.exports = {
             ...(config.plugins || []),
             new WorkerPlugin({
                 globalObject: 'self'
+            }),
+            new CopyWebpackPlugin({
+                patterns: [
+                    {
+                        context: path.dirname(require('enhanced-resolve').sync(__dirname, '@visualdl/netron')),
+                        from: '**/*',
+                        to: 'static/netron',
+                        toType: 'dir'
+                    }
+                ]
             })
         ];
 

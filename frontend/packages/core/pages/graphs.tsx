@@ -221,7 +221,6 @@ const Graphs: NextI18NextPage = () => {
                     style={{
                         display: 'none'
                     }}
-                    accept=".onnx, .pb, .meta, .tflite, .lite, .tfl, .bin, .keras, .h5, .hd5, .hdf5, .json, .model, .mar, .params, .param, .armnn, .mnn, .ncnn, .nn, .dnn, .cmf, .mlmodel, .caffemodel, .pbtxt, .prototxt, .pkl, .pt, .pth, .t7, .joblib, .cfg, .xml"
                 />
             </Content>
         </>

@@ -38,19 +38,19 @@
         "version": "yarn format && git add -A"
     },
     "devDependencies": {
-        "@typescript-eslint/eslint-plugin": "3.1.0",
-        "@typescript-eslint/parser": "3.1.0",
-        "eslint": "7.1.0",
+        "@typescript-eslint/eslint-plugin": "3.2.0",
+        "@typescript-eslint/parser": "3.2.0",
+        "eslint": "7.2.0",
         "eslint-config-prettier": "6.11.0",
         "eslint-plugin-prettier": "3.1.3",
         "eslint-plugin-react": "7.20.0",
         "eslint-plugin-react-hooks": "4.0.0",
         "husky": "4.2.5",
-        "lerna": "3.22.0",
-        "lint-staged": "10.2.8",
+        "lerna": "3.22.1",
+        "lint-staged": "10.2.9",
         "prettier": "2.0.5",
         "rimraf": "3.0.2",
-        "typescript": "3.9.3",
+        "typescript": "3.9.5",
         "yarn": "1.22.4"
     },
     "engines": {
