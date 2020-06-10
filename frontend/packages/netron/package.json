@@ -1,5 +1,5 @@
 {
-    "name": "@visualdl/i18n",
+    "name": "@visualdl/netron",
     "version": "2.0.0-beta.43",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -20,46 +20,37 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/PaddlePaddle/VisualDL.git",
-        "directory": "frontend/packages/i18n"
+        "directory": "frontend/packages/netron"
     },
     "scripts": {
-        "build": "tsc",
+        "build": "rimraf dist && webpack",
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "files": [
-        "dist",
-        "types.d.ts",
-        "middleware.js",
-        "middleware.d.ts"
+        "dist"
     ],
-    "main": "dist/index.js",
-    "types": "types.d.ts",
+    "main": "dist/index.html",
     "dependencies": {
-        "detect-node": "2.0.4",
-        "hoist-non-react-statics": "3.3.2",
-        "i18next": "19.4.5",
-        "i18next-browser-languagedetector": "4.2.0",
-        "i18next-fs-backend": "1.0.6",
-        "i18next-http-backend": "1.0.15",
-        "i18next-http-middleware": "2.1.0",
-        "path-match": "1.2.4",
-        "prop-types": "15.7.2",
-        "react-i18next": "11.5.0",
-        "url": "0.11.0"
+        "d3": "5.16.0",
+        "dagre": "0.8.5",
+        "long": "4.0.0",
+        "marked": "1.1.0",
+        "netron": "lutzroeder/netron#9f9be2e1d0cdeb538fcddbc359f1b4138223a953",
+        "pako": "1.0.11",
+        "protobufjs": "lutzroeder/protobuf.js#b9a9d027589356226f4704f9d77f2639f52172f3"
     },
     "devDependencies": {
-        "@types/express": "4.17.6",
-        "@types/hoist-non-react-statics": "3.3.1",
-        "@types/node": "14.0.13",
-        "@types/react": "16.9.35",
-        "@types/react-dom": "16.9.8",
-        "typescript": "3.9.5"
-    },
-    "peerDependencies": {
-        "express": "^4.17.1",
-        "next": "^9.3.4",
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1"
+        "autoprefixer": "9.8.0",
+        "copy-webpack-plugin": "6.0.2",
+        "css-loader": "3.5.3",
+        "html-webpack-plugin": "4.3.0",
+        "mini-css-extract-plugin": "0.9.0",
+        "postcss-loader": "3.0.0",
+        "rimraf": "3.0.2",
+        "sass": "1.26.8",
+        "sass-loader": "8.0.2",
+        "terser": "4.7.0",
+        "webpack": "4.43.0"
     },
     "engines": {
         "node": ">=10",

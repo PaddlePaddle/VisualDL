@@ -9,7 +9,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: 'module'
     },
-    ignorePatterns: ['node_modules/', 'dist/', 'output/', '_next', 'packages/core/public/netron'],
+    ignorePatterns: ['node_modules/', 'dist/', 'output/', '_next'],
     rules: {
         'no-console': 'warn',
         'sort-imports': 'error'
