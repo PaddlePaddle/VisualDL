@@ -7,6 +7,7 @@ import {em, rem} from '~/utils/style';
 
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
+import Error from '~/components/Error';
 import Field from '~/components/Field';
 import HighDimensionalChart from '~/components/HighDimensionalPage/HighDimensionalChart';
 import Icon from '~/components/Icon';
@@ -95,54 +96,55 @@ const HighDimensional: NextI18NextPage = () => {
     const bottom = useMemo(() => <RunningToggle running={running} onToggle={setRunning} />, [running, setRunning]);
 
     const aside = useMemo(
-        () => (
-            <Aside bottom={bottom}>
-                <AsideSection>
-                    <AsideTitle>{t('common:select-runs')}</AsideTitle>
-                    <StyledSelect list={labelList} value={label} onChange={setLabel} />
-                </AsideSection>
-                <AsideSection>
-                    <Field>
-                        <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
-                    </Field>
-                    <Field>
-                        <Checkbox value={labelVisibility} onChange={setLabelVisibility}>
-                            {t('high-dimensional:display-all-label')}
-                        </Checkbox>
-                    </Field>
-                </AsideSection>
-                <AsideSection>
-                    <AsideTitle>
-                        <StyledIcon type="dimension" />
-                        {t('high-dimensional:dimension')}
-                    </AsideTitle>
-                    <Field>
-                        <RadioGroup value={dimension} onChange={value => setDimension(value)}>
-                            {dimensions.map(item => (
-                                <RadioButton key={item} value={item}>
-                                    {t(item)}
-                                </RadioButton>
-                            ))}
-                        </RadioGroup>
-                    </Field>
-                </AsideSection>
-                <AsideSection>
-                    <AsideTitle>
-                        <StyledIcon type="reduction" />
-                        {t('high-dimensional:reduction-method')}
-                    </AsideTitle>
-                    <Field>
-                        <RadioGroup value={reduction} onChange={value => setReduction(value)}>
-                            {reductions.map(item => (
-                                <RadioButton key={item} value={item}>
-                                    {t(item)}
-                                </RadioButton>
-                            ))}
-                        </RadioGroup>
-                    </Field>
-                </AsideSection>
-            </Aside>
-        ),
+        () =>
+            labelList.length ? (
+                <Aside bottom={bottom}>
+                    <AsideSection>
+                        <AsideTitle>{t('common:select-runs')}</AsideTitle>
+                        <StyledSelect list={labelList} value={label} onChange={setLabel} />
+                    </AsideSection>
+                    <AsideSection>
+                        <Field>
+                            <SearchInput placeholder={t('common:search')} value={search} onChange={setSearch} />
+                        </Field>
+                        <Field>
+                            <Checkbox value={labelVisibility} onChange={setLabelVisibility}>
+                                {t('high-dimensional:display-all-label')}
+                            </Checkbox>
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <AsideTitle>
+                            <StyledIcon type="dimension" />
+                            {t('high-dimensional:dimension')}
+                        </AsideTitle>
+                        <Field>
+                            <RadioGroup value={dimension} onChange={value => setDimension(value)}>
+                                {dimensions.map(item => (
+                                    <RadioButton key={item} value={item}>
+                                        {t(item)}
+                                    </RadioButton>
+                                ))}
+                            </RadioGroup>
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <AsideTitle>
+                            <StyledIcon type="reduction" />
+                            {t('high-dimensional:reduction-method')}
+                        </AsideTitle>
+                        <Field>
+                            <RadioGroup value={reduction} onChange={value => setReduction(value)}>
+                                {reductions.map(item => (
+                                    <RadioButton key={item} value={item}>
+                                        {t(item)}
+                                    </RadioButton>
+                                ))}
+                            </RadioGroup>
+                        </Field>
+                    </AsideSection>
+                </Aside>
+            ) : null,
         [t, bottom, dimension, label, labelList, labelVisibility, reduction, search]
     );
 
@@ -151,7 +153,9 @@ const HighDimensional: NextI18NextPage = () => {
             <Preloader url="/runs" />
             <Title>{t('common:high-dimensional')}</Title>
             <Content aside={aside} loading={loading}>
-                {error ? (
+                {!loading && !list.length ? (
+                    <Error />
+                ) : error ? (
                     <div>{t('common:error')}</div>
                 ) : loading ? null : (
                     <HighDimensionalChart
