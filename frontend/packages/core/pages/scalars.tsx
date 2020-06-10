@@ -6,6 +6,7 @@ import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
+import Error from '~/components/Error';
 import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
 import RadioButton from '~/components/RadioButton';
@@ -53,48 +54,49 @@ const Scalars: NextI18NextPage = () => {
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
     const aside = useMemo(
-        () => (
-            <RunAside
-                runs={runs}
-                selectedRuns={selectedRuns}
-                onChangeRuns={onChangeRuns}
-                running={running}
-                onToggleRunning={setRunning}
-            >
-                <AsideSection>
-                    <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
-                        {t('scalars:ignore-outliers')}
-                    </Checkbox>
-                    <TooltipSortingDiv>
-                        <span>{t('scalars:tooltip-sorting')}</span>
-                        <Select
-                            list={toolTipSortingValues.map(value => ({
-                                label: t(`tooltip-sorting-value.${value}`),
-                                value
-                            }))}
-                            value={tooltipSorting}
-                            onChange={setTooltipSorting}
-                        />
-                    </TooltipSortingDiv>
-                </AsideSection>
-                <AsideSection>
-                    <Field label={t('scalars:smoothing')}>
-                        <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
-                    </Field>
-                </AsideSection>
-                <AsideSection>
-                    <Field label={t('scalars:x-axis')}>
-                        <RadioGroup value={xAxis} onChange={setXAxis}>
-                            {xAxisValues.map(value => (
-                                <RadioButton key={value} value={value}>
-                                    {t(`x-axis-value.${value}`)}
-                                </RadioButton>
-                            ))}
-                        </RadioGroup>
-                    </Field>
-                </AsideSection>
-            </RunAside>
-        ),
+        () =>
+            runs.length ? (
+                <RunAside
+                    runs={runs}
+                    selectedRuns={selectedRuns}
+                    onChangeRuns={onChangeRuns}
+                    running={running}
+                    onToggleRunning={setRunning}
+                >
+                    <AsideSection>
+                        <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
+                            {t('scalars:ignore-outliers')}
+                        </Checkbox>
+                        <TooltipSortingDiv>
+                            <span>{t('scalars:tooltip-sorting')}</span>
+                            <Select
+                                list={toolTipSortingValues.map(value => ({
+                                    label: t(`tooltip-sorting-value.${value}`),
+                                    value
+                                }))}
+                                value={tooltipSorting}
+                                onChange={setTooltipSorting}
+                            />
+                        </TooltipSortingDiv>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={t('scalars:smoothing')}>
+                            <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={t('scalars:x-axis')}>
+                            <RadioGroup value={xAxis} onChange={setXAxis}>
+                                {xAxisValues.map(value => (
+                                    <RadioButton key={value} value={value}>
+                                        {t(`x-axis-value.${value}`)}
+                                    </RadioButton>
+                                ))}
+                            </RadioGroup>
+                        </Field>
+                    </AsideSection>
+                </RunAside>
+            ) : null,
         [t, ignoreOutliers, onChangeRuns, running, runs, selectedRuns, smoothing, tooltipSorting, xAxis]
     );
 
@@ -120,7 +122,11 @@ const Scalars: NextI18NextPage = () => {
             <Preloader url="/scalars/tags" />
             <Title>{t('common:scalars')}</Title>
             <Content aside={aside} loading={loadingRuns}>
-                <ChartPage items={tags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                {!loadingRuns && !runs.length ? (
+                    <Error />
+                ) : (
+                    <ChartPage items={tags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                )}
             </Content>
         </>
     );

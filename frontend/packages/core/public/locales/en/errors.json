@@ -1,5 +1,13 @@
 {
     "error-with-status": "A {{statusCode}} error occurred on server",
     "error-without-status": "An error occurred on the server",
-    "page-not-found": "Page Not Found"
+    "page-not-found": "Page Not Found",
+    "common": {
+        "title": "No visualized data.",
+        "description": "Possible reasons are:",
+        "1": "Log files are not generated. Please refer to <1>README</1> to create log files.",
+        "2": "Log files are generated but data is not written yet. Please refer to <1>VisualDL User Guide</1> to write visualized data.",
+        "3": "Log files are generated and data is writte. Please try to <1>Refresh</1>.",
+        "4": "Log files are generated but path to log directory is wrong. Please check your directory and try again."
+    }
 }

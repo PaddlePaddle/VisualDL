@@ -7,6 +7,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
+import Error from '~/components/Error';
 import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
 import RunAside from '~/components/RunAside';
@@ -49,31 +50,32 @@ const Samples: NextI18NextPage = () => {
     const [contrast, setContrast] = useState(1);
 
     const aside = useMemo(
-        () => (
-            <RunAside
-                runs={runs}
-                selectedRuns={selectedRuns}
-                onChangeRuns={onChangeRuns}
-                running={running}
-                onToggleRunning={setRunning}
-            >
-                <AsideSection>
-                    <Checkbox value={showActualSize} onChange={setShowActualSize}>
-                        {t('samples:show-actual-size')}
-                    </Checkbox>
-                </AsideSection>
-                <AsideSection>
-                    <Field label={t('samples:brightness')}>
-                        <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
-                    </Field>
-                </AsideSection>
-                <AsideSection>
-                    <Field label={t('samples:contrast')}>
-                        <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
-                    </Field>
-                </AsideSection>
-            </RunAside>
-        ),
+        () =>
+            runs.length ? (
+                <RunAside
+                    runs={runs}
+                    selectedRuns={selectedRuns}
+                    onChangeRuns={onChangeRuns}
+                    running={running}
+                    onToggleRunning={setRunning}
+                >
+                    <AsideSection>
+                        <Checkbox value={showActualSize} onChange={setShowActualSize}>
+                            {t('samples:show-actual-size')}
+                        </Checkbox>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={t('samples:brightness')}>
+                            <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={t('samples:contrast')}>
+                            <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
+                        </Field>
+                    </AsideSection>
+                </RunAside>
+            ) : null,
         [t, brightness, contrast, onChangeRuns, running, runs, selectedRuns, showActualSize]
     );
 
@@ -97,12 +99,16 @@ const Samples: NextI18NextPage = () => {
             <Preloader url="/images/tags" />
             <Title>{t('common:samples')}</Title>
             <Content aside={aside} loading={loadingRuns}>
-                <ChartPage
-                    items={ungroupedSelectedTags}
-                    chartSize={chartSize}
-                    withChart={withChart}
-                    loading={loadingRuns || loadingTags}
-                />
+                {!loadingRuns && !runs.length ? (
+                    <Error />
+                ) : (
+                    <ChartPage
+                        items={ungroupedSelectedTags}
+                        chartSize={chartSize}
+                        withChart={withChart}
+                        loading={loadingRuns || loadingTags}
+                    />
+                )}
             </Content>
         </>
     );
