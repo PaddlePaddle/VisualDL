@@ -157,7 +157,7 @@ def get_histogram(log_reader, run, tag):
 
 def get_graph(log_reader):
     result = b""
-    if "" != log_reader.model:
+    if log_reader.model:
         with open(log_reader.model, "rb") as fp:
             result = fp.read()
     return result

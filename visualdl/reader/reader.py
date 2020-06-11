@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import os
 from visualdl.io import bfile
 from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
@@ -69,11 +70,10 @@ class LogReader(object):
 
     @model.setter
     def model(self, model_path):
-        import os
         if not os.path.isfile(model_path):
             print("Model path %s should be file path, please check this path." % model_path)
         else:
-            if os.path.exists(model_path) is True:
+            if os.path.exists(model_path):
                 self._model = model_path
             else:
                 print("Model path %s is invalid, please check this path." % model_path)
