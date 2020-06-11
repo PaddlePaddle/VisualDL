@@ -9,14 +9,11 @@ import {
     textColor,
     textLightColor,
     textLighterColor,
-    tooltipBackgroundColor,
-    tooltipTextColor,
     transitionProps
 } from '~/utils/style';
 
 import Icon from '~/components/Icon';
-import ReactTooltip from 'react-tooltip';
-import {nanoid} from 'nanoid';
+import Tippy from '@tippyjs/react';
 import styled from 'styled-components';
 
 const Toolbox = styled.div<{reversed?: boolean}>`
@@ -65,17 +62,15 @@ type ToggleChartToolboxItem = {
 export type ChartTooboxItem = NormalChartToolboxItem | ToggleChartToolboxItem;
 
 type ChartToolboxProps = {
-    cid?: string;
     items: ChartTooboxItem[];
     reversed?: boolean;
-    tooltipPlace?: 'top' | 'bottom' | 'left' | 'right';
+    tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right';
 };
 
 const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
-    cid,
+    tooltipPlacement,
     items,
     reversed,
-    tooltipPlace,
     className
 }) => {
     const [activeStatus, setActiveStatus] = useState<boolean[]>(new Array(items.length).fill(false));
@@ -96,37 +91,38 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
         [items, activeStatus]
     );
 
-    const [id] = useState(`chart-toolbox-tooltip-${cid || nanoid()}`);
+    const getToolboxItem = useCallback(
+        (item: ChartTooboxItem, index: number) => (
+            <ToolboxItem
+                key={index}
+                reversed={reversed}
+                active={item.toggle && !item.activeIcon && activeStatus[index]}
+                onClick={() => onClick(index)}
+            >
+                <Icon type={item.toggle ? (activeStatus[index] && item.activeIcon) || item.icon : item.icon} />
+            </ToolboxItem>
+        ),
+        [activeStatus, onClick, reversed]
+    );
 
     return (
         <>
             <Toolbox className={className} reversed={reversed}>
-                {items.map((item, index) => (
-                    <ToolboxItem
-                        key={index}
-                        reversed={reversed}
-                        active={item.toggle && !item.activeIcon && activeStatus[index]}
-                        onClick={() => onClick(index)}
-                        data-for={item.tooltip ? id : null}
-                        data-tip={
-                            item.tooltip
-                                ? item.toggle
-                                    ? (activeStatus[index] && item.activeTooltip) || item.tooltip
-                                    : item.tooltip
-                                : null
-                        }
-                    >
-                        <Icon type={item.toggle ? (activeStatus[index] && item.activeIcon) || item.icon : item.icon} />
-                    </ToolboxItem>
-                ))}
+                {items.map((item, index) =>
+                    item.tooltip ? (
+                        <Tippy
+                            content={
+                                item.toggle ? (activeStatus[index] && item.activeTooltip) || item.tooltip : item.tooltip
+                            }
+                            placement={tooltipPlacement || 'top'}
+                        >
+                            {getToolboxItem(item, index)}
+                        </Tippy>
+                    ) : (
+                        getToolboxItem(item, index)
+                    )
+                )}
             </Toolbox>
-            <ReactTooltip
-                id={id}
-                place={tooltipPlace ?? 'top'}
-                textColor={tooltipTextColor}
-                backgroundColor={tooltipBackgroundColor}
-                effect="solid"
-            />
         </>
     );
 };

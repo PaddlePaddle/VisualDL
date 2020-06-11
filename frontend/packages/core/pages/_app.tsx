@@ -7,6 +7,7 @@ import Layout from '~/components/Layout';
 import NProgress from 'nprogress';
 import React from 'react';
 import {SWRConfig} from 'swr';
+import {ToastContainer} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 
 Router.events.on('routeChangeStart', () => NProgress.start());
@@ -41,6 +42,7 @@ class VDLApp extends App {
                     <Layout>
                         <Component {...pageProps} />
                     </Layout>
+                    <ToastContainer position="top-center" hideProgressBar closeOnClick={false} />
                 </SWRConfig>
             </>
         );

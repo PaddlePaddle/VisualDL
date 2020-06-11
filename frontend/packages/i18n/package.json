@@ -41,7 +41,7 @@
         "i18next-browser-languagedetector": "4.2.0",
         "i18next-fs-backend": "1.0.6",
         "i18next-http-backend": "1.0.15",
-        "i18next-http-middleware": "2.1.0",
+        "i18next-http-middleware": "2.1.2",
         "path-match": "1.2.4",
         "prop-types": "15.7.2",
         "react-i18next": "11.5.0",
@@ -51,7 +51,7 @@
         "@types/express": "4.17.6",
         "@types/hoist-non-react-statics": "3.3.1",
         "@types/node": "14.0.13",
-        "@types/react": "16.9.35",
+        "@types/react": "16.9.36",
         "@types/react-dom": "16.9.8",
         "typescript": "3.9.5"
     },

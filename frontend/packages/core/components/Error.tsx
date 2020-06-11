@@ -42,6 +42,8 @@ const Wrapper = styled.div`
     }
 `;
 
+const reload = () => window.location.reload();
+
 const Error: FunctionComponent<WithStyled> = ({className, children}) => {
     const {t} = useTranslation('errors');
 
@@ -79,7 +81,7 @@ const Error: FunctionComponent<WithStyled> = ({className, children}) => {
                             <li>
                                 <Trans i18nKey="errors:common.3">
                                     Log files are generated and data is writte. Please try to&nbsp;
-                                    <a href="javascript:location.reload()">Refresh</a>.
+                                    <a onClick={reload}>Refresh</a>.
                                 </Trans>
                             </li>
                             <li>

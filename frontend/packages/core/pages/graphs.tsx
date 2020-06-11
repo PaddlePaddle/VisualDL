@@ -1,21 +1,24 @@
 import Aside, {AsideSection} from '~/components/Aside';
+import {BlobResponse, blobFetcher} from '~/utils/fetch';
 import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
 import Graph, {GraphRef} from '~/components/GraphsPage/Graph';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {primaryColor, rem, size} from '~/utils/style';
 
 import Button from '~/components/Button';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
+import HashLoader from 'react-spinners/HashLoader';
 import ModelPropertiesDialog from '~/components/GraphsPage/ModelPropertiesDialog';
 import NodeDocumentationSidebar from '~/components/GraphsPage/NodeDocumentationSidebar';
 import NodePropertiesSidebar from '~/components/GraphsPage/NodePropertiesSidebar';
 import Search from '~/components/GraphsPage/Search';
 import Title from '~/components/Title';
 import Uploader from '~/components/GraphsPage/Uploader';
-import {rem} from '~/utils/style';
 import styled from 'styled-components';
+import useRequest from '~/hooks/useRequest';
 
 const FullWidthButton = styled(Button)`
     width: 100%;
@@ -45,12 +48,26 @@ const SearchSection = styled(AsideSection)`
     }
 `;
 
+const Loading = styled.div`
+    ${size('100%', '100%')}
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overscroll-behavior: none;
+    cursor: progress;
+    font-size: ${rem(16)};
+    line-height: ${rem(60)};
+`;
+
 const Graphs: NextI18NextPage = () => {
     const {t} = useTranslation(['graphs', 'common']);
 
+    const {data, loading} = useRequest<BlobResponse>('/graphs/graph', blobFetcher);
+
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | null>(null);
+    const [files, setFiles] = useState<FileList | File[] | null>(null);
     const onClickFile = useCallback(() => {
         if (file.current) {
             file.current.value = '';
@@ -63,6 +80,11 @@ const Graphs: NextI18NextPage = () => {
             setFiles(target.files);
         }
     }, []);
+    useEffect(() => {
+        if (data) {
+            setFiles([new File([data.data], data.filename || 'unknwon_model')]);
+        }
+    }, [data]);
 
     const [search, setSearch] = useState('');
     const [searching, setSearching] = useState(false);
@@ -84,7 +106,10 @@ const Graphs: NextI18NextPage = () => {
     const [nodeData, setNodeData] = useState<Properties | null>(null);
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
 
-    useEffect(() => setSearch(''), [showAttributes, showInitializers, showNames]);
+    useEffect(() => {
+        setSearch('');
+        setSearchResult({text: '', result: []});
+    }, [files, showAttributes, showInitializers, showNames]);
 
     const bottom = useMemo(
         () =>
@@ -99,7 +124,7 @@ const Graphs: NextI18NextPage = () => {
     const [rendered, setRendered] = useState(false);
 
     const aside = useMemo(() => {
-        if (!rendered) {
+        if (!rendered || loading) {
             return null;
         }
         if (nodeDocumentation) {
@@ -186,6 +211,7 @@ const Graphs: NextI18NextPage = () => {
         showInitializers,
         showNames,
         rendered,
+        loading,
         nodeData,
         nodeDocumentation
     ]);
@@ -197,22 +223,28 @@ const Graphs: NextI18NextPage = () => {
             <Title>{t('common:graphs')}</Title>
             <ModelPropertiesDialog data={modelData} onClose={() => setModelData(null)} />
             <Content aside={aside}>
-                <Graph
-                    ref={graph}
-                    files={files}
-                    uploader={uploader}
-                    showAttributes={showAttributes}
-                    showInitializers={showInitializers}
-                    showNames={showNames}
-                    onRendered={() => setRendered(true)}
-                    onSearch={data => setSearchResult(data)}
-                    onShowModelProperties={data => setModelData(data)}
-                    onShowNodeProperties={data => {
-                        setNodeData(data);
-                        setNodeDocumentation(null);
-                    }}
-                    onShowNodeDocumentation={data => setNodeDocumentation(data)}
-                />
+                {loading ? (
+                    <Loading>
+                        <HashLoader size="60px" color={primaryColor} />
+                    </Loading>
+                ) : (
+                    <Graph
+                        ref={graph}
+                        files={files}
+                        uploader={uploader}
+                        showAttributes={showAttributes}
+                        showInitializers={showInitializers}
+                        showNames={showNames}
+                        onRendered={() => setRendered(true)}
+                        onSearch={data => setSearchResult(data)}
+                        onShowModelProperties={data => setModelData(data)}
+                        onShowNodeProperties={data => {
+                            setNodeData(data);
+                            setNodeDocumentation(null);
+                        }}
+                        onShowNodeDocumentation={data => setNodeDocumentation(data)}
+                    />
+                )}
                 <input
                     ref={file}
                     type="file"

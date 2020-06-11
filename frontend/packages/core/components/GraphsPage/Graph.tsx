@@ -5,6 +5,7 @@ import {backgroundColor, borderColor, contentHeight, position, primaryColor, rem
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
+import {toast} from 'react-toastify';
 import {useTranslation} from '~/utils/i18n';
 
 const toolboxHeight = rem(40);
@@ -80,7 +81,7 @@ export type GraphRef = {
 };
 
 type GraphProps = {
-    files: FileList | null;
+    files: FileList | File[] | null;
     uploader: JSX.Element;
     showAttributes: boolean;
     showInitializers: boolean;
@@ -135,6 +136,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             return;
                         case 'search':
                             return onSearch?.(data);
+                        case 'cancel':
+                            return setLoading(false);
+                        case 'error':
+                            toast(data);
+                            setLoading(false);
+                            return;
                         case 'show-model-properties':
                             return onShowModelProperties?.(data);
                         case 'show-node-properties':
@@ -146,13 +153,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             },
             [onRendered, onSearch, onShowModelProperties, onShowNodeProperties, onShowNodeDocumentation]
         );
-        useEffect(() => {
-            if (process.browser) {
-                window.addEventListener('message', handler);
-                return () => window.removeEventListener('message', handler);
-            }
-        }, [handler]);
-
         const dispatch = useCallback((type: string, data?: unknown) => {
             if (process.browser) {
                 iframe.current?.contentWindow?.postMessage(
@@ -164,11 +164,28 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 );
             }
         }, []);
+        useEffect(() => {
+            if (process.browser) {
+                window.addEventListener('message', handler);
+                dispatch('ready');
+                return () => {
+                    window.removeEventListener('message', handler);
+                };
+            }
+        }, [handler, dispatch]);
 
-        useEffect(() => dispatch('change-files', files), [dispatch, files]);
-        useEffect(() => dispatch('toggle-attributes', showAttributes), [dispatch, showAttributes]);
-        useEffect(() => dispatch('toggle-initializers', showInitializers), [dispatch, showInitializers]);
-        useEffect(() => dispatch('toggle-names', showNames), [dispatch, showNames]);
+        useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
+        useEffect(() => (ready && dispatch('toggle-attributes', showAttributes)) || undefined, [
+            dispatch,
+            showAttributes,
+            ready
+        ]);
+        useEffect(() => (ready && dispatch('toggle-initializers', showInitializers)) || undefined, [
+            dispatch,
+            showInitializers,
+            ready
+        ]);
+        useEffect(() => (ready && dispatch('toggle-names', showNames)) || undefined, [dispatch, showNames, ready]);
 
         useImperativeHandle(ref, () => ({
             export(type) {
@@ -225,7 +242,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             }
                         ]}
                         reversed
-                        tooltipPlace="bottom"
+                        tooltipPlacement="bottom"
                     />
                     <Content>
                         <iframe
