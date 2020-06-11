@@ -31,6 +31,7 @@ module.exports = {
         DEFAULT_LANGUAGE,
         LOCALE_PATH,
         LANGUAGES,
+        API_TOKEN_KEY: process.env.API_TOKEN_KEY || '',
         PUBLIC_PATH: publicPath,
         API_URL: apiUrl
     },

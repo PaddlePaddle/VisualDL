@@ -15,6 +15,8 @@ export {borderRadius as borderRadiusShortHand, borderColor as borderColorShortHa
 
 const {math, size, lighten, darken, normalize, fontFace, transitions, border, position} = polished;
 
+export const iconFontPath = `${process.env.PUBLIC_PATH}/style/fonts/vdl-icon`;
+
 // sizes
 const fontSize = '14px';
 export const rem = (pxval: string | number): string => polished.rem(pxval, fontSize);
@@ -126,7 +128,7 @@ export const GlobalStyle = createGlobalStyle`
 
     ${fontFace({
         fontFamily: 'vdl-icon',
-        fontFilePath: `${process.env.PUBLIC_PATH}/style/fonts/vdl-icon`,
+        fontFilePath: iconFontPath,
         fileFormats: ['ttf', 'woff', 'svg'],
         fontWeight: 'normal',
         fontStyle: 'normal',
