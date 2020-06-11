@@ -81,7 +81,7 @@ const Graphs: NextI18NextPage = () => {
         }
     }, []);
     useEffect(() => {
-        if (data) {
+        if (data?.data.size) {
             setFiles([new File([data.data], data.filename || 'unknwon_model')]);
         }
     }, [data]);

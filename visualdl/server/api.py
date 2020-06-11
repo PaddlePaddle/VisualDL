@@ -37,14 +37,18 @@ def gen_result(data=None, status=0, msg=''):
     }
 
 
-def result(mimetype='application/json'):
+def result(mimetype='application/json', headers=None):
     def decorator(func):
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            data = func(*args, **kwargs)
+        def wrapper(self, *args, **kwargs):
+            data = func(self, *args, **kwargs)
             if mimetype == 'application/json':
                 data = json.dumps(gen_result(data))
-            return data, mimetype
+            if callable(headers):
+                headers_output = headers(self)
+            else:
+                headers_output = headers
+            return data, mimetype, headers_output
         return wrapper
     return decorator
 
@@ -60,6 +64,7 @@ class Api(object):
     def __init__(self, logdir, model, cache_timeout):
         self._reader = LogReader(logdir)
         self._reader.model = model
+        self.model_name = os.path.basename(model)
 
         # use a memory cache to reduce disk reading frequency.
         cache = MemCache(timeout=cache_timeout)
@@ -145,7 +150,7 @@ class Api(object):
         key = os.path.join('data/plugin/embeddings/embeddings', run, tag)
         return self._get_with_retry(key, lib.get_embeddings, run, tag)
 
-    @result('application/octet-stream')
+    @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
     def graphs_graph(self):
         key = os.path.join('data/plugin/graphs/graph')
         return self._get_with_retry(key, lib.get_graph)

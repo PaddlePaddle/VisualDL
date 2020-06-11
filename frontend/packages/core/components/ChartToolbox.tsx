@@ -115,6 +115,7 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
                                 item.toggle ? (activeStatus[index] && item.activeTooltip) || item.tooltip : item.tooltip
                             }
                             placement={tooltipPlacement || 'top'}
+                            key={index}
                         >
                             {getToolboxItem(item, index)}
                         </Tippy>
