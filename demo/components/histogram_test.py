@@ -12,23 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-components = {
-    "scalar": {
-        "enabled": False
-    },
-    "image": {
-        "enabled": False
-    },
-    "embedding": {
-        "enabled": False
-    },
-    "audio": {
-        "enabled": False
-    },
-    "histogram": {
-        "enabled": False
-    },
-    "graph": {
-        "enabled": False
-    }
-}
+# coding=utf-8
+from visualdl import LogWriter
+import numpy as np
+
+
+if __name__ == '__main__':
+    values = np.arange(0, 1000)
+    with LogWriter(logdir="./log/histogram_test/train") as writer:
+        for index in range(5):
+            writer.add_histogram(tag='default1',
+                                 values=values+index,
+                                 step=index,
+                                 buckets=10)

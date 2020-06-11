@@ -15,7 +15,7 @@
 import os
 import time
 from visualdl.writer.record_writer import RecordFileWriter
-from visualdl.component.base_component import scalar, image, embedding, audio
+from visualdl.component.base_component import scalar, image, embedding, audio, histogram
 import numpy as np
 
 
@@ -98,6 +98,10 @@ class LogWriter(object):
         self._all_writers = {}
         self._get_file_writer()
         self.loggers = {}
+
+    @property
+    def logdir(self):
+        return self._logdir
 
     def _get_file_writer(self):
         if not self._write_to_disk:
@@ -239,6 +243,41 @@ class LogWriter(object):
                 tag=tag,
                 audio_array=audio_array,
                 sample_rate=sample_rate,
+                step=step,
+                walltime=walltime))
+
+    def add_histogram(self,
+                      tag,
+                      values,
+                      step,
+                      walltime=None,
+                      buckets=10):
+        """Add an histogram to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            value (numpy.ndarray or list): value represented by a numpy.array or list
+            step (int): Step of histogram
+            walltime (int): Wall time of audio
+            buckets (int): Number of buckets, default is 10
+
+        Example:
+            values = np.arange(0, 1000)
+            with LogWriter(logdir="./log/histogram_test/train") as writer:
+                for index in range(5):
+                    writer.add_histogram(tag='default',
+                                         values=values+index,
+                                         step=index)
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        hist, bin_edges = np.histogram(values, bins=buckets)
+        walltime = round(time.time()) if walltime is None else walltime
+        self._get_file_writer().add_record(
+            histogram(
+                tag=tag,
+                hist=hist,
+                bin_edges=bin_edges,
                 step=step,
                 walltime=walltime))
 

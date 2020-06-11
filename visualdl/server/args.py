@@ -38,11 +38,6 @@ class DefaultArgs(object):
 
 
 def validate_args(args):
-    # exit if no logdir specified
-    if not args.logdir or args.logdir is None:
-        logger.error('Log directory is not specified.')
-        sys.exit(-1)
-
     # if not in API mode, public path cannot be set to root path
     if not args.api_only and args.public_path == '/':
         logger.error('Public path cannot be set to root path.')
@@ -91,7 +86,6 @@ def parse_args():
     parser = ArgumentParser(description="VisualDL, a tool to visualize deep learning.")
     parser.add_argument(
         "--logdir",
-        required=True,
         action="store",
         dest="logdir",
         nargs="+",
@@ -142,8 +136,5 @@ def parse_args():
     )
 
     args = parser.parse_args()
-    # print help if no logdir specified
-    if not args.logdir:
-        parser.print_help()
 
     return format_args(args)

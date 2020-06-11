@@ -29,6 +29,11 @@ message Record {
     bytes encoded_vectors = 2;
   }
 
+message Histogram {
+  repeated double hist = 1 [packed = true];
+  repeated double bin_edges = 2 [packed = true];
+};
+
   message Value {
     int64 id = 1;
     string tag = 2;
@@ -38,6 +43,7 @@ message Record {
       Image image = 5;
       Audio audio = 6;
       Embeddings embeddings = 7;
+      Histogram histogram = 8;
     }
   }
 
