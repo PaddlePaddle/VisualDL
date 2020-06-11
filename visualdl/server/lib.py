@@ -155,6 +155,14 @@ def get_histogram(log_reader, run, tag):
     return results
 
 
+def get_graph(log_reader):
+    result = b""
+    if log_reader.model:
+        with open(log_reader.model, "rb") as fp:
+            result = fp.read()
+    return result
+
+
 def retry(ntimes, function, time2sleep, *args, **kwargs):
     '''
     try to execute `function` `ntimes`, if exception catched, the thread will

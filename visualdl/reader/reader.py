@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import os
 from visualdl.io import bfile
 from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
@@ -60,6 +61,22 @@ class LogReader(object):
         self.data_manager = default_data_manager
         self.load_new_data(update=True)
         self._a_tags = {}
+
+        self._model = ""
+
+    @property
+    def model(self):
+        return self._model
+
+    @model.setter
+    def model(self, model_path):
+        if not os.path.isfile(model_path):
+            print("Model path %s should be file path, please check this path." % model_path)
+        else:
+            if os.path.exists(model_path):
+                self._model = model_path
+            else:
+                print("Model path %s is invalid, please check this path." % model_path)
 
     @property
     def logdir(self):
@@ -213,8 +230,8 @@ class LogReader(object):
         if update is True:
             self.load_new_data(update=update)
         components_set = set(self._tags.values())
-        if 0 == len(components_set):
-            return {'scalar'}
+        components_set.add('scalar')
+
         return components_set
 
     def load_new_data(self, update=True):
