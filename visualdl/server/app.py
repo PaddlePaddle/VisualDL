@@ -52,7 +52,7 @@ def create_app(args):
 
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
     babel = Babel(app)
-    api_call = create_api_call(args.logdir, args.cache_timeout)
+    api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
 
     update_util.PbUpdater().start()
 
@@ -100,6 +100,7 @@ def create_app(args):
     def serve_api(method):
         data, mimetype = api_call(method, request.args)
         return make_response(Response(data, mimetype=mimetype))
+
     return app
 
 

@@ -77,6 +77,7 @@ class ParseArgs(object):
         self.public_path = args.public_path
         self.api_only = args.api_only
         self.open_browser = args.open_browser
+        self.model = args.model
 
 
 def parse_args():
@@ -105,6 +106,13 @@ def parse_args():
         default=default_host,
         action="store",
         help="api service ip")
+    parser.add_argument(
+        "--model",
+        type=str,
+        action="store",
+        dest="model",
+        default="",
+        help="model file path")
     parser.add_argument(
         "--cache_timeout",
         action="store",

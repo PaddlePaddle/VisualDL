@@ -61,6 +61,23 @@ class LogReader(object):
         self.load_new_data(update=True)
         self._a_tags = {}
 
+        self._model = ""
+
+    @property
+    def model(self):
+        return self._model
+
+    @model.setter
+    def model(self, model_path):
+        import os
+        if not os.path.isfile(model_path):
+            print("Model path %s should be file path, please check this path." % model_path)
+        else:
+            if os.path.exists(model_path) is True:
+                self._model = model_path
+            else:
+                print("Model path %s is invalid, please check this path." % model_path)
+
     @property
     def logdir(self):
         return self.dir
@@ -213,8 +230,8 @@ class LogReader(object):
         if update is True:
             self.load_new_data(update=update)
         components_set = set(self._tags.values())
-        if 0 == len(components_set):
-            return {'scalar'}
+        components_set.add('scalar')
+
         return components_set
 
     def load_new_data(self, update=True):

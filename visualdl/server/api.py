@@ -57,8 +57,9 @@ def try_call(function, *args, **kwargs):
 
 
 class Api(object):
-    def __init__(self, logdir, cache_timeout):
+    def __init__(self, logdir, model, cache_timeout):
         self._reader = LogReader(logdir)
+        self._reader.model = model
 
         # use a memory cache to reduce disk reading frequency.
         cache = MemCache(timeout=cache_timeout)
@@ -144,9 +145,14 @@ class Api(object):
         key = os.path.join('data/plugin/embeddings/embeddings', run, tag)
         return self._get_with_retry(key, lib.get_embeddings, run, tag)
 
+    @result('application/octet-stream')
+    def graphs_graph(self):
+        key = os.path.join('data/plugin/graphs/graph')
+        return self._get_with_retry(key, lib.get_graph)
 
-def create_api_call(logdir, cache_timeout):
-    api = Api(logdir, cache_timeout)
+
+def create_api_call(logdir, model, cache_timeout):
+    api = Api(logdir, model, cache_timeout)
     routes = {
         'components': (api.components, []),
         'runs': (api.runs, []),
@@ -163,7 +169,8 @@ def create_api_call(logdir, cache_timeout):
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
         'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension']),
-        'histogram/histogram': (api.histogram_histogram, ['run', 'tag'])
+        'histogram/histogram': (api.histogram_histogram, ['run', 'tag']),
+        'graphs/graph': (api.graphs_graph, [])
     }
 
     def call(path: str, args):
