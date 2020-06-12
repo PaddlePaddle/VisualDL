@@ -39,7 +39,11 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
 ### 功能丰富
 
-功能覆盖训练参数、数据样本及数据降维可视化。
+功能覆盖训练参数、数据样本、图结构及数据降维可视化。
+
+### 高兼容性
+
+全面支持Paddle、ONNX、Caffe等市面主流模型结构可视化，广泛支持各类用户进行可视化分析。
 
 ### 全面支持
 
@@ -213,6 +217,13 @@ app.run(logdir="./log")
 
 <p align="center">
 <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+</p>
+
+### Graph
+
+一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
 </p>
 
 
