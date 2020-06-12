@@ -98,9 +98,8 @@ def create_app(args):
 
     @app.route(api_path + '/<path:method>')
     def serve_api(method):
-        data, mimetype = api_call(method, request.args)
-        return make_response(Response(data, mimetype=mimetype))
-
+        data, mimetype, headers = api_call(method, request.args)
+        return make_response(Response(data, mimetype=mimetype, headers=headers))
     return app
 
 

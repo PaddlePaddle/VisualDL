@@ -33,6 +33,7 @@ export const {i18n, config, appWithTranslation, withTranslation, useTranslation,
 
 // from ~/node_modules/next/types/index.d.ts
 // https://gitlab.com/kachkaev/website-frontend/-/blob/master/src/i18n.ts#L64-68
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type NextI18NextPage<P = {}, IP = P> = NextComponentType<
     NextPageContext,
     IP & {namespacesRequired: string[]},

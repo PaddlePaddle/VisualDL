@@ -3,6 +3,8 @@ import * as polished from 'polished';
 import {createGlobalStyle, keyframes} from 'styled-components';
 
 import {css} from 'styled-components';
+import tippy from '!!css-loader!tippy.js/dist/tippy.css';
+import toast from '!!css-loader!react-toastify/dist/ReactToastify.css';
 import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
 
 export {default as styled} from 'styled-components';
@@ -12,6 +14,8 @@ export * from 'polished';
 export {borderRadius as borderRadiusShortHand, borderColor as borderColorShortHand} from 'polished';
 
 const {math, size, lighten, darken, normalize, fontFace, transitions, border, position} = polished;
+
+export const iconFontPath = `${process.env.PUBLIC_PATH}/style/fonts/vdl-icon`;
 
 // sizes
 const fontSize = '14px';
@@ -124,7 +128,7 @@ export const GlobalStyle = createGlobalStyle`
 
     ${fontFace({
         fontFamily: 'vdl-icon',
-        fontFilePath: `${process.env.PUBLIC_PATH}/style/fonts/vdl-icon`,
+        fontFilePath: iconFontPath,
         fileFormats: ['ttf', 'woff', 'svg'],
         fontWeight: 'normal',
         fontStyle: 'normal',
@@ -132,6 +136,8 @@ export const GlobalStyle = createGlobalStyle`
     })}
 
     ${vdlIcon.toString()}
+    ${toast.toString()}
+    ${tippy.toString()}
 
     html {
         font-size: ${fontSize};
@@ -206,5 +212,40 @@ export const GlobalStyle = createGlobalStyle`
     .nprogress-custom-parent #nprogress .spinner,
     .nprogress-custom-parent #nprogress .bar {
         position: absolute;
+    }
+
+    .Toastify__toast-container {
+        z-index: 10001;
+
+        .Toastify__toast {
+            border-radius: ${borderRadius};
+        }
+
+        .Toastify__toast--default {
+            color: ${textColor};
+        }
+
+        .Toastify__toast-body {
+            padding: 0 1.428571429em;
+        }
+    }
+
+    .tippy-box {
+        z-index: 10002;
+        color: ${tooltipTextColor};
+        background-color: ${tooltipBackgroundColor};
+
+        &[data-placement^='top'] > .tippy-arrow::before {
+            border-top-color: ${tooltipBackgroundColor};
+        }
+        &[data-placement^='bottom'] > .tippy-arrow::before {
+            border-bottom-color: ${tooltipBackgroundColor};
+        }
+        &[data-placement^='left'] > .tippy-arrow::before {
+            border-left-color: ${tooltipBackgroundColor};
+        }
+        &[data-placement^='right'] > .tippy-arrow::before {
+            border-right-color: ${tooltipBackgroundColor};
+        }
     }
 `;

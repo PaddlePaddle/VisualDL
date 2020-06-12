@@ -15,6 +15,7 @@ import Icon from '~/components/Icon';
 import {InitConfig} from '@visualdl/i18n';
 import Language from '~/components/Language';
 import ee from '~/utils/event';
+import {getApiToken} from '~/utils/fetch';
 import styled from 'styled-components';
 import useNavItems from '~/hooks/useNavItems';
 import {useRouter} from 'next/router';
@@ -105,7 +106,14 @@ const Navbar: FunctionComponent = () => {
         if (subpath) {
             path += `/${subpath}`;
         }
-        return `${path}/index`;
+        path += '/index';
+        if (process.env.API_TOKEN_KEY) {
+            const id = getApiToken();
+            if (id) {
+                path += `?${process.env.API_TOKEN_KEY}=${id}`;
+            }
+        }
+        return path;
     }, [i18n.options, i18n.language]);
 
     return (

@@ -2,8 +2,7 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {WithStyled, rem} from '~/utils/style';
 
 import Button from '~/components/Button';
-import ReactTooltip from 'react-tooltip';
-import {nanoid} from 'nanoid';
+import Tippy from '@tippyjs/react';
 import styled from 'styled-components';
 import {useTranslation} from '~/utils/i18n';
 
@@ -40,23 +39,16 @@ const RunningToggle: FunctionComponent<RunningToggleProps & WithStyled> = ({runn
         onToggle?.(state);
     }, [onToggle, state]);
 
-    const [id] = useState(`running-toggle-tooltip-${nanoid()}`);
-
     return (
         <Wrapper className={className}>
             <span>{t(state ? 'running' : 'stopped')}</span>
-            <div data-for={id} data-tip>
-                <StyledButton onClick={() => setState(s => !s)} type={state ? 'danger' : 'primary'} rounded>
-                    {t(state ? 'stop' : 'run')}
-                </StyledButton>
-            </div>
-            <ReactTooltip
-                id={id}
-                place="top"
-                type="dark"
-                effect="solid"
-                getContent={() => t(state ? 'stop-realtime-refresh' : 'start-realtime-refresh')}
-            />
+            <Tippy content={t(state ? 'stop-realtime-refresh' : 'start-realtime-refresh') + ''} hideOnClick={false}>
+                <div>
+                    <StyledButton onClick={() => setState(s => !s)} type={state ? 'danger' : 'primary'} rounded>
+                        {t(state ? 'stop' : 'run')}
+                    </StyledButton>
+                </div>
+            </Tippy>
         </Wrapper>
     );
 };

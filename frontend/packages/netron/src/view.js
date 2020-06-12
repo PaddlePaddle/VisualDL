@@ -58,6 +58,9 @@ view.View = class {
     }
 
     toggleAttributes(toggle) {
+        if (toggle != null && !(toggle ^ this._showAttributes)) {
+            return;
+        }
         this._showAttributes = toggle == null ? !this._showAttributes : toggle;
         this._reload();
     }
@@ -67,6 +70,9 @@ view.View = class {
     }
 
     toggleInitializers(toggle) {
+        if (toggle != null && !(toggle ^ this._showInitializers)) {
+            return;
+        }
         this._showInitializers = toggle == null ? !this._showInitializers : toggle;
         this._reload();
     }
@@ -76,6 +82,9 @@ view.View = class {
     }
 
     toggleNames(toggle) {
+        if (toggle != null && !(toggle ^ this._showNames)) {
+            return;
+        }
         this._showNames = toggle == null ? !this._showNames : toggle;
         this._reload();
     }

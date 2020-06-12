@@ -17,6 +17,7 @@ host.BrowserHost = class {
         }
         this._type = this._meta.type ? this._meta.type[0] : 'Browser';
         this._version = this._meta.version ? this._meta.version[0] : null;
+        this._ready = false;
     }
 
     get document() {
@@ -69,12 +70,18 @@ host.BrowserHost = class {
                             return this._view.showModelProperties();
                         case 'show-node-documentation':
                             return this._view.showNodeDocumentation(data);
+                        case 'ready':
+                            if (this._ready) {
+                                return this.status('ready');
+                            }
+                            return;
                     }
                 }
             },
             false
         );
 
+        this._ready = true;
         this.status('ready');
     }
 
@@ -89,11 +96,15 @@ host.BrowserHost = class {
     }
 
     error(message, detail) {
-        alert((message == 'Error' ? '' : message + ' ') + detail);
+        this.message('error', (message === 'Error' ? '' : message + ' ') + detail);
     }
 
     confirm(message, detail) {
-        return confirm(message + ' ' + detail);
+        const result = confirm(message + ' ' + detail);
+        if (!result) {
+            this.message('cancel');
+        }
+        return result;
     }
 
     require(id) {
@@ -147,6 +158,11 @@ host.BrowserHost = class {
     _changeFiles(files) {
         if (files && files.length) {
             files = Array.from(files);
+            const file = files.find(file => this._view.accept(file.name));
+            if (!file) {
+                this.error('Error opening file.', 'Cannot open file ' + files[0].name);
+                return;
+            }
             this._open(
                 files.find(file => this._view.accept(file.name)),
                 files
