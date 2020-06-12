@@ -110,7 +110,7 @@ const Navbar: FunctionComponent = () => {
         if (process.env.API_TOKEN_KEY) {
             const id = getApiToken();
             if (id) {
-                path += `?${process.env.API_TOKEN_KEY}=${id}`;
+                path += `?${process.env.API_TOKEN_KEY}=${encodeURIComponent(id)}`;
             }
         }
         return path;

@@ -38,7 +38,13 @@ async function start() {
 
     if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
-        server.use(config.env.API_URL, createProxyMiddleware({target: backend, changeOrigin: true}));
+        server.use(
+            config.env.API_URL,
+            createProxyMiddleware({
+                target: backend,
+                changeOrigin: true
+            })
+        );
     } else if (isDev) {
         const {default: mock} = await import('@visualdl/mock');
         server.use(config.env.API_URL, mock({delay: delay ? () => Math.random() * delay : 0}));
