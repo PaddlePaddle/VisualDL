@@ -56,7 +56,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 ### 使用pip安装
 
 ```shell
-pip install --upgrade visualdl==2.0.0b4
+pip install --upgrade visualdl==2.0.0b5
 ```
 ### 使用代码安装
 
