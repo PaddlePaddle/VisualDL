@@ -8,11 +8,12 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 
 目前，VisualDL 支持 scalar, image, high dimensional 三个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
-|                               组件名称                               |  展示图表  |                               作用                                |
-| :------------------------------------------------------------------: | :--------: | :---------------------------------------------------------------- |
-|            <a href="#1">[Scalar](#Scalar--折线图组件)</a>            |   折线图   | 动态展示损失函数值、准确率等标量数据                              |
-|           <a href="#3">[Image](#Image--图片可视化组件)</a>           | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化    |
-| <a href="#6">[High Dimensional](#High-Dimensional--数据降维组件)</a> |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
+|                           组件名称                           |  展示图表  | 作用                                                         |
+| :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
+|      [ Scalar](#Scalar--折线图组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
+|      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
+|               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
+| [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
 
 
@@ -159,7 +160,7 @@ if __name__ == '__main__':
     with LogWriter(logdir="./log/image_test/train") as writer:
         for step in range(6):
             # 添加一个图片数据
-            writer.add_image(tag="doge",
+            writer.add_image(tag="eye",
                              img=random_crop("../../docs/images/eye.jpg"),
                              step=step)
 ```
@@ -177,19 +178,98 @@ visualdl --logdir ./log --port 8080
 
 ### 功能操作说明
 
-可搜索图片标签显示对应图片数据
+- 可搜索图片标签显示对应图片数据
 
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
 </p>
 
 
-支持滑动Step/迭代次数查看不同迭代次数下的图片数据
+- 支持滑动Step/迭代次数查看不同迭代次数下的图片数据
 
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
 </p>
 
+## Graph--网络结构组件
+
+### 介绍
+
+Graph组件一键可视化模型的网络结构。用于查看模型属性、节点信息、节点输入输出等，并进行节点搜索，协助开发者们快速分析模型结构与了解数据流向。
+
+### Demo
+
+共有两种启动方式：
+
+1. 如果只需要使用Graph功能，在命令行执行`visualdl`后，在浏览器输入`http://127.0.0.1:8040`即可启动。
+
+2. 如果同时需使用其他功能，在命令行执行
+
+   ```shell
+   visualdl --logdir ./log --port 8080
+   ```
+
+   在浏览器输入`http://127.0.0.1:8080`，即可启动。
+   
+启动后上传模型即可查看网络结构可视化：
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84490149-51e20580-acd5-11ea-9663-1f156892c0e0.png" width="80%"/>
+</p>
+
+### 功能操作说明
+
+- 一键上传模型
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487396-44c31780-acd1-11ea-831a-1632e636613d.png" width="80%"/>
+</p>
+
+- 支持上下左右任意拖拽模型、放大和缩小模型
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487568-8784ef80-acd1-11ea-9da1-befedd69b872.GIF" width="80%"/>
+</p>
+
+- 搜索定位到对应节点
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487694-b9965180-acd1-11ea-8214-34f3febc1828.png" width="30%"/>
+</p>
+
+- 点击查看模型属性
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487751-cadf5e00-acd1-11ea-9ce2-4fdfeeea9c5a.png" width="30%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487759-d03ca880-acd1-11ea-9294-520ef7f9e0b1.png" width="30%"/>
+</p>
+
+- 支持选择模型展示的信息
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487829-ee0a0d80-acd1-11ea-8563-6682a15483d9.png" width="23%"/>
+</p>
+
+- 支持以PNG、SVG格式导出文件
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487884-ff531a00-acd1-11ea-8b12-5221db78683e.png" width="30%"/>
+</p>
+
+- 点击节点即可展示对应属性信息
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487941-13971700-acd2-11ea-937d-42fb524b9ee1.png" width="30%"/>
+</p>
+
+- 支持一键更换模型
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487998-27db1400-acd2-11ea-83d7-5d75832ef41d.png" width="25%"/>
+</p>
 
 ## High Dimensional--数据降维组件
 
