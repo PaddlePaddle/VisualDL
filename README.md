@@ -3,10 +3,16 @@
   <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/packages/core/public/images/logo-visualdl.svg?sanitize=true" width="70%"/>
 </p>
 
-[![Build Status](https://img.shields.io/travis/PaddlePaddle/VisualDL/develop?style=flat-square)](https://travis-ci.org/PaddlePaddle/VisualDL)
-[![Documentation Status](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat-square)](https://github.com/PaddlePaddle/VisualDL/tree/develop/docs)
-[![Release](https://img.shields.io/github/release/PaddlePaddle/VisualDL.svg?style=flat-square)](https://github.com/PaddlePaddle/VisualDL/releases)
-[![License](https://img.shields.io/badge/license-Apache%202-blue.svg?style=flat-square)](LICENSE)
+<p align="center">
+<a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/paddlepaddle/visualdl/develop?style=flat-square" alt="Build Status" /></a>
+<a href="https://pypi.org/project/visualdl/"><img src="https://img.shields.io/pypi/v/visualdl?style=flat-square" alt="PyPI" /></a>
+<a href="https://pypi.org/project/visualdl/#files"><img src="https://img.shields.io/pypi/dm/visualdl?style=flat-square" alt="Downloads" /></a>
+<a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/paddlepaddle/visualdl?style=flat-square" alt="License" /></a>
+</p>
+
+<p align="center">
+<a href="javascript:void(0)"><img src="https://img.shields.io/badge/QQ_Group-1045783368-52B6EF?style=social&logo=tencent-qq&logoColor=000&logoWidth=20" alt="QQ Group" /></a>
+</p>
 
 ## 介绍
 VisualDL是深度学习模型可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
@@ -56,7 +62,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 ### 使用pip安装
 
 ```shell
-pip install --upgrade visualdl==2.0.0b5
+pip install --upgrade --pre visualdl
 ```
 ### 使用代码安装
 
@@ -134,8 +140,8 @@ visualdl --logdir <dir_1, dir_2, ... , dir_n> --host <host> --port <port> --cach
 | --port          | 设定端口，默认为`8040`                                                                                                                                                                       |
 | --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒                                                                                                            |
 | --language      | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言                                                                                                                                   |
-| --public-path   | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://<host>:<port>/app'                                                                                                                    |
-| --api-only      | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://<host>:<port>/<public_path>/api'；若没有设置public_path参数，则默认为'http://<host>:<port>/api' |
+| --public-path   | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                    |
+| --api-only      | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
 
 针对上一步生成的日志，启动命令为：
 
@@ -169,8 +175,8 @@ visualdl.server.app.run(logdir,
 | port          | int                                              | 启动服务端口，默认为`8040`                                                                                                                                                                   |
 | cache_timeout | int                                              | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒                                                                                                            |
 | language      | string                                           | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言                                                                                                                                   |
-| public_path   | string                                           | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://<host>:<port>/app'                                                                                                                    |
-| api_only      | boolean                                          | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://<host>:<port>/<public_path>/api'；若没有设置public_path参数，则默认为'http://<host>:<port>/api' |
+| public_path   | string                                           | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                    |
+| api_only      | boolean                                          | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
 | open_browser  | boolean                                          | 是否打开浏览器，设置为True则在启动后自动打开浏览器并访问VisualDL面板，若设置api_only，则忽略此参数                                                                                           |
 
 针对上一步生成的日志，我们的启动脚本为：
