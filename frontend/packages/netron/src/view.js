@@ -695,7 +695,7 @@ view.View = class {
         if (this._activeGraph && (extension == 'png' || extension == 'svg')) {
             const graphElement = this._host.document.getElementById('canvas');
             const exportElement = graphElement.cloneNode(true);
-            this.applyStyleSheet(exportElement, 'view-grapher.css');
+            this.applyStyleSheet(exportElement, 'style.css');
             exportElement.setAttribute('id', 'export');
             exportElement.removeAttribute('width');
             exportElement.removeAttribute('height');

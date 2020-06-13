@@ -35,12 +35,6 @@ module.exports = {
                     name: 'vendors',
                     test: /[\\/]node_modules[\\/](?!netron)/,
                     chunks: 'all'
-                },
-                styles: {
-                    name: 'styles',
-                    test: /\.scss$/,
-                    chunks: 'all',
-                    enforce: true
                 }
             }
         }
@@ -58,8 +52,7 @@ module.exports = {
             pako: 'pako'
         }),
         new MiniCssExtractPlugin({
-            filename: '[name].[contenthash].css',
-            chunkFilename: '[id].[contenthash].css'
+            filename: '[name].css'
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',

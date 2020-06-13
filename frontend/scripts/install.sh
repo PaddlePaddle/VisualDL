@@ -5,7 +5,7 @@ set -e
 # rust toolchain
 # https://rustup.rs/
 if ! hash rustup 2>/dev/null; then
-    curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --default-toolchain nightly -y
+    curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path -y
     PATH="$HOME/.cargo/bin:$PATH"
 fi
 

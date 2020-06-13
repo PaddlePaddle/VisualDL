@@ -1,12 +1,11 @@
 import App, {AppContext, AppProps} from 'next/app';
-import {GlobalStyle, iconFontPath} from '~/utils/style';
 import {Router, appWithTranslation} from '~/utils/i18n';
 import {fetcher, getApiToken, setApiToken} from '~/utils/fetch';
 
+import {GlobalStyle} from '~/utils/style';
 import Head from 'next/head';
 import Layout from '~/components/Layout';
 import NProgress from 'nprogress';
-import Preloader from '~/components/Preloader';
 import React from 'react';
 import {SWRConfig} from 'swr';
 import {ToastContainer} from 'react-toastify';
@@ -52,9 +51,6 @@ class VDLApp extends App {
 
         return (
             <>
-                {['ttf', 'woff', 'svg'].map(ext => (
-                    <Preloader url={`${iconFontPath}.${ext}`} as="font" key={ext} />
-                ))}
                 <Head>
                     <title>{process.env.title}</title>
                     <link rel="shortcut icon" href={`${process.env.PUBLIC_PATH}/favicon.ico`} />
