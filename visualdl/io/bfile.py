@@ -31,11 +31,13 @@ class FileFactory(object):
         self._register_factories.update({path: filesystem})
 
     def get_filesystem(self, path):
-        if 'hdfs://' in path and "hdfs" not in self._register_factories.keys():
+        if path.startswith(
+                'hdfs://') and "hdfs" not in self._register_factories.keys():
             try:
                 default_file_factory.register_filesystem("hdfs", HDFileSystem())
             except hdfs.util.HdfsError:
-                raise ValueError("Please initialize `~/.hdfscli.cfg` for HDFS.")
+                raise RuntimeError(
+                    "Please initialize `~/.hdfscli.cfg` for HDFS.")
         prefix = ""
         index = path.find("://")
         if index >= 0:
