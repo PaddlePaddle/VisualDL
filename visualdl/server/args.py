@@ -25,18 +25,6 @@ default_cache_timeout = 20
 default_public_path = '/app'
 
 
-class DefaultArgs(object):
-    def __init__(self, args):
-        self.logdir = args.get('logdir')
-        self.host = args.get('host', default_host)
-        self.port = args.get('port', default_port)
-        self.cache_timeout = args.get('cache_timeout', default_cache_timeout)
-        self.language = args.get('language')
-        self.public_path = args.get('public_path')
-        self.api_only = args.get('api_only', False)
-        self.open_browser = args.get('open_browser', False)
-
-
 def validate_args(args):
     # if not in API mode, public path cannot be set to root path
     if not args.api_only and args.public_path == '/':
@@ -63,21 +51,6 @@ def format_args(args):
         args.open_browser = False
 
     return args
-
-
-class ParseArgs(object):
-    def __init__(self, **kwargs):
-        args = format_args(DefaultArgs(kwargs))
-
-        self.logdir = args.logdir
-        self.host = args.host
-        self.port = args.port
-        self.cache_timeout = args.cache_timeout
-        self.language = args.language
-        self.public_path = args.public_path
-        self.api_only = args.api_only
-        self.open_browser = args.open_browser
-        self.model = args.model
 
 
 def parse_args():
@@ -142,7 +115,14 @@ def parse_args():
         default=False,
         help="serve api only"
     )
+    parser.add_argument(
+        "-B",
+        "--open_browser",
+        action="store_true",
+        default=False,
+        help="open browser automatically"
+    )
 
     args = parser.parse_args()
 
-    return format_args(args)
+    return args

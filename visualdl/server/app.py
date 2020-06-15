@@ -31,7 +31,7 @@ from flask_babel import Babel
 
 import visualdl.server
 from visualdl.server.api import create_api_call
-from visualdl.server.args import (ParseArgs, parse_args)
+from visualdl.server.args import (format_args, parse_args)
 from visualdl.server.log import logger
 from visualdl.server.template import Template
 
@@ -115,7 +115,10 @@ def _open_browser(app, index_url):
 
 
 def _run(**kwargs):
-    args = ParseArgs(**kwargs)
+    args = parse_args()
+    for key, value in kwargs.items():
+        args.__dict__[key] = value
+    args = format_args(args)
     logger.info(' port=' + str(args.port))
     app = create_app(args)
     if not args.api_only:
@@ -137,7 +140,7 @@ def run(logdir=None, **options):
 
 
 def main():
-    args = parse_args()
+    args = format_args(parse_args())
     logger.info(' port=' + str(args.port))
     app = create_app(args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
