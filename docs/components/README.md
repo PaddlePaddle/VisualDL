@@ -38,7 +38,36 @@ add_scalar(tag, value, step, walltime=None)
 | step     | int    | 记录的步数                                  |
 | walltime | int    | 记录数据的时间戳，默认为当前时间戳          |
 
+*注意tag的使用规则为：
+
+1. 第一个`/`前的为父tag，并作为一栏图片的tag
+2. 第一个`/`后的为子tag，子tag的对应图片将显示在父tag下
+3. 可以使用多次`/`，但一栏图片的tag依旧为第一个`/`前的tag
+
+具体使用参见以下三个例子：
+
+- 创建train为父tag，acc和loss为子tag：`train/acc`、 `train/loss`，即创建了tag为train的图片栏，包含acc和loss两张图片：
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84653342-d6d05780-af3f-11ea-8979-8da039ae7201.JPG" width="100%"/>
+</p>
+
+- 创建train为父tag，test/acc和test/loss为子tag：`train/test/acc`、 `train/test/loss`，即创建了tag为train的图片栏，包含test/acc和test/loss两张图片：
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84644066-3bd08100-af31-11ea-8eb5-c4a4cab351ed.png" width="100%"/>
+</p>
+
+- 创建两个父tag：`acc`、 `loss`，即创建了tag分别为acc和loss的两个图片栏：：
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84644323-99fd6400-af31-11ea-9855-eca7f7b01810.png" width="100%"/>
+</p>
+
 ### Demo
+
+- 基础使用
+
 下面展示了使用 Scalar 组件记录数据的示例，代码见[Scalar组件](../../demo/components/scalar_test.py)
 ```python
 from visualdl import LogWriter
@@ -64,6 +93,48 @@ visualdl --logdir ./log --port 8080
   <img src="https://user-images.githubusercontent.com/48054808/82397559-478c6d00-9a83-11ea-80db-a0844dcaca35.png" width="100%"/>
 </p>
 
+- 多组实验对比
+
+下面展示了使用Scalar组件实现多组实验对比
+
+多组实验对比的实现分为两步：
+
+1. 创建子日志文件储存每组实验的参数数据
+2. 将数据写入scalar组件时，**使用相同的tag**，即可实现对比**不同实验**的**同一类型参数**
+
+```python
+from visualdl import LogWriter
+
+if __name__ == '__main__':
+    value = [i/1000.0 for i in range(1000)]
+    # 步骤一：创建父文件夹：log与子文件夹：scalar_test
+    with LogWriter(logdir="./log/scalar_test") as writer:
+        for step in range(1000):
+            # 步骤二：向记录器添加一个tag为`train/acc`的数据
+            writer.add_scalar(tag="train/acc", step=step, value=value[step])
+            # 步骤二：向记录器添加一个tag为`train/loss`的数据
+            writer.add_scalar(tag="train/loss", step=step, value=1/(value[step] + 1))
+    # 步骤一：创建第二个子文件夹scalar_test2       
+    value = [i/500.0 for i in range(1000)]
+    with LogWriter(logdir="./log/scalar_test2") as writer:
+        for step in range(1000):
+            # 步骤二：在同样名为`train/acc`下添加scalar_test2的accuracy的数据
+            writer.add_scalar(tag="train/acc", step=step, value=value[step])
+            # 步骤二：在同样名为`train/loss`下添加scalar_test2的loss的数据
+            writer.add_scalar(tag="train/loss", step=step, value=1/(value[step] + 1))
+```
+
+运行上述程序后，在命令行执行
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+接着在浏览器打开`http://127.0.0.1:8080`，即可查看以下折线图，观察scalar_test和scalar_test2的accuracy和loss的对比。
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84644158-5efb3080-af31-11ea-8e64-bbe4078425f4.png" width="100%"/>
+</p>
 
 
 ### 功能操作说明
