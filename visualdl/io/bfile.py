@@ -32,7 +32,7 @@ class FileFactory(object):
 
     def get_filesystem(self, path):
         if path.startswith(
-                'hdfs://') and "hdfs" not in self._register_factories.keys():
+                'hdfs://') and "hdfs" not in self._register_factories:
             try:
                 default_file_factory.register_filesystem("hdfs", HDFileSystem())
             except hdfs.util.HdfsError:
