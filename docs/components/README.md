@@ -136,6 +136,7 @@ visualdl --logdir ./log --port 8080
   <img src="https://user-images.githubusercontent.com/48054808/84644158-5efb3080-af31-11ea-8e64-bbe4078425f4.png" width="100%"/>
 </p>
 
+*多组实验对比的应用案例可参考AI Studio项目：[VisualDL 2.0--眼疾识别训练可视化](https://aistudio.baidu.com/aistudio/projectdetail/502834)
 
 ### 功能操作说明
 
