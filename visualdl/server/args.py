@@ -35,6 +35,7 @@ class DefaultArgs(object):
         self.public_path = args.get('public_path')
         self.api_only = args.get('api_only', False)
         self.open_browser = args.get('open_browser', False)
+        self.model = args.get('model', '')
 
 
 def validate_args(args):
@@ -141,6 +142,13 @@ def parse_args():
         action="store_true",
         default=False,
         help="serve api only"
+    )
+    parser.add_argument(
+        "-B",
+        "--open_browser",
+        action="store_true",
+        default=False,
+        help="open browser automatically"
     )
 
     args = parser.parse_args()
