@@ -35,6 +35,7 @@ class DefaultArgs(object):
         self.public_path = args.get('public_path')
         self.api_only = args.get('api_only', False)
         self.open_browser = args.get('open_browser', False)
+        self.model = args.get('model', '')
 
 
 def validate_args(args):
