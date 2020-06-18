@@ -2334,6 +2334,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/d3-format@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-format/-/d3-format-1.3.1.tgz#35bf88264bd6bcda39251165bb827f67879c4384"
+  integrity sha512-KAWvReOKMDreaAwOjdfQMm0HjcUMlQG47GwqdVKgmm20vTd2pucj0a70c3gUSHrnsmo6H2AMrkBsZU2UhJLq8A==
+
 "@types/echarts@4.6.1":
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/@types/echarts/-/echarts-4.6.1.tgz#de6ede6b8069123150d53f3350f9e38533f1970e"
@@ -4955,7 +4960,7 @@ d3-force@1:
     d3-quadtree "1"
     d3-timer "1"
 
-d3-format@1:
+d3-format@1, d3-format@1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-1.4.4.tgz#356925f28d0fd7c7983bfad593726fce46844030"
   integrity sha512-TWks25e7t8/cqctxCmxpUuzZN11QxIA7YrMbram94zMQ0PXjE4LVIMe/f6a4+xxL8HQ3OsAFULOINQi1pE62Aw==
@@ -10793,11 +10798,6 @@ react-dom@16.13.1:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.19.1"
-
-react-hooks-worker@0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-hooks-worker/-/react-hooks-worker-0.9.0.tgz#cf6e481711045d539368c83ba0fa42bd97c71a09"
-  integrity sha512-aDKlrc9Dh8O0Wag2mWbNpuXbTB/kX1tGzq74bFdxSfKg6KHvF9ft789WpatmCBQbszdgXEi3pS/BCj698JXCJQ==
 
 react-i18next@11.5.0:
   version "11.5.0"

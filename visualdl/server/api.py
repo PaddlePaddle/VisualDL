@@ -146,9 +146,9 @@ class Api(object):
         return self._get_with_retry('data/plugin/histogram/tags', lib.get_histogram_tags)
 
     @result()
-    def histogram_histogram(self, run, tag):
-        key = os.path.join('data/plugin/embeddings/embeddings', run, tag)
-        return self._get_with_retry(key, lib.get_embeddings, run, tag)
+    def histogram_list(self, run, tag):
+        key = os.path.join('data/plugin/histogram/histogram', run, tag)
+        return self._get_with_retry(key, lib.get_histogram, run, tag)
 
     @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
     def graphs_graph(self):
@@ -174,7 +174,7 @@ def create_api_call(logdir, model, cache_timeout):
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
         'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension']),
-        'histogram/histogram': (api.histogram_histogram, ['run', 'tag']),
+        'histogram/list': (api.histogram_list, ['run', 'tag']),
         'graphs/graph': (api.graphs_graph, [])
     }
 

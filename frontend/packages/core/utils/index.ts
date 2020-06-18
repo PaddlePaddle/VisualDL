@@ -19,6 +19,5 @@ export const quantile = (values: number[], p: number) => {
     const i0 = i.integerValue().toNumber();
     const value0 = new BigNumber(values[i0]);
     const value1 = new BigNumber(values[i0 + 1]);
-    // return value0 + (value1 - value0) * (i - i0);
     return value0.plus(value1.minus(value0).multipliedBy(i.minus(i0))).toNumber();
 };

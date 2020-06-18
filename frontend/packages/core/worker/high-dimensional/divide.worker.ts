@@ -1,6 +1,4 @@
-import {DivideParams, divide} from '~/resource/high-dimensional';
+import {divide} from '~/resource/high-dimensional';
+import worker from '~/utils/worker';
 
-import {exposeWorker} from 'react-hooks-worker';
-
-// exposeWorker can only handle Promise
-exposeWorker((data: DivideParams) => Promise.resolve(divide(data)));
+worker(divide);

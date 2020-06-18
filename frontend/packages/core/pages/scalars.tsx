@@ -1,7 +1,7 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
-import {sortingMethodMap, xAxisMap} from '~/resource/scalars';
+import {SortingMethod, XAxis, sortingMethod as toolTipSortingValues, xAxis as xAxisValues} from '~/resource/scalars';
 
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
@@ -20,11 +20,6 @@ import Title from '~/components/Title';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import useTagFilter from '~/hooks/useTagFilter';
-
-type XAxis = keyof typeof xAxisMap;
-const xAxisValues = ['step', 'relative', 'wall'] as const;
-type TooltipSorting = keyof typeof sortingMethodMap;
-const toolTipSortingValues = ['default', 'descending', 'ascending', 'nearest'] as const;
 
 const TooltipSortingDiv = styled.div`
     margin-top: ${rem(20)};
@@ -49,7 +44,7 @@ const Scalars: NextI18NextPage = () => {
 
     const [xAxis, setXAxis] = useState<XAxis>(xAxisValues[0]);
 
-    const [tooltipSorting, setTooltipSorting] = useState<TooltipSorting>(toolTipSortingValues[0]);
+    const [tooltipSorting, setTooltipSorting] = useState<SortingMethod>(toolTipSortingValues[0]);
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
@@ -71,7 +66,7 @@ const Scalars: NextI18NextPage = () => {
                             <span>{t('scalars:tooltip-sorting')}</span>
                             <Select
                                 list={toolTipSortingValues.map(value => ({
-                                    label: t(`tooltip-sorting-value.${value}`),
+                                    label: t(`scalars:tooltip-sorting-value.${value}`),
                                     value
                                 }))}
                                 value={tooltipSorting}
@@ -89,7 +84,7 @@ const Scalars: NextI18NextPage = () => {
                             <RadioGroup value={xAxis} onChange={setXAxis}>
                                 {xAxisValues.map(value => (
                                     <RadioButton key={value} value={value}>
-                                        {t(`x-axis-value.${value}`)}
+                                        {t(`scalars:x-axis-value.${value}`)}
                                     </RadioButton>
                                 ))}
                             </RadioGroup>

@@ -2,6 +2,8 @@ import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useSt
 import {maskColor, primaryColor, textColor} from '~/utils/style';
 
 import {ECharts} from 'echarts';
+import {dataURL2Blob} from '~/utils/image';
+import {saveAs} from 'file-saver';
 
 const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(options: {
     loading?: boolean;
@@ -12,6 +14,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     ref: MutableRefObject<T | null>;
     wrapper: MutableRefObject<W | null>;
     echart: ECharts | null;
+    saveAsImage: (filename?: string) => void;
 } => {
     const ref = useRef<T | null>(null);
     const echartInstance = useRef<ECharts | null>(null);
@@ -82,7 +85,17 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
         }
     }, [options.autoFit]);
 
-    return {ref, echart, wrapper};
+    const saveAsImage = useCallback(
+        (filename?: string) => {
+            if (echart) {
+                const blob = dataURL2Blob(echart.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'}));
+                saveAs(blob, `${filename?.replace(/[/\\?%*:|"<>]/g, '_') || 'chart'}.png`);
+            }
+        },
+        [echart]
+    );
+
+    return {ref, echart, wrapper, saveAsImage};
 };
 
 export default useECharts;
