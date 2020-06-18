@@ -31,6 +31,13 @@ class FileFactory(object):
         self._register_factories.update({path: filesystem})
 
     def get_filesystem(self, path):
+        if path.startswith(
+                'hdfs://') and "hdfs" not in self._register_factories:
+            try:
+                default_file_factory.register_filesystem("hdfs", HDFileSystem())
+            except hdfs.util.HdfsError:
+                raise RuntimeError(
+                    "Please initialize `~/.hdfscli.cfg` for HDFS.")
         prefix = ""
         index = path.find("://")
         if index >= 0:
@@ -128,12 +135,6 @@ class HDFileSystem(object):
     def walk(self, dir):
         walks = self.cli.walk(hdfs_path=dir[7:])
         return (['hdfs://'+root, dirs, files] for root, dirs, files in walks)
-
-
-try:
-    default_file_factory.register_filesystem("hdfs", HDFileSystem())
-except hdfs.util.HdfsError:
-    print("HDFS initialization failed, please check if .hdfscli，cfg exists.")
 
 
 class BFile(object):
