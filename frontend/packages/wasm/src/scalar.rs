@@ -15,7 +15,7 @@ impl Range {
     }
 }
 
-fn quantile(values: Vec<f64>, p: f64) -> f64 {
+fn quantile(values: &Vec<f64>, p: f64) -> f64 {
     let n: usize = values.len();
     if n == 0 {
         return std::f64::NAN;
@@ -33,7 +33,7 @@ fn quantile(values: Vec<f64>, p: f64) -> f64 {
     return value0 + (value1 - value0) * (i - (i0 as f64));
 }
 
-pub fn transform(datasets: Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smoothed>> {
+pub fn transform(datasets: &Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smoothed>> {
     let mut result: Vec<Vec<Smoothed>> = vec![];
     for dataset in datasets.iter() {
         let mut row: Vec<Smoothed> = vec![];
@@ -72,7 +72,7 @@ pub fn transform(datasets: Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smoothe
     return result;
 }
 
-pub fn range(datasets: Vec<Vec<Smoothed>>, outlier: bool) -> Range {
+pub fn range(datasets: &Vec<Vec<Smoothed>>, outlier: bool) -> Range {
     let mut ranges: Vec<Range> = vec![];
 
     for data in datasets.iter() {
@@ -90,8 +90,8 @@ pub fn range(datasets: Vec<Vec<Smoothed>>, outlier: bool) -> Range {
             ranges.push(Range::new(sorted[0], sorted[n - 1]));
         } else {
             ranges.push(Range::new(
-                quantile(sorted, 0.05_f64),
-                quantile(values, 0.95),
+                quantile(&sorted, 0.05_f64),
+                quantile(&values, 0.95),
             ));
         }
     }
