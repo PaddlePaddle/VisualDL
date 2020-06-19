@@ -1,9 +1,10 @@
 import {
     Dataset,
     Range,
-    RangeParams,
-    TransformParams,
+    SortingMethod,
+    XAxis,
     chartData,
+    options as chartOptions,
     nearestPoint,
     range,
     singlePointRange,
@@ -28,12 +29,12 @@ import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
 
 const smoothWasm = () =>
-    import('@visualdl/wasm').then(({transform}) => (params: TransformParams) =>
-        (transform(params.datasets, params.smoothing) as unknown) as Dataset[]
+    import('@visualdl/wasm').then(({scalar_transform}): typeof transform => params =>
+        scalar_transform(params.datasets, params.smoothing)
     );
 const rangeWasm = () =>
-    import('@visualdl/wasm').then(({range}) => (params: RangeParams) =>
-        (range(params.datasets, params.outlier) as unknown) as Range
+    import('@visualdl/wasm').then(({scalar_range}): typeof range => params =>
+        scalar_range(params.datasets, params.outlier)
     );
 
 const smoothWorker = () => new Worker('~/worker/scalars/smooth.worker.ts', {type: 'module'});
@@ -88,8 +89,8 @@ type ScalarChartProps = {
     runs: Run[];
     tag: string;
     smoothing: number;
-    xAxis: keyof typeof xAxisMap;
-    sortingMethod: keyof typeof sortingMethodMap;
+    xAxis: XAxis;
+    sortingMethod: SortingMethod;
     outlier?: boolean;
     running?: boolean;
     onToggleMaximized?: (maximized: boolean) => void;
@@ -115,7 +116,6 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         (...urls) => cycleFetcher(urls)
     );
 
-    const smooth = false;
     const [maximized, setMaximized] = useState<boolean>(false);
     const toggleMaximized = useCallback(() => {
         ee.emit('toggle-chart-size', cid, !maximized);
@@ -166,10 +166,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             chartData({
                 data: smoothedDatasets.slice(0, runs.length),
                 runs,
-                smooth,
                 xAxis
             }),
-        [smoothedDatasets, runs, smooth, xAxis]
+        [smoothedDatasets, runs, xAxis]
     );
 
     const formatter = useCallback(
@@ -183,6 +182,25 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [smoothedDatasets, runs, sortingMethod, i18n]
     );
 
+    const options = useMemo(
+        () => ({
+            ...chartOptions,
+            tooltip: {
+                ...chartOptions.tooltip,
+                formatter
+            },
+            xAxis: {
+                type: xAxisType,
+                ...ranges.x
+            },
+            yAxis: {
+                type: yAxisType,
+                ...ranges.y
+            }
+        }),
+        [formatter, ranges, xAxisType, yAxisType]
+    );
+
     // display error only on first fetch
     if (!data && error) {
         return <Error>{t('common:error')}</Error>;
@@ -190,17 +208,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     return (
         <Wrapper>
-            <StyledLineChart
-                ref={echart}
-                title={tag}
-                xRange={ranges.x}
-                yRange={ranges.y}
-                xType={xAxisType}
-                yType={yAxisType}
-                tooltip={formatter}
-                data={data}
-                loading={loading}
-            />
+            <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
             <Toolbox
                 items={[
                     {

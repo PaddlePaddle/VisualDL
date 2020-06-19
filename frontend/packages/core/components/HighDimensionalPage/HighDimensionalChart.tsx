@@ -1,4 +1,4 @@
-import {Dimension, DivideParams, Point, Reduction, divide} from '~/resource/high-dimensional';
+import {Dimension, Reduction, divide} from '~/resource/high-dimensional';
 import React, {FunctionComponent, useMemo} from 'react';
 import {contentHeight, primaryColor, rem} from '~/utils/style';
 
@@ -10,11 +10,8 @@ import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
 
 const divideWasm = () =>
-    import('@visualdl/wasm').then(({divide}) => (params: DivideParams) =>
-        (divide(params.points, params.labels, !!params.visibility, params.keyword ?? '') as unknown) as [
-            Point[],
-            Point[]
-        ]
+    import('@visualdl/wasm').then(({high_dimensional_divide}): typeof divide => params =>
+        high_dimensional_divide(params.points, params.labels, !!params.visibility, params.keyword ?? '')
     );
 const divideWorker = () => new Worker('~/worker/high-dimensional/divide.worker.ts', {type: 'module'});
 

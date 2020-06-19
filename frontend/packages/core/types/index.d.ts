@@ -7,3 +7,8 @@ export interface Tag {
     runs: Run[];
     label: string;
 }
+
+export interface TagWithSingleRun {
+    label: string;
+    run: Run;
+}

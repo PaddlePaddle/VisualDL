@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-<a href="javascript:void(0)"><img src="https://img.shields.io/badge/QQ_Group-1045783368-52B6EF?style=social&logo=tencent-qq&logoColor=000&logoWidth=20" alt="QQ Group" /></a>
+<a href="https://jq.qq.com/?_wv=1027&k=TyzyVT4C" target="_blank" rel="noreferrer"><img src="https://img.shields.io/badge/QQ_Group-1045783368-52B6EF?style=social&logo=tencent-qq&logoColor=000&logoWidth=20" alt="QQ Group" /></a>
 </p>
 
 ## 介绍
@@ -245,7 +245,9 @@ app.run(logdir="./log")
 
 ## 开源贡献
 
-VisualDL 是由 [PaddlePaddle](https://www.paddlepaddle.org/) 和 [ECharts](https://echarts.apache.org/) 合作推出的开源项目。欢迎所有人使用，提意见以及贡献代码。
+VisualDL 是由 [PaddlePaddle](https://www.paddlepaddle.org/) 和 [ECharts](https://echarts.apache.org/) 合作推出的开源项目。
+Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技术支持。
+欢迎所有人使用，提意见以及贡献代码。
 
 
 ## 更多细节
@@ -254,7 +256,7 @@ VisualDL 是由 [PaddlePaddle](https://www.paddlepaddle.org/) 和 [ECharts](http
 
 ## 技术交流
 
-欢迎您加入VisualDL官方qq群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。
+欢迎您加入VisualDL官方QQ群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/82522691-c2758680-9b5c-11ea-9aee-fca994aba175.png" width="20%"/>

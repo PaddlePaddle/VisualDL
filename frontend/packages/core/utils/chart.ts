@@ -1,3 +1,6 @@
+import {format} from 'd3-format';
+import {primaryColor} from '~/utils/style';
+
 export const color = [
     '#2932E1',
     '#00CC88',
@@ -50,14 +53,14 @@ export const title = {
 
 export const tooltip = {
     trigger: 'axis',
-    position: ['10%', '100%'],
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
     hideDelay: 100,
     enterable: false,
     axisPointer: {
         type: 'cross',
         label: {
-            show: true
+            show: true,
+            formatter: ({value}: {value: number}) => format('.4')(value)
         },
         lineStyle: {
             color: '#2932E1',
@@ -101,7 +104,7 @@ export const legend = {
 };
 
 export const grid = {
-    left: 50,
+    left: 60,
     top: 60,
     right: 30,
     bottom: 30
@@ -124,7 +127,8 @@ export const xAxis = {
     },
     axisLabel: {
         fontSize: 12,
-        color: '#666'
+        color: '#666',
+        formatter: format('.4')
     },
     splitLine: {
         show: false
@@ -147,7 +151,7 @@ export const yAxis = {
     axisLabel: {
         fontSize: 12,
         color: '#666',
-        formatter: (v: number) => (v < 0.0001 ? v.toExponential(1) : Number.parseFloat(v.toFixed(4)))
+        formatter: format('.4')
     },
     splitLine: {
         lineStyle: {
@@ -157,10 +161,10 @@ export const yAxis = {
 };
 
 export const series = {
-    type: 'line',
     hoverAnimation: false,
     animationDuration: 100,
     lineStyle: {
+        color: primaryColor,
         width: 1.5
     }
 };

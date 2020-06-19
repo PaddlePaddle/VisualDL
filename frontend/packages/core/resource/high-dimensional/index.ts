@@ -1,4 +1,4 @@
-import {DivideParams, Point} from './types';
+import {Point} from './types';
 
 export * from './types';
 
@@ -30,5 +30,14 @@ const combineLabel = (points: Point['value'][], labels: string[], visibility?: b
         };
     });
 
-export const divide = ({points, keyword, labels, visibility}: DivideParams) =>
-    dividePoints(combineLabel(points, labels, visibility), keyword);
+export const divide = ({
+    points,
+    keyword,
+    labels,
+    visibility
+}: {
+    points: Point['value'][];
+    keyword?: string;
+    labels: string[];
+    visibility?: boolean;
+}) => dividePoints(combineLabel(points, labels, visibility), keyword);

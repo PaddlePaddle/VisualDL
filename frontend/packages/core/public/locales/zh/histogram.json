@@ -1,0 +1,10 @@
+{
+    "download-image": "下载图片",
+    "maximize": "最大化",
+    "minimize": "最小化",
+    "mode": "直方图模式",
+    "mode-value": {
+        "offset": "Offset",
+        "overlay": "Overlay"
+    }
+}

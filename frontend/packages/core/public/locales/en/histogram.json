@@ -1,0 +1,10 @@
+{
+    "download-image": "Download image",
+    "maximize": "Maximize",
+    "minimize": "Minimize",
+    "mode": "Mode",
+    "mode-value": {
+        "offset": "Offset",
+        "overlay": "Overlay"
+    }
+}

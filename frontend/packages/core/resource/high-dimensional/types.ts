@@ -6,10 +6,3 @@ export type Point = {
     value: [number, number] | [number, number, number];
     showing: boolean;
 };
-
-export type DivideParams = {
-    points: Point['value'][];
-    keyword?: string;
-    labels: string[];
-    visibility?: boolean;
-};

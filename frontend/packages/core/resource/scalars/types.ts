@@ -1,7 +1,11 @@
+import {sortingMethodMap, xAxisMap} from './index';
+
 import {Run} from '~/types';
-import {xAxisMap} from './index';
 
 export type Dataset = number[][];
+
+export type XAxis = keyof typeof xAxisMap;
+export type SortingMethod = keyof typeof sortingMethodMap;
 
 export type Range = {
     min: number;
@@ -11,21 +15,4 @@ export type Range = {
 export type TooltipData = {
     run: Run;
     item: number[];
-};
-
-export type TransformParams = {
-    datasets: Dataset[];
-    smoothing: number;
-};
-
-export type ChartDataParams = {
-    data: Dataset[];
-    runs: Run[];
-    smooth: boolean;
-    xAxis: keyof typeof xAxisMap;
-};
-
-export type RangeParams = {
-    datasets: Dataset[];
-    outlier: boolean;
 };

@@ -1,10 +1,10 @@
 {
-    "image": "图片",
     "audio": "音频",
-    "text": "文本",
+    "brightness": "亮度",
+    "contrast": "对比度",
+    "download-image": "下载$t(image)",
+    "image": "图片",
     "show-actual-size": "按真实大小展示",
     "step": "Step",
-    "download-image": "下载$t(image)",
-    "brightness": "亮度",
-    "contrast": "对比度"
+    "text": "文本"
 }
