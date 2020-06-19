@@ -270,20 +270,28 @@ visualdl --logdir ./log --port 8080
 Graph组件一键可视化模型的网络结构。用于查看模型属性、节点信息、节点输入输出等，并进行节点搜索，协助开发者们快速分析模型结构与了解数据流向。
 
 ### Demo
-
 共有两种启动方式：
 
-1. 如果只需要使用Graph功能，在命令行执行`visualdl`后，在浏览器输入`http://127.0.0.1:8040`即可启动。
+- 前端启动Graph：
 
-2. 如果同时需使用其他功能，在命令行执行
+  - 如只需使用Graph，无需添加任何参数，在命令行执行`visualdl`后即可启动。
+  - 如果同时需使用其他功能，在命令行指定日志文件路径（以`./log`为例），即可启动：
 
-   ```shell
-   visualdl --logdir ./log --port 8080
-   ```
+  ```shell
+  visualdl --logdir ./log --port 8080
+  ```
 
-   在浏览器输入`http://127.0.0.1:8080`，即可启动。
+
+- 后端启动Graph：
+
+  - 在命令行加入参数`--model`并指定**模型文件**路径（非文件夹路径），即可启动：
+
+  ```shell
+  visualdl --model ./log/model --port 8080
+  ```
+
    
-启动后上传模型即可查看网络结构可视化：
+启动后即可查看网络结构可视化：
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84490149-51e20580-acd5-11ea-9663-1f156892c0e0.png" width="80%"/>
@@ -292,6 +300,8 @@ Graph组件一键可视化模型的网络结构。用于查看模型属性、节
 ### 功能操作说明
 
 - 一键上传模型
+  - 支持模型格式：PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite
+  - 实验性支持模型格式：TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84487396-44c31780-acd1-11ea-831a-1632e636613d.png" width="80%"/>
