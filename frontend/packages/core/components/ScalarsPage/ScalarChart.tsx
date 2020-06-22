@@ -1,6 +1,7 @@
+import LineChart, {LineChartRef} from '~/components/LineChart';
 import {
-    Dataset,
     Range,
+    ScalarDataset,
     SortingMethod,
     XAxis,
     chartData,
@@ -13,7 +14,6 @@ import {
     transform,
     xAxisMap
 } from '~/resource/scalars';
-import LineChart, {LineChartRef} from '~/components/LineChart';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
 import {rem, size} from '~/utils/style';
 
@@ -22,6 +22,7 @@ import {EChartOption} from 'echarts';
 import {Run} from '~/types';
 import {cycleFetcher} from '~/utils/fetch';
 import ee from '~/utils/event';
+import {format} from 'd3-format';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
@@ -110,7 +111,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const echart = useRef<LineChartRef>(null);
 
-    const {data: datasets, error, loading} = useRunningRequest<(Dataset | null)[]>(
+    const {data: datasets, error, loading} = useRunningRequest<(ScalarDataset | null)[]>(
         runs.map(run => `/scalars/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
@@ -171,15 +172,20 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [smoothedDatasets, runs, xAxis]
     );
 
+    const maxStepLength = useMemo(
+        () => String(Math.max(...smoothedDatasets.map(i => Math.max(...i.map(j => j[1]))))).length,
+        [smoothedDatasets]
+    );
+
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const data = Array.isArray(params) ? params[0].data : params.data;
             const step = data[1];
             const points = nearestPoint(smoothedDatasets ?? [], runs, step);
             const sort = sortingMethodMap[sortingMethod];
-            return tooltip(sort ? sort(points, data) : points, i18n);
+            return tooltip(sort ? sort(points, data) : points, maxStepLength, i18n);
         },
-        [smoothedDatasets, runs, sortingMethod, i18n]
+        [smoothedDatasets, runs, sortingMethod, maxStepLength, i18n]
     );
 
     const options = useMemo(
@@ -191,7 +197,13 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             },
             xAxis: {
                 type: xAxisType,
-                ...ranges.x
+                ...ranges.x,
+                axisPointer: {
+                    label: {
+                        formatter:
+                            xAxisType === XAxisType.time ? undefined : ({value}: {value: number}) => format('.8')(value)
+                    }
+                }
             },
             yAxis: {
                 type: yAxisType,

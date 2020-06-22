@@ -59,8 +59,7 @@ export const tooltip = {
     axisPointer: {
         type: 'cross',
         label: {
-            show: true,
-            formatter: ({value}: {value: number}) => format('.4')(value)
+            show: true
         },
         lineStyle: {
             color: '#2932E1',

@@ -1,16 +1,16 @@
+import {Dataset, ScalarDataset} from './types';
+
 import BigNumber from 'bignumber.js';
-import {Dataset} from './types';
 import {Run} from '~/types';
-import cloneDeep from 'lodash/cloneDeep';
 import compact from 'lodash/compact';
 import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
 import {quantile} from '~/utils';
 
-export const transform = ({datasets, smoothing}: {datasets: Dataset[]; smoothing: number}) =>
+export const transform = ({datasets, smoothing}: {datasets: ScalarDataset[]; smoothing: number}) =>
     // https://en.wikipedia.org/wiki/Moving_average
     datasets.map(seriesData => {
-        const data = cloneDeep(seriesData);
+        const data = seriesData.map<Dataset[number]>(s => [...s, Number.NaN, Number.NaN]);
         let last = new BigNumber(data.length > 0 ? 0 : Number.NaN);
         let numAccum = 0;
         let startValue = 0;
