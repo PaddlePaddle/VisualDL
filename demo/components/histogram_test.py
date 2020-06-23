@@ -20,8 +20,11 @@ import numpy as np
 if __name__ == '__main__':
     values = np.arange(0, 1000)
     with LogWriter(logdir="./log/histogram_test/train") as writer:
-        for index in range(5):
-            writer.add_histogram(tag='default1',
-                                 values=values+index,
+        for index in range(1, 101):
+            interval_start = 1 + 2 * index / 100.0
+            interval_end = 6 - 2 * index / 100.0
+            data = np.random.uniform(interval_start, interval_end, size=(10000))
+            writer.add_histogram(tag='default tag',
+                                 values=data,
                                  step=index,
                                  buckets=10)
