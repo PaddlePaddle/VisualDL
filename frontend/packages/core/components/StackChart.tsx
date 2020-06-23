@@ -1,32 +1,13 @@
 import * as chart from '~/utils/chart';
 
 import React, {useCallback, useEffect, useImperativeHandle} from 'react';
-import {WithStyled, position, primaryColor, size} from '~/utils/style';
+import {WithStyled, primaryColor} from '~/utils/style';
+import useECharts, {Wrapper} from '~/hooks/useECharts';
 
 import {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
-import {dataURL2Blob} from '~/utils/image';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {saveAs} from 'file-saver';
-import styled from 'styled-components';
-import useECharts from '~/hooks/useECharts';
 import {useTranslation} from '~/utils/i18n';
-
-const Wrapper = styled.div`
-    position: relative;
-
-    > .echarts {
-        height: 100%;
-    }
-
-    > .loading {
-        ${size('100%')}
-        ${position('absolute', 0, null, null, 0)}
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-`;
 
 type renderItem = NonNullable<EChartOption.SeriesCustom['renderItem']>;
 type renderItemArguments = NonNullable<renderItem['arguments']>;
