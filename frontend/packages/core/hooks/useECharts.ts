@@ -1,9 +1,10 @@
 import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {maskColor, primaryColor, textColor} from '~/utils/style';
+import {maskColor, position, primaryColor, size, textColor} from '~/utils/style';
 
 import {ECharts} from 'echarts';
 import {dataURL2Blob} from '~/utils/image';
 import {saveAs} from 'file-saver';
+import styled from 'styled-components';
 
 const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(options: {
     loading?: boolean;
@@ -99,3 +100,22 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
 };
 
 export default useECharts;
+
+export const Wrapper = styled.div`
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+
+    > .echarts {
+        width: 100%;
+    }
+
+    > .loading {
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+`;
