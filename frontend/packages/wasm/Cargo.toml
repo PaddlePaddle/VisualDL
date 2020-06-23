@@ -25,13 +25,13 @@ lto = true
 # default = ["wee_alloc"]
 
 [dependencies]
-serde = "1.0.104"
-serde_derive = "1.0.104"
+serde = "1.0.112"
+serde_derive = "1.0.112"
 
 # The `wasm-bindgen` crate provides the bare minimum functionality needed
 # to interact with JavaScript.
 [dependencies.wasm-bindgen]
-version = "0.2.59"
+version = "0.2.63"
 features = ["serde-serialize"]
 
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
@@ -42,7 +42,7 @@ features = ["serde-serialize"]
 # The `web-sys` crate allows you to interact with the various browser APIs,
 # like the DOM.
 [dependencies.web-sys]
-version = "0.3.36"
+version = "0.3.40"
 features = ["console"]
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
@@ -54,10 +54,10 @@ console_error_panic_hook = "0.1.6"
 
 # These crates are used for running unit tests.
 [dev-dependencies]
-wasm-bindgen-test = "0.3.6"
+wasm-bindgen-test = "0.3.13"
 futures = "0.3.5"
-js-sys = "0.3.36"
-wasm-bindgen-futures = "0.4.9"
+js-sys = "0.3.40"
+wasm-bindgen-futures = "0.4.13"
 
 [package.metadata.wasm-pack.profile.dev]
 # Should `wasm-opt` be used to further optimize the wasm binary generated after

@@ -5,9 +5,9 @@ pub struct Point {
     showing: bool,
 }
 impl Point {
-    pub fn new(name: String, value: Vec<f64>, showing: bool) -> Self {
+    pub fn new(name: &str, value: Vec<f64>, showing: bool) -> Self {
         Point {
-            name,
+            name: String::from(name),
             value,
             showing,
         }
@@ -23,25 +23,27 @@ impl DividedPoints {
 }
 
 pub fn divide(
-    points: Vec<Vec<f64>>,
-    labels: Vec<String>,
+    points: &Vec<Vec<f64>>,
+    labels: &Vec<String>,
     visibility: bool,
-    keyword: String,
+    keyword: &str,
 ) -> DividedPoints {
     let mut matched: Vec<Point> = vec![];
     let mut missing: Vec<Point> = vec![];
 
     for (i, point) in points.iter().enumerate() {
-        let mut name: String = String::from("");
+        let mut name: &str = "";
         let ptr: *const String = &labels[i];
         if !ptr.is_null() {
-            name = labels[i].clone();
+            unsafe {
+                name = &(*ptr)[..];
+            }
         }
-        let point_with_label: Point = Point::new(name.clone(), point.to_vec(), visibility);
-        if keyword == String::from("") {
+        let point_with_label: Point = Point::new(name, point.to_vec(), visibility);
+        if let "" = keyword {
             missing.push(point_with_label);
         } else {
-            if name.contains(&keyword) {
+            if String::from(name).contains(&keyword) {
                 matched.push(point_with_label);
             } else {
                 missing.push(point_with_label);

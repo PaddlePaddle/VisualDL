@@ -65,7 +65,7 @@ export const chartData = ({data, runs, xAxis}: {data: Dataset[]; runs: Run[]; xA
         .flat();
 
 // TODO: make it better, don't concat html
-export const tooltip = (data: TooltipData[], i18n: I18n) => {
+export const tooltip = (data: TooltipData[], stepLength: number, i18n: I18n) => {
     const indexPropMap = {
         time: 0,
         step: 1,
@@ -73,10 +73,10 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         smoothed: 3,
         relative: 4
     } as const;
-    const widthPropMap = {
-        run: [60, 180] as [number, number],
+    const widthPropMap: Record<string, number | readonly [number, number]> = {
+        run: [60, 180],
         time: 150,
-        step: 40,
+        step: Math.max(stepLength * 8, 40),
         value: 60,
         smoothed: 70,
         relative: 60
@@ -103,7 +103,7 @@ export const tooltip = (data: TooltipData[], i18n: I18n) => {
         } as const;
     });
 
-    const renderContent = (content: string, width: number | [number, number]) =>
+    const renderContent = (content: string, width: number | readonly [number, number]) =>
         `<div style="overflow: hidden; ${
             Array.isArray(width)
                 ? `min-width:${(width as [number, number])[0]};max-width:${(width as [number, number])[1]};`

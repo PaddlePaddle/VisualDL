@@ -1,5 +1,3 @@
-use std::f64;
-
 trait FloatIterExt {
     fn float_min(&mut self) -> f64;
     fn float_max(&mut self) -> f64;
@@ -108,7 +106,7 @@ fn compute_histogram(
     return result;
 }
 
-pub fn transform_overlay(data: Vec<Data>) -> Overlay {
+pub fn transform_overlay(data: &Vec<Data>) -> Overlay {
     struct Temp {
         time: f64,
         step: f64,
@@ -154,8 +152,8 @@ pub fn transform_overlay(data: Vec<Data>) -> Overlay {
     };
 }
 
-pub fn transform_offset(data: Vec<Data>) -> Offset {
-    let overlay: Overlay = transform_overlay(data);
+pub fn transform_offset(data: &Vec<Data>) -> Offset {
+    let overlay: Overlay = transform_overlay(&data);
     let mut min_step: f64 = std::f64::INFINITY;
     let mut max_step: f64 = std::f64::NEG_INFINITY;
     let mut min_z: f64 = std::f64::INFINITY;
