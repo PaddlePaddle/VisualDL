@@ -14,7 +14,7 @@ const Label = styled.div`
 `;
 
 type FieldProps = {
-    label?: string;
+    label?: string | JSX.Element;
 };
 
 const Field: FunctionComponent<FieldProps & WithStyled> = ({label, children, className}) => (

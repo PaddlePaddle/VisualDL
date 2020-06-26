@@ -1,4 +1,4 @@
-import {Dataset, TooltipData, XAxis} from './types';
+import {Dataset, XAxis} from './types';
 
 import {I18n} from '@visualdl/i18n';
 import {Run} from '~/types';
@@ -64,87 +64,36 @@ export const chartData = ({data, runs, xAxis}: {data: Dataset[]; runs: Run[]; xA
         })
         .flat();
 
-// TODO: make it better, don't concat html
-export const tooltip = (data: TooltipData[], stepLength: number, i18n: I18n) => {
-    const indexPropMap = {
-        time: 0,
-        step: 1,
-        value: 2,
-        smoothed: 3,
-        relative: 4
-    } as const;
-    const widthPropMap: Record<string, number | readonly [number, number]> = {
-        run: [60, 180],
-        time: 150,
-        step: Math.max(stepLength * 8, 40),
-        value: 60,
-        smoothed: 70,
-        relative: 60
-    } as const;
-    const translatePropMap = {
-        run: 'common:runs',
-        time: 'scalars:x-axis-value.wall',
-        step: 'scalars:x-axis-value.step',
-        value: 'scalars:value',
-        smoothed: 'scalars:smoothed',
-        relative: 'scalars:x-axis-value.relative'
-    } as const;
-    const transformedData = data.map(item => {
-        const data = item.item;
-        return {
-            run: item.run,
-            smoothed: valueFormatter(data[indexPropMap.smoothed] ?? Number.NaN),
-            value: valueFormatter(data[indexPropMap.value] ?? Number.NaN),
-            step: data[indexPropMap.step],
-            time: formatTime(data[indexPropMap.time], i18n.language),
-            // Relative display value should take easy-read into consideration.
-            // Better to tranform data to 'day:hour', 'hour:minutes', 'minute: seconds' and second only.
-            relative: Math.floor(data[indexPropMap.relative] * 60 * 60) + 's'
-        } as const;
-    });
-
-    const renderContent = (content: string, width: number | readonly [number, number]) =>
-        `<div style="overflow: hidden; ${
-            Array.isArray(width)
-                ? `min-width:${(width as [number, number])[0]};max-width:${(width as [number, number])[1]};`
-                : `width:${width as number}px;`
-        }">${content}</div>`;
-
-    let headerHtml = '<tr style="font-size:14px;">';
-    headerHtml += (Object.keys(transformedData[0]) as (keyof typeof transformedData[0])[])
-        .map(key => {
-            return `<th style="padding: 0 4px; font-weight: bold;" class="${key}">${renderContent(
-                i18n.t(translatePropMap[key]),
-                widthPropMap[key]
-            )}</th>`;
-        })
-        .join('');
-    headerHtml += '</tr>';
-
-    const content = transformedData
-        .map(item => {
-            let str = '<tr style="font-size:12px;">';
-            str += Object.keys(item)
-                .map(key => {
-                    let content = '';
-                    if (key === 'run') {
-                        content += `<span class="run-indicator" style="background-color:${
-                            item[key].colors?.[0] ?? 'transpanent'
-                        }"></span>`;
-                        content += `<span title="${item[key].label}">${item[key].label}</span>`;
-                    } else {
-                        content += item[key as keyof typeof item];
-                    }
-                    return `<td style="padding: 0 4px;" class="${key}">${renderContent(
-                        content,
-                        widthPropMap[key as keyof typeof item]
-                    )}</td>`;
-                })
-                .join('');
-            str += '</tr>';
-            return str;
-        })
-        .join('');
-
-    return `<table style="text-align: left;table-layout: fixed;"><thead>${headerHtml}</thead><tbody>${content}</tbody><table>`;
+export const tooltip = (data: Dataset, stepLength: number, i18n: I18n) => {
+    return {
+        columns: [
+            {
+                label: i18n.t('scalars:smoothed'),
+                width: '5em'
+            },
+            {
+                label: i18n.t('scalars:value'),
+                width: '4.285714286em'
+            },
+            {
+                label: i18n.t('common:time-mode.step'),
+                width: `${Math.max(stepLength * 0.571428571, 2.857142857)}em`
+            },
+            {
+                label: i18n.t('common:time-mode.wall'),
+                width: '10.714285714em'
+            },
+            {
+                label: i18n.t('common:time-mode.relative'),
+                width: '4.285714286em'
+            }
+        ],
+        data: data.map(([time, step, value, smoothed, relative]) => [
+            valueFormatter(smoothed ?? Number.NaN),
+            valueFormatter(value ?? Number.NaN),
+            step,
+            formatTime(time, i18n.language),
+            Math.floor(relative * 60 * 60) + 's'
+        ])
+    };
 };

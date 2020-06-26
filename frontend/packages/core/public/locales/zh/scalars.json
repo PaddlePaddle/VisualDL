@@ -15,10 +15,5 @@
         "nearest": "最近"
     },
     "value": "Value",
-    "x-axis": "X轴",
-    "x-axis-value": {
-        "relative": "Relative",
-        "step": "Step",
-        "wall": "Wall Time"
-    }
+    "x-axis": "X轴"
 }

@@ -103,6 +103,6 @@ export const nearestPoint = (data: Dataset[], runs: Run[], step: number) =>
         }
         return {
             run: runs[index],
-            item: nearestItem || []
+            item: nearestItem || [0, 0, 0, 0, 0]
         };
     });

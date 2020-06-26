@@ -1,7 +1,7 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
-import {SortingMethod, XAxis, sortingMethod as toolTipSortingValues, xAxis as xAxisValues} from '~/resource/scalars';
+import {SortingMethod, XAxis, sortingMethod as toolTipSortingValues} from '~/resource/scalars';
 
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
@@ -9,13 +9,12 @@ import Content from '~/components/Content';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
-import RadioButton from '~/components/RadioButton';
-import RadioGroup from '~/components/RadioGroup';
 import RunAside from '~/components/RunAside';
 import ScalarChart from '~/components/ScalarsPage/ScalarChart';
 import Select from '~/components/Select';
 import Slider from '~/components/Slider';
 import {Tag} from '~/types';
+import TimeModeSelect from '~/components/TimeModeSelect';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
@@ -42,7 +41,7 @@ const Scalars: NextI18NextPage = () => {
 
     const [smoothing, setSmoothing] = useState(0.6);
 
-    const [xAxis, setXAxis] = useState<XAxis>(xAxisValues[0]);
+    const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step);
 
     const [tooltipSorting, setTooltipSorting] = useState<SortingMethod>(toolTipSortingValues[0]);
 
@@ -81,13 +80,7 @@ const Scalars: NextI18NextPage = () => {
                     </AsideSection>
                     <AsideSection>
                         <Field label={t('scalars:x-axis')}>
-                            <RadioGroup value={xAxis} onChange={setXAxis}>
-                                {xAxisValues.map(value => (
-                                    <RadioButton key={value} value={value}>
-                                        {t(`scalars:x-axis-value.${value}`)}
-                                    </RadioButton>
-                                ))}
-                            </RadioGroup>
+                            <TimeModeSelect value={xAxis} onChange={setXAxis} />
                         </Field>
                     </AsideSection>
                 </RunAside>

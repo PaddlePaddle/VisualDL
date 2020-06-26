@@ -1,5 +1,5 @@
-import LineChart, {LineChartRef} from '~/components/LineChart';
 import {
+    Dataset,
     Range,
     ScalarDataset,
     SortingMethod,
@@ -14,20 +14,25 @@ import {
     transform,
     xAxisMap
 } from '~/resource/scalars';
+import LineChart, {LineChartRef, XAxisType, YAxisType} from '~/components/LineChart';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
 import {rem, size} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import {EChartOption} from 'echarts';
 import {Run} from '~/types';
+import TooltipTable from '~/components/TooltipTable';
 import {cycleFetcher} from '~/utils/fetch';
 import ee from '~/utils/event';
 import {format} from 'd3-format';
 import queryString from 'query-string';
+import {renderToStaticMarkup} from 'react-dom/server';
 import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
+
+const labelFormatter = format('.8');
 
 const smoothWasm = () =>
     import('@visualdl/wasm').then(({scalar_transform}): typeof transform => params =>
@@ -74,17 +79,6 @@ const Error = styled.div`
     align-items: center;
 `;
 
-enum XAxisType {
-    value = 'value',
-    log = 'log',
-    time = 'time'
-}
-
-enum YAxisType {
-    value = 'value',
-    log = 'log'
-}
-
 type ScalarChartProps = {
     cid: symbol;
     runs: Run[];
@@ -94,7 +88,6 @@ type ScalarChartProps = {
     sortingMethod: SortingMethod;
     outlier?: boolean;
     running?: boolean;
-    onToggleMaximized?: (maximized: boolean) => void;
 };
 
 const ScalarChart: FunctionComponent<ScalarChartProps> = ({
@@ -123,7 +116,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         setMaximized(m => !m);
     }, [cid, maximized]);
 
-    const xAxisType = useMemo(() => (xAxis === 'wall' ? XAxisType.time : XAxisType.value), [xAxis]);
+    const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
 
     const [yAxisType, setYAxisType] = useState<YAxisType>(YAxisType.value);
     const toggleYAxisType = useCallback(() => {
@@ -179,13 +172,20 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
-            const data = Array.isArray(params) ? params[0].data : params.data;
-            const step = data[1];
-            const points = nearestPoint(smoothedDatasets ?? [], runs, step);
+            const series: Dataset[number] = Array.isArray(params) ? params[0].data : params.data;
+            const points = nearestPoint(smoothedDatasets ?? [], runs, series[1]);
             const sort = sortingMethodMap[sortingMethod];
-            return tooltip(sort ? sort(points, data) : points, maxStepLength, i18n);
+            const sorted = sort(points, series);
+            const {columns, data} = tooltip(
+                sorted.map(i => i.item),
+                maxStepLength,
+                i18n
+            );
+            return renderToStaticMarkup(
+                <TooltipTable run={t('common:runs')} runs={sorted.map(i => i.run)} columns={columns} data={data} />
+            );
         },
-        [smoothedDatasets, runs, sortingMethod, maxStepLength, i18n]
+        [smoothedDatasets, runs, sortingMethod, maxStepLength, t, i18n]
     );
 
     const options = useMemo(
@@ -201,7 +201,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 axisPointer: {
                     label: {
                         formatter:
-                            xAxisType === XAxisType.time ? undefined : ({value}: {value: number}) => format('.8')(value)
+                            xAxisType === XAxisType.time
+                                ? undefined
+                                : ({value}: {value: number}) => labelFormatter(value)
                     }
                 }
             },

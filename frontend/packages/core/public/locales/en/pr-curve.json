@@ -1,0 +1,10 @@
+{
+    "false-negatives": "FN",
+    "false-positives": "FP",
+    "precision": "Precision",
+    "recall": "Recall",
+    "threshold": "Threshold",
+    "time-display-type": "Time Display Type",
+    "true-negatives": "TN",
+    "true-positives": "TP"
+}
