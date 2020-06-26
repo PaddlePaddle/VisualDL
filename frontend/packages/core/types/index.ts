@@ -3,12 +3,18 @@ export interface Run {
     colors: [string, string];
 }
 
-export interface Tag {
-    runs: Run[];
+export interface Tag<R = Run> {
+    runs: R[];
     label: string;
 }
 
 export interface TagWithSingleRun {
     label: string;
     run: Run;
+}
+
+export enum TimeMode {
+    Step = 'step',
+    Relative = 'relative',
+    WallTime = 'wall'
 }

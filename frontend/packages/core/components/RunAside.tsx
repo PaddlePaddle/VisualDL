@@ -18,6 +18,7 @@ const StyledAside = styled(Aside)`
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        margin-bottom: 0;
 
         .run-select {
             flex: auto;

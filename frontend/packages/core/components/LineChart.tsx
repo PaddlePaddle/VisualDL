@@ -18,6 +18,17 @@ type LineChartProps = {
     zoom?: boolean;
 };
 
+export enum XAxisType {
+    value = 'value',
+    log = 'log',
+    time = 'time'
+}
+
+export enum YAxisType {
+    value = 'value',
+    log = 'log'
+}
+
 export type LineChartRef = {
     restore(): void;
     saveAsImage(): void;

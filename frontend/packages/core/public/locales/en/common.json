@@ -9,6 +9,7 @@
     "histogram": "Histogram",
     "loading": "Please wait while loading data",
     "next-page": "Next Page",
+    "pr-curve": "PR-Curve",
     "previous-page": "Prev Page",
     "run": "Run",
     "running": "Running",
@@ -27,6 +28,11 @@
     "stop": "Stop",
     "stop-realtime-refresh": "Stop realtime refresh",
     "stopped": "Stopped",
+    "time-mode": {
+        "relative": "Relative",
+        "step": "Step",
+        "wall": "Wall Time"
+    },
     "total-page": "{{count}} page, jump to",
     "total-page_plural": "{{count}} pages, jump to",
     "unselected-empty": "Nothing selected. <1/>Please select display data from right side."

@@ -5,17 +5,35 @@ import {fetcher} from '~/utils/fetch';
 import intersection from 'lodash/intersection';
 import useRequest from '~/hooks/useRequest';
 
-const allNavItems = ['scalars', 'histogram', 'samples', 'graphs', 'high-dimensional'];
+enum Pages {
+    Scalars = 'scalars',
+    Histogram = 'histogram',
+    Samples = 'samples',
+    Graphs = 'graphs',
+    HighDimensional = 'high-dimensional',
+    PRCurve = 'pr-curve'
+}
+
+const pages = [
+    Pages.Scalars,
+    Pages.Histogram,
+    Pages.Samples,
+    Pages.Graphs,
+    Pages.HighDimensional,
+    Pages.PRCurve
+] as const;
+
 export const navMap = {
-    scalar: 'scalars',
-    histogram: 'histogram',
-    image: 'samples',
-    graph: 'graphs',
-    embeddings: 'high-dimensional'
+    scalar: Pages.Scalars,
+    histogram: Pages.Histogram,
+    image: Pages.Samples,
+    graph: Pages.Graphs,
+    embeddings: Pages.HighDimensional,
+    'pr-curve': Pages.PRCurve
 } as const;
 
 const useNavItems = () => {
-    const [components, setComponents] = useState<string[]>([]);
+    const [components, setComponents] = useState<Pages[]>([]);
 
     const {data, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
         refreshInterval: components.length ? 61 * 1000 : 15 * 1000,
@@ -36,7 +54,7 @@ const useNavItems = () => {
     }, [mutate]);
 
     useEffect(() => {
-        setComponents(intersection(allNavItems, data?.map(component => navMap[component]) ?? []));
+        setComponents(intersection(pages, data?.map(component => navMap[component]) ?? []));
     }, [data]);
 
     return components;
