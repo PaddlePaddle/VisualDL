@@ -40,7 +40,7 @@
         "protobufjs": "lutzroeder/protobuf.js#b9a9d027589356226f4704f9d77f2639f52172f3"
     },
     "devDependencies": {
-        "autoprefixer": "9.8.2",
+        "autoprefixer": "9.8.4",
         "copy-webpack-plugin": "6.0.2",
         "css-loader": "3.6.0",
         "html-webpack-plugin": "4.3.0",
