@@ -35,7 +35,7 @@
         "dagre": "0.8.5",
         "long": "4.0.0",
         "marked": "1.1.0",
-        "netron": "lutzroeder/netron#9f9be2e1d0cdeb538fcddbc359f1b4138223a953",
+        "netron": "PeterPanZH/netron",
         "pako": "1.0.11",
         "protobufjs": "lutzroeder/protobuf.js#b9a9d027589356226f4704f9d77f2639f52172f3"
     },

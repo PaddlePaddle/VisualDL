@@ -9051,9 +9051,9 @@ netmask@^1.0.6:
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
   integrity sha1-ICl+idhvb2QA8lDZ9Pa0wZRfzTU=
 
-netron@lutzroeder/netron#9f9be2e1d0cdeb538fcddbc359f1b4138223a953:
-  version "4.1.9"
-  resolved "https://codeload.github.com/lutzroeder/netron/tar.gz/9f9be2e1d0cdeb538fcddbc359f1b4138223a953"
+netron@PeterPanZH/netron:
+  version "4.3.5"
+  resolved "https://codeload.github.com/PeterPanZH/netron/tar.gz/2c04a5d19b18ec09ddb9087f99177e7d27f156bd"
   dependencies:
     d3 "5.16.0"
     dagre "0.8.5"
