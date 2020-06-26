@@ -143,13 +143,6 @@ def parse_args():
         default=False,
         help="serve api only"
     )
-    parser.add_argument(
-        "-B",
-        "--open_browser",
-        action="store_true",
-        default=False,
-        help="open browser automatically"
-    )
 
     args = parser.parse_args()
 

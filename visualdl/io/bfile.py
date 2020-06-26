@@ -16,11 +16,22 @@
 import os
 import tempfile
 import hdfs
+import hashlib
+import base64
+from visualdl.io import bos_sample_conf
+from baidubce.services.bos.bos_client import BosClient
+from baidubce import exception
 
 # Note: Some codes here refer to TensorBoardX.
 # A good default block size depends on the system in question.
 # A somewhat conservative default chosen here.
 _DEFAULT_BLOCK_SIZE = 16 * 1024 * 1024
+
+
+def content_md5(buffer):
+    md5 = hashlib.md5()
+    md5.update(buffer)
+    return base64.standard_b64encode(md5.digest())
 
 
 class FileFactory(object):
@@ -35,6 +46,13 @@ class FileFactory(object):
                 'hdfs://') and "hdfs" not in self._register_factories:
             try:
                 default_file_factory.register_filesystem("hdfs", HDFileSystem())
+            except hdfs.util.HdfsError:
+                raise RuntimeError(
+                    "Please initialize `~/.hdfscli.cfg` for HDFS.")
+        elif path.startswith(
+                'bos://') and "bos" not in self._register_factories:
+            try:
+                default_file_factory.register_filesystem("bos", BosFileSystem())
             except hdfs.util.HdfsError:
                 raise RuntimeError(
                     "Please initialize `~/.hdfscli.cfg` for HDFS.")
@@ -135,6 +153,152 @@ class HDFileSystem(object):
     def walk(self, dir):
         walks = self.cli.walk(hdfs_path=dir[7:])
         return (['hdfs://'+root, dirs, files] for root, dirs, files in walks)
+
+
+class BosFileSystem(object):
+    def __init__(self):
+        self.bos_client = BosClient(bos_sample_conf.config)
+        self.file_length_map = {}
+
+    def exists(self, path):
+        path = path[6:]
+        index = path.index('/')
+        bucket_name = path[0:index]
+        object_key = path[index+1:]
+        try:
+            self.bos_client.get_object_meta_data(bucket_name, object_key)
+            return True
+        except exception.BceError:
+            return False
+
+    def get_meta(self, bucket_name, object_key):
+        return self.bos_client.get_object_meta_data(bucket_name, object_key)
+
+    def makedirs(self, path):
+        if '/' != path[-1]:
+            path += '/'
+        if self.exists(path):
+            return
+        path = path[6:]
+        index = path.index('/')
+        bucket_name = path[0:index]
+        object_key = path[index + 1:]
+        if '/' != object_key[-1]:
+            object_key += '/'
+        init_data = b''
+        self.bos_client.append_object(bucket_name=bucket_name,
+                                      key=object_key,
+                                      data=init_data,
+                                      content_md5=content_md5(init_data),
+                                      content_length=len(init_data))
+
+    @staticmethod
+    def join(path, *paths):
+        return os.path.join(path, *paths)
+
+    def read(self, filename, binary_mode=False, size=0, continue_from=None):
+        path = filename[6:]
+        index = path.index('/')
+        bucket_name = path[0:index]
+        object_key = path[index + 1:]
+        offset = 0
+        if continue_from is not None:
+            offset = continue_from.get("last_offset", 0)
+        data = self.bos_client.get_object_as_string(bucket_name=bucket_name,
+                                                    key=object_key)
+        data = data[offset:]
+        continue_from_token = {"last_offset": len(data)}
+        return data, continue_from_token
+
+    def append(self, filename, file_content, binary_mode=False):
+        path = filename[6:]
+        index = path.index('/')
+        bucket_name = path[0:index]
+        key = path[index + 1:]
+        if not self.exists(filename):
+            init_data = b''
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=key,
+                                          data=init_data,
+                                          content_md5=content_md5(init_data),
+                                          content_length=len(init_data),
+                                          offset=0)
+        content_length = len(file_content)
+
+        offset = self.get_meta(bucket_name, key).metadata.content_length
+        self.bos_client.append_object(bucket_name=bucket_name,
+                                      key=key,
+                                      data=file_content,
+                                      content_md5=content_md5(file_content),
+                                      content_length=content_length,
+                                      offset=offset)
+
+    def write(self, filename, file_content, binary_mode=False):
+        filename = filename[6:]
+        filename = str(filename)
+        index = filename.index('/')
+        bucket = filename[0:index]
+        filename = filename[index+1:]
+
+        self.bos_client.append_object(bucket_name=bucket,
+                                      key=filename,
+                                      data=file_content,
+                                      content_md5=content_md5(file_content),
+                                      content_length=len(file_content))
+
+    def walk(self, dir):
+        class WalkGenerator():
+            def __init__(self, bucket_name, contents):
+                self.contents = None
+                self.length = 0
+                self.bucket = bucket_name
+                self.handle_contents(contents)
+                self.count = 0
+
+            def handle_contents(self, contents):
+                contents_map = {}
+                for item in contents:
+                    try:
+                        rindex = item.rindex('/')
+                        key = item[0:rindex]
+                        value = item[rindex + 1:]
+                    except ValueError:
+                        key = '.'
+                        value = item
+                    if key in contents_map.keys():
+                        contents_map[key].append(value)
+                    else:
+                        contents_map[key] = [value]
+                temp_walk = []
+                for key, value in contents_map.items():
+                    temp_walk.append([BosFileSystem.join('bos://' + self.bucket, key), [], value])
+                # print("temp_walk=", temp_walk)
+                self.length = len(temp_walk)
+                self.contents = temp_walk
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.count < self.length:
+                    self.count += 1
+                    return self.contents[self.count - 1]
+                else:
+                    raise StopIteration
+
+        path = dir[6:]
+        index = path.index('/')
+        bucket_name = path[0:index]
+        object_key = path[index + 1:]
+
+        if object_key in ['.', './']:
+            prefix = None
+        else:
+            prefix = object_key + '/' if '/' != object_key[-1] else object_key
+        response = self.bos_client.list_objects(bucket_name,
+                                                prefix=prefix)
+        contents = [content.key for content in response.contents]
+        return WalkGenerator(bucket_name, contents)
 
 
 class BFile(object):

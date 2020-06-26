@@ -9,3 +9,4 @@ six >= 1.14.0
 protobuf >= 3.11.0
 opencv-python
 hdfs
+baidubce
