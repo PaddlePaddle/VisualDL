@@ -3,7 +3,7 @@ export interface Run {
     colors: [string, string];
 }
 
-export interface Tag<R = Run> {
+export interface Tag<R extends Run = Run> {
     runs: R[];
     label: string;
 }

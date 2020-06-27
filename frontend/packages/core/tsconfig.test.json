@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "jsx": "preserve",
-        "target": "es2018",
+        "jsx": "react",
+        "target": "es5",
         "module": "esnext",
         "moduleResolution": "node",
         "lib": [
@@ -23,20 +23,13 @@
             ]
         },
         "types": [
-            "@types/node"
+            "@types/node",
+            "@types/jest"
         ],
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "isolatedModules": true
-    },
-    "exclude": [
-        "node_modules",
-        "__tests__",
-        "__mocks__"
-    ],
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx"
-    ]
+        "isolatedModules": true,
+        "allowSyntheticDefaultImports": true,
+        "noImplicitAny": true
+    }
 }

@@ -26,7 +26,7 @@
         "dev": "cross-env NODE_ENV=development ts-node index.ts",
         "build": "tsc",
         "start": "node index.js",
-        "test": "echo \"Error: no test specified\" && exit 0"
+        "test": "echo \"Error: no test specified\" && exit 0; #"
     },
     "bin": "dist/index.js",
     "types": "dist/index.d.ts",

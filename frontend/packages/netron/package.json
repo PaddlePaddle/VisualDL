@@ -24,7 +24,7 @@
     },
     "scripts": {
         "build": "rimraf dist && webpack",
-        "test": "echo \"Error: no test specified\" && exit 0"
+        "test": "echo \"Error: no test specified\" && exit 0; #"
     },
     "files": [
         "dist"

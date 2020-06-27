@@ -1,6 +1,7 @@
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import {headerHeight, rem} from '~/utils/style';
 
+import React from 'react';
 import styled from 'styled-components';
 
 const Error = styled.div`
