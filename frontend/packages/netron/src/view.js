@@ -1026,19 +1026,21 @@ view.ModelFactoryService = class {
         this.register('./tflite', ['.tflite', '.lite', '.tfl', '.bin', '.pb', '.tmfile', '.h5', '.model', '.json']);
         this.register('./tf', ['.pb', '.meta', '.pbtxt', '.prototxt', '.json', '.index', '.ckpt']);
         this.register('./mediapipe', ['.pbtxt']);
-        this.register('./sklearn', ['.pkl', '.joblib', '.model', '.meta', '.pb']);
+        this.register('./uff', ['.uff', '.pb', '.trt', '.pbtxt', '.uff.txt']);
+        this.register('./sklearn', ['.pkl', '.pickle', '.joblib', '.model', '.meta', '.pb', '.pt', '.h5']);
         this.register('./cntk', ['.model', '.cntk', '.cmf', '.dnn']);
-        this.register('./paddle', ['.paddle', '__model__']);
+        this.register('./paddle', ['.paddle', '.pdmodel', '__model__']);
         this.register('./armnn', ['.armnn']);
         this.register('./bigdl', ['.model', '.bigdl']);
         this.register('./darknet', ['.cfg', '.model']);
         this.register('./mnn', ['.mnn']);
         this.register('./ncnn', ['.param', '.bin', '.cfg.ncnn', '.weights.ncnn']);
+        this.register('./tnn', ['.tnnproto', '.tnnmodel']);
         this.register('./tengine', ['.tmfile']);
         this.register('./barracuda', ['.nn']);
         this.register('./openvino', ['.xml', '.bin']);
         this.register('./flux', ['.bson']);
-        this.register('./chainer', ['.npz', '.h5', '.hd5', '.hdf5']);
+        this.register('./npz', ['.npz', '.h5', '.hd5', '.hdf5']);
         this.register('./dl4j', ['.zip']);
         this.register('./mlnet', ['.zip']);
     }
@@ -1300,27 +1302,21 @@ view.ModelFactoryService = class {
             return Promise.reject(new ModelError('File has no content.', true));
         }
         const list = [
-            {name: 'ELF executable', value: '\x7FELF'},
-            {name: 'Git LFS header', value: 'version https://git-lfs.github.com/spec/v1\n'},
-            {name: 'Git LFS header', value: 'oid sha256:'},
-            {name: 'HTML markup', value: '<html>'},
-            {name: 'HTML markup', value: '<!DOCTYPE html>'},
-            {name: 'HTML markup', value: '<!DOCTYPE HTML>'},
-            {name: 'HTML markup', value: '\n\n\n\n\n<!DOCTYPE html>'},
-            {name: 'HTML markup', value: '\n\n\n\n\n\n<!DOCTYPE html>'},
-            {name: 'Unity metadata', value: 'fileFormatVersion:'},
-            {name: 'Vulkan SwiftShader ICD manifest', value: '{"file_format_version": "1.0.0", "ICD":'},
-            {name: 'StringIntLabelMapProto data', value: 'item {\r\n  id:'},
-            {name: 'StringIntLabelMapProto data', value: 'item {\r\n  name:'},
-            {name: 'StringIntLabelMapProto data', value: 'item {\n  id:'},
-            {name: 'StringIntLabelMapProto data', value: 'item {\n  name:'},
-            {name: 'Python source code', value: 'import sys, types, os;'}
+            {name: 'ELF executable', value: /^\x7FELF/},
+            {name: 'Git LFS header', value: /^version https:\/\/git-lfs.github.com\/spec\/v1\n/},
+            {name: 'Git LFS header', value: /^oid sha256:/},
+            {name: 'HTML markup', value: /^\s*<html>/},
+            {name: 'HTML markup', value: /^\s*<!DOCTYPE html>/},
+            {name: 'HTML markup', value: /^\s*<!DOCTYPE HTML>/},
+            {name: 'Unity metadata', value: /^fileFormatVersion:/},
+            {name: 'Vulkan SwiftShader ICD manifest', value: /^{\s*"file_format_version":\s*"1.0.0"\s*,\s*"ICD":/},
+            {name: 'StringIntLabelMapProto data', value: /^item\s*{\r?\n\s*id:/},
+            {name: 'StringIntLabelMapProto data', value: /^item\s*{\r?\n\s*name:/},
+            {name: 'Python source code', value: /^\s*import sys, types, os;/}
         ];
+        const text = new TextDecoder().decode(buffer.subarray(0, Math.min(1024, buffer.length)));
         for (const item of list) {
-            if (
-                buffer.length >= item.value.length &&
-                buffer.subarray(0, item.value.length).every((v, i) => v === item.value.charCodeAt(i))
-            ) {
+            if (text.match(item.value)) {
                 return Promise.reject(new ModelError('Invalid file content. File contains ' + item.name + '.', true));
             }
         }

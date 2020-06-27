@@ -9,6 +9,7 @@
     "histogram": "直方图",
     "loading": "数据载入中，请稍等",
     "next-page": "下一页",
+    "pr-curve": "PR曲线",
     "previous-page": "上一页",
     "run": "运行",
     "running": "运行中",
@@ -27,6 +28,11 @@
     "stop": "停止",
     "stop-realtime-refresh": "停止实时数据刷新",
     "stopped": "已停止",
+    "time-mode": {
+        "relative": "Relative",
+        "step": "Step",
+        "wall": "Wall Time"
+    },
     "total-page": "共 {{count}} 页，跳转至",
     "total-page_plural": "共 {{count}} 页，跳转至",
     "unselected-empty": "未选中任何数据<1/>请在右侧操作栏选择要展示的数据"

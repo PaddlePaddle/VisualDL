@@ -55,7 +55,6 @@ type HistogramChartProps = {
     tag: string;
     mode: Modes;
     running?: boolean;
-    onToggleMaximized?: (maximized: boolean) => void;
 };
 
 const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, mode, running}) => {
