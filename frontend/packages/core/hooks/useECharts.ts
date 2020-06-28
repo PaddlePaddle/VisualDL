@@ -6,12 +6,18 @@ import {dataURL2Blob} from '~/utils/image';
 import {saveAs} from 'file-saver';
 import styled from 'styled-components';
 
-const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(options: {
+export type Options = {
     loading?: boolean;
     gl?: boolean;
     zoom?: boolean;
     autoFit?: boolean;
-}): {
+    onInit?: (echarts: ECharts) => unknown;
+    onDispose?: (echarts: ECharts) => unknown;
+};
+
+const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(
+    options: Options
+): {
     ref: MutableRefObject<T | null>;
     wrapper: MutableRefObject<W | null>;
     echart: ECharts | null;
@@ -31,23 +37,32 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 return;
             }
             echartInstance.current = echarts.init((ref.current as unknown) as HTMLDivElement);
-            if (options.zoom) {
-                setTimeout(() => {
+
+            setTimeout(() => {
+                if (options.zoom) {
                     echartInstance.current?.dispatchAction({
                         type: 'takeGlobalCursor',
                         key: 'dataZoomSelect',
                         dataZoomSelectActive: true
                     });
-                }, 0);
-            }
+                }
+
+                if (echartInstance.current) {
+                    options.onInit?.(echartInstance.current);
+                }
+            }, 0);
+
             setEchart(echartInstance.current);
         })();
-    }, [options.gl, options.zoom]);
+    }, [options.gl, options.zoom, options.onInit]);
 
     const destroyChart = useCallback(() => {
+        if (echartInstance.current) {
+            options.onDispose?.(echartInstance.current);
+        }
         echartInstance.current?.dispose();
         setEchart(null);
-    }, []);
+    }, [options.onDispose]);
 
     useEffect(() => {
         if (process.browser) {

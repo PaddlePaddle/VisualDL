@@ -2,7 +2,7 @@ import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
-import useECharts, {Wrapper} from '~/hooks/useECharts';
+import useECharts, {Options, Wrapper} from '~/hooks/useECharts';
 
 import {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
@@ -16,6 +16,7 @@ type LineChartProps = {
     data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
     loading?: boolean;
     zoom?: boolean;
+    onInit?: Options['onInit'];
 };
 
 export enum XAxisType {
@@ -35,13 +36,14 @@ export type LineChartRef = {
 };
 
 const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
-    ({options, data, title, loading, zoom, className}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
 
         const {ref: echartRef, echart, wrapper, saveAsImage} = useECharts<HTMLDivElement>({
             loading: !!loading,
             zoom,
-            autoFit: true
+            autoFit: true,
+            onInit
         });
 
         useImperativeHandle(ref, () => ({
