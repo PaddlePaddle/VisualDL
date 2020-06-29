@@ -15,12 +15,21 @@
 
 import os
 import tempfile
-import hdfs
 import hashlib
 import base64
-from visualdl.io import bos_conf
-from baidubce.services.bos.bos_client import BosClient
-from baidubce import exception
+
+try:
+    import hdfs
+    from hdfs.util import HdfsError
+    HDFS_ENABLED = True
+except ImportError:
+    HDFS_ENABLED = False
+try:
+    from baidubce.services.bos.bos_client import BosClient
+    from baidubce import exception
+    BOS_ENABLED = True
+except ImportError:
+    BOS_ENABLED = False
 
 # Note: Some codes here refer to TensorBoardX.
 # A good default block size depends on the system in question.
@@ -44,6 +53,8 @@ class FileFactory(object):
     def get_filesystem(self, path):
         if path.startswith(
                 'hdfs://') and "hdfs" not in self._register_factories:
+            if not HDFS_ENABLED:
+                raise RuntimeError('Please install module named "hdfs".')
             try:
                 default_file_factory.register_filesystem("hdfs", HDFileSystem())
             except hdfs.util.HdfsError:
@@ -51,11 +62,11 @@ class FileFactory(object):
                     "Please initialize `~/.hdfscli.cfg` for HDFS.")
         elif path.startswith(
                 'bos://') and "bos" not in self._register_factories:
-            try:
-                default_file_factory.register_filesystem("bos", BosFileSystem())
-            except hdfs.util.HdfsError:
+            if not BOS_ENABLED:
                 raise RuntimeError(
-                    "Please initialize `~/.hdfscli.cfg` for HDFS.")
+                    'Please install module named "bce-python-sdk".')
+            default_file_factory.register_filesystem("bos", BosFileSystem())
+
         prefix = ""
         index = path.find("://")
         if index >= 0:
@@ -139,10 +150,13 @@ class HDFileSystem(object):
             offset = continue_from.get("last_offset", 0)
 
         encoding = None if binary_mode else "utf-8"
-        with self.cli.read(hdfs_path=filename[7:], offset=offset, encoding=encoding) as reader:
-            data = reader.read()
-            continue_from_token = {"last_offset": offset + len(data)}
-            return data, continue_from_token
+        try:
+            with self.cli.read(hdfs_path=filename[7:], offset=offset, encoding=encoding) as reader:
+                data = reader.read()
+                continue_from_token = {"last_offset": offset + len(data)}
+                return data, continue_from_token
+        except HdfsError:
+            raise EOFError('No more events to read on HDFS.')
 
     def append(self, filename, file_content, binary_mode=False):
         self.cli.write(hdfs_path=filename[7:], data=file_content, append=True)
@@ -157,14 +171,20 @@ class HDFileSystem(object):
 
 class BosFileSystem(object):
     def __init__(self):
+        from visualdl.io import bos_conf
         self.bos_client = BosClient(bos_conf.config)
         self.file_length_map = {}
 
-    def exists(self, path):
+    @staticmethod
+    def _get_object_info(path):
         path = path[6:]
         index = path.index('/')
         bucket_name = path[0:index]
         object_key = path[index+1:]
+        return bucket_name, object_key
+
+    def exists(self, path):
+        bucket_name, object_key = BosFileSystem._get_object_info(path)
         try:
             self.bos_client.get_object_meta_data(bucket_name, object_key)
             return True
@@ -175,15 +195,12 @@ class BosFileSystem(object):
         return self.bos_client.get_object_meta_data(bucket_name, object_key)
 
     def makedirs(self, path):
-        if '/' != path[-1]:
+        if not path.endswith('/'):
             path += '/'
         if self.exists(path):
             return
-        path = path[6:]
-        index = path.index('/')
-        bucket_name = path[0:index]
-        object_key = path[index + 1:]
-        if '/' != object_key[-1]:
+        bucket_name, object_key = BosFileSystem._get_object_info(path)
+        if not object_key.endswith('/'):
             object_key += '/'
         init_data = b''
         self.bos_client.append_object(bucket_name=bucket_name,
@@ -197,10 +214,7 @@ class BosFileSystem(object):
         return os.path.join(path, *paths)
 
     def read(self, filename, binary_mode=False, size=0, continue_from=None):
-        path = filename[6:]
-        index = path.index('/')
-        bucket_name = path[0:index]
-        object_key = path[index + 1:]
+        bucket_name, object_key = BosFileSystem._get_object_info(filename)
         offset = 0
         if continue_from is not None:
             offset = continue_from.get("last_offset", 0)
@@ -211,37 +225,30 @@ class BosFileSystem(object):
         return data, continue_from_token
 
     def append(self, filename, file_content, binary_mode=False):
-        path = filename[6:]
-        index = path.index('/')
-        bucket_name = path[0:index]
-        key = path[index + 1:]
+        bucket_name, object_key = BosFileSystem._get_object_info(filename)
         if not self.exists(filename):
             init_data = b''
             self.bos_client.append_object(bucket_name=bucket_name,
-                                          key=key,
+                                          key=object_key,
                                           data=init_data,
                                           content_md5=content_md5(init_data),
                                           content_length=len(init_data),
                                           offset=0)
         content_length = len(file_content)
 
-        offset = self.get_meta(bucket_name, key).metadata.content_length
+        offset = self.get_meta(bucket_name, object_key).metadata.content_length
         self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=key,
+                                      key=object_key,
                                       data=file_content,
                                       content_md5=content_md5(file_content),
                                       content_length=content_length,
                                       offset=offset)
 
     def write(self, filename, file_content, binary_mode=False):
-        filename = filename[6:]
-        filename = str(filename)
-        index = filename.index('/')
-        bucket = filename[0:index]
-        filename = filename[index+1:]
+        bucket_name, object_key = BosFileSystem._get_object_info(filename)
 
-        self.bos_client.append_object(bucket_name=bucket,
-                                      key=filename,
+        self.bos_client.append_object(bucket_name=bucket_name,
+                                      key=object_key,
                                       data=file_content,
                                       content_md5=content_md5(file_content),
                                       content_length=len(file_content))
@@ -286,15 +293,13 @@ class BosFileSystem(object):
                 else:
                     raise StopIteration
 
-        path = dir[6:]
-        index = path.index('/')
-        bucket_name = path[0:index]
-        object_key = path[index + 1:]
+        bucket_name, object_key = BosFileSystem._get_object_info(dir)
 
         if object_key in ['.', './']:
             prefix = None
         else:
-            prefix = object_key + '/' if '/' != object_key[-1] else object_key
+            prefix = object_key if object_key.endswith(
+                '/') else object_key + '/'
         response = self.bos_client.list_objects(bucket_name,
                                                 prefix=prefix)
         contents = [content.key for content in response.contents]

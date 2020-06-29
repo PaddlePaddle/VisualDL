@@ -14,7 +14,6 @@
 # =======================================================================
 from visualdl.io import bfile
 import struct
-from hdfs.util import HdfsError
 
 
 class _RecordReader(object):
@@ -31,10 +30,7 @@ class _RecordReader(object):
     def get_next(self):
         # Read the header
         self._curr_event = None
-        try:
-            header_str = self.file_handle.read(8)
-        except HdfsError:
-            raise EOFError('No more events to read on HDFS.')
+        header_str = self.file_handle.read(8)
         if len(header_str) != 8:
             # Hit EOF so raise and exit
             raise EOFError('No more events to read on LFS.')

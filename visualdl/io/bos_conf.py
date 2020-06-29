@@ -24,6 +24,6 @@ secret_access_key = os.getenv("BOS_SK")
 
 
 # Create BceClientConfiguration
-config = BceClientConfiguration(credentials=BceCredentials(access_key_id,
-                                                           secret_access_key),
-                                endpoint=bos_host)
+config = BceClientConfiguration(
+    credentials=BceCredentials(access_key_id, secret_access_key),
+    endpoint=bos_host)
