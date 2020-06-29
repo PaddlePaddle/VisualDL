@@ -18,7 +18,7 @@ import tempfile
 import hdfs
 import hashlib
 import base64
-from visualdl.io import bos_sample_conf
+from visualdl.io import bos_conf
 from baidubce.services.bos.bos_client import BosClient
 from baidubce import exception
 
@@ -157,7 +157,7 @@ class HDFileSystem(object):
 
 class BosFileSystem(object):
     def __init__(self):
-        self.bos_client = BosClient(bos_sample_conf.config)
+        self.bos_client = BosClient(bos_conf.config)
         self.file_length_map = {}
 
     def exists(self, path):
