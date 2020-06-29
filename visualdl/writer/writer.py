@@ -14,9 +14,14 @@
 # =======================================================================
 import os
 import time
-from visualdl.writer.record_writer import RecordFileWriter
-from visualdl.component.base_component import scalar, image, embedding, audio, histogram
 import numpy as np
+from visualdl.writer.record_writer import RecordFileWriter
+from visualdl.component.base_component import scalar
+from visualdl.component.base_component import image
+from visualdl.component.base_component import embedding
+from visualdl.component.base_component import audio
+from visualdl.component.base_component import histogram
+from visualdl.component.base_component import pr_curve, pr_curve_raw
 
 
 class DummyFileWriter(object):
@@ -280,6 +285,50 @@ class LogWriter(object):
                 bin_edges=bin_edges,
                 step=step,
                 walltime=walltime))
+
+    def add_pr_curve(self,
+                     tag,
+                     labels,
+                     predictions,
+                     step,
+                     num_thresholds=10,
+                     weights=None,
+                     walltime=None):
+        """Add an precision-recall curve to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            labels (numpy.ndarray or list): Binary labels for each element.
+            predictions (numpy.ndarray or list): The probability that an element
+                be classified as true.
+            step (int): Step of pr curve.
+            weights (float): Multiple of data to display on the curve.
+            num_thresholds (int): Number of thresholds used to draw the curve.
+            walltime (int): Wall time of pr curve.
+
+        Example:
+            with LogWriter(logdir="./log/pr_curve_test/train") as writer:
+                for index in range(3):
+                    labels = np.random.randint(2, size=100)
+                    predictions = np.random.rand(100)
+                    writer.add_pr_curve(tag='default',
+                                        labels=labels,
+                                        predictions=predictions,
+                                        step=index)
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        walltime = round(time.time()) if walltime is None else walltime
+        self._get_file_writer().add_record(
+            pr_curve(
+                tag=tag,
+                labels=labels,
+                predictions=predictions,
+                step=step,
+                walltime=walltime,
+                num_thresholds=num_thresholds,
+                weights=weights
+                ))
 
     def flush(self):
         """Flush all data in cache to disk.

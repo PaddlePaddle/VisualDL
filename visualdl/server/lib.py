@@ -114,6 +114,40 @@ def get_histogram_tags(log_reader):
     return get_logs(log_reader, "histogram")
 
 
+def get_pr_curve_tags(log_reader):
+    return get_logs(log_reader, "pr_curve")
+
+
+def get_pr_curve(log_reader, run, tag):
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
+        run, decode_tag(tag))
+    results = []
+    for item in records:
+        pr_curve = item.pr_curve
+        length = len(pr_curve.precision)
+        num_thresholds = [float(v) / length for v in range(1, length + 1)]
+        results.append([item.timestamp,
+                        item.id,
+                        list(pr_curve.precision),
+                        list(pr_curve.recall),
+                        list(pr_curve.TP),
+                        list(pr_curve.FP),
+                        list(pr_curve.TN),
+                        list(pr_curve.FN),
+                        num_thresholds])
+    return results
+
+
+def get_pr_curve_step(log_reader, run, tag=None):
+    tag = get_pr_curve_tags(log_reader)[run][0] if tag is None else tag
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
+        run, decode_tag(tag))
+    results = [[item.timestamp, item.id] for item in records]
+    return results
+
+
 def get_embeddings(log_reader, run, tag, reduction, dimension=2):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("embeddings").get_items(
