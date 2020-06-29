@@ -16,12 +16,7 @@ import os
 import time
 import numpy as np
 from visualdl.writer.record_writer import RecordFileWriter
-from visualdl.component.base_component import scalar
-from visualdl.component.base_component import image
-from visualdl.component.base_component import embedding
-from visualdl.component.base_component import audio
-from visualdl.component.base_component import histogram
-from visualdl.component.base_component import pr_curve, pr_curve_raw
+from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve
 
 
 class DummyFileWriter(object):
