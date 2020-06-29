@@ -110,6 +110,10 @@ class Api(object):
         return self._get_with_retry('data/plugin/embeddings/tags', lib.get_embeddings_tags)
 
     @result()
+    def pr_curve_tags(self):
+        return self._get_with_retry('data/plugin/pr_curves/tags', lib.get_pr_curve_tags)
+
+    @result()
     def scalars_list(self, run, tag):
         key = os.path.join('data/plugin/scalars/scalars', run, tag)
         return self._get_with_retry(key, lib.get_scalar, run, tag)
@@ -151,6 +155,16 @@ class Api(object):
         key = os.path.join('data/plugin/histogram/histogram', run, tag)
         return self._get_with_retry(key, lib.get_histogram, run, tag)
 
+    @result()
+    def pr_curves_pr_curve(self, run, tag):
+        key = os.path.join('data/plugin/pr_curves/pr_curve', run, tag)
+        return self._get_with_retry(key, lib.get_pr_curve, run, tag)
+
+    @result()
+    def pr_curves_steps(self, run):
+        key = os.path.join('data/plugin/pr_curves/steps', run)
+        return self._get_with_retry(key, lib.get_pr_curve_step, run)
+
     @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
     def graphs_graph(self):
         key = os.path.join('data/plugin/graphs/graph')
@@ -169,6 +183,7 @@ def create_api_call(logdir, model, cache_timeout):
         'audio/tags': (api.audio_tags, []),
         'embeddings/tags': (api.embeddings_tags, []),
         'histogram/tags': (api.histogram_tags, []),
+        'pr-curve/tags': (api.pr_curve_tags, []),
         'scalars/list': (api.scalars_list, ['run', 'tag']),
         'images/list': (api.images_list, ['run', 'tag']),
         'images/image': (api.images_image, ['run', 'tag', 'index']),
@@ -176,7 +191,9 @@ def create_api_call(logdir, model, cache_timeout):
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
         'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
-        'graphs/graph': (api.graphs_graph, [])
+        'graphs/graph': (api.graphs_graph, []),
+        'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
+        'pr-curve/steps': (api.pr_curves_steps, ['run'])
     }
 
     def call(path: str, args):

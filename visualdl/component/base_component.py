@@ -134,8 +134,146 @@ def audio(tag, audio_array, sample_rate, step, walltime):
 
 
 def histogram(tag, hist, bin_edges, step, walltime):
+    """Package data to one histogram.
+
+    Args:
+        tag (string): Data identifier
+        hist (numpy.ndarray or list): The values of the histogram
+        bin_edges (numpy.ndarray or list): The bin edges
+        step (int): Step of histogram
+        walltime (int): Wall time of histogram
+
+    Return:
+        Package with format of record_pb2.Record
+    """
     histogram = Record.Histogram(hist=hist, bin_edges=bin_edges)
     return Record(values=[
         Record.Value(
             id=step, tag=tag, timestamp=walltime, histogram=histogram)
+    ])
+
+
+def compute_curve(labels, predictions, num_thresholds=None, weights=None):
+    """ Compute precision-recall curve data by labels and predictions.
+
+    Args:
+        labels (numpy.ndarray or list): Binary labels for each element.
+        predictions (numpy.ndarray or list): The probability that an element be
+            classified as true.
+        num_thresholds (int): Number of thresholds used to draw the curve.
+        weights (float): Multiple of data to display on the curve.
+    """
+    _MINIMUM_COUNT = 1e-7
+
+    if weights is None:
+        weights = 1.0
+
+    bucket_indices = np.int32(np.floor(predictions * (num_thresholds - 1)))
+    float_labels = labels.astype(np.float)
+    histogram_range = (0, num_thresholds - 1)
+    tp_buckets, _ = np.histogram(
+        bucket_indices,
+        bins=num_thresholds,
+        range=histogram_range,
+        weights=float_labels * weights)
+    fp_buckets, _ = np.histogram(
+        bucket_indices,
+        bins=num_thresholds,
+        range=histogram_range,
+        weights=(1.0 - float_labels) * weights)
+
+    # Obtain the reverse cumulative sum.
+    tp = np.cumsum(tp_buckets[::-1])[::-1]
+    fp = np.cumsum(fp_buckets[::-1])[::-1]
+    tn = fp[0] - fp
+    fn = tp[0] - tp
+    precision = tp / np.maximum(_MINIMUM_COUNT, tp + fp)
+    recall = tp / np.maximum(_MINIMUM_COUNT, tp + fn)
+    data = {
+        'tp': tp.astype(int).tolist(),
+        'fp': fp.astype(int).tolist(),
+        'tn': tn.astype(int).tolist(),
+        'fn': fn.astype(int).tolist(),
+        'precision': precision.astype(float).tolist(),
+        'recall': recall.astype(float).tolist()
+    }
+    return data
+
+
+def pr_curve(tag, labels, predictions, step, walltime, num_thresholds=127,
+             weights=None):
+    """Package data to one pr_curve.
+
+    Args:
+        tag (string): Data identifier
+        labels (numpy.ndarray or list): Binary labels for each element.
+        predictions (numpy.ndarray or list): The probability that an element be
+            classified as true.
+        step (int): Step of pr_curve
+        walltime (int): Wall time of pr_curve
+        num_thresholds (int): Number of thresholds used to draw the curve.
+        weights (float): Multiple of data to display on the curve.
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+    num_thresholds = min(num_thresholds, 127)
+    prcurve_map = compute_curve(labels, predictions, num_thresholds, weights)
+
+    return pr_curve_raw(tag=tag,
+                        tp=prcurve_map['tp'],
+                        fp=prcurve_map['fp'],
+                        tn=prcurve_map['tn'],
+                        fn=prcurve_map['fn'],
+                        precision=prcurve_map['precision'],
+                        recall=prcurve_map['recall'],
+                        step=step,
+                        walltime=walltime)
+
+
+def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, step, walltime):
+    """Package raw data to one pr_curve.
+
+    Args:
+        tag (string): Data identifier
+        tp (list): True Positive.
+        fp (list): False Positive.
+        tn (list): True Negative.
+        fn (list): False Negative.
+        precision (list): The fraction of retrieved documents that are relevant
+            to the query:
+        recall (list): The fraction of the relevant documents that are
+            successfully retrieved.
+        step (int): Step of pr_curve
+        walltime (int): Wall time of pr_curve
+        num_thresholds (int): Number of thresholds used to draw the curve.
+        weights (float): Multiple of data to display on the curve.
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+
+    """
+    if isinstance(tp, np.ndarray):
+        tp = tp.astype(int).tolist()
+    if isinstance(fp, np.ndarray):
+        fp = fp.astype(int).tolist()
+    if isinstance(tn, np.ndarray):
+        tn = tn.astype(int).tolist()
+    if isinstance(fn, np.ndarray):
+        fn = fn.astype(int).tolist()
+    if isinstance(precision, np.ndarray):
+        precision = precision.astype(int).tolist()
+    if isinstance(recall, np.ndarray):
+        recall = recall.astype(int).tolist()
+    """
+    prcurve = Record.PRCurve(TP=tp,
+                             FP=fp,
+                             TN=tn,
+                             FN=fn,
+                             precision=precision,
+                             recall=recall)
+    return Record(values=[
+        Record.Value(
+            id=step, tag=tag, timestamp=walltime, pr_curve=prcurve)
     ])
