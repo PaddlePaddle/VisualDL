@@ -14,11 +14,12 @@
 # =======================================================================
 
 import sys
+import socket
 from argparse import ArgumentParser
 
 from visualdl.server.log import logger
 
-default_host = '127.0.0.1'
+default_host = None
 default_port = 8040
 default_cache_timeout = 20
 
@@ -50,6 +51,16 @@ def validate_args(args):
         sys.exit(-1)
 
 
+def get_host(host=None, port=default_port):
+    if not host:
+        host = socket.getfqdn()
+        try:
+            socket.create_connection((host, port), timeout=1)
+        except socket.error:
+            host = 'localhost'
+    return host
+
+
 def format_args(args):
     validate_args(args)
 
@@ -62,6 +73,9 @@ def format_args(args):
     # don't open browser in API mode
     if args.api_only:
         args.open_browser = False
+
+    if not args.host:
+        args.host = get_host(args.host, args.port)
 
     return args
 
