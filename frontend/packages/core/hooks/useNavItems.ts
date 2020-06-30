@@ -29,7 +29,7 @@ export const navMap = {
     image: Pages.Samples,
     graph: Pages.Graphs,
     embeddings: Pages.HighDimensional,
-    'pr-curve': Pages.PRCurve
+    pr_curve: Pages.PRCurve
 } as const;
 
 const useNavItems = () => {
