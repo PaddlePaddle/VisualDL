@@ -27,6 +27,9 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     const echartInstance = useRef<ECharts | null>(null);
     const [echart, setEchart] = useState<ECharts | null>(null);
 
+    const onInit = useRef(options.onInit);
+    const onDispose = useRef(options.onDispose);
+
     const createChart = useCallback(() => {
         (async () => {
             const echarts = await import('echarts');
@@ -48,21 +51,21 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 }
 
                 if (echartInstance.current) {
-                    options.onInit?.(echartInstance.current);
+                    onInit.current?.(echartInstance.current);
                 }
             }, 0);
 
             setEchart(echartInstance.current);
         })();
-    }, [options.gl, options.zoom, options.onInit]);
+    }, [options.gl, options.zoom]);
 
     const destroyChart = useCallback(() => {
         if (echartInstance.current) {
-            options.onDispose?.(echartInstance.current);
+            onDispose.current?.(echartInstance.current);
         }
         echartInstance.current?.dispose();
         setEchart(null);
-    }, [options.onDispose]);
+    }, []);
 
     useEffect(() => {
         if (process.browser) {

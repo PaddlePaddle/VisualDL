@@ -35,20 +35,20 @@ function useRunningRequest<D = unknown, E = unknown>(
     key: keyInterface,
     running: boolean,
     fetcher?: fetcherFn<D>,
-    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'refreshInterval' | 'dedupingInterval' | 'errorRetryInterval'>
+    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'dedupingInterval' | 'errorRetryInterval'>
 ): Response<D, E>;
 function useRunningRequest<D = unknown, E = unknown>(
     key: keyInterface,
     running: boolean,
     fetcher?: fetcherFn<D>,
-    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'refreshInterval' | 'dedupingInterval' | 'errorRetryInterval'>
+    config?: Omit<ConfigInterface<D, E, fetcherFn<D>>, 'dedupingInterval' | 'errorRetryInterval'>
 ) {
     const c = useMemo<ConfigInterface<D, E, fetcherFn<D>>>(
         () => ({
             ...config,
-            refreshInterval: running ? 15 * 1000 : 0,
-            dedupingInterval: 15 * 1000,
-            errorRetryInterval: 15 * 1000
+            refreshInterval: running ? config?.refreshInterval ?? 15 * 1000 : 0,
+            dedupingInterval: config?.refreshInterval ?? 15 * 1000,
+            errorRetryInterval: config?.refreshInterval ?? 15 * 1000
         }),
         [running, config]
     );

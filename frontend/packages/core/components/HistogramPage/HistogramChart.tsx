@@ -10,19 +10,21 @@ import {
 } from '~/resource/histogram';
 import LineChart, {LineChartRef} from '~/components/LineChart';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import StackChart, {StackChartRef} from '~/components/StackChart';
+import StackChart, {StackChartProps, StackChartRef} from '~/components/StackChart';
 import {rem, size} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import {Run} from '~/types';
 import {distance} from '~/utils';
 import ee from '~/utils/event';
+import {fetcher} from '~/utils/fetch';
 import {format} from 'd3-format';
 import minBy from 'lodash/minBy';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
+import useThrottleFn from '~/hooks/useThrottleFn';
 import {useTranslation} from '~/utils/i18n';
 
 const formatTooltipXValue = format('.4f');
@@ -78,7 +80,11 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
 
     const {data: dataset, error, loading} = useRunningRequest<HistogramData>(
         `/histogram/list?${queryString.stringify({run: run.label, tag})}`,
-        !!running
+        !!running,
+        fetcher,
+        {
+            refreshInterval: 60 * 1000
+        }
     );
 
     const [maximized, setMaximized] = useState<boolean>(false);
@@ -105,7 +111,7 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
         type Optional<T> = T | undefined;
         if (mode === Modes.Overlay) {
             return (data as Optional<OverlayData>)?.data.map((items, index) => ({
-                name: `step${items[0][1]}`,
+                name: `${t('common:time-mode.step')}${items[0][1]}`,
                 data: items,
                 lineStyle: {
                     color: run.colors[index === highlight || highlight == null ? 0 : 1]
@@ -130,15 +136,12 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
             };
         }
         return null as never;
-    }, [data, mode, run, highlight]);
+    }, [data, mode, run, highlight, t]);
 
-    const formatter = useCallback(
-        (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
-            if (!data) {
-                return '';
-            }
-            if (mode === Modes.Overlay) {
-                if (highlight == null) {
+    const formatter = {
+        [Modes.Overlay]: useCallback(
+            (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
+                if (!data || highlight == null) {
                     return '';
                 }
                 const series = (params as EChartOption.Tooltip.Format[]).filter(
@@ -148,64 +151,72 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
                     series[0].seriesName,
                     ...series.map(s => `${formatTooltipXValue(s.data[2])}, ${formatTooltipYValue(s.data[3])}`)
                 ].join('<br />');
-            }
-            if (mode === Modes.Offset) {
-                return '';
-            }
-            return '' as never;
-        },
-        [highlight, data, mode]
-    );
+            },
+            [highlight, data]
+        ),
+        [Modes.Offset]: useCallback(
+            (step: number, dots: [number, number, number][]) =>
+                [
+                    `${t('common:time-mode.step')}${step}`,
+                    ...dots
+                        .filter(d => d[1] === step)
+                        .map(d => `${formatTooltipXValue(d[0])}, ${formatTooltipYValue(d[2])}`)
+                ].join('<br />'),
+            [t]
+        )
+    } as const;
 
     const options = useMemo(
         () => ({
             ...chartOptions[mode],
             color: [run.colors[0]],
             tooltip: {
-                formatter
+                formatter: formatter[mode]
             }
         }),
         [mode, run, formatter]
     );
+
+    const mousemove = useCallback((echarts: ECharts, {offsetX, offsetY}: {offsetX: number; offsetY: number}) => {
+        const series = echarts.getOption().series;
+        const pt: [number, number] = [offsetX, offsetY];
+        if (series) {
+            type Distance = number;
+            type Index = number;
+            const npts: [number, number, Distance, Index][] = series.map((s, i) =>
+                (s.data as OverlayDataItem[])?.reduce(
+                    (m, [, , x, y]) => {
+                        const px = echarts.convertToPixel('grid' as EChartsConvertFinder, [x, y]) as [number, number];
+                        const d = distance(px, pt);
+                        if (d < m[2]) {
+                            return [x, y, d, i];
+                        }
+                        return m;
+                    },
+                    [0, 0, Number.POSITIVE_INFINITY, i]
+                )
+            );
+            const npt = minBy(npts, p => p[2]);
+            setHighlight(npt?.[3] ?? null);
+            return;
+        }
+    }, []);
+
+    const throttled = useThrottleFn(mousemove, {wait: 200});
 
     const onInit = useCallback(
         (echarts: ECharts) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const zr = (echarts as any).getZr();
             if (zr) {
-                zr.on('mousemove', ({offsetX, offsetY}: {offsetX: number; offsetY: number}) => {
-                    const series = echarts.getOption().series;
-                    const pt: [number, number] = [offsetX, offsetY];
-                    if (series) {
-                        if (mode === Modes.Overlay) {
-                            type Distance = number;
-                            type Index = number;
-                            const npts: [number, number, Distance, Index][] = series.map((s, i) =>
-                                (s.data as OverlayDataItem[])?.reduce(
-                                    (m, [, , x, y]) => {
-                                        const px = echarts.convertToPixel('grid' as EChartsConvertFinder, [x, y]) as [
-                                            number,
-                                            number
-                                        ];
-                                        const d = distance(px, pt);
-                                        if (d < m[2]) {
-                                            return [x, y, d, i];
-                                        }
-                                        return m;
-                                    },
-                                    [0, 0, Number.POSITIVE_INFINITY, i]
-                                )
-                            );
-                            const npt = minBy(npts, p => p[2]);
-                            setHighlight(npt?.[3] ?? null);
-                            return;
-                        }
-                    }
+                zr.on('mousemove', (e: {offsetX: number; offsetY: number}) => throttled.run(echarts, e));
+                zr.on('mouseout', () => {
+                    throttled.cancel();
+                    setHighlight(null);
                 });
-                zr.on('mouseout', () => setHighlight(null));
             }
         },
-        [mode]
+        [throttled]
     );
 
     const chart = useMemo(() => {
@@ -215,7 +226,7 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
                     ref={echart as React.RefObject<LineChartRef>}
                     title={title}
                     data={chartData as EChartOption<EChartOption.SeriesLine>['series']}
-                    options={options}
+                    options={options as EChartOption}
                     loading={loading}
                     onInit={onInit}
                 />
@@ -226,9 +237,8 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
                 <StyledStackChart
                     ref={echart as React.RefObject<StackChartRef>}
                     title={title}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    data={chartData as any}
-                    options={options}
+                    data={chartData as StackChartProps['data']}
+                    options={options as EChartOption}
                     loading={loading}
                 />
             );
