@@ -75,7 +75,7 @@ fn compute_histogram(
     let mut range: Vec<f64> = vec![];
     let mut optional = Some(min);
     while let Some(i) = optional {
-        if i > max {
+        if i >= max {
             optional = None;
         } else {
             range.push(i);

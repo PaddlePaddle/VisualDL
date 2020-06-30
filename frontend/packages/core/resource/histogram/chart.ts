@@ -5,9 +5,6 @@ import {Modes} from './types';
 const baseOptions: EChartOption = {
     legend: {
         data: []
-    },
-    tooltip: {
-        showContent: false
     }
 };
 

@@ -24,5 +24,8 @@ module.exports = {
             .map(p => `tsc -p ${p} --noEmit`),
 
     // lint changed files
-    '**/*.(j|t)s?(x)': filenames => `eslint ${filenames.join(' ')}`
+    '**/*.(j|t)s?(x)': filenames => [
+        `eslint ${filenames.join(' ')}`,
+        `yarn test --silent --bail --findRelatedTests ${filenames.join(' ')}`
+    ]
 };

@@ -6,12 +6,18 @@ import {dataURL2Blob} from '~/utils/image';
 import {saveAs} from 'file-saver';
 import styled from 'styled-components';
 
-const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(options: {
+export type Options = {
     loading?: boolean;
     gl?: boolean;
     zoom?: boolean;
     autoFit?: boolean;
-}): {
+    onInit?: (echarts: ECharts) => unknown;
+    onDispose?: (echarts: ECharts) => unknown;
+};
+
+const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElement>(
+    options: Options
+): {
     ref: MutableRefObject<T | null>;
     wrapper: MutableRefObject<W | null>;
     echart: ECharts | null;
@@ -20,6 +26,9 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     const ref = useRef<T | null>(null);
     const echartInstance = useRef<ECharts | null>(null);
     const [echart, setEchart] = useState<ECharts | null>(null);
+
+    const onInit = useRef(options.onInit);
+    const onDispose = useRef(options.onDispose);
 
     const createChart = useCallback(() => {
         (async () => {
@@ -31,20 +40,29 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 return;
             }
             echartInstance.current = echarts.init((ref.current as unknown) as HTMLDivElement);
-            if (options.zoom) {
-                setTimeout(() => {
+
+            setTimeout(() => {
+                if (options.zoom) {
                     echartInstance.current?.dispatchAction({
                         type: 'takeGlobalCursor',
                         key: 'dataZoomSelect',
                         dataZoomSelectActive: true
                     });
-                }, 0);
-            }
+                }
+
+                if (echartInstance.current) {
+                    onInit.current?.(echartInstance.current);
+                }
+            }, 0);
+
             setEchart(echartInstance.current);
         })();
     }, [options.gl, options.zoom]);
 
     const destroyChart = useCallback(() => {
+        if (echartInstance.current) {
+            onDispose.current?.(echartInstance.current);
+        }
         echartInstance.current?.dispose();
         setEchart(null);
     }, []);
