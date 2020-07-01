@@ -142,7 +142,9 @@ class HDFileSystem(object):
 
     @staticmethod
     def join(path, *paths):
-        return os.path.join(path, *paths)
+        result = os.path.join(path, *paths)
+        result.replace('\\', '/')
+        return result
 
     def read(self, filename, binary_mode=False, size=0, continue_from=None):
         offset = 0
@@ -211,7 +213,9 @@ class BosFileSystem(object):
 
     @staticmethod
     def join(path, *paths):
-        return os.path.join(path, *paths)
+        result = os.path.join(path, *paths)
+        result.replace('\\', '/')
+        return result
 
     def read(self, filename, binary_mode=False, size=0, continue_from=None):
         bucket_name, object_key = BosFileSystem._get_object_info(filename)
