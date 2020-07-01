@@ -1,0 +1,2 @@
+hdfs
+bce-python-sdk
