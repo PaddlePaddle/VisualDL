@@ -1,7 +1,10 @@
+ [**English**](./README-en.md)
+
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/packages/core/public/images/logo-visualdl.svg?sanitize=true" width="70%"/>
 </p>
+
 
 <p align="center">
 <a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/paddlepaddle/visualdl/develop?style=flat-square" alt="Build Status" /></a>
