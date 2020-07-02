@@ -20,7 +20,7 @@ type PreloaderProps = {
 };
 
 const Preloader: FunctionComponent<PreloaderProps> = ({url, as}) =>
-    process.env.API_TOKEN_KEY ? null : (
+    process.env.API_TOKEN_KEY || globalThis.__vdl_api_token_key__ ? null : (
         <Head>
             <link rel="preload" href={process.env.API_URL + url} crossOrigin="anonymous" as={as || 'fetch'} />
         </Head>

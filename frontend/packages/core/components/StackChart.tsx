@@ -120,6 +120,36 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
             [makePolyPoints]
         );
 
+        const [highlight, setHighlight] = useState<number | null>(null);
+        const [dots, setDots] = useState<[number, number, number][]>([]);
+        const tooltipRef = useRef<HTMLDivElement | null>(null);
+        const [tooltip, setTooltip] = useState('');
+        const highLightRef = useRef(highlight);
+        const dotsRef = useRef(dots);
+        useEffect(() => {
+            highLightRef.current = highlight;
+        }, [highlight]);
+        useEffect(() => {
+            dotsRef.current = dots;
+        }, [dots]);
+
+        const pointerLabelFormatter = options?.axisPointer?.label?.formatter;
+
+        // formatter change will cause echarts rerender axis pointer label
+        // so we need to use 2 refs instead of dots and highlight to get rid of dependencies of these two variables
+        const axisPointerLabelFormatter = useCallback(
+            params => {
+                if (!pointerLabelFormatter || highLightRef.current == null) {
+                    return '';
+                }
+                if ('string' === typeof pointerLabelFormatter) {
+                    return pointerLabelFormatter;
+                }
+                return pointerLabelFormatter(params, dotsRef.current[highLightRef.current]);
+            },
+            [pointerLabelFormatter]
+        );
+
         const chartOptions = useMemo<EChartOption>(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, toolbox, series, ...defaults} = chart;
@@ -133,9 +163,17 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                         min: minY,
                         max: maxY
                     },
+                    axisPointer: {
+                        label: {
+                            formatter: axisPointerLabelFormatter
+                        }
+                    },
                     xAxis: {
                         min: minX,
-                        max: maxX
+                        max: maxX,
+                        axisPointer: {
+                            type: 'none'
+                        }
                     },
                     yAxis: {
                         inverse: true,
@@ -147,6 +185,9 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                         },
                         axisLabel: {
                             formatter: (value: number) => (value < minY ? '' : value + '')
+                        },
+                        axisPointer: {
+                            type: 'none'
                         }
                     },
                     grid: {
@@ -174,12 +215,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                 options,
                 defaults
             );
-        }, [options, title, rawData, minX, maxX, minY, maxY, negativeY, renderItem]);
-
-        const [highlight, setHighlight] = useState<number | null>(null);
-        const [dots, setDots] = useState<[number, number, number][]>([]);
-        const tooltipRef = useRef<HTMLDivElement | null>(null);
-        const [tooltip, setTooltip] = useState('');
+        }, [options, title, rawData, minX, maxX, minY, maxY, negativeY, renderItem, axisPointerLabelFormatter]);
 
         const mouseout = useCallback(() => {
             setHighlight(null);
@@ -220,7 +256,8 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                             break;
                         }
                     }
-                    setHighlight(step == null ? null : data.findIndex(row => row[1] === step));
+                    const highlight = step == null ? null : data.findIndex(row => row[1] === step);
+                    setHighlight(highlight);
 
                     // find nearest x axis point
                     let dots: [number, number, number][] = [];
@@ -247,7 +284,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                     if (chartOptions.tooltip?.formatter) {
                         setTooltip(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            step == null ? '' : (chartOptions.tooltip?.formatter as any)?.(step, dots)
+                            highlight == null ? '' : (chartOptions.tooltip?.formatter as any)?.(dots[highlight])
                         );
                         if (tooltipRef.current) {
                             if (step == null) {

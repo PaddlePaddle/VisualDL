@@ -12,12 +12,14 @@ import {ToastContainer} from 'react-toastify';
 import queryString from 'query-string';
 import {withRouter} from 'next/router';
 
+const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
+
 class VDLApp extends App {
     constructor(props: AppProps) {
         super(props);
-        if (process.browser && process.env.API_TOKEN_KEY) {
+        if (process.browser && API_TOKEN_KEY) {
             const query = queryString.parse(window.location.search);
-            setApiToken(query[process.env.API_TOKEN_KEY]);
+            setApiToken(query[API_TOKEN_KEY]);
         }
     }
 
@@ -25,16 +27,16 @@ class VDLApp extends App {
         Router.events.on('routeChangeStart', () => NProgress.start());
         Router.events.on('routeChangeComplete', (url: string) => {
             NProgress.done();
-            if (process.env.API_TOKEN_KEY) {
+            if (API_TOKEN_KEY) {
                 const id = getApiToken();
                 const parsed = queryString.parseUrl(url);
-                if (id && !parsed.query[process.env.API_TOKEN_KEY]) {
+                if (id && !parsed.query[API_TOKEN_KEY]) {
                     this.props.router.replace(
                         queryString.stringifyUrl({
                             url: parsed.url,
                             query: {
                                 ...parsed.query,
-                                [process.env.API_TOKEN_KEY]: id
+                                [API_TOKEN_KEY]: id
                             }
                         }),
                         undefined,
@@ -82,8 +84,8 @@ class VDLApp extends App {
     static async getInitialProps(appContext: AppContext) {
         const appProps = await App.getInitialProps(appContext);
 
-        if (process.env.API_TOKEN_KEY) {
-            setApiToken(appContext.router.query[process.env.API_TOKEN_KEY]);
+        if (API_TOKEN_KEY) {
+            setApiToken(appContext.router.query[API_TOKEN_KEY]);
         }
         return {...appProps};
     }

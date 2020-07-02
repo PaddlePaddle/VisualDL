@@ -16,9 +16,12 @@ import {InitConfig} from '@visualdl/i18n';
 import Language from '~/components/Language';
 import ee from '~/utils/event';
 import {getApiToken} from '~/utils/fetch';
+import queryString from 'query-string';
 import styled from 'styled-components';
 import useNavItems from '~/hooks/useNavItems';
 import {useRouter} from 'next/router';
+
+const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
 
 const Nav = styled.nav`
     background-color: ${navbarBackgroundColor};
@@ -107,10 +110,12 @@ const Navbar: FunctionComponent = () => {
             path += `/${subpath}`;
         }
         path += '/index';
-        if (process.env.API_TOKEN_KEY) {
+        if (API_TOKEN_KEY) {
             const id = getApiToken();
             if (id) {
-                path += `?${process.env.API_TOKEN_KEY}=${encodeURIComponent(id)}`;
+                path += `?${queryString.stringify({
+                    [API_TOKEN_KEY]: id
+                })}`;
             }
         }
         return path;
