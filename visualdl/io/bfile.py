@@ -179,13 +179,13 @@ class BosFileSystem(object):
     def __init__(self):
         self.max_contents_count = 1
         self.max_contents_time = 1
-        self._file_contents_to_add = b''
-        self._file_contents_count = 0
-        self._start_append_time = time.time()
-
         self.get_bos_config()
         self.bos_client = BosClient(self.config)
         self.file_length_map = {}
+
+        self._file_contents_to_add = b''
+        self._file_contents_count = 0
+        self._start_append_time = time.time()
 
     def get_bos_config(self):
         bos_host = os.getenv("BOS_HOST")
@@ -248,10 +248,17 @@ class BosFileSystem(object):
         offset = 0
         if continue_from is not None:
             offset = continue_from.get("last_offset", 0)
-        data = self.bos_client.get_object_as_string(bucket_name=bucket_name,
-                                                    key=object_key)
-        data = data[offset:]
-        continue_from_token = {"last_offset": len(data)}
+        length = int(
+            self.get_meta(bucket_name, object_key).metadata.content_length)
+        if offset < length:
+            data = self.bos_client.get_object_as_string(bucket_name=bucket_name,
+                                                        key=object_key,
+                                                        range=[offset,
+                                                               length - 1])
+        else:
+            data = b''
+
+        continue_from_token = {"last_offset": length}
         return data, continue_from_token
 
     def ready_to_append(self):
