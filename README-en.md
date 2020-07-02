@@ -26,8 +26,8 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 ## Contents
 
 * [Key Highlights](#Key-Highlights)
-* [Installation ](#Installation)
-* [Usage Guidline](#Usage-Guidline)
+* [Installation](#Installation)
+* [Usage Guideline](#Usage-Guideline)
 * [Function Preview](#Function-Preview)
 * [Contribution](#Contribution)
 * [More Details](#More-Details)
@@ -35,7 +35,7 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 
 
-## Key highlights
+## Key Highlights
 
 ### Easy to Use
 
@@ -243,7 +243,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 VisualDL is an open source project supported by  [PaddlePaddle](https://www.paddlepaddle.org/) and [ECharts](https://echarts.apache.org/) . Developers are warmly welcomed to use, comment and contribute.
 
 
-## More details
+## More Details
 
 For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md)。
 
