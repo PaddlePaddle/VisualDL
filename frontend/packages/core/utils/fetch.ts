@@ -3,28 +3,33 @@
 
 import fetch from 'isomorphic-unfetch';
 
+const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
+
 const API_TOKEN_HEADER = 'X-VisualDL-Instance-ID';
 
 function addApiToken(options?: RequestInit): RequestInit | undefined {
-    if (!process.env.API_TOKEN_KEY || !globalThis.__visualdl_instance_id__) {
+    const id = getApiToken();
+    if (!API_TOKEN_KEY || !id) {
         return options;
     }
     const {headers, ...rest} = options || {};
+    const newHeaders = new Headers(headers);
+    if (Array.isArray(id)) {
+        id.forEach(value => newHeaders.append(API_TOKEN_HEADER, value));
+    } else {
+        newHeaders.append(API_TOKEN_HEADER, id);
+    }
     return {
         ...rest,
-        headers: {
-            ...(headers || {}),
-            [API_TOKEN_HEADER]: globalThis.__visualdl_instance_id__
-        }
+        headers: newHeaders
     };
 }
 
 export function setApiToken(id?: string | string[] | null) {
-    const instanceId = Array.isArray(id) ? id[0] : id;
-    globalThis.__visualdl_instance_id__ = instanceId || '';
+    globalThis.__visualdl_instance_id__ = id || '';
 }
 
-export function getApiToken() {
+export function getApiToken(): string | string[] | null {
     return globalThis.__visualdl_instance_id__ || '';
 }
 

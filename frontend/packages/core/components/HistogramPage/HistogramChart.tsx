@@ -144,27 +144,36 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
                 if (!data || highlight == null) {
                     return '';
                 }
-                const series = (params as EChartOption.Tooltip.Format[]).filter(
+                const series = (params as EChartOption.Tooltip.Format[]).find(
                     s => s.data[1] === (data as OverlayData).data[highlight][0][1]
                 );
-                return [
-                    series[0].seriesName,
-                    ...series.map(s => `${formatTooltipXValue(s.data[2])}, ${formatTooltipYValue(s.data[3])}`)
-                ].join('<br />');
+                return series?.seriesName ?? '';
             },
             [highlight, data]
         ),
-        [Modes.Offset]: useCallback(
-            (step: number, dots: [number, number, number][]) =>
-                [
-                    `${t('common:time-mode.step')}${step}`,
-                    ...dots
-                        .filter(d => d[1] === step)
-                        .map(d => `${formatTooltipXValue(d[0])}, ${formatTooltipYValue(d[2])}`)
-                ].join('<br />'),
-            [t]
-        )
+        [Modes.Offset]: useCallback((dot: [number, number, number]) => dot[2], [])
     } as const;
+
+    const pointerFormatter = {
+        [Modes.Overlay]: useCallback((params: {value: number; axisDimension: 'x' | 'y'}) => {
+            if (params.axisDimension === 'x') {
+                return formatTooltipXValue(params.value);
+            }
+            if (params.axisDimension === 'y') {
+                return formatTooltipYValue(params.value);
+            }
+            return '' as never;
+        }, []),
+        [Modes.Offset]: useCallback((params: {axisDimension: 'x' | 'y'}, dot: [number, number, number]) => {
+            if (params.axisDimension === 'x') {
+                return formatTooltipXValue(dot?.[0]);
+            }
+            if (params.axisDimension === 'y') {
+                return formatTooltipYValue(dot?.[1]);
+            }
+            return '' as never;
+        }, [])
+    };
 
     const options = useMemo(
         () => ({
@@ -172,9 +181,24 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
             color: [run.colors[0]],
             tooltip: {
                 formatter: formatter[mode]
+            },
+            axisPointer: {
+                label: {
+                    formatter: pointerFormatter[mode]
+                }
+            },
+            xAxis: {
+                axisPointer: {
+                    snap: mode === Modes.Overlay
+                }
+            },
+            yAxis: {
+                axisPointer: {
+                    snap: mode === Modes.Overlay
+                }
             }
         }),
-        [mode, run, formatter]
+        [mode, run, formatter, pointerFormatter]
     );
 
     const mousemove = useCallback((echarts: ECharts, {offsetX, offsetY}: {offsetX: number; offsetY: number}) => {

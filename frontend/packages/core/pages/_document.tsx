@@ -59,6 +59,9 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
                     <script
                         dangerouslySetInnerHTML={{__html: `__vdl_public_path__='${process.env.PUBLIC_PATH}'`}}
                     ></script>
+                    <script
+                        dangerouslySetInnerHTML={{__html: `__vdl_api_token_key__='${process.env.API_TOKEN_KEY}'`}}
+                    ></script>
                     <Main />
                     <NextScript />
                 </body>
