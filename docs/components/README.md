@@ -13,6 +13,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |      [ Scalar](#Scalar--折线图组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
 |      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
+|            [Histogram](#Histogram--训练参数分布)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
 
@@ -352,6 +353,101 @@ Graph组件一键可视化模型的网络结构。用于查看模型属性、节
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84487998-27db1400-acd2-11ea-83d7-5d75832ef41d.png" width="25%"/>
 </p>
+
+## Histogram--训练参数分布
+
+### 介绍
+
+Histogram组件以直方图形式实时展示训练过程中张量参数，如weight、bias、gradient的分布变化。深入了解训练效果，探查模型问题所在，提高调参效率。
+
+### 记录接口
+
+Histogram 组件的记录接口如下：
+
+```python
+add_histogram(tag, values, step, walltime=None, buckets=10)
+```
+接口参数说明如下：
+|   参数   |          格式          |                    含义                     |
+| -------- | --------------------- | ------------------------------------------- |
+| tag      | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
+| values   | numpy.ndarray or list | 以ndarray或list格式表示的数据                     |
+| step     | int                   | 记录的步数                                  |
+| walltime | int                   | 记录数据的时间戳，默认为当前时间戳          |
+| buckets  | int                   | 生成直方图的分段数，默认为10          |
+### Demo
+
+下面展示了使用 Histogram组件记录数据的示例，代码见[Histogram组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/histogram_test.py)
+
+```python
+from visualdl import LogWriter
+import numpy as np
+
+
+if __name__ == '__main__':
+    values = np.arange(0, 1000)
+    with LogWriter(logdir="./log/histogram_test/train") as writer:
+        for index in range(1, 101):
+            interval_start = 1 + 2 * index / 100.0
+            interval_end = 6 - 2 * index / 100.0
+            data = np.random.uniform(interval_start, interval_end, size=(10000))
+            writer.add_histogram(tag='default tag',
+                                 values=data,
+                                 step=index,
+                                 buckets=10)
+```
+
+运行上述程序后，在命令行执行
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+在浏览器输入`http://127.0.0.1:8080`，即可查看训练参数直方图。
+
+### 功能操作说明
+
+- 支持数据卡片「最大化」、「下载」直方图
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86535351-42d82700-bf12-11ea-89f0-171280e7c526.png" width="60%"/>
+  </p>
+
+- 可选择Offset或Overlay模式
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86535413-c134c900-bf12-11ea-9ad6-f0ad8eafa76f.png" width="30%"/>
+  </p>
+
+  - Offset模式
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86536435-2b9d3780-bf1a-11ea-9981-92f837d22ae5.png" width="60%"/>
+  </p>
+
+  - Overlay模式
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86536458-5ab3a900-bf1a-11ea-985e-05f06c1b762b.png" width="60%"/>
+  </p>
+
+- 数据点Hover展示参数值、训练步数、频次
+  - 在第240次训练步数时，权重为-0.0031，且出现的频次是2734次
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86536482-80d94900-bf1a-11ea-9e12-5bea9f382b34.png" width="60%"/>
+  </p>
+
+- 可搜索卡片标签，展示目标直方图
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="40%"/>
+  </p>
+
+- 可搜索打点数据标签，展示特定数据流
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86536639-b894c080-bf1b-11ea-9ee5-cf815dd4bbd7.png" width="40%"/>
+  </p>
 
 ## High Dimensional--数据降维组件
 
