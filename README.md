@@ -237,6 +237,21 @@ app.run(logdir="./log")
 <img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
 </p>
 
+### Histogram
+
+以直方图形式展示Tensor（weight、bias、gradient等）数据在训练过程中的变化趋势。深入了解模型各层效果，帮助开发者精准调整模型结构。
+
+- Offset模式
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86551031-86647c80-bf76-11ea-8ec2-8c86826c8137.png" width="85%"/>
+</p>
+
+- Overlay模式
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86551033-882e4000-bf76-11ea-8e6a-af954c662ced.png" width="85%"/>
+</p>
 
 ### High Dimensional
 
