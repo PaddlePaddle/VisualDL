@@ -19,7 +19,7 @@ writer = LogWriter('vdl_add_scalars')
 r = 5
 with LogWriter('scalars_test') as writer:
     for i in range(100):
-        writer.add_scalars('main_tag', {'xsinx/A': i*np.sin(i/r),
-                                        'xcosx/B': i*np.cos(i/r),
-                                        'tanx/C': np.tan(i/r)}, i)
+        writer.add_scalars('main_tag', {'xsinx': i*np.sin(i/r),
+                                        'xcosx': i*np.cos(i/r),
+                                        'tanx': np.tan(i/r)}, i)
 
