@@ -138,6 +138,38 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
 
+    def add_scalars(self, main_tag, tag_scalar_dict, step, walltime=None):
+        """Add scalars to vdl record file.
+
+        Args:
+            main_tag (string): The parent name for the tags
+            tag_scalar_dict (dict): Key-value pair storing the tag and corresponding values
+            step (int): Step of scalars
+            walltime (float): Wall time of scalars.
+
+        Example:
+            for index in range(1, 101):
+                writer.add_scalar(tag="train/loss", value=index*0.2, step=index)
+                writer.add_scalar(tag="train/lr", value=index*0.5, step=index)
+        """
+        fw_logdir = self.logdir
+        walltime = round(time.time()) if walltime is None else walltime
+        for tag, value in tag_scalar_dict.items():
+            tag = os.path.join(fw_logdir, main_tag, tag)
+            if '%' in tag:
+                raise RuntimeError("% can't appear in tag!")
+            if tag in self._all_writers:
+                fw = self._all_writers[tag]
+            else:
+                fw = RecordFileWriter(
+                        logdir=tag,
+                        max_queue_size=self._max_queue,
+                        flush_secs=self._flush_secs,
+                        filename_suffix=self._filename_suffix)
+                self._all_writers.update({tag: fw})
+            fw.add_record(
+                scalar(tag=main_tag, value=value, step=step, walltime=walltime))
+
     def add_image(self, tag, img, step, walltime=None):
         """Add an image to vdl record file.
 
