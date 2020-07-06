@@ -17,9 +17,9 @@
 </p>
 
 ## Introduction
-VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
+VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
-VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
+VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
 
 VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training. 
 
@@ -229,6 +229,22 @@ Developers can compare with multiple experiments by specifying and uploading the
 <img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
 </p>
 
+### Histogram
+
+Histogram displays how the trend of tensors (weight, bias, gradient, etc.) changes during the training process in the form of histogram. Developers can adjust the model structures accurately by having an in-depth understanding of the effect of each layer.
+
+- Offset Mode
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86551031-86647c80-bf76-11ea-8ec2-8c86826c8137.png" width="85%"/>
+</p>
+
+
+- Overlay Mode
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86551033-882e4000-bf76-11ea-8e6a-af954c662ced.png" width="85%"/>
+</p>
 
 ### High Dimensional
 
