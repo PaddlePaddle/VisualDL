@@ -16,7 +16,7 @@ Currently, VisualDL provides three components: scalar, image, high dimensional. 
 |             [Image](#Image--Image-Visualization)             |      image visualization      | Display images, visualizing the input and the output and making it easy to view the changes in the intermediate process. |
 |              [Graph](#Graph--Network-Structure)              |       network structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
 |       [Histogram](#Histogram--Distribution-of-Tensors)       |    distribution of tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
-| [High Dimensional](#High Dimensional--Data-Dimensionality-Reduction) | data dimensionality reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
+| [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction)| data dimensionality reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
 
 
@@ -354,6 +354,7 @@ After the launch, developers can view the network structure:
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84487998-27db1400-acd2-11ea-83d7-5d75832ef41d.png" width="25%"/>
 </p>
+
 ## Histogram--Distribution of Tensors 
 
 ### Introduction
