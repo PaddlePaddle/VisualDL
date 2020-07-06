@@ -6,19 +6,19 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, high dimensional 三个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, graph，histogram，high dimensional 五个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
-|      [ Scalar](#Scalar--折线图组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
+|      [ Scalar](#Scalar--标量组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
 |      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
-|            [Histogram](#Histogram--训练参数分布)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
+|            [Histogram](#Histogram--直方图组件)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
 
 
-## Scalar--折线图组件
+## Scalar--标量组件
 
 ### 介绍
 
@@ -354,7 +354,7 @@ Graph组件一键可视化模型的网络结构。用于查看模型属性、节
   <img src="https://user-images.githubusercontent.com/48054808/84487998-27db1400-acd2-11ea-83d7-5d75832ef41d.png" width="25%"/>
 </p>
 
-## Histogram--训练参数分布
+## Histogram--直方图组件
 
 ### 介绍
 
@@ -375,6 +375,7 @@ add_histogram(tag, values, step, walltime=None, buckets=10)
 | step     | int                   | 记录的步数                                  |
 | walltime | int                   | 记录数据的时间戳，默认为当前时间戳          |
 | buckets  | int                   | 生成直方图的分段数，默认为10          |
+
 ### Demo
 
 下面展示了使用 Histogram组件记录数据的示例，代码见[Histogram组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/histogram_test.py)
