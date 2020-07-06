@@ -115,7 +115,7 @@ host.BrowserHost = class {
         }
         return new Promise((resolve, reject) => {
             window.module = {exports: {}};
-            let script = document.createElement('script');
+            const script = document.createElement('script');
             script.setAttribute('id', id);
             script.setAttribute('type', 'text/javascript');
             script.setAttribute('src', url);
@@ -138,7 +138,7 @@ host.BrowserHost = class {
     }
 
     export(file, blob) {
-        let element = this.document.createElement('a');
+        const element = this.document.createElement('a');
         element.download = file;
         element.href = URL.createObjectURL(blob);
         this.document.body.appendChild(element);
@@ -446,7 +446,7 @@ class BrowserFileContext {
             return Promise.reject(new Error("File not found '" + file + "'."));
         }
         return new Promise((resolve, reject) => {
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.onload = e => {
                 resolve(encoding ? e.target.result : new Uint8Array(e.target.result));
             };
