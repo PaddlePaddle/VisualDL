@@ -9,10 +9,14 @@ import NProgress from 'nprogress';
 import React from 'react';
 import {SWRConfig} from 'swr';
 import {ToastContainer} from 'react-toastify';
+import getConfig from 'next/config';
 import queryString from 'query-string';
 import {withRouter} from 'next/router';
 
-const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
+const {API_TOKEN_KEY, PUBLIC_PATH} = (getConfig()?.publicRuntimeConfig as Record<string, string>) ?? {
+    API_TOKEN_KEY: '',
+    PUBLIC_PATH: ''
+};
 
 class VDLApp extends App {
     constructor(props: AppProps) {
@@ -55,7 +59,7 @@ class VDLApp extends App {
             <>
                 <Head>
                     <title>{process.env.title}</title>
-                    <link rel="shortcut icon" href={`${process.env.PUBLIC_PATH}/favicon.ico`} />
+                    <link rel="shortcut icon" href={`${PUBLIC_PATH}/favicon.ico`} />
                     <meta
                         name="viewport"
                         content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no,shrink-to-fit=no"

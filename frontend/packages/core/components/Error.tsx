@@ -2,7 +2,10 @@ import React, {FunctionComponent} from 'react';
 import {Trans, useTranslation} from '~/utils/i18n';
 import {WithStyled, backgroundColor, em, link, rem, size, textColor, textLightColor} from '~/utils/style';
 
+import getConfig from 'next/config';
 import styled from 'styled-components';
+
+const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
 
 const Wrapper = styled.div`
     display: flex;
@@ -13,7 +16,7 @@ const Wrapper = styled.div`
     width: 100%;
 
     > .image {
-        background-image: url(${`${process.env.PUBLIC_PATH}/images/empty.svg`});
+        background-image: url(${`${PUBLIC_PATH}/images/empty.svg`});
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 100% 100%;

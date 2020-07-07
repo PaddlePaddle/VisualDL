@@ -13,6 +13,7 @@ const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT || '', 10) || 8999;
 const backend = process.env.BACKEND;
 const delay = Number.parseInt(process.env.DELAY || '', 10);
+const publicPath = process.env.PUBLIC_PATH || '/';
 
 const server = express();
 
@@ -31,7 +32,7 @@ async function start() {
         const compiler = webpack(webpackConfig);
         server.use(
             webpackDevMiddleware(compiler, {
-                publicPath: '/'
+                publicPath
             })
         );
     }
@@ -50,6 +51,12 @@ async function start() {
         server.use(config.env.API_URL, mock({delay: delay ? () => Math.random() * delay : 0}));
     } else {
         console.warn('Server is running in production mode but no backend address specified.');
+    }
+
+    if (publicPath !== '/') {
+        server.get('/', (_req, res) => {
+            res.redirect(publicPath);
+        });
     }
 
     const {default: nextI18Next} = await import('@visualdl/core/utils/i18n');

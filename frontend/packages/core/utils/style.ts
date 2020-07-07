@@ -3,9 +3,12 @@ import * as polished from 'polished';
 import {createGlobalStyle, keyframes} from 'styled-components';
 
 import {css} from 'styled-components';
+import getConfig from 'next/config';
 import tippy from '!!css-loader!tippy.js/dist/tippy.css';
 import toast from '!!css-loader!react-toastify/dist/ReactToastify.css';
 import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
+
+const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
 
 export {default as styled} from 'styled-components';
 export * from 'styled-components';
@@ -15,7 +18,7 @@ export {borderRadius as borderRadiusShortHand, borderColor as borderColorShortHa
 
 const {math, size, lighten, darken, normalize, fontFace, transitions, border, position} = polished;
 
-export const iconFontPath = `${process.env.PUBLIC_PATH}/style/fonts/vdl-icon`;
+export const iconFontPath = `${PUBLIC_PATH}/style/fonts/vdl-icon`;
 
 // sizes
 const fontSize = '14px';

@@ -9,8 +9,11 @@ import NextI18Next from '../index';
 import {NextPageContext} from 'next';
 import {NextStaticProvider} from '../components';
 import React from 'react';
+import getConfig from 'next/config';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import {withRouter} from 'next/router';
+
+const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
 
 interface Props {
     initialLanguage: string;
@@ -56,8 +59,8 @@ export const appWithTranslation = function (this: NextI18Next, WrappedComponent:
                     const {query} = router;
                     let {pathname, asPath} = router;
 
-                    if (process.env.PUBLIC_PATH) {
-                        const publicPath = process.env.PUBLIC_PATH;
+                    if (PUBLIC_PATH) {
+                        const publicPath = PUBLIC_PATH;
                         if (pathname.indexOf(publicPath) === 0) {
                             pathname = pathname.replace(publicPath, '');
                         }
