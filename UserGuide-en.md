@@ -1,5 +1,5 @@
 
-[**中文**](./README.md)
+[**中文**](./docs/components/README.md)
 
 # VisualDL Guide
 
