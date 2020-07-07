@@ -6,7 +6,7 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, graph，histogram，high dimensional 五个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, graph, histogram, pr curve, high dimensional 六个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
@@ -14,6 +14,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
 |            [Histogram](#Histogram--直方图组件)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
+|              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
 
@@ -441,13 +442,109 @@ visualdl --logdir ./log --port 8080
 - 可搜索卡片标签，展示目标直方图
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="40%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="30%"/>
   </p>
 
 - 可搜索打点数据标签，展示特定数据流
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86536639-b894c080-bf1b-11ea-9ee5-cf815dd4bbd7.png" width="40%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/86536639-b894c080-bf1b-11ea-9ee5-cf815dd4bbd7.png" width="30%"/>
+  </p>
+
+## PR Curve--PR曲线组件
+
+### 介绍
+
+PR Curve以折线图形式呈现精度与召回率的权衡分析，清晰直观了解模型训练效果，便于分析模型是否达到理想标准。
+
+### 记录接口
+
+PR Curve组件的记录接口如下：
+
+```python
+add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
+```
+
+接口参数说明如下：
+
+| 参数           | 格式                  | 含义                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
+| values         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
+| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
+| step           | int                   | 记录的步数                                  |
+| num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
+
+### Demo
+
+下面展示了使用 PR Curve 组件记录数据的示例，代码见[PR Curve组件](#https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/pr_curve_test.py)
+
+```python
+from visualdl import LogWriter
+import numpy as np
+
+with LogWriter("./log/pr_curve_test/train") as writer:
+    for step in range(3):
+        labels = np.random.randint(2, size=100)
+        predictions = np.random.rand(100)
+        writer.add_pr_curve(tag='pr_curve',
+                            labels=labels,
+                            predictions=predictions,
+                            step=step,
+                            num_thresholds=5)
+```
+
+运行上述程序后，在命令行执行
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+接着在浏览器打开`http://127.0.0.1:8080`，即可查看PR Curve
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/86738774-ee46c000-c067-11ea-90d2-a98aac445cca.png" width="80%"/>
+</p>
+
+### 功能操作说明
+
+- 支持数据卡片「最大化」、「还原」、「下载」PR曲线
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86740067-f18e7b80-c068-11ea-96bf-52cb7da1f799.png" width="40%"/>
+  </p>
+
+- 数据点Hover展示详细信息：阈值对应的TP、TN、FP、FN
+
+    <p align="center">
+      <img src="https://user-images.githubusercontent.com/48054808/86740477-43370600-c069-11ea-93f0-f4d05445fbab.png" width="50%"/>
+    </p>
+
+- 可搜索卡片标签，展示目标图表
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86740670-66fa4c00-c069-11ea-9ee3-0a22e2d0dbec.png" width="30%"/>
+  </p>
+
+- 可搜索打点数据标签，展示特定数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/86740817-809b9380-c069-11ea-9453-6531e3ff5f43.png" width="30%"/>
+</p>
+
+- 支持查看不同训练步数下的PR曲线
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86741057-b04a9b80-c069-11ea-9fef-2dcc16f9cd46.png" width="30%"/>
+  </p>
+
+- X轴-时间显示类型有三种衡量尺度
+  - Step：迭代次数
+  - Walltime：训练绝对时间
+  - Relative：训练时长
+  
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86741304-db34ef80-c069-11ea-86eb-787b49ed3705.png" width="30%"/>
   </p>
 
 ## High Dimensional--数据降维组件
