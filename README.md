@@ -20,7 +20,7 @@
 ## 介绍
 VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL原生支持python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
@@ -48,7 +48,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
 ### 功能丰富
 
-功能覆盖标量、数据样本、图结构、直方图及数据降维可视化。
+功能覆盖标量、数据样本、图结构、直方图、PR曲线及数据降维可视化。
 
 ### 高兼容性
 
@@ -251,6 +251,14 @@ app.run(logdir="./log")
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/86551033-882e4000-bf76-11ea-8e6a-af954c662ced.png" width="85%"/>
+</p>
+
+### PR Curve
+
+精度-召回率曲线，帮助开发者权衡模型精度和召回率之间的平衡，设定最佳阈值。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86738774-ee46c000-c067-11ea-90d2-a98aac445cca.png" width="85%"/>
 </p>
 
 ### High Dimensional
