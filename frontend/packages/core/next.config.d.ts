@@ -1,4 +1,5 @@
 declare type NextEnv = {
+    PUBLIC_PATH: string;
     API_URL: string;
     DEFAULT_LANGUAGE: string;
     LANGUAGES: string[];

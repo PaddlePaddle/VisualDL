@@ -30,9 +30,7 @@ module.exports = {
         DEFAULT_LANGUAGE,
         LOCALE_PATH,
         LANGUAGES,
-        API_URL: apiUrl
-    },
-    publicRuntimeConfig: {
+        API_URL: apiUrl,
         PUBLIC_PATH: publicPath,
         API_TOKEN_KEY: process.env.API_TOKEN_KEY || ''
     },

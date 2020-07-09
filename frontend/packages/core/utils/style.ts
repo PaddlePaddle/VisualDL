@@ -3,12 +3,11 @@ import * as polished from 'polished';
 import {createGlobalStyle, keyframes} from 'styled-components';
 
 import {css} from 'styled-components';
-import getConfig from 'next/config';
 import tippy from '!!css-loader!tippy.js/dist/tippy.css';
 import toast from '!!css-loader!react-toastify/dist/ReactToastify.css';
 import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
 
-const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 export {default as styled} from 'styled-components';
 export * from 'styled-components';

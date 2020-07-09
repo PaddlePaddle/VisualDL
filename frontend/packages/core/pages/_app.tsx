@@ -1,7 +1,7 @@
-import App, {AppContext, AppProps} from 'next/app';
 import {Router, appWithTranslation} from '~/utils/i18n';
-import {fetcher, getApiToken, setApiToken} from '~/utils/fetch';
+import {fetcher, getApiToken} from '~/utils/fetch';
 
+import App from 'next/app';
 import {GlobalStyle} from '~/utils/style';
 import Head from 'next/head';
 import Layout from '~/components/Layout';
@@ -9,24 +9,13 @@ import NProgress from 'nprogress';
 import React from 'react';
 import {SWRConfig} from 'swr';
 import {ToastContainer} from 'react-toastify';
-import getConfig from 'next/config';
 import queryString from 'query-string';
 import {withRouter} from 'next/router';
 
-const {API_TOKEN_KEY, PUBLIC_PATH} = (getConfig()?.publicRuntimeConfig as Record<string, string>) ?? {
-    API_TOKEN_KEY: '',
-    PUBLIC_PATH: ''
-};
+const API_TOKEN_KEY = process.env.API_TOKEN_KEY;
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 class VDLApp extends App {
-    constructor(props: AppProps) {
-        super(props);
-        if (process.browser && API_TOKEN_KEY) {
-            const query = queryString.parse(window.location.search);
-            setApiToken(query[API_TOKEN_KEY]);
-        }
-    }
-
     componentDidMount() {
         Router.events.on('routeChangeStart', () => NProgress.start());
         Router.events.on('routeChangeComplete', (url: string) => {
@@ -83,15 +72,6 @@ class VDLApp extends App {
                 </SWRConfig>
             </>
         );
-    }
-
-    static async getInitialProps(appContext: AppContext) {
-        const appProps = await App.getInitialProps(appContext);
-
-        if (API_TOKEN_KEY) {
-            setApiToken(appContext.router.query[API_TOKEN_KEY]);
-        }
-        return {...appProps};
     }
 }
 

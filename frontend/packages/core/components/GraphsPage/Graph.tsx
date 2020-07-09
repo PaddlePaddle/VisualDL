@@ -4,12 +4,11 @@ import {backgroundColor, borderColor, contentHeight, position, primaryColor, rem
 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
-import getConfig from 'next/config';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import {useTranslation} from '~/utils/i18n';
 
-const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 const toolboxHeight = rem(40);
 

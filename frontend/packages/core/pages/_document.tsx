@@ -9,12 +9,8 @@ import Document, {
 } from 'next/document';
 
 import {ServerStyleSheet} from '~/utils/style';
-import getConfig from 'next/config';
 
-const {API_TOKEN_KEY, PUBLIC_PATH} = (getConfig()?.publicRuntimeConfig as Record<string, string>) ?? {
-    API_TOKEN_KEY: '',
-    PUBLIC_PATH: ''
-};
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 interface VDLDocumentProps extends DocumentProps {
     language: string;
@@ -63,7 +59,6 @@ export default class VDLDocument extends Document<VDLDocumentProps> {
                 <Head />
                 <body>
                     <script dangerouslySetInnerHTML={{__html: `__vdl_public_path__='${PUBLIC_PATH}'`}}></script>
-                    <script dangerouslySetInnerHTML={{__html: `__vdl_api_token_key__='${API_TOKEN_KEY}'`}}></script>
                     <Main />
                     <NextScript />
                 </body>

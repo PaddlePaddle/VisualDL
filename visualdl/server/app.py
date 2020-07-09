@@ -38,7 +38,7 @@ from visualdl.server.template import Template
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
 support_language = ["en", "zh"]
-default_language = support_language[0]
+default_language = default_language
 
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 template_file_path = os.path.join(SERVER_DIR, "./dist")
@@ -89,7 +89,7 @@ def create_app(args):
             lang = get_locale()
             if lang == default_language:
                 return redirect(public_path + '/index', code=302)
-            lang = support_language[0] if lang is None else lang
+            lang = default_language if lang is None else lang
             return redirect(public_path + '/' + lang + '/index', code=302)
 
         @app.route(public_path + '/<path:filename>')

@@ -7,12 +7,11 @@ import Chart from '~/components/Chart';
 import ChartCollapse from '~/components/ChartCollapse';
 import Pagination from '~/components/Pagination';
 import SearchInput from '~/components/SearchInput';
-import getConfig from 'next/config';
 import groupBy from 'lodash/groupBy';
 import styled from 'styled-components';
 import useSearchValue from '~/hooks/useSearchValue';
 
-const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 const StyledPagination = styled(Pagination)`
     margin-top: ${rem(20)};

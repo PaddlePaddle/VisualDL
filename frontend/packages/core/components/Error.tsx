@@ -2,10 +2,9 @@ import React, {FunctionComponent} from 'react';
 import {Trans, useTranslation} from '~/utils/i18n';
 import {WithStyled, backgroundColor, em, link, rem, size, textColor, textLightColor} from '~/utils/style';
 
-import getConfig from 'next/config';
 import styled from 'styled-components';
 
-const PUBLIC_PATH: string = getConfig()?.publicRuntimeConfig?.PUBLIC_PATH ?? '';
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 const Wrapper = styled.div`
     display: flex;
