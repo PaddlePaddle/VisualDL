@@ -256,7 +256,7 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 
 ## Contribution
 
-VisualDL is an open source project supported by  [PaddlePaddle](https://www.paddlepaddle.org/) and [ECharts](https://echarts.apache.org/) . Developers are warmly welcomed to use, comment and contribute.
+VisualDL, in which Graph is powered by [Netron](https://github.com/lutzroeder/netron), is an open source project supported by  [PaddlePaddle](https://www.paddlepaddle.org/) and [ECharts](https://echarts.apache.org/) . Developers are warmly welcomed to use, comment and contribute.
 
 
 ## More Details
