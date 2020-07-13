@@ -4,7 +4,7 @@ import {ellipsis, em, primaryColor, rem, size, textLightColor, transitionProps} 
 
 import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
-import StepSlider from '~/components/SamplesPage/StepSlider';
+import StepSlider from '~/components/SamplePage/StepSlider';
 import {formatTime} from '~/utils';
 import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
@@ -93,7 +93,7 @@ const getImageUrl = (index: number, run: string, tag: string, wallTime: number):
 const cacheValidity = 5 * 60 * 1000;
 
 const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness, contrast, fit, running}) => {
-    const {t, i18n} = useTranslation(['samples', 'common']);
+    const {t, i18n} = useTranslation(['sample', 'common']);
 
     const image = useRef<ImageRef>(null);
 
@@ -203,7 +203,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, brightness,
                 items={[
                     {
                         icon: 'download',
-                        tooltip: t('samples:download-image'),
+                        tooltip: t('sample:download-image'),
                         onClick: saveImage
                     }
                 ]}

@@ -11,7 +11,7 @@ import Error from '~/components/Error';
 import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
 import RunAside from '~/components/RunAside';
-import SampleChart from '~/components/SamplesPage/SampleChart';
+import SampleChart from '~/components/SamplePage/SampleChart';
 import Slider from '~/components/Slider';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
@@ -26,8 +26,8 @@ type Item = {
     label: string;
 };
 
-const Samples: NextI18NextPage = () => {
-    const {t} = useTranslation(['samples', 'common']);
+const Image: NextI18NextPage = () => {
+    const {t} = useTranslation(['sample', 'common']);
 
     const [running, setRunning] = useState(true);
 
@@ -61,16 +61,16 @@ const Samples: NextI18NextPage = () => {
                 >
                     <AsideSection>
                         <Checkbox value={showActualSize} onChange={setShowActualSize}>
-                            {t('samples:show-actual-size')}
+                            {t('sample:show-actual-size')}
                         </Checkbox>
                     </AsideSection>
                     <AsideSection>
-                        <Field label={t('samples:brightness')}>
+                        <Field label={t('sample:brightness')}>
                             <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
                         </Field>
                     </AsideSection>
                     <AsideSection>
-                        <Field label={t('samples:contrast')}>
+                        <Field label={t('sample:contrast')}>
                             <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
                         </Field>
                     </AsideSection>
@@ -97,7 +97,7 @@ const Samples: NextI18NextPage = () => {
         <>
             <Preloader url="/runs" />
             <Preloader url="/images/tags" />
-            <Title>{t('common:samples')}</Title>
+            <Title>{t('common:sample')}</Title>
             <Content aside={aside} loading={loadingRuns}>
                 {!loadingRuns && !runs.length ? (
                     <Error />
@@ -114,8 +114,8 @@ const Samples: NextI18NextPage = () => {
     );
 };
 
-Samples.getInitialProps = () => ({
-    namespacesRequired: ['samples', 'common']
+Image.getInitialProps = () => ({
+    namespacesRequired: ['sample', 'common']
 });
 
-export default Samples;
+export default Image;

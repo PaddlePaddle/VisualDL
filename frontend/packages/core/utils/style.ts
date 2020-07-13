@@ -4,6 +4,7 @@ import {createGlobalStyle, keyframes} from 'styled-components';
 
 import {css} from 'styled-components';
 import tippy from '!!css-loader!tippy.js/dist/tippy.css';
+import tippyAnimation from '!!css-loader!tippy.js/animations/shift-away-subtle.css';
 import toast from '!!css-loader!react-toastify/dist/ReactToastify.css';
 import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
 
@@ -140,6 +141,7 @@ export const GlobalStyle = createGlobalStyle`
     ${vdlIcon.toString()}
     ${toast.toString()}
     ${tippy.toString()}
+    ${tippyAnimation.toString()}
 
     html {
         font-size: ${fontSize};
@@ -232,7 +234,7 @@ export const GlobalStyle = createGlobalStyle`
         }
     }
 
-    .tippy-box {
+    [data-tippy-root] .tippy-box {
         z-index: 10002;
         color: ${tooltipTextColor};
         background-color: ${tooltipBackgroundColor};
@@ -248,6 +250,18 @@ export const GlobalStyle = createGlobalStyle`
         }
         &[data-placement^='right'] > .tippy-arrow::before {
             border-right-color: ${tooltipBackgroundColor};
+        }
+
+        &[data-theme~='navbar'] {
+            color: ${textColor};
+            background-color: ${backgroundColor};
+            box-shadow: 0 0 10px 0 rgba(0,0,0,0.10);
+            border-radius: ${borderRadius};
+            overflow: hidden;
+
+            > .tippy-content {
+                padding: 0;
+            }
         }
     }
 `;

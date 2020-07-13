@@ -29,7 +29,7 @@ type StepSliderProps = {
 };
 
 const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeComplete, value, steps, children}) => {
-    const {t} = useTranslation('samples');
+    const {t} = useTranslation('sample');
     const [step, setStep] = useState(value);
 
     useEffect(() => setStep(value), [value]);
@@ -45,7 +45,7 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeCompl
     return (
         <>
             <Label>
-                <span>{`${t('samples:step')}: ${steps[step] ?? '...'}`}</span>
+                <span>{`${t('sample:step')}: ${steps[step] ?? '...'}`}</span>
                 {children && <span>{children}</span>}
             </Label>
             <FullWidthRangeSlider

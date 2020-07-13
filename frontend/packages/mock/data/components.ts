@@ -1,1 +1,1 @@
-export default ['embeddings', 'scalar', 'image', 'graph', 'histogram', 'pr_curve'];
+export default ['embeddings', 'scalar', 'image', 'audio', 'graph', 'histogram', 'pr_curve'];

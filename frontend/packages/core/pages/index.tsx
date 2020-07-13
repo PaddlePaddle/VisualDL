@@ -19,15 +19,19 @@ const Loading = styled.div`
 `;
 
 const Index: NextI18NextPage = () => {
-    const navItmes = useNavItems();
+    const navItems = useNavItems();
 
     const {t} = useTranslation('common');
 
     useEffect(() => {
-        if (navItmes.length) {
-            Router.replace(`/${navItmes[0]}`);
+        if (navItems.length) {
+            if (navItems[0].path) {
+                Router.replace(navItems[0].path);
+            } else if (navItems[0].children?.length && navItems[0].children[0].path) {
+                Router.replace(navItems[0].children[0].path);
+            }
         }
-    }, [navItmes]);
+    }, [navItems]);
 
     return (
         <Loading>
