@@ -96,7 +96,7 @@ export const createConfig = (userConfig: Config): Config => {
         /*
             Set client side backend
         */
-        const publicPath = (window as any).__vdl_public_path__ || '';
+        const publicPath = combinedConfig.publicPath;
         combinedConfig.backend = {
             loadPath: `${publicPath}/${clientLocalePath}/${localeStructure}.${localeExtension}`,
             addPath: `${publicPath}/${clientLocalePath}/${localeStructure}.missing.${localeExtension}`
