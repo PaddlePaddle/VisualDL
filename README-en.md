@@ -19,7 +19,7 @@
 ## Introduction
 VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
-VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
+VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
 
 VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training. 
 
