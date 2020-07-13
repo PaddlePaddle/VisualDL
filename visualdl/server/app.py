@@ -38,7 +38,7 @@ from visualdl.server.template import Template
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
 support_language = ["en", "zh"]
-default_language = default_language
+default_language = support_language[0]
 
 server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 template_file_path = os.path.join(SERVER_DIR, "./dist")
