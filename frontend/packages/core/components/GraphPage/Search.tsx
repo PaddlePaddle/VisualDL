@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
-import {SearchItem, SearchResult} from '~/resource/graphs/types';
+import {SearchItem, SearchResult} from '~/resource/graph/types';
 import {
     backgroundColor,
     backgroundFocusedColor,
@@ -145,7 +145,7 @@ type SearchProps = {
 };
 
 const Search: FunctionComponent<SearchProps> = ({text, data, onChange, onSelect, onActive, onDeactive}) => {
-    const {t} = useTranslation(['graphs', 'common']);
+    const {t} = useTranslation(['graph', 'common']);
 
     const [search, setSearch] = useState(text ?? '');
     const [searching, setSearching] = useState(false);
@@ -209,7 +209,7 @@ const Search: FunctionComponent<SearchProps> = ({text, data, onChange, onSelect,
                         </List>
                     </Wrapper>
                 ) : (
-                    <Empty>{t('graphs:nothing-matched')}</Empty>
+                    <Empty>{t('graph:nothing-matched')}</Empty>
                 ))}
         </>
     );

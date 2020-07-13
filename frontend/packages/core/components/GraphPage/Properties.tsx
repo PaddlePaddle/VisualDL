@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react';
 
-import {Properties as PropertiesType} from '~/resource/graphs/types';
-import Property from '~/components/GraphsPage/Property';
+import {Properties as PropertiesType} from '~/resource/graph/types';
+import Property from '~/components/GraphPage/Property';
 import {em} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from '~/utils/i18n';
@@ -18,13 +18,13 @@ type PropertiesProps = PropertiesType & {
 };
 
 const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, expand, showNodeDodumentation}) => {
-    const {t} = useTranslation('graphs');
+    const {t} = useTranslation('graph');
 
     return (
         <>
             {properties?.map((property, index) => (
                 <Property
-                    name={t(`graphs:properties.${property.name}`)}
+                    name={t(`graph:properties.${property.name}`)}
                     values={property.values}
                     key={index}
                     showNodeDodumentation={showNodeDodumentation}
@@ -32,7 +32,7 @@ const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, exp
             ))}
             {groups?.map((group, index) => (
                 <React.Fragment key={index}>
-                    <Header>{t(`graphs:properties.${group.name}`)}</Header>
+                    <Header>{t(`graph:properties.${group.name}`)}</Header>
                     {group.properties?.map((property, anotherIndex) => (
                         <Property
                             {...property}

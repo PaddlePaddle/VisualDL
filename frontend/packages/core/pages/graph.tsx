@@ -1,7 +1,7 @@
 import Aside, {AsideSection} from '~/components/Aside';
 import {BlobResponse, blobFetcher} from '~/utils/fetch';
-import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
-import Graph, {GraphRef} from '~/components/GraphsPage/Graph';
+import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
+import GraphComponent, {GraphRef} from '~/components/GraphPage/Graph';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {primaryColor, rem, size} from '~/utils/style';
@@ -11,12 +11,12 @@ import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Field from '~/components/Field';
 import HashLoader from 'react-spinners/HashLoader';
-import ModelPropertiesDialog from '~/components/GraphsPage/ModelPropertiesDialog';
-import NodeDocumentationSidebar from '~/components/GraphsPage/NodeDocumentationSidebar';
-import NodePropertiesSidebar from '~/components/GraphsPage/NodePropertiesSidebar';
-import Search from '~/components/GraphsPage/Search';
+import ModelPropertiesDialog from '~/components/GraphPage/ModelPropertiesDialog';
+import NodeDocumentationSidebar from '~/components/GraphPage/NodeDocumentationSidebar';
+import NodePropertiesSidebar from '~/components/GraphPage/NodePropertiesSidebar';
+import Search from '~/components/GraphPage/Search';
 import Title from '~/components/Title';
-import Uploader from '~/components/GraphsPage/Uploader';
+import Uploader from '~/components/GraphPage/Uploader';
 import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 
@@ -60,10 +60,10 @@ const Loading = styled.div`
     line-height: ${rem(60)};
 `;
 
-const Graphs: NextI18NextPage = () => {
-    const {t} = useTranslation(['graphs', 'common']);
+const Graph: NextI18NextPage = () => {
+    const {t} = useTranslation(['graph', 'common']);
 
-    const {data, loading} = useRequest<BlobResponse>('/graphs/graph', blobFetcher);
+    const {data, loading} = useRequest<BlobResponse>('/graph/graph', blobFetcher);
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
@@ -115,7 +115,7 @@ const Graphs: NextI18NextPage = () => {
         () =>
             searching ? null : (
                 <FullWidthButton type="primary" rounded onClick={onClickFile}>
-                    {t('graphs:change-model')}
+                    {t('graph:change-model')}
                 </FullWidthButton>
             ),
         [t, onClickFile, searching]
@@ -161,36 +161,36 @@ const Graphs: NextI18NextPage = () => {
                     <>
                         <AsideSection>
                             <FullWidthButton onClick={() => graph.current?.showModelProperties()}>
-                                {t('graphs:model-properties')}
+                                {t('graph:model-properties')}
                             </FullWidthButton>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={t('graphs:display-data')}>
+                            <Field label={t('graph:display-data')}>
                                 <div>
                                     <Checkbox value={showAttributes} onChange={setShowAttributes}>
-                                        {t('graphs:show-attributes')}
+                                        {t('graph:show-attributes')}
                                     </Checkbox>
                                 </div>
                                 <div>
                                     <Checkbox value={showInitializers} onChange={setShowInitializers}>
-                                        {t('graphs:show-initializers')}
+                                        {t('graph:show-initializers')}
                                     </Checkbox>
                                 </div>
                                 <div>
                                     <Checkbox value={showNames} onChange={setShowNames}>
-                                        {t('graphs:show-node-names')}
+                                        {t('graph:show-node-names')}
                                     </Checkbox>
                                 </div>
                             </Field>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={t('graphs:export-file')}>
+                            <Field label={t('graph:export-file')}>
                                 <ExportButtonWrapper>
                                     <Button onClick={() => graph.current?.export('png')}>
-                                        {t('graphs:export-png')}
+                                        {t('graph:export-png')}
                                     </Button>
                                     <Button onClick={() => graph.current?.export('svg')}>
-                                        {t('graphs:export-svg')}
+                                        {t('graph:export-svg')}
                                     </Button>
                                 </ExportButtonWrapper>
                             </Field>
@@ -220,7 +220,7 @@ const Graphs: NextI18NextPage = () => {
 
     return (
         <>
-            <Title>{t('common:graphs')}</Title>
+            <Title>{t('common:graph')}</Title>
             <ModelPropertiesDialog data={modelData} onClose={() => setModelData(null)} />
             <Content aside={aside}>
                 {loading ? (
@@ -228,7 +228,7 @@ const Graphs: NextI18NextPage = () => {
                         <HashLoader size="60px" color={primaryColor} />
                     </Loading>
                 ) : (
-                    <Graph
+                    <GraphComponent
                         ref={graph}
                         files={files}
                         uploader={uploader}
@@ -259,8 +259,8 @@ const Graphs: NextI18NextPage = () => {
     );
 };
 
-Graphs.getInitialProps = () => ({
-    namespacesRequired: ['graphs', 'common']
+Graph.getInitialProps = () => ({
+    namespacesRequired: ['graph', 'common']
 });
 
-export default Graphs;
+export default Graph;

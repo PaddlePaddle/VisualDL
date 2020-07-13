@@ -1,7 +1,7 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
-import {SortingMethod, XAxis, sortingMethod as toolTipSortingValues} from '~/resource/scalars';
+import {SortingMethod, XAxis, sortingMethod as toolTipSortingValues} from '~/resource/scalar';
 
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
@@ -10,7 +10,7 @@ import Error from '~/components/Error';
 import Field from '~/components/Field';
 import Preloader from '~/components/Preloader';
 import RunAside from '~/components/RunAside';
-import ScalarChart from '~/components/ScalarsPage/ScalarChart';
+import ScalarChart from '~/components/ScalarPage/ScalarChart';
 import Select from '~/components/Select';
 import Slider from '~/components/Slider';
 import {Tag} from '~/types';
@@ -32,12 +32,12 @@ const TooltipSortingDiv = styled.div`
     }
 `;
 
-const Scalars: NextI18NextPage = () => {
-    const {t} = useTranslation(['scalars', 'common']);
+const Scalar: NextI18NextPage = () => {
+    const {t} = useTranslation(['scalar', 'common']);
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('scalars', running);
+    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('scalar', running);
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -59,13 +59,13 @@ const Scalars: NextI18NextPage = () => {
                 >
                     <AsideSection>
                         <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
-                            {t('scalars:ignore-outliers')}
+                            {t('scalar:ignore-outliers')}
                         </Checkbox>
                         <TooltipSortingDiv>
-                            <span>{t('scalars:tooltip-sorting')}</span>
+                            <span>{t('scalar:tooltip-sorting')}</span>
                             <Select
                                 list={toolTipSortingValues.map(value => ({
-                                    label: t(`scalars:tooltip-sorting-value.${value}`),
+                                    label: t(`scalar:tooltip-sorting-value.${value}`),
                                     value
                                 }))}
                                 value={tooltipSorting}
@@ -74,12 +74,12 @@ const Scalars: NextI18NextPage = () => {
                         </TooltipSortingDiv>
                     </AsideSection>
                     <AsideSection>
-                        <Field label={t('scalars:smoothing')}>
+                        <Field label={t('scalar:smoothing')}>
                             <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
                         </Field>
                     </AsideSection>
                     <AsideSection>
-                        <Field label={t('scalars:x-axis')}>
+                        <Field label={t('scalar:x-axis')}>
                             <TimeModeSelect value={xAxis} onChange={setXAxis} />
                         </Field>
                     </AsideSection>
@@ -107,8 +107,8 @@ const Scalars: NextI18NextPage = () => {
     return (
         <>
             <Preloader url="/runs" />
-            <Preloader url="/scalars/tags" />
-            <Title>{t('common:scalars')}</Title>
+            <Preloader url="/scalar/tags" />
+            <Title>{t('common:scalar')}</Title>
             <Content aside={aside} loading={loadingRuns}>
                 {!loadingRuns && !runs.length ? (
                     <Error />
@@ -120,8 +120,8 @@ const Scalars: NextI18NextPage = () => {
     );
 };
 
-Scalars.getInitialProps = () => ({
-    namespacesRequired: ['scalars', 'common']
+Scalar.getInitialProps = () => ({
+    namespacesRequired: ['scalar', 'common']
 });
 
-export default Scalars;
+export default Scalar;

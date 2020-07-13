@@ -1,4 +1,4 @@
-import {transform} from '~/resource/scalars';
+import {transform} from '~/resource/scalar';
 import worker from '~/utils/worker';
 
 worker(transform);

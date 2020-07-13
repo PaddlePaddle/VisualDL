@@ -1,4 +1,4 @@
-import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graphs/types';
+import {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {backgroundColor, borderColor, contentHeight, position, primaryColor, rem, size} from '~/utils/style';
 
@@ -111,7 +111,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         },
         ref
     ) => {
-        const {t} = useTranslation('graphs');
+        const {t} = useTranslation('graph');
 
         const [ready, setReady] = useState(false);
         const [loading, setLoading] = useState(false);
@@ -229,17 +229,17 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                         items={[
                             {
                                 icon: 'restore-size',
-                                tooltip: t('graphs:restore-size'),
+                                tooltip: t('graph:restore-size'),
                                 onClick: () => dispatch('zoom-reset')
                             },
                             {
                                 icon: 'zoom-out',
-                                tooltip: t('graphs:zoom-out'),
+                                tooltip: t('graph:zoom-out'),
                                 onClick: () => dispatch('zoom-out')
                             },
                             {
                                 icon: 'zoom-in',
-                                tooltip: t('graphs:zoom-in'),
+                                tooltip: t('graph:zoom-in'),
                                 onClick: () => dispatch('zoom-in')
                             }
                         ]}

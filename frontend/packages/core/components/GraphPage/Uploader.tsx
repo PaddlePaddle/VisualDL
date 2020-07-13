@@ -60,7 +60,7 @@ type UploaderProps = {
 };
 
 const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}) => {
-    const {t} = useTranslation('graphs');
+    const {t} = useTranslation('graph');
 
     const [actived, setActived] = useState(false);
     const onClick = useCallback(() => onClickUpload?.(), [onClickUpload]);
@@ -92,20 +92,20 @@ const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}
                 onDragLeave={onDragLeave}
             >
                 <Icon type="upload" className="upload-icon" />
-                <span>{t('upload-tip')}</span>
+                <span>{t('graph:upload-tip')}</span>
                 <Button type="primary" rounded className="upload-button" onClick={onClick}>
-                    {t('upload-model')}
+                    {t('graph:upload-model')}
                 </Button>
             </DropZone>
             <SupportTable>
                 <tbody>
                     <tr>
-                        <td>{t('supported-model')}</td>
-                        <td>{t('supported-model-list')}</td>
+                        <td>{t('graph:supported-model')}</td>
+                        <td>{t('graph:supported-model-list')}</td>
                     </tr>
                     <tr>
-                        <td>{t('experimental-supported-model')}</td>
-                        <td>{t('experimental-supported-model-list')}</td>
+                        <td>{t('graph:experimental-supported-model')}</td>
+                        <td>{t('graph:experimental-supported-model-list')}</td>
                     </tr>
                 </tbody>
             </SupportTable>

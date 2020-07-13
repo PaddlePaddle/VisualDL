@@ -2,8 +2,8 @@ import React, {FunctionComponent, useCallback} from 'react';
 import {Trans, useTranslation} from '~/utils/i18n';
 import {borderRadius, em, textLightColor} from '~/utils/style';
 
-import {Documentation as DocumentationType} from '~/resource/graphs/types';
-import GraphSidebar from '~/components/GraphsPage/GraphSidebar';
+import {Documentation as DocumentationType} from '~/resource/graph/types';
+import GraphSidebar from '~/components/GraphPage/GraphSidebar';
 import styled from 'styled-components';
 
 const Documentation = styled.div`
@@ -74,7 +74,7 @@ type NodeDocumentationSidebarProps = {
 };
 
 const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps> = ({data, onClose}) => {
-    const {t} = useTranslation('graphs');
+    const {t} = useTranslation('graph');
 
     const list = useCallback(
         (items: {name: string; type?: string | string[]; description: string}[]) =>
@@ -105,21 +105,21 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
     );
 
     return (
-        <GraphSidebar title={t('graphs:node-documentation')} onClose={onClose}>
+        <GraphSidebar title={t('graph:node-documentation')} onClose={onClose}>
             <Documentation>
                 <h1>{data?.name}</h1>
                 {data?.summary && <p dangerouslySetInnerHTML={{__html: data.summary}}></p>}
                 {data?.description && <p dangerouslySetInnerHTML={{__html: data.description}}></p>}
                 {data?.attributes && (
                     <>
-                        <h2>{t('graphs:documentation.attributes')}</h2>
+                        <h2>{t('graph:documentation.attributes')}</h2>
                         {list(data.attributes)}
                     </>
                 )}
                 {data?.inputs && (
                     <>
                         <h2>
-                            {t('graphs:documentation.inputs')}
+                            {t('graph:documentation.inputs')}
                             {data?.inputs_range && ` (${data.inputs_range.replace(/&#8734;/g, '∞')})`}
                         </h2>
                         {list(data.inputs)}
@@ -128,7 +128,7 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                 {data?.outputs && (
                     <>
                         <h2>
-                            {t('graphs:documentation.outputs')}
+                            {t('graph:documentation.outputs')}
                             {data?.outputs_range && ` (${data.outputs_range.replace(/&#8734;/g, '∞')})`}
                         </h2>
                         {list(data.outputs)}
@@ -136,7 +136,7 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                 )}
                 {data?.type_constraints && (
                     <>
-                        <h2>{t('graphs:documentation.type-constraints')}</h2>
+                        <h2>{t('graph:documentation.type-constraints')}</h2>
                         {list(
                             data.type_constraints.map(({type_param_str, allowed_type_strs, description}) => ({
                                 name: type_param_str,
@@ -148,7 +148,7 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                 )}
                 {data?.examples && (
                     <>
-                        <h2>{t('graphs:documentation.examples')}</h2>
+                        <h2>{t('graph:documentation.examples')}</h2>
                         {data.examples.map((example, index) => (
                             <React.Fragment key={index}>
                                 <h3>{example.summary}</h3>
@@ -159,7 +159,7 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                 )}
                 {data?.references && (
                     <>
-                        <h2>{t('graphs:documentation.references')}</h2>
+                        <h2>{t('graph:documentation.references')}</h2>
                         <ul>
                             {data.references.map((reference, index) => (
                                 <li key={index} dangerouslySetInnerHTML={{__html: reference.description}}></li>
@@ -169,10 +169,10 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                 )}
                 {data && data.domain && data.since_version && data.support_level && (
                     <>
-                        <h2>{t('graphs:documentation.support')}</h2>
+                        <h2>{t('graph:documentation.support')}</h2>
                         <dl>
                             {/* prettier-ignore */}
-                            <Trans i18nKey="graphs:documentation.support-info">
+                            <Trans i18nKey="graph:documentation.support-info">
                                 In domain <code>{{domain: data.domain}}</code> since version <code>{{since_version: data.since_version}}</code> at support level <code>{{support_level: data.support_level}}</code>.
                             </Trans>
                         </dl>

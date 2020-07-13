@@ -1,4 +1,8 @@
 {
+    "download-image": "Download image",
+    "maximize": "Maximize",
+    "minimize": "Minimize",
+    "restore": "Restore",
     "false-negatives": "FN",
     "false-positives": "FP",
     "precision": "Precision",

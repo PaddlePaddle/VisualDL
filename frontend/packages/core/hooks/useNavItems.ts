@@ -6,28 +6,28 @@ import intersection from 'lodash/intersection';
 import useRequest from '~/hooks/useRequest';
 
 enum Pages {
-    Scalars = 'scalars',
+    Scalar = 'scalar',
     Histogram = 'histogram',
     Samples = 'samples',
-    Graphs = 'graphs',
+    Graph = 'graph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve'
 }
 
 const pages = [
-    Pages.Scalars,
+    Pages.Scalar,
     Pages.Histogram,
     Pages.Samples,
-    Pages.Graphs,
+    Pages.Graph,
     Pages.HighDimensional,
     Pages.PRCurve
 ] as const;
 
 export const navMap = {
-    scalar: Pages.Scalars,
+    scalar: Pages.Scalar,
     histogram: Pages.Histogram,
     image: Pages.Samples,
-    graph: Pages.Graphs,
+    graph: Pages.Graph,
     embeddings: Pages.HighDimensional,
     pr_curve: Pages.PRCurve
 } as const;

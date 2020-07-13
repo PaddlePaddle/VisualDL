@@ -1,4 +1,8 @@
 {
+    "download-image": "下载图片",
+    "maximize": "最大化",
+    "minimize": "最小化",
+    "restore": "还原",
     "false-negatives": "FN",
     "false-positives": "FP",
     "precision": "Precision",

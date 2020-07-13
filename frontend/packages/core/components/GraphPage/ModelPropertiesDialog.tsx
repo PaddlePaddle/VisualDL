@@ -2,8 +2,8 @@ import React, {FunctionComponent} from 'react';
 import {backgroundColor, em, size} from '~/utils/style';
 
 import Icon from '~/components/Icon';
-import Properties from '~/components/GraphsPage/Properties';
-import {Properties as PropertiesType} from '~/resource/graphs/types';
+import Properties from '~/components/GraphPage/Properties';
+import {Properties as PropertiesType} from '~/resource/graph/types';
 import styled from 'styled-components';
 import {useTranslation} from '~/utils/i18n';
 
@@ -62,7 +62,7 @@ type ModelPropertiesDialogProps = {
 };
 
 const ModelPropertiesDialog: FunctionComponent<ModelPropertiesDialogProps> = ({data, onClose}) => {
-    const {t} = useTranslation('graphs');
+    const {t} = useTranslation('graph');
 
     if (!data) {
         return null;
@@ -72,7 +72,7 @@ const ModelPropertiesDialog: FunctionComponent<ModelPropertiesDialogProps> = ({d
         <Dialog>
             <div className="modal">
                 <div className="modal-header">
-                    <span className="modal-title">{t('graphs:model-properties')}</span>
+                    <span className="modal-title">{t('graph:model-properties')}</span>
                     <a className="modal-close" onClick={() => onClose?.()}>
                         <Icon type="close" />
                     </a>

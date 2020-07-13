@@ -1,8 +1,8 @@
 import React, {FunctionComponent} from 'react';
 
-import GraphSidebar from '~/components/GraphsPage/GraphSidebar';
-import Properties from '~/components/GraphsPage/Properties';
-import {Properties as PropertiesType} from '~/resource/graphs/types';
+import GraphSidebar from '~/components/GraphPage/GraphSidebar';
+import Properties from '~/components/GraphPage/Properties';
+import {Properties as PropertiesType} from '~/resource/graph/types';
 import {useTranslation} from '~/utils/i18n';
 
 type NodePropertiesSidebarProps = {
@@ -16,10 +16,10 @@ const NodePropertiesSidebar: FunctionComponent<NodePropertiesSidebarProps> = ({
     onClose,
     showNodeDodumentation
 }) => {
-    const {t} = useTranslation('graphs');
+    const {t} = useTranslation('graph');
 
     return (
-        <GraphSidebar title={t('graphs:node-properties')} onClose={onClose}>
+        <GraphSidebar title={t('graph:node-properties')} onClose={onClose}>
             <Properties {...data} showNodeDodumentation={showNodeDodumentation} />
         </GraphSidebar>
     );

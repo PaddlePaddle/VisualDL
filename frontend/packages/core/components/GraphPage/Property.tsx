@@ -1,8 +1,8 @@
-import {Argument as ArgumentType, NameValues, Property as PropertyType} from '~/resource/graphs/types';
+import {Argument as ArgumentType, NameValues, Property as PropertyType} from '~/resource/graph/types';
 import React, {FunctionComponent} from 'react';
 import {ellipsis, em, sameBorder} from '~/utils/style';
 
-import Argument from '~/components/GraphsPage/Argument';
+import Argument from '~/components/GraphPage/Argument';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`

@@ -94,7 +94,7 @@ class Api(object):
         return self._get('data/logs', lib.get_logs)
 
     @result()
-    def scalars_tags(self):
+    def scalar_tags(self):
         return self._get_with_retry('data/plugin/scalars/tags', lib.get_scalar_tags)
 
     @result()
@@ -106,7 +106,7 @@ class Api(object):
         return self._get_with_retry('data/plugin/audio/tags', lib.get_audio_tags)
 
     @result()
-    def embeddings_tags(self):
+    def embedding_tags(self):
         return self._get_with_retry('data/plugin/embeddings/tags', lib.get_embeddings_tags)
 
     @result()
@@ -114,7 +114,7 @@ class Api(object):
         return self._get_with_retry('data/plugin/pr_curves/tags', lib.get_pr_curve_tags)
 
     @result()
-    def scalars_list(self, run, tag):
+    def scalar_list(self, run, tag):
         key = os.path.join('data/plugin/scalars/scalars', run, tag)
         return self._get_with_retry(key, lib.get_scalar, run, tag)
 
@@ -141,7 +141,7 @@ class Api(object):
         return self._get_with_retry(key, lib.get_individual_audio, run, tag, index)
 
     @result()
-    def embeddings_embedding(self, run, tag='default', reduction='pca', dimension=2):
+    def embedding_embedding(self, run, tag='default', reduction='pca', dimension=2):
         dimension = int(dimension)
         key = os.path.join('data/plugin/embeddings/embeddings', run, str(dimension), reduction)
         return self._get_with_retry(key, lib.get_embeddings, run, tag, reduction, dimension)
@@ -166,7 +166,7 @@ class Api(object):
         return self._get_with_retry(key, lib.get_pr_curve_step, run)
 
     @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
-    def graphs_graph(self):
+    def graph_graph(self):
         key = os.path.join('data/plugin/graphs/graph')
         return self._get_with_retry(key, lib.get_graph)
 
@@ -178,20 +178,20 @@ def create_api_call(logdir, model, cache_timeout):
         'runs': (api.runs, []),
         'tags': (api.tags, []),
         'logs': (api.logs, []),
-        'scalars/tags': (api.scalars_tags, []),
+        'scalar/tags': (api.scalar_tags, []),
         'images/tags': (api.images_tags, []),
         'audio/tags': (api.audio_tags, []),
-        'embeddings/tags': (api.embeddings_tags, []),
+        'embedding/tags': (api.embedding_tags, []),
         'histogram/tags': (api.histogram_tags, []),
         'pr-curve/tags': (api.pr_curve_tags, []),
-        'scalars/list': (api.scalars_list, ['run', 'tag']),
+        'scalar/list': (api.scalar_list, ['run', 'tag']),
         'images/list': (api.images_list, ['run', 'tag']),
         'images/image': (api.images_image, ['run', 'tag', 'index']),
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
-        'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension']),
+        'embedding/embedding': (api.embedding_embedding, ['run', 'tag', 'reduction', 'dimension']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
-        'graphs/graph': (api.graphs_graph, []),
+        'graph/graph': (api.graph_graph, []),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'pr-curve/steps': (api.pr_curves_steps, ['run'])
     }

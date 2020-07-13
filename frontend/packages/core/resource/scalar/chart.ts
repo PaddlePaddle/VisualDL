@@ -68,11 +68,11 @@ export const tooltip = (data: Dataset, stepLength: number, i18n: I18n) => {
     return {
         columns: [
             {
-                label: i18n.t('scalars:smoothed'),
+                label: i18n.t('scalar:smoothed'),
                 width: '5em'
             },
             {
-                label: i18n.t('scalars:value'),
+                label: i18n.t('scalar:value'),
                 width: '4.285714286em'
             },
             {

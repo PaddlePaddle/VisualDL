@@ -180,19 +180,19 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({cid, runs, tag, run
                     {
                         icon: 'maximize',
                         activeIcon: 'minimize',
-                        tooltip: t('scalars:maximize'),
-                        activeTooltip: t('scalars:minimize'),
+                        tooltip: t('pr-curve:maximize'),
+                        activeTooltip: t('pr-curve:minimize'),
                         toggle: true,
                         onClick: toggleMaximized
                     },
                     {
                         icon: 'restore-size',
-                        tooltip: t('scalars:restore'),
+                        tooltip: t('pr-curve:restore'),
                         onClick: () => echart.current?.restore()
                     },
                     {
                         icon: 'download',
-                        tooltip: t('scalars:download-image'),
+                        tooltip: t('pr-curve:download-image'),
                         onClick: () => echart.current?.saveAsImage()
                     }
                 ]}

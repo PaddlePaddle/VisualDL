@@ -1,4 +1,4 @@
-import {Argument as ArgumentType, Property as PropertyType} from '~/resource/graphs/types';
+import {Argument as ArgumentType, Property as PropertyType} from '~/resource/graph/types';
 import React, {FunctionComponent, useMemo, useState} from 'react';
 import {borderColor, em, sameBorder, textLightColor, textLighterColor} from '~/utils/style';
 

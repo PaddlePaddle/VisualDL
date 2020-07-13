@@ -13,7 +13,7 @@ import {
     tooltip,
     transform,
     xAxisMap
-} from '~/resource/scalars';
+} from '~/resource/scalar';
 import LineChart, {LineChartRef, XAxisType, YAxisType} from '~/components/LineChart';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
 import {rem, size} from '~/utils/style';
@@ -43,8 +43,8 @@ const rangeWasm = () =>
         scalar_range(params.datasets, params.outlier)
     );
 
-const smoothWorker = () => new Worker('~/worker/scalars/smooth.worker.ts', {type: 'module'});
-const rangeWorker = () => new Worker('~/worker/scalars/range.worker.ts', {type: 'module'});
+const smoothWorker = () => new Worker('~/worker/scalar/smooth.worker.ts', {type: 'module'});
+const rangeWorker = () => new Worker('~/worker/scalar/range.worker.ts', {type: 'module'});
 
 const Wrapper = styled.div`
     ${size('100%', '100%')}
@@ -92,12 +92,12 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     outlier,
     running
 }) => {
-    const {t, i18n} = useTranslation(['scalars', 'common']);
+    const {t, i18n} = useTranslation(['scalar', 'common']);
 
     const echart = useRef<LineChartRef>(null);
 
     const {data: datasets, error, loading} = useRunningRequest<(ScalarDataset | null)[]>(
-        runs.map(run => `/scalars/list?${queryString.stringify({run: run.label, tag})}`),
+        runs.map(run => `/scalar/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
@@ -220,25 +220,25 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                     {
                         icon: 'maximize',
                         activeIcon: 'minimize',
-                        tooltip: t('scalars:maximize'),
-                        activeTooltip: t('scalars:minimize'),
+                        tooltip: t('scalar:maximize'),
+                        activeTooltip: t('scalar:minimize'),
                         toggle: true,
                         onClick: toggleMaximized
                     },
                     {
                         icon: 'restore-size',
-                        tooltip: t('scalars:restore'),
+                        tooltip: t('scalar:restore'),
                         onClick: () => echart.current?.restore()
                     },
                     {
                         icon: 'log-axis',
-                        tooltip: t('scalars:axis'),
+                        tooltip: t('scalar:axis'),
                         toggle: true,
                         onClick: toggleYAxisType
                     },
                     {
                         icon: 'download',
-                        tooltip: t('scalars:download-image'),
+                        tooltip: t('scalar:download-image'),
                         onClick: () => echart.current?.saveAsImage()
                     }
                 ]}

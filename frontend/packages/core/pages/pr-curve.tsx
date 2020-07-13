@@ -141,7 +141,7 @@ const PRCurve: NextI18NextPage = () => {
     return (
         <>
             <Preloader url="/runs" />
-            <Preloader url="/scalars/tags" />
+            <Preloader url="/scalar/tags" />
             <Title>{t('common:pr-curve')}</Title>
             <Content aside={aside} loading={loadingRuns}>
                 {!loadingRuns && !runs.length ? (
