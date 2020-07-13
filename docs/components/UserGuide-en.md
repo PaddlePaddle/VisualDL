@@ -6,7 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides three components: scalar, image, high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides six components: scalar, image, graph, histogram, pr curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
@@ -16,6 +16,7 @@ Currently, VisualDL provides three components: scalar, image, high dimensional. 
 |             [Image](#Image--Image-Visualization)             |      image visualization      | Display images, visualizing the input and the output and making it easy to view the changes in the intermediate process. |
 |              [Graph](#Graph--Network-Structure)              |       network structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
 |       [Histogram](#Histogram--Distribution-of-Tensors)       |    distribution of tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
+|                   [PR Curve](#PR-曲线组件)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | data dimensionality reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
 
@@ -455,6 +456,103 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080`to view the
 
   <p align="center">
     <img src="https://user-images.githubusercontent.com/48054808/86536639-b894c080-bf1b-11ea-9ee5-cf815dd4bbd7.png" width="40%"/>
+  </p>
+
+## PR Curve--PR 曲线组件
+
+### Introduction
+
+PR Curve presents precision-recall curves in line charts, describing the tradeoff relationship between precision and recall in order to choose a best threshold.
+
+### Record Interface
+
+The interface of the PR Curve is shown as follows:
+
+```python
+add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
+```
+
+The interface parameters are described as follows:
+
+| 参数           | 格式                  | 含义                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
+| values         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
+| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
+| step           | int                   | 记录的步数                                  |
+| num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
+
+### Demo
+
+The following shows an example of how to use High Dimensional component, and script can be found in [PR Curve Demo](../../demo/components/pr_curve_test.py)
+
+```python
+from visualdl import LogWriter
+import numpy as np
+
+with LogWriter("./log/pr_curve_test/train") as writer:
+    for step in range(3):
+        labels = np.random.randint(2, size=100)
+        predictions = np.random.rand(100)
+        writer.add_pr_curve(tag='pr_curve',
+                            labels=labels,
+                            predictions=predictions,
+                            step=step,
+                            num_thresholds=5)
+```
+
+After running the above program, developers can launch the panel by:
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/86738774-ee46c000-c067-11ea-90d2-a98aac445cca.png" width="80%"/>
+</p>
+
+### Functional Instrucions
+
+- Developers can zoom in, restore, and download PR Curves
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86740067-f18e7b80-c068-11ea-96bf-52cb7da1f799.png" width="40%"/>
+  </p>
+
+- Developers hover on the specific data point to learn about the detailed information: TP, TN, FP, FN and the corresponded thresholds
+
+    <p align="center">
+      <img src="https://user-images.githubusercontent.com/48054808/86740477-43370600-c069-11ea-93f0-f4d05445fbab.png" width="50%"/>
+    </p>
+
+- The targeted PR Curves can be displayed by searching tags
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86740670-66fa4c00-c069-11ea-9ee3-0a22e2d0dbec.png" width="30%"/>
+  </p>
+
+- Developers can find specific labels by searching tags or view the all labels
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/86740817-809b9380-c069-11ea-9453-6531e3ff5f43.png" width="30%"/>
+</p>
+
+- Developers is able to observe the changes of PR Curves across training steps
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86741057-b04a9b80-c069-11ea-9fef-2dcc16f9cd46.png" width="30%"/>
+  </p>
+
+- There are three measurement scales of X axis
+
+  1. Step: number of iterations
+  2. Walltime: absolute training time
+  3. Relative: training time
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/86741304-db34ef80-c069-11ea-86eb-787b49ed3705.png" width="30%"/>
   </p>
 
 ## High Dimensional--Data Dimensionality Reduction
