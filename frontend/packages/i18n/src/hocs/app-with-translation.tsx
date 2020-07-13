@@ -56,8 +56,8 @@ export const appWithTranslation = function (this: NextI18Next, WrappedComponent:
                     const {query} = router;
                     let {pathname, asPath} = router;
 
-                    if (process.env.PUBLIC_PATH) {
-                        const publicPath = process.env.PUBLIC_PATH;
+                    if (config.publicPath) {
+                        const publicPath = config.publicPath;
                         if (pathname.indexOf(publicPath) === 0) {
                             pathname = pathname.replace(publicPath, '');
                         }

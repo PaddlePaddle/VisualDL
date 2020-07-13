@@ -8,6 +8,7 @@ const LOCALE_STRUCTURE = '{{lng}}/{{ns}}';
 const LOCALE_EXTENSION = 'json';
 
 export const defaultConfig = {
+    publicPath: '',
     defaultLanguage: DEFAULT_LANGUAGE,
     otherLanguages: OTHER_LANGUAGES,
     load: 'currentOnly',

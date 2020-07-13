@@ -22,7 +22,6 @@ const LANGUAGES = ['en', 'zh'];
 const otherLanguages = LANGUAGES.filter(lang => lang !== DEFAULT_LANGUAGE);
 
 module.exports = {
-    target: 'serverless',
     assetPrefix: publicPath,
     distDir,
     poweredByHeader: false,
@@ -31,8 +30,9 @@ module.exports = {
         DEFAULT_LANGUAGE,
         LOCALE_PATH,
         LANGUAGES,
+        API_URL: apiUrl,
         PUBLIC_PATH: publicPath,
-        API_URL: apiUrl
+        API_TOKEN_KEY: process.env.API_TOKEN_KEY || ''
     },
     exportPathMap: defaultPathMap => ({
         ...defaultPathMap,

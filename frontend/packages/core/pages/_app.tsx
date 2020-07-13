@@ -1,7 +1,7 @@
-import App, {AppContext, AppProps} from 'next/app';
 import {Router, appWithTranslation} from '~/utils/i18n';
-import {fetcher, getApiToken, setApiToken} from '~/utils/fetch';
+import {fetcher, getApiToken} from '~/utils/fetch';
 
+import App from 'next/app';
 import {GlobalStyle} from '~/utils/style';
 import Head from 'next/head';
 import Layout from '~/components/Layout';
@@ -12,17 +12,10 @@ import {ToastContainer} from 'react-toastify';
 import queryString from 'query-string';
 import {withRouter} from 'next/router';
 
-const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
+const API_TOKEN_KEY = process.env.API_TOKEN_KEY;
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 class VDLApp extends App {
-    constructor(props: AppProps) {
-        super(props);
-        if (process.browser && API_TOKEN_KEY) {
-            const query = queryString.parse(window.location.search);
-            setApiToken(query[API_TOKEN_KEY]);
-        }
-    }
-
     componentDidMount() {
         Router.events.on('routeChangeStart', () => NProgress.start());
         Router.events.on('routeChangeComplete', (url: string) => {
@@ -55,7 +48,7 @@ class VDLApp extends App {
             <>
                 <Head>
                     <title>{process.env.title}</title>
-                    <link rel="shortcut icon" href={`${process.env.PUBLIC_PATH}/favicon.ico`} />
+                    <link rel="shortcut icon" href={`${PUBLIC_PATH}/favicon.ico`} />
                     <meta
                         name="viewport"
                         content="width=device-width,minimum-scale=1,maximum-scale=1,initial-scale=1,user-scalable=no,shrink-to-fit=no"
@@ -79,15 +72,6 @@ class VDLApp extends App {
                 </SWRConfig>
             </>
         );
-    }
-
-    static async getInitialProps(appContext: AppContext) {
-        const appProps = await App.getInitialProps(appContext);
-
-        if (API_TOKEN_KEY) {
-            setApiToken(appContext.router.query[API_TOKEN_KEY]);
-        }
-        return {...appProps};
     }
 }
 

@@ -2,10 +2,17 @@
 // https://github.com/zeit/swr/blob/master/examples/axios-typescript/libs/useRequest.ts
 
 import fetch from 'isomorphic-unfetch';
+import queryString from 'query-string';
 
-const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
+const API_TOKEN_KEY = process.env.API_TOKEN_KEY;
 
 const API_TOKEN_HEADER = 'X-VisualDL-Instance-ID';
+
+const instanceId = process.browser && API_TOKEN_KEY ? queryString.parse(window.location.search)[API_TOKEN_KEY] : '';
+
+export function getApiToken(): string | string[] | null {
+    return instanceId ?? null;
+}
 
 function addApiToken(options?: RequestInit): RequestInit | undefined {
     const id = getApiToken();
@@ -23,14 +30,6 @@ function addApiToken(options?: RequestInit): RequestInit | undefined {
         ...rest,
         headers: newHeaders
     };
-}
-
-export function setApiToken(id?: string | string[] | null) {
-    globalThis.__visualdl_instance_id__ = id || '';
-}
-
-export function getApiToken(): string | string[] | null {
-    return globalThis.__visualdl_instance_id__ || '';
 }
 
 export const fetcher = async <T = unknown>(url: string, options?: RequestInit): Promise<T> => {

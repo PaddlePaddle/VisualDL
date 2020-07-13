@@ -11,6 +11,8 @@ import groupBy from 'lodash/groupBy';
 import styled from 'styled-components';
 import useSearchValue from '~/hooks/useSearchValue';
 
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
+
 const StyledPagination = styled(Pagination)`
     margin-top: ${rem(20)};
 `;
@@ -52,7 +54,7 @@ const Empty = styled.div<{height?: string}>`
     height: ${props => props.height ?? 'auto'};
     padding: ${rem(320)} 0 ${rem(70)};
     background-color: ${backgroundColor};
-    background-image: url(${`${process.env.PUBLIC_PATH}/images/empty.svg`});
+    background-image: url(${`${PUBLIC_PATH}/images/empty.svg`});
     background-repeat: no-repeat;
     background-position: calc(50% + ${rem(25)}) ${rem(70)};
     background-size: ${rem(280)} ${rem(244)};

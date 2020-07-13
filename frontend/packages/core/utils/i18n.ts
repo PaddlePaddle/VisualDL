@@ -15,6 +15,7 @@ allLanguages.forEach(async (lang: string) => {
 });
 
 const nextI18Next = new NextI18Next({
+    publicPath: env.PUBLIC_PATH,
     localePath: env.LOCALE_PATH,
     browserLanguageDetection: !isDev,
     serverLanguageDetection: !isDev,

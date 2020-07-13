@@ -21,7 +21,8 @@ import styled from 'styled-components';
 import useNavItems from '~/hooks/useNavItems';
 import {useRouter} from 'next/router';
 
-const API_TOKEN_KEY: string = globalThis.__vdl_api_token_key__ || '';
+const API_TOKEN_KEY = process.env.API_TOKEN_KEY;
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
 
 const Nav = styled.nav`
     background-color: ${navbarBackgroundColor};
@@ -105,7 +106,7 @@ const Navbar: FunctionComponent = () => {
     const indexUrl = useMemo(() => {
         // TODO: fix type
         const subpath = (i18n.options as InitConfig).localeSubpaths?.[i18n.language];
-        let path = process.env.PUBLIC_PATH ?? '';
+        let path = PUBLIC_PATH ?? '';
         if (subpath) {
             path += `/${subpath}`;
         }
@@ -125,7 +126,7 @@ const Navbar: FunctionComponent = () => {
         <Nav>
             <div className="left">
                 <Logo href={indexUrl}>
-                    <img alt="PaddlePaddle" src={`${process.env.PUBLIC_PATH}/images/logo.svg`} />
+                    <img alt="PaddlePaddle" src={`${PUBLIC_PATH}/images/logo.svg`} />
                     <span>VisualDL</span>
                 </Logo>
                 {navItems.map(name => {

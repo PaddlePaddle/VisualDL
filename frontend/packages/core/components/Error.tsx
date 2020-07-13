@@ -4,6 +4,8 @@ import {WithStyled, backgroundColor, em, link, rem, size, textColor, textLightCo
 
 import styled from 'styled-components';
 
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
+
 const Wrapper = styled.div`
     display: flex;
     justify-content: center;
@@ -13,7 +15,7 @@ const Wrapper = styled.div`
     width: 100%;
 
     > .image {
-        background-image: url(${`${process.env.PUBLIC_PATH}/images/empty.svg`});
+        background-image: url(${`${PUBLIC_PATH}/images/empty.svg`});
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 100% 100%;

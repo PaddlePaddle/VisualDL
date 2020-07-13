@@ -8,6 +8,8 @@ import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import {useTranslation} from '~/utils/i18n';
 
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
+
 const toolboxHeight = rem(40);
 
 const Wrapper = styled.div`
@@ -247,7 +249,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Content>
                         <iframe
                             ref={iframe}
-                            src={`${process.env.PUBLIC_PATH ?? ''}/_next/static/netron/index.html`}
+                            src={`${PUBLIC_PATH ?? ''}/_next/static/netron/index.html`}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}
@@ -259,7 +261,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             target="_blank"
                             rel="noreferrer"
                         >
-                            Powered by <img src={`${process.env.PUBLIC_PATH ?? ''}/images/netron.png`} alt="netron" />
+                            Powered by <img src={`${PUBLIC_PATH ?? ''}/images/netron.png`} alt="netron" />
                         </a>
                     </Content>
                 </RenderContent>

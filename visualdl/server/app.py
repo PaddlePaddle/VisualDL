@@ -89,7 +89,7 @@ def create_app(args):
             lang = get_locale()
             if lang == default_language:
                 return redirect(public_path + '/index', code=302)
-            lang = support_language[0] if lang is None else lang
+            lang = default_language if lang is None else lang
             return redirect(public_path + '/' + lang + '/index', code=302)
 
         @app.route(public_path + '/<path:filename>')

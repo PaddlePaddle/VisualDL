@@ -18,6 +18,7 @@ import {LinkProps} from 'next/link';
 import {SingletonRouter} from 'next/router';
 
 export type InitConfig = {
+    publicPath?: string;
     projectRoot?: string;
     browserLanguageDetection?: boolean;
     serverLanguageDetection?: boolean;

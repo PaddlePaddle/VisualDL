@@ -171,11 +171,10 @@ const NodeDocumentationSidebar: FunctionComponent<NodeDocumentationSidebarProps>
                     <>
                         <h2>{t('graphs:documentation.support')}</h2>
                         <dl>
-                            {/* eslint-disable prettier/prettier */}
+                            {/* prettier-ignore */}
                             <Trans i18nKey="graphs:documentation.support-info">
                                 In domain <code>{{domain: data.domain}}</code> since version <code>{{since_version: data.since_version}}</code> at support level <code>{{support_level: data.support_level}}</code>.
                             </Trans>
-                            {/* eslint-enable prettier/prettier */}
                         </dl>
                     </>
                 )}
