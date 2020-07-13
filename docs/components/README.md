@@ -1,5 +1,5 @@
-
-
+[**English**](./UserGuide-en.md)
+ 
 # VisualDL 使用指南
 
 ### 概述
