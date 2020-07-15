@@ -3,6 +3,7 @@ import React, {FunctionComponent, useEffect, useMemo, useState} from 'react';
 import {
     backgroundFocusedColor,
     border,
+    borderRadius,
     navbarBackgroundColor,
     navbarHighlightColor,
     navbarHoverBackgroundColor,
@@ -89,6 +90,11 @@ const NavItem = styled.a<{active?: boolean}>`
         ${transitionProps('border-bottom')}
         text-transform: uppercase;
     }
+`;
+
+const SubNav = styled.div`
+    overflow: hidden;
+    border-radius: ${borderRadius};
 `;
 
 const NavItemChild = styled.a<{active?: boolean}>`
@@ -227,13 +233,17 @@ const Navbar: FunctionComponent = () => {
                                 offset={[0, 0]}
                                 hideOnClick={false}
                                 role="menu"
-                                content={item.children.map(child => (
-                                    <Link href={child.path} key={child.id} passHref>
-                                        <NavItemChild active={child.active}>
-                                            {t(item.id)} - {t(child.id)}
-                                        </NavItemChild>
-                                    </Link>
-                                ))}
+                                content={
+                                    <SubNav>
+                                        {item.children.map(child => (
+                                            <Link href={child.path} key={child.id} passHref>
+                                                <NavItemChild active={child.active}>
+                                                    {t(item.id)} - {t(child.id)}
+                                                </NavItemChild>
+                                            </Link>
+                                        ))}
+                                    </SubNav>
+                                }
                                 key={item.active ? `${item.id}-activated` : item.id}
                             >
                                 <NavbarItem {...item} />
