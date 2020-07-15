@@ -37,9 +37,9 @@
         "mime-types": "2.1.27"
     },
     "devDependencies": {
-        "@types/express": "4.17.6",
+        "@types/express": "4.17.7",
         "@types/faker": "4.1.12",
-        "@types/node": "14.0.14",
+        "@types/node": "14.0.23",
         "cpy-cli": "3.1.1",
         "rimraf": "3.0.2",
         "typescript": "3.9.6"

@@ -38,10 +38,10 @@
         "open": "7.0.4",
         "ora": "4.0.4",
         "pm2": "4.4.0",
-        "yargs": "15.3.1"
+        "yargs": "15.4.1"
     },
     "devDependencies": {
-        "@types/node": "14.0.14",
+        "@types/node": "14.0.23",
         "@types/yargs": "15.0.5",
         "cross-env": "7.0.2",
         "ts-node": "8.10.2",
