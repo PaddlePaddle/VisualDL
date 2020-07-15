@@ -48,7 +48,9 @@ export default (options: Options) => {
                 await sleep(delay);
             }
 
-            if (mock instanceof ArrayBuffer) {
+            if (Buffer.isBuffer(mock)) {
+                res.send(mock);
+            } else if (mock instanceof ArrayBuffer) {
                 res.send(Buffer.from(mock));
             } else {
                 const result = JSON.parse(faker.fake(JSON.stringify(mock, null, 4)));

@@ -102,7 +102,7 @@ def get_individual_audio(log_reader, run, tag, step_index):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("audio").get_items(
         run, decode_tag(tag))
-    result = records[step_index].audio.encoded_image_string
+    result = records[step_index].audio.encoded_audio_string
     return result
 
 

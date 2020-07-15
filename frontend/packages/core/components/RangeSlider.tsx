@@ -6,10 +6,13 @@ import {
     em,
     half,
     position,
+    primaryActiveColor,
     primaryColor,
+    primaryFocusedColor,
     sameBorder,
     size,
-    textLighterColor
+    textLighterColor,
+    transitionProps
 } from '~/utils/style';
 
 import styled from 'styled-components';
@@ -30,8 +33,19 @@ const Wrapper = styled.div<{disabled?: boolean}>`
             display: none;
         }
 
+        --color: ${primaryColor};
+
+        &:hover {
+            --color: ${primaryFocusedColor};
+        }
+
+        &:active {
+            --color: ${primaryActiveColor};
+        }
+
         &__track {
             cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+            ${transitionProps('width', {duration: '30ms'})}
 
             &--background {
                 ${size(railHeight, '100%')}
@@ -44,7 +58,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
             &--active {
                 height: ${railHeight};
                 position: absolute;
-                background-color: ${props => (props.disabled ? textLighterColor : primaryColor)};
+                background-color: ${props => (props.disabled ? textLighterColor : 'var(--color)')};
                 border-radius: ${half(railHeight)};
                 outline: none;
             }
@@ -53,6 +67,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
         &__slider-container {
             top: -${half(`${thumbSize} - ${railHeight}`)};
             margin-left: -${half(thumbSize)};
+            ${transitionProps('left', {duration: '30ms'})}
         }
 
         &__slider {
@@ -60,7 +75,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
             ${props =>
                 sameBorder({
                     width: em(3),
-                    color: props.disabled ? textLighterColor : primaryColor,
+                    color: props.disabled ? textLighterColor : 'var(--color)',
                     radius: half(thumbSize)
                 })}
             background-color: ${backgroundColor};
@@ -75,11 +90,13 @@ type RangeSliderProps = {
     value?: number;
     disabled?: boolean;
     onChange?: (value: number) => unknown;
+    onChangeStart?: () => unknown;
     onChangeComplete?: () => unknown;
 };
 
 const RangeSlider: FunctionComponent<RangeSliderProps & WithStyled> = ({
     onChange,
+    onChangeStart,
     onChangeComplete,
     className,
     min,
@@ -103,6 +120,7 @@ const RangeSlider: FunctionComponent<RangeSliderProps & WithStyled> = ({
                 disabled={disabled}
                 value={value as number}
                 onChange={onChangeRange}
+                onChangeStart={() => onChangeStart?.()}
                 onChangeComplete={() => onChangeComplete?.()}
             />
         </Wrapper>

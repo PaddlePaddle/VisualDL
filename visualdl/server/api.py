@@ -98,7 +98,7 @@ class Api(object):
         return self._get_with_retry('data/plugin/scalars/tags', lib.get_scalar_tags)
 
     @result()
-    def images_tags(self):
+    def image_tags(self):
         return self._get_with_retry('data/plugin/images/tags', lib.get_image_tags)
 
     @result()
@@ -119,12 +119,12 @@ class Api(object):
         return self._get_with_retry(key, lib.get_scalar, run, tag)
 
     @result()
-    def images_list(self, mode, tag):
+    def image_list(self, mode, tag):
         key = os.path.join('data/plugin/images/images', mode, tag)
         return self._get_with_retry(key, lib.get_image_tag_steps, mode, tag)
 
     @result('image/png')
-    def images_image(self, mode, tag, index=0):
+    def image_image(self, mode, tag, index=0):
         index = int(index)
         key = os.path.join('data/plugin/images/individualImage', mode, tag, str(index))
         return self._get_with_retry(key, lib.get_individual_image, mode, tag, index)
@@ -134,7 +134,7 @@ class Api(object):
         key = os.path.join('data/plugin/audio/audio', run, tag)
         return self._get_with_retry(key, lib.get_audio_tag_steps, run, tag)
 
-    @result()
+    @result('audio/wav')
     def audio_audio(self, run, tag, index=0):
         index = int(index)
         key = os.path.join('data/plugin/audio/individualAudio', run, tag, str(index))
@@ -179,14 +179,14 @@ def create_api_call(logdir, model, cache_timeout):
         'tags': (api.tags, []),
         'logs': (api.logs, []),
         'scalar/tags': (api.scalar_tags, []),
-        'images/tags': (api.images_tags, []),
+        'image/tags': (api.image_tags, []),
         'audio/tags': (api.audio_tags, []),
         'embedding/tags': (api.embedding_tags, []),
         'histogram/tags': (api.histogram_tags, []),
         'pr-curve/tags': (api.pr_curve_tags, []),
         'scalar/list': (api.scalar_list, ['run', 'tag']),
-        'images/list': (api.images_list, ['run', 'tag']),
-        'images/image': (api.images_image, ['run', 'tag', 'index']),
+        'image/list': (api.image_list, ['run', 'tag']),
+        'image/image': (api.image_image, ['run', 'tag', 'index']),
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
         'embedding/embedding': (api.embedding_embedding, ['run', 'tag', 'reduction', 'dimension']),

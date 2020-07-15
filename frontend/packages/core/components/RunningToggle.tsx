@@ -42,7 +42,11 @@ const RunningToggle: FunctionComponent<RunningToggleProps & WithStyled> = ({runn
     return (
         <Wrapper className={className}>
             <span>{t(state ? 'running' : 'stopped')}</span>
-            <Tippy content={t(state ? 'stop-realtime-refresh' : 'start-realtime-refresh') + ''} hideOnClick={false}>
+            <Tippy
+                theme="tooltip"
+                content={t(state ? 'stop-realtime-refresh' : 'start-realtime-refresh') + ''}
+                hideOnClick={false}
+            >
                 <div>
                     <StyledButton onClick={() => setState(s => !s)} type={state ? 'danger' : 'primary'} rounded>
                         {t(state ? 'stop' : 'run')}

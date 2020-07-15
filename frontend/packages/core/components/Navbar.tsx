@@ -107,7 +107,6 @@ const NavItemChild = styled.a<{active?: boolean}>`
 `;
 
 interface NavItem extends BaseNavItem {
-    aid: string;
     cid?: string;
     active: boolean;
     children?: ({active: boolean} & NonNullable<BaseNavItem['children']>[number])[];
@@ -165,9 +164,6 @@ const Navbar: FunctionComponent = () => {
                     if (child) {
                         return {
                             ...item,
-                            // this is used to prevent reuse of component
-                            // so that tippy will re-initialize when we change route
-                            aid: `${item.id}-activated`,
                             cid: child.id,
                             path: currentPath,
                             active: true,
@@ -187,7 +183,6 @@ const Navbar: FunctionComponent = () => {
                 }
                 return {
                     ...item,
-                    aid: item.id,
                     active: currentPath === item.path,
                     children
                 };
@@ -240,13 +235,13 @@ const Navbar: FunctionComponent = () => {
                                         </NavItemChild>
                                     </Link>
                                 ))}
-                                key={item.aid}
+                                key={item.active ? `${item.id}-activated` : item.id}
                             >
                                 <NavbarItem {...item} />
                             </Tippy>
                         );
                     }
-                    return <NavbarItem {...item} key={item.aid} />;
+                    return <NavbarItem {...item} key={item.id} />;
                 })}
             </div>
             <div className="right">
