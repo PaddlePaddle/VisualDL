@@ -13,7 +13,7 @@ import {
 
 import {AudioPlayer} from '~/utils/audio';
 import Icon from '~/components/Icon';
-import {PuffLoader} from 'react-spinners';
+import PuffLoader from 'react-spinners/PuffLoader';
 import RangeSlider from '~/components/RangeSlider';
 import SyncLoader from 'react-spinners/SyncLoader';
 import Tippy from '@tippyjs/react';
