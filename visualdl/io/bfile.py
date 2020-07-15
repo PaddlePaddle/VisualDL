@@ -124,6 +124,8 @@ class LocalFileSystem(object):
         self._write(filename, file_content, "wb" if binary_mode else "w")
 
     def walk(self, dir):
+        if 'posix' == os.name:
+            return os.walk(dir, followlinks=True)
         return os.walk(dir)
 
 
