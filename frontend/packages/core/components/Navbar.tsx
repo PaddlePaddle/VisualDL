@@ -1,5 +1,5 @@
 import {Link, config, i18n, useTranslation} from '~/utils/i18n';
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, useEffect, useMemo, useState} from 'react';
 import {
     backgroundFocusedColor,
     border,
