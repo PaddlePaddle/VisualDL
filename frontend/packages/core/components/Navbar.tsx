@@ -225,7 +225,6 @@ const Navbar: FunctionComponent = () => {
                                 interactive
                                 arrow={false}
                                 offset={[0, 0]}
-                                theme="navbar"
                                 hideOnClick={false}
                                 role="menu"
                                 content={item.children.map(child => (
