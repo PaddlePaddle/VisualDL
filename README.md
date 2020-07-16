@@ -230,6 +230,13 @@ app.run(logdir="./log")
 <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
 </p>
 
+### Audio
+实时查看训练过程中的音频数据，监控语音识别与合成等任务的训练过程。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/87659138-b4746880-c78f-11ea-965b-c33804e7c296.png" width="85%"/>
+</p>
+
 ### Graph
 
 一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。
