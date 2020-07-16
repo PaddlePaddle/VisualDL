@@ -4,6 +4,7 @@ import {createGlobalStyle, keyframes} from 'styled-components';
 
 import {css} from 'styled-components';
 import tippy from '!!css-loader!tippy.js/dist/tippy.css';
+import tippyAnimation from '!!css-loader!tippy.js/animations/shift-away-subtle.css';
 import toast from '!!css-loader!react-toastify/dist/ReactToastify.css';
 import vdlIcon from '!!css-loader!~/public/style/vdl-icon.css';
 
@@ -47,6 +48,7 @@ export const textLightColor = '#666';
 export const textLighterColor = '#999';
 export const textInvertColor = '#FFF';
 export const bodyBackgroundColor = '#F4F4F4';
+export const primaryBackgroundColor = '#F2F6FF';
 export const backgroundColor = '#FFF';
 export const backgroundFocusedColor = '#F6F6F6';
 export const borderColor = '#DDD';
@@ -86,12 +88,12 @@ export const sameBorder = (
         radius ? {borderRadius: radius === true ? borderRadius : radius} : undefined
     );
 };
-export const transitionProps = (props: string | string[], args?: string) => {
+export const transitionProps = (props: string | string[], args?: string | {duration?: string; easing?: string}) => {
     if ('string' === typeof props) {
         props = [props];
     }
-    if (!args) {
-        args = `${duration} ${easing}`;
+    if ('string' !== typeof args) {
+        args = `${args?.duration ?? duration} ${args?.easing ?? easing}`;
     }
     return transitions(props, args);
 };
@@ -140,6 +142,7 @@ export const GlobalStyle = createGlobalStyle`
     ${vdlIcon.toString()}
     ${toast.toString()}
     ${tippy.toString()}
+    ${tippyAnimation.toString()}
 
     html {
         font-size: ${fontSize};
@@ -232,22 +235,51 @@ export const GlobalStyle = createGlobalStyle`
         }
     }
 
-    .tippy-box {
+    [data-tippy-root] .tippy-box {
         z-index: 10002;
-        color: ${tooltipTextColor};
-        background-color: ${tooltipBackgroundColor};
+        color: ${textColor};
+        background-color: ${backgroundColor};
+        box-shadow: 0 0 10px 0 rgba(0,0,0,0.10);
+        border-radius: ${borderRadius};
+
+        > .tippy-content {
+            padding: 0;
+        }
 
         &[data-placement^='top'] > .tippy-arrow::before {
-            border-top-color: ${tooltipBackgroundColor};
+            border-top-color: ${backgroundColor};
         }
         &[data-placement^='bottom'] > .tippy-arrow::before {
-            border-bottom-color: ${tooltipBackgroundColor};
+            border-bottom-color: ${backgroundColor};
         }
         &[data-placement^='left'] > .tippy-arrow::before {
-            border-left-color: ${tooltipBackgroundColor};
+            border-left-color: ${backgroundColor};
         }
         &[data-placement^='right'] > .tippy-arrow::before {
-            border-right-color: ${tooltipBackgroundColor};
+            border-right-color: ${backgroundColor};
+        }
+
+        &[data-theme~='tooltip'] {
+            color: ${tooltipTextColor};
+            background-color: ${tooltipBackgroundColor};
+            box-shadow: none;
+
+            > .tippy-content {
+                padding: ${rem(5)} ${rem(9)};
+            }
+
+            &[data-placement^='top'] > .tippy-arrow::before {
+                border-top-color: ${tooltipBackgroundColor};
+            }
+            &[data-placement^='bottom'] > .tippy-arrow::before {
+                border-bottom-color: ${tooltipBackgroundColor};
+            }
+            &[data-placement^='left'] > .tippy-arrow::before {
+                border-left-color: ${tooltipBackgroundColor};
+            }
+            &[data-placement^='right'] > .tippy-arrow::before {
+                border-right-color: ${tooltipBackgroundColor};
+            }
         }
     }
 `;

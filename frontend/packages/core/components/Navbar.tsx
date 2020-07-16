@@ -1,24 +1,29 @@
 import {Link, config, i18n, useTranslation} from '~/utils/i18n';
-import React, {FunctionComponent, useMemo} from 'react';
+import React, {FunctionComponent, useEffect, useMemo, useState} from 'react';
 import {
+    backgroundFocusedColor,
     border,
+    borderRadius,
     navbarBackgroundColor,
     navbarHighlightColor,
     navbarHoverBackgroundColor,
+    primaryColor,
     rem,
     size,
+    textColor,
     textInvertColor,
     transitionProps
 } from '~/utils/style';
+import useNavItems, {NavItem as BaseNavItem} from '~/hooks/useNavItems';
 
 import Icon from '~/components/Icon';
 import {InitConfig} from '@visualdl/i18n';
 import Language from '~/components/Language';
+import Tippy from '@tippyjs/react';
 import ee from '~/utils/event';
 import {getApiToken} from '~/utils/fetch';
 import queryString from 'query-string';
 import styled from 'styled-components';
-import useNavItems from '~/hooks/useNavItems';
 import {useRouter} from 'next/router';
 
 const API_TOKEN_KEY = process.env.API_TOKEN_KEY;
@@ -87,6 +92,32 @@ const NavItem = styled.a<{active?: boolean}>`
     }
 `;
 
+const SubNav = styled.div`
+    overflow: hidden;
+    border-radius: ${borderRadius};
+`;
+
+const NavItemChild = styled.a<{active?: boolean}>`
+    display: block;
+    padding: 0 ${rem(20)};
+    line-height: 3em;
+
+    &,
+    &:visited {
+        color: ${props => (props.active ? primaryColor : textColor)};
+    }
+
+    &:hover {
+        background-color: ${backgroundFocusedColor};
+    }
+`;
+
+interface NavItem extends BaseNavItem {
+    cid?: string;
+    active: boolean;
+    children?: ({active: boolean} & NonNullable<BaseNavItem['children']>[number])[];
+}
+
 const changeLanguage = () => {
     const {language} = i18n;
     const {allLanguages} = config;
@@ -95,13 +126,75 @@ const changeLanguage = () => {
     i18n.changeLanguage(nextLanguage);
 };
 
+const NavbarItem = React.forwardRef<HTMLAnchorElement, NavItem>(({path, id, cid, active}, ref) => {
+    const {t} = useTranslation('common');
+
+    const name = useMemo(() => (cid ? `${t(id)} - ${t(cid)}` : t(id)), [t, id, cid]);
+
+    if (path) {
+        // https://nextjs.org/docs/api-reference/next/link#if-the-child-is-a-custom-component-that-wraps-an-a-tag
+        return (
+            <Link href={path} passHref>
+                <NavItem active={active} ref={ref}>
+                    <span className="nav-text">{name}</span>
+                </NavItem>
+            </Link>
+        );
+    }
+    return (
+        <NavItem active={active} ref={ref}>
+            <span className="nav-text">{name}</span>
+        </NavItem>
+    );
+});
+
+NavbarItem.displayName = 'NavbarItem';
+
 const Navbar: FunctionComponent = () => {
     const {t, i18n} = useTranslation('common');
     const {pathname, basePath} = useRouter();
 
-    const navItems = useNavItems();
+    const currentPath = useMemo(() => pathname.replace(basePath, ''), [pathname, basePath]);
 
-    const path = useMemo(() => pathname.replace(basePath, ''), [pathname, basePath]);
+    const navItems = useNavItems();
+    const [items, setItems] = useState<NavItem[]>([]);
+    useEffect(() => {
+        setItems(oldItems =>
+            navItems.map(item => {
+                const children = item.children?.map(child => ({
+                    ...child,
+                    active: child.path === currentPath
+                }));
+                if (item.children && !item.path) {
+                    const child = item.children.find(child => child.path === currentPath);
+                    if (child) {
+                        return {
+                            ...item,
+                            cid: child.id,
+                            path: currentPath,
+                            active: true,
+                            children
+                        };
+                    } else {
+                        const oldItem = oldItems.find(oldItem => oldItem.id === item.id);
+                        if (oldItem) {
+                            return {
+                                ...item,
+                                ...oldItem,
+                                active: false,
+                                children
+                            };
+                        }
+                    }
+                }
+                return {
+                    ...item,
+                    active: currentPath === item.path,
+                    children
+                };
+            })
+        );
+    }, [navItems, currentPath]);
 
     const indexUrl = useMemo(() => {
         // TODO: fix type
@@ -129,16 +222,35 @@ const Navbar: FunctionComponent = () => {
                     <img alt="PaddlePaddle" src={`${PUBLIC_PATH}/images/logo.svg`} />
                     <span>VisualDL</span>
                 </Logo>
-                {navItems.map(name => {
-                    const href = `/${name}`;
-                    return (
-                        // https://nextjs.org/docs/api-reference/next/link#if-the-child-is-a-custom-component-that-wraps-an-a-tag
-                        <Link href={href} key={name} passHref>
-                            <NavItem active={path === href}>
-                                <span className="nav-text">{t(name)}</span>
-                            </NavItem>
-                        </Link>
-                    );
+                {items.map(item => {
+                    if (item.children) {
+                        return (
+                            <Tippy
+                                placement="bottom-start"
+                                animation="shift-away-subtle"
+                                interactive
+                                arrow={false}
+                                offset={[0, 0]}
+                                hideOnClick={false}
+                                role="menu"
+                                content={
+                                    <SubNav>
+                                        {item.children.map(child => (
+                                            <Link href={child.path} key={child.id} passHref>
+                                                <NavItemChild active={child.active}>
+                                                    {t(item.id)} - {t(child.id)}
+                                                </NavItemChild>
+                                            </Link>
+                                        ))}
+                                    </SubNav>
+                                }
+                                key={item.active ? `${item.id}-activated` : item.id}
+                            >
+                                <NavbarItem {...item} />
+                            </Tippy>
+                        );
+                    }
+                    return <NavbarItem {...item} key={item.id} />;
                 })}
             </div>
             <div className="right">

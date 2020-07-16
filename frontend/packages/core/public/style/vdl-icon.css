@@ -1,7 +1,7 @@
 .vdl-icon {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'vdl-icon' !important;
-    speak: none;
+    speak: never;
     font-style: normal;
     font-weight: normal;
     font-variant: normal;
@@ -13,6 +13,21 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-mute:before {
+    content: '\e918';
+}
+.icon-volumn-low:before {
+    content: '\e91b';
+}
+.icon-volumn:before {
+    content: '\e91c';
+}
+.icon-pause:before {
+    content: '\e919';
+}
+.icon-play:before {
+    content: '\e91a';
+}
 .icon-question-circle:before {
     content: '\e913';
 }

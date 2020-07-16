@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/netron",
-    "version": "2.0.0-beta.44",
+    "version": "2.0.0-beta.49",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -35,20 +35,20 @@
         "dagre": "0.8.5",
         "flatbuffers": "1.12.0",
         "long": "4.0.0",
-        "marked": "1.1.0",
+        "marked": "1.1.1",
         "netron": "PeterPanZH/netron",
         "pako": "1.0.11"
     },
     "devDependencies": {
-        "autoprefixer": "9.8.4",
+        "autoprefixer": "9.8.5",
         "copy-webpack-plugin": "6.0.3",
         "css-loader": "3.6.0",
         "html-webpack-plugin": "4.3.0",
         "mini-css-extract-plugin": "0.9.0",
         "postcss-loader": "3.0.0",
         "rimraf": "3.0.2",
-        "sass": "1.26.9",
-        "sass-loader": "9.0.0",
+        "sass": "1.26.10",
+        "sass-loader": "9.0.2",
         "terser": "4.8.0",
         "webpack": "4.43.0"
     },

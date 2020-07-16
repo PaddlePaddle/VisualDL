@@ -55,7 +55,7 @@ const HighDimensional: NextI18NextPage = () => {
     const {data: runs, error: runsError, loading: runsLoading} = useRunningRequest<string[]>('/runs', running);
 
     const {data: tags, error: tagsError, loading: tagsLoading} = useRunningRequest<Record<string, string[]>>(
-        '/embeddings/tags',
+        '/embedding/tags',
         running
     );
 

@@ -1,39 +1,78 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 
 import ee from '~/utils/event';
 import {fetcher} from '~/utils/fetch';
-import intersection from 'lodash/intersection';
 import useRequest from '~/hooks/useRequest';
 
 enum Pages {
-    Scalars = 'scalars',
+    Scalar = 'scalar',
     Histogram = 'histogram',
-    Samples = 'samples',
-    Graphs = 'graphs',
+    Image = 'image',
+    Audio = 'audio',
+    Graph = 'graph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve'
 }
 
-const pages = [
-    Pages.Scalars,
-    Pages.Histogram,
-    Pages.Samples,
-    Pages.Graphs,
-    Pages.HighDimensional,
-    Pages.PRCurve
-] as const;
+export interface NavItem {
+    id: Pages | string;
+    visible?: boolean;
+    path?: string;
+    children?: {
+        id: NavItem['id'];
+        path: string;
+    }[];
+}
+
+const pages: NavItem[] = [
+    {
+        id: Pages.Scalar,
+        path: `/${Pages.Scalar}`
+    },
+    {
+        id: Pages.Histogram,
+        path: `/${Pages.Histogram}`
+    },
+    {
+        id: 'sample',
+        visible: true,
+        children: [
+            {
+                id: Pages.Image,
+                path: `/sample/${Pages.Image}`
+            },
+            {
+                id: Pages.Audio,
+                path: `/sample/${Pages.Audio}`
+            }
+        ]
+    },
+    {
+        id: Pages.Graph,
+        path: `/${Pages.Graph}`
+    },
+    {
+        id: Pages.HighDimensional,
+        path: `/${Pages.HighDimensional}`
+    },
+    {
+        id: Pages.PRCurve,
+        path: `/${Pages.PRCurve}`
+    }
+];
 
 export const navMap = {
-    scalar: Pages.Scalars,
+    scalar: Pages.Scalar,
     histogram: Pages.Histogram,
-    image: Pages.Samples,
-    graph: Pages.Graphs,
+    image: Pages.Image,
+    audio: Pages.Audio,
+    graph: Pages.Graph,
     embeddings: Pages.HighDimensional,
     pr_curve: Pages.PRCurve
 } as const;
 
 const useNavItems = () => {
-    const [components, setComponents] = useState<Pages[]>([]);
+    const [components, setComponents] = useState<NavItem[]>([]);
 
     const {data, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
         refreshInterval: components.length ? 61 * 1000 : 15 * 1000,
@@ -53,9 +92,33 @@ const useNavItems = () => {
         };
     }, [mutate]);
 
+    const filterPages = useCallback(
+        (pages: NavItem[]) => {
+            const items: string[] = data?.map(item => navMap[item]) ?? [];
+            return pages.reduce<NavItem[]>((m, page) => {
+                if (!page.visible && !items.includes(page.id)) {
+                    return m;
+                }
+                if (page.children) {
+                    const children = filterPages(page.children);
+                    if (children.length) {
+                        m.push({
+                            ...page,
+                            children: children as NavItem['children']
+                        });
+                    }
+                } else {
+                    m.push(page);
+                }
+                return m;
+            }, []);
+        },
+        [data]
+    );
+
     useEffect(() => {
-        setComponents(intersection(pages, data?.map(component => navMap[component]) ?? []));
-    }, [data]);
+        setComponents(filterPages(pages));
+    }, [data, filterPages]);
 
     return components;
 };

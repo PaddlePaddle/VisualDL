@@ -1,4 +1,4 @@
-import {Run, Tag} from '~/types';
+import {Run, Tag, TagWithSingleRun} from '~/types';
 import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
@@ -183,3 +183,13 @@ const useTagFilter = (type: string, running: boolean) => {
 };
 
 export default useTagFilter;
+
+export function ungroup(tags: Tag[]) {
+    return tags.reduce<TagWithSingleRun[]>((prev, {runs, ...item}) => {
+        Array.prototype.push.apply(
+            prev,
+            runs.map(run => ({...item, run, id: `${item.label}-${run.label}`}))
+        );
+        return prev;
+    }, []);
+}

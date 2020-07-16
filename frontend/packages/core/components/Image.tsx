@@ -1,9 +1,9 @@
 import {BlobResponse, blobFetcher} from '~/utils/fetch';
 import React, {useImperativeHandle, useLayoutEffect, useState} from 'react';
+import {WithStyled, primaryColor} from '~/utils/style';
 
 import GridLoader from 'react-spinners/GridLoader';
 import mime from 'mime-types';
-import {primaryColor} from '~/utils/style';
 import {saveAs} from 'file-saver';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from '~/utils/i18n';
@@ -17,7 +17,7 @@ type ImageProps = {
     cache?: number;
 };
 
-const Image = React.forwardRef<ImageRef, ImageProps>(({src, cache}, ref) => {
+const Image = React.forwardRef<ImageRef, ImageProps & WithStyled>(({src, cache, className}, ref) => {
     const {t} = useTranslation('common');
 
     const [url, setUrl] = useState('');
@@ -55,7 +55,7 @@ const Image = React.forwardRef<ImageRef, ImageProps>(({src, cache}, ref) => {
         return <div>{t('common:error')}</div>;
     }
 
-    return <img src={url} />;
+    return <img className={className} src={url} />;
 });
 
 export default Image;

@@ -61,7 +61,7 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
 
     const {data, error, loading} = useRunningRequest<Data>(
         run && tag
-            ? `/embeddings/embedding?${queryString.stringify({
+            ? `/embedding/embedding?${queryString.stringify({
                   run,
                   tag,
                   dimension: Number.parseInt(dimension, 10),

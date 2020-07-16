@@ -1,8 +1,12 @@
 {
+    "download-image": "Download image",
     "false-negatives": "FN",
     "false-positives": "FP",
+    "maximize": "Maximize",
+    "minimize": "Minimize",
     "precision": "Precision",
     "recall": "Recall",
+    "restore": "Restore",
     "threshold": "Threshold",
     "time-display-type": "Time Display Type",
     "true-negatives": "TN",
