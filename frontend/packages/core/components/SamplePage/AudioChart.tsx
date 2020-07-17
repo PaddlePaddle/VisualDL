@@ -16,9 +16,11 @@ const StyledAudio = styled(Audio)`
 
 const cache = 5 * 60 * 1000;
 
-type AudioChartProps = SampleChartBaseProps;
+type AudioChartProps = {
+    audioContext?: AudioContext;
+} & SampleChartBaseProps;
 
-const AudioChart: FunctionComponent<AudioChartProps> = ({...props}) => {
+const AudioChart: FunctionComponent<AudioChartProps> = ({audioContext, ...props}) => {
     const {t} = useTranslation(['sample', 'common']);
 
     const [sampleRate, setSampleRate] = useState<string>('--Hz');
@@ -31,9 +33,16 @@ const AudioChart: FunctionComponent<AudioChartProps> = ({...props}) => {
 
     const content = useCallback(
         (ref: React.RefObject<AudioRef>, src: string) => (
-            <StyledAudio src={src} cache={cache} onLoading={onLoading} onLoad={onLoad} ref={ref} />
+            <StyledAudio
+                audioContext={audioContext}
+                src={src}
+                cache={cache}
+                onLoading={onLoading}
+                onLoad={onLoad}
+                ref={ref}
+            />
         ),
-        [onLoading, onLoad]
+        [onLoading, onLoad, audioContext]
     );
 
     return (

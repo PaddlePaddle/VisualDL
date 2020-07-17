@@ -1,5 +1,6 @@
 interface AudioPlayerOptions {
-    volumn: number;
+    context?: AudioContext;
+    volumn?: number;
     onplay?: () => void;
     onstop?: () => void;
 }
@@ -10,6 +11,7 @@ export class AudioPlayer {
     private source: AudioBufferSourceNode | null = null;
     private buffer: AudioBuffer | null = null;
     private decodedSampleRate: number = Number.NaN;
+    private contextFromOptions: boolean;
 
     private startAt = 0;
     private stopAt = 0;
@@ -19,7 +21,7 @@ export class AudioPlayer {
 
     public playing = false;
 
-    public readonly options: AudioPlayerOptions;
+    public readonly options: Required<AudioPlayerOptions>;
 
     get current() {
         if (this.playing) {
@@ -54,14 +56,16 @@ export class AudioPlayer {
         this.gain.gain.value = value / 100;
     }
 
-    constructor(options?: Partial<AudioPlayerOptions>) {
+    constructor(options?: AudioPlayerOptions) {
         this.options = {
+            context: options?.context ?? new AudioContext(),
             volumn: 100,
+            onplay: () => void 0,
+            onstop: () => void 0,
             ...options
         };
-        // safari only has webkitAudioContext
-        const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
-        this.context = new AudioContext();
+        this.contextFromOptions = !!options?.context;
+        this.context = this.options.context;
         this.gain = this.context.createGain();
         this.volumn = this.options.volumn;
     }
@@ -166,7 +170,7 @@ export class AudioPlayer {
             this.stopAt = this.context.currentTime;
             this.offset += this.stopAt - this.startAt;
             this.playing = false;
-            this.options.onstop?.();
+            this.options.onstop();
             this.source = null;
         });
         if (this.offset >= this.duration) {
@@ -175,7 +179,7 @@ export class AudioPlayer {
         this.source.start(0, this.offset);
         this.startAt = this.context.currentTime;
         this.playing = true;
-        this.options.onplay?.();
+        this.options.onplay();
     }
 
     pause() {
@@ -214,7 +218,9 @@ export class AudioPlayer {
 
     dispose() {
         this.reset();
-        this.context.close();
+        if (!this.contextFromOptions) {
+            this.context.close();
+        }
         this.source = null;
         this.buffer = null;
     }

@@ -2,7 +2,7 @@
 
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import useTagFilter, {ungroup} from '~/hooks/useTagFilter';
 
 import AudioChart from '~/components/SamplePage/AudioChart';
@@ -19,6 +19,19 @@ const chartSize = {
 
 const Audio: NextI18NextPage = () => {
     const {t} = useTranslation(['sample', 'common']);
+
+    const audioContext = useRef<AudioContext>();
+    useEffect(() => {
+        if (process.browser) {
+            // safari only has webkitAudioContext
+            const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
+            audioContext.current = new AudioContext();
+
+            return () => {
+                audioContext.current?.close();
+            };
+        }
+    }, []);
 
     const [running, setRunning] = useState(true);
 
@@ -41,7 +54,7 @@ const Audio: NextI18NextPage = () => {
     );
 
     const withChart = useCallback<WithChart<typeof ungroupedSelectedTags[number]>>(
-        ({run, label}) => <AudioChart run={run} tag={label} running={running} />,
+        ({run, label}) => <AudioChart audioContext={audioContext.current} run={run} tag={label} running={running} />,
         [running]
     );
 
