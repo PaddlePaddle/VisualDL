@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ellipsis, em, primaryColor, rem, size, textLightColor} from '~/utils/style';
+import {ellipsis, em, primaryColor, rem, size, textLightColor, textLighterColor} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
@@ -76,6 +76,16 @@ const Footer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+`;
+
+const FooterInfo = styled.div`
+    color: ${textLighterColor};
+    font-size: ${rem(12)};
+
+    > * {
+        display: inline-block;
+        margin-left: ${rem(10)};
+    }
 `;
 
 type SampleData = {
@@ -221,7 +231,14 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
                         }
                     ]}
                 />
-                {footer}
+                <FooterInfo>
+                    <span>
+                        {t('sample:sample')}
+                        {t('common:colon')}
+                        {data?.length ? `${step + 1}/${data.length}` : '--/--'}
+                    </span>
+                    {footer}
+                </FooterInfo>
             </Footer>
         </Wrapper>
     );
