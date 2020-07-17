@@ -210,7 +210,7 @@ const Audio = React.forwardRef<AudioRef, AudioProps & WithStyled>(({src, cache, 
                         }
                     });
                     const buffer = await data.data.arrayBuffer();
-                    await p.load(buffer);
+                    await p.load(buffer, data.type ?? undefined);
                     setDecoding(false);
                     setDuration(formatDuration(p.duration));
                     onLoad?.({sampleRate: p.sampleRate, duration: p.duration});

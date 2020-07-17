@@ -9,6 +9,7 @@ export class AudioPlayer {
     private gain: GainNode;
     private source: AudioBufferSourceNode | null = null;
     private buffer: AudioBuffer | null = null;
+    private decodedSampleRate: number = Number.NaN;
 
     private startAt = 0;
     private stopAt = 0;
@@ -38,7 +39,7 @@ export class AudioPlayer {
         if (!this.buffer) {
             return Number.NaN;
         }
-        return this.buffer.sampleRate;
+        return Number.isNaN(this.decodedSampleRate) ? this.buffer.sampleRate : this.decodedSampleRate;
     }
 
     get volumn() {
@@ -75,8 +76,25 @@ export class AudioPlayer {
         }
     }
 
-    load(buffer: ArrayBuffer) {
+    static getWavSampleRate(buffer: ArrayBuffer) {
+        const intArr = new Int8Array(buffer);
+        const sampleRateArr = intArr.slice(24, 28);
+        return (
+            (sampleRateArr[0] & 0xff) |
+            ((sampleRateArr[1] & 0xff) << 8) |
+            ((sampleRateArr[2] & 0xff) << 16) |
+            ((sampleRateArr[3] & 0xff) << 24)
+        );
+    }
+
+    load(buffer: ArrayBuffer, type?: string) {
         this.reset();
+        if (type === 'audio/wave') {
+            this.decodedSampleRate = AudioPlayer.getWavSampleRate(buffer);
+        } else {
+            this.decodedSampleRate = Number.NaN;
+        }
+
         return this.context.decodeAudioData(buffer, audioBuffer => {
             this.buffer = audioBuffer;
         });
