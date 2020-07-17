@@ -1,5 +1,6 @@
 interface AudioPlayerOptions {
-    volumn: number;
+    context?: AudioContext;
+    volumn?: number;
     onplay?: () => void;
     onstop?: () => void;
 }
@@ -10,6 +11,7 @@ export class AudioPlayer {
     private source: AudioBufferSourceNode | null = null;
     private buffer: AudioBuffer | null = null;
     private decodedSampleRate: number = Number.NaN;
+    private contextFromOptions: boolean;
 
     private startAt = 0;
     private stopAt = 0;
@@ -19,7 +21,7 @@ export class AudioPlayer {
 
     public playing = false;
 
-    public readonly options: AudioPlayerOptions;
+    public readonly options: Required<AudioPlayerOptions>;
 
     get current() {
         if (this.playing) {
@@ -39,7 +41,7 @@ export class AudioPlayer {
         if (!this.buffer) {
             return Number.NaN;
         }
-        return Number.isNaN(this.decodedSampleRate) ? this.buffer.sampleRate : this.decodedSampleRate;
+        return this.decodedSampleRate;
     }
 
     get volumn() {
@@ -54,12 +56,16 @@ export class AudioPlayer {
         this.gain.gain.value = value / 100;
     }
 
-    constructor(options?: Partial<AudioPlayerOptions>) {
+    constructor(options?: AudioPlayerOptions) {
         this.options = {
+            context: options?.context ?? new AudioContext(),
             volumn: 100,
+            onplay: () => void 0,
+            onstop: () => void 0,
             ...options
         };
-        this.context = new AudioContext();
+        this.contextFromOptions = !!options?.context;
+        this.context = this.options.context;
         this.gain = this.context.createGain();
         this.volumn = this.options.volumn;
     }
@@ -87,16 +93,69 @@ export class AudioPlayer {
         );
     }
 
+    static getMp3SampleRate(buffer: ArrayBuffer) {
+        let arr = new Uint8Array(buffer);
+        if (String.fromCharCode.apply(null, Array.from(arr.slice(0, 3))) === 'ID3') {
+            arr = arr.slice(10);
+            let i = 0;
+            while (arr[i] !== 0x00) {
+                const size = arr[i + 4] * 0x100000000 + arr[i + 5] * 0x10000 + arr[i + 6] * 0x100 + arr[i + 7];
+                i += 10 + size;
+            }
+        }
+        let j = 0;
+        while (arr[j++] !== 0xff) {}
+        j--;
+        const header = arr.slice(j, j + 4);
+        const version = (header[1] & 0b00011000) >> 3;
+        const sampleRate = (header[2] & 0b00001100) >> 2;
+        if (version === 0b11) {
+            if (sampleRate === 0b00) {
+                return 44100;
+            } else if (sampleRate === 0b01) {
+                return 48000;
+            } else if (sampleRate === 0b10) {
+                return 32000;
+            }
+        } else if (version === 0b10) {
+            if (sampleRate === 0b00) {
+                return 22050;
+            } else if (sampleRate === 0b01) {
+                return 24000;
+            } else if (sampleRate === 0b10) {
+                return 16000;
+            }
+        } else if (version === 0b00) {
+            if (sampleRate === 0b00) {
+                return 11025;
+            } else if (sampleRate === 0b01) {
+                return 12000;
+            } else if (sampleRate === 0b10) {
+                return 8000;
+            }
+        }
+        return Number.NaN;
+    }
+
     load(buffer: ArrayBuffer, type?: string) {
         this.reset();
-        if (type === 'audio/wave') {
+        if (type === 'wav') {
             this.decodedSampleRate = AudioPlayer.getWavSampleRate(buffer);
+        } else if (type === 'mpga' || type === 'mp3') {
+            this.decodedSampleRate = AudioPlayer.getMp3SampleRate(buffer);
         } else {
             this.decodedSampleRate = Number.NaN;
         }
-
-        return this.context.decodeAudioData(buffer, audioBuffer => {
-            this.buffer = audioBuffer;
+        // safari doesn't return promise here
+        return new Promise<void>((resolve, reject) => {
+            this.context.decodeAudioData(
+                buffer,
+                audioBuffer => {
+                    this.buffer = audioBuffer;
+                    resolve();
+                },
+                reject
+            );
         });
     }
 
@@ -111,7 +170,7 @@ export class AudioPlayer {
             this.stopAt = this.context.currentTime;
             this.offset += this.stopAt - this.startAt;
             this.playing = false;
-            this.options.onstop?.();
+            this.options.onstop();
             this.source = null;
         });
         if (this.offset >= this.duration) {
@@ -120,7 +179,7 @@ export class AudioPlayer {
         this.source.start(0, this.offset);
         this.startAt = this.context.currentTime;
         this.playing = true;
-        this.options.onplay?.();
+        this.options.onplay();
     }
 
     pause() {
@@ -159,7 +218,9 @@ export class AudioPlayer {
 
     dispose() {
         this.reset();
-        this.context.close();
+        if (!this.contextFromOptions) {
+            this.context.close();
+        }
         this.source = null;
         this.buffer = null;
     }

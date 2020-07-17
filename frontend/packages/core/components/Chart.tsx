@@ -56,7 +56,12 @@ const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, width, height, 
     }, [toggleMaximze]);
 
     return (
-        <Div maximized={maximized} width={width} height={height} className={className}>
+        <Div
+            maximized={maximized}
+            width={width}
+            height={height}
+            className={`${maximized ? 'maximized' : ''} ${className ?? ''}`}
+        >
             {children}
         </Div>
     );

@@ -45,7 +45,6 @@ const Wrapper = styled.div<{disabled?: boolean}>`
 
         &__track {
             cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-            ${transitionProps('width', {duration: '30ms'})}
 
             &--background {
                 ${size(railHeight, '100%')}
@@ -67,7 +66,6 @@ const Wrapper = styled.div<{disabled?: boolean}>`
         &__slider-container {
             top: -${half(`${thumbSize} - ${railHeight}`)};
             margin-left: -${half(thumbSize)};
-            ${transitionProps('left', {duration: '30ms'})}
         }
 
         &__slider {

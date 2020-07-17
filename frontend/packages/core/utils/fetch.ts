@@ -49,6 +49,17 @@ export const blobFetcher = async (url: string, options?: RequestInit): Promise<B
     const res = await fetch(process.env.API_URL + url, addApiToken(options));
     const data = await res.blob();
     const disposition = res.headers.get('Content-Disposition');
+    // support safari
+    if (!data.arrayBuffer) {
+        data.arrayBuffer = async () =>
+            new Promise<ArrayBuffer>((resolve, reject) => {
+                const fileReader = new FileReader();
+                fileReader.addEventListener('load', e =>
+                    e.target ? resolve(e.target.result as ArrayBuffer) : reject()
+                );
+                fileReader.readAsArrayBuffer(data);
+            });
+    }
     let filename: string | null = null;
     if (disposition && disposition.indexOf('attachment') !== -1) {
         const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
