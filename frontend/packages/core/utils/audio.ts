@@ -59,6 +59,8 @@ export class AudioPlayer {
             volumn: 100,
             ...options
         };
+        // safari only has webkitAudioContext
+        const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
         this.context = new AudioContext();
         this.gain = this.context.createGain();
         this.volumn = this.options.volumn;
@@ -140,8 +142,16 @@ export class AudioPlayer {
         } else {
             this.decodedSampleRate = Number.NaN;
         }
-        return this.context.decodeAudioData(buffer, audioBuffer => {
-            this.buffer = audioBuffer;
+        // safari doesn't return promise here
+        return new Promise<void>((resolve, reject) => {
+            this.context.decodeAudioData(
+                buffer,
+                audioBuffer => {
+                    this.buffer = audioBuffer;
+                    resolve();
+                },
+                reject
+            );
         });
     }
 

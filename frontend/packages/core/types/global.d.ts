@@ -4,8 +4,10 @@ declare global {
     }
 
     namespace globalThis {
-        // eslint-disable-next-line no-var
+        /* eslint-disable no-var */
         var __visualdl_instance_id__: string | string[] | undefined;
+        var webkitAudioContext: AudioContext | undefined;
+        /* eslint-enable no-var */
     }
 }
 
