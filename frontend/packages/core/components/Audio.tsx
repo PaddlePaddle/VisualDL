@@ -7,6 +7,7 @@ import {
     primaryColor,
     primaryFocusedColor,
     rem,
+    size,
     textLightColor,
     textLighterColor
 } from '~/utils/style';
@@ -15,6 +16,7 @@ import {AudioPlayer} from '~/utils/audio';
 import Icon from '~/components/Icon';
 import PuffLoader from 'react-spinners/PuffLoader';
 import RangeSlider from '~/components/RangeSlider';
+import Slider from 'react-rangeslider';
 import SyncLoader from 'react-spinners/SyncLoader';
 import Tippy from '@tippyjs/react';
 import mime from 'mime-types';
@@ -69,19 +71,55 @@ const Container = styled.div`
     }
 `;
 
-const VolumnSlider = styled.input.attrs(() => ({
-    type: 'range',
-    orient: 'vertical',
-    min: 0,
-    max: 100,
-    step: 1
-}))`
-    writing-mode: bt-lr;
-    -webkit-appearance: slider-vertical;
+const VolumnSlider = styled(Slider)`
     margin: ${rem(15)} ${rem(18)};
     width: ${rem(4)};
     height: ${rem(100)};
     cursor: pointer;
+    position: relative;
+    background-color: #dbdeeb;
+    outline: none;
+    border-radius: ${rem(2)};
+    user-select: none;
+
+    --color: ${primaryColor};
+
+    &:hover {
+        --color: ${primaryFocusedColor};
+    }
+
+    &:active {
+        --color: ${primaryActiveColor};
+    }
+
+    .rangeslider__fill {
+        background-color: var(--color);
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        border-bottom-left-radius: ${rem(2)};
+        border-bottom-right-radius: ${rem(2)};
+        border-top: ${rem(4)} solid var(--color);
+        box-sizing: content-box;
+    }
+
+    .rangeslider__handle {
+        background-color: var(--color);
+        ${size(rem(8), rem(8))}
+        position: absolute;
+        left: -${rem(2)};
+        border-radius: 50%;
+        outline: none;
+
+        .rangeslider__handle-tooltip,
+        .rangeslider__handle-label {
+            display: none;
+        }
+    }
+
+    .rangeslider__labels {
+        display: none;
+    }
 `;
 
 const SLIDER_MAX = 100;
@@ -273,7 +311,16 @@ const Audio = React.forwardRef<AudioRef, AudioProps & WithStyled>(
                     animation="shift-away-subtle"
                     interactive
                     hideOnClick={false}
-                    content={<VolumnSlider value={volumn} onChange={e => setVolumn(+e.target.value)} />}
+                    content={
+                        <VolumnSlider
+                            value={volumn}
+                            min={0}
+                            max={100}
+                            step={1}
+                            onChange={setVolumn}
+                            orientation="vertical"
+                        />
+                    }
                 >
                     <a className="control volumn" onClick={toggleMute}>
                         <Icon type={volumnIcon} />

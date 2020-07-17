@@ -279,6 +279,8 @@ export const GlobalStyle = createGlobalStyle`
 
         > .tippy-content {
             padding: 0;
+            /* trigger bfc */
+            display: flow-root;
         }
 
         &[data-placement^='top'] > .tippy-arrow::before {
