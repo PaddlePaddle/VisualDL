@@ -29,6 +29,10 @@ const Wrapper = styled.div`
         margin: 0 ${rem(20)} ${rem(20)} 0;
         flex-shrink: 0;
         flex-grow: 0;
+
+        &.maximized {
+            margin-right: 0;
+        }
     }
 `;
 
