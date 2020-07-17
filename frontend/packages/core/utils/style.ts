@@ -14,9 +14,13 @@ export {default as styled} from 'styled-components';
 export * from 'styled-components';
 export * from 'polished';
 // rename conflict shorthands
-export {borderRadius as borderRadiusShortHand, borderColor as borderColorShortHand} from 'polished';
+export {
+    borderRadius as borderRadiusShortHand,
+    borderColor as borderColorShortHand,
+    fontFace as fontFaceShortHand
+} from 'polished';
 
-const {math, size, lighten, darken, normalize, fontFace, transitions, border, position} = polished;
+const {math, size, lighten, darken, normalize, transitions, border, position} = polished;
 
 export const iconFontPath = `${PUBLIC_PATH}/style/fonts/vdl-icon`;
 
@@ -97,6 +101,36 @@ export const transitionProps = (props: string | string[], args?: string | {durat
     }
     return transitions(props, args);
 };
+export const fontFace = ({queryString, ...args}: {queryString?: string} & Parameters<typeof polished.fontFace>[0]) => {
+    const formatMap: Record<string, string> = {
+        eot: 'embedded-opentype',
+        woff2: 'woff2',
+        woff: 'woff',
+        ttf: 'truetype',
+        svg: 'svg'
+    };
+
+    const f = polished.fontFace(args);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const src: string = (f['@font-face'] as any).src;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (f['@font-face'] as any).src = src.replace(/url\(['"](.*?)\.(\w*?)['"]\)/g, (_, path: string, format: string) => {
+        let replace = `url("${path}.${format}`;
+        if (queryString) {
+            replace += `?${queryString}`;
+        }
+        if (format === 'svg') {
+            replace += `#${args.fontFamily}`;
+        }
+        replace += '")';
+        if (formatMap[format]) {
+            replace += ` format("${formatMap[format]}")`;
+        }
+        return replace;
+    });
+    return f;
+};
 export const link = css`
     a {
         color: ${primaryColor};
@@ -131,6 +165,7 @@ export const GlobalStyle = createGlobalStyle`
     ${normalize}
 
     ${fontFace({
+        queryString: 'wxo6ka',
         fontFamily: 'vdl-icon',
         fontFilePath: iconFontPath,
         fileFormats: ['ttf', 'woff', 'svg'],
