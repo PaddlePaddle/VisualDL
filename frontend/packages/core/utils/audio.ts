@@ -89,12 +89,11 @@ export class AudioPlayer {
 
     load(buffer: ArrayBuffer, type?: string) {
         this.reset();
-        if (type === 'audio/wave') {
+        if (type === 'wav') {
             this.decodedSampleRate = AudioPlayer.getWavSampleRate(buffer);
         } else {
             this.decodedSampleRate = Number.NaN;
         }
-
         return this.context.decodeAudioData(buffer, audioBuffer => {
             this.buffer = audioBuffer;
         });
