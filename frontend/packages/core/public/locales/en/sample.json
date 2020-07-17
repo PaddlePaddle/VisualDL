@@ -5,6 +5,7 @@
     "download-audio": "Download $t(audio)",
     "download-image": "Download $t(image)",
     "image": "image",
+    "sample": "Sample",
     "sample-rate": "Sample Rate",
     "show-actual-size": "Show Actual Image Size",
     "step": "Step",
