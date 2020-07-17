@@ -12,6 +12,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
 |      [ Scalar](#Scalar--标量组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
 |      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
+|      [Audio](#Audio--音频可视化组件)      | 音频可视化 | 播放训练过程中的音频数据，监控语音识别与合成等任务的训练过程 |
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
 |            [Histogram](#Histogram--直方图组件)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
@@ -264,6 +265,107 @@ visualdl --logdir ./log --port 8080
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
 </p>
+
+## Audio--音频可视化组件
+
+### 介绍
+
+Audio组件实时查看训练过程中的音频数据，监控语音识别与合成等任务的训练过程。
+
+### 记录接口
+
+Audio 组件的记录接口如下：
+
+```python
+add_audio(tag, audio_array, step, sample_rate)
+```
+接口参数说明如下：
+|   参数   |     格式      |                    含义                     |
+| -------- | ------------- | ------------------------------------------- |
+| tag      | string        | 记录指标的标志，如`audio_tag`，不能含有`%` |
+| audio_arry      | numpy.ndarray | 以ndarray格式表示的音频                     |
+| step     | int           | 记录的步数                                  |
+| sample_rate | int           | 采样率          |
+
+
+### Demo
+
+```python
+from visualdl import LogWriter
+import numpy as np
+import wave
+
+
+def read_audio_data(audio_path):
+    """
+    Get audio data.
+    """
+    CHUNK = 4096
+    f = wave.open(audio_path, "rb")
+    wavdata = []
+    chunk = f.readframes(CHUNK)
+    while chunk:
+        data = np.frombuffer(chunk, dtype='uint8')
+        wavdata.extend(data)
+        chunk = f.readframes(CHUNK)
+    # 8k sample rate, 16bit frame, 1 channel
+    shape = [8000, 2, 1]
+    return shape, wavdata
+
+
+if __name__ == '__main__':
+    with LogWriter(logdir="vdl_audio_0713") as writer:
+        audio_shape, audio_data = read_audio_data("./testing.wav")
+        audio_data = np.array(audio_data)
+        writer.add_audio(tag="audio_tag",
+                         audio_array=audio_data,
+                         step=0,
+                         sample_rate=8000)
+```
+
+运行上述程序后，在命令行执行
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+在浏览器输入`http://127.0.0.1:8080`，即可查看图片数据。
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/87659138-b4746880-c78f-11ea-965b-c33804e7c296.png" width="90%"/>
+</p>
+
+### 功能操作说明
+
+- 可搜索音频标签显示对应音频数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/87661431-29956d00-c793-11ea-833b-172d8fc1b221.png" width="80%"/>
+</p>
+
+- 支持滑动Step/迭代次数查看不同迭代次数下的音频数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/87661089-a07e3600-c792-11ea-8740-cbe99a64d830.png" width="40%"/>
+</p>
+
+- 支持播放/暂停音频数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/87661130-b3910600-c792-11ea-9f9f-2ae66132e9de.png" width="40%"/>
+</p>
+
+- 支持音量调节
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/87661497-49c52c00-c793-11ea-9eeb-471543cd2a0b.png" width="40%"/>
+</p>
+
+- 支持音频下载
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/87661166-c277b880-c792-11ea-8ad7-5c60bb08379b.png" width="40%"/>
+</p>
+
 
 ## Graph--网络结构组件
 
