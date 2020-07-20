@@ -21,14 +21,9 @@ const Histogram: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('histogram', running);
-    const tagsWithSingleRun = useMemo(
-        () =>
-            tags.reduce<(TagWithSingleRun & {id: string})[]>((result, tag) => {
-                result.push(...tag.runs.map(run => ({id: `${tag.label}-${run.label}`, label: tag.label, run})));
-                return result;
-            }, []),
-        [tags]
+    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
+        'histogram',
+        running
     );
 
     const [mode, setMode] = useState<Modes>(Modes.Offset);

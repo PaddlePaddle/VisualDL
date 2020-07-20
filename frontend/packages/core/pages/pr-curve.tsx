@@ -36,6 +36,10 @@ const StepSliderWrapper = styled.div`
         margin-top: 0;
         padding-top: ${rem(20)};
     }
+
+    &:empty + .run-section {
+        border-top: none;
+    }
 `;
 
 const PRCurve: NextI18NextPage = () => {
@@ -43,7 +47,10 @@ const PRCurve: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('pr-curve', running);
+    const {runs, tags, runsInTags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
+        'pr-curve',
+        running
+    );
 
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const onChangeIndexes = useCallback(
@@ -57,31 +64,31 @@ const PRCurve: NextI18NextPage = () => {
     useEffect(
         () =>
             setIndexes(indexes =>
-                selectedRuns.reduce<typeof indexes>((m, c) => {
+                runsInTags.reduce<typeof indexes>((m, c) => {
                     if (indexes[c.label] != null) {
                         m[c.label] = indexes[c.label];
                     }
                     return m;
                 }, {})
             ),
-        [selectedRuns]
+        [runsInTags]
     );
 
     const {data: stepInfo} = useRunningRequest<StepInfo[]>(
-        selectedRuns.map(run => `/pr-curve/steps?${queryString.stringify({run: run.label})}`),
+        runsInTags.map(run => `/pr-curve/steps?${queryString.stringify({run: run.label})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
     const runWithInfo = useMemo<Run[]>(
         () =>
-            selectedRuns.map((run, i) => ({
+            runsInTags.map((run, i) => ({
                 ...run,
                 index: indexes[run.label] ?? (stepInfo?.[i].length ?? 1) - 1,
                 steps: stepInfo?.[i].map(j => j[1]) ?? [],
                 wallTimes: stepInfo?.[i].map(j => Math.floor(j[0] * 1000)) ?? [],
                 relatives: stepInfo?.[i].map(j => (j[0] - stepInfo[i][0][0]) * 1000) ?? []
             })),
-        [selectedRuns, stepInfo, indexes]
+        [runsInTags, stepInfo, indexes]
     );
 
     const [timeType, setTimeType] = useState<TimeType>(TimeType.Step);
@@ -141,7 +148,7 @@ const PRCurve: NextI18NextPage = () => {
     return (
         <>
             <Preloader url="/runs" />
-            <Preloader url="/scalar/tags" />
+            <Preloader url="/pr-curve/tags" />
             <Title>{t('common:pr-curve')}</Title>
             <Content aside={aside} loading={loadingRuns}>
                 {!loadingRuns && !runs.length ? (
