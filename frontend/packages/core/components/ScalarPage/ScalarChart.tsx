@@ -232,7 +232,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                     },
                     {
                         icon: 'log-axis',
-                        tooltip: t('scalar:axis'),
+                        tooltip: t('scalar:toggle-log-axis'),
                         toggle: true,
                         onClick: toggleYAxisType
                     },

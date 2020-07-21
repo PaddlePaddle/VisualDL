@@ -3,7 +3,6 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import useTagFilter, {ungroup} from '~/hooks/useTagFilter';
 
 import AudioChart from '~/components/SamplePage/AudioChart';
 import Content from '~/components/Content';
@@ -12,6 +11,7 @@ import Preloader from '~/components/Preloader';
 import RunAside from '~/components/RunAside';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
+import useTagFilter from '~/hooks/useTagFilter';
 
 const chartSize = {
     height: rem(244)
@@ -35,9 +35,10 @@ const Audio: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('audio', running);
-
-    const ungroupedSelectedTags = useMemo(() => ungroup(tags), [tags]);
+    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
+        'audio',
+        running
+    );
 
     const aside = useMemo(
         () =>
@@ -53,7 +54,7 @@ const Audio: NextI18NextPage = () => {
         [onChangeRuns, running, runs, selectedRuns]
     );
 
-    const withChart = useCallback<WithChart<typeof ungroupedSelectedTags[number]>>(
+    const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
         ({run, label}) => <AudioChart audioContext={audioContext.current} run={run} tag={label} running={running} />,
         [running]
     );
@@ -70,7 +71,7 @@ const Audio: NextI18NextPage = () => {
                     <Error />
                 ) : (
                     <ChartPage
-                        items={ungroupedSelectedTags}
+                        items={tagsWithSingleRun}
                         chartSize={chartSize}
                         withChart={withChart}
                         loading={loadingRuns || loadingTags}

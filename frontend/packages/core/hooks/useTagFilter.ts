@@ -138,6 +138,7 @@ const reducer = (state: State, action: Action): State => {
     }
 };
 
+// TODO: refactor to improve performance
 const useTagFilter = (type: string, running: boolean) => {
     const router = useRouter();
 
@@ -173,8 +174,27 @@ const useTagFilter = (type: string, running: boolean) => {
     useEffect(() => dispatch({type: ActionType.setSelectedRuns, payload: runsFromQuery}), [runsFromQuery]);
     useEffect(() => dispatch({type: ActionType.initTags, payload: tags || {}}), [tags]);
 
+    const tagsWithSingleRun = useMemo(
+        () =>
+            state.tags.reduce<TagWithSingleRun[]>((prev, {runs, ...item}) => {
+                Array.prototype.push.apply(
+                    prev,
+                    runs.map(run => ({...item, run, id: `${item.label}-${run.label}`}))
+                );
+                return prev;
+            }, []),
+        [state.tags]
+    );
+
+    const runsInTags = useMemo(() => state.selectedRuns.filter(run => !!tags?.[run.label]?.length), [
+        state.selectedRuns,
+        tags
+    ]);
+
     return {
         ...state,
+        tagsWithSingleRun,
+        runsInTags,
         onChangeRuns,
         onChangeTags,
         loadingRuns,
@@ -183,13 +203,3 @@ const useTagFilter = (type: string, running: boolean) => {
 };
 
 export default useTagFilter;
-
-export function ungroup(tags: Tag[]) {
-    return tags.reduce<TagWithSingleRun[]>((prev, {runs, ...item}) => {
-        Array.prototype.push.apply(
-            prev,
-            runs.map(run => ({...item, run, id: `${item.label}-${run.label}`}))
-        );
-        return prev;
-    }, []);
-}

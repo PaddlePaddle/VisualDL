@@ -140,17 +140,26 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({cid, runs, tag, run
                     label: t('pr-curve:false-negatives')
                 }
             ];
-            const data = points.map(([precision, recall, tp, fp, tn, fn, threshold]) => [
-                valueFormatter(threshold),
-                axisFormatter(precision),
-                axisFormatter(recall),
-                tp,
-                fp,
-                tn,
-                fn
-            ]);
+            const runData = points.reduce<Run[]>((m, runPoints, index) => {
+                m.push(...new Array(runPoints.length).fill(runs[index]));
+                return m;
+            }, []);
+            const data = points.reduce<(string | number)[][]>((m, runPoints) => {
+                m.push(
+                    ...runPoints.map(([precision, recall, tp, fp, tn, fn, threshold]) => [
+                        valueFormatter(threshold),
+                        axisFormatter(precision),
+                        axisFormatter(recall),
+                        tp,
+                        fp,
+                        tn,
+                        fn
+                    ])
+                );
+                return m;
+            }, []);
             return renderToStaticMarkup(
-                <TooltipTable run={t('common:runs')} runs={runs} columns={columns} data={data} />
+                <TooltipTable run={t('common:runs')} runs={runData} columns={columns} data={data} />
             );
         },
         [selectedData, runs, t]

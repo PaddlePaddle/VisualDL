@@ -60,7 +60,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
         useEffect(() => {
             if (process.browser) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const {color, colorAlt, ...defaults} = chart;
+                const {color, colorAlt, series, ...defaults} = chart;
 
                 let chartOptions: EChartOption = defaultsDeep(
                     {
@@ -75,7 +75,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                                     type: 'line'
                                 },
                                 item,
-                                chart.series
+                                series
                             )
                         )
                     },

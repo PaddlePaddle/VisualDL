@@ -3,7 +3,6 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import {NextI18NextPage, useTranslation} from '~/utils/i18n';
 import React, {useCallback, useMemo, useState} from 'react';
-import useTagFilter, {ungroup} from '~/hooks/useTagFilter';
 
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
@@ -16,6 +15,7 @@ import RunAside from '~/components/RunAside';
 import Slider from '~/components/Slider';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
+import useTagFilter from '~/hooks/useTagFilter';
 
 const chartSize = {
     height: rem(406)
@@ -26,9 +26,10 @@ const Image: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('image', running);
-
-    const ungroupedSelectedTags = useMemo(() => ungroup(tags), [tags]);
+    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
+        'image',
+        running
+    );
 
     const [showActualSize, setShowActualSize] = useState(false);
     const [brightness, setBrightness] = useState(1);
@@ -64,7 +65,7 @@ const Image: NextI18NextPage = () => {
         [t, brightness, contrast, onChangeRuns, running, runs, selectedRuns, showActualSize]
     );
 
-    const withChart = useCallback<WithChart<typeof ungroupedSelectedTags[number]>>(
+    const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
         ({run, label}) => (
             <ImageChart
                 run={run}
@@ -90,7 +91,7 @@ const Image: NextI18NextPage = () => {
                     <Error />
                 ) : (
                     <ChartPage
-                        items={ungroupedSelectedTags}
+                        items={tagsWithSingleRun}
                         chartSize={chartSize}
                         withChart={withChart}
                         loading={loadingRuns || loadingTags}
