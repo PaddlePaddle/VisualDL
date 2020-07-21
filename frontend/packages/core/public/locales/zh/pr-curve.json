@@ -6,7 +6,7 @@
     "minimize": "最小化",
     "precision": "Precision",
     "recall": "Recall",
-    "restore": "还原",
+    "restore": "还原图表框选",
     "threshold": "Threshold",
     "time-display-type": "时间显示类型",
     "true-negatives": "TN",

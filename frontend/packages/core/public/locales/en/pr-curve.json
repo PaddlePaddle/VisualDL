@@ -6,7 +6,7 @@
     "minimize": "Minimize",
     "precision": "Precision",
     "recall": "Recall",
-    "restore": "Restore",
+    "restore": "Selection restore",
     "threshold": "Threshold",
     "time-display-type": "Time Display Type",
     "true-negatives": "TN",

@@ -1,12 +1,12 @@
 {
-    "axis": "坐标轴",
     "download-image": "下载图片",
     "ignore-outliers": "图表缩放时忽略极端值",
     "maximize": "最大化",
     "minimize": "最小化",
-    "restore": "还原",
+    "restore": "还原图表框选",
     "smoothed": "Smoothed",
     "smoothing": "平滑度",
+    "toggle-log-axis": "切换对数坐标轴",
     "tooltip-sorting": "标签排序方法",
     "tooltip-sorting-value": {
         "ascending": "升序",
