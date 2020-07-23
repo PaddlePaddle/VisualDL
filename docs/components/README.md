@@ -49,19 +49,19 @@ add_scalar(tag, value, step, walltime=None)
 
 具体使用参见以下三个例子：
 
-- 创建train为父tag，acc和loss为子tag：`train/acc`、 `train/loss`，即创建了tag为train的图片栏，包含acc和loss两张图片：
+- 创建train为父tag，acc和loss为子tag：`train/acc`、 `train/loss`，即创建了tag为train的图片栏，包含acc和loss两张图表：
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84653342-d6d05780-af3f-11ea-8979-8da039ae7201.JPG" width="100%"/>
 </p>
 
-- 创建train为父tag，test/acc和test/loss为子tag：`train/test/acc`、 `train/test/loss`，即创建了tag为train的图片栏，包含test/acc和test/loss两张图片：
+- 创建train为父tag，test/acc和test/loss为子tag：`train/test/acc`、 `train/test/loss`，即创建了tag为train的图片栏，包含test/acc和test/loss两张图表：
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84644066-3bd08100-af31-11ea-8eb5-c4a4cab351ed.png" width="100%"/>
 </p>
 
-- 创建两个父tag：`acc`、 `loss`，即创建了tag分别为acc和loss的两个图片栏：：
+- 创建两个父tag：`acc`、 `loss`，即创建了tag分别为acc和loss的两个图表栏：：
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84644323-99fd6400-af31-11ea-9855-eca7f7b01810.png" width="100%"/>
