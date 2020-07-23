@@ -14,6 +14,8 @@ import HashLoader from 'react-spinners/HashLoader';
 import ModelPropertiesDialog from '~/components/GraphPage/ModelPropertiesDialog';
 import NodeDocumentationSidebar from '~/components/GraphPage/NodeDocumentationSidebar';
 import NodePropertiesSidebar from '~/components/GraphPage/NodePropertiesSidebar';
+import RadioButton from '~/components/RadioButton';
+import RadioGroup from '~/components/RadioGroup';
 import Search from '~/components/GraphPage/Search';
 import Title from '~/components/Title';
 import Uploader from '~/components/GraphPage/Uploader';
@@ -101,6 +103,7 @@ const Graph: NextI18NextPage = () => {
     const [showAttributes, setShowAttributes] = useState(false);
     const [showInitializers, setShowInitializers] = useState(true);
     const [showNames, setShowNames] = useState(false);
+    const [horizontal, setHorizontal] = useState(false);
 
     const [modelData, setModelData] = useState<Properties | null>(null);
     const [nodeData, setNodeData] = useState<Properties | null>(null);
@@ -184,6 +187,14 @@ const Graph: NextI18NextPage = () => {
                             </Field>
                         </AsideSection>
                         <AsideSection>
+                            <Field label={t('graph:direction')}>
+                                <RadioGroup value={horizontal} onChange={setHorizontal}>
+                                    <RadioButton value={false}>{t('graph:vertical')}</RadioButton>
+                                    <RadioButton value={true}>{t('graph:horizontal')}</RadioButton>
+                                </RadioGroup>
+                            </Field>
+                        </AsideSection>
+                        <AsideSection>
                             <Field label={t('graph:export-file')}>
                                 <ExportButtonWrapper>
                                     <Button onClick={() => graph.current?.export('png')}>
@@ -210,6 +221,7 @@ const Graph: NextI18NextPage = () => {
         showAttributes,
         showInitializers,
         showNames,
+        horizontal,
         rendered,
         loading,
         nodeData,
@@ -235,6 +247,7 @@ const Graph: NextI18NextPage = () => {
                         showAttributes={showAttributes}
                         showInitializers={showInitializers}
                         showNames={showNames}
+                        horizontal={horizontal}
                         onRendered={() => setRendered(true)}
                         onSearch={data => setSearchResult(data)}
                         onShowModelProperties={data => setModelData(data)}

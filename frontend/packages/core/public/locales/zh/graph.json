@@ -1,5 +1,6 @@
 {
     "change-model": "更换模型",
+    "direction": "方向",
     "display-data": "选择展示数据",
     "documentation": {
         "attributes": "属性",
@@ -16,6 +17,7 @@
     "export-file": "导出文件",
     "export-png": "PNG",
     "export-svg": "SVG",
+    "horizontal": "水平",
     "model-properties": "模型属性",
     "node-documentation": "文档",
     "node-properties": "节点属性",
@@ -47,6 +49,7 @@
     "supported-model-list": "PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite",
     "upload-model": "上传模型",
     "upload-tip": "点击或拖拽文件到页面上传模型，进行结构展示",
+    "vertical": "垂直",
     "zoom-in": "放大",
     "zoom-out": "缩小"
 }

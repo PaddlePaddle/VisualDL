@@ -1,5 +1,6 @@
 {
     "change-model": "Change Model",
+    "direction": "Direction",
     "display-data": "Select Display Data",
     "documentation": {
         "attributes": "Attributes",
@@ -16,6 +17,7 @@
     "export-file": "Export File",
     "export-png": "PNG",
     "export-svg": "SVG",
+    "horizontal": "Horizontal",
     "model-properties": "Model Properties",
     "node-documentation": "Documentation",
     "node-properties": "Node Properties",
@@ -47,6 +49,7 @@
     "supported-model-list": "PaddlePaddle, ONNX, Keras, Core ML, Caffe, Caffe2, Darknet, MXNet, ncnn, TensorFlow Lite",
     "upload-model": "Upload Model",
     "upload-tip": "Click or Drop file here to view neural network models",
+    "vertical": "Vertical",
     "zoom-in": "Zoom In",
     "zoom-out": "Zoom Out"
 }

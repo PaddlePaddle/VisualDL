@@ -60,6 +60,8 @@ host.BrowserHost = class {
                             return this._view.toggleInitializers(data);
                         case 'toggle-names':
                             return this._view.toggleNames(data);
+                        case 'toggle-direction':
+                            return this._view.toggleDirection(data);
                         case 'export':
                             return this._view.export(`${document.title}.${data}`);
                         case 'search':
