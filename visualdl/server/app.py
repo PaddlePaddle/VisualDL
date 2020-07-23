@@ -71,7 +71,11 @@ def create_app(args):
 
     if not args.api_only:
 
-        template = Template(os.path.join(server_path, template_file_path), PUBLIC_PATH=public_path.lstrip('/'))
+        template = Template(
+            os.path.join(server_path, template_file_path),
+            PUBLIC_PATH=public_path.lstrip('/'),
+            API_TOKEN_KEY=''
+        )
 
         @app.route('/')
         def base():

@@ -16,7 +16,7 @@ build_frontend() {
 
     cd "$FRONTEND_DIR"
     . ./scripts/install.sh
-    SCOPE="serverless" PUBLIC_PATH="/{{PUBLIC_PATH}}" API_URL="/{{PUBLIC_PATH}}/api" PATH="$PATH" ./scripts/build.sh
+    SCOPE="serverless" PUBLIC_PATH="/{{PUBLIC_PATH}}" API_URL="/{{PUBLIC_PATH}}/api" API_TOKEN_KEY="{{API_TOKEN_KEY}}" PATH="$PATH" ./scripts/build.sh
 
     # extract
     tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$BUILD_DIR/package/dist"
