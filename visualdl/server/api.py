@@ -199,7 +199,7 @@ def create_api_call(logdir, model, cache_timeout):
     def call(path: str, args):
         route = routes.get(path)
         if not route:
-            return gen_result(status=1, msg='api not found')
+            return json.dumps(gen_result(status=1, msg='api not found')), 'application/json', None
         method, call_arg_names = route
         call_args = [args.get(name) for name in call_arg_names]
         return method(*call_args)

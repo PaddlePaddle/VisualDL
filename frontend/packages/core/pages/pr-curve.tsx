@@ -25,6 +25,7 @@ const StepSliderWrapper = styled.div`
     overflow: auto;
     overflow-x: hidden;
     overflow-y: auto;
+    flex-shrink: 0;
 
     > ${AsideSection}:last-child {
         padding-bottom: ${rem(20)};
