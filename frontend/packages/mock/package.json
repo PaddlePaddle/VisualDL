@@ -39,10 +39,10 @@
     "devDependencies": {
         "@types/express": "4.17.7",
         "@types/faker": "4.1.12",
-        "@types/node": "14.0.23",
+        "@types/node": "14.0.24",
         "cpy-cli": "3.1.1",
         "rimraf": "3.0.2",
-        "typescript": "3.9.6"
+        "typescript": "3.9.7"
     },
     "peerDependencies": {
         "express": "^4.17.1"
