@@ -18,6 +18,7 @@ import sys
 import time
 import numpy as np
 from visualdl.server.log import logger
+from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
 
 
@@ -192,8 +193,8 @@ def get_histogram(log_reader, run, tag):
 def get_graph(log_reader):
     result = b""
     if log_reader.model:
-        with open(log_reader.model, "rb") as fp:
-            result = fp.read()
+        with bfile.BFile(log_reader.model, 'rb') as bfp:
+            result = bfp.read_file(log_reader.model)
     return result
 
 

@@ -99,6 +99,15 @@ class LocalFileSystem(object):
     def join(path, *paths):
         return os.path.join(path, *paths)
 
+    def isfile(self, filename):
+        return os.path.isfile(filename)
+
+    def read_file(self, filename, binary_mode=True):
+        mode = "rb" if binary_mode else "r"
+        with open(filename, mode) as reader:
+            data = reader.read()
+        return data
+
     def read(self, filename, binary_mode=False, size=None, continue_from=None):
         mode = "rb" if binary_mode else "r"
         encoding = None if binary_mode else "utf-8"
@@ -141,6 +150,14 @@ class HDFileSystem(object):
             return False
         else:
             return True
+
+    def isfile(self, filename):
+        return exists(filename)
+
+    def read_file(self, filename, binary_mode=True):
+        with self.cli.read(hdfs_path=filename[7:]) as reader:
+            data = reader.read()
+        return data
 
     def makedirs(self, path):
         self.cli.makedirs(hdfs_path=path[7:])
@@ -204,6 +221,13 @@ class BosFileSystem(object):
         self.config = BceClientConfiguration(
             credentials=BceCredentials(access_key_id, secret_access_key),
             endpoint=bos_host)
+
+    def isfile(self, filename):
+        return exists(filename)
+
+    def read_file(self, filename, binary=True):
+        print('BosFileSystem not support --model yet.')
+        return
 
     @staticmethod
     def _get_object_info(path):
@@ -392,6 +416,9 @@ class BFile(object):
     def __iter__(self):
         return self
 
+    def isfile(self, filename):
+        return self.fs.isfile(filename)
+
     def _read_buffer_to_offset(self, new_buff_offset):
         """Read buffer from index self.buffer_offset to index new_buff_offset.
 
@@ -406,6 +433,9 @@ class BFile(object):
         read_size = min(len(self.buff), new_buff_offset) - old_buff_offset
         self.buff_offset += read_size
         return self.buff[old_buff_offset:old_buff_offset + read_size]
+
+    def read_file(self, filename, binnary=True):
+        return self.fs.read_file(filename, binnary)
 
     def read(self, n=None):
         """Read `n` or all contents of self.buff or file.

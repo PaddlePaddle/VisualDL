@@ -70,13 +70,15 @@ class LogReader(object):
 
     @model.setter
     def model(self, model_path):
-        if not os.path.isfile(model_path):
-            print("Model path %s should be file path, please check this path." % model_path)
-        else:
-            if os.path.exists(model_path):
-                self._model = model_path
+        self._model = model_path
+        with bfile.BFile(model_path, 'rb') as bfp:
+            if not bfp.isfile(model_path):
+                print("Model path %s should be file path, please check this path." % model_path)
             else:
-                print("Model path %s is invalid, please check this path." % model_path)
+                if bfile.exists(model_path):
+                    self._model = model_path
+                else:
+                    print("Model path %s is invalid, please check this path." % model_path)
 
     @property
     def logdir(self):
