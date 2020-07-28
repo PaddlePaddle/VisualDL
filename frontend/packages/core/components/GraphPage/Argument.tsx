@@ -18,6 +18,8 @@ const Wrapper = styled.div`
         justify-content: space-between;
         padding: ${em(8)} ${em(10)};
         line-height: 1.5;
+        box-sizing: content-box;
+        min-height: 1em;
 
         > .argument-text {
             flex: auto;

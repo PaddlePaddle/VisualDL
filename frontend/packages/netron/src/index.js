@@ -153,10 +153,6 @@ host.BrowserHost = class {
         return this._request(url, null, encoding);
     }
 
-    openURL(url) {
-        window.open(url, '_target');
-    }
-
     _changeFiles(files) {
         if (files && files.length) {
             files = Array.from(files);

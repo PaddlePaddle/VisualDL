@@ -1,5 +1,5 @@
 window.base = require('netron/src/base');
-window.flatbuffers = require('flatbuffers').flatbuffers;
+window.flatbuffers = require('netron/src/flatbuffers');
 window.long = {
     Long: require('long')
 };
