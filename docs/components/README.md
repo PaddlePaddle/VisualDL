@@ -6,7 +6,7 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, graph, histogram, pr curve, high dimensional 六个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, audio，graph, histogram, pr curve, high dimensional 七个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
@@ -572,7 +572,7 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 | 参数           | 格式                  | 含义                                        |
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
-| values         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
+| labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
 | predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
 | step           | int                   | 记录的步数                                  |
 | num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
