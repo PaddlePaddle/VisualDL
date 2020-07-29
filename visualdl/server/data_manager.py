@@ -19,7 +19,7 @@ import random
 import collections
 
 DEFAULT_PLUGIN_MAXSIZE = {
-    "scalar": 300,
+    "scalar": 1000,
     "image": 10,
     "histogram": 100,
     "embeddings": 50000,
