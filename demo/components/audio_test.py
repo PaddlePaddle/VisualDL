@@ -24,22 +24,25 @@ def read_audio_data(audio_path):
     """
     CHUNK = 4096
     f = wave.open(audio_path, "rb")
+    rate = f.getframerate()
+    width = f.getsampwidth()
+    channel = f.getnchannels()
     wavdata = []
     chunk = f.readframes(CHUNK)
+
     while chunk:
         data = np.frombuffer(chunk, dtype='uint8')
         wavdata.extend(data)
         chunk = f.readframes(CHUNK)
-    # 8k sample rate, 16bit frame, 1 channel
-    shape = [8000, 2, 1]
+    shape = [rate, width, channel]
     return shape, wavdata
 
 
 if __name__ == '__main__':
     with LogWriter(logdir="vdl_audio_0713") as writer:
-        audio_shape, audio_data = read_audio_data("./testing.wav")
+        audio_shape, audio_data = read_audio_data("./test.wav")
         audio_data = np.array(audio_data)
         writer.add_audio(tag="audio_tag",
                          audio_array=audio_data,
                          step=0,
-                         sample_rate=8000)
+                         sample_rate=audio_shape[0])
