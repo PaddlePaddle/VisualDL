@@ -22,6 +22,8 @@ VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变
 
 VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
+VisualDL支持浏览器种类：Chrome（81和83）、Safari 13、FireFox（77和78）、Edge（Chromium版）。
+
 VisualDL原生支持python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
 ## 目录
