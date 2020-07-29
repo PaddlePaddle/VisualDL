@@ -6,18 +6,19 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides six components: scalar, image, graph, histogram, pr curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides seven components: scalar, image, audio, graph, histogram, pr curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
-|                        component name                        |         display chart         | function                                                     |
+|                        Component Name                        |         Display Chart         | Function                                                     |
 | :----------------------------------------------------------: | :---------------------------: | :----------------------------------------------------------- |
-|                [ Scalar](#Scalar--Line-Chart)                |          line chart           | Display scalar data such as loss and accuracy dynamically.   |
-|             [Image](#Image--Image-Visualization)             |      image visualization      | Display images, visualizing the input and the output and making it easy to view the changes in the intermediate process. |
-|              [Graph](#Graph--Network-Structure)              |       network structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
-|       [Histogram](#Histogram--Distribution-of-Tensors)       |    distribution of tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
+|                [ Scalar](#Scalar--Line-Chart)                |          Line Chart           | Display scalar data such as loss and accuracy dynamically.   |
+|             [Image](#Image--Image-Visualization)             |      Image Visualization      | Display images, visualizing the input and the output and making it easy to view the changes in the intermediate process. |
+|             [Audio](#Audio--Audio-Play)             |      Audio Play      | Play the audio during the training process, making it easy to monitor the process of speech recognition and text-to-speech. |
+|              [Graph](#Graph--Network-Structure)              |       Network Structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
+|       [Histogram](#Histogram--Distribution-of-Tensors)       |    Distribution of Tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
 |                   [PR Curve](#PR-曲线组件)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
-| [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | data dimensionality reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
+| [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
 
 
@@ -159,7 +160,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 
 
 
-* Developers can find target images by searching corresponded image tags.
+* Developers can find target scalar charts by searching corresponded tags.
 
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/scalar-searchlabel.png" width="90%"/>
@@ -183,6 +184,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/x-axis.png" width="40%"/>
 </p>
+
 * The smoothness of the curve can be adjusted to better show the change of the overall trend.
 
 <p align="center">
@@ -265,6 +267,106 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080`to view:
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
 </p>
+
+## Audio--Audio Play
+
+### Introduction
+
+Audio aims to allow developers to listen to the audio in real-time during the training process, helping developers to monitor the process of speech recognition and text-to-speech.
+
+### Record Interface
+
+The interface of the Image is shown as follows:
+
+```python
+add_audio(tag, audio_array, step, sample_rate)
+```
+The interface parameters are described as follows:
+| parameter | format        | meaning                                                      |
+| --------- | ------------- | ------------------------------------------------------------ |
+| tag      | string        | Record the name of the audio，e.g.audoi/sample. Notice that the name cannot contain `%` |
+| audio_arry      | numpy.ndarray | Audio in ndarray format                     |
+| step     | int           | Record the training steps                                  |
+| sample_rate | int           | Sample rate，**Please note that the rate should be the rate of the original audio**          |
+
+### Demo
+The following shows an example of using Audio to record data, and the script can be found in [Audio Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/audio_test.py).
+
+```python
+from visualdl import LogWriter
+import numpy as np
+import wave
+
+
+def read_audio_data(audio_path):
+    """
+    Get audio data.
+    """
+    CHUNK = 4096
+    f = wave.open(audio_path, "rb")
+    wavdata = []
+    chunk = f.readframes(CHUNK)
+    while chunk:
+        data = np.frombuffer(chunk, dtype='uint8')
+        wavdata.extend(data)
+        chunk = f.readframes(CHUNK)
+    # 8k sample rate, 16bit frame, 1 channel
+    shape = [8000, 2, 1]
+    return shape, wavdata
+
+
+if __name__ == '__main__':
+    with LogWriter(logdir="./log") as writer:
+        audio_shape, audio_data = read_audio_data("./testing.wav")
+        audio_data = np.array(audio_data)
+        writer.add_audio(tag="audio_tag",
+                         audio_array=audio_data,
+                         step=0,
+                         sample_rate=8000)
+```
+After running the above program, developers can launch the panel by:
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+Then, open the browser and enter the address: `http://127.0.0.1:8080`to view:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/88753858-eaeab400-d18f-11ea-87c6-46ab7d5a5fd0.png" width="90%"/>
+</p>
+
+### Functional Instructions
+
+- Developers can find the target audio by searching corresponded tags.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/88755034-c6dca200-d192-11ea-8349-1414bcf9d38d.png" width="80%"/>
+</p>
+
+- Developers are allowed to listen to the audio under different iterations by scrolling the Step/iteration slider.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/88755220-33f03780-d193-11ea-9b0f-a283d9f3a78a.png" width="40%"/>
+</p>
+
+- Play/Pause the audio
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/88755240-41a5bd00-d193-11ea-9780-7ae7c7792070.png" width="40%"/>
+</p>
+
+- Adjust the volume
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/88755258-53876000-d193-11ea-96b2-9ed698423202.png" width="40%"/>
+</p>
+
+- Download the audio
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/88755377-9a755580-d193-11ea-947e-4275b9d3aa54.png" width="40%"/>
+</p>
+
 
 ## Graph--Network Structure
 
