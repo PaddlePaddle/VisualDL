@@ -66,7 +66,12 @@ module.exports = {
                 to: file,
                 transform: content => {
                     try {
-                        const result = Terser.minify(content.toString());
+                        // It is important to keep class names and function names after compressing
+                        // Netron relies on Class.constructor.name and Function.prototype.name to show attribute's value
+                        const result = Terser.minify(content.toString(), {
+                            keep_classnames: true,
+                            keep_fnames: true
+                        });
                         if (result.error) {
                             throw result.error;
                         }

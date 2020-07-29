@@ -60,6 +60,8 @@ host.BrowserHost = class {
                             return this._view.toggleInitializers(data);
                         case 'toggle-names':
                             return this._view.toggleNames(data);
+                        case 'toggle-direction':
+                            return this._view.toggleDirection(data);
                         case 'export':
                             return this._view.export(`${document.title}.${data}`);
                         case 'search':
@@ -149,10 +151,6 @@ host.BrowserHost = class {
     request(base, file, encoding) {
         const url = base ? base + '/' + file : this._url(file);
         return this._request(url, null, encoding);
-    }
-
-    openURL(url) {
-        window.open(url, '_target');
     }
 
     _changeFiles(files) {

@@ -72,7 +72,7 @@ const RadioButton = <T extends unknown>({
     const onChange = useContext(EventContext);
 
     const onClick = useCallback(() => {
-        if (value && onChange && groupValue !== value) {
+        if (value != null && onChange && groupValue !== value) {
             onChange(value);
         }
     }, [value, onChange, groupValue]);

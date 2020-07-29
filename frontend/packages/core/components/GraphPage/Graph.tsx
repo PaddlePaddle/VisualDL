@@ -88,6 +88,7 @@ type GraphProps = {
     showAttributes: boolean;
     showInitializers: boolean;
     showNames: boolean;
+    horizontal: boolean;
     onRendered?: () => unknown;
     onSearch?: (data: SearchResult) => unknown;
     onShowModelProperties?: (data: Properties) => unknown;
@@ -103,6 +104,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             showAttributes,
             showInitializers,
             showNames,
+            horizontal,
             onRendered,
             onSearch,
             onShowModelProperties,
@@ -188,6 +190,11 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             ready
         ]);
         useEffect(() => (ready && dispatch('toggle-names', showNames)) || undefined, [dispatch, showNames, ready]);
+        useEffect(() => (ready && dispatch('toggle-direction', horizontal)) || undefined, [
+            dispatch,
+            horizontal,
+            ready
+        ]);
 
         useImperativeHandle(ref, () => ({
             export(type) {
