@@ -13,4 +13,4 @@
 # limitations under the License.
 # =======================================================================
 
-vdl_version = '2.0.0-beta.8'
+vdl_version = '2.0.0-beta.9'

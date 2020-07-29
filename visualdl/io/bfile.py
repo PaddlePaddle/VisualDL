@@ -30,6 +30,7 @@ try:
     from baidubce import exception
     from baidubce.bce_client_configuration import BceClientConfiguration
     from baidubce.auth.bce_credentials import BceCredentials
+    from baidubce.exception import BceServerError
     BOS_ENABLED = True
 except ImportError:
     BOS_ENABLED = False
@@ -226,8 +227,9 @@ class BosFileSystem(object):
         return exists(filename)
 
     def read_file(self, filename, binary=True):
-        print('BosFileSystem not support --model yet.')
-        return
+        bucket_name, object_key = BosFileSystem._get_object_info(filename)
+        result = self.bos_client.get_object_as_string(bucket_name, object_key)
+        return result
 
     @staticmethod
     def _get_object_info(path):
@@ -554,7 +556,10 @@ class BFile(object):
 
     def close(self):
         if isinstance(self.fs, BosFileSystem):
-            self.fs.append(self._filename, b'', self.binary_mode, force=True)
+            try:
+                self.fs.append(self._filename, b'', self.binary_mode, force=True)
+            except:
+                pass
         self.flush()
         if self.write_temp is not None:
             self.write_temp.close()
