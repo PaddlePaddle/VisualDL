@@ -24,6 +24,7 @@ import re
 import webbrowser
 import requests
 
+from visualdl import __version__
 from visualdl.utils import update_util
 
 from flask import (Flask, Response, redirect, request, send_file, make_response)
@@ -32,7 +33,7 @@ from flask_babel import Babel
 import visualdl.server
 from visualdl.server.api import create_api_call
 from visualdl.server.args import (ParseArgs, parse_args)
-from visualdl.server.log import logger
+from visualdl.server.log import info
 from visualdl.server.template import Template
 
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
@@ -46,7 +47,13 @@ mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
 
 def create_app(args):
+    # disable warning from flask
+    cli = sys.modules['flask.cli']
+    cli.show_server_banner = lambda *x: None
+
     app = Flask('visualdl', static_folder=None)
+    app.logger.disabled = True
+
     # set static expires in a short time to reduce browser's memory usage.
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
@@ -59,8 +66,13 @@ def create_app(args):
     public_path = args.public_path
     api_path = public_path + '/api'
 
+    info('VisualDL %s at http://%s:%s/ (Press CTRL+C to quit)', __version__, args.host, args.port)
+
+    if args.host == 'localhost':
+        info('Serving VisualDL on localhost; to expose to the network, use a proxy or pass --host 0.0.0.0')
+
     if args.api_only:
-        logger.info('Running in API mode, only {}/* will be served.'.format(api_path))
+        info('Running in API mode, only %s/* will be served.', api_path)
 
     @babel.localeselector
     def get_locale():
@@ -104,6 +116,7 @@ def create_app(args):
     def serve_api(method):
         data, mimetype, headers = api_call(method, request.args)
         return make_response(Response(data, mimetype=mimetype, headers=headers))
+
     return app
 
 
@@ -120,8 +133,8 @@ def _open_browser(app, index_url):
 
 def _run(**kwargs):
     args = ParseArgs(**kwargs)
-    logger.info(' port=' + str(args.port))
     app = create_app(args)
+
     if not args.api_only:
         index_url = 'http://' + args.host + ':' + str(args.port) + args.public_path
         if kwargs.get('open_browser', False):
@@ -142,7 +155,6 @@ def run(logdir=None, **options):
 
 def main():
     args = parse_args()
-    logger.info(' port=' + str(args.port))
     app = create_app(args)
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 

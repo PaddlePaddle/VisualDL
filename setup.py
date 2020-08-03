@@ -28,9 +28,7 @@ from visualdl import __version__
 import subprocess
 
 TOP_DIR = os.path.realpath(os.path.dirname(__file__))
-PYTHON_SDK_DIR = os.path.join(TOP_DIR, 'visualdl/python')
 BUILD_DIR = os.path.join(TOP_DIR, 'build')
-MODE = os.environ.get('VS_BUILD_MODE', 'RELEASE')
 
 
 def read(name):
@@ -41,50 +39,22 @@ def readlines(name):
     return read(name).split('\n')
 
 
+README = read('README.md')
 LICENSE = readlines('LICENSE')[0].strip()
-
-# use memcache to reduce disk read frequency.
-REQUIRED_PACKAGES = read("requirements.txt")
-
-execute_requires = ['npm', 'node', 'bash', 'cmake', 'unzip']
-if platform == "win32":
-    execute_requires = ['node', 'powershell', 'cmake']
-
-
-def die(msg):
-    log.error(msg)
-    sys.exit(1)
-
-
-def CHECK(cond, msg):
-    if not cond:
-        die(msg)
-
+REQUIRED_PACKAGES = read('requirements.txt')
+execute_requires = ['npm', 'node', 'powershell' if platform == 'win32' else 'bash']
 
 for exe in execute_requires:
-    CHECK(find_executable(exe), "{} should be installed.".format(exe))
-
-
-class BaseCommand(setuptools.Command):
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
+    if not find_executable(exe):
+        log.error('%s should be installed.', exe)
+        sys.exit(1)
 
 
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
-        cmd = ['bash', 'scripts/build.sh']
-        if platform == "win32":
-            cmd = ['powershell', '-NoProfile', './scripts/build.ps1']
+        cmd = ['powershell', '-NoProfile', './scripts/build.ps1'] if platform == 'win32' else ['bash',
+                                                                                               'scripts/build.sh']
         env = dict(os.environ)
-        if MODE == "travis-CI":
-            cmd.append('travis-CI')
-        if sys.version_info[0] >= 3:
-            env["WITH_PYTHON3"] = "ON"
         subprocess.check_call(cmd, env=env)
         return setuptools.command.build_py.build_py.run(self)
 
@@ -100,7 +70,7 @@ setup(
     description="Visualize Deep Learning",
     license=LICENSE,
     keywords="visualization deeplearning",
-    long_description=read('README.md'),
+    long_description=README,
     long_description_content_type='text/markdown',
     install_requires=REQUIRED_PACKAGES,
     package_data={
