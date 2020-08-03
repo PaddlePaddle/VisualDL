@@ -89,6 +89,7 @@ class LogWriter(logdir=None,
 | flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件                                         |
 | filename_suffix | string  | 为默认的日志文件名添加后缀                                                                             |
 | write_to_disk   | boolean | 是否写入到磁盘                                                                                         |
+| display_name    | string  | 实际展示在面板中的`runs`名称，可隐藏路径信息                                                             |
 
 #### 示例
 
