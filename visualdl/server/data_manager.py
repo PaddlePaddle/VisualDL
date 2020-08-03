@@ -222,7 +222,7 @@ class _ReservoirBucket(object):
             if len(self._items) < self._max_size or self._max_size == 0:
                 self._items.append(item)
             else:
-                r = self._random.randint(0, self._num_items_index)
+                r = self._random.randint(0, self._num_items_index) + 1
                 if r < self._max_size:
                     self._items.pop(r)
                     self._items.append(item)
