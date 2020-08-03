@@ -24,7 +24,8 @@ DEFAULT_PLUGIN_MAXSIZE = {
     "histogram": 100,
     "embeddings": 50000,
     "audio": 10,
-    "pr_curve": 300
+    "pr_curve": 300,
+    "meta_data": 100
 }
 
 
@@ -277,7 +278,9 @@ class DataManager(object):
             "audio":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["audio"]),
             "pr_curve":
-            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["pr_curve"])
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["pr_curve"]),
+            "meta_data":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["meta_data"])
         }
         self._mutex = threading.Lock()
 

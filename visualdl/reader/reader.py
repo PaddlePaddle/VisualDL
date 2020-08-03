@@ -55,6 +55,8 @@ class LogReader(object):
         self.readers = {}
         self.walks = None
         self._tags = {}
+        self.name2tags = {}
+        self.tags2name = {}
 
         self.file_readers = {}
         self._environments = components
@@ -63,6 +65,7 @@ class LogReader(object):
         self._a_tags = {}
 
         self._model = ""
+
 
     @property
     def model(self):
@@ -110,11 +113,20 @@ class LogReader(object):
                 component = "histogram"
             elif "pr_curve" == value_type:
                 component = "pr_curve"
+            elif "meta_data" == value_type:
+                self.change_meta_data(record)
+                component = "meta_data"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component
 
         return self._tags[path], self.reader.dir, tag, value
+
+    def change_meta_data(self, record):
+        meta = record.values[0].meta_data
+        if meta.display_name:
+            self.name2tags[meta.display_name] = self.reader.dir
+            self.tags2name[self.reader.dir] = meta.display_name
 
     def get_all_walk(self):
         self.walks = {}

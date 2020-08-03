@@ -16,7 +16,7 @@ import os
 import time
 import numpy as np
 from visualdl.writer.record_writer import RecordFileWriter
-from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve
+from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve, meta_data
 
 
 class DummyFileWriter(object):
@@ -66,6 +66,7 @@ class LogWriter(object):
                  flush_secs=120,
                  filename_suffix='',
                  write_to_disk=True,
+                 display_name='',
                  **kwargs):
         """Create a instance of class `LogWriter` and create a vdl log file with
         given args.
@@ -98,6 +99,7 @@ class LogWriter(object):
         self._all_writers = {}
         self._get_file_writer()
         self.loggers = {}
+        self.add_meta(display_name=display_name)
 
     @property
     def logdir(self):
@@ -117,6 +119,22 @@ class LogWriter(object):
                 filename_suffix=self._filename_suffix)
             self._all_writers.update({self._logdir: self._file_writer})
         return self._file_writer
+
+    def add_meta(self, tag='meta_data_tag', display_name='', step=0, walltime=None):
+        """Add a meta to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            display_name (string): Display name of `runs`.
+            step (int): Step of meta.
+            walltime (int): Wall time of scalar
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        walltime = round(time.time()) if walltime is None else walltime
+        self._get_file_writer().add_record(
+            meta_data(tag=tag, display_name=display_name, step=step,
+                      walltime=walltime))
 
     def add_scalar(self, tag, value, step, walltime=None):
         """Add a scalar to vdl record file.
