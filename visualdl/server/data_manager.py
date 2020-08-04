@@ -222,7 +222,26 @@ class _ReservoirBucket(object):
             if len(self._items) < self._max_size or self._max_size == 0:
                 self._items.append(item)
             else:
-                r = self._random.randint(0, self._num_items_index) + 1
+                r = self._random.randint(1, self._num_items_index)
+                if r < self._max_size:
+                    self._items.pop(r)
+                    self._items.append(item)
+            self._num_items_index += 1
+
+    def add_item_minmax(self, item, min, max):
+        """ Add an item to bucket, replacing an old item with probability.
+
+        Use reservoir sampling to add a new item to sampling bucket,
+        each item in a steam has same probability stay in the bucket.
+
+        Args:
+            item: The item to add to reservoir bucket.
+        """
+        with self._mutex:
+            if len(self._items) < self._max_size or self._max_size == 0:
+                self._items.append(item)
+            else:
+                r = self._random.randint(1, self._num_items_index)
                 if r < self._max_size:
                     self._items.pop(r)
                     self._items.append(item)
