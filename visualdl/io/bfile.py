@@ -219,12 +219,7 @@ class BosFileSystem(object):
         self.max_contents_count = int(os.getenv('BOS_CACHE_COUNT', 1))
         self.max_contents_time = int(os.getenv('BOS_CACHE_TIME', 1))
         bos_sts = os.getenv("BOS_STS")
-        if not bos_sts:
-            self.config = BceClientConfiguration(
-                credentials=BceCredentials(access_key_id, secret_access_key),
-                endpoint=bos_host)
-        else:
-            self.config = BceClientConfiguration(
+        self.config = BceClientConfiguration(
                 credentials=BceCredentials(access_key_id, secret_access_key),
                 endpoint=bos_host, security_token=bos_sts)
 
