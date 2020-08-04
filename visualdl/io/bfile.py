@@ -220,8 +220,8 @@ class BosFileSystem(object):
         self.max_contents_time = int(os.getenv('BOS_CACHE_TIME', 1))
         bos_sts = os.getenv("BOS_STS")
         self.config = BceClientConfiguration(
-                credentials=BceCredentials(access_key_id, secret_access_key),
-                endpoint=bos_host, security_token=bos_sts)
+            credentials=BceCredentials(access_key_id, secret_access_key),
+            endpoint=bos_host, security_token=bos_sts)
 
     def isfile(self, filename):
         return exists(filename)
