@@ -30,7 +30,6 @@ try:
     from baidubce import exception
     from baidubce.bce_client_configuration import BceClientConfiguration
     from baidubce.auth.bce_credentials import BceCredentials
-    from baidubce.exception import BceServerError
     BOS_ENABLED = True
 except ImportError:
     BOS_ENABLED = False
