@@ -3,7 +3,7 @@
 import crypto, {BinaryLike} from 'crypto';
 
 import fetch from 'node-fetch';
-import fs from 'fs/promises';
+import {promises as fs} from 'fs';
 import mime from 'mime-types';
 import mkdirp from 'mkdirp';
 import path from 'path';
