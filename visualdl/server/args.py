@@ -72,6 +72,7 @@ def format_args(args):
     if args.api_only:
         args.open_browser = False
 
+    # set host to localhost if host is not set
     if not args.host:
         args.host = get_host(args.host, args.port)
 
@@ -99,7 +100,12 @@ def parse_args():
     """
     :return:
     """
-    parser = ArgumentParser(prog="VisualDL", description="VisualDL, a tool to visualize deep learning.")
+    parser = ArgumentParser(
+        prog="VisualDL",
+        description="VisualDL, a tool to visualize deep learning.",
+        epilog="For more information: https://github.com/PaddlePaddle/VisualDL"
+    )
+
     parser.add_argument(
         "--logdir",
         action="store",
@@ -111,14 +117,14 @@ def parse_args():
         type=int,
         default=default_port,
         action="store",
-        help="port of visualdl board")
+        help="port of %(prog)s board")
     parser.add_argument(
         "-t",
         "--host",
         type=str,
         default=default_host,
         action="store",
-        help="bind visualdl board to ip/host")
+        help="bind %(prog)s board to ip/host")
     parser.add_argument(
         "--model",
         type=str,
@@ -131,7 +137,7 @@ def parse_args():
         dest="cache_timeout",
         type=float,
         default=default_cache_timeout,
-        help="memory cache timeout duration in seconds, default 20", )
+        help="memory cache timeout duration in seconds (default: %(default)s)", )
     parser.add_argument(
         "-L",
         "--language",
@@ -171,6 +177,4 @@ def parse_args():
 
     init_logger(args.verbose)
 
-    validate_args(args)
-
-    return format_args(args)
+    return vars(args)

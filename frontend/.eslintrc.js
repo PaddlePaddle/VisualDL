@@ -16,7 +16,13 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['packages/cli/**/*', 'packages/mock/**/*', 'packages/server/**/*', 'packages/serverless/**/*'],
+            files: [
+                'packages/cli/**/*',
+                'packages/mock/**/*',
+                'packages/demo/**/*',
+                'packages/server/**/*',
+                'packages/serverless/**/*'
+            ],
             extends: [
                 'plugin:@typescript-eslint/recommended',
                 'prettier/@typescript-eslint',

@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": [
+            "esnext",
+            "esnext.asynciterable",
+            "dom"
+        ],
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "declaration": true,
+        "skipLibCheck": true,
+        "outDir": "dist"
+    },
+    "include": [
+        "index.ts",
+        "builder"
+    ]
+}

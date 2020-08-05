@@ -8,6 +8,7 @@ import path from 'path';
 import {setConfig} from 'next/config';
 
 const isDev = process.env.NODE_ENV === 'development';
+const isDemo = !!process.env.DEMO;
 
 const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT || '', 10) || 8999;
@@ -46,6 +47,9 @@ async function start() {
                 changeOrigin: true
             })
         );
+    } else if (isDemo) {
+        const {default: demo} = await import('@visualdl/demo');
+        server.use(config.env.API_URL, demo);
     } else if (isDev) {
         const {default: mock} = await import('@visualdl/mock');
         server.use(config.env.API_URL, mock({delay: delay ? () => Math.random() * delay : 0}));

@@ -11,8 +11,7 @@ import {
     primaryFocusedColor,
     sameBorder,
     size,
-    textLighterColor,
-    transitionProps
+    textLighterColor
 } from '~/utils/style';
 
 import styled from 'styled-components';

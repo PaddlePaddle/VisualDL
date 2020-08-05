@@ -45,6 +45,8 @@ server_path = os.path.abspath(os.path.dirname(sys.argv[0]))
 template_file_path = os.path.join(SERVER_DIR, "./dist")
 mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 
+check_live_path = '/alive'
+
 
 def create_app(args):
     # disable warning from flask
@@ -65,14 +67,6 @@ def create_app(args):
 
     public_path = args.public_path
     api_path = public_path + '/api'
-
-    info('VisualDL %s at http://%s:%s/ (Press CTRL+C to quit)', __version__, args.host, args.port)
-
-    if args.host == 'localhost':
-        info('Serving VisualDL on localhost; to expose to the network, use a proxy or pass --host 0.0.0.0')
-
-    if args.api_only:
-        info('Running in API mode, only %s/* will be served.', api_path)
 
     @babel.localeselector
     def get_locale():
@@ -117,6 +111,10 @@ def create_app(args):
         data, mimetype, headers = api_call(method, request.args)
         return make_response(Response(data, mimetype=mimetype, headers=headers))
 
+    @app.route(check_live_path)
+    def check_live():
+        return '', 204
+
     return app
 
 
@@ -131,32 +129,47 @@ def _open_browser(app, index_url):
     webbrowser.open(index_url)
 
 
-def _run(**kwargs):
-    args = ParseArgs(**kwargs)
-    app = create_app(args)
+def wait_until_live(args: ParseArgs):
+    url = 'http://{host}:{port}'.format(host=args.host, port=args.port)
+    while True:
+        try:
+            requests.get(url + check_live_path)
+            info('Running VisualDL at http://%s:%s/ (Press CTRL+C to quit)', args.host, args.port)
 
-    if not args.api_only:
-        index_url = 'http://' + args.host + ':' + str(args.port) + args.public_path
-        if kwargs.get('open_browser', False):
-            threading.Thread(
-                target=_open_browser, kwargs={'app': app, 'index_url': index_url}).start()
+            if args.host == 'localhost':
+                info('Serving VisualDL on localhost; to expose to the network, use a proxy or pass --host 0.0.0.0')
+
+            if args.api_only:
+                info('Running in API mode, only %s/* will be served.', args.public_path + '/api')
+
+            break
+        except Exception:
+            time.sleep(0.5)
+    if not args.api_only and args.open_browser:
+        webbrowser.open(url + args.public_path)
+
+
+def _run(args):
+    args = ParseArgs(**args)
+    info('\033[1;33mVisualDL %s\033[0m', __version__)
+    app = create_app(args)
+    threading.Thread(target=wait_until_live, args=(args,)).start()
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
 def run(logdir=None, **options):
-    kwargs = {
+    args = {
         'logdir': logdir
     }
-    kwargs.update(options)
-    p = multiprocessing.Process(target=_run, kwargs=kwargs)
+    args.update(options)
+    p = multiprocessing.Process(target=_run, args=(args,))
     p.start()
     return p.pid
 
 
 def main():
     args = parse_args()
-    app = create_app(args)
-    app.run(debug=False, host=args.host, port=args.port, threaded=False)
+    _run(args)
 
 
 if __name__ == '__main__':

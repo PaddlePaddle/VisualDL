@@ -4,6 +4,7 @@
 /* eslint-disable no-console */
 
 import ora, {Ora} from 'ora';
+
 import ecosystem from '@visualdl/server/ecosystem.config';
 import pm2 from 'pm2';
 
@@ -27,6 +28,8 @@ const argv = require('yargs')
     .nargs('b', 1)
     .nargs('backend', 1)
     .describe('b', 'Backend API address')
+    .boolean('demo')
+    .describe('demo', 'Run in demo mode')
     .boolean('open')
     .describe('open', 'Open browser when server is ready')
     .help('h')
@@ -92,7 +95,8 @@ pm2.connect(err => {
                         ...app.env,
                         HOST: host,
                         PORT: port + '',
-                        BACKEND: argv.backend
+                        BACKEND: argv.backend,
+                        DEMO: argv.demo ? '1' : ''
                     }
                 },
                 err => {

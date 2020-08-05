@@ -24,7 +24,7 @@
     },
     "scripts": {
         "dev": "cross-env NODE_ENV=development nodemon --watch index.ts --watch webpack.config.js --exec \"ts-node index.ts\"",
-        "build": "cross-env ts-node --script-mode build.ts",
+        "build": "ts-node --script-mode build.ts",
         "build:webpack": "webpack",
         "start": "pm2-runtime ecosystem.config.js",
         "test": "echo \"Error: no test specified\" && exit 0; #"
@@ -38,6 +38,7 @@
     ],
     "dependencies": {
         "@visualdl/core": "2.0.0-beta.49",
+        "@visualdl/demo": "2.0.0-beta.49",
         "@visualdl/i18n": "2.0.0-beta.49",
         "express": "4.17.1",
         "http-proxy-middleware": "1.0.5",
