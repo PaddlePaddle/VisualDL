@@ -38,7 +38,7 @@
         "detect-node": "2.0.4",
         "hoist-non-react-statics": "3.3.2",
         "i18next": "19.6.3",
-        "i18next-browser-languagedetector": "5.0.0",
+        "i18next-browser-languagedetector": "5.0.1",
         "i18next-fs-backend": "1.0.7",
         "i18next-http-backend": "1.0.17",
         "i18next-http-middleware": "3.0.2",
@@ -50,8 +50,8 @@
     "devDependencies": {
         "@types/express": "4.17.7",
         "@types/hoist-non-react-statics": "3.3.1",
-        "@types/node": "14.0.26",
-        "@types/react": "16.9.43",
+        "@types/node": "14.0.27",
+        "@types/react": "16.9.44",
         "@types/react-dom": "16.9.8",
         "typescript": "3.9.7"
     },

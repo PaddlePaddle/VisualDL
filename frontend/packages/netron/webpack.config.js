@@ -64,17 +64,14 @@ module.exports = {
             patterns: commons.map(file => ({
                 from: path.join(netron, file),
                 to: file,
-                transform: content => {
+                transform: async content => {
                     try {
                         // It is important to keep class names and function names after compressing
                         // Netron relies on Class.constructor.name and Function.prototype.name to show attribute's value
-                        const result = Terser.minify(content.toString(), {
+                        const result = await Terser.minify(content.toString(), {
                             keep_classnames: true,
                             keep_fnames: true
                         });
-                        if (result.error) {
-                            throw result.error;
-                        }
                         return result.code;
                     } catch (e) {
                         console.error(e);
