@@ -17,12 +17,12 @@ import sys
 import socket
 from argparse import ArgumentParser
 
-from visualdl.server.log import logger
+from visualdl import __version__
+from visualdl.server.log import (init_logger, logger)
 
 default_host = None
 default_port = 8040
 default_cache_timeout = 20
-
 default_public_path = '/app'
 
 
@@ -39,6 +39,16 @@ class DefaultArgs(object):
         self.model = args.get('model', '')
 
 
+def get_host(host=default_host, port=default_port):
+    if not host:
+        host = socket.getfqdn()
+        try:
+            socket.create_connection((host, port), timeout=1)
+        except socket.error:
+            host = 'localhost'
+    return host
+
+
 def validate_args(args):
     # if not in API mode, public path cannot be set to root path
     if not args.api_only and args.public_path == '/':
@@ -51,19 +61,7 @@ def validate_args(args):
         sys.exit(-1)
 
 
-def get_host(host=None, port=default_port):
-    if not host:
-        host = socket.getfqdn()
-        try:
-            socket.create_connection((host, port), timeout=1)
-        except socket.error:
-            host = 'localhost'
-    return host
-
-
 def format_args(args):
-    validate_args(args)
-
     # set default public path according to API mode option
     if args.public_path is None:
         args.public_path = '' if args.api_only else default_public_path
@@ -74,6 +72,7 @@ def format_args(args):
     if args.api_only:
         args.open_browser = False
 
+    # set host to localhost if host is not set
     if not args.host:
         args.host = get_host(args.host, args.port)
 
@@ -82,7 +81,9 @@ def format_args(args):
 
 class ParseArgs(object):
     def __init__(self, **kwargs):
-        args = format_args(DefaultArgs(kwargs))
+        args = DefaultArgs(kwargs)
+        validate_args(args)
+        args = format_args(args)
 
         self.logdir = args.logdir
         self.host = args.host
@@ -99,11 +100,15 @@ def parse_args():
     """
     :return:
     """
-    parser = ArgumentParser(description="VisualDL, a tool to visualize deep learning.")
+    parser = ArgumentParser(
+        prog="VisualDL",
+        description="VisualDL, a tool to visualize deep learning.",
+        epilog="For more information: https://github.com/PaddlePaddle/VisualDL"
+    )
+
     parser.add_argument(
         "--logdir",
         action="store",
-        dest="logdir",
         nargs="+",
         help="log file directory")
     parser.add_argument(
@@ -112,52 +117,64 @@ def parse_args():
         type=int,
         default=default_port,
         action="store",
-        dest="port",
-        help="api service port")
+        help="port of %(prog)s board")
     parser.add_argument(
         "-t",
         "--host",
         type=str,
         default=default_host,
         action="store",
-        help="api service ip")
+        help="bind %(prog)s board to ip/host")
     parser.add_argument(
         "--model",
         type=str,
         action="store",
-        dest="model",
         default="",
         help="model file path")
     parser.add_argument(
-        "--cache_timeout",
+        "--cache-timeout",
         action="store",
         dest="cache_timeout",
         type=float,
         default=default_cache_timeout,
-        help="memory cache timeout duration in seconds, default 20", )
+        help="memory cache timeout duration in seconds (default: %(default)s)", )
     parser.add_argument(
         "-L",
         "--language",
         type=str,
         action="store",
         default=None,
-        help="set the default language")
+        help="specify the default language")
     parser.add_argument(
-        "-P",
         "--public-path",
         type=str,
         action="store",
+        dest="public_path",
         default=None,
         help="set public path"
     )
     parser.add_argument(
-        "-A",
         "--api-only",
         action="store_true",
+        dest="api_only",
         default=False,
         help="serve api only"
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="count",
+        default=0,
+        help="set log level, use -vvv... to get more information"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s {}".format(__version__)
     )
 
     args = parser.parse_args()
 
-    return format_args(args)
+    init_logger(args.verbose)
+
+    return vars(args)
