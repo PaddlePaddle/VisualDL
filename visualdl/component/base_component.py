@@ -36,6 +36,27 @@ def scalar(tag, value, step, walltime=None):
     ])
 
 
+def meta_data(tag='meta_data_tag', display_name="", step=0, walltime=None):
+    """Package data to one meta_data.
+
+    Meta data is info for one record file, include `display_name` etc.
+
+    Args:
+        tag (string): Data identifier
+        display_name (string): Replace
+        step (int): Step of scalar
+        walltime (int): Wall time of scalar
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+    meta = Record.MetaData(display_name=display_name)
+    return Record(values=[
+        Record.Value(id=step, tag=tag, timestamp=walltime,
+                     meta_data=meta)
+    ])
+
+
 def imgarray2bytes(np_array):
     """Convert image ndarray to bytes.
 

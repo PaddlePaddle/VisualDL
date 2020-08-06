@@ -29,7 +29,13 @@ def get_components(log_reader):
 
 
 def get_runs(log_reader):
-    return log_reader.runs()
+    runs = []
+    for item in log_reader.runs():
+        if item in log_reader.tags2name:
+            runs.append(log_reader.tags2name[item])
+        else:
+            runs.append(item)
+    return runs
 
 
 def get_tags(log_reader):
@@ -47,7 +53,15 @@ def get_logs(log_reader, component):
             tags[run].append(tag)
         else:
             tags[run] = [tag]
-    return tags
+    fake_tags = {}
+    for key, value in tags.items():
+
+        if key in log_reader.tags2name:
+            fake_tags[log_reader.tags2name[key]] = value
+        else:
+            fake_tags[key] = value
+
+    return fake_tags
 
 
 def get_scalar_tags(log_reader):
@@ -55,6 +69,7 @@ def get_scalar_tags(log_reader):
 
 
 def get_scalar(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("scalar").get_items(
         run, decode_tag(tag))
@@ -67,6 +82,7 @@ def get_image_tags(log_reader):
 
 
 def get_image_tag_steps(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("image").get_items(
         run, decode_tag(tag))
@@ -78,6 +94,7 @@ def get_image_tag_steps(log_reader, run, tag):
 
 
 def get_individual_image(log_reader, run, tag, step_index):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("image").get_items(
         run, decode_tag(tag))
@@ -89,6 +106,7 @@ def get_audio_tags(log_reader):
 
 
 def get_audio_tag_steps(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("audio").get_items(
         run, decode_tag(tag))
@@ -100,6 +118,7 @@ def get_audio_tag_steps(log_reader, run, tag):
 
 
 def get_individual_audio(log_reader, run, tag, step_index):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("audio").get_items(
         run, decode_tag(tag))
@@ -120,6 +139,7 @@ def get_pr_curve_tags(log_reader):
 
 
 def get_pr_curve(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
         run, decode_tag(tag))
@@ -141,6 +161,7 @@ def get_pr_curve(log_reader, run, tag):
 
 
 def get_pr_curve_step(log_reader, run, tag=None):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     tag = get_pr_curve_tags(log_reader)[run][0] if tag is None else tag
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
@@ -150,6 +171,7 @@ def get_pr_curve_step(log_reader, run, tag=None):
 
 
 def get_embeddings(log_reader, run, tag, reduction, dimension=2):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("embeddings").get_items(
         run, decode_tag(tag))
@@ -173,6 +195,7 @@ def get_embeddings(log_reader, run, tag, reduction, dimension=2):
 
 
 def get_histogram(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("histogram").get_items(
         run, decode_tag(tag))

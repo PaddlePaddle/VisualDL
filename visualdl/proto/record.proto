@@ -43,6 +43,10 @@ message Record {
     repeated double recall = 6;
   }
 
+  message MetaData {
+    string display_name = 1;
+  }
+
   message Value {
     int64 id = 1;
     string tag = 2;
@@ -54,6 +58,7 @@ message Record {
       Embeddings embeddings = 7;
       Histogram histogram = 8;
       PRCurve pr_curve = 9;
+      MetaData meta_data = 10;
     }
   }
 
