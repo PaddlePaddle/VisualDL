@@ -55,10 +55,10 @@ By Integrating into PaddlePaddle and related modules, VisualDL allows developers
 
 ## Installation
 
-### Install by Pip
+### Install by PiP
 
 ```shell
-pip install --upgrade --pre visualdl
+python -m pip install visualdl -i https://mirror.baidu.com/pypi/simple
 ```
 ### Install by Code
 
