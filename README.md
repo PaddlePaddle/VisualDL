@@ -67,7 +67,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 ### 使用pip安装
 
 ```shell
-pip install --upgrade --pre visualdl
+python -m pip install visualdl -i https://mirror.baidu.com/pypi/simple
 ```
 ### 使用代码安装
 
