@@ -13,7 +13,6 @@
 from recommonmark.parser import CommonMarkParser
 import os
 import sys
-from visualdl import __version__
 sys.path.insert(0, os.path.abspath('../visualdl'))
 
 
@@ -24,7 +23,7 @@ copyright = '2020, PaddlePaddle'
 author = 'PaddlePaddle'
 
 # The full version, including alpha/beta/rc tags
-release = __version__
+release = '2.0.0'
 
 
 # -- General configuration ---------------------------------------------------
