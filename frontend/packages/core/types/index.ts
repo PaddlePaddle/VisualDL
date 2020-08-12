@@ -1,3 +1,8 @@
+export interface TagsData {
+    runs: string[];
+    tags: string[][];
+}
+
 export interface Run {
     label: string;
     colors: [string, string];

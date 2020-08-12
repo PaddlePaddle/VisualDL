@@ -1,4 +1,4 @@
-import {Run, Tag, TagWithSingleRun} from '~/types';
+import {Run, Tag, TagWithSingleRun, TagsData} from '~/types';
 import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
@@ -142,8 +142,23 @@ const reducer = (state: State, action: Action): State => {
 const useTagFilter = (type: string, running: boolean) => {
     const router = useRouter();
 
-    const {data: runs, loading: loadingRuns} = useRunningRequest<string[]>('/runs', running);
-    const {data: tags, loading: loadingTags} = useRunningRequest<Tags>(`/${type}/tags`, running);
+    const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
+
+    const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
+    const tags: Tags = useMemo(
+        () =>
+            data
+                ? runs.reduce<Tags>((m, run, i) => {
+                      if (m[run]) {
+                          m[run] = [...m[run], ...(data.tags?.[i] ?? [])];
+                      } else {
+                          m[run] = data.tags[i] ?? [];
+                      }
+                      return m;
+                  }, {})
+                : {},
+        [runs, data]
+    );
 
     const [state, dispatch] = useReducer(reducer, {
         initRuns: [],
@@ -197,8 +212,8 @@ const useTagFilter = (type: string, running: boolean) => {
         runsInTags,
         onChangeRuns,
         onChangeTags,
-        loadingRuns,
-        loadingTags
+        loading,
+        error
     };
 };
 

@@ -48,10 +48,7 @@ const PRCurve: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, runsInTags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
-        'pr-curve',
-        running
-    );
+    const {runs, tags, runsInTags, selectedRuns, onChangeRuns, loading} = useTagFilter('pr-curve', running);
 
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const onChangeIndexes = useCallback(
@@ -148,14 +145,13 @@ const PRCurve: NextI18NextPage = () => {
 
     return (
         <>
-            <Preloader url="/runs" />
             <Preloader url="/pr-curve/tags" />
             <Title>{t('common:pr-curve')}</Title>
-            <Content aside={aside} loading={loadingRuns}>
-                {!loadingRuns && !runs.length ? (
+            <Content aside={aside} loading={loading}>
+                {!loading && !runs.length ? (
                     <Error />
                 ) : (
-                    <ChartPage items={prCurveTags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                    <ChartPage items={prCurveTags} withChart={withChart} loading={loading} />
                 )}
             </Content>
         </>
