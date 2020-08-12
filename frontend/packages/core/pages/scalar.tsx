@@ -37,7 +37,7 @@ const Scalar: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter('scalar', running);
+    const {runs, tags, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
 
     const [smoothing, setSmoothing] = useState(0.6);
 
@@ -106,14 +106,13 @@ const Scalar: NextI18NextPage = () => {
 
     return (
         <>
-            <Preloader url="/runs" />
             <Preloader url="/scalar/tags" />
             <Title>{t('common:scalar')}</Title>
-            <Content aside={aside} loading={loadingRuns}>
-                {!loadingRuns && !runs.length ? (
+            <Content aside={aside} loading={loading}>
+                {!loading && !runs.length ? (
                     <Error />
                 ) : (
-                    <ChartPage items={tags} withChart={withChart} loading={loadingRuns || loadingTags} />
+                    <ChartPage items={tags} withChart={withChart} loading={loading} />
                 )}
             </Content>
         </>
