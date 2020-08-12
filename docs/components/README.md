@@ -71,7 +71,7 @@ add_scalar(tag, value, step, walltime=None)
 
 - 基础使用
 
-下面展示了使用 Scalar 组件记录数据的示例，代码见[Scalar组件](../../demo/components/scalar_test.py)
+下面展示了使用 Scalar 组件记录数据的示例，代码见[Scalar组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/scalar_test.py)
 ```python
 from visualdl import LogWriter
 
@@ -212,7 +212,7 @@ add_image(tag, img, step, walltime=None)
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
 
 ### Demo
-下面展示了使用 Image 组件记录数据的示例，代码文件请见[Image组件](../../demo/components/image_test.py)
+下面展示了使用 Image 组件记录数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py)
 ```python
 import numpy as np
 from PIL import Image
@@ -579,7 +579,7 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 
 ### Demo
 
-下面展示了使用 PR Curve 组件记录数据的示例，代码见[PR Curve组件](#https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/pr_curve_test.py)
+下面展示了使用 PR Curve 组件记录数据的示例，代码见[PR Curve组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/pr_curve_test.py)
 
 ```python
 from visualdl import LogWriter
@@ -674,7 +674,7 @@ add_embeddings(tag, labels, hot_vectors, walltime=None)
 | walltime    | int                 | 记录数据的时间戳，默认为当前时间戳                   |
 
 ### Demo
-下面展示了使用 High Dimensional 组件记录数据的示例，代码见[High Dimensional组件](../../demo/components/high_dimensional_test.py)
+下面展示了使用 High Dimensional 组件记录数据的示例，代码见[High Dimensional组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/high_dimensional_test.py)
 ```python
 from visualdl import LogWriter
 
