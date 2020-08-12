@@ -21,10 +21,7 @@ const Histogram: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
-        'histogram',
-        running
-    );
+    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('histogram', running);
 
     const [mode, setMode] = useState<Modes>(Modes.Offset);
 
@@ -61,14 +58,13 @@ const Histogram: NextI18NextPage = () => {
 
     return (
         <>
-            <Preloader url="/runs" />
             <Preloader url="/histogram/tags" />
             <Title>{t('common:histogram')}</Title>
-            <Content aside={aside} loading={loadingRuns}>
-                {!loadingRuns && !runs.length ? (
+            <Content aside={aside} loading={loading}>
+                {!loading && !runs.length ? (
                     <Error />
                 ) : (
-                    <ChartPage items={tagsWithSingleRun} withChart={withChart} loading={loadingRuns || loadingTags} />
+                    <ChartPage items={tagsWithSingleRun} withChart={withChart} loading={loading} />
                 )}
             </Content>
         </>

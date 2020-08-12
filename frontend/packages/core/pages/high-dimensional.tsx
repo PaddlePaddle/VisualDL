@@ -16,6 +16,7 @@ import RadioButton from '~/components/RadioButton';
 import RadioGroup from '~/components/RadioGroup';
 import RunningToggle from '~/components/RunningToggle';
 import SearchInput from '~/components/SearchInput';
+import {TagsData} from '~/types';
 import Title from '~/components/Title';
 import styled from 'styled-components';
 import {useRouter} from 'next/router';
@@ -52,25 +53,17 @@ const HighDimensional: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {data: runs, error: runsError, loading: runsLoading} = useRunningRequest<string[]>('/runs', running);
-
-    const {data: tags, error: tagsError, loading: tagsLoading} = useRunningRequest<Record<string, string[]>>(
-        '/embedding/tags',
-        running
-    );
-
-    const error = useMemo(() => runsError || tagsError, [runsError, tagsError]);
-    const loading = useMemo(() => runsLoading || tagsLoading, [runsLoading, tagsLoading]);
+    const {data, error, loading} = useRunningRequest<TagsData>('/embedding/tags', running);
 
     const list = useMemo(() => {
-        if (!runs || !tags) {
+        if (!data) {
             return [];
         }
-        return runs.reduce<Item[]>(
-            (p, run) => [...p, ...(tags[run]?.map(tag => ({run, tag, label: `${run}/${tag}`})) ?? [])],
+        return data.runs.reduce<Item[]>(
+            (p, run, i) => [...p, ...(data.tags[i]?.map(tag => ({run, tag, label: `${run}/${tag}`})) ?? [])],
             []
         );
-    }, [runs, tags]);
+    }, [data]);
     const labelList = useMemo(() => list.map(item => item.label), [list]);
 
     const {query} = useRouter();
@@ -150,7 +143,7 @@ const HighDimensional: NextI18NextPage = () => {
 
     return (
         <>
-            <Preloader url="/runs" />
+            <Preloader url="/embedding/tags" />
             <Title>{t('common:high-dimensional')}</Title>
             <Content aside={aside} loading={loading}>
                 {!loading && !list.length ? (

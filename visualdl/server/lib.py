@@ -55,13 +55,17 @@ def get_logs(log_reader, component):
             tags[run] = [tag]
     fake_tags = {}
     for key, value in tags.items():
-
         if key in log_reader.tags2name:
             fake_tags[log_reader.tags2name[key]] = value
         else:
             fake_tags[key] = value
 
-    return fake_tags
+    run2tag = {'runs': [], 'tags': []}
+    for run, tags in fake_tags.items():
+        run2tag['runs'].append(run)
+        run2tag['tags'].append(tags)
+
+    return run2tag
 
 
 def get_scalar_tags(log_reader):

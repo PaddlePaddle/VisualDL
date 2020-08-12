@@ -35,10 +35,7 @@ const Audio: NextI18NextPage = () => {
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loadingRuns, loadingTags} = useTagFilter(
-        'audio',
-        running
-    );
+    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('audio', running);
 
     const aside = useMemo(
         () =>
@@ -61,20 +58,19 @@ const Audio: NextI18NextPage = () => {
 
     return (
         <>
-            <Preloader url="/runs" />
             <Preloader url="/audio/tags" />
             <Title>
                 {t('common:sample')} - {t('common:audio')}
             </Title>
-            <Content aside={aside} loading={loadingRuns}>
-                {!loadingRuns && !runs.length ? (
+            <Content aside={aside} loading={loading}>
+                {!loading && !runs.length ? (
                     <Error />
                 ) : (
                     <ChartPage
                         items={tagsWithSingleRun}
                         chartSize={chartSize}
                         withChart={withChart}
-                        loading={loadingRuns || loadingTags}
+                        loading={loading}
                     />
                 )}
             </Content>
