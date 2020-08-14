@@ -14,35 +14,13 @@
 # =======================================================================
 # coding=utf-8
 from visualdl import LogWriter
-import numpy as np
-import wave
-
-
-def read_audio_data(audio_path):
-    """
-    Get audio data.
-    """
-    CHUNK = 4096
-    f = wave.open(audio_path, "rb")
-    rate = f.getframerate()
-    width = f.getsampwidth()
-    channel = f.getnchannels()
-    wavdata = []
-    chunk = f.readframes(CHUNK)
-
-    while chunk:
-        data = np.frombuffer(chunk, dtype='uint8')
-        wavdata.extend(data)
-        chunk = f.readframes(CHUNK)
-    shape = [rate, width, channel]
-    return shape, wavdata
+from scipy.io import wavfile
 
 
 if __name__ == '__main__':
     with LogWriter(logdir="vdl_audio_0713") as writer:
-        audio_shape, audio_data = read_audio_data("./test.wav")
-        audio_data = np.array(audio_data)
+        sample_rate, audio_data = wavfile.read('./waveflow.wav')
         writer.add_audio(tag="audio_tag",
                          audio_array=audio_data,
                          step=0,
-                         sample_rate=audio_shape[0])
+                         sample_rate=sample_rate)
