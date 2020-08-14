@@ -18,8 +18,8 @@ from scipy.io import wavfile
 
 
 if __name__ == '__main__':
-    with LogWriter(logdir="vdl_audio_0713") as writer:
-        sample_rate, audio_data = wavfile.read('./waveflow.wav')
+    with LogWriter(logdir="./log/audio_test/train") as writer:
+        sample_rate, audio_data = wavfile.read('./test.wav')
         writer.add_audio(tag="audio_tag",
                          audio_array=audio_data,
                          step=0,
