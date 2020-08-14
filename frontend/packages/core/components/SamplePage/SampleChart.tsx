@@ -48,6 +48,8 @@ const Title = styled.div<{color: string}>`
         flex-shrink: 0;
         flex-grow: 0;
         color: ${textLightColor};
+        ${ellipsis()}
+        max-width: 50%;
 
         &::before {
             content: '';
