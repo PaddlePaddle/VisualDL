@@ -95,6 +95,7 @@ class LogWriter(logdir=None,
                 flush_secs=120,
                 filename_suffix='',
                 write_to_disk=True,
+                display_name='',
                 **kwargs)
 ```
 
@@ -108,6 +109,7 @@ class LogWriter(logdir=None,
 | flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件 |
 | filename_suffix | string  | 为默认的日志文件名添加后缀                                   |
 | write_to_disk   | boolean | 是否写入到磁盘                                               |
+| --display_name  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
 
 #### 示例
 
