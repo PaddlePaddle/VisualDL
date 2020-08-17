@@ -131,15 +131,26 @@ def audio(tag, audio_array, sample_rate, step, walltime):
     Return:
         Package with format of record_pb2.Record
     """
+    audio_array = audio_array.squeeze()
+    if abs(audio_array).max() > 1:
+        print('warning: audio amplitude out of range, auto clipped.')
+        audio_array = audio_array.clip(-1, 1)
+    assert (audio_array.ndim == 1), 'input tensor should be 1 dimensional.'
+
+    audio_array = [int(32767.0 * x) for x in audio_array]
+
     import io
     import wave
+    import struct
 
     fio = io.BytesIO()
     wave_writer = wave.open(fio, 'wb')
     wave_writer.setnchannels(1)
     wave_writer.setsampwidth(2)
     wave_writer.setframerate(sample_rate)
-    wave_writer.writeframes(audio_array)
+    audio_enc = b''
+    audio_enc += struct.pack("<" + "h" * len(audio_array), *audio_array)
+    wave_writer.writeframes(audio_enc)
     wave_writer.close()
     audio_string = fio.getvalue()
     fio.close()
