@@ -226,17 +226,21 @@ def get_graph(log_reader):
 
 
 def retry(ntimes, function, time2sleep, *args, **kwargs):
-    '''
+    """
     try to execute `function` `ntimes`, if exception catched, the thread will
     sleep `time2sleep` seconds.
-    '''
+    """
     for i in range(ntimes):
         try:
             return function(*args, **kwargs)
         except Exception:
-            error_info = '\n'.join(map(str, sys.exc_info()))
-            logger.error("Unexpected error: %s" % error_info)
-            time.sleep(time2sleep)
+            if i < ntimes-1:
+                error_info = '\n'.join(map(str, sys.exc_info()))
+                logger.error("Unexpected error: %s" % error_info)
+                time.sleep(time2sleep)
+            else:
+                import traceback
+                traceback.print_exc()
 
 
 def cache_get(cache):
