@@ -99,6 +99,7 @@ class LogWriter(logdir=None,
 | flush_secs      | int     | The maximum cache time of the data generated before recording in a log file, when this time is reached, the data is immediately written to the log file. |
 | filename_suffix | string  | Add a suffix to the default log file name.                   |
 | write_to_disk   | boolean | Write into disk or not.                                      |
+| display_name  | string | Set the name of different runs when `logdir` is too long or needed to be hidden. If not set, the default name is `logdir`.|
 
 #### Example
 
