@@ -231,7 +231,7 @@ app.run(logdir="./log")
 实时展示训练过程中的图像数据，用于观察不同训练阶段的图像变化，进而深入了解训练过程及效果。
 
 <p align="center">
-<img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90356439-24715980-e082-11ea-8896-01c27fc2fc9b.gif" width="85%"/>
 </p>
 
 ### Audio

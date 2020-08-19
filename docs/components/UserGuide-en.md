@@ -294,35 +294,16 @@ The following shows an example of using Audio to record data, and the script can
 
 ```python
 from visualdl import LogWriter
-import numpy as np
-import wave
-
-
-def read_audio_data(audio_path):
-    """
-    Get audio data.
-    """
-    CHUNK = 4096
-    f = wave.open(audio_path, "rb")
-    wavdata = []
-    chunk = f.readframes(CHUNK)
-    while chunk:
-        data = np.frombuffer(chunk, dtype='uint8')
-        wavdata.extend(data)
-        chunk = f.readframes(CHUNK)
-    # 8k sample rate, 16bit frame, 1 channel
-    shape = [8000, 2, 1]
-    return shape, wavdata
+from scipy.io import wavfile
 
 
 if __name__ == '__main__':
-    with LogWriter(logdir="./log") as writer:
-        audio_shape, audio_data = read_audio_data("./testing.wav")
-        audio_data = np.array(audio_data)
+    with LogWriter(logdir="./log/audio_test/train") as writer:
+        sample_rate, audio_data = wavfile.read('./test.wav')
         writer.add_audio(tag="audio_tag",
                          audio_array=audio_data,
                          step=0,
-                         sample_rate=8000)
+                         sample_rate=sample_rate)
 ```
 After running the above program, developers can launch the panel by:
 ```shell
