@@ -29,7 +29,7 @@ async function start() {
             '--logdir',
             '.',
             '--model',
-            './graph/__model__',
+            './__model__',
             '--host',
             host,
             '--port',

@@ -1,4 +1,4 @@
-import type {Worker} from './types';
+import type {Data, Worker} from './types';
 
 const worker: Worker = async io => {
     const components = await io.getData<string[]>('/components');
@@ -6,10 +6,10 @@ const worker: Worker = async io => {
         return;
     }
 
-    const tagsMap = await io.save<Record<string, string[]>>('/pr-curve/tags');
-    for (const [run, tags] of Object.entries(tagsMap)) {
+    const {runs, tags} = await io.save<Data>('/pr-curve/tags');
+    for (const [index, run] of runs.entries()) {
         await io.save('/pr-curve/steps', {run});
-        for (const tag of tags) {
+        for (const tag of tags[index]) {
             await io.save('/pr-curve/list', {run, tag});
         }
     }
