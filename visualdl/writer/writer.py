@@ -67,6 +67,7 @@ class LogWriter(object):
                  filename_suffix='',
                  write_to_disk=True,
                  display_name='',
+                 file_name='',
                  **kwargs):
         """Create a instance of class `LogWriter` and create a vdl log file with
         given args.
@@ -94,6 +95,7 @@ class LogWriter(object):
         self._filename_suffix = filename_suffix
         self._write_to_disk = write_to_disk
         self.kwargs = kwargs
+        self._file_name = file_name
 
         self._file_writer = None
         self._all_writers = {}
@@ -116,7 +118,8 @@ class LogWriter(object):
                 logdir=self._logdir,
                 max_queue_size=self._max_queue,
                 flush_secs=self._flush_secs,
-                filename_suffix=self._filename_suffix)
+                filename_suffix=self._filename_suffix,
+                filename=self._file_name)
             self._all_writers.update({self._logdir: self._file_writer})
         return self._file_writer
 

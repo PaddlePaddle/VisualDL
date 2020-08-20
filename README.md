@@ -96,6 +96,7 @@ class LogWriter(logdir=None,
                 filename_suffix='',
                 write_to_disk=True,
                 display_name='',
+                file_name='',
                 **kwargs)
 ```
 
@@ -110,6 +111,7 @@ class LogWriter(logdir=None,
 | filename_suffix | string  | 为默认的日志文件名添加后缀                                   |
 | write_to_disk   | boolean | 是否写入到磁盘                                               |
 | display_name    | string  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
+| file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，文件名必须包括`vdlrecords` |
 
 #### 示例
 

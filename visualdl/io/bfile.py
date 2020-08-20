@@ -130,7 +130,8 @@ class LocalFileSystem(object):
         self._write(filename, file_content, "ab" if binary_mode else "a")
 
     def write(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "wb" if binary_mode else "w")
+        self._write(filename, file_content, "ab" if binary_mode else "a")
+        # self._write(filename, file_content, "wb" if binary_mode else "w")
 
     def walk(self, dir):
         if 'posix' == os.name:
@@ -187,7 +188,8 @@ class HDFileSystem(object):
         self.cli.write(hdfs_path=filename[7:], data=file_content, append=True)
 
     def write(self, filename, file_content, binary_mode=False):
-        self.cli.write(hdfs_path=filename[7:], data=file_content)
+        self.cli.write(hdfs_path=filename[7:], data=file_content, append=True)
+        # self.cli.write(hdfs_path=filename[7:], data=file_content)
 
     def walk(self, dir):
         walks = self.cli.walk(hdfs_path=dir[7:])
@@ -326,13 +328,15 @@ class BosFileSystem(object):
         self._start_append_time = time.time()
 
     def write(self, filename, file_content, binary_mode=False):
-        bucket_name, object_key = BosFileSystem._get_object_info(filename)
+        self.append(filename, file_content, binary_mode=False)
 
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=file_content,
-                                      content_md5=content_md5(file_content),
-                                      content_length=len(file_content))
+        # bucket_name, object_key = BosFileSystem._get_object_info(filename)
+        #
+        # self.bos_client.append_object(bucket_name=bucket_name,
+        #                               key=object_key,
+        #                               data=file_content,
+        #                               content_md5=content_md5(file_content),
+        #                               content_length=len(file_content))
 
     def walk(self, dir):
         class WalkGenerator():

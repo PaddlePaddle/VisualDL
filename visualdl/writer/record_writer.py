@@ -74,12 +74,28 @@ class RecordFileWriter(object):
     file.
     """
     def __init__(self, logdir, max_queue_size=10, flush_secs=120,
-                 filename_suffix=''):
+                 filename_suffix='', filename=''):
         self._logdir = logdir
         if not bfile.exists(logdir):
             bfile.makedirs(logdir)
-        self._file_name = bfile.join(logdir, "vdlrecords.%010d.log%s" % (
-            time.time(), filename_suffix))
+
+        if filename:
+            if 'vdlrecords' in filename:
+                self._file_name = bfile.join(logdir, filename)
+                if bfile.exists(self._file_name):
+                    print(
+                        '`{}` is exists, VisualDL will add logs to it.'.format(
+                            self._file_name))
+            else:
+                fn = "vdlrecords.%010d.log%s" % (time.time(), filename_suffix)
+                self._file_name = bfile.join(logdir, fn)
+                print(
+                    '`vdlrecords` must in log file name, will use `{}` replace `{}`'.format(
+                        fn, filename))
+        else:
+            self._file_name = bfile.join(logdir, "vdlrecords.%010d.log%s" % (
+                time.time(), filename_suffix))
+
         self._general_file_writer = bfile.BFile(self._file_name, "wb")
         self._async_writer = _AsyncWriter(RecordWriter(
             self._general_file_writer), max_queue_size, flush_secs)
