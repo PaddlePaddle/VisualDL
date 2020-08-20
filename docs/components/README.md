@@ -289,38 +289,19 @@ add_audio(tag, audio_array, step, sample_rate)
 
 
 ### Demo
-
+下面展示了使用 Audio 组件记录数据的示例，代码文件请见[Audio组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/audio_test.py)
 ```python
 from visualdl import LogWriter
-import numpy as np
-import wave
-
-
-def read_audio_data(audio_path):
-    """
-    Get audio data.
-    """
-    CHUNK = 4096
-    f = wave.open(audio_path, "rb")
-    wavdata = []
-    chunk = f.readframes(CHUNK)
-    while chunk:
-        data = np.frombuffer(chunk, dtype='uint8')
-        wavdata.extend(data)
-        chunk = f.readframes(CHUNK)
-    # 8k sample rate, 16bit frame, 1 channel
-    shape = [8000, 2, 1]
-    return shape, wavdata
+from scipy.io import wavfile
 
 
 if __name__ == '__main__':
-    with LogWriter(logdir="./log") as writer:
-        audio_shape, audio_data = read_audio_data("./testing.wav")
-        audio_data = np.array(audio_data)
+    with LogWriter(logdir="./log/audio_test/train") as writer:
+        sample_rate, audio_data = wavfile.read('./test.wav')
         writer.add_audio(tag="audio_tag",
                          audio_array=audio_data,
                          step=0,
-                         sample_rate=8000)
+                         sample_rate=sample_rate)
 ```
 
 运行上述程序后，在命令行执行
