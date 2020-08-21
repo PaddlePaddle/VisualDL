@@ -54,19 +54,19 @@ Here are three examples:
 - When 'train' is created as the parent tag and 'acc' and 'loss' are created as child tags：`train/acc`、 `train/loss`，the tag of a raw is 'train' , which includes two sub charts--'acc' and 'loss':
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84653342-d6d05780-af3f-11ea-8979-8da039ae7201.JPG" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90884030-88c54d80-e3e1-11ea-9ba7-4b8df7b3496e.png" width="100%"/>
 </p>
 
 - When 'train' is created as the parent tag, and 'test/acc' and 'test/loss' are created as child tags：`train/test/acc`、 `train/test/loss`, the tag of a raw is 'train', which includes two sub charts--'test/acc' and 'test/loss': 
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84644066-3bd08100-af31-11ea-8eb5-c4a4cab351ed.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90884098-a692b280-e3e1-11ea-8c0b-380b970b50b2.png" width="100%"/>
 </p>
 
 - When two parent tags are created：`acc`、 `loss`， two rows of charts are named as 'acc' and 'loss' respectively.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84644323-99fd6400-af31-11ea-9855-eca7f7b01810.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90884122-b3afa180-e3e1-11ea-90b0-93a75543f253.png" width="100%"/>
 </p>
 
 ### Demo
@@ -138,7 +138,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address: `http://127.0.0.1:8080` to view line charts:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84644158-5efb3080-af31-11ea-8e64-bbe4078425f4.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90884963-4dc41980-e3e3-11ea-824a-277a8d71823e.png" width="100%"/>
 </p>
 *For more specific details of how to compare multiple experiments, pleas refer to the project on AI Studio：[VisualDL 2.0--Visualization of eye disease recognition training](https://aistudio.baidu.com/aistudio/projectdetail/502834)
 
@@ -147,7 +147,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 * Developers are allowed to zoom in, restore, transform of the coordinate axis (y-axis logarithmic coordinates), download the line chart.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/scalar-icon.png" width="55%"/>
+  <img src="https://visualdl.bj.bcebos.com/images/scalar-icon.png" width="45%"/>
 </p>
 
 
