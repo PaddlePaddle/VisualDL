@@ -187,7 +187,7 @@ app.run(logdir="./log")
 After launching the panel by one of the above methods, developers can see the visualization results on the browser shown as blow:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/82786044-67ae9880-9e96-11ea-8a2b-3a0951a6ec19.png" width="60%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90868674-ba321f00-e3c9-11ea-83c1-f03c6dd19187.png" width="70%"/>
 </p>
 
 
@@ -211,7 +211,7 @@ After the launchment of VisualDL Board, the LogReader will continuously record t
 Developers can compare with multiple experiments by specifying and uploading the path of each experiment at the same time so as to visualize the same parameters in the same chart.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/multi_experiments.gif" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90869567-fdd95880-e3ca-11ea-9855-6c97ad5c8ae7.gif" width="100%"/>
 </p>
 
 
@@ -219,14 +219,14 @@ Developers can compare with multiple experiments by specifying and uploading the
 **Image** provides real-time visualizations of the image data during the training process, allowing developers to observe the changes of images in different training stages and  to deeply understand the effects of the training process. 
 
 <p align="center">
-<img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90869677-22353500-e3cb-11ea-9830-2334bdd8e52e.gif" width="55%"/>
 </p>
 
 ### Audio
 **Audio** aims to allow developers to listen to the audio data in real-time during the training process, helping developers to monitor the process of speech recognition and text-to-speech.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/88752564-d22ccf00-d18c-11ea-9711-7b5868986ba7.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90869771-47c23e80-e3cb-11ea-8b2a-a38b6c33d64b.png" width="85%"/>
 </p>
 
 ### Graph
@@ -234,7 +234,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 **Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows Developers to explore model attributes, node information, node input and output. aiding them analyze model structure quickly and understand the direction of data flow easily.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90869866-6aecee00-e3cb-11ea-8211-b8af070239e6.png" width="85%"/>
 </p>
 
 ### Histogram
@@ -244,14 +244,14 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 - Offset Mode
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/86551031-86647c80-bf76-11ea-8ec2-8c86826c8137.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90870121-bd2e0f00-e3cb-11ea-89cf-6622cb607b89.png" width="85%"/>
 </p>
 
 
 - Overlay Mode
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/86551033-882e4000-bf76-11ea-8e6a-af954c662ced.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90870194-cfa84880-e3cb-11ea-8a66-bebcad267a10.png" width="85%"/>
 </p>
 
 ### High Dimensional
@@ -259,7 +259,7 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 **High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis. 
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>
 </p>
 
 ## Contribution
