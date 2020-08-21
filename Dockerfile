@@ -1,3 +1,13 @@
+FROM nikolaik/python-nodejs:python3.8-nodejs14 AS builder
+
+WORKDIR /home/visualdl
+COPY . .
+
+RUN apt-get update && apt-get -y --no-install-recommends install cmake && rm -rf /var/lib/apt/lists/*
+RUN ["pip", "install", "--disable-pip-version-check", "-r", "requirements.txt"]
+RUN ["python", "setup.py", "bdist_wheel"]
+
+
 FROM python:3-alpine as opencv
 
 WORKDIR /opt
@@ -109,24 +119,14 @@ RUN cp -p $(find `python -c "from distutils.sysconfig import get_python_lib; pri
 RUN tar zcf packages.tar.gz -C $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") .
 
 
-FROM nikolaik/python-nodejs:python3.8-nodejs14 AS builder
-
-WORKDIR /home/visualdl
-COPY . .
-
-RUN apt-get update && apt-get -y --no-install-recommends install cmake && rm -rf /var/lib/apt/lists/*
-RUN ["pip", "install", "-r", "requirements.txt"]
-RUN ["python", "setup.py", "bdist_wheel"]
-
-
 FROM python:3-alpine
 
 WORKDIR /home/visualdl
+COPY --from=builder /home/visualdl/dist/* dist/
 COPY --from=opencv /usr/local/include/opencv* /usr/local/include/
 COPY --from=opencv /usr/local/lib/* /usr/local/lib/
 COPY --from=opencv /usr/local/lib64/* /usr/local/lib64/
 COPY --from=opencv /opt/packages.tar.gz .
-COPY --from=builder /home/visualdl/dist/* dist/
 COPY requirements.txt .
 
 RUN tar zxf packages.tar.gz -C $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
@@ -136,4 +136,4 @@ RUN sed -i -e '/opencv-python/d' requirements.txt
 RUN ["pip", "install", "--disable-pip-version-check", "-r", "requirements.txt"]
 RUN ["pip", "install", "--disable-pip-version-check", "--no-deps", "--find-links=dist", "visualdl"]
 
-ENTRYPOINT ["visualdl", "--logdir", "/home/visualdl/log"]
+ENTRYPOINT ["visualdl", "--logdir", "/home/visualdl/log", "--host", "0.0.0.0"]

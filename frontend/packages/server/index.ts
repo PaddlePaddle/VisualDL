@@ -63,6 +63,18 @@ async function start() {
         });
     }
 
+    if (
+        process.env.PING_URL &&
+        process.env.PING_URL !== '/' &&
+        process.env.PING_URL !== publicPath &&
+        process.env.PING_URL.startsWith('/')
+    ) {
+        server.get(process.env.PING_URL, (_req, res) => {
+            res.type('text/plain');
+            res.status(200).send('OK!');
+        });
+    }
+
     const {default: nextI18Next} = await import('@visualdl/core/utils/i18n');
     await nextI18Next.initPromise;
     server.use(nextI18NextMiddleware(nextI18Next));

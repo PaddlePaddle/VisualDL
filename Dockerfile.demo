@@ -1,0 +1,30 @@
+FROM nikolaik/python-nodejs:python3.8-nodejs14 AS builder
+
+WORKDIR /home/visualdl
+COPY . .
+
+RUN apt-get update && apt-get -y --no-install-recommends install cmake libgl1-mesa-glx && rm -rf /var/lib/apt/lists/*
+RUN ["pip", "install", "--disable-pip-version-check", "-r", "requirements.txt"]
+RUN ["python", "setup.py", "bdist_wheel"]
+RUN ["pip", "install", "--disable-pip-version-check", "--find-links=dist", "visualdl"]
+
+WORKDIR frontend
+ENV SCOPE server
+ENV PUBLIC_PATH /paddle/visualdl/demo
+ENV API_URL /paddle/visualdl/demo/api
+RUN ["./scripts/install.sh"]
+RUN ["./scripts/build.sh"]
+
+
+FROM node:14-alpine
+WORKDIR /home/visualdl
+COPY --from=builder /home/visualdl/frontend/ ./
+ENV NODE_ENV production
+ENV PUBLIC_PATH /paddle/visualdl/demo
+ENV API_URL /paddle/visualdl/demo/api
+ENV PING_URL /ping
+ENV DEMO true
+ENV HOST 0.0.0.0
+ENV PORT 8999
+RUN ["yarn", "install", "--frozen-lockfile"]
+ENTRYPOINT ["yarn", "workspace" , "@visualdl/server", "start"]

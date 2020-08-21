@@ -1,4 +1,4 @@
-import type {Worker} from './types';
+import type {Data, Worker} from './types';
 
 interface Audio {
     step: number;
@@ -11,11 +11,11 @@ const worker: Worker = async io => {
         return;
     }
 
-    const tagsMap = await io.save<Record<string, string[]>>('/audio/tags');
-    for (const [run, tags] of Object.entries(tagsMap)) {
-        for (const tag of tags) {
-            const list = await io.save<Audio[]>('/audio/list', {run, tag});
-            for (const [index, audio] of Object.entries(list)) {
+    const {runs, tags} = await io.save<Data>('/audio/tags');
+    for (const [index, run] of runs.entries()) {
+        for (const tag of tags[index]) {
+            const list = (await io.save<Audio[]>('/audio/list', {run, tag})) ?? [];
+            for (const [index, audio] of list.entries()) {
                 await io.saveBinary('/audio/audio', {run, tag, index, ts: audio.wallTime});
             }
         }
