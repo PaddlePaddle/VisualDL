@@ -10,16 +10,18 @@ RUN ["pip", "install", "--disable-pip-version-check", "--find-links=dist", "visu
 
 WORKDIR frontend
 ENV SCOPE server
+ENV PUBLIC_PATH /paddle/visualdl/demo
+ENV API_URL /paddle/visualdl/demo/api
 RUN ["./scripts/install.sh"]
 RUN ["./scripts/build.sh"]
 
 
 FROM node:14-alpine
 WORKDIR /home/visualdl
-COPY --from=builder /home/visualdl/frontend/output/server.tar.gz /tmp
-RUN ["tar", "zxf", "/tmp/server.tar.gz"]
-RUN apk update && apk upgrade && apk add --no-cache git
+COPY --from=builder /home/visualdl/frontend/ ./
 ENV NODE_ENV production
+ENV PUBLIC_PATH /paddle/visualdl/demo
+ENV API_URL /paddle/visualdl/demo/api
 ENV DEMO true
-RUN ["yarn", "install", "--no-lockfile"]
-ENTRYPOINT ["yarn", "start"]
+RUN ["yarn", "install", "--frozen-lockfile"]
+ENTRYPOINT ["yarn", "workspace" , "@visualdl/server", "start"]
