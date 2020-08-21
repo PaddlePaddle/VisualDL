@@ -95,7 +95,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address: `http://127.0.0.1:8080`to view line charts:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/82397559-478c6d00-9a83-11ea-80db-a0844dcaca35.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90871520-c9b36700-e3cd-11ea-9063-ca692b1d3917.png" width="100%"/>
 </p>
 
 - Advanced Usage--Comparison of Multiple Experiments
@@ -155,7 +155,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 * Details can be shown by hovering on specific data points.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/scalar-tooltip.png" width="60%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90872099-b785f880-e3ce-11ea-9ebe-8083c893d88b.png" width="60%"/>
 </p>
 
 
@@ -163,7 +163,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 * Developers can find target scalar charts by searching corresponded tags.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/scalar-searchlabel.png" width="90%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90872849-cfaa4780-e3cf-11ea-985d-b4c382acf773.png" width="90%"/>
 </p>
 
 
@@ -171,7 +171,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 * Specific runs can be selected by searching for the corresponded  experiment tags.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/scalar-searchstream.png" width="40%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90873112-2b74d080-e3d0-11ea-8a69-24b7b4abae96.png" width="40%"/>
 </p>
 
 
@@ -182,13 +182,13 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
 3. Relative: training time
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/x-axis.png" width="40%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90873502-da191100-e3d0-11ea-8b03-c8fea0b65388.png" width="40%"/>
 </p>
 
 * The smoothness of the curve can be adjusted to better show the change of the overall trend.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/scalar-smooth.png" width="37%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90873564-edc47780-e3d0-11ea-909c-161e9fd8eeef.png" width="37%"/>
 </p>
 
 
@@ -249,7 +249,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address: `http://127.0.0.1:8080`to view:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/82397685-86babe00-9a83-11ea-870e-502f313bdc7c.png" width="90%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90874434-4a746200-e3d2-11ea-9395-a039d9e83470.png" width="90%"/>
 </p>
 
 
@@ -258,14 +258,14 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080`to view:
 - Developers can find target images by searching corresponded tags.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90875589-f8344080-e3d3-11ea-9020-52a5a88324ab.png" width="90%"/>
 </p>
 
 
 - Developers are allowed to view image data under different iterations by scrolling the Step/iteration slider.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90875652-10a45b00-e3d4-11ea-9fd9-3c79f22829f7.gif" width="60%"/>
 </p>
 
 ## Audio--Audio Play
@@ -380,7 +380,7 @@ There are two methods to launch this component:
 After the launch, developers can view the network structure:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84490149-51e20580-acd5-11ea-9663-1f156892c0e0.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90877274-6548d580-e3d6-11ea-9804-74a1ead47b30.png" width="80%"/>
 </p>
 
 ### Functional Instructions
@@ -390,53 +390,49 @@ After the launch, developers can view the network structure:
   - Experimental supported model：TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487396-44c31780-acd1-11ea-831a-1632e636613d.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90877449-a80aad80-e3d6-11ea-8016-0a2f3afe6f5e.png" width="80%"/>
 </p>
 
 - Developers are allowed to drag the model up and down，left and right，zoom in and zoom out.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487568-8784ef80-acd1-11ea-9da1-befedd69b872.GIF" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90878058-a097d400-e3d7-11ea-9543-bcef67ace675.gif" width="80%"/>
 </p>
 
 - Search to locate the specific node
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487694-b9965180-acd1-11ea-8214-34f3febc1828.png" width="30%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90878136-c0c79300-e3d7-11ea-9a14-1c1e809af442.png" width="30%"/>
 </p>
 
 - Click to view the model properties
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487751-cadf5e00-acd1-11ea-9ce2-4fdfeeea9c5a.png" width="30%"/>
-</p>
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487759-d03ca880-acd1-11ea-9294-520ef7f9e0b1.png" width="30%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90878623-5531f580-e3d8-11ea-89cc-1be3500bff66.png" width="30%"/>
 </p>
 
 - Display the model information by selecting corresponded attributes
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487829-ee0a0d80-acd1-11ea-8563-6682a15483d9.png" width="23%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90878712-6ed33d00-e3d8-11ea-85b9-48bf57867d30.png" width="23%"/>
 </p>
 
 - Files can be ex as PNG or SVG format
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487884-ff531a00-acd1-11ea-8b12-5221db78683e.png" width="30%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90878893-b35ed880-e3d8-11ea-8c22-badee805bfff.png" width="30%"/>
 </p>
 
 - Click nodes to view attribute information
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487941-13971700-acd2-11ea-937d-42fb524b9ee1.png" width="30%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90878944-c5407b80-e3d8-11ea-9db2-10e1dd1de5bf.png" width="30%"/>
 </p>
 
 - Switch the model by one-click
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487998-27db1400-acd2-11ea-83d7-5d75832ef41d.png" width="25%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90879247-34b66b00-e3d9-11ea-94ef-a26b1ba07dd0.png" width="25%"/>
 </p>
 
 ## Histogram--Distribution of Tensors 
@@ -504,7 +500,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080`to view the
 - Provide two modes: Offset and Overlay.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86535413-c134c900-bf12-11ea-9ad6-f0ad8eafa76f.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90879332-56175700-e3d9-11ea-87c3-24682191ddd4.png" width="30%"/>
   </p>
 
 
@@ -532,13 +528,13 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080`to view the
 - Developers can find target histogram by searching corresponded tags.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="40%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90879724-ebb2e680-e3d9-11ea-9e05-9bc06691ed9c.png" width="85%"/>
   </p>
 
 - Search tags to show the histograms generated by corresponded experiments.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86536639-b894c080-bf1b-11ea-9ee5-cf815dd4bbd7.png" width="40%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90879868-26b51a00-e3da-11ea-8c1d-83fb019ec668.png" width="40%"/>
   </p>
 
 ## PR Curve--PR 曲线组件
@@ -593,7 +589,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/86738774-ee46c000-c067-11ea-90d2-a98aac445cca.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90879904-37fe2680-e3da-11ea-9369-2513620bf541.png" width="85%"/>
 </p>
 
 ### Functional Instrucions
@@ -607,25 +603,25 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 - Developers hover on the specific data point to learn about the detailed information: TP, TN, FP, FN and the corresponded thresholds
 
     <p align="center">
-      <img src="https://user-images.githubusercontent.com/48054808/86740477-43370600-c069-11ea-93f0-f4d05445fbab.png" width="50%"/>
+      <img src="https://user-images.githubusercontent.com/48054808/90879971-4e0be700-e3da-11ea-989a-777b977c271d.png" width="50%"/>
     </p>
 
 - The targeted PR Curves can be displayed by searching tags
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86740670-66fa4c00-c069-11ea-9ee3-0a22e2d0dbec.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880145-8e6b6500-e3da-11ea-8f06-28248ee2eb84.png" width="80%"/>
   </p>
 
 - Developers can find specific labels by searching tags or view the all labels
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/86740817-809b9380-c069-11ea-9453-6531e3ff5f43.png" width="30%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90880173-9fb47180-e3da-11ea-8704-34cc55c0a844.png" width="30%"/>
 </p>
 
 - Developers is able to observe the changes of PR Curves across training steps
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86741057-b04a9b80-c069-11ea-9fef-2dcc16f9cd46.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880301-d2f70080-e3da-11ea-97e0-952b389f8010.png" width="30%"/>
   </p>
 
 - There are three measurement scales of X axis
@@ -635,7 +631,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
   3. Relative: training time
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86741304-db34ef80-c069-11ea-86eb-787b49ed3705.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880354-eace8480-e3da-11ea-921f-20f363eb1b1d.png" width="30%"/>
   </p>
 
 ## High Dimensional--Data Dimensionality Reduction
@@ -692,7 +688,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/dynamic_high_dimensional.gif" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90880543-341ed400-e3db-11ea-8fdc-8b914704b916.GIF" width="80%"/>
 </p>
 
 ### Functional Instrucions
@@ -700,23 +696,23 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 * Developers are allowed to select specific run of data to display
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006541-f6f9ae80-a044-11ea-82d9-03f1c99a310a.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880592-48fb6780-e3db-11ea-9d87-bd54716839aa.png" width="30%"/>
   </p>
 
 * Developers can find specific labels by searching tags or view the all labels
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006580-0842bb00-a045-11ea-9f7b-776f80ae8b90.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880759-9aa3f200-e3db-11ea-8b66-ecc890ffdaf9.png" width="30%"/>
   </p>
 
 * Support "2D" or "3D" forms to display the high-dimensional data distribution
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006687-2f998800-a045-11ea-888e-2b59e16a92b9.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880813-ad1e2b80-e3db-11ea-8540-5e78075dfb69.png" width="27%"/>
   </p>
 
 * PCA and T-SNE are supported
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006747-3fb16780-a045-11ea-83e0-a314b7765108.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/90880856-bf986500-e3db-11ea-8ffd-261b56d8e730.png" width="27%"/>
   </p>
