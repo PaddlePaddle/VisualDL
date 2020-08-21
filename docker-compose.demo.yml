@@ -7,5 +7,5 @@ services:
     ports:
       - "8999:8999"
     environment:
-      HOST: 0.0.0.0
+      PING_URL: /ping
       PORT: 8999

@@ -22,6 +22,9 @@ COPY --from=builder /home/visualdl/frontend/ ./
 ENV NODE_ENV production
 ENV PUBLIC_PATH /paddle/visualdl/demo
 ENV API_URL /paddle/visualdl/demo/api
+ENV PING_URL /ping
 ENV DEMO true
+ENV HOST 0.0.0.0
+ENV PORT 8999
 RUN ["yarn", "install", "--frozen-lockfile"]
 ENTRYPOINT ["yarn", "workspace" , "@visualdl/server", "start"]

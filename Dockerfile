@@ -136,4 +136,4 @@ RUN sed -i -e '/opencv-python/d' requirements.txt
 RUN ["pip", "install", "--disable-pip-version-check", "-r", "requirements.txt"]
 RUN ["pip", "install", "--disable-pip-version-check", "--no-deps", "--find-links=dist", "visualdl"]
 
-ENTRYPOINT ["visualdl", "--logdir", "/home/visualdl/log"]
+ENTRYPOINT ["visualdl", "--logdir", "/home/visualdl/log", "--host", "0.0.0.0"]
