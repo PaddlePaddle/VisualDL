@@ -14,7 +14,6 @@
 # =======================================================================
 from visualdl.proto.record_pb2 import Record
 import numpy as np
-import cv2
 from PIL import Image
 
 
@@ -66,10 +65,18 @@ def imgarray2bytes(np_array):
     Returns:
         Binary bytes of np_array.
     """
-    np_array = cv2.cvtColor(np_array, cv2.COLOR_BGR2RGB)
-    ret, buf = cv2.imencode(".png", np_array)
+    try:
+        import cv2
 
-    img_bin = Image.fromarray(np.uint8(buf)).tobytes("raw")
+        np_array = cv2.cvtColor(np_array, cv2.COLOR_BGR2RGB)
+        ret, buf = cv2.imencode(".png", np_array)
+        img_bin = Image.fromarray(np.uint8(buf)).tobytes("raw")
+    except ImportError:
+        import io
+        im = Image.fromarray(np_array)
+        with io.BytesIO() as fp:
+            im.save(fp, format='png')
+            img_bin = fp.getvalue()
     return img_bin
 
 
