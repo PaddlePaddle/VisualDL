@@ -123,6 +123,10 @@ class LogWriter(object):
             self._all_writers.update({self._logdir: self._file_writer})
         return self._file_writer
 
+    @property
+    def file_name(self):
+        return self._file_writer.get_filename()
+
     def add_meta(self, tag='meta_data_tag', display_name='', step=0, walltime=None):
         """Add a meta to vdl record file.
 

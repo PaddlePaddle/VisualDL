@@ -90,7 +90,7 @@ class RecordFileWriter(object):
                 fn = "vdlrecords.%010d.log%s" % (time.time(), filename_suffix)
                 self._file_name = bfile.join(logdir, fn)
                 print(
-                    '`vdlrecords` must in log file name, will use `{}` replace `{}`'.format(
+                    'Since the log filename should contain `vdlrecords`, the filename is invalid and `{}` will replace `{}`'.format(
                         fn, filename))
         else:
             self._file_name = bfile.join(logdir, "vdlrecords.%010d.log%s" % (
@@ -106,6 +106,9 @@ class RecordFileWriter(object):
 
     def get_logdir(self):
         return self._logdir
+
+    def get_filename(self):
+        return self._file_name
 
     def add_record(self, record):
         if not isinstance(record, record_pb2.Record):
