@@ -17,7 +17,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |             [Audio](#Audio--Audio-Play)             |      Audio Play      | Play the audio during the training process, making it easy to monitor the process of speech recognition and text-to-speech. |
 |              [Graph](#Graph--Network-Structure)              |       Network Structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
 |       [Histogram](#Histogram--Distribution-of-Tensors)       |    Distribution of Tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
-|                   [PR Curve](#PR-曲线组件)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
+|                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
 
@@ -537,7 +537,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080`to view the
     <img src="https://user-images.githubusercontent.com/48054808/90879868-26b51a00-e3da-11ea-8c1d-83fb019ec668.png" width="40%"/>
   </p>
 
-## PR Curve--PR 曲线组件
+## PR Curve
 
 ### Introduction
 
@@ -553,7 +553,7 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 
 The interface parameters are described as follows:
 
-| 参数           | 格式                  | 含义                                        |
+| parameter          | format                  | meaning                                        |
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
 | values         | numpy.ndarray or list | Data is in ndarray or list format            |
