@@ -555,11 +555,13 @@ The interface parameters are described as follows:
 
 | 参数           | 格式                  | 含义                                        |
 | -------------- | --------------------- | ------------------------------------------- |
-| tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
-| values         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
-| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
-| step           | int                   | 记录的步数                                  |
-| num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
+| tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
+| values         | numpy.ndarray or list | Data is in ndarray or list format            |
+| predictions    | numpy.ndarray or list | Prediction data is in ndarray or list format            |
+| step           | int                   | Record the training steps                                  |
+| num_thresholds | int                   | Set the number of thresholds, default as 10, maximum as 127      |
+| weights        | float                   | Set the weights of TN/FN/TP/FP to calculate precision and recall      |
+| walltime       | int                   | Record the time-stamp of the data, and the default is the current time-stamp      |
 
 ### Demo
 
