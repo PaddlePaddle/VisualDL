@@ -558,6 +558,8 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 | predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
 | step           | int                   | 记录的步数                                  |
 | num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
+| weights        | float                 | 用于设置TP/FP/TN/FN在计算precision和recall时的权重       |
+| walltime       | int                   | 记录数据的时间戳，默认为当前时间戳     |
 
 ### Demo
 
