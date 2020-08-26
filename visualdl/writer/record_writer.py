@@ -21,6 +21,9 @@ import struct
 import time
 import queue
 import threading
+import os
+
+QUEUE_TIMEOUT = os.getenv("VDL_QUEUE_TIMEOUT")
 
 
 class RecordWriter(object):
@@ -145,7 +148,10 @@ class _AsyncWriter(object):
         with self._lock:
             if self._closed:
                 raise IOError("Writer is closed.")
-            self._bytes_queue.put(bytestring)
+            try:
+                self._bytes_queue.put(bytestring, timeout=QUEUE_TIMEOUT)
+            except queue.Full:
+                print('This data was not written to the log due to timeout.')
 
     def flush(self):
         with self._lock:
