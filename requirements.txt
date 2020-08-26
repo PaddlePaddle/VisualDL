@@ -7,4 +7,3 @@ flask >= 1.1.1
 Flask-Babel >= 1.0.0
 six >= 1.14.0
 protobuf >= 3.11.0
-opencv-python
