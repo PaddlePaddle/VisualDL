@@ -24,6 +24,8 @@ import threading
 import os
 
 QUEUE_TIMEOUT = os.getenv("VDL_QUEUE_TIMEOUT")
+if isinstance(QUEUE_TIMEOUT, str):
+    QUEUE_TIMEOUT = int(QUEUE_TIMEOUT)
 
 
 class RecordWriter(object):
