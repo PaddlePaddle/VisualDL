@@ -312,8 +312,7 @@ class BosFileSystem(object):
                                           key=object_key,
                                           data=init_data,
                                           content_md5=content_md5(init_data),
-                                          content_length=len(init_data),
-                                          offset=0)
+                                          content_length=len(init_data))
         content_length = len(file_content)
 
         offset = self.get_meta(bucket_name, object_key).metadata.content_length
