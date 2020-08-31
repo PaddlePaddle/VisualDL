@@ -17,9 +17,9 @@ const route = pathMatch();
 
 export default function (nexti18next: NextI18Next) {
     const {config, i18n} = nexti18next;
-    const {allLanguages, ignoreRoutes, localeSubpaths} = config;
+    const {allLanguages, ignoreRoutes, localeSubpaths, publicPath} = config;
 
-    const isI18nRoute = (req: Request) => ignoreRoutes?.every(x => !req.url.startsWith(x));
+    const isI18nRoute = (req: Request) => ignoreRoutes?.every(x => !req.url.startsWith((publicPath || '') + x));
     const localeSubpathRoute = route(`/:subpath(${Object.values(localeSubpaths || {}).join('|')})(.*)`);
 
     const middleware = [];
@@ -48,13 +48,17 @@ export default function (nexti18next: NextI18Next) {
     */
     middleware.push((req: Request, res: Response, next: NextFunction) => {
         if (isI18nRoute(req) && req.i18n) {
+            let url = publicPath ? req.url.replace(publicPath, '') : req.url;
+            if (!url) {
+                url = '/';
+            }
             let currentLng = lngFromReq(req);
             const currentLngSubpath = subpathFromLng(config, currentLng);
             const currentLngRequiresSubpath = subpathIsRequired(config, currentLng || '');
-            const currentLngSubpathIsPresent = subpathIsPresent(req.url, currentLngSubpath);
+            const currentLngSubpathIsPresent = subpathIsPresent(url, currentLngSubpath);
 
             const lngFromCurrentSubpath = allLanguages.find((l: string) =>
-                subpathIsPresent(req.url, subpathFromLng(config, l))
+                subpathIsPresent(url, subpathFromLng(config, l))
             );
 
             if (lngFromCurrentSubpath !== undefined && lngFromCurrentSubpath !== currentLng) {
@@ -70,7 +74,7 @@ export default function (nexti18next: NextI18Next) {
                     If a language subpath is required and
                     not present, prepend correct subpath
                 */
-                return redirectWithoutCache(res, addSubpath(req.url, currentLngSubpath));
+                return redirectWithoutCache(res, (publicPath || '') + addSubpath(url, currentLngSubpath));
             }
 
             /*
@@ -79,11 +83,11 @@ export default function (nexti18next: NextI18Next) {
                 render the correct route
             */
             if (typeof lngFromCurrentSubpath === 'string') {
-                const params = localeSubpathRoute(req.url);
+                const params = localeSubpathRoute(url);
                 if (params !== false) {
                     const {subpath} = params;
                     req.query = {...req.query, subpath, lng: currentLng};
-                    req.url = removeSubpath(req.url, subpath);
+                    req.url = (publicPath || '') + removeSubpath(url, subpath);
                 }
             }
         }

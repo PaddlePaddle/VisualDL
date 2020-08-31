@@ -7,7 +7,7 @@ import {Config} from '../../types';
 
 const parseAs = (originalAs: string | undefined, href: any) => {
     const asType = typeof originalAs;
-    let as;
+    let as: string;
 
     if (asType === 'undefined') {
         as = formatUrl(href, {unicode: true});
@@ -37,7 +37,7 @@ const parseHref = (originalHref: any) => {
 };
 
 export const lngPathCorrector = (config: Config, currentRoute: any, currentLanguage: string) => {
-    const {allLanguages, localeSubpaths} = config;
+    const {allLanguages, localeSubpaths, publicPath} = config;
     const {as: originalAs, href: originalHref} = currentRoute;
 
     if (!allLanguages.includes(currentLanguage)) {
@@ -46,6 +46,11 @@ export const lngPathCorrector = (config: Config, currentRoute: any, currentLangu
 
     const href = parseHref(originalHref);
     let as = parseAs(originalAs, href);
+    if (publicPath) {
+        const url = parseUrl(as);
+        url.pathname = url.pathname.replace(publicPath, '');
+        as = formatUrl(url);
+    }
 
     /*
     url.format prefers the 'url.search' string over
@@ -58,8 +63,8 @@ export const lngPathCorrector = (config: Config, currentRoute: any, currentLangu
     Strip any/all subpaths from the `as` value
   */
     Object.values(localeSubpaths || {}).forEach((subpath: string) => {
-        if (subpathIsPresent(as as string, subpath)) {
-            as = removeSubpath(as as string, subpath);
+        if (subpathIsPresent(as, subpath)) {
+            as = removeSubpath(as, subpath);
         }
     });
 
