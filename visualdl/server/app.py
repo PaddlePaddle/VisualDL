@@ -32,6 +32,7 @@ from flask_babel import Babel
 
 import visualdl.server
 from visualdl.server.api import create_api_call
+from visualdl.server.serve import upload_to_dev
 from visualdl.server.args import (ParseArgs, parse_args)
 from visualdl.server.log import info
 from visualdl.server.template import Template
@@ -167,7 +168,11 @@ def run(logdir=None, **options):
 
 def main():
     args = parse_args()
-    _run(args)
+    if args.get('dest') == 'server':
+        if args.get('behavior') == 'upload':
+            upload_to_dev(args.get('logdir'))
+    else:
+        _run(args)
 
 
 if __name__ == '__main__':
