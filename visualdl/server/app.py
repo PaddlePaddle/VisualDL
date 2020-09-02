@@ -63,7 +63,7 @@ def create_app(args):
     babel = Babel(app)
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
 
-    update_util.PbUpdater().start()
+    update_util.PbUpdater(args.product).start()
 
     public_path = args.public_path
     api_path = public_path + '/api'
