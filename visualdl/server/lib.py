@@ -22,6 +22,10 @@ from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
 
 
+def s2ms(timestamp):
+    return timestamp * 1000 if timestamp < 2000000000 else timestamp
+
+
 def get_components(log_reader):
     components = log_reader.components(update=True)
     components.add('graph')
@@ -77,7 +81,7 @@ def get_scalar(log_reader, run, tag):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("scalar").get_items(
         run, decode_tag(tag))
-    results = [[item.timestamp, item.id, item.value] for item in records]
+    results = [[s2ms(item.timestamp), item.id, item.value] for item in records]
     return results
 
 
@@ -92,7 +96,7 @@ def get_image_tag_steps(log_reader, run, tag):
         run, decode_tag(tag))
     result = [{
         "step": item.id,
-        "wallTime": item.timestamp
+        "wallTime": s2ms(item.timestamp)
     } for item in records]
     return result
 
@@ -116,7 +120,7 @@ def get_audio_tag_steps(log_reader, run, tag):
         run, decode_tag(tag))
     result = [{
         "step": item.id,
-        "wallTime": item.timestamp
+        "wallTime": s2ms(item.timestamp)
     } for item in records]
     return result
 
@@ -152,7 +156,7 @@ def get_pr_curve(log_reader, run, tag):
         pr_curve = item.pr_curve
         length = len(pr_curve.precision)
         num_thresholds = [float(v) / length for v in range(1, length + 1)]
-        results.append([item.timestamp,
+        results.append([s2ms(item.timestamp),
                         item.id,
                         list(pr_curve.precision),
                         list(pr_curve.recall),
@@ -171,7 +175,7 @@ def get_pr_curve_step(log_reader, run, tag=None):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
         run, decode_tag(tag))
-    results = [[item.timestamp, item.id] for item in records]
+    results = [[s2ms(item.timestamp), item.id] for item in records]
     return results
 
 
@@ -213,7 +217,7 @@ def get_histogram(log_reader, run, tag):
         histogram_data = []
         for index in range(len(hist)):
             histogram_data.append([bin_edges[index], bin_edges[index+1], hist[index]])
-        results.append([item.timestamp, item.id, histogram_data])
+        results.append([s2ms(item.timestamp), item.id, histogram_data])
 
     return results
 
