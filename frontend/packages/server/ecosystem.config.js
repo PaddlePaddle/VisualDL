@@ -5,8 +5,8 @@ module.exports = {
     apps: [
         {
             name: 'visualdl',
-            script: 'index.js',
-            cwd: require('path').resolve(__dirname, './dist'),
+            script: 'dist/index.js',
+            cwd: __dirname,
             args: '',
             instances: 'max',
             autorestart: true,
