@@ -37,6 +37,7 @@ class DefaultArgs(object):
         self.api_only = args.get('api_only', False)
         self.open_browser = args.get('open_browser', False)
         self.model = args.get('model', '')
+        self.product = args.get('product', 'normal')
 
 
 def get_host(host=default_host, port=default_port):
@@ -94,6 +95,7 @@ class ParseArgs(object):
         self.api_only = args.api_only
         self.open_browser = args.open_browser
         self.model = args.model
+        self.product = args.product
 
 
 def parse_args():
@@ -172,6 +174,12 @@ def parse_args():
         action="version",
         version="%(prog)s {}".format(__version__)
     )
+    parser.add_argument(
+        "--product",
+        type=str,
+        action="store",
+        default="normal",
+        help="specify the product")
 
     args = parser.parse_args()
 

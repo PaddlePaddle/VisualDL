@@ -63,7 +63,7 @@ def create_app(args):
     babel = Babel(app)
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
 
-    update_util.PbUpdater().start()
+    update_util.PbUpdater(args.product).start()
 
     public_path = args.public_path
     api_path = public_path + '/api'
@@ -152,6 +152,7 @@ def wait_until_live(args: ParseArgs):
 
 def _run(args):
     args = ParseArgs(**args)
+    os.system('')
     info('\033[1;33mVisualDL %s\033[0m', __version__)
     app = create_app(args)
     threading.Thread(target=wait_until_live, args=(args,)).start()
