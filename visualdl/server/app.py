@@ -151,6 +151,7 @@ def wait_until_live(args: ParseArgs):
 
 def _run(args):
     args = ParseArgs(**args)
+    os.system('')
     info('\033[1;33mVisualDL %s\033[0m', __version__)
     app = create_app(args)
     threading.Thread(target=wait_until_live, args=(args,)).start()
