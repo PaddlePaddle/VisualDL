@@ -3,10 +3,11 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import i18n from 'i18next';
 import {initReactI18next} from 'react-i18next';
 
-const {SNOWPACK_PUBLIC_DEFAULT_LANGUAGE, SNOWPACK_PUBLIC_LANGUAGES} = import.meta.env;
+const {SNOWPACK_PUBLIC_DEFAULT_LANGUAGE, SNOWPACK_PUBLIC_LANGUAGES, SNOWPACK_PUBLIC_PATH} = import.meta.env;
 
 const defaultLanguage: string = SNOWPACK_PUBLIC_DEFAULT_LANGUAGE;
 const allLanguages: string[] = SNOWPACK_PUBLIC_LANGUAGES.split(',');
+const PUBLIC_PATH: string = SNOWPACK_PUBLIC_PATH;
 
 i18n.use(initReactI18next)
     .use(Fetch)
@@ -22,10 +23,12 @@ i18n.use(initReactI18next)
             escapeValue: false
         },
         backend: {
-            loadPath: '/locales/{{lng}}/{{ns}}.json'
+            loadPath: `${PUBLIC_PATH}/locales/{{lng}}/{{ns}}.json`
         },
         detection: {
-            order: ['cookie', 'localStorage', 'navigator'],
+            order: ['localStorage', 'cookie', 'navigator'],
+            lookupCookie: 'vdl_lng',
+            lookupLocalStorage: 'vdlLng',
             caches: ['localStorage']
         }
     });

@@ -1,5 +1,5 @@
 import React, {FunctionComponent, Suspense, useEffect, useMemo, useState} from 'react';
-import {Redirect, Route, BrowserRouter as Router, Switch} from 'react-router-dom';
+import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {headerHeight, position, size} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
@@ -47,6 +47,14 @@ const Progress: FunctionComponent = () => {
     return null;
 };
 
+const Telemetry: FunctionComponent = () => {
+    const location = useLocation();
+    useEffect(() => {
+        globalThis._hmt.push(['_trackPageview', PUBLIC_PATH + location.pathname]);
+    }, [location.pathname]);
+    return null;
+};
+
 const App: FunctionComponent = () => {
     const {i18n} = useTranslation();
 
@@ -79,6 +87,7 @@ const App: FunctionComponent = () => {
                 ) : (
                     <Main>
                         <Router basename={PUBLIC_PATH || '/'}>
+                            <Telemetry />
                             <Header>
                                 <Navbar />
                             </Header>
