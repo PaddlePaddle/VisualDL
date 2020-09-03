@@ -220,7 +220,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
                 <span>{run.label}</span>
             </Title>
             <StepSlider value={step} steps={steps} onChange={setStep} onChangeComplete={cacheSrc}>
-                {formatTime(wallTime * 1000, i18n.language)}
+                {formatTime(wallTime, i18n.language)}
             </StepSlider>
             <Container ref={container}>{Content}</Container>
             <Footer>

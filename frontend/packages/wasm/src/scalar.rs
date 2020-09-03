@@ -47,7 +47,7 @@ pub fn transform(datasets: &Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smooth
             let mut r: Smoothed = Smoothed(0, d.1, d.2, 0.0, 0.0);
             let next_val: f64 = d.2;
             // second to millisecond.
-            let millisecond: i64 = ((d.0 as f64) * 1000_f64).floor() as i64;
+            let millisecond: i64 = d.0.floor() as i64;
             r.0 = millisecond;
             if i == 0 {
                 start_value = millisecond;

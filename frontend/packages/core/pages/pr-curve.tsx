@@ -83,8 +83,8 @@ const PRCurve: NextI18NextPage = () => {
                 ...run,
                 index: indexes[run.label] ?? (stepInfo?.[i].length ?? 1) - 1,
                 steps: stepInfo?.[i].map(j => j[1]) ?? [],
-                wallTimes: stepInfo?.[i].map(j => Math.floor(j[0] * 1000)) ?? [],
-                relatives: stepInfo?.[i].map(j => (j[0] - stepInfo[i][0][0]) * 1000) ?? []
+                wallTimes: stepInfo?.[i].map(j => Math.floor(j[0])) ?? [],
+                relatives: stepInfo?.[i].map(j => j[0] - stepInfo[i][0][0]) ?? []
             })),
         [runsInTags, stepInfo, indexes]
     );

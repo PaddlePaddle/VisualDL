@@ -17,8 +17,7 @@ export const transform = ({datasets, smoothing}: {datasets: ScalarDataset[]; smo
         const bigSmoothing = new BigNumber(smoothing);
         data.forEach((d, i) => {
             const nextVal = new BigNumber(d[2]);
-            // second to millisecond.
-            const millisecond = (d[0] = Math.floor(d[0] * 1000));
+            const millisecond = (d[0] = Math.floor(d[0]));
             if (i === 0) {
                 startValue = millisecond;
             }
