@@ -9,7 +9,7 @@
     "smoothed": "Smoothed",
     "smoothing": "平滑度",
     "toggle-log-axis": "切换对数坐标轴",
-    "tooltip-sorting": "标签排序方法",
+    "tooltip-sorting": "详情数据排序",
     "tooltip-sorting-value": {
         "ascending": "升序",
         "default": "默认",
