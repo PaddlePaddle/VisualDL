@@ -1,4 +1,4 @@
-import type {Dataset, XAxis} from './types';
+import type {Dataset, TooltipData, XAxis} from './types';
 
 import type I18n from 'i18next';
 import type {Run} from '~/types';
@@ -64,7 +64,7 @@ export const chartData = ({data, runs, xAxis}: {data: Dataset[]; runs: Run[]; xA
         })
         .flat();
 
-export const tooltip = (data: Dataset, stepLength: number, i18n: typeof I18n) => {
+export const tooltip = (data: TooltipData[], stepLength: number, i18n: typeof I18n) => {
     return {
         columns: [
             {
@@ -73,6 +73,14 @@ export const tooltip = (data: Dataset, stepLength: number, i18n: typeof I18n) =>
             },
             {
                 label: i18n.t('scalar:value'),
+                width: '4.285714286em'
+            },
+            {
+                label: i18n.t('scalar:min'),
+                width: '4.285714286em'
+            },
+            {
+                label: i18n.t('scalar:max'),
                 width: '4.285714286em'
             },
             {
@@ -88,12 +96,14 @@ export const tooltip = (data: Dataset, stepLength: number, i18n: typeof I18n) =>
                 width: '4.285714286em'
             }
         ],
-        data: data.map(([time, step, value, smoothed, relative]) => [
-            valueFormatter(smoothed ?? Number.NaN),
-            valueFormatter(value ?? Number.NaN),
-            step,
-            formatTime(time, i18n.language),
-            Math.floor(relative * 60 * 60) + 's'
+        data: data.map(({min, max, item}) => [
+            valueFormatter(item[3] ?? Number.NaN),
+            valueFormatter(item[2] ?? Number.NaN),
+            valueFormatter(min ?? Number.NaN),
+            valueFormatter(max ?? Number.NaN),
+            item[1],
+            formatTime(item[0], i18n.language),
+            Math.floor(item[4] * 60 * 60) + 's'
         ])
     };
 };

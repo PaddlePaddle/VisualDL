@@ -46,10 +46,28 @@ export const singlePointRange = (value: number) => ({
     max: value ? Math.max(value * 2, 0) : 0.5
 });
 
-export const range = ({datasets, outlier}: {datasets: Dataset[]; outlier: boolean}) => {
+export const range = ({datasets}: {datasets: Dataset[]}) => {
+    return datasets?.map(dataset => {
+        if (dataset.length == 0) {
+            return {
+                min: Number.NaN,
+                max: Number.NaN
+            };
+        }
+        const values = dataset.map(v => v[2]);
+        return {
+            min: Math.min(...values) ?? Number.NaN,
+            max: Math.max(...values) ?? Number.NaN
+        };
+    });
+};
+
+export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: boolean}) => {
     const ranges = compact(
         datasets?.map(dataset => {
-            if (dataset.length == 0) return;
+            if (dataset.length == 0) {
+                return;
+            }
             const values = dataset.map(v => v[2]);
             if (!outlier) {
                 // Get the orgin data range.

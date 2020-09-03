@@ -4,6 +4,7 @@ import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from '
 import {
     SortingMethod,
     XAxis,
+    axisRange,
     chartData,
     options as chartOptions,
     nearestPoint,
@@ -15,7 +16,7 @@ import {
     xAxisMap
 } from '~/resource/scalar';
 import {rem, size} from '~/utils/style';
-import type {scalar_range, scalar_transform} from '@visualdl/wasm'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import type {scalar_axis_range, scalar_range, scalar_transform} from '@visualdl/wasm'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 import ChartToolbox from '~/components/ChartToolbox';
 import type {EChartOption} from 'echarts';
@@ -39,9 +40,14 @@ const smoothWasm = () =>
         scalar_transform(params.datasets, params.smoothing)
     );
 
+const axisRangeWasm = () =>
+    wasm<typeof scalar_axis_range>('scalar_axis_range').then((scalar_axis_range): typeof axisRange => params =>
+        scalar_axis_range(params.datasets, params.outlier)
+    );
+
 const rangeWasm = () =>
     wasm<typeof scalar_range>('scalar_range').then((scalar_range): typeof range => params =>
-        scalar_range(params.datasets, params.outlier)
+        scalar_range(params.datasets)
     );
 
 // const smoothWorker = () => new Worker('~/worker/scalar/smooth.worker.ts', {type: 'module'});
@@ -126,14 +132,17 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const smoothedDatasetsOrUndefined = useHeavyWork(smoothWasm, null, transform, transformParams);
     const smoothedDatasets = useMemo(() => smoothedDatasetsOrUndefined ?? [], [smoothedDatasetsOrUndefined]);
 
-    const rangeParams = useMemo(
+    const axisRangeParams = useMemo(
         () => ({
             datasets: smoothedDatasets,
             outlier: !!outlier
         }),
         [smoothedDatasets, outlier]
     );
-    const yRange = useHeavyWork(rangeWasm, null, range, rangeParams);
+    const yRange = useHeavyWork(axisRangeWasm, null, axisRange, axisRangeParams);
+
+    const datasetRangesParams = useMemo(() => ({datasets: smoothedDatasets}), [smoothedDatasets]);
+    const datasetRanges = useHeavyWork(rangeWasm, null, range, datasetRangesParams);
 
     const ranges: Record<'x' | 'y', Range | undefined> = useMemo(() => {
         let x: Range | undefined = undefined;
@@ -167,19 +176,18 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const series: Dataset[number] = Array.isArray(params) ? params[0].data : params.data;
-            const points = nearestPoint(smoothedDatasets ?? [], runs, series[1]);
+            const points = nearestPoint(smoothedDatasets ?? [], runs, series[1]).map((point, index) => ({
+                ...point,
+                ...datasetRanges?.[index]
+            }));
             const sort = sortingMethodMap[sortingMethod];
             const sorted = sort(points, series);
-            const {columns, data} = tooltip(
-                sorted.map(i => i.item),
-                maxStepLength,
-                i18n
-            );
+            const {columns, data} = tooltip(sorted, maxStepLength, i18n);
             return renderToStaticMarkup(
                 <TooltipTable run={t('common:runs')} runs={sorted.map(i => i.run)} columns={columns} data={data} />
             );
         },
-        [smoothedDatasets, runs, sortingMethod, maxStepLength, t, i18n]
+        [smoothedDatasets, datasetRanges, runs, sortingMethod, maxStepLength, t, i18n]
     );
 
     const options = useMemo(

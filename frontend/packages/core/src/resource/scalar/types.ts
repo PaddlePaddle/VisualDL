@@ -25,4 +25,6 @@ export type Range = {
 export type TooltipData = {
     run: Run;
     item: Dataset[number];
+    min?: number;
+    max?: number;
 };
