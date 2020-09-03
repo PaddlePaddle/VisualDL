@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import {useTranslation} from 'react-i18next';
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH ?? '';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 const toolboxHeight = rem(40);
 

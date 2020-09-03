@@ -1,7 +1,7 @@
 import queryString from 'query-string';
 
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
-const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL || '/api';
+const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL;
 
 const API_TOKEN_HEADER = 'X-VisualDL-Instance-ID';
 

@@ -1,14 +1,27 @@
 import '~/utils/i18n';
 
 import App from './App';
+import BodyLoading from '~/components/BodyLoading';
 import {GlobalStyle} from '~/utils/style';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+const TELEMETRY_ID: string = import.meta.env.SNOWPACK_PUBLIC_TELEMETRY_ID;
+
+globalThis._hmt = globalThis._hmt || [];
+if (import.meta.env.MODE === 'production' && TELEMETRY_ID) {
+    (function () {
+        const hm = document.createElement('script');
+        hm.src = `https://hm.baidu.com/hm.js?${TELEMETRY_ID}`;
+        const s = document.getElementsByTagName('script')[0];
+        s.parentNode?.insertBefore(hm, s);
+    })();
+}
+
 ReactDOM.render(
     <React.StrictMode>
         <GlobalStyle />
-        <React.Suspense fallback="loading">
+        <React.Suspense fallback={<BodyLoading />}>
             <App />
         </React.Suspense>
     </React.StrictMode>,

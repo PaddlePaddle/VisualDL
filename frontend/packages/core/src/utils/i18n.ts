@@ -5,8 +5,8 @@ import {initReactI18next} from 'react-i18next';
 
 const {SNOWPACK_PUBLIC_DEFAULT_LANGUAGE, SNOWPACK_PUBLIC_LANGUAGES} = import.meta.env;
 
-const defaultLanguage: string = SNOWPACK_PUBLIC_DEFAULT_LANGUAGE || 'en';
-const allLanguages: string[] = SNOWPACK_PUBLIC_LANGUAGES ? SNOWPACK_PUBLIC_LANGUAGES.split(',') : ['en', 'zh'];
+const defaultLanguage: string = SNOWPACK_PUBLIC_DEFAULT_LANGUAGE;
+const allLanguages: string[] = SNOWPACK_PUBLIC_LANGUAGES.split(',');
 
 i18n.use(initReactI18next)
     .use(Fetch)

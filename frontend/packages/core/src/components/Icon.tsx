@@ -2,7 +2,7 @@ import React, {FunctionComponent, Suspense, useMemo} from 'react';
 
 import type {WithStyled} from '~/utils/style';
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH ?? '';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 export type Icons = string;
 

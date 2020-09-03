@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+require('./builder/environment');
 const mock = require('./builder/mock');
 const icons = require('./builder/icons');
 const netron = require('./builder/netron');

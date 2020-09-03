@@ -27,7 +27,7 @@ import styled from 'styled-components';
 import useNavItems from '~/hooks/useNavItems';
 import {useTranslation} from 'react-i18next';
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH ?? '';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 
 interface NavbarItemProps extends Route {

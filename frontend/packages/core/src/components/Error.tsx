@@ -4,7 +4,7 @@ import {WithStyled, backgroundColor, em, link, rem, size, textColor, textLightCo
 
 import styled from 'styled-components';
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH ?? '';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 const Wrapper = styled.div`
     display: flex;

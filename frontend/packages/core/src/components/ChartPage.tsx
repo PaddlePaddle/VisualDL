@@ -11,7 +11,7 @@ import groupBy from 'lodash/groupBy';
 import styled from 'styled-components';
 import useSearchValue from '~/hooks/useSearchValue';
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH ?? '';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 const StyledPagination = styled(Pagination)`
     margin-top: ${rem(20)};
