@@ -23,11 +23,9 @@ type ImageChartProps = {
 
 const ImageChart: FunctionComponent<ImageChartProps> = ({brightness, contrast, fit, ...props}) => {
     const content = useCallback(
-        (ref: React.RefObject<ImageRef>, src: string) => {
-            return (
-                <StyledImage src={src} cache={cache} ref={ref} brightness={brightness} contrast={contrast} fit={fit} />
-            );
-        },
+        (ref: React.RefObject<ImageRef>, src: string) => (
+            <StyledImage src={src} cache={cache} ref={ref} brightness={brightness} contrast={contrast} fit={fit} />
+        ),
         [brightness, contrast, fit]
     );
     return <SampleChart type="image" cache={cache} content={content} {...props} />;
