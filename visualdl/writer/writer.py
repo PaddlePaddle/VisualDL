@@ -138,7 +138,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             meta_data(tag=tag, display_name=display_name, step=step,
                       walltime=walltime))
@@ -159,7 +159,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
 
@@ -182,7 +182,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             image(tag=tag, image_array=img, step=step, walltime=walltime))
 
@@ -207,7 +207,7 @@ class LogWriter(object):
             labels = ["label_1", "label_2", "label_3", "label_4", "label_5"]
 
             writer.add_embedding(labels=labels, vectors=hot_vectors,
-                                 walltime=round(time.time()))
+                                 walltime=round(time.time() * 1000))
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
@@ -216,7 +216,7 @@ class LogWriter(object):
         if isinstance(labels, np.ndarray):
             labels = labels.tolist()
         step = 0
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             embedding(
                 tag=tag,
@@ -260,7 +260,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         if isinstance(audio_array, list):
             audio_array = np.array(audio_array)
         self._get_file_writer().add_record(
@@ -297,7 +297,7 @@ class LogWriter(object):
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
         hist, bin_edges = np.histogram(values, bins=buckets)
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             histogram(
                 tag=tag,
@@ -338,7 +338,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             pr_curve(
                 tag=tag,
