@@ -1,8 +1,9 @@
 import Aside, {AsideSection} from '~/components/Aside';
 import {BlobResponse, blobFetcher} from '~/utils/fetch';
-import type {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
+import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import GraphComponent, {GraphRef} from '~/components/GraphPage/Graph';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import Select, {SelectProps} from '~/components/Select';
 import {primaryColor, rem, size} from '~/utils/style';
 
 import Button from '~/components/Button';
@@ -23,6 +24,10 @@ import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
 const FullWidthButton = styled(Button)`
+    width: 100%;
+`;
+
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<NonNullable<OpenedResult['selected']>>>>(Select)`
     width: 100%;
 `;
 
@@ -87,6 +92,17 @@ const Graph: FunctionComponent = () => {
             setFiles([new File([data.data], data.filename || 'unknwon_model')]);
         }
     }, [data]);
+
+    const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
+    const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
+    const setOpenedModel = useCallback((data: OpenedResult) => {
+        setModelGraphs(data.graphs);
+        setSelectedGraph(data.selected || '');
+    }, []);
+    const changeGraph = useCallback((name: string) => {
+        setSelectedGraph(name);
+        graph.current?.changeGraph(name);
+    }, []);
 
     const [search, setSearch] = useState('');
     const [searching, setSearching] = useState(false);
@@ -167,6 +183,13 @@ const Graph: FunctionComponent = () => {
                                 {t('graph:model-properties')}
                             </FullWidthButton>
                         </AsideSection>
+                        {modelGraphs.length > 1 && (
+                            <AsideSection>
+                                <Field label={t('graph:subgraph')}>
+                                    <FullWidthSelect list={modelGraphs} value={selectedGraph} onChange={changeGraph} />
+                                </Field>
+                            </AsideSection>
+                        )}
                         <AsideSection>
                             <Field label={t('graph:display-data')}>
                                 <div>
@@ -216,6 +239,9 @@ const Graph: FunctionComponent = () => {
         search,
         searching,
         searchResult,
+        modelGraphs,
+        selectedGraph,
+        changeGraph,
         onSearch,
         onSelect,
         showAttributes,
@@ -249,6 +275,7 @@ const Graph: FunctionComponent = () => {
                         showNames={showNames}
                         horizontal={horizontal}
                         onRendered={() => setRendered(true)}
+                        onOpened={setOpenedModel}
                         onSearch={data => setSearchResult(data)}
                         onShowModelProperties={data => setModelData(data)}
                         onShowNodeProperties={data => {
