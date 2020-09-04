@@ -108,7 +108,6 @@ VisualDL 支持最新版本的 [Google Chrome](https://www.google.com/chrome/) �
 
 本项目基于以下项目：
 
-- [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)

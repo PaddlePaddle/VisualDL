@@ -33,6 +33,11 @@ export type SearchItem = {
     id: string;
 };
 
+export type OpenedResult = {
+    graphs: string[];
+    selected: string | null;
+};
+
 export type SearchResult = {
     text: string;
     result: SearchItem[];

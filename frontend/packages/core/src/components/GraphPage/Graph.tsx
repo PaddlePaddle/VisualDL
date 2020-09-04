@@ -1,4 +1,4 @@
-import type {Documentation, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
+import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {backgroundColor, borderColor, contentHeight, position, primaryColor, rem, size} from '~/utils/style';
 
@@ -77,10 +77,11 @@ const Loading = styled.div`
 
 export type GraphRef = {
     export(type: 'svg' | 'png'): void;
+    changeGraph(name: string): void;
     search(value: string): void;
     select(item: SearchItem): void;
     showModelProperties(): void;
-    showNodeDocumentation: (data: Properties) => void;
+    showNodeDocumentation(data: Properties): void;
 };
 
 type GraphProps = {
@@ -91,6 +92,7 @@ type GraphProps = {
     showNames: boolean;
     horizontal: boolean;
     onRendered?: () => unknown;
+    onOpened?: (data: OpenedResult) => unknown;
     onSearch?: (data: SearchResult) => unknown;
     onShowModelProperties?: (data: Properties) => unknown;
     onShowNodeProperties?: (data: Properties) => unknown;
@@ -107,6 +109,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             showNames,
             horizontal,
             onRendered,
+            onOpened,
             onSearch,
             onShowModelProperties,
             onShowNodeProperties,
@@ -139,6 +142,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                     return;
                             }
                             return;
+                        case 'opened':
+                            return onOpened?.(data);
                         case 'search':
                             return onSearch?.(data);
                         case 'cancel':
@@ -156,7 +161,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     }
                 }
             },
-            [onRendered, onSearch, onShowModelProperties, onShowNodeProperties, onShowNodeDocumentation]
+            [onRendered, onOpened, onSearch, onShowModelProperties, onShowNodeProperties, onShowNodeDocumentation]
         );
         const dispatch = useCallback((type: string, data?: unknown) => {
             iframe.current?.contentWindow?.postMessage(
@@ -196,6 +201,9 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         useImperativeHandle(ref, () => ({
             export(type) {
                 dispatch('export', type);
+            },
+            changeGraph(name) {
+                dispatch('change-graph', name);
             },
             search(value) {
                 dispatch('search', value);

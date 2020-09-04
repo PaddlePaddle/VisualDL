@@ -108,7 +108,6 @@ VisualDL supports the latest version of [Google Chrome](https://www.google.com/c
 
 This project is based on following projects:
 
-- [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)

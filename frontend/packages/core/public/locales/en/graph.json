@@ -37,6 +37,7 @@
         "producer": "Producer",
         "runtime": "Runtime",
         "source": "Source",
+        "subgraph": "Subgraph",
         "tags": "Tags",
         "type": "Type",
         "version": "Version"
@@ -45,6 +46,7 @@
     "show-attributes": "Show Attributes",
     "show-initializers": "Show Initializers",
     "show-node-names": "Show Node Names",
+    "subgraph": "Select Subgraph",
     "supported-model": "Supported models: ",
     "supported-model-list": "PaddlePaddle, ONNX, Keras, Core ML, Caffe, Caffe2, Darknet, MXNet, ncnn, TensorFlow Lite",
     "upload-model": "Upload Model",

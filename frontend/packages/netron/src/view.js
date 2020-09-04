@@ -190,10 +190,18 @@ view.View = class {
             return this._modelFactoryService.open(context).then(model => {
                 return this._timeout(20).then(() => {
                     const graph = model.graphs.length > 0 ? model.graphs[0] : null;
+                    this._host.message('opened', {
+                        graphs: model.graphs.map(g => g.name || ''),
+                        selected: graph && (graph.name || '')
+                    });
                     return this._updateGraph(model, graph);
                 });
             });
         });
+    }
+
+    changeGraph(name) {
+        this._updateActiveGraph(name);
     }
 
     _updateActiveGraph(name) {

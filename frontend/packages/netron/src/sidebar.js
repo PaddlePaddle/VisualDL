@@ -531,18 +531,17 @@ sidebar.ModelSidebar = class {
             }
         }
 
-        // TODO: graph select
-        // if (this._model._graphs.length > 1) {
-        //     let graphSelector = new sidebar.SelectView(
-        //         this._host,
-        //         this._model.graphs.map(g => g.name),
-        //         graph.name
-        //     );
-        //     graphSelector.on('change', (sender, data) => {
-        //         this._raise('update-active-graph', data);
-        //     });
-        //     this._addProperty('subgraph', graphSelector);
-        // }
+        if (this._model._graphs.length > 1) {
+            // let graphSelector = new sidebar.SelectView(
+            //     this._host,
+            //     this._model.graphs.map(g => g.name),
+            //     graph.name
+            // );
+            // graphSelector.on('change', (sender, data) => {
+            //     this._raise('update-active-graph', data);
+            // });
+            this._addProperty('subgraph', new sidebar.ValueTextView(this._host, graph.name));
+        }
 
         if (graph) {
             if (graph.version) {
