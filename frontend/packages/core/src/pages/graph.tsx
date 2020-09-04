@@ -20,6 +20,7 @@ import Search from '~/components/GraphPage/Search';
 import Title from '~/components/Title';
 import Uploader from '~/components/GraphPage/Uploader';
 import styled from 'styled-components';
+import useGlobalState from '~/hooks/useGlobalState';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
@@ -70,23 +71,30 @@ const Loading = styled.div`
 const Graph: FunctionComponent = () => {
     const {t} = useTranslation(['graph', 'common']);
 
-    const {data, loading} = useRequest<BlobResponse>('/graph/graph', blobFetcher);
+    const [globalState, globalDispatch] = useGlobalState();
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | File[] | null>(null);
+    const [files, setFiles] = useState<FileList | File[] | null>(globalState.model);
     const onClickFile = useCallback(() => {
         if (file.current) {
             file.current.value = '';
             file.current.click();
         }
     }, []);
-    const onChangeFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const target = e.target;
-        if (target && target.files && target.files.length) {
-            setFiles(target.files);
-        }
-    }, []);
+    const onChangeFile = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const target = e.target;
+            if (target && target.files && target.files.length) {
+                globalDispatch({model: target.files});
+                setFiles(target.files);
+            }
+        },
+        [globalDispatch]
+    );
+
+    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph', blobFetcher);
+
     useEffect(() => {
         if (data?.data.size) {
             setFiles([new File([data.data], data.filename || 'unknwon_model')]);

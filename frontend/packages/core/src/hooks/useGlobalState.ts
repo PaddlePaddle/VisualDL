@@ -4,10 +4,12 @@ import type {Dispatch} from 'react';
 
 export interface GlobalState {
     runs: string[];
+    model: FileList | File[] | null;
 }
 
 export const globalState: GlobalState = {
-    runs: []
+    runs: [],
+    model: null
 };
 
 export const GlobalStateContext = createContext<GlobalState>(globalState);
