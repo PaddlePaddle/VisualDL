@@ -6,6 +6,7 @@ import groupBy from 'lodash/groupBy';
 import intersectionBy from 'lodash/intersectionBy';
 import queryString from 'query-string';
 import uniq from 'lodash/uniq';
+import useGlobalState from '~/hooks/useGlobalState';
 import {useLocation} from 'react-router-dom';
 import {useRunningRequest} from '~/hooks/useRequest';
 
@@ -13,6 +14,7 @@ type Tags = Record<string, string[]>;
 
 type State = {
     initRuns: string[];
+    globalRuns: string[];
     runs: Run[];
     selectedRuns: Run[];
     initTags: Tags;
@@ -86,12 +88,16 @@ const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case ActionType.initRuns:
             const initRuns = action.payload;
+            const initRunsGlobalRuns = state.globalRuns.length ? state.globalRuns : initRuns;
             const initRunsRuns = attachRunColor(initRuns);
-            const initRunsSelectedRuns = state.selectedRuns.filter(run => initRuns.includes(run.label));
+            const initRunsSelectedRuns = state.globalRuns.length
+                ? initRunsRuns.filter(run => initRunsGlobalRuns.includes(run.label))
+                : initRunsRuns;
             const initRunsTags = groupTags(initRunsSelectedRuns, state.initTags);
             return {
                 ...state,
                 initRuns,
+                globalRuns: initRunsGlobalRuns,
                 runs: initRunsRuns,
                 selectedRuns: initRunsSelectedRuns,
                 tags: initRunsTags,
@@ -111,6 +117,7 @@ const reducer = (state: State, action: Action): State => {
             const setSelectedRunsTags = groupTags(action.payload, state.initTags);
             return {
                 ...state,
+                globalRuns: action.payload.map(run => run.label),
                 selectedRuns: action.payload,
                 tags: setSelectedRunsTags,
                 selectedTags: setSelectedRunsTags
@@ -146,6 +153,8 @@ const useTagFilter = (type: string, running: boolean) => {
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
 
+    const [globalState, globalDispatch] = useGlobalState();
+
     const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
     const tags: Tags = useMemo(
         () =>
@@ -164,6 +173,7 @@ const useTagFilter = (type: string, running: boolean) => {
 
     const [state, dispatch] = useReducer(reducer, {
         initRuns: [],
+        globalRuns: globalState.runs,
         runs: [],
         selectedRuns: [],
         initTags: {},
@@ -176,17 +186,22 @@ const useTagFilter = (type: string, running: boolean) => {
         [query]
     );
 
-    const runsFromQuery = useMemo(
-        () => (queryRuns.length ? state.runs.filter(run => queryRuns.includes(run.label)) : state.runs),
-        [state.runs, queryRuns]
-    );
-
     const onChangeRuns = useCallback((runs: Run[]) => dispatch({type: ActionType.setSelectedRuns, payload: runs}), []);
     const onChangeTags = useCallback((tags: Tag[]) => dispatch({type: ActionType.setSelectedTags, payload: tags}), []);
 
     useEffect(() => dispatch({type: ActionType.initRuns, payload: runs || []}), [runs]);
-    useEffect(() => dispatch({type: ActionType.setSelectedRuns, payload: runsFromQuery}), [runsFromQuery]);
     useEffect(() => dispatch({type: ActionType.initTags, payload: tags || {}}), [tags]);
+
+    useEffect(() => {
+        if (queryRuns.length) {
+            const runs = state.runs.filter(run => queryRuns.includes(run.label));
+            dispatch({
+                type: ActionType.setSelectedRuns,
+                payload: runs.length ? runs : state.runs
+            });
+        }
+    }, [queryRuns, state.runs]);
+    useEffect(() => globalDispatch({runs: state.globalRuns}), [state.globalRuns, globalDispatch]);
 
     const tagsWithSingleRun = useMemo(
         () =>
