@@ -5,7 +5,7 @@ set -e
 WORKING_PATH=$(pwd)
 SERVER_DIR="packages/server"
 SERVER_DIR_PATH="$WORKING_PATH/$SERVER_DIR"
-SERVERLESS_DIR="packages/serverless/dist"
+SERVERLESS_DIR="packages/core/dist"
 SERVERLESS_DIR_PATH="$WORKING_PATH/$SERVERLESS_DIR"
 OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
@@ -19,7 +19,7 @@ yarn clean
 
 # build
 if [ "$SCOPE" = "serverless" ]; then
-    npx lerna run --scope "@visualdl/serverless" --include-dependencies build
+    npx lerna run --scope "@visualdl/core" --include-dependencies build
 elif [ "$SCOPE" = "server" ]; then
     npx lerna run --scope "@visualdl/server" --include-dependencies build
 elif [ "$SCOPE" = "cli" ]; then
@@ -34,7 +34,7 @@ mkdir -p "$OUTPUT_PATH"
 
 # package server files
 if [ -d "$SERVER_DIR_PATH" ]; then
-    tar zcf "${OUTPUT_PATH}/server.tar.gz" --exclude="node_modules" --exclude="*.log" --exclude=".gitignore" --exclude=".DS_Store" --dereference -C "$SERVER_DIR_PATH" .
+    tar zcf "${OUTPUT_PATH}/server.tar.gz" --exclude="node_modules" --exclude=".gitignore" --exclude=".DS_Store" --dereference -C "$SERVER_DIR_PATH" .
 fi
 
 # package serverless files

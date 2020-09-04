@@ -8,7 +8,7 @@ RUN ["pip", "install", "--disable-pip-version-check", "-r", "requirements.txt"]
 RUN ["python", "setup.py", "bdist_wheel"]
 RUN ["pip", "install", "--disable-pip-version-check", "--find-links=dist", "visualdl"]
 
-WORKDIR frontend
+WORKDIR /home/visualdl/frontend
 ENV SCOPE server
 ENV PUBLIC_PATH /paddle/visualdl/demo
 ENV API_URL /paddle/visualdl/demo/api

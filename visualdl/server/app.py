@@ -63,7 +63,8 @@ def create_app(args):
     babel = Babel(app)
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
 
-    update_util.PbUpdater(args.product).start()
+    if args.telemetry:
+        update_util.PbUpdater(args.product).start()
 
     public_path = args.public_path
     api_path = public_path + '/api'
@@ -80,7 +81,8 @@ def create_app(args):
         template = Template(
             os.path.join(server_path, template_file_path),
             PUBLIC_PATH=public_path.lstrip('/'),
-            API_TOKEN_KEY=''
+            API_TOKEN_KEY='',
+            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else ''
         )
 
         @app.route('/')
@@ -96,15 +98,15 @@ def create_app(args):
 
         @app.route(public_path + '/')
         def index():
-            lang = get_locale()
-            if lang == default_language:
-                return redirect(public_path + '/index', code=302)
-            lang = default_language if lang is None else lang
-            return redirect(public_path + '/' + lang + '/index', code=302)
+            return redirect(public_path + '/index', code=302)
 
         @app.route(public_path + '/<path:filename>')
         def serve_static(filename):
-            return template.render(filename if re.search(r'\..+$', filename) else filename + '.html')
+            is_not_page_request = re.search(r'\..+$', filename)
+            response = template.render(filename if is_not_page_request else 'index.html')
+            if not is_not_page_request:
+                response.set_cookie('vdl_lng', get_locale(), path='/', samesite='Strict', secure=False, httponly=False)
+            return response
 
     @app.route(api_path + '/<path:method>')
     def serve_api(method):
@@ -116,17 +118,6 @@ def create_app(args):
         return '', 204
 
     return app
-
-
-def _open_browser(app, index_url):
-    while True:
-        # noinspection PyBroadException
-        try:
-            requests.get(index_url)
-            break
-        except Exception:
-            time.sleep(0.5)
-    webbrowser.open(index_url)
 
 
 def wait_until_live(args: ParseArgs):

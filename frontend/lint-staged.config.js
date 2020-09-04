@@ -1,6 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 
+const getPackages = filenames => [
+    ...new Set(filenames.map(filename => path.relative(path.join(__dirname, 'packages'), filename).split(path.sep)[0]))
+];
+
 module.exports = {
     // lint all files when global package.json or eslint config changes.
     './(package.json|.eslintrc.js)': () =>
@@ -8,11 +12,7 @@ module.exports = {
 
     // check types when ts file or package.json changes.
     './(packages/*/package.json|packages/*/**/*.ts?(x))': filenames =>
-        [
-            ...new Set(
-                filenames.map(filename => path.relative(path.join(__dirname, 'packages'), filename).split(path.sep)[0])
-            )
-        ]
+        getPackages(filenames)
             .map(p => path.join(__dirname, 'packages', p, 'tsconfig.json'))
             .filter(p => {
                 try {
@@ -26,6 +26,15 @@ module.exports = {
     // lint changed files
     '**/*.(j|t)s?(x)': filenames => [
         `eslint ${filenames.join(' ')}`,
-        `yarn test --silent --bail --findRelatedTests ${filenames.join(' ')}`
+        ...getPackages(filenames).map(p => {
+            const filename = path.join(__dirname, 'packages', p, 'package.json');
+            const packageFile = JSON.parse(fs.readFileSync(filename, 'utf-8'));
+            if (packageFile.scripts.test === 'jest') {
+                return `yarn workspace @visualdl/${p} run test --silent --bail --findRelatedTests ${filenames.join(
+                    ' '
+                )}`;
+            }
+            return `yarn workspace @visualdl/${p} run test`;
+        })
     ]
 };

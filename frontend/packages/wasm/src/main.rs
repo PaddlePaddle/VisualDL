@@ -19,10 +19,18 @@ pub fn scalar_transform(js_datasets: &JsValue, smoothing: f64) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn scalar_range(js_datasets: &JsValue, outlier: bool) -> JsValue {
+pub fn scalar_range(js_datasets: &JsValue) -> JsValue {
     utils::set_panic_hook();
     let datasets: Vec<Vec<scalar::Smoothed>> = js_datasets.into_serde().unwrap();
-    let result = scalar::range(&datasets, outlier);
+    let result = scalar::range(&datasets);
+    JsValue::from_serde(&result).unwrap()
+}
+
+#[wasm_bindgen]
+pub fn scalar_axis_range(js_datasets: &JsValue, outlier: bool) -> JsValue {
+    utils::set_panic_hook();
+    let datasets: Vec<Vec<scalar::Smoothed>> = js_datasets.into_serde().unwrap();
+    let result = scalar::axis_range(&datasets, outlier);
     JsValue::from_serde(&result).unwrap()
 }
 

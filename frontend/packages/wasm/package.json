@@ -28,25 +28,21 @@
         "dist/index.js",
         "dist/index.d.ts"
     ],
+    "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "wasm-pack build --release --out-dir dist --out-name index .",
-        "test": "echo \"Error: no test specified\" && exit 0; #"
+        "build": "wasm-pack build --release --out-dir dist --out-name index --target web .",
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {
         "wasm-pack": "0.9.1"
     },
     "engines": {
-        "node": ">=10",
+        "node": ">=12",
         "npm": ">=6"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }

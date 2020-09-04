@@ -24,7 +24,7 @@
     },
     "scripts": {
         "build": "rimraf dist && webpack",
-        "test": "echo \"Error: no test specified\" && exit 0; #"
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "files": [
         "dist"
@@ -41,27 +41,23 @@
     },
     "devDependencies": {
         "autoprefixer": "9.8.6",
-        "copy-webpack-plugin": "6.0.3",
-        "css-loader": "4.2.0",
-        "html-webpack-plugin": "4.3.0",
-        "mini-css-extract-plugin": "0.9.0",
+        "copy-webpack-plugin": "6.1.0",
+        "css-loader": "4.2.2",
+        "html-webpack-plugin": "4.4.1",
+        "mini-css-extract-plugin": "0.11.0",
         "postcss-loader": "3.0.0",
         "rimraf": "3.0.2",
         "sass": "1.26.10",
-        "sass-loader": "9.0.3",
-        "terser": "5.0.0",
-        "webpack": "4.43.0"
+        "sass-loader": "10.0.1",
+        "terser": "5.2.1",
+        "webpack": "4.44.1",
+        "webpack-cli": "3.3.12"
     },
     "engines": {
-        "node": ">=10",
+        "node": ">=12",
         "npm": ">=6"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }
