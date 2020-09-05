@@ -86,6 +86,7 @@ type ScalarChartProps = {
     xAxis: XAxis;
     sortingMethod: SortingMethod;
     outlier?: boolean;
+    smoothedOnly?: boolean;
     running?: boolean;
 };
 
@@ -97,6 +98,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     xAxis,
     sortingMethod,
     outlier,
+    smoothedOnly,
     running
 }) => {
     const {t, i18n} = useTranslation(['scalar', 'common']);
@@ -163,9 +165,10 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             chartData({
                 data: smoothedDatasets.slice(0, runs.length),
                 runs,
-                xAxis
+                xAxis,
+                smoothedOnly
             }),
-        [smoothedDatasets, runs, xAxis]
+        [smoothedDatasets, runs, xAxis, smoothedOnly]
     );
 
     const maxStepLength = useMemo(
