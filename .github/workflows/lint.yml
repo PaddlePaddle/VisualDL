@@ -21,7 +21,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           eslint: true
-          prettier: true
           eslint_dir: frontend/
           eslint_extensions: js,ts,jsx,tsx
           eslint_args: "--max-warnings 0 --ignore-path .gitignore"
