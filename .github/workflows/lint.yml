@@ -1,0 +1,45 @@
+name: Lint
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+jobs:
+  lint_fe:
+    name: Lint FE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: |
+          cd frontend
+          ./scripts/install.sh
+          yarn
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          eslint: true
+          prettier: true
+          eslint_dir: frontend/
+          eslint_extensions: js,ts,jsx,tsx
+          eslint_args: "--max-warnings 0 --ignore-path .gitignore"
+  lint_be:
+    name: Lint BE
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install requirements
+        run: |
+          echo "TODO"
+      - name: Lint
+        run: |
+          echo: "TODO"
