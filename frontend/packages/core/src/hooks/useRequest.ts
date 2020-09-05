@@ -21,7 +21,7 @@ function useRequest<D = unknown, E = unknown>(
     config?: ConfigInterface<D, E, fetcherFn<D>>
 ): Response<D, E> {
     const {data, error, ...other} = useSWR<D, E>(key, fetcher, config);
-    const loading = useMemo(() => !data && !error, [data, error]);
+    const loading = useMemo(() => !!key && !data && !error, [key, data, error]);
     return {data, error, loading, ...other};
 }
 
