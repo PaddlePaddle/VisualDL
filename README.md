@@ -7,7 +7,7 @@
 
 
 <p align="center">
-<a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/paddlepaddle/visualdl/develop?style=flat-square" alt="Build Status" /></a>
+<a href="https://github.com/PaddlePaddle/VisualDL/actions"><img src="https://img.shields.io/github/workflow/status/PaddlePaddle/VisualDL/build?style=flat-square" alt="Build Status" /></a>
 <a href="https://pypi.org/project/visualdl/"><img src="https://img.shields.io/pypi/v/visualdl?style=flat-square" alt="PyPI" /></a>
 <a href="https://pypi.org/project/visualdl/#files"><img src="https://img.shields.io/pypi/dm/visualdl?style=flat-square" alt="Downloads" /></a>
 <a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/paddlepaddle/visualdl?style=flat-square" alt="License" /></a>
