@@ -1,7 +1,5 @@
 name: Lint
-on:
-  pull_request:
-    types: [assigned, opened, synchronize, reopened]
+on: pull_request
 jobs:
   lint_fe:
     name: Lint FE
