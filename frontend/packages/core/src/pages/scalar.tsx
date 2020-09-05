@@ -46,6 +46,8 @@ const Scalar: FunctionComponent = () => {
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
 
+    const [smoothedDataOnly, setSmoothedDataOnly] = useState(false);
+
     const aside = useMemo(
         () =>
             runs.length ? (
@@ -76,6 +78,11 @@ const Scalar: FunctionComponent = () => {
                         <Field label={t('scalar:smoothing')}>
                             <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
                         </Field>
+                        <Field>
+                            <Checkbox value={smoothedDataOnly} onChange={setSmoothedDataOnly}>
+                                {t('scalar:smoothed-data-only')}
+                            </Checkbox>
+                        </Field>
                     </AsideSection>
                     <AsideSection>
                         <Field label={t('scalar:x-axis')}>
@@ -84,7 +91,18 @@ const Scalar: FunctionComponent = () => {
                     </AsideSection>
                 </RunAside>
             ) : null,
-        [t, ignoreOutliers, onChangeRuns, running, runs, selectedRuns, smoothing, tooltipSorting, xAxis]
+        [
+            t,
+            ignoreOutliers,
+            smoothedDataOnly,
+            onChangeRuns,
+            running,
+            runs,
+            selectedRuns,
+            smoothing,
+            tooltipSorting,
+            xAxis
+        ]
     );
 
     const withChart = useCallback<WithChart<Tag>>(
@@ -97,10 +115,11 @@ const Scalar: FunctionComponent = () => {
                 xAxis={xAxis}
                 sortingMethod={tooltipSorting}
                 outlier={ignoreOutliers}
+                smoothedOnly={smoothedDataOnly}
                 running={running}
             />
         ),
-        [smoothing, xAxis, tooltipSorting, ignoreOutliers, running]
+        [smoothing, xAxis, tooltipSorting, ignoreOutliers, smoothedDataOnly, running]
     );
 
     return (

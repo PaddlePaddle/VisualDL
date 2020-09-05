@@ -7,6 +7,7 @@
     "minimize": "最小化",
     "restore": "还原图表框选",
     "smoothed": "Smoothed",
+    "smoothed-data-only": "仅显示平滑后数据",
     "smoothing": "平滑度",
     "toggle-log-axis": "切换对数坐标轴",
     "tooltip-sorting": "详情数据排序",

@@ -17,7 +17,17 @@ export const options = {
     }
 };
 
-export const chartData = ({data, runs, xAxis}: {data: Dataset[]; runs: Run[]; xAxis: XAxis}) =>
+export const chartData = ({
+    data,
+    runs,
+    xAxis,
+    smoothedOnly
+}: {
+    data: Dataset[];
+    runs: Run[];
+    xAxis: XAxis;
+    smoothedOnly?: boolean;
+}) =>
     data
         .map((dataset, i) => {
             // smoothed data:
@@ -29,22 +39,7 @@ export const chartData = ({data, runs, xAxis}: {data: Dataset[]; runs: Run[]; xA
             const name = runs[i].label;
             const color = runs[i].colors[0];
             const colorAlt = runs[i].colors[1];
-            return [
-                {
-                    name,
-                    z: i,
-                    itemStyle: {
-                        color: colorAlt
-                    },
-                    lineStyle: {
-                        color: colorAlt
-                    },
-                    data: dataset,
-                    encode: {
-                        x: [xAxisMap[xAxis]],
-                        y: [2]
-                    }
-                },
+            const result = [
                 {
                     name,
                     z: runs.length + i,
@@ -61,6 +56,24 @@ export const chartData = ({data, runs, xAxis}: {data: Dataset[]; runs: Run[]; xA
                     }
                 }
             ];
+            if (!smoothedOnly) {
+                result.push({
+                    name,
+                    z: i,
+                    itemStyle: {
+                        color: colorAlt
+                    },
+                    lineStyle: {
+                        color: colorAlt
+                    },
+                    data: dataset,
+                    encode: {
+                        x: [xAxisMap[xAxis]],
+                        y: [2]
+                    }
+                });
+            }
+            return result;
         })
         .flat();
 
