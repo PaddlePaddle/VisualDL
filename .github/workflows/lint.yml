@@ -40,4 +40,4 @@ jobs:
           echo "TODO"
       - name: Lint
         run: |
-          echo: "TODO"
+          echo "TODO"
