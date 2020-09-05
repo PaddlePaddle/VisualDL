@@ -17,13 +17,9 @@ jobs:
           ./scripts/install.sh
           yarn
       - name: Run linters
-        uses: wearerequired/lint-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          eslint: true
-          eslint_dir: frontend/
-          eslint_extensions: js,ts,jsx,tsx
-          eslint_args: "--max-warnings 0 --ignore-path .gitignore"
+        run: |
+          cd frontend
+          yarn lint
   lint_be:
     name: Lint BE
     runs-on: ubuntu-latest
