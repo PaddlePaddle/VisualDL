@@ -7,6 +7,7 @@ import {Helmet} from 'react-helmet';
 import NProgress from 'nprogress';
 import Navbar from '~/components/Navbar';
 import {SWRConfig} from 'swr';
+import {ToastContainer} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 import init from '@visualdl/wasm';
 import routes from '~/routes';
@@ -102,6 +103,7 @@ const App: FunctionComponent = () => {
                         </Router>
                     </Main>
                 )}
+                <ToastContainer />
             </SWRConfig>
         </div>
     );

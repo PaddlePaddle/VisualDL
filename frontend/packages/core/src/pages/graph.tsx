@@ -1,11 +1,11 @@
 import Aside, {AsideSection} from '~/components/Aside';
-import {BlobResponse, blobFetcher} from '~/utils/fetch';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import GraphComponent, {GraphRef} from '~/components/GraphPage/Graph';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {primaryColor, rem, size} from '~/utils/style';
 
+import type {BlobResponse} from '~/utils/fetch';
 import Button from '~/components/Button';
 import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
@@ -93,7 +93,7 @@ const Graph: FunctionComponent = () => {
         [globalDispatch]
     );
 
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph', blobFetcher);
+    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
     useEffect(() => {
         if (data?.data.size) {

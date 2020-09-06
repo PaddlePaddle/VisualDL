@@ -33,8 +33,12 @@ async function start() {
             })
         );
     } else if (isDemo) {
-        const {default: demo} = await import('@visualdl/demo');
-        app.use(apiUrl, demo);
+        try {
+            const {default: demo} = await import('@visualdl/demo');
+            app.use(apiUrl, demo);
+        } catch {
+            console.warn('Demo is not installed. Please rebuild server.');
+        }
     } else if (isDev) {
         const {middleware: mock} = await import('@visualdl/mock');
         app.use(apiUrl, mock({delay: delay ? () => Math.random() * delay : 0}));
