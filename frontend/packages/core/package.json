@@ -61,7 +61,7 @@
         "react-router-dom": "5.2.0",
         "react-spinners": "0.9.0",
         "react-toastify": "6.0.8",
-        "styled-components": "5.1.1",
+        "styled-components": "5.2.0",
         "swr": "0.3.0",
         "tippy.js": "6.2.6"
     },
