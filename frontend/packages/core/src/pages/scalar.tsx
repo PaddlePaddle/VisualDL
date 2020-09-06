@@ -16,8 +16,11 @@ import TimeModeSelect from '~/components/TimeModeSelect';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
+import useQuery from '~/hooks/useQuery';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
+
+const DEFAULT_SMOOTHING = 0.6;
 
 const TooltipSortingDiv = styled.div`
     margin-top: ${rem(20)};
@@ -33,12 +36,21 @@ const TooltipSortingDiv = styled.div`
 
 const Scalar: FunctionComponent = () => {
     const {t} = useTranslation(['scalar', 'common']);
+    const query = useQuery();
 
     const [running, setRunning] = useState(true);
 
     const {runs, tags, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
 
-    const [smoothing, setSmoothing] = useState(0.6);
+    const smoothingFromQuery = useMemo(() => {
+        const parsedSmoothing = Number.parseFloat(String(query.smoothing));
+        let smoothing = DEFAULT_SMOOTHING;
+        if (Number.isFinite(parsedSmoothing) && parsedSmoothing < 1 && parsedSmoothing >= 0) {
+            smoothing = Math.round(parsedSmoothing * 100) / 100;
+        }
+        return smoothing;
+    }, [query.smoothing]);
+    const [smoothing, setSmoothing] = useState(smoothingFromQuery);
 
     const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step);
 
