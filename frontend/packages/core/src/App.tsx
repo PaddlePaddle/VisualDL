@@ -3,6 +3,8 @@ import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'rea
 import {headerHeight, position, size} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
+import ErrorBoundary from '~/components/ErrorBoundary';
+import ErrorPage from '~/pages/error';
 import {Helmet} from 'react-helmet';
 import NProgress from 'nprogress';
 import Navbar from '~/components/Navbar';
@@ -57,7 +59,7 @@ const Telemetry: FunctionComponent = () => {
 };
 
 const App: FunctionComponent = () => {
-    const {i18n} = useTranslation();
+    const {t, i18n} = useTranslation('errors');
 
     const dir = useMemo(() => (i18n.language ? i18n.dir(i18n.language) : ''), [i18n]);
 
@@ -92,14 +94,19 @@ const App: FunctionComponent = () => {
                             <Header>
                                 <Navbar />
                             </Header>
-                            <Suspense fallback={<Progress />}>
-                                <Switch>
-                                    <Redirect exact from="/" to={defaultRoute?.path ?? '/index'} />
-                                    {routers.map(route => (
-                                        <Route key={route.id} path={route.path} component={route.component} />
-                                    ))}
-                                </Switch>
-                            </Suspense>
+                            <ErrorBoundary fallback={<ErrorPage />}>
+                                <Suspense fallback={<Progress />}>
+                                    <Switch>
+                                        <Redirect exact from="/" to={defaultRoute?.path ?? '/index'} />
+                                        {routers.map(route => (
+                                            <Route key={route.id} path={route.path} component={route.component} />
+                                        ))}
+                                        <Route path="*">
+                                            <ErrorPage title={t('errors:page-not-found')} />
+                                        </Route>
+                                    </Switch>
+                                </Suspense>
+                            </ErrorBoundary>
                         </Router>
                     </Main>
                 )}

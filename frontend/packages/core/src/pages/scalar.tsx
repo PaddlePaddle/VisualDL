@@ -21,8 +21,6 @@ import useQuery from '~/hooks/useQuery';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
 
-const DEFAULT_SMOOTHING = 0.6;
-
 const TooltipSortingDiv = styled.div`
     margin-top: ${rem(20)};
     display: flex;
