@@ -37,6 +37,7 @@
         "producer": "框架",
         "runtime": "运行时",
         "source": "源",
+        "subgraph": "子图",
         "tags": "标签",
         "type": "类型",
         "version": "版本"
@@ -45,6 +46,7 @@
     "show-attributes": "显示参数",
     "show-initializers": "显示初始化参数",
     "show-node-names": "显示节点名称",
+    "subgraph": "选择子图",
     "supported-model": "VisualDL支持：",
     "supported-model-list": "PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite",
     "upload-model": "上传模型",

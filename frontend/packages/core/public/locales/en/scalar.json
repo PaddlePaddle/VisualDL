@@ -1,10 +1,13 @@
 {
     "download-image": "Download image",
     "ignore-outliers": "Ignore outliers in chart scaling",
+    "max": "Max",
     "maximize": "Maximize",
+    "min": "Min",
     "minimize": "Minimize",
     "restore": "Selection restore",
     "smoothed": "Smoothed",
+    "smoothed-data-only": "Smoothed Data Only",
     "smoothing": "Smoothing",
     "toggle-log-axis": "Logarithmic axis",
     "tooltip-sorting": "Tooltip Sorting",

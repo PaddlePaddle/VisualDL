@@ -24,6 +24,7 @@ default_host = None
 default_port = 8040
 default_cache_timeout = 20
 default_public_path = '/app'
+default_product = 'normal'
 
 
 class DefaultArgs(object):
@@ -37,7 +38,8 @@ class DefaultArgs(object):
         self.api_only = args.get('api_only', False)
         self.open_browser = args.get('open_browser', False)
         self.model = args.get('model', '')
-        self.product = args.get('product', 'normal')
+        self.product = args.get('product', default_product)
+        self.telemetry = args.get('telemetry', True)
 
 
 def get_host(host=default_host, port=default_port):
@@ -96,6 +98,7 @@ class ParseArgs(object):
         self.open_browser = args.open_browser
         self.model = args.model
         self.product = args.product
+        self.telemetry = args.telemetry
 
 
 def parse_args():
@@ -178,8 +181,15 @@ def parse_args():
         "--product",
         type=str,
         action="store",
-        default="normal",
+        default=default_product,
         help="specify the product")
+    parser.add_argument(
+        "--disable-telemetry",
+        action="store_false",
+        dest="telemetry",
+        default=True,
+        help="disable telemetry"
+    )
 
     args = parser.parse_args()
 

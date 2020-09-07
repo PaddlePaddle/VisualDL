@@ -6,7 +6,7 @@
 
 
 <p align="center">
-<a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/paddlepaddle/visualdl/develop?style=flat-square" alt="Build Status" /></a>
+<a href="https://actions-badge.atrox.dev/PaddlePaddle/VisualDL/goto?ref=develop"><img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FPaddlePaddle%2FVisualDL%2Fbadge%3Fref%3Ddevelop&style=flat-square" alt="Build Status" /></a>
 <a href="https://pypi.org/project/visualdl/"><img src="https://img.shields.io/pypi/v/visualdl?style=flat-square" alt="PyPI" /></a>
 <a href="https://pypi.org/project/visualdl/#files"><img src="https://img.shields.io/pypi/dm/visualdl?style=flat-square" alt="Downloads" /></a>
 <a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/paddlepaddle/visualdl?style=flat-square" alt="License" /></a>
@@ -21,7 +21,7 @@ VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of c
 
 VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
 
-VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training. 
+VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training.
 
 ## Contents
 
@@ -41,11 +41,11 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 The high-level design of API makes it easy to use. Only one click can initiate the visualization of model structures.
 
-### Various Functions 
+### Various Functions
 
 The function contains the visualization of training parameters, data samples, graph structures, histograms of tensors, PR curves and high-dimensional data.
 
-### High Compatibility 
+### High Compatibility
 
 VisualDL provides the visualization of the mainstream model structures such as Paddle, ONNX, Caffe, widely supporting visual analysis for diverse users.
 
@@ -71,7 +71,7 @@ pip install --upgrade dist/visualdl-*.whl
 ```
 Please note that Python 2 is no longer maintained officially since January 1, 2020. VisualDL now only supports Python 3 in order to ensure the usability of codes.
 
-## Usage Guideline 
+## Usage Guideline
 
 VisualDL stores the data, parameters and other information of the training process in a log file. Users can launch the panel to observe the visualization results.
 
@@ -148,7 +148,7 @@ visualdl --logdir ./log
 
 #### Launch in Python Script
 
-Developers can start the VisualDL panel in Python script as follows: 
+Developers can start the VisualDL panel in Python script as follows:
 
 ```python
 visualdl.server.app.run(logdir,
@@ -216,7 +216,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 
 
 ### Image
-**Image** provides real-time visualizations of the image data during the training process, allowing developers to observe the changes of images in different training stages and  to deeply understand the effects of the training process. 
+**Image** provides real-time visualizations of the image data during the training process, allowing developers to observe the changes of images in different training stages and  to deeply understand the effects of the training process.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/90869677-22353500-e3cb-11ea-9830-2334bdd8e52e.gif" width="55%"/>
@@ -256,7 +256,7 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 
 ### High Dimensional
 
-**High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis. 
+**High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>

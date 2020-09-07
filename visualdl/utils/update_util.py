@@ -52,7 +52,7 @@ class PbUpdater(threading.Thread):
                 with open('/visualdl/proto/record_pb2.py', mode='wb') as fp:
                     fp.write(pb_bin)
                     print('Update pb file successfully.')
-        except Exception as err:
+        except Exception:
             pass
 
     def run(self):
