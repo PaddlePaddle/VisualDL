@@ -1,8 +1,9 @@
-import {BlobResponse, blobFetcher} from '~/utils/fetch';
 import React, {useImperativeHandle, useLayoutEffect, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 
+import type {BlobResponse} from '~/utils/fetch';
 import GridLoader from 'react-spinners/GridLoader';
+import {fetcher} from '~/utils/fetch';
 import mime from 'mime-types';
 import {saveAs} from 'file-saver';
 import useRequest from '~/hooks/useRequest';
@@ -21,7 +22,7 @@ const Image = React.forwardRef<ImageRef, ImageProps & WithStyled>(({src, cache, 
     const {t} = useTranslation('common');
 
     const [url, setUrl] = useState('');
-    const {data, error, loading} = useRequest<BlobResponse>(src ?? null, blobFetcher, {
+    const {data, error, loading} = useRequest<BlobResponse>(src ?? null, fetcher, {
         dedupingInterval: cache ?? 2000
     });
 

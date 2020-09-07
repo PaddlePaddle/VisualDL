@@ -16,9 +16,8 @@ import RunningToggle from '~/components/RunningToggle';
 import SearchInput from '~/components/SearchInput';
 import type {TagsData} from '~/types';
 import Title from '~/components/Title';
-import queryString from 'query-string';
 import styled from 'styled-components';
-import {useLocation} from 'react-router-dom';
+import useQuery from '~/hooks/useQuery';
 import {useRunningRequest} from '~/hooks/useRequest';
 import useSearchValue from '~/hooks/useSearchValue';
 import {useTranslation} from 'react-i18next';
@@ -66,8 +65,7 @@ const HighDimensional: FunctionComponent = () => {
     }, [data]);
     const labelList = useMemo(() => list.map(item => item.label), [list]);
 
-    const location = useLocation();
-    const query = useMemo(() => queryString.parse(location.search), [location]);
+    const query = useQuery();
     const selectedLabel = useMemo(() => {
         const run = Array.isArray(query.run) ? query.run[0] : query.run;
         return (run && list.find(item => item.run === run)?.label) ?? list[0]?.label;

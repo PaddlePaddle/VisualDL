@@ -123,3 +123,12 @@ export const nearestPoint = (data: Dataset[], runs: Run[], step: number) =>
             item: nearestItem || [0, 0, 0, 0, 0]
         };
     });
+
+export const parseSmoothing = (value: unknown) => {
+    const parsedValue = Number.parseFloat(String(value));
+    let smoothing = 0.6;
+    if (Number.isFinite(parsedValue) && parsedValue < 1 && parsedValue >= 0) {
+        smoothing = Math.round(parsedValue * 100) / 100;
+    }
+    return smoothing;
+};

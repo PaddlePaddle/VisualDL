@@ -1,4 +1,3 @@
-import {BlobResponse, blobFetcher} from '~/utils/fetch';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {
     WithStyled,
@@ -13,12 +12,14 @@ import {
 } from '~/utils/style';
 
 import {AudioPlayer} from '~/utils/audio';
+import type {BlobResponse} from '~/utils/fetch';
 import Icon from '~/components/Icon';
 import PuffLoader from 'react-spinners/PuffLoader';
 import RangeSlider from '~/components/RangeSlider';
 import Slider from 'react-rangeslider';
 import SyncLoader from 'react-spinners/SyncLoader';
 import Tippy from '@tippyjs/react';
+import {fetcher} from '~/utils/fetch';
 import mime from 'mime-types';
 import moment from 'moment';
 import {saveAs} from 'file-saver';
@@ -147,7 +148,7 @@ const Audio = React.forwardRef<AudioRef, AudioProps & WithStyled>(
     ({audioContext, src, cache, onLoading, onLoad, className}, ref) => {
         const {t} = useTranslation('common');
 
-        const {data, error, loading} = useRequest<BlobResponse>(src ?? null, blobFetcher, {
+        const {data, error, loading} = useRequest<BlobResponse>(src ?? null, fetcher, {
             dedupingInterval: cache ?? 2000
         });
 

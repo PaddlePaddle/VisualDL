@@ -19,6 +19,9 @@ i18n.use(initReactI18next)
         ns: 'common',
         defaultNS: 'common',
         load: 'currentOnly',
+        react: {
+            useSuspense: false
+        },
         interpolation: {
             escapeValue: false
         },

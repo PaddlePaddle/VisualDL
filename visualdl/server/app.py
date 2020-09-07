@@ -98,7 +98,10 @@ def create_app(args):
 
         @app.route(public_path + '/')
         def index():
-            return redirect(public_path + '/index', code=302)
+            query_string = ''
+            if request.query_string:
+                query_string = '?' + request.query_string.decode()
+            return redirect(public_path + '/index' + query_string, code=302)
 
         @app.route(public_path + '/<path:filename>')
         def serve_static(filename):

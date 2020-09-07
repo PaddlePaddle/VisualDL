@@ -1,3 +1,5 @@
+import type {TFunction} from 'i18next';
+import i18next from 'i18next';
 import queryString from 'query-string';
 
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
@@ -29,12 +31,17 @@ function addApiToken(options?: RequestInit): RequestInit | undefined {
     };
 }
 
-export const fetcher = async <T = unknown>(url: string, options?: RequestInit): Promise<T> => {
-    const res = await fetch(API_URL + url, addApiToken(options));
-    const response = await res.json();
+interface SuccessData<D> {
+    status: 0;
+    data: D;
+}
 
-    return response && 'data' in response ? response.data : response;
-};
+interface ErrorData {
+    status: number;
+    msg?: string;
+}
+
+type Data<D> = SuccessData<D> | ErrorData;
 
 export type BlobResponse = {
     data: Blob;
@@ -42,30 +49,77 @@ export type BlobResponse = {
     filename: string | null;
 };
 
-export const blobFetcher = async (url: string, options?: RequestInit): Promise<BlobResponse> => {
-    const res = await fetch(API_URL + url, addApiToken(options));
-    const data = await res.blob();
-    const disposition = res.headers.get('Content-Disposition');
-    // support safari
-    if (!data.arrayBuffer) {
-        data.arrayBuffer = async () =>
-            new Promise<ArrayBuffer>((resolve, reject) => {
-                const fileReader = new FileReader();
-                fileReader.addEventListener('load', e =>
-                    e.target ? resolve(e.target.result as ArrayBuffer) : reject()
-                );
-                fileReader.readAsArrayBuffer(data);
-            });
+function getT(): Promise<TFunction> {
+    return new Promise(resolve => {
+        // Bug of i18next
+        i18next.changeLanguage((undefined as unknown) as string).then(t => resolve(t));
+    });
+}
+
+function logErrorAndReturnT(e: unknown) {
+    if (import.meta.env.MODE === 'development') {
+        console.error(e); // eslint-disable-line no-console
     }
-    let filename: string | null = null;
-    if (disposition && disposition.indexOf('attachment') !== -1) {
-        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-        if (matches != null && matches[1]) {
-            filename = matches[1].replace(/['"]/g, '');
+    return getT();
+}
+
+export function fetcher(url: string, options?: RequestInit): Promise<BlobResponse>;
+export function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<T>;
+export async function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<BlobResponse | T> {
+    let res: Response;
+    try {
+        res = await fetch(API_URL + url, addApiToken(options));
+    } catch (e) {
+        const t = await logErrorAndReturnT(e);
+        throw new Error(t('errors:network-error'));
+    }
+
+    if (!res.ok) {
+        const t = await logErrorAndReturnT(res);
+        throw new Error(t([`errors:response-error.${res.status}`, 'errors:response-error.unknown']));
+    }
+
+    let response: Data<T> | T;
+    try {
+        if (res.headers.get('content-type')?.includes('application/json')) {
+            response = await res.json();
+            if (response && 'status' in response) {
+                if (response.status !== 0) {
+                    const t = await logErrorAndReturnT(response);
+                    throw new Error((response as ErrorData).msg || t('errors:error'));
+                } else {
+                    return (response as SuccessData<T>).data;
+                }
+            }
+            return response;
+        } else {
+            const data = await res.blob();
+            const disposition = res.headers.get('Content-Disposition');
+            // support safari
+            if (!data.arrayBuffer) {
+                data.arrayBuffer = async () =>
+                    new Promise<ArrayBuffer>((resolve, reject) => {
+                        const fileReader = new FileReader();
+                        fileReader.addEventListener('load', e =>
+                            e.target ? resolve(e.target.result as ArrayBuffer) : reject()
+                        );
+                        fileReader.readAsArrayBuffer(data);
+                    });
+            }
+            let filename: string | null = null;
+            if (disposition && disposition.indexOf('attachment') !== -1) {
+                const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                if (matches != null && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
+            }
+            return {data, type: res.headers.get('Content-Type'), filename};
         }
+    } catch (e) {
+        const t = await logErrorAndReturnT(e);
+        throw new Error(t('errors:parse-error'));
     }
-    return {data, type: res.headers.get('Content-Type'), filename};
-};
+}
 
 export const cycleFetcher = async <T = unknown>(urls: string[], options?: RequestInit): Promise<T[]> => {
     return await Promise.all(urls.map(url => fetcher<T>(url, options)));

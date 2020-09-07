@@ -18,7 +18,7 @@ export const navMap = {
 const useNavItems = () => {
     const [components, setComponents] = useState<Route[]>([]);
 
-    const {data, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
+    const {data, loading, error, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
         refreshInterval: components.length ? 61 * 1000 : 15 * 1000,
         dedupingInterval: 14 * 1000,
         errorRetryInterval: 15 * 1000,
@@ -59,9 +59,9 @@ const useNavItems = () => {
 
     useEffect(() => {
         setComponents(filterPages(routes));
-    }, [data, filterPages]);
+    }, [filterPages]);
 
-    return components;
+    return [components, loading, error] as const;
 };
 
 export default useNavItems;

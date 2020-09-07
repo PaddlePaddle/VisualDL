@@ -196,7 +196,7 @@ const Navbar: FunctionComponent = () => {
 
     const currentPath = useMemo(() => pathname.replace(PUBLIC_PATH, ''), [pathname]);
 
-    const navItems = useNavItems();
+    const [navItems] = useNavItems();
     const [items, setItems] = useState<NavbarItemProps[]>([]);
     useEffect(() => {
         setItems(oldItems =>
