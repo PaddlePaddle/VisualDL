@@ -12,9 +12,6 @@ WORKDIR /home/visualdl/frontend
 ENV SCOPE server
 ENV PUBLIC_PATH /paddle/visualdl/demo
 RUN ["./scripts/install.sh"]
-# re-install esbuild
-# I don't know why...
-RUN cd node_modules/esbuild && rm -f stamp.txt && node install.js
 RUN ["./scripts/build.sh"]
 
 

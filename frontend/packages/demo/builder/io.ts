@@ -4,8 +4,6 @@ import crypto, {BinaryLike} from 'crypto';
 
 import fetch from 'node-fetch';
 import {promises as fs} from 'fs';
-import mime from 'mime-types';
-import mkdirp from 'mkdirp';
 import path from 'path';
 import querystring from 'querystring';
 
@@ -110,6 +108,7 @@ export default class IO {
         contentType: string,
         options?: WriteOptions | WriteOptions['type']
     ) {
+        const {default: mkdirp} = await import('mkdirp');
         const type = 'string' === typeof options ? options : options?.type ?? 'json';
 
         const fileDir = path.join(this.dataDir, IO.dataPath, filePath);
@@ -117,6 +116,7 @@ export default class IO {
         let fileContent: Buffer;
         let extname: string;
         if (type === 'buffer') {
+            const {default: mime} = await import('mime-types');
             extname = mime.extension(contentType) || '';
             if (extname) {
                 extname = '.' + extname;
