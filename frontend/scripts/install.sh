@@ -28,3 +28,8 @@ export PATH=$PATH
 
 # yarn install
 yarn install --frozen-lockfile
+
+# re-install esbuild
+# I don't know why...
+# but this works in docker...
+(cd node_modules/esbuild && rm -f stamp.txt && node install.js)

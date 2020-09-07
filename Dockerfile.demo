@@ -11,8 +11,10 @@ RUN ["pip", "install", "--disable-pip-version-check", "--find-links=dist", "visu
 WORKDIR /home/visualdl/frontend
 ENV SCOPE server
 ENV PUBLIC_PATH /paddle/visualdl/demo
-ENV API_URL /paddle/visualdl/demo/api
 RUN ["./scripts/install.sh"]
+# re-install esbuild
+# I don't know why...
+RUN cd node_modules/esbuild && rm -f stamp.txt && node install.js
 RUN ["./scripts/build.sh"]
 
 
@@ -21,7 +23,6 @@ WORKDIR /home/visualdl
 COPY --from=builder /home/visualdl/frontend/ ./
 ENV NODE_ENV production
 ENV PUBLIC_PATH /paddle/visualdl/demo
-ENV API_URL /paddle/visualdl/demo/api
 ENV PING_URL /ping
 ENV DEMO true
 ENV HOST 0.0.0.0
