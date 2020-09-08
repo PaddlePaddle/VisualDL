@@ -11,6 +11,7 @@ RUN ["pip", "install", "--disable-pip-version-check", "--find-links=dist", "visu
 WORKDIR /home/visualdl/frontend
 ENV SCOPE server
 ENV PUBLIC_PATH /paddle/visualdl/demo
+ENV TELEMETRY_ID b281676ad3824647971c6fd92d65f642
 RUN ["./scripts/install.sh"]
 RUN ["./scripts/build.sh"]
 
