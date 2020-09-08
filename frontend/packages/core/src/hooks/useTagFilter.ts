@@ -3,6 +3,7 @@ import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
 import groupBy from 'lodash/groupBy';
+import intersection from 'lodash/intersection';
 import intersectionBy from 'lodash/intersectionBy';
 import uniq from 'lodash/uniq';
 import useGlobalState from '~/hooks/useGlobalState';
@@ -85,61 +86,72 @@ const attachRunColor = (runs: string[]): Run[] =>
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
-        case ActionType.initRuns:
+        case ActionType.initRuns: {
             const initRuns = action.payload;
-            const initRunsGlobalRuns = state.globalRuns.length ? state.globalRuns : initRuns;
-            const initRunsRuns = attachRunColor(initRuns);
-            const initRunsSelectedRuns = state.globalRuns.length
-                ? initRunsRuns.filter(run => initRunsGlobalRuns.includes(run.label))
-                : initRunsRuns;
-            const initRunsTags = groupTags(initRunsSelectedRuns, state.initTags);
+            const validGlobalRuns = initRuns.length ? intersection(initRuns, state.globalRuns) : state.globalRuns;
+            const globalRuns = validGlobalRuns.length ? validGlobalRuns : initRuns;
+            const runs = attachRunColor(initRuns);
+            const selectedRuns = runs.filter(run => globalRuns.includes(run.label));
+            const tags = groupTags(selectedRuns, state.initTags);
             return {
                 ...state,
                 initRuns,
-                globalRuns: initRunsGlobalRuns,
-                runs: initRunsRuns,
-                selectedRuns: initRunsSelectedRuns,
-                tags: initRunsTags,
-                selectedTags: initRunsTags
+                globalRuns,
+                runs,
+                selectedRuns,
+                tags,
+                selectedTags: tags
             };
-        case ActionType.setRuns:
-            const setRunsSelectedRuns = intersectionBy(state.selectedRuns, action.payload, r => r.label);
-            const setRunsTags = groupTags(setRunsSelectedRuns, state.initTags);
+        }
+        case ActionType.setRuns: {
+            const runs = action.payload;
+            const selectedRuns = intersectionBy(state.selectedRuns, runs, r => r.label);
+            const tags = groupTags(selectedRuns, state.initTags);
             return {
                 ...state,
-                runs: action.payload,
-                selectedRuns: setRunsSelectedRuns,
-                tags: setRunsTags,
-                selectedTags: setRunsTags
+                runs,
+                selectedRuns,
+                tags,
+                selectedTags: tags
             };
-        case ActionType.setSelectedRuns:
-            const setSelectedRunsTags = groupTags(action.payload, state.initTags);
+        }
+        case ActionType.setSelectedRuns: {
+            const selectedRuns = action.payload;
+            const globalRuns = selectedRuns.map(run => run.label);
+            const tags = groupTags(selectedRuns, state.initTags);
             return {
                 ...state,
-                globalRuns: action.payload.map(run => run.label),
-                selectedRuns: action.payload,
-                tags: setSelectedRunsTags,
-                selectedTags: setSelectedRunsTags
+                globalRuns,
+                selectedRuns,
+                tags,
+                selectedTags: tags
             };
-        case ActionType.initTags:
-            const initTagsTags = groupTags(state.selectedRuns, action.payload);
+        }
+        case ActionType.initTags: {
+            const initTags = action.payload;
+            const tags = groupTags(state.selectedRuns, initTags);
             return {
                 ...state,
-                initTags: action.payload,
-                tags: initTagsTags,
-                selectedTags: initTagsTags
+                initTags,
+                tags,
+                selectedTags: tags
             };
-        case ActionType.setTags:
+        }
+        case ActionType.setTags: {
+            const tags = action.payload;
             return {
                 ...state,
-                tags: action.payload,
-                selectedTags: action.payload
+                tags,
+                selectedTags: tags
             };
-        case ActionType.setSelectedTags:
+        }
+        case ActionType.setSelectedTags: {
+            const selectedTags = action.payload;
             return {
                 ...state,
-                selectedTags: action.payload
+                selectedTags
             };
+        }
         default:
             throw new Error();
     }
