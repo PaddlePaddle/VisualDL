@@ -163,7 +163,7 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
 
-    def add_image(self, tag, img, step, walltime=None):
+    def add_image(self, tag, img, step, walltime=None, dataformats="HWC"):
         """Add an image to vdl record file.
 
         Args:
@@ -184,7 +184,8 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            image(tag=tag, image_array=img, step=step, walltime=walltime))
+            image(tag=tag, image_array=img, step=step, walltime=walltime,
+                  dataformats=dataformats))
 
     def add_embeddings(self, tag, labels, hot_vectors, walltime=None):
         """Add embeddings to vdl record file.
