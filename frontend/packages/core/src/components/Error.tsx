@@ -46,6 +46,29 @@ const Wrapper = styled.div`
 
 const reload = () => window.location.reload();
 
+const ReadmeMap: Record<string, string> = {
+    zh: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/README.md',
+    en: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/README-en.md'
+};
+
+const UserGuideMap: Record<string, string> = {
+    zh: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/README.md',
+    en: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/UserGuide-en.md'
+};
+
+const I18nLink: FunctionComponent<{map: Record<string, string>}> = ({map, children}) => {
+    const {i18n} = useTranslation();
+    return (
+        <a
+            href={map[i18n.language] ?? map[String(i18n.options.fallbackLng)] ?? map.en}
+            target="_blank"
+            rel="noreferrer"
+        >
+            {children}
+        </a>
+    );
+};
+
 const Error: FunctionComponent<WithStyled> = ({className, children}) => {
     const {t} = useTranslation('errors');
 
@@ -61,22 +84,14 @@ const Error: FunctionComponent<WithStyled> = ({className, children}) => {
                             <li>
                                 <Trans i18nKey="errors:common.1">
                                     Log files are not generated. Please refer to&nbsp;
-                                    <a href="https://github.com/PaddlePaddle/VisualDL" target="_blank" rel="noreferrer">
-                                        README
-                                    </a>
+                                    <I18nLink map={ReadmeMap}>README</I18nLink>
                                     &nbsp;to create log files.
                                 </Trans>
                             </li>
                             <li>
                                 <Trans i18nKey="errors:common.2">
                                     Log files are generated but data is not written yet. Please refer to&nbsp;
-                                    <a
-                                        href="https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/README.md"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        VisualDL User Guide
-                                    </a>
+                                    <I18nLink map={UserGuideMap}>VisualDL User Guide</I18nLink>
                                     &nbsp;to write visualized data.
                                 </Trans>
                             </li>

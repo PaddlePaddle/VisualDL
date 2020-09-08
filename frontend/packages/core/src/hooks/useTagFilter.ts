@@ -4,10 +4,9 @@ import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
 import groupBy from 'lodash/groupBy';
 import intersectionBy from 'lodash/intersectionBy';
-import queryString from 'query-string';
 import uniq from 'lodash/uniq';
 import useGlobalState from '~/hooks/useGlobalState';
-import {useLocation} from 'react-router-dom';
+import useQuery from '~/hooks/useQuery';
 import {useRunningRequest} from '~/hooks/useRequest';
 
 type Tags = Record<string, string[]>;
@@ -148,8 +147,7 @@ const reducer = (state: State, action: Action): State => {
 
 // TODO: refactor to improve performance
 const useTagFilter = (type: string, running: boolean) => {
-    const location = useLocation();
-    const query = useMemo(() => queryString.parse(location.search), [location.search]);
+    const query = useQuery();
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
 

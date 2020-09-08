@@ -26,7 +26,10 @@ export default (options?: Options) => {
         }
 
         if (!method) {
-            res.status(404).send({});
+            res.status(404).json({
+                status: 1,
+                msg: 'Method does not exist'
+            });
             return;
         }
 
@@ -61,7 +64,10 @@ export default (options?: Options) => {
                 }
             }
         } catch (e) {
-            res.status(500).send(e.message);
+            res.status(500).json({
+                status: 1,
+                msg: e.message
+            });
             // eslint-disable-next-line no-console
             console.error(e);
         }

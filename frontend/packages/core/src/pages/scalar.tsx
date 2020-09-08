@@ -1,6 +1,6 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
-import {SortingMethod, XAxis, sortingMethod as toolTipSortingValues} from '~/resource/scalar';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import {SortingMethod, XAxis, parseSmoothing, sortingMethod as toolTipSortingValues} from '~/resource/scalar';
 
 import {AsideSection} from '~/components/Aside';
 import Checkbox from '~/components/Checkbox';
@@ -16,6 +16,8 @@ import TimeModeSelect from '~/components/TimeModeSelect';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
+import useLocalStorage from '~/hooks/useLocalStorage';
+import useQuery from '~/hooks/useQuery';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
 
@@ -33,12 +35,21 @@ const TooltipSortingDiv = styled.div`
 
 const Scalar: FunctionComponent = () => {
     const {t} = useTranslation(['scalar', 'common']);
+    const query = useQuery();
 
     const [running, setRunning] = useState(true);
 
     const {runs, tags, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
 
-    const [smoothing, setSmoothing] = useState(0.6);
+    const [smoothingFromLocalStorage, setSmoothingFromLocalStorage] = useLocalStorage('scalar_smoothing');
+    const parsedSmoothing = useMemo(() => {
+        if (query.smoothing != null) {
+            return parseSmoothing(query.smoothing);
+        }
+        return parseSmoothing(smoothingFromLocalStorage);
+    }, [query.smoothing, smoothingFromLocalStorage]);
+    const [smoothing, setSmoothing] = useState(parsedSmoothing);
+    useEffect(() => setSmoothingFromLocalStorage(String(smoothing)), [smoothing, setSmoothingFromLocalStorage]);
 
     const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step);
 
