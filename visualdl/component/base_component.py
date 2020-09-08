@@ -146,6 +146,7 @@ def image(tag, image_array, step, walltime=None, dataformats="HWC"):
         image_array (numpy.ndarray): Value of iamge
         step (int): Step of image
         walltime (int): Wall time of image
+        dataformats (string): Format of image
 
     Return:
         Package with format of record_pb2.Record

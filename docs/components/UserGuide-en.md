@@ -203,7 +203,7 @@ The Image is used to present the change of image data during training. Developer
 The interface of the Image is shown as follows:
 
 ```python
-add_image(tag, img, step, walltime=None)
+add_image(tag, img, step, walltime=None, dataformats="HWC")
 ```
 The interface parameters are described as follows:
 | parameter | format        | meaning                                                      |
@@ -212,6 +212,7 @@ The interface parameters are described as follows:
 | img       | numpy.ndarray | Images in ndarray format                                     |
 | step      | int           | Record the training steps                                    |
 | walltime  | int           | Record the time-stamp of the data, the default is the current time-stamp |
+| dataformats| string       | Format of image，include `NCHW`、`HWC`、`HW`，default is `HWC`|
 
 ### Demo
 The following shows an example of using Image to record data, and the script can be found in [Image Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py).
