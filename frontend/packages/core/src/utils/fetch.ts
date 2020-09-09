@@ -80,44 +80,50 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
     }
 
     let response: Data<T> | T;
-    try {
-        if (res.headers.get('content-type')?.includes('application/json')) {
+    if (res.headers.get('content-type')?.includes('application/json')) {
+        try {
             response = await res.json();
-            if (response && 'status' in response) {
-                if (response.status !== 0) {
-                    const t = await logErrorAndReturnT(response);
-                    throw new Error((response as ErrorData).msg || t('errors:error'));
-                } else {
-                    return (response as SuccessData<T>).data;
-                }
-            }
-            return response;
-        } else {
-            const data = await res.blob();
-            const disposition = res.headers.get('Content-Disposition');
-            // support safari
-            if (!data.arrayBuffer) {
-                data.arrayBuffer = async () =>
-                    new Promise<ArrayBuffer>((resolve, reject) => {
-                        const fileReader = new FileReader();
-                        fileReader.addEventListener('load', e =>
-                            e.target ? resolve(e.target.result as ArrayBuffer) : reject()
-                        );
-                        fileReader.readAsArrayBuffer(data);
-                    });
-            }
-            let filename: string | null = null;
-            if (disposition && disposition.indexOf('attachment') !== -1) {
-                const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-                if (matches != null && matches[1]) {
-                    filename = matches[1].replace(/['"]/g, '');
-                }
-            }
-            return {data, type: res.headers.get('Content-Type'), filename};
+        } catch (e) {
+            const t = await logErrorAndReturnT(e);
+            throw new Error(t('errors:parse-error'));
         }
-    } catch (e) {
-        const t = await logErrorAndReturnT(e);
-        throw new Error(t('errors:parse-error'));
+        if (response && 'status' in response) {
+            if (response.status !== 0) {
+                const t = await logErrorAndReturnT(response);
+                throw new Error((response as ErrorData).msg || t('errors:error'));
+            } else {
+                return (response as SuccessData<T>).data;
+            }
+        }
+        return response;
+    } else {
+        let data: Blob;
+        try {
+            data = await res.blob();
+        } catch (e) {
+            const t = await logErrorAndReturnT(e);
+            throw new Error(t('errors:parse-error'));
+        }
+        const disposition = res.headers.get('Content-Disposition');
+        // support safari
+        if (!data.arrayBuffer) {
+            data.arrayBuffer = async () =>
+                new Promise<ArrayBuffer>((resolve, reject) => {
+                    const fileReader = new FileReader();
+                    fileReader.addEventListener('load', e =>
+                        e.target ? resolve(e.target.result as ArrayBuffer) : reject()
+                    );
+                    fileReader.readAsArrayBuffer(data);
+                });
+        }
+        let filename: string | null = null;
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+            const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+        return {data, type: res.headers.get('Content-Type'), filename};
     }
 }
 
