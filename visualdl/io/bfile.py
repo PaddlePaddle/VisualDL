@@ -324,7 +324,7 @@ class BosFileSystem(object):
                                           content_md5=content_md5(file_content),
                                           content_length=content_length,
                                           offset=offset)
-        except exception.BceServerError:
+        except (exception.BceServerError, exception.BceHttpClientError) as e:
             init_data = b''
             self.bos_client.append_object(bucket_name=bucket_name,
                                           key=object_key,
