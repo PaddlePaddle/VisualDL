@@ -171,6 +171,7 @@ class LogWriter(object):
             img (numpy.ndarray): Image represented by a numpy.array
             step (int): Step of image
             walltime (int): Wall time of image
+            dataformats (string): Format of image
 
         Example:
             from PIL import Image
