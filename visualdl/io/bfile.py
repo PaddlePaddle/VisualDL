@@ -315,13 +315,23 @@ class BosFileSystem(object):
                                           content_length=len(init_data))
         content_length = len(file_content)
 
-        offset = self.get_meta(bucket_name, object_key).metadata.content_length
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=file_content,
-                                      content_md5=content_md5(file_content),
-                                      content_length=content_length,
-                                      offset=offset)
+        try:
+            offset = self.get_meta(bucket_name,
+                                   object_key).metadata.content_length
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=object_key,
+                                          data=file_content,
+                                          content_md5=content_md5(file_content),
+                                          content_length=content_length,
+                                          offset=offset)
+        except exception.BceServerError:
+            init_data = b''
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=object_key,
+                                          data=init_data,
+                                          content_md5=content_md5(init_data),
+                                          content_length=len(init_data))
+
         self._file_contents_to_add = b''
         self._file_contents_count = 0
         self._start_append_time = time.time()
