@@ -59,6 +59,8 @@ const Scalar: FunctionComponent = () => {
 
     const [smoothedDataOnly, setSmoothedDataOnly] = useState(false);
 
+    const [showMostValue, setShowMostValue] = useState(false);
+
     const aside = useMemo(
         () =>
             runs.length ? (
@@ -70,9 +72,16 @@ const Scalar: FunctionComponent = () => {
                     onToggleRunning={setRunning}
                 >
                     <AsideSection>
-                        <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
-                            {t('scalar:ignore-outliers')}
-                        </Checkbox>
+                        <Field>
+                            <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
+                                {t('scalar:ignore-outliers')}
+                            </Checkbox>
+                        </Field>
+                        <Field>
+                            <Checkbox value={showMostValue} onChange={setShowMostValue}>
+                                {t('scalar:show-most-value')}
+                            </Checkbox>
+                        </Field>
                         <TooltipSortingDiv>
                             <span>{t('scalar:tooltip-sorting')}</span>
                             <Select
@@ -105,6 +114,7 @@ const Scalar: FunctionComponent = () => {
         [
             t,
             ignoreOutliers,
+            showMostValue,
             smoothedDataOnly,
             onChangeRuns,
             running,
@@ -127,10 +137,11 @@ const Scalar: FunctionComponent = () => {
                 sortingMethod={tooltipSorting}
                 outlier={ignoreOutliers}
                 smoothedOnly={smoothedDataOnly}
+                showMostValue={showMostValue}
                 running={running}
             />
         ),
-        [smoothing, xAxis, tooltipSorting, ignoreOutliers, smoothedDataOnly, running]
+        [smoothing, xAxis, tooltipSorting, ignoreOutliers, showMostValue, smoothedDataOnly, running]
     );
 
     return (
