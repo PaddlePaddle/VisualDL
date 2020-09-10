@@ -2,6 +2,7 @@ import type {Run, Tag, TagWithSingleRun, TagsData} from '~/types';
 import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
+import camelCase from 'lodash/camelCase';
 import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
 import intersectionBy from 'lodash/intersectionBy';
@@ -163,7 +164,13 @@ const useTagFilter = (type: string, running: boolean) => {
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
 
+    const pageName = useMemo(() => camelCase(type), [type]);
+
     const [globalState, globalDispatch] = useGlobalState();
+    const storedRuns = useMemo(
+        () => ((globalState as unknown) as Record<string, {runs: string[]}>)[camelCase(pageName)]?.runs ?? [],
+        [pageName, globalState]
+    );
 
     const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
     const tags: Tags = useMemo(
@@ -183,7 +190,7 @@ const useTagFilter = (type: string, running: boolean) => {
 
     const [state, dispatch] = useReducer(reducer, {
         initRuns: [],
-        globalRuns: globalState.runs,
+        globalRuns: storedRuns,
         runs: [],
         selectedRuns: [],
         initTags: {},
@@ -211,7 +218,15 @@ const useTagFilter = (type: string, running: boolean) => {
             });
         }
     }, [queryRuns, state.runs]);
-    useEffect(() => globalDispatch({runs: state.globalRuns}), [state.globalRuns, globalDispatch]);
+    useEffect(
+        () =>
+            globalDispatch({
+                [pageName]: {
+                    runs: state.globalRuns
+                }
+            }),
+        [pageName, state.globalRuns, globalDispatch]
+    );
 
     const tagsWithSingleRun = useMemo(
         () =>
