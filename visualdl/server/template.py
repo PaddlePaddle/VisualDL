@@ -21,6 +21,13 @@ from flask import (Response, send_from_directory)
 class Template(object):
     extname = [".html", ".js", ".css"]
 
+    defaults = {
+        'PUBLIC_PATH': '/app',
+        'API_TOKEN_KEY': '',
+        'TELEMETRY_ID': '',
+        'THEME': ''
+    }
+
     def __init__(self, path, **context):
         if not os.path.exists(path):
             raise Exception("template file does not exist.")
@@ -33,7 +40,9 @@ class Template(object):
                     rel_path = os.path.relpath(file_path, path).replace(os.path.sep, '/')
                     with open(file_path, "r", encoding="UTF-8") as f:
                         content = f.read()
-                        for key, value in context.items():
+                        envs = self.defaults.copy()
+                        envs.update(context)
+                        for key, value in envs.items():
                             content = content.replace("{{" + key + "}}", value)
                     self.files[rel_path] = content, mimetypes.guess_type(file)[0]
 

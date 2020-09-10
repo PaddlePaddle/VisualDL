@@ -1,19 +1,6 @@
 import {Link, LinkProps, useLocation} from 'react-router-dom';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
-import {
-    backgroundFocusedColor,
-    border,
-    borderRadius,
-    navbarBackgroundColor,
-    navbarHighlightColor,
-    navbarHoverBackgroundColor,
-    primaryColor,
-    rem,
-    size,
-    textColor,
-    textInvertColor,
-    transitionProps
-} from '~/utils/style';
+import {border, borderRadius, rem, size, transitionProps} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import Language from '~/components/Language';
@@ -51,8 +38,8 @@ function appendApiToken(url: string) {
 }
 
 const Nav = styled.nav`
-    background-color: ${navbarBackgroundColor};
-    color: ${textInvertColor};
+    background-color: var(--navbar-background-color);
+    color: var(--navbar-text-color);
     ${size('100%')}
     padding: 0 ${rem(20)};
     display: flex;
@@ -96,12 +83,12 @@ const NavItem = styled.div<{active?: boolean}>`
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    background-color: ${navbarBackgroundColor};
+    background-color: var(--navbar-background-color);
     cursor: pointer;
     ${transitionProps('background-color')}
 
     &:hover {
-        background-color: ${navbarHoverBackgroundColor};
+        background-color: var(--navbar-hover-background-color);
     }
 
     &.nav-item {
@@ -120,7 +107,7 @@ const NavItem = styled.div<{active?: boolean}>`
     .nav-text {
         margin: ${rem(20)};
         padding: ${rem(10)} 0 ${rem(7)};
-        ${props => border('bottom', rem(3), 'solid', props.active ? navbarHighlightColor : 'transparent')}
+        ${props => border('bottom', rem(3), 'solid', props.active ? 'var(--navbar-highlight-color)' : 'transparent')}
         ${transitionProps('border-bottom')}
         text-transform: uppercase;
     }
@@ -137,11 +124,11 @@ const NavItemChild = styled.div<{active?: boolean}>`
 
     &,
     &:visited {
-        color: ${props => (props.active ? primaryColor : textColor)};
+        color: ${props => (props.active ? 'var(--primary-color)' : 'var(--text-color)')};
     }
 
     &:hover {
-        background-color: ${backgroundFocusedColor};
+        background-color: var(--background-focused-color);
     }
 
     > a {

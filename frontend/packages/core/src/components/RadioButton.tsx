@@ -2,17 +2,11 @@ import {EventContext, ValueContext} from '~/components/RadioGroup';
 import React, {FunctionComponent, PropsWithChildren, useCallback, useContext} from 'react';
 import {
     WithStyled,
-    backgroundColor,
-    borderColor,
-    borderFocusedColor,
     borderRadius,
     borderRadiusShortHand,
     ellipsis,
     em,
-    primaryColor,
     sameBorder,
-    textColor,
-    textInvertColor,
     transitionProps
 } from '~/utils/style';
 
@@ -24,15 +18,15 @@ const maxWidth = em(144);
 
 const Button = styled.a<{selected?: boolean}>`
     cursor: pointer;
-    background-color: ${props => (props.selected ? primaryColor : backgroundColor)};
-    color: ${props => (props.selected ? textInvertColor : textColor)};
+    background-color: ${props => (props.selected ? 'var(--primary-color)' : 'var(--background-color)')};
+    color: ${props => (props.selected ? 'var(--primary-text-color)' : 'var(--text-color)')};
     height: ${height};
     line-height: calc(${height} - 2px);
     min-width: ${minWidth};
     padding: 0 ${em(8)};
     text-align: center;
     ${ellipsis(maxWidth)}
-    ${props => sameBorder({color: props.selected ? primaryColor : borderColor})};
+    ${props => sameBorder({color: props.selected ? 'var(--primary-color)' : 'var(--border-color)'})};
     ${transitionProps(['color', 'border-color', 'background-color'])}
 
     /* bring selected one to top in order to cover the sibling's border */
@@ -40,7 +34,7 @@ const Button = styled.a<{selected?: boolean}>`
         props.selected ? 'position: relative;' : ''}
 
     &:hover {
-        border-color: ${props => (props.selected ? primaryColor : borderFocusedColor)};
+        border-color: ${props => (props.selected ? 'var(--primary-color)' : 'var(--border-focused-color)')};
     }
 
     &:first-of-type {

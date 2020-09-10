@@ -1,16 +1,5 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
-import {
-    WithStyled,
-    backgroundColor,
-    borderRadius,
-    headerHeight,
-    math,
-    primaryColor,
-    rem,
-    sameBorder,
-    size,
-    transitionProps
-} from '~/utils/style';
+import {WithStyled, borderRadius, headerHeight, math, rem, sameBorder, size, transitionProps} from '~/utils/style';
 
 import ee from '~/utils/event';
 import styled from 'styled-components';
@@ -21,13 +10,13 @@ const Div = styled.div<{maximized?: boolean; divWidth?: string; divHeight?: stri
             props.maximized ? `calc(100vh - ${headerHeight} - ${rem(40)})` : props.divHeight || 'auto',
             props.maximized ? '100%' : props.divWidth || '100%'
         )}
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     ${sameBorder({radius: math(`${borderRadius} * 2`)})}
     ${transitionProps(['border-color', 'box-shadow'])}
     position: relative;
 
     &:hover {
-        border-color: ${primaryColor};
+        border-color: var(--primary-color);
         box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
     }
 `;

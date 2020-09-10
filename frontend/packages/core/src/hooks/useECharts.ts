@@ -1,10 +1,12 @@
-import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {maskColor, position, primaryColor, size, textColor} from '~/utils/style';
+import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import {position, primaryColor, size} from '~/utils/style';
 
 import type {ECharts} from 'echarts';
 import {dataURL2Blob} from '~/utils/image';
 import {saveAs} from 'file-saver';
 import styled from 'styled-components';
+import {themes} from '~/utils/theme';
+import useTheme from '~/hooks/useTheme';
 
 export type Options = {
     loading?: boolean;
@@ -26,6 +28,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     const ref = useRef<T | null>(null);
     const echartInstance = useRef<ECharts | null>(null);
     const [echart, setEchart] = useState<ECharts | null>(null);
+    const theme = useTheme();
 
     const onInit = useRef(options.onInit);
     const onDispose = useRef(options.onDispose);
@@ -82,14 +85,14 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
             echartInstance.current?.showLoading('default', {
                 text: '',
                 color: primaryColor,
-                textColor,
-                maskColor,
+                textColor: themes[theme].textColor,
+                maskColor: themes[theme].maskColor,
                 zlevel: 0
             });
         } else {
             echartInstance.current?.hideLoading();
         }
-    }, [options.loading]);
+    }, [options.loading, theme]);
 
     const wrapper = useRef<W | null>(null);
     useLayoutEffect(() => {
@@ -138,3 +141,128 @@ export const Wrapper = styled.div`
         align-items: center;
     }
 `;
+
+export const useChartTheme = (gl?: boolean) => {
+    const theme = useTheme();
+    const tt = useMemo(() => themes[theme], [theme]);
+    if (gl) {
+        return {
+            title: {
+                textStyle: {
+                    color: tt.textColor
+                }
+            },
+            tooltip: {
+                backgroundColor: tt.tooltipBackgroundColor,
+                borderColor: tt.tooltipBackgroundColor,
+                textStyle: {
+                    color: tt.tooltipTextColor
+                }
+            },
+            xAxis3D: {
+                nameTextStyle: {
+                    color: tt.textLighterColor
+                },
+                axisLabel: {
+                    color: tt.textLighterColor
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: tt.borderColor
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: tt.borderColor
+                    }
+                }
+            },
+            yAxis3D: {
+                nameTextStyle: {
+                    color: tt.textLighterColor
+                },
+                axisLabel: {
+                    color: tt.textLighterColor
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: tt.borderColor
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: tt.borderColor
+                    }
+                }
+            },
+            zAxis3D: {
+                nameTextStyle: {
+                    color: tt.textLighterColor
+                },
+                axisLabel: {
+                    color: tt.textLighterColor
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: tt.borderColor
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: tt.borderColor
+                    }
+                }
+            }
+        };
+    }
+    return {
+        title: {
+            textStyle: {
+                color: tt.textColor
+            }
+        },
+        tooltip: {
+            backgroundColor: tt.tooltipBackgroundColor,
+            borderColor: tt.tooltipBackgroundColor,
+            textStyle: {
+                color: tt.tooltipTextColor
+            }
+        },
+        xAxis: {
+            nameTextStyle: {
+                color: tt.textLighterColor
+            },
+            axisLabel: {
+                color: tt.textLighterColor
+            },
+            axisLine: {
+                lineStyle: {
+                    color: tt.borderColor
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: tt.borderColor
+                }
+            }
+        },
+        yAxis: {
+            nameTextStyle: {
+                color: tt.textLighterColor
+            },
+            axisLabel: {
+                color: tt.textLighterColor
+            },
+            axisLine: {
+                lineStyle: {
+                    color: tt.borderColor
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: tt.borderColor
+                }
+            }
+        }
+    };
+};

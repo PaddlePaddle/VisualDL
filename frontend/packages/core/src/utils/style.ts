@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import * as polished from 'polished';
 
+import {colors, variables} from '~/utils/theme';
 import {createGlobalStyle, keyframes} from 'styled-components';
 
 import {css} from 'styled-components';
@@ -17,7 +18,7 @@ export {
     fontFace as fontFaceShortHand
 } from 'polished';
 
-const {math, size, lighten, darken, normalize, transitions, border, position} = polished;
+const {math, size, normalize, transitions, border, position} = polished;
 
 // sizes
 const fontSize = '14px';
@@ -31,35 +32,11 @@ export const asideWidth = rem(260);
 export const borderRadius = '4px';
 export const progressSpinnerSize = '20px';
 
-// colors
-export const primaryColor = '#2932E1';
-export const dangerColor = '#FF3912';
-export const primaryFocusedColor = lighten(0.08, primaryColor);
-export const primaryActiveColor = lighten(0.12, primaryColor);
-export const dangerFocusedColor = lighten(0.08, dangerColor);
-export const dangerActiveColor = lighten(0.12, dangerColor);
-export const selectedColor = '#1A73E8';
-export const lightColor = '#F4F5FC';
-export const lightFocusedColor = darken(0.03, lightColor);
-export const lightActiveColor = darken(0.06, lightColor);
-export const textColor = '#333';
-export const textLightColor = '#666';
-export const textLighterColor = '#999';
-export const textInvertColor = '#FFF';
-export const bodyBackgroundColor = '#F4F4F4';
-export const primaryBackgroundColor = '#F2F6FF';
-export const backgroundColor = '#FFF';
-export const backgroundFocusedColor = '#F6F6F6';
-export const borderColor = '#DDD';
-export const borderFocusedColor = darken(0.15, borderColor);
-export const borderActiveColor = darken(0.3, borderColor);
-export const navbarBackgroundColor = '#1527C2';
-export const navbarHoverBackgroundColor = lighten(0.05, navbarBackgroundColor);
-export const navbarHighlightColor = '#596cd6';
-export const progressBarColor = '#FFF';
-export const maskColor = 'rgba(255, 255, 255, 0.8)';
-export const tooltipBackgroundColor = 'rgba(0, 0, 0, 0.6)';
-export const tooltipTextColor = '#FFF';
+// shims
+// TODO: remove and use colors in theme instead
+export const primaryColor = colors.primary.default;
+export const primaryFocusedColor = colors.primary.focused;
+export const primaryActiveColor = colors.primary.active;
 
 // transitions
 export const duration = '75ms';
@@ -72,12 +49,12 @@ export const sameBorder = (
         | number
         | {width?: string | number; type?: string; color?: string; radius?: string | boolean},
     type = 'solid',
-    color = borderColor,
+    color = 'var(--border-color)',
     radius?: string | boolean
 ) => {
     if ('object' === typeof width) {
         type = width.type ?? 'solid';
-        color = width.color ?? borderColor;
+        color = width.color ?? 'var(--border-color)';
         radius = width.radius === true ? borderRadius : width.radius;
         width = width.width ?? '1px';
     }
@@ -99,16 +76,16 @@ export const transitionProps = (props: string | string[], args?: string | {durat
 
 export const link = css`
     a {
-        color: ${primaryColor};
+        color: var(--primary-color);
         cursor: pointer;
         ${transitionProps('color')};
 
         &:hover {
-            color: ${primaryFocusedColor};
+            color: var(--primary-focused-color);
         }
 
         &:active {
-            color: ${primaryActiveColor};
+            color: var(--primary-active-color);
         }
     }
 `;
@@ -130,6 +107,8 @@ export type WithStyled = {
 export const GlobalStyle = createGlobalStyle`
     ${normalize}
 
+    ${variables}
+
     html {
         font-size: ${fontSize};
         font-family: 'Merriweather Sans', Helvetica, Arial, sans-serif;
@@ -140,8 +119,8 @@ export const GlobalStyle = createGlobalStyle`
     html,
     body {
         height: 100%;
-        background-color: ${bodyBackgroundColor};
-        color: ${textColor};
+        background-color: var(--body-background-color);
+        color: var(--text-color);
     }
 
     a {
@@ -162,7 +141,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     #nprogress .bar {
-        background: ${progressBarColor};
+        background: var(--progress-bar-color);
         z-index: 99999;
         ${position('fixed', 0, null, null, 0)}
         ${size('2px', '100%')}
@@ -172,7 +151,7 @@ export const GlobalStyle = createGlobalStyle`
         display: block;
         ${position('absolute', null, 0, null, null)}
         ${size('100%', rem(100))}
-        box-shadow: 0 0 rem(10) ${progressBarColor}, 0 0 ${rem(5)} ${progressBarColor};
+        box-shadow: 0 0 rem(10) var(--progress-bar-color), 0 0 ${rem(5)} var(--progress-bar-color);
         opacity: 1;
         transform: rotate(3deg) translate(0px, -${rem(4)});
     }
@@ -188,8 +167,8 @@ export const GlobalStyle = createGlobalStyle`
         box-sizing: border-box;
 
         border: solid 2px transparent;
-        border-top-color: ${progressBarColor};
-        border-left-color: ${progressBarColor};
+        border-top-color: var(--progress-bar-color);
+        border-left-color: var(--progress-bar-color);
         border-radius: 50%;
 
         animation: ${spinner} 400ms linear infinite;
@@ -213,7 +192,7 @@ export const GlobalStyle = createGlobalStyle`
         }
 
         .Toastify__toast--default {
-            color: ${textColor};
+            color: var(--text-color);
         }
 
         .Toastify__toast-body {
@@ -223,9 +202,9 @@ export const GlobalStyle = createGlobalStyle`
 
     [data-tippy-root] .tippy-box {
         z-index: 10002;
-        color: ${textColor};
-        background-color: ${backgroundColor};
-        box-shadow: 0 0 10px 0 rgba(0,0,0,0.10);
+        color: var(--text-color);
+        background-color: var(--background-color);
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         border-radius: ${borderRadius};
 
         > .tippy-content {
@@ -235,21 +214,21 @@ export const GlobalStyle = createGlobalStyle`
         }
 
         &[data-placement^='top'] > .tippy-arrow::before {
-            border-top-color: ${backgroundColor};
+            border-top-color: var(--background-color);
         }
         &[data-placement^='bottom'] > .tippy-arrow::before {
-            border-bottom-color: ${backgroundColor};
+            border-bottom-color: var(--background-color);
         }
         &[data-placement^='left'] > .tippy-arrow::before {
-            border-left-color: ${backgroundColor};
+            border-left-color: var(--background-color);
         }
         &[data-placement^='right'] > .tippy-arrow::before {
-            border-right-color: ${backgroundColor};
+            border-right-color: var(--background-color);
         }
 
         &[data-theme~='tooltip'] {
-            color: ${tooltipTextColor};
-            background-color: ${tooltipBackgroundColor};
+            color: var(--tooltip-text-color);
+            background-color: var(--tooltip-background-color);
             box-shadow: none;
 
             > .tippy-content {
@@ -257,16 +236,16 @@ export const GlobalStyle = createGlobalStyle`
             }
 
             &[data-placement^='top'] > .tippy-arrow::before {
-                border-top-color: ${tooltipBackgroundColor};
+                border-top-color: var(--tooltip-background-color);
             }
             &[data-placement^='bottom'] > .tippy-arrow::before {
-                border-bottom-color: ${tooltipBackgroundColor};
+                border-bottom-color: var(--tooltip-background-color);
             }
             &[data-placement^='left'] > .tippy-arrow::before {
-                border-left-color: ${tooltipBackgroundColor};
+                border-left-color: var(--tooltip-background-color);
             }
             &[data-placement^='right'] > .tippy-arrow::before {
-                border-right-color: ${tooltipBackgroundColor};
+                border-right-color: var(--tooltip-background-color);
             }
         }
     }

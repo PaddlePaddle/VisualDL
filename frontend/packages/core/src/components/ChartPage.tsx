@@ -1,6 +1,6 @@
 import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {WithStyled, backgroundColor, headerHeight, link, primaryColor, rem, textLighterColor} from '~/utils/style';
+import {WithStyled, headerHeight, link, primaryColor, rem} from '~/utils/style';
 
 import BarLoader from 'react-spinners/BarLoader';
 import Chart from '~/components/Chart';
@@ -53,11 +53,11 @@ const Empty = styled.div<{height?: string}>`
     width: 100%;
     text-align: center;
     font-size: ${rem(16)};
-    color: ${textLighterColor};
+    color: var(--text-lighter-color);
     line-height: ${rem(24)};
     height: ${props => props.height ?? 'auto'};
     padding: ${rem(320)} 0 ${rem(70)};
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     background-image: url(${`${PUBLIC_PATH}/images/empty.svg`});
     background-repeat: no-repeat;
     background-position: calc(50% + ${rem(25)}) ${rem(70)};

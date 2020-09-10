@@ -1,19 +1,6 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import type {SearchItem, SearchResult} from '~/resource/graph/types';
-import {
-    backgroundColor,
-    backgroundFocusedColor,
-    css,
-    ellipsis,
-    em,
-    primaryColor,
-    rem,
-    sameBorder,
-    size,
-    textLightColor,
-    transitionProps,
-    triangle
-} from '~/utils/style';
+import {css, ellipsis, em, rem, sameBorder, size, transitionProps, triangle} from '~/utils/style';
 
 import Field from '~/components/Field';
 import SearchInput from '~/components/SearchInput';
@@ -32,7 +19,7 @@ const SearchField = styled(Field)`
     }
 
     > a:last-child {
-        color: ${primaryColor};
+        color: var(--primary-color);
         cursor: pointer;
         margin-left: ${rem(10)};
         flex: none;
@@ -42,7 +29,7 @@ const SearchField = styled(Field)`
 const Empty = styled.div`
     padding: ${rem(100)} 0;
     text-align: center;
-    color: ${textLightColor};
+    color: var(--text-light-color);
 `;
 
 const Wrapper = styled.div`
@@ -59,7 +46,7 @@ const Item = styled.li`
     padding: ${em(10)} ${em(12)};
     cursor: pointer;
     width: 100%;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     display: flex;
     align-items: center;
     ${transitionProps('background-color')}
@@ -71,7 +58,7 @@ const Item = styled.li`
     }
 
     &:hover {
-        background-color: ${backgroundFocusedColor};
+        background-color: var(--background-focused-color);
     }
 `;
 

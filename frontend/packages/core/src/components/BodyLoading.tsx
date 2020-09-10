@@ -7,7 +7,7 @@ import styled from 'styled-components';
 const Wrapper = styled.div`
     ${size('100vh', '100vw')}
     ${position('fixed', 0, 0, 0, 0)}
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: var(--mask-color);
     display: flex;
     justify-content: center;
     align-items: center;

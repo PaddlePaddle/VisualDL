@@ -1,5 +1,5 @@
+import {colors} from '~/utils/theme';
 import {format} from 'd3-format';
-import {primaryColor} from '~/utils/style';
 
 export const color = [
     '#2932E1',
@@ -44,6 +44,7 @@ export const colorAlt = [
 
 export const title = {
     textStyle: {
+        color: '#000',
         fontSize: 16,
         fontWeight: 'bold'
     },
@@ -54,6 +55,10 @@ export const title = {
 export const tooltip = {
     trigger: 'axis',
     backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    borderColor: 'rgba(0, 0, 0, 0.75)',
+    textStyle: {
+        color: '#fff'
+    },
     hideDelay: 100,
     enterable: false,
     axisPointer: {
@@ -62,11 +67,11 @@ export const tooltip = {
             show: true
         },
         lineStyle: {
-            color: '#2932E1',
+            color: colors.primary.default,
             type: 'dashed'
         },
         crossStyle: {
-            color: '#2932E1',
+            color: colors.primary.default,
             type: 'dashed'
         }
     }
@@ -139,6 +144,10 @@ export const yAxis = {
     type: 'value',
     name: '',
     splitNumber: 4,
+    nameTextStyle: {
+        fontSize: 12,
+        color: '#666'
+    },
     axisLine: {
         lineStyle: {
             color: '#CCC'
@@ -163,7 +172,7 @@ export const series = {
     hoverAnimation: false,
     animationDuration: 100,
     lineStyle: {
-        color: primaryColor,
+        color: colors.primary.default,
         width: 1.5
     }
 };

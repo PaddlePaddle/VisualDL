@@ -1,8 +1,11 @@
 import {createContext, useContext} from 'react';
 
 import type {Dispatch} from 'react';
+import type {Theme} from '~/utils/theme';
+import {theme} from '~/utils/theme';
 
 export interface GlobalState {
+    theme: Theme;
     scalar: {
         runs: string[];
     };
@@ -24,6 +27,7 @@ export interface GlobalState {
 }
 
 export const globalState: GlobalState = {
+    theme,
     scalar: {
         runs: []
     },

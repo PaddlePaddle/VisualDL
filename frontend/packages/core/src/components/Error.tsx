@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {WithStyled, backgroundColor, em, link, rem, size, textColor, textLightColor} from '~/utils/style';
+import {WithStyled, em, link, rem, size} from '~/utils/style';
 
 import styled from 'styled-components';
 
@@ -10,7 +10,7 @@ const Wrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     height: 100%;
     width: 100%;
 
@@ -24,11 +24,11 @@ const Wrapper = styled.div`
 
     > .inner {
         width: calc(50% - ${rem(280)});
-        color: ${textLightColor};
+        color: var(--text-light-color);
         ${link}
 
         h4 {
-            color: ${textColor};
+            color: var(--text-color);
             font-size: ${em(18)};
             font-weight: 700;
         }

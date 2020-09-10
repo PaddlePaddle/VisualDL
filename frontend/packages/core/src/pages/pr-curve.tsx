@@ -1,7 +1,6 @@
 import ChartPage, {WithChart} from '~/components/ChartPage';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import type {Run, StepInfo, Tag} from '~/resource/pr-curve';
-import {borderColor, rem} from '~/utils/style';
 
 import {AsideSection} from '~/components/Aside';
 import Content from '~/components/Content';
@@ -15,6 +14,7 @@ import {TimeType} from '~/resource/pr-curve';
 import Title from '~/components/Title';
 import {cycleFetcher} from '~/utils/fetch';
 import queryString from 'query-string';
+import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useRunningRequest} from '~/hooks/useRequest';
 import useTagFilter from '~/hooks/useTagFilter';
@@ -33,7 +33,7 @@ const StepSliderWrapper = styled.div`
     }
 
     + .run-section {
-        border-top: 1px solid ${borderColor};
+        border-top: 1px solid var(--border-color);
         margin-top: 0;
         padding-top: ${rem(20)};
     }

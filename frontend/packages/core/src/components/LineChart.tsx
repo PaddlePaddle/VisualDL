@@ -2,7 +2,7 @@ import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
-import useECharts, {Options, Wrapper} from '~/hooks/useECharts';
+import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
 import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
@@ -46,6 +46,8 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             onInit
         });
 
+        const theme = useChartTheme();
+
         useImperativeHandle(ref, () => ({
             restore: () => {
                 echart?.dispatchAction({
@@ -79,6 +81,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     )
                 },
                 options,
+                theme,
                 defaults
             );
             if ((chartOptions?.xAxis as EChartOption.XAxis).type === 'time') {
@@ -106,7 +109,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 );
             }
             echart?.setOption(chartOptions, {notMerge: true});
-        }, [options, data, title, i18n.language, echart]);
+        }, [options, data, title, theme, i18n.language, echart]);
 
         return (
             <Wrapper ref={wrapper} className={className}>

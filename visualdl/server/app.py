@@ -87,8 +87,8 @@ def create_app(args):
         template = Template(
             os.path.join(server_path, template_file_path),
             PUBLIC_PATH=public_path.lstrip('/'),
-            API_TOKEN_KEY='',
-            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else ''
+            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else '',
+            THEME='' if args.theme is None else args.theme
         )
 
         @app.route('/')

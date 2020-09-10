@@ -17,6 +17,7 @@ build_frontend() {
       API_URL="/{{PUBLIC_PATH}}/api" \
       API_TOKEN_KEY="{{API_TOKEN_KEY}}" \
       TELEMETRY_ID="{{TELEMETRY_ID}}" \
+      THEME="{{THEME}}" \
       PATH="$PATH" \
       ./scripts/build.sh
 

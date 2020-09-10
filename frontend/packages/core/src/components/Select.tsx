@@ -1,10 +1,6 @@
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import {
     WithStyled,
-    backgroundColor,
-    backgroundFocusedColor,
-    borderColor,
-    borderFocusedColor,
     borderRadius,
     borderRadiusShortHand,
     css,
@@ -12,9 +8,7 @@ import {
     em,
     math,
     sameBorder,
-    selectedColor,
     size,
-    textLighterColor,
     transitionProps
 } from '~/utils/style';
 
@@ -34,7 +28,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
     max-width: 100%;
     display: inline-block;
     position: relative;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     ${sameBorder({radius: true})}
     ${props => (props.opened ? borderRadiusShortHand('bottom', '0') : '')}
     ${transitionProps(
@@ -42,7 +36,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
     )}
 
     &:hover {
-        border-color: ${borderFocusedColor};
+        border-color: var(--border-focused-color);
     }
 `;
 
@@ -53,7 +47,7 @@ const Trigger = styled.div<{selected?: boolean}>`
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    ${props => (props.selected ? '' : `color: ${textLighterColor}`)}
+    ${props => (props.selected ? '' : 'color: var(--text-lighter-color)')}
 `;
 
 const TriggerIcon = styled(Icon)<{opened?: boolean}>`
@@ -81,7 +75,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     left: -1px;
     padding: ${padding} 0;
     border: inherit;
-    border-top-color: ${borderColor};
+    border-top-color: var(--border-color);
     ${borderRadiusShortHand('bottom', borderRadius)}
     display: ${props => (props.opened ? 'block' : 'none')};
     z-index: 9999;
@@ -91,7 +85,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     ${props =>
         props.empty
             ? {
-                  color: textLighterColor,
+                  color: 'var(--text-lighter-color)',
                   textAlign: 'center'
               }
             : ''}
@@ -106,14 +100,14 @@ const listItem = css`
     ${transitionProps(['color', 'background-color'])}
 
     &:hover {
-        background-color: ${backgroundFocusedColor};
+        background-color: var(--background-focused-color);
     }
 `;
 
 const ListItem = styled.div<{selected?: boolean}>`
     ${ellipsis()}
     ${listItem}
-    ${props => (props.selected ? `color: ${selectedColor};` : '')}
+    ${props => (props.selected ? `color: var(--select-selected-text-color);` : '')}
 `;
 
 const MultipleListItem = styled(Checkbox)<{selected?: boolean}>`

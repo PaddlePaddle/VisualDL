@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useCallback, useState} from 'react';
-import {em, primaryColor, sameBorder, size, textLightColor} from '~/utils/style';
+import {em, sameBorder, size} from '~/utils/style';
 
 import Button from '~/components/Button';
 import Icon from '~/components/Icon';
@@ -12,7 +12,7 @@ const DropZone = styled.div<{actived: boolean}>`
             width: '1px',
             type: 'dashed',
             radius: em(16),
-            color: props.actived ? primaryColor : undefined
+            color: props.actived ? 'var(--primary-color)' : undefined
         })}
     background-color: ${props => (props.actived ? '#f2f6ff' : '#f9f9f9')};
     ${size('43.2%', '68%')}
@@ -23,7 +23,7 @@ const DropZone = styled.div<{actived: boolean}>`
 
     > .upload-icon {
         font-size: ${em(64)};
-        color: ${primaryColor};
+        color: var(--primary-color);
     }
 
     > span {
@@ -45,7 +45,7 @@ const SupportTable = styled.table`
         line-height: 2;
 
         &:first-of-type {
-            color: ${textLightColor};
+            color: var(--text-light-color);
             text-align: right;
             padding-right: ${em(10)};
             font-size: ${em(16)};

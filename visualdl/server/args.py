@@ -26,6 +26,8 @@ default_cache_timeout = 20
 default_public_path = '/app'
 default_product = 'normal'
 
+support_themes = ['light', 'dark']
+
 
 class DefaultArgs(object):
     def __init__(self, args):
@@ -40,6 +42,7 @@ class DefaultArgs(object):
         self.model = args.get('model', '')
         self.product = args.get('product', default_product)
         self.telemetry = args.get('telemetry', True)
+        self.theme = args.get('theme', None)
 
 
 def get_host(host=default_host, port=default_port):
@@ -61,6 +64,11 @@ def validate_args(args):
     # public path must start with `/`
     if args.public_path is not None and not args.public_path.startswith('/'):
         logger.error('Public path should always start with a `/`.')
+        sys.exit(-1)
+
+    # theme not support
+    if args.theme is not None and args.theme not in support_themes:
+        logger.error('Theme {} is not support.'.format(args.theme))
         sys.exit(-1)
 
 
@@ -99,6 +107,7 @@ class ParseArgs(object):
         self.model = args.model
         self.product = args.product
         self.telemetry = args.telemetry
+        self.theme = args.theme
 
 
 def parse_args():
@@ -189,6 +198,14 @@ def parse_args():
         dest="telemetry",
         default=True,
         help="disable telemetry"
+    )
+    parser.add_argument(
+        "--theme",
+        action="store",
+        dest="theme",
+        default=None,
+        choices=support_themes,
+        help="set theme"
     )
 
     args = parser.parse_args()

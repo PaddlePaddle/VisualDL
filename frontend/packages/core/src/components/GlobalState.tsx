@@ -1,8 +1,10 @@
 import {GlobalDispatchContext, GlobalStateContext, globalState} from '~/hooks/useGlobalState';
-import React, {useReducer} from 'react';
+import React, {useCallback, useEffect, useReducer} from 'react';
+import {THEME, matchMedia} from '~/utils/theme';
 
 import type {FunctionComponent} from 'react';
 import type {GlobalState as GlobalStateType} from '~/hooks/useGlobalState';
+import isObject from 'lodash/isObject';
 
 interface GlobalDispatch {
     (state: GlobalStateType, newState: Partial<GlobalStateType>): GlobalStateType;
@@ -14,8 +16,8 @@ const GlobalState: FunctionComponent = ({children}) => {
         (state, newState) =>
             Object.entries(newState).reduce(
                 (m, [key, value]) => {
-                    if (m.hasOwnProperty(key)) {
-                        m[key] = {...m[key], ...value};
+                    if (m.hasOwnProperty(key) && isObject(m[key])) {
+                        m[key] = {...m[key], ...(value as any)};
                     } else {
                         m[key] = value;
                     }
@@ -26,6 +28,19 @@ const GlobalState: FunctionComponent = ({children}) => {
             ),
         globalState
     );
+
+    const toggleTheme = useCallback((e: MediaQueryListEvent) => dispatch({theme: e.matches ? 'dark' : 'light'}), [
+        dispatch
+    ]);
+
+    useEffect(() => {
+        if (!THEME) {
+            matchMedia.addEventListener('change', toggleTheme);
+            return () => {
+                matchMedia.removeEventListener('change', toggleTheme);
+            };
+        }
+    }, [toggleTheme]);
 
     return (
         <GlobalStateContext.Provider value={state}>

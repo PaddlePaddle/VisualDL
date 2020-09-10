@@ -1,6 +1,6 @@
 import type {Argument as ArgumentType, Property as PropertyType} from '~/resource/graph/types';
 import React, {FunctionComponent, useMemo, useState} from 'react';
-import {borderColor, em, sameBorder, textLightColor, textLighterColor} from '~/utils/style';
+import {em, sameBorder} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import styled from 'styled-components';
@@ -41,16 +41,16 @@ const Wrapper = styled.div`
             cursor: pointer;
             font-size: ${em(14)};
             margin-left: ${em(10)};
-            color: ${textLighterColor};
+            color: var(--text-lighter-color);
 
             &:hover,
             &:active {
-                color: ${textLightColor};
+                color: var(--text-light-color);
             }
         }
 
         &:not(:first-child) {
-            border-top: 1px solid ${borderColor};
+            border-top: 1px solid var(--border-color);
         }
     }
 `;
