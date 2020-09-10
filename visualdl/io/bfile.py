@@ -127,10 +127,16 @@ class LocalFileSystem(object):
             fp.write(file_content)
 
     def append(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "ab" if binary_mode else "a")
+        try:
+            self._write(filename, file_content, "ab" if binary_mode else "a")
+        except FileNotFoundError:
+            self.makedirs(self.makedirs(os.path.dirname(filename)))
 
     def write(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "ab" if binary_mode else "a")
+        try:
+            self._write(filename, file_content, "ab" if binary_mode else "a")
+        except FileNotFoundError:
+            self.makedirs(self.makedirs(os.path.dirname(filename)))
         # self._write(filename, file_content, "wb" if binary_mode else "w")
 
     def walk(self, dir):
