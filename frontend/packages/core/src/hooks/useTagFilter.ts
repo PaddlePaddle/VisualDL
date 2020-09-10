@@ -2,6 +2,7 @@ import type {Run, Tag, TagWithSingleRun, TagsData} from '~/types';
 import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
 
+import {cache} from 'swr';
 import camelCase from 'lodash/camelCase';
 import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
@@ -163,6 +164,9 @@ const useTagFilter = (type: string, running: boolean) => {
     const query = useQuery();
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
+
+    // clear cache in order to fully reload data when switching page
+    useEffect(() => () => cache.delete(`/${type}/tags`), [type]);
 
     const pageName = useMemo(() => camelCase(type), [type]);
 
