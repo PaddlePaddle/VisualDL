@@ -75,7 +75,7 @@ const Graph: FunctionComponent = () => {
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | File[] | null>(globalState.model);
+    const [files, setFiles] = useState<FileList | File[] | null>(globalState.graph.model);
     const onClickFile = useCallback(() => {
         if (file.current) {
             file.current.value = '';
@@ -86,7 +86,7 @@ const Graph: FunctionComponent = () => {
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
             if (target && target.files && target.files.length) {
-                globalDispatch({model: target.files});
+                globalDispatch({graph: {model: target.files}});
                 setFiles(target.files);
             }
         },

@@ -204,7 +204,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             ...chartOptions,
             tooltip: {
                 ...chartOptions.tooltip,
-                formatter
+                formatter,
+                hideDelay: 300,
+                enterable: true
             },
             xAxis: {
                 type: xAxisType,
