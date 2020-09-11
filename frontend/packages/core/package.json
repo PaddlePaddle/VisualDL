@@ -101,9 +101,9 @@
         "fs-extra": "9.0.1",
         "http-proxy-middleware": "1.0.5",
         "jest": "26.4.2",
-        "snowpack": "2.10.1",
+        "snowpack": "2.10.3",
         "typescript": "4.0.2",
-        "yargs": "15.4.1"
+        "yargs": "16.0.3"
     },
     "engines": {
         "node": ">=12",
