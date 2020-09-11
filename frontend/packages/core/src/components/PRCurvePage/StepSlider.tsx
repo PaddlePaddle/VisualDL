@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import {ellipsis, size} from '~/utils/style';
+import {ellipsis, size, transitionProps} from '~/utils/style';
 
 import Field from '~/components/Field';
 import RangeSlider from '~/components/RangeSlider';
@@ -17,6 +17,7 @@ const TimeDisplay = styled.div`
     font-size: 0.857142857em;
     padding-left: 1.666666667em;
     margin-bottom: 0.416666667em;
+    ${transitionProps('color')}
 `;
 
 const Label = styled.span<{color: string}>`

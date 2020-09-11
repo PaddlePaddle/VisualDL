@@ -1,14 +1,15 @@
 import type {Run, Tag, TagWithSingleRun, TagsData} from '~/types';
+import {actions, selectors} from '~/store';
 import {color, colorAlt} from '~/utils/chart';
 import {useCallback, useEffect, useMemo, useReducer} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 
+import type {Page} from '~/store/runs/types';
 import {cache} from 'swr';
-import camelCase from 'lodash/camelCase';
 import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
 import intersectionBy from 'lodash/intersectionBy';
 import uniq from 'lodash/uniq';
-import useGlobalState from '~/hooks/useGlobalState';
 import useQuery from '~/hooks/useQuery';
 import {useRunningRequest} from '~/hooks/useRequest';
 
@@ -160,7 +161,7 @@ const reducer = (state: State, action: Action): State => {
 };
 
 // TODO: refactor to improve performance
-const useTagFilter = (type: string, running: boolean) => {
+const useTagFilter = (type: Page, running: boolean) => {
     const query = useQuery();
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
@@ -168,13 +169,9 @@ const useTagFilter = (type: string, running: boolean) => {
     // clear cache in order to fully reload data when switching page
     useEffect(() => () => cache.delete(`/${type}/tags`), [type]);
 
-    const pageName = useMemo(() => camelCase(type), [type]);
-
-    const [globalState, globalDispatch] = useGlobalState();
-    const storedRuns = useMemo(
-        () => ((globalState as unknown) as Record<string, {runs: string[]}>)[camelCase(pageName)]?.runs ?? [],
-        [pageName, globalState]
-    );
+    const storeDispatch = useDispatch();
+    const selector = useMemo(() => selectors.runs.getRunsByPage(type), [type]);
+    const storedRuns = useSelector(selector);
 
     const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
     const tags: Tags = useMemo(
@@ -222,15 +219,9 @@ const useTagFilter = (type: string, running: boolean) => {
             });
         }
     }, [queryRuns, state.runs]);
-    useEffect(
-        () =>
-            globalDispatch({
-                [pageName]: {
-                    runs: state.globalRuns
-                }
-            }),
-        [pageName, state.globalRuns, globalDispatch]
-    );
+    useEffect(() => {
+        storeDispatch(actions.runs.setSelectedRuns(type, state.globalRuns));
+    }, [storeDispatch, state.globalRuns, type]);
 
     const tagsWithSingleRun = useMemo(
         () =>

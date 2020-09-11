@@ -1,6 +1,6 @@
 import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {WithStyled, headerHeight, link, primaryColor, rem} from '~/utils/style';
+import {WithStyled, headerHeight, link, primaryColor, rem, transitionProps} from '~/utils/style';
 
 import BarLoader from 'react-spinners/BarLoader';
 import Chart from '~/components/Chart';
@@ -62,6 +62,7 @@ const Empty = styled.div<{height?: string}>`
     background-repeat: no-repeat;
     background-position: calc(50% + ${rem(25)}) ${rem(70)};
     background-size: ${rem(280)} ${rem(244)};
+    ${transitionProps(['color', 'background-color'])}
     ${link}
 `;
 

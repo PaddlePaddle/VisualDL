@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from 'react';
+import {rem, transitionProps} from '~/utils/style';
 
-import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
@@ -17,11 +17,13 @@ const Title = styled.div`
     align-items: center;
     border-bottom: 1px solid var(--border-color);
     margin: 0 ${rem(20)};
+    ${transitionProps('border-color')}
 
     > .close {
         flex: none;
         color: var(--text-light-color);
         cursor: pointer;
+        ${transitionProps('color')}
     }
 `;
 

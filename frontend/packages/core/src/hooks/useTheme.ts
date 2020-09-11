@@ -1,9 +1,6 @@
-import useGlobalState from '~/hooks/useGlobalState';
-import {useMemo} from 'react';
+import {selectors} from '~/store';
+import {useSelector} from 'react-redux';
 
-const useTheme = () => {
-    const [globalState] = useGlobalState();
-    return useMemo(() => globalState.theme, [globalState.theme]);
-};
+const useTheme = () => useSelector(selectors.theme.theme);
 
 export default useTheme;

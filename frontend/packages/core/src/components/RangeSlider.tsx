@@ -1,6 +1,6 @@
 import InputRange, {Range} from 'react-input-range';
 import React, {FunctionComponent, useCallback} from 'react';
-import {WithStyled, em, half, position, sameBorder, size} from '~/utils/style';
+import {WithStyled, em, half, position, sameBorder, size, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 
@@ -38,6 +38,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
                 margin-top: -${half(railHeight)};
                 background-color: var(--slider-rail-color);
                 border-radius: ${half(railHeight)};
+                ${transitionProps('background-color')}
             }
 
             &--active {
@@ -46,6 +47,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
                 background-color: ${props => (props.disabled ? 'var(--text-lighter-color)' : 'var(--color)')};
                 border-radius: ${half(railHeight)};
                 outline: none;
+                ${transitionProps('background-color')}
             }
         }
 
@@ -63,6 +65,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
                     radius: half(thumbSize)
                 })}
             background-color: var(--background-color);
+            ${transitionProps(['border-color', 'background-color'])}
         }
     }
 `;

@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useCallback} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {borderRadius, em} from '~/utils/style';
+import {borderRadius, em, transitionProps} from '~/utils/style';
 
 import type {Documentation as DocumentationType} from '~/resource/graph/types';
 import GraphSidebar from '~/components/GraphPage/GraphSidebar';
@@ -51,6 +51,7 @@ const Documentation = styled.div`
         padding: ${em(10)};
         border-radius: ${borderRadius};
         overflow: auto;
+        ${transitionProps('color')}
 
         code {
             background-color: transparent;
@@ -65,6 +66,7 @@ const Documentation = styled.div`
         color: var(--text-light-color);
         padding: ${em(2)} ${em(4)};
         border-radius: ${em(2)};
+        ${transitionProps('color')}
     }
 `;
 

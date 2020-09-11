@@ -17,7 +17,7 @@ const Input = styled.input`
     display: inline-block;
     outline: none;
     padding: ${padding};
-    ${transitionProps('border-color')}
+    ${transitionProps(['border-color', 'color', 'caret-color'])}
     border: none;
     border-bottom: 1px solid var(--border-color);
     text-align: center;

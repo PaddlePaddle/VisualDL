@@ -1,6 +1,6 @@
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {contentHeight, position, primaryColor, rem, size} from '~/utils/style';
+import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
@@ -21,6 +21,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    ${transitionProps('background-color')}
 `;
 
 const RenderContent = styled.div<{show: boolean}>`
@@ -37,6 +38,7 @@ const Toolbox = styled(ChartToolbox)`
     height: ${toolboxHeight};
     border-bottom: 1px solid var(--border-color);
     padding: 0 ${rem(20)};
+    ${transitionProps('border-color')}
 `;
 
 const Content = styled.div`

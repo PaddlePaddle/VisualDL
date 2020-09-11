@@ -121,6 +121,7 @@ export const GlobalStyle = createGlobalStyle`
         height: 100%;
         background-color: var(--body-background-color);
         color: var(--text-color);
+        ${transitionProps(['background-color', 'color'])}
     }
 
     a {
@@ -141,10 +142,11 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     #nprogress .bar {
-        background: var(--progress-bar-color);
+        background-color: var(--progress-bar-color);
         z-index: 99999;
         ${position('fixed', 0, null, null, 0)}
         ${size('2px', '100%')}
+        ${transitionProps('background-color')}
     }
 
     #nprogress .peg {
@@ -154,6 +156,7 @@ export const GlobalStyle = createGlobalStyle`
         box-shadow: 0 0 rem(10) var(--progress-bar-color), 0 0 ${rem(5)} var(--progress-bar-color);
         opacity: 1;
         transform: rotate(3deg) translate(0px, -${rem(4)});
+        ${transitionProps('box-shadow')}
     }
 
     #nprogress .spinner {
@@ -172,6 +175,8 @@ export const GlobalStyle = createGlobalStyle`
         border-radius: 50%;
 
         animation: ${spinner} 400ms linear infinite;
+
+        ${transitionProps('border-color')}
     }
 
     .nprogress-custom-parent {
@@ -193,6 +198,7 @@ export const GlobalStyle = createGlobalStyle`
 
         .Toastify__toast--default {
             color: var(--text-color);
+            ${transitionProps('color')}
         }
 
         .Toastify__toast-body {
@@ -206,11 +212,16 @@ export const GlobalStyle = createGlobalStyle`
         background-color: var(--background-color);
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
         border-radius: ${borderRadius};
+        ${transitionProps(['color', 'background-color'])}
 
         > .tippy-content {
             padding: 0;
             /* trigger bfc */
             display: flow-root;
+        }
+
+        > .tippy-arrow {
+            ${transitionProps('border-color')}
         }
 
         &[data-placement^='top'] > .tippy-arrow::before {

@@ -7,6 +7,7 @@ import styled from 'styled-components';
 const Wrapper = styled.div`
     background-color: var(--background-color);
     border-radius: ${borderRadius};
+    ${transitionProps('background-color')}
 
     & + & {
         margin-top: ${rem(4)};
@@ -21,12 +22,14 @@ const Header = styled.div`
     padding: 0 ${em(20)};
     color: var(--text-lighter-color);
     cursor: pointer;
+    ${transitionProps('color')}
 
     > h3 {
         color: var(--text-color);
         flex-grow: 1;
         margin: 0;
         font-weight: 700;
+        ${transitionProps('color')}
     }
 
     > .total {
@@ -37,6 +40,7 @@ const Header = styled.div`
 const Content = styled.div`
     border-top: 1px solid var(--border-color);
     padding: ${rem(20)};
+    ${transitionProps('border-color')}
 `;
 
 const CollapseIcon = styled(Icon)<{opened?: boolean}>`

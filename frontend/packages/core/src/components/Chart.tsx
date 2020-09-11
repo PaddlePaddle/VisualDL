@@ -12,7 +12,7 @@ const Div = styled.div<{maximized?: boolean; divWidth?: string; divHeight?: stri
         )}
     background-color: var(--background-color);
     ${sameBorder({radius: math(`${borderRadius} * 2`)})}
-    ${transitionProps(['border-color', 'box-shadow'])}
+    ${transitionProps(['border-color', 'box-shadow', 'background-color'])}
     position: relative;
 
     &:hover {

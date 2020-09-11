@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {WithStyled, asideWidth, rem, size} from '~/utils/style';
+import {WithStyled, asideWidth, rem, size, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 
@@ -10,6 +10,7 @@ export const AsideSection = styled.section`
         border-bottom: 1px solid var(--border-color);
         padding-bottom: ${rem(20)};
         margin-bottom: 0;
+        ${transitionProps('border-color')}
     }
 `;
 

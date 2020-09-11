@@ -1,6 +1,6 @@
 import type {Argument as ArgumentType, Property as PropertyType} from '~/resource/graph/types';
 import React, {FunctionComponent, useMemo, useState} from 'react';
-import {em, sameBorder} from '~/utils/style';
+import {em, sameBorder, transitionProps} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import styled from 'styled-components';
@@ -42,6 +42,7 @@ const Wrapper = styled.div`
             font-size: ${em(14)};
             margin-left: ${em(10)};
             color: var(--text-lighter-color);
+            ${transitionProps('color')}
 
             &:hover,
             &:active {
@@ -51,6 +52,7 @@ const Wrapper = styled.div`
 
         &:not(:first-child) {
             border-top: 1px solid var(--border-color);
+            ${transitionProps('border-color')}
         }
     }
 `;

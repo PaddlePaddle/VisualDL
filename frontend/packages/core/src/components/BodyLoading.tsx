@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {position, primaryColor, size} from '~/utils/style';
+import {position, primaryColor, size, transitionProps} from '~/utils/style';
 
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
@@ -13,6 +13,7 @@ const Wrapper = styled.div`
     align-items: center;
     overscroll-behavior: none;
     cursor: progress;
+    ${transitionProps('background-color')}
 `;
 
 const BodyLoading: FunctionComponent = () => {

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {WithStyled, primaryColor, rem, size} from '~/utils/style';
+import {WithStyled, primaryColor, rem, size, transitionProps} from '~/utils/style';
 
 import {AudioPlayer} from '~/utils/audio';
 import type {BlobResponse} from '~/utils/fetch';
@@ -24,6 +24,7 @@ const Container = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 0 ${rem(20)};
+    ${transitionProps('background-color')}
 
     > .control {
         font-size: ${rem(16)};
@@ -31,6 +32,7 @@ const Container = styled.div`
         margin: 0 ${rem(10)};
         color: var(--primary-color);
         cursor: pointer;
+        ${transitionProps('color')}
 
         &.volumn {
             font-size: ${rem(20)};
@@ -60,6 +62,7 @@ const Container = styled.div`
         color: var(--text-lighter-color);
         font-size: ${rem(12)};
         margin: 0 ${rem(5)};
+        ${transitionProps('color')}
     }
 `;
 
@@ -73,6 +76,7 @@ const VolumnSlider = styled(Slider)`
     outline: none;
     border-radius: ${rem(2)};
     user-select: none;
+    ${transitionProps('color')}
 
     --color: var(--primary-color);
 
@@ -93,6 +97,7 @@ const VolumnSlider = styled(Slider)`
         border-bottom-right-radius: ${rem(2)};
         border-top: ${rem(4)} solid var(--color);
         box-sizing: content-box;
+        ${transitionProps(['background-color', 'color'])}
     }
 
     .rangeslider__handle {
@@ -102,6 +107,7 @@ const VolumnSlider = styled(Slider)`
         left: -${rem(2)};
         border-radius: 50%;
         outline: none;
+        ${transitionProps('background-color')}
 
         .rangeslider__handle-tooltip,
         .rangeslider__handle-label {

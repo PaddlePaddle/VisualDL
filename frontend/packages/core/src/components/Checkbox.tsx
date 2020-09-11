@@ -63,6 +63,7 @@ const Content = styled.div<{disabled?: boolean}>`
     line-height: ${height};
     flex-grow: 1;
     ${props => (props.disabled ? 'color: var(--text-lighter-color);' : '')}
+    ${transitionProps('color')}
     ${ellipsis()}
 `;
 

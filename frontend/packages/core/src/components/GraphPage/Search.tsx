@@ -23,6 +23,7 @@ const SearchField = styled(Field)`
         cursor: pointer;
         margin-left: ${rem(10)};
         flex: none;
+        ${transitionProps('color')}
     }
 `;
 
@@ -30,6 +31,7 @@ const Empty = styled.div`
     padding: ${rem(100)} 0;
     text-align: center;
     color: var(--text-light-color);
+    ${transitionProps('color')}
 `;
 
 const Wrapper = styled.div`

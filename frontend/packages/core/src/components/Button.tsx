@@ -36,7 +36,7 @@ const Wrapper = styled.a<{type?: colorTypes; rounded?: boolean; disabled?: boole
     vertical-align: top;
     text-align: center;
     padding: 0 ${em(20)};
-    ${transitionProps(['background-color', 'border-color'])}
+    ${transitionProps(['background-color', 'border-color', 'color'])}
     ${ellipsis()}
 
     &:hover,

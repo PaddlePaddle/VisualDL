@@ -32,7 +32,8 @@ const Wrapper = styled.div<{opened?: boolean}>`
     ${sameBorder({radius: true})}
     ${props => (props.opened ? borderRadiusShortHand('bottom', '0') : '')}
     ${transitionProps(
-        'border-color'
+        'border-color',
+        'background-color'
     )}
 
     &:hover {
@@ -48,6 +49,7 @@ const Trigger = styled.div<{selected?: boolean}>`
     align-items: center;
     cursor: pointer;
     ${props => (props.selected ? '' : 'color: var(--text-lighter-color)')}
+    ${transitionProps('color')}
 `;
 
 const TriggerIcon = styled(Icon)<{opened?: boolean}>`
@@ -82,6 +84,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     line-height: 1;
     background-color: inherit;
     box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
+    ${transitionProps(['border-color', 'color'])}
     ${props =>
         props.empty
             ? {

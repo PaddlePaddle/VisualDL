@@ -3,7 +3,9 @@ import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} 
 import GraphComponent, {GraphRef} from '~/components/GraphPage/Graph';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
+import {actions, selectors} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
+import {useDispatch, useSelector} from 'react-redux';
 
 import type {BlobResponse} from '~/utils/fetch';
 import Button from '~/components/Button';
@@ -20,7 +22,6 @@ import Search from '~/components/GraphPage/Search';
 import Title from '~/components/Title';
 import Uploader from '~/components/GraphPage/Uploader';
 import styled from 'styled-components';
-import useGlobalState from '~/hooks/useGlobalState';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
@@ -71,11 +72,12 @@ const Loading = styled.div`
 const Graph: FunctionComponent = () => {
     const {t} = useTranslation(['graph', 'common']);
 
-    const [globalState, globalDispatch] = useGlobalState();
+    const storeDispatch = useDispatch();
+    const storeModel = useSelector(selectors.graph.model);
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | File[] | null>(globalState.graph.model);
+    const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
     const onClickFile = useCallback(() => {
         if (file.current) {
             file.current.value = '';
@@ -86,11 +88,11 @@ const Graph: FunctionComponent = () => {
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
             if (target && target.files && target.files.length) {
-                globalDispatch({graph: {model: target.files}});
+                storeDispatch(actions.graph.setModel(target.files));
                 setFiles(target.files);
             }
         },
-        [globalDispatch]
+        [storeDispatch]
     );
 
     const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');

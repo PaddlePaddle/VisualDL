@@ -16,7 +16,7 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     background-color: var(--input-background-color);
     color: var(--text-color);
     caret-color: var(--text-color);
-    ${transitionProps('border-color')}
+    ${transitionProps(['border-color', 'background-color', 'caret-color', 'color'])}
 
     &:hover,
     &:focus {
@@ -25,6 +25,7 @@ const StyledInput = styled.input<{rounded?: boolean}>`
 
     &::placeholder {
         color: var(--text-lighter-color);
+        ${transitionProps('color')}
     }
 `;
 

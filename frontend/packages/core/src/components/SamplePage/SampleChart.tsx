@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ellipsis, em, primaryColor, rem, size} from '~/utils/style';
+import {ellipsis, em, primaryColor, rem, size, transitionProps} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
@@ -50,6 +50,7 @@ const Title = styled.div<{color: string}>`
         color: var(--text-light-color);
         ${ellipsis()}
         max-width: 50%;
+        ${transitionProps('color')}
 
         &::before {
             content: '';
@@ -83,6 +84,7 @@ const Footer = styled.div`
 const FooterInfo = styled.div`
     color: var(--text-lighter-color);
     font-size: ${rem(12)};
+    ${transitionProps('color')}
 
     > * {
         display: inline-block;

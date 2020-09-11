@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useCallback, useState} from 'react';
-import {em, sameBorder, size} from '~/utils/style';
+import {em, sameBorder, size, transitionProps} from '~/utils/style';
 
 import Button from '~/components/Button';
 import Icon from '~/components/Icon';
@@ -20,10 +20,12 @@ const DropZone = styled.div<{actived: boolean}>`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    ${transitionProps('border-color', 'background-color')}
 
     > .upload-icon {
         font-size: ${em(64)};
         color: var(--primary-color);
+        ${transitionProps('color')}
     }
 
     > span {
@@ -50,6 +52,7 @@ const SupportTable = styled.table`
             padding-right: ${em(10)};
             font-size: ${em(16)};
             width: ${em(250)};
+            ${transitionProps('color')}
         }
     }
 `;

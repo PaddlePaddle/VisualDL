@@ -45,6 +45,7 @@ const Nav = styled.nav`
     display: flex;
     justify-content: space-between;
     align-items: stretch;
+    ${transitionProps(['background-color', 'color'])}
 
     > .left {
         display: flex;

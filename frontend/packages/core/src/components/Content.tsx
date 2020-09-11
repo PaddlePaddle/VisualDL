@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {contentHeight, contentMargin, headerHeight, position} from '~/utils/style';
+import {contentHeight, contentMargin, headerHeight, position, transitionProps} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
 import styled from 'styled-components';
@@ -21,6 +21,7 @@ const Aside = styled.aside`
     ${position('sticky', headerHeight, 0, null, null)}
     overflow-x: hidden;
     overflow-y: auto;
+    ${transitionProps('background-color')}
 `;
 
 type ContentProps = {

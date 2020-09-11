@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {em, size} from '~/utils/style';
+import {em, size, transitionProps} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import Properties from '~/components/GraphPage/Properties';
@@ -16,6 +16,7 @@ const Dialog = styled.div`
     overscroll-behavior: none;
     background-color: var(--mask-color);
     z-index: 999;
+    ${transitionProps('background-color')}
 
     > .modal {
         width: ${em(536)};
@@ -33,6 +34,7 @@ const Dialog = styled.div`
             justify-content: space-between;
             align-items: center;
             font-size: ${em(18)};
+            ${transitionProps('background-color')}
 
             > .modal-title {
                 flex: auto;
@@ -52,6 +54,7 @@ const Dialog = styled.div`
             background-color: var(--background-color);
             overflow: auto;
             max-height: calc(80vh - ${em(47)});
+            ${transitionProps('background-color')}
         }
     }
 `;

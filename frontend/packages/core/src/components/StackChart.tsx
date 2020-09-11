@@ -2,7 +2,7 @@ import * as chart from '~/utils/chart';
 
 import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import {WithStyled, primaryColor, transitionProps} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
 import GridLoader from 'react-spinners/GridLoader';
@@ -18,6 +18,7 @@ const Tooltip = styled.div`
     border-radius: 4px;
     padding: 5px;
     display: none;
+    ${transitionProps(['color', 'background-color'])}
 `;
 
 type renderItem = NonNullable<EChartOption.SeriesCustom['renderItem']>;
