@@ -262,6 +262,8 @@ def compute_curve(labels, predictions, num_thresholds=None, weights=None):
         num_thresholds (int): Number of thresholds used to draw the curve.
         weights (float): Multiple of data to display on the curve.
     """
+    if isinstance(labels, list):
+        labels = np.array(labels)
     _MINIMUM_COUNT = 1e-7
 
     if weights is None:
