@@ -87,6 +87,7 @@ type ScalarChartProps = {
     sortingMethod: SortingMethod;
     outlier?: boolean;
     smoothedOnly?: boolean;
+    showMostValue?: boolean;
     running?: boolean;
 };
 
@@ -99,6 +100,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     sortingMethod,
     outlier,
     smoothedOnly,
+    showMostValue,
     running
 }) => {
     const {t, i18n} = useTranslation(['scalar', 'common']);
@@ -132,7 +134,10 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [datasets, smoothing]
     );
     const smoothedDatasetsOrUndefined = useHeavyWork(smoothWasm, null, transform, transformParams);
-    const smoothedDatasets = useMemo(() => smoothedDatasetsOrUndefined ?? [], [smoothedDatasetsOrUndefined]);
+    const smoothedDatasets = useMemo<NonNullable<typeof smoothedDatasetsOrUndefined>>(
+        () => smoothedDatasetsOrUndefined ?? [],
+        [smoothedDatasetsOrUndefined]
+    );
 
     const axisRangeParams = useMemo(
         () => ({
@@ -164,11 +169,12 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         () =>
             chartData({
                 data: smoothedDatasets.slice(0, runs.length),
+                ranges: showMostValue ? datasetRanges ?? [] : [],
                 runs,
                 xAxis,
                 smoothedOnly
             }),
-        [smoothedDatasets, runs, xAxis, smoothedOnly]
+        [smoothedDatasets, datasetRanges, runs, xAxis, smoothedOnly, showMostValue]
     );
 
     const maxStepLength = useMemo(
@@ -198,7 +204,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             ...chartOptions,
             tooltip: {
                 ...chartOptions.tooltip,
-                formatter
+                formatter,
+                hideDelay: 300,
+                enterable: true
             },
             xAxis: {
                 type: xAxisType,

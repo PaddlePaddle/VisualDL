@@ -3,13 +3,45 @@ import {createContext, useContext} from 'react';
 import type {Dispatch} from 'react';
 
 export interface GlobalState {
-    runs: string[];
-    model: FileList | File[] | null;
+    scalar: {
+        runs: string[];
+    };
+    histogram: {
+        runs: string[];
+    };
+    image: {
+        runs: string[];
+    };
+    audio: {
+        runs: string[];
+    };
+    prCurve: {
+        runs: string[];
+    };
+    graph: {
+        model: FileList | File[] | null;
+    };
 }
 
 export const globalState: GlobalState = {
-    runs: [],
-    model: null
+    scalar: {
+        runs: []
+    },
+    histogram: {
+        runs: []
+    },
+    image: {
+        runs: []
+    },
+    audio: {
+        runs: []
+    },
+    prCurve: {
+        runs: []
+    },
+    graph: {
+        model: null
+    }
 };
 
 export const GlobalStateContext = createContext<GlobalState>(globalState);

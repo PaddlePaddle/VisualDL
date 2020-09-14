@@ -201,7 +201,7 @@ Image 组件用于显示图片数据随训练的变化。在模型训练过程�
 Image 组件的记录接口如下：
 
 ```python
-add_image(tag, img, step, walltime=None)
+add_image(tag, img, step, walltime=None, dataformats="HWC")
 ```
 接口参数说明如下：
 |   参数   |     格式      |                    含义                     |
@@ -210,6 +210,7 @@ add_image(tag, img, step, walltime=None)
 | img      | numpy.ndarray | 以ndarray格式表示的图片                     |
 | step     | int           | 记录的步数                                  |
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
+| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
 
 ### Demo
 下面展示了使用 Image 组件记录数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py)

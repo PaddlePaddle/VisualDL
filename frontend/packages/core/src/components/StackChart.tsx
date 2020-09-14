@@ -64,7 +64,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
         };
         const rawData = useMemo(() => seriesData.data ?? [], [seriesData.data]);
 
-        const negativeY = useMemo(() => minY - (maxY - minY) * 0.4, [minY, maxY]);
+        const negativeY = useMemo(() => (minY === 0 && maxY === 0 ? -0.4 : minY - (maxY - minY) * 0.4), [minY, maxY]);
 
         const getPoint = useCallback(
             (x: number, y: number, z: number, getCoord: GetCoord) => {

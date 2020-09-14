@@ -30,6 +30,8 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     const onInit = useRef(options.onInit);
     const onDispose = useRef(options.onDispose);
 
+    const hideTip = useCallback(() => echartInstance.current?.dispatchAction({type: 'hideTip'}), []);
+
     const createChart = useCallback(() => {
         (async () => {
             const {default: echarts} = await import('echarts');
@@ -40,6 +42,8 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 return;
             }
             echartInstance.current = echarts.init((ref.current as unknown) as HTMLDivElement);
+
+            ref.current.addEventListener('mouseleave', hideTip);
 
             setTimeout(() => {
                 if (options.zoom) {
@@ -57,15 +61,16 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
 
             setEchart(echartInstance.current);
         })();
-    }, [options.gl, options.zoom]);
+    }, [options.gl, options.zoom, hideTip]);
 
     const destroyChart = useCallback(() => {
         if (echartInstance.current) {
             onDispose.current?.(echartInstance.current);
         }
         echartInstance.current?.dispose();
+        ref.current?.removeEventListener('mouseleave', hideTip);
         setEchart(null);
-    }, []);
+    }, [hideTip]);
 
     useEffect(() => {
         createChart();

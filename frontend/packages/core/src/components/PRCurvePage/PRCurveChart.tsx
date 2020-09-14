@@ -171,7 +171,9 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({cid, runs, tag, run
             ...chartOptions,
             tooltip: {
                 ...chartOptions.tooltip,
-                formatter
+                formatter,
+                hideDelay: 300,
+                enterable: true
             }
         }),
         [formatter]

@@ -5,6 +5,10 @@ import type {Run} from '~/types';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
+    max-height: ${rem(160)};
+    overflow: hidden auto;
+    overscroll-behavior: auto contain;
+
     table {
         border-spacing: none;
         text-align: left;
