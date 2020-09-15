@@ -12,7 +12,8 @@ FROM python:3-alpine
 WORKDIR /home/visualdl
 COPY --from=builder /home/visualdl/dist/* dist/
 
-RUN apk add --no-cache --virtual .build-deps build-base linux-headers jpeg-dev zlib-dev && \
+RUN apk add --no-cache jpeg-dev && \
+    apk add --no-cache --virtual .build-deps build-base linux-headers zlib-dev && \
     pip install --disable-pip-version-check --find-links=dist visualdl && \
     apk del --no-network .build-deps && \
     rm -rf dist
