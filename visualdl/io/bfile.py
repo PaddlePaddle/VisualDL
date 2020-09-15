@@ -127,10 +127,16 @@ class LocalFileSystem(object):
             fp.write(file_content)
 
     def append(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "ab" if binary_mode else "a")
+        try:
+            self._write(filename, file_content, "ab" if binary_mode else "a")
+        except FileNotFoundError:
+            self.makedirs(os.path.dirname(filename))
 
     def write(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "ab" if binary_mode else "a")
+        try:
+            self._write(filename, file_content, "ab" if binary_mode else "a")
+        except FileNotFoundError:
+            self.makedirs(os.path.dirname(filename))
         # self._write(filename, file_content, "wb" if binary_mode else "w")
 
     def walk(self, dir):
@@ -315,13 +321,23 @@ class BosFileSystem(object):
                                           content_length=len(init_data))
         content_length = len(file_content)
 
-        offset = self.get_meta(bucket_name, object_key).metadata.content_length
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=file_content,
-                                      content_md5=content_md5(file_content),
-                                      content_length=content_length,
-                                      offset=offset)
+        try:
+            offset = self.get_meta(bucket_name,
+                                   object_key).metadata.content_length
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=object_key,
+                                          data=file_content,
+                                          content_md5=content_md5(file_content),
+                                          content_length=content_length,
+                                          offset=offset)
+        except (exception.BceServerError, exception.BceHttpClientError) as e:
+            init_data = b''
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=object_key,
+                                          data=init_data,
+                                          content_md5=content_md5(init_data),
+                                          content_length=len(init_data))
+
         self._file_contents_to_add = b''
         self._file_contents_count = 0
         self._start_append_time = time.time()
