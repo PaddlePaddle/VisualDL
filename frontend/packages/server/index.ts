@@ -2,6 +2,7 @@
 
 import {config} from 'dotenv';
 import express from 'express';
+import {promises as fs} from 'fs';
 import path from 'path';
 import resolve from 'enhanced-resolve';
 
@@ -54,10 +55,32 @@ async function start() {
 
     if (pingUrl && pingUrl !== '/' && pingUrl !== publicPath && pingUrl.startsWith('/')) {
         app.get(pingUrl, (_req, res) => {
-            res.type('text/plain');
-            res.status(200).send('OK!');
+            res.type('text/plain').status(200).send('OK!');
         });
     }
+
+    require('@visualdl/core/builder/environment');
+    // snowpack uses PUBLIC_URL & MODE in template
+    // https://www.snowpack.dev/#environment-variables
+    process.env.PUBLIC_URL = process.env.PUBLIC_PATH;
+    process.env.MODE = process.env.NODE_ENV;
+
+    const template = await fs.readFile(path.resolve(root, '../public/index.html'), {encoding: 'utf-8'});
+    const rendered = template.replace(/%(.+?)%/g, (_matched, key) => process.env[key] ?? '');
+
+    const {default: clientEnv} = await import('@visualdl/core/dist/__snowpack__/env');
+    const serverEnv = Object.keys(clientEnv).reduce((m, key) => {
+        if (process.env[key] != null) {
+            m[key] = process.env[key];
+        }
+        return m;
+    }, clientEnv);
+
+    app.get(`${publicPath}/__snowpack__/env.js`, (_req, res) => {
+        res.type('.js')
+            .status(200)
+            .send(`export default ${JSON.stringify(serverEnv)};`);
+    });
 
     app.use(publicPath, express.static(root, {index: false}));
 
@@ -67,7 +90,7 @@ async function start() {
     });
 
     app.get('*', (_req, res) => {
-        res.sendFile('index.html', {root});
+        res.type('.html').status(200).send(rendered);
     });
 
     const server = app.listen(port, host, () => {

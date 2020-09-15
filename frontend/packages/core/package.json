@@ -30,7 +30,9 @@
     },
     "main": "dist/index.html",
     "files": [
-        "dist"
+        "dist",
+        "public/index.html",
+        "builder/environment.js"
     ],
     "dependencies": {
         "@tippyjs/react": "4.1.0",
