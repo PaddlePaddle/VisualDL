@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 
 import crypto, {BinaryLike} from 'crypto';
+import {promises as fs, writeFileSync} from 'fs';
 
 import fetch from 'node-fetch';
-import {promises as fs} from 'fs';
 import path from 'path';
 import querystring from 'querystring';
 
@@ -49,6 +49,11 @@ export default class IO {
     constructor(url: string, dataDir: string) {
         this.url = url;
         this.dataDir = dataDir;
+
+        writeFileSync(path.join(this.dataDir, IO.metaFileName), JSON.stringify(this.metadata), {
+            encoding: 'utf-8',
+            flag: 'w'
+        });
     }
 
     public static isSameUri(url1: Pick<MetaData, 'uri' | 'query'>, url2: Pick<MetaData, 'uri' | 'query'>) {
