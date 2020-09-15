@@ -80,14 +80,14 @@ def upload_to_dev(logdir):
     err_code = res.get('code')
     msg = res.get('msg')
 
-    if '100000' == err_code:
-        print(msg)
-        return
-    elif '000000' == err_code:
+    if '000000' == err_code:
         sts_ak = msg.get('sts_ak')
         sts_sk = msg.get('sts_sk')
         sts_token = msg.get('token')
         bucket_id = msg.get('dir')
+    else:
+        print(msg)
+        return
 
     if not sts_ak or not sts_sk or not sts_token:
         return

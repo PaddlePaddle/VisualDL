@@ -168,7 +168,7 @@ def run(logdir=None, **options):
 
 def main():
     args = parse_args()
-    if args.get('dest') == 'server':
+    if args.get('dest') == 'service':
         if args.get('behavior') == 'upload':
             upload_to_dev(args.get('logdir'))
     else:
