@@ -3,7 +3,6 @@
 import crypto, {BinaryLike} from 'crypto';
 import {promises as fs, writeFileSync} from 'fs';
 
-import fetch from 'node-fetch';
 import path from 'path';
 import querystring from 'querystring';
 
@@ -141,13 +140,14 @@ export default class IO {
         return filename;
     }
 
-    fetch(uri: string, query?: Query) {
+    async fetch(uri: string, query?: Query) {
+        const {default: fetch} = await import('node-fetch');
         let url = this.url + apiUrl + uri;
         if (!isEmpty(query)) {
             url += '?' + querystring.stringify(query);
         }
         try {
-            return fetch(url);
+            return await fetch(url);
         } catch (e) {
             console.error(e);
         }

@@ -1,21 +1,16 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "ES2018",
+        "module": "commonjs",
         "lib": [
             "esnext",
-            "esnext.asynciterable",
-            "dom"
+            "esnext.asynciterable"
         ],
         "moduleResolution": "node",
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "downlevelIteration": true,
         "declaration": true,
         "skipLibCheck": true,
         "outDir": "dist"
-    },
-    "include": [
-        "index.ts",
-        "builder"
-    ]
+    }
 }
