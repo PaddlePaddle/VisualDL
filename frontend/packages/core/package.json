@@ -26,7 +26,7 @@
         "dev": "snowpack dev",
         "build": "snowpack build",
         "start": "yarn dev --reload",
-        "test": "jest"
+        "test": "jest --passWithNoTests"
     },
     "main": "dist/index.html",
     "files": [
