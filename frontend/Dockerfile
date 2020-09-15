@@ -14,11 +14,11 @@ ENV NODE_ENV production
 
 RUN apk update && \
     apk upgrade && \
-    apk add --no-cache git && \
+    apk add --no-cache --virtual .build-deps git && \
     tar zxf /tmp/server.tar.gz && \
     rm /tmp/server.tar.gz && \
     yarn install --no-lockfile && \
     yarn cache clean && \
-    apk del git
+    apk del --no-network .build-deps
 
 ENTRYPOINT ["yarn", "start"]

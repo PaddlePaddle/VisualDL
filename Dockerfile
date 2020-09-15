@@ -12,9 +12,9 @@ FROM python:3-alpine
 WORKDIR /home/visualdl
 COPY --from=builder /home/visualdl/dist/* dist/
 
-RUN apk add --no-cache jpeg-dev zlib-dev && \
-    apk add --no-cache --virtual .build-deps build-base linux-headers && \
+RUN apk add --no-cache --virtual .build-deps build-base linux-headers jpeg-dev zlib-dev && \
     pip install --disable-pip-version-check --find-links=dist visualdl && \
-    apk del .build-deps
+    apk del --no-network .build-deps && \
+    rm -rf dist
 
 ENTRYPOINT ["visualdl", "--logdir", "/home/visualdl/log", "--host", "0.0.0.0"]
