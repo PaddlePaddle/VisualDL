@@ -23,6 +23,23 @@ const root = path.dirname(resolve.sync(__dirname, '@visualdl/core'));
 
 const app = express();
 
+async function parseTemplate() {
+    const template = await fs.readFile(path.resolve(root, '../public/index.html'), {encoding: 'utf-8'});
+    return template.replace(/%(.+?)%/g, (_matched, key) => process.env[key] ?? '');
+}
+
+async function extendEnv() {
+    const content = await fs.readFile(path.resolve(root, '__snowpack__/env.js'), {encoding: 'utf-8'});
+    const match = content.match(/export default\s*({.*})/);
+    const env = JSON.parse(match[1]);
+    return Object.keys(env).reduce((m, key) => {
+        if (process.env[key] != null) {
+            m[key] = process.env[key];
+        }
+        return m;
+    }, env);
+}
+
 async function start() {
     if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
@@ -62,24 +79,18 @@ async function start() {
     require('@visualdl/core/builder/environment');
     // snowpack uses PUBLIC_URL & MODE in template
     // https://www.snowpack.dev/#environment-variables
-    process.env.PUBLIC_URL = process.env.PUBLIC_PATH;
     process.env.MODE = process.env.NODE_ENV;
+    if (process.env.PUBLIC_PATH != null) {
+        process.env.PUBLIC_URL = process.env.PUBLIC_PATH;
+    }
 
-    const template = await fs.readFile(path.resolve(root, '../public/index.html'), {encoding: 'utf-8'});
-    const rendered = template.replace(/%(.+?)%/g, (_matched, key) => process.env[key] ?? '');
-
-    const {default: clientEnv} = await import('@visualdl/core/dist/__snowpack__/env');
-    const serverEnv = Object.keys(clientEnv).reduce((m, key) => {
-        if (process.env[key] != null) {
-            m[key] = process.env[key];
-        }
-        return m;
-    }, clientEnv);
+    const template = await parseTemplate();
+    const env = await extendEnv();
 
     app.get(`${publicPath}/__snowpack__/env.js`, (_req, res) => {
         res.type('.js')
             .status(200)
-            .send(`export default ${JSON.stringify(serverEnv)};`);
+            .send(`export default ${JSON.stringify(env)};`);
     });
 
     app.use(publicPath, express.static(root, {index: false}));
@@ -90,7 +101,7 @@ async function start() {
     });
 
     app.get('*', (_req, res) => {
-        res.type('.html').status(200).send(rendered);
+        res.type('.html').status(200).send(template);
     });
 
     const server = app.listen(port, host, () => {

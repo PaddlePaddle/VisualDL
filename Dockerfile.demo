@@ -21,7 +21,7 @@ RUN ["./scripts/build.sh"]
 FROM node:14-alpine
 
 WORKDIR /home/visualdl
-COPY --from=builder /home/visualdl/frontend/ ./
+COPY --from=builder /home/visualdl/frontend/output/server.tar.gz /tmp
 
 ENV NODE_ENV production
 ENV PUBLIC_PATH /paddle/visualdl/demo
@@ -30,6 +30,13 @@ ENV DEMO true
 ENV HOST 0.0.0.0
 ENV PORT 8999
 
-RUN ["yarn", "install", "--frozen-lockfile"]
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache git && \
+    tar zxf /tmp/server.tar.gz && \
+    rm /tmp/server.tar.gz && \
+    yarn install --no-lockfile && \
+    yarn cache clean && \
+    apk del git
 
-ENTRYPOINT ["yarn", "workspace" , "@visualdl/server", "start"]
+ENTRYPOINT ["yarn", "start"]
