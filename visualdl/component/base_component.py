@@ -264,6 +264,8 @@ def compute_curve(labels, predictions, num_thresholds=None, weights=None):
     """
     if isinstance(labels, list):
         labels = np.array(labels)
+    if isinstance(predictions, list):
+        predictions = np.array(predictions)
     _MINIMUM_COUNT = 1e-7
 
     if weights is None:
