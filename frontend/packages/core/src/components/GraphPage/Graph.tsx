@@ -11,6 +11,12 @@ import {useTranslation} from 'react-i18next';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
+let IFRAME_HOST = `${window.location.protocol}//${window.location.host}`;
+if (PUBLIC_PATH.startsWith('http')) {
+    const url = new URL(PUBLIC_PATH);
+    IFRAME_HOST = `${url.protocol}//${url.host}`;
+}
+
 const toolboxHeight = rem(40);
 
 const Wrapper = styled.div`
@@ -169,7 +175,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     type,
                     data
                 },
-                `${window.location.protocol}//${window.location.host}`
+                IFRAME_HOST
             );
         }, []);
         useEffect(() => {
