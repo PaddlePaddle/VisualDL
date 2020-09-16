@@ -24,8 +24,6 @@ WORKDIR /home/visualdl
 COPY --from=builder /home/visualdl/frontend/output/server.tar.gz /tmp
 
 ENV NODE_ENV production
-ENV PUBLIC_PATH /paddle/visualdl/demo
-ENV BASE_URI /paddle/visualdl/demo
 ENV PING_URL /ping
 ENV DEMO true
 ENV HOST 0.0.0.0
