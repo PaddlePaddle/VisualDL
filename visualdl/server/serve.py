@@ -19,10 +19,17 @@ import json
 
 from visualdl.io import bfile
 from visualdl.reader.reader import is_VDLRecord_file
-from visualdl.utils.dir import get_server_url
+from visualdl.utils.dir import CONFIG_PATH
+from visualdl.server.log import logger
 
 
-def beg_for_token():
+def get_server_url():
+    with open(CONFIG_PATH, 'r') as fp:
+        server_url = json.load(fp)['server_url']
+    return server_url
+
+
+def apply_for_token():
     url = get_server_url() + '/sts/'
     res = requests.post(url=url).json()
 
@@ -41,7 +48,7 @@ def get_url(path, **kwargs):
         url = msg.get('url')
         return url
     else:
-        print(msg)
+        logger.info(msg)
         return
 
 
@@ -71,11 +78,11 @@ def get_vdl_log_file(logdirs):
 
 def upload_to_dev(logdir):
     if not logdir:
-        print('Error: Must specify directory to upload via `--logdir`.')
+        logger.error("Must specify directory to upload via `--logdir`.")
     else:
         walks = get_vdl_log_file(logdir)
 
-    res = beg_for_token()
+    res = apply_for_token()
 
     err_code = res.get('code')
     msg = res.get('msg')
@@ -86,7 +93,7 @@ def upload_to_dev(logdir):
         sts_token = msg.get('token')
         bucket_id = msg.get('dir')
     else:
-        print(msg)
+        logger.info(msg)
         return
 
     if not sts_ak or not sts_sk or not sts_token:
@@ -100,4 +107,4 @@ def upload_to_dev(logdir):
 
         bos_fs.upload_object_from_file(path=bucket_id, filename=filename)
     url = get_url(bucket_id)
-    print("You can view the visualization results on page`%s`." % (url))
+    logger.info("You can view the visualization results on page`%s`." % url)

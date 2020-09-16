@@ -29,12 +29,6 @@ CONF_HOME = os.path.join(VDL_HOME, 'conf')
 CONFIG_PATH = os.path.join(CONF_HOME, 'config.json')
 
 
-def get_server_url():
-    with open(CONFIG_PATH, 'r') as fp:
-        server_url = json.load(fp)['server_url']
-    return server_url
-
-
 def init_vdl_config():
     if not os.path.exists(CONF_HOME):
         os.makedirs(CONF_HOME)
