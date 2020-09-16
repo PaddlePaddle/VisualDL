@@ -40,6 +40,8 @@ class DefaultArgs(object):
         self.model = args.get('model', '')
         self.product = args.get('product', default_product)
         self.telemetry = args.get('telemetry', True)
+        self.dest = args.get('dest', '')
+        self.behavior = args.get('behavior', '')
 
 
 def get_host(host=default_host, port=default_port):
@@ -99,6 +101,8 @@ class ParseArgs(object):
         self.model = args.model
         self.product = args.product
         self.telemetry = args.telemetry
+        self.dest = args.dest
+        self.behavior = args.behavior
 
 
 def parse_args():
@@ -189,6 +193,15 @@ def parse_args():
         dest="telemetry",
         default=True,
         help="disable telemetry"
+    )
+    parser.add_argument(
+        'dest',
+        nargs='?',
+        help='set destination for log'
+    )
+    parser.add_argument(
+        "behavior",
+        nargs='?'
     )
 
     args = parser.parse_args()

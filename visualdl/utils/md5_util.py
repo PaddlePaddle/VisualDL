@@ -1,4 +1,4 @@
-# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+# Copyright (c) 2020 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
 # limitations under the License.
 # =======================================================================
 
-from __future__ import absolute_import
+import hashlib
 
-import os
 
-from visualdl.writer.writer import LogWriter  # noqa
-from visualdl.version import vdl_version as __version__
-from visualdl.utils.dir import init_vdl_config
-
-init_vdl_config()
-
-ROOT = os.path.dirname(__file__)
+def md5(text):
+    if isinstance(text, str):
+        text = text.encode("utf8")
+    md5 = hashlib.md5()
+    md5.update(text)
+    return md5.hexdigest()
