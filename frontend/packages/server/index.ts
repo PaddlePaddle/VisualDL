@@ -29,7 +29,7 @@ async function parseTemplate() {
 }
 
 async function extendEnv() {
-    const content = await fs.readFile(path.resolve(root, '__snowpack__/env.js'), {encoding: 'utf-8'});
+    const content = await fs.readFile(path.resolve(root, '__snowpack__/env.local.js'), {encoding: 'utf-8'});
     const match = content.match(/export default\s*({.*})/);
     const env = JSON.parse(match[1]);
     return Object.keys(env).reduce((m, key) => {
@@ -87,7 +87,7 @@ async function start() {
     const template = await parseTemplate();
     const env = await extendEnv();
 
-    app.get(`${publicPath}/__snowpack__/env.js`, (_req, res) => {
+    app.get(`${publicPath}/__snowpack__/env.local.js`, (_req, res) => {
         res.type('.js')
             .status(200)
             .send(`export default ${JSON.stringify(env)};`);

@@ -31,7 +31,9 @@ module.exports = {
     },
     proxy: {
         ...[mock.pathname, icons.pathname, netron.pathname, wasm.pathname].reduce((m, pathname) => {
-            m[(process.env.PUBLIC_PATH || '') + pathname] = `http://${devServer.host}:${devServer.port}${pathname}`;
+            m[
+                process.env.SNOWPACK_PUBLIC_BASE_URI + pathname
+            ] = `http://${devServer.host}:${devServer.port}${pathname}`;
             return m;
         }, {})
     },
@@ -41,7 +43,7 @@ module.exports = {
         port
     },
     buildOptions: {
-        baseUrl: process.env.PUBLIC_PATH || '/',
+        baseUrl: process.env.SNOWPACK_PUBLIC_PATH || '/',
         clean: true
     },
     installOptions: {

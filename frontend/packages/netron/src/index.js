@@ -91,7 +91,7 @@ host.BrowserHost = class {
 
     message(type, data) {
         if (window.parent) {
-            window.parent.postMessage({type: type, data: data});
+            window.parent.postMessage({type: type, data: data}, '*');
         }
     }
 
