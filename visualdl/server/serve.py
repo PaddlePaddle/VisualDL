@@ -16,6 +16,7 @@
 # =======================================================================
 import requests
 import json
+import os
 
 from visualdl.io import bfile
 from visualdl.reader.reader import is_VDLRecord_file
@@ -36,9 +37,9 @@ def apply_for_token():
     return res
 
 
-def get_url(path, **kwargs):
+def get_url(path='', model='', **kwargs):
     server_url = get_server_url() + '/url/'
-    data = json.dumps({'path': path})
+    data = json.dumps({'path': path, 'model': model})
     headers = {"Content-Type": "application/json"}
     res = requests.post(url=server_url, headers=headers, data=data).json()
     err_code = res.get('code')
@@ -48,7 +49,7 @@ def get_url(path, **kwargs):
         url = msg.get('url')
         return url
     else:
-        logger.info(msg)
+        logger.error(msg)
         return
 
 
@@ -76,10 +77,12 @@ def get_vdl_log_file(logdirs):
     return walks_temp
 
 
-def upload_to_dev(logdir):
-    if not logdir:
-        logger.error("Must specify directory to upload via `--logdir`.")
-    else:
+def upload_to_dev(logdir=None, model=None):
+    if not logdir and not model:
+        logger.error("Must specify directory to upload via `--logdir` or specify model to upload via `--model`.")
+        return
+    walks = {}
+    if logdir:
         walks = get_vdl_log_file(logdir)
 
     res = apply_for_token()
@@ -93,7 +96,7 @@ def upload_to_dev(logdir):
         sts_token = msg.get('token')
         bucket_id = msg.get('dir')
     else:
-        logger.info(msg)
+        logger.error(msg)
         return
 
     if not sts_ak or not sts_sk or not sts_token:
@@ -104,7 +107,13 @@ def upload_to_dev(logdir):
 
     for key, value in walks.items():
         filename = bos_fs.join(key, value)
-
         bos_fs.upload_object_from_file(path=bucket_id, filename=filename)
-    url = get_url(bucket_id)
-    logger.info("You can view the visualization results on page`%s`." % url)
+
+    if model:
+        if os.path.getsize(model) > 1024 * 1024 * 100:
+            logger.error('Size of model must less than 100M.')
+        else:
+            bos_fs.upload_object_from_file(path=bucket_id, filename=model)
+    url = get_url(path=bucket_id, model=model)
+
+    print("You can view the visualization results on page`%s`." % url)

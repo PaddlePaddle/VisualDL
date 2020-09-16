@@ -170,7 +170,7 @@ def main():
     args = parse_args()
     if args.get('dest') == 'service':
         if args.get('behavior') == 'upload':
-            upload_to_dev(args.get('logdir'))
+            upload_to_dev(args.get('logdir'), args.get('model'))
     else:
         _run(args)
 
