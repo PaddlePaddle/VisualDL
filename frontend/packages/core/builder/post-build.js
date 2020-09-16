@@ -91,22 +91,27 @@ async function pushCdn(directory) {
 
 const dist = path.resolve(__dirname, '../dist');
 const dest = path.join(dist, '__snowpack__');
+const publicDir = path.resolve(__dirname, '../public');
 
-const ENV_PROVIDER = `
-<script type="module">
-    import env from '${process.env.SNOWPACK_PUBLIC_BASE_URI}/__snowpack__/env.local.js'; globalThis.env = env;
-</script>
-`;
+function envProviderTemplate(baseUri) {
+    return `
+        <script type="module">
+            import env from '${baseUri}/__snowpack__/env.local.js'; globalThis.env = env;
+        </script>
+    `;
+}
+
 const ENV_INJECT = 'const env = globalThis.env || {}; export default env;';
+const ENV_PROVIDER = envProviderTemplate(process.env.SNOWPACK_PUBLIC_BASE_URI);
+const ENV_TEMPLATE_PROVIDER = envProviderTemplate('%BASE_URI%');
 
-async function main() {
-    const indexFile = path.join(dist, 'index.html');
-    const index = await fs.readFile(indexFile, 'utf-8');
-    const scriptPos = index.indexOf('<script ');
-    const newIndex = index.slice(0, scriptPos) + ENV_PROVIDER + index.slice(scriptPos);
+async function injectProvider(input, provider, output) {
+    const file = await fs.readFile(input, 'utf-8');
+    const scriptPos = file.indexOf('<script ');
+    const newFile = file.slice(0, scriptPos) + provider + file.slice(scriptPos);
     await fs.writeFile(
-        indexFile,
-        minify(newIndex, {
+        output || input,
+        minify(newFile, {
             collapseWhitespace: true,
             removeAttributeQuotes: true,
             removeComments: true,
@@ -115,13 +120,18 @@ async function main() {
         }),
         'utf-8'
     );
+}
+
+async function main() {
+    await injectProvider(path.join(dist, 'index.html'), ENV_PROVIDER);
+    await injectProvider(path.join(publicDir, 'index.html'), ENV_TEMPLATE_PROVIDER, path.join(dist, 'index.tpl.html'));
 
     const envFile = path.join(dest, 'env.js');
     await fs.rename(envFile, path.join(dest, 'env.local.js'));
     await fs.writeFile(envFile, ENV_INJECT, 'utf-8');
 
     if (process.env.CDN_VERSION) {
-        // TODO: do not upload index.html & __snowpack__/env.local.js
+        // TODO: do not upload index.html & index.tpl.html & __snowpack__/env.local.js
         await pushCdn(dist);
     }
 }

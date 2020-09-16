@@ -15,8 +15,6 @@ const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT || '', 10) || 8999;
 const backend = process.env.BACKEND;
 const delay = Number.parseInt(process.env.DELAY || '', 10);
-const publicPath = process.env.PUBLIC_PATH || '/';
-const apiUrl = process.env.API_URL || `${process.env.PUBLIC_PATH || ''}/api`;
 const pingUrl = process.env.PING_URL;
 
 const root = path.dirname(resolve.sync(__dirname, '@visualdl/core'));
@@ -24,7 +22,7 @@ const root = path.dirname(resolve.sync(__dirname, '@visualdl/core'));
 const app = express();
 
 async function parseTemplate() {
-    const template = await fs.readFile(path.resolve(root, '../public/index.html'), {encoding: 'utf-8'});
+    const template = await fs.readFile(path.resolve(root, 'index.tpl.html'), {encoding: 'utf-8'});
     return template.replace(/%(.+?)%/g, (_matched, key) => process.env[key] ?? '');
 }
 
@@ -41,6 +39,21 @@ async function extendEnv() {
 }
 
 async function start() {
+    require('@visualdl/core/builder/environment');
+
+    // snowpack uses PUBLIC_URL & MODE in template
+    // https://www.snowpack.dev/#environment-variables
+    process.env.MODE = process.env.NODE_ENV;
+    if (process.env.PUBLIC_PATH != null) {
+        process.env.PUBLIC_URL = process.env.PUBLIC_PATH;
+    }
+
+    const baseUri = process.env.SNOWPACK_PUBLIC_BASE_URI;
+    const apiUrl = process.env.SNOWPACK_PUBLIC_API_URL;
+
+    const template = await parseTemplate();
+    const env = await extendEnv();
+
     if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
         app.use(
@@ -64,36 +77,25 @@ async function start() {
         console.warn('Server is running in production mode but no backend address specified.');
     }
 
-    if (publicPath !== '/') {
+    if (baseUri !== '') {
         app.get('/', (_req, res) => {
-            res.redirect(publicPath);
+            res.redirect(baseUri);
         });
     }
 
-    if (pingUrl && pingUrl !== '/' && pingUrl !== publicPath && pingUrl.startsWith('/')) {
+    if (pingUrl && pingUrl !== '/' && pingUrl !== baseUri && pingUrl.startsWith('/')) {
         app.get(pingUrl, (_req, res) => {
             res.type('text/plain').status(200).send('OK!');
         });
     }
 
-    require('@visualdl/core/builder/environment');
-    // snowpack uses PUBLIC_URL & MODE in template
-    // https://www.snowpack.dev/#environment-variables
-    process.env.MODE = process.env.NODE_ENV;
-    if (process.env.PUBLIC_PATH != null) {
-        process.env.PUBLIC_URL = process.env.PUBLIC_PATH;
-    }
-
-    const template = await parseTemplate();
-    const env = await extendEnv();
-
-    app.get(`${publicPath}/__snowpack__/env.local.js`, (_req, res) => {
+    app.get(`${baseUri}/__snowpack__/env.local.js`, (_req, res) => {
         res.type('.js')
             .status(200)
             .send(`export default ${JSON.stringify(env)};`);
     });
 
-    app.use(publicPath, express.static(root, {index: false}));
+    app.use(baseUri || '/', express.static(root, {index: false}));
 
     app.get(/\.wasm/, (_req, res, next) => {
         res.type('application/wasm');

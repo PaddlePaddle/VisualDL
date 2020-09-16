@@ -31,7 +31,6 @@
     "main": "dist/index.html",
     "files": [
         "dist",
-        "public/index.html",
         "builder/environment.js"
     ],
     "dependencies": {
