@@ -57,7 +57,7 @@ const Progress: FunctionComponent = () => {
 const Telemetry: FunctionComponent = () => {
     const location = useLocation();
     useEffect(() => {
-        globalThis._hmt.push(['_trackPageview', BASE_URI + location.pathname]);
+        window._hmt.push(['_trackPageview', BASE_URI + location.pathname]);
     }, [location.pathname]);
     return null;
 };

@@ -16,8 +16,9 @@ async function main() {
     await injectEnv();
 
     if (process.env.CDN_VERSION) {
-        // TODO: do not upload index.html & index.tpl.html & __snowpack__/env.local.js
-        await pushCdn(dist);
+        await pushCdn(dist, {
+            exclude: ['index.html', 'index.tpl.html', '__snowpack__/env.local.js']
+        });
     }
 }
 
