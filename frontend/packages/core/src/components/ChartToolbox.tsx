@@ -29,7 +29,7 @@ const ToolboxItem = styled.a<{active?: boolean; reversed?: boolean}>`
     }
 
     & + & {
-        ${props => `margin-${props.reversed ? 'right' : 'left'}: ${rem(14)};`}
+        margin: ${props => (props.reversed ? `0 ${rem(14)} 0 0` : `0 0 0 ${rem(14)}`)};
     }
 `;
 

@@ -33,7 +33,7 @@ const RadioGroup = <T extends unknown>({
             setSelected(value);
             onChange?.(value);
         },
-        [onChange] // eslint-disable-line react-hooks/exhaustive-deps
+        [onChange]
     );
 
     return (

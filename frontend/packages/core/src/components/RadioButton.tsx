@@ -30,8 +30,7 @@ const Button = styled.a<{selected?: boolean}>`
     ${transitionProps(['color', 'border-color', 'background-color'])}
 
     /* bring selected one to top in order to cover the sibling's border */
-    ${props =>
-        props.selected ? 'position: relative;' : ''}
+    ${props => (props.selected ? 'position: relative;' : '')}
 
     &:hover {
         border-color: ${props => (props.selected ? 'var(--primary-color)' : 'var(--border-focused-color)')};

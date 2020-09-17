@@ -31,10 +31,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
     background-color: var(--background-color);
     ${sameBorder({radius: true})}
     ${props => (props.opened ? borderRadiusShortHand('bottom', '0') : '')}
-    ${transitionProps(
-        'border-color',
-        'background-color'
-    )}
+    ${transitionProps('border-color', 'background-color')}
 
     &:hover {
         border-color: var(--border-focused-color);
@@ -164,7 +161,6 @@ const Select = <T extends unknown>({
         setValue
     ]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const isSelected = useMemo(() => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : (value as T)), [
         multiple,
         value
@@ -175,7 +171,7 @@ const Select = <T extends unknown>({
             (onChange as OnSingleChange<T>)?.(mutateValue);
             setIsOpenedFalse();
         },
-        [setIsOpenedFalse, onChange] // eslint-disable-line react-hooks/exhaustive-deps
+        [setIsOpenedFalse, onChange]
     );
     const changeMultipleValue = useCallback(
         (mutateValue: T, checked: boolean) => {
@@ -192,7 +188,7 @@ const Select = <T extends unknown>({
             setValue(newValue);
             (onChange as OnMultipleChange<T>)?.(newValue);
         },
-        [value, onChange] // eslint-disable-line react-hooks/exhaustive-deps
+        [value, onChange]
     );
 
     const ref = useClickOutside<HTMLDivElement>(setIsOpenedFalse);
@@ -204,11 +200,10 @@ const Select = <T extends unknown>({
                     ? {value: item as T, label: item + ''}
                     : (item as SelectListItem<T>)
             ) ?? [],
-        [propList] // eslint-disable-line react-hooks/exhaustive-deps
+        [propList]
     );
     const isListEmpty = useMemo(() => list.length === 0, [list]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const findLabelByValue = useCallback((v: T) => list.find(item => item.value === v)?.label ?? '', [list]);
     const label = useMemo(
         () =>
@@ -217,7 +212,7 @@ const Select = <T extends unknown>({
                     ? (value as T[]).map(findLabelByValue).join(' / ')
                     : findLabelByValue(value as T)
                 : placeholder || t('common:select'),
-        [multiple, value, findLabelByValue, isSelected, placeholder, t] // eslint-disable-line react-hooks/exhaustive-deps
+        [multiple, value, findLabelByValue, isSelected, placeholder, t]
     );
 
     return (

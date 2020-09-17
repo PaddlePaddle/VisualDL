@@ -132,7 +132,7 @@ const ChartPage = <T extends Item>({
                 }
                 return 0;
             }),
-        [items] // eslint-disable-line react-hooks/exhaustive-deps
+        [items]
     );
 
     const total = useMemo(() => Math.ceil(matchedTags.length / pageSize), [matchedTags]);
@@ -174,7 +174,7 @@ const ChartPage = <T extends Item>({
                     )}
                 </Wrapper>
             ),
-        [withChart, loading, chartSize, t] // eslint-disable-line react-hooks/exhaustive-deps
+        [withChart, loading, chartSize, t]
     );
 
     return (
