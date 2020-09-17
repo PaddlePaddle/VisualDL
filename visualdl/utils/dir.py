@@ -1,4 +1,4 @@
-# Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
+# Copyright (c) 2020 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,14 +13,25 @@
 # limitations under the License.
 # =======================================================================
 
-from __future__ import absolute_import
-
 import os
+import json
 
-from visualdl.writer.writer import LogWriter  # noqa
-from visualdl.version import vdl_version as __version__
-from visualdl.utils.dir import init_vdl_config
 
-init_vdl_config()
+VDL_SERVER = "http://paddlepaddle.org.cn/visualdl"
 
-ROOT = os.path.dirname(__file__)
+default_vdl_config = {
+    'server_url': VDL_SERVER
+}
+
+USER_HOME = os.path.expanduser('~')
+VDL_HOME = os.path.join(USER_HOME, '.visualdl')
+CONF_HOME = os.path.join(VDL_HOME, 'conf')
+CONFIG_PATH = os.path.join(CONF_HOME, 'config.json')
+
+
+def init_vdl_config():
+    if not os.path.exists(CONF_HOME):
+        os.makedirs(CONF_HOME)
+    if not os.path.exists(CONFIG_PATH) or 0 == os.path.getsize(CONFIG_PATH):
+        with open(CONFIG_PATH, 'w') as fp:
+            fp.write(json.dumps(default_vdl_config))

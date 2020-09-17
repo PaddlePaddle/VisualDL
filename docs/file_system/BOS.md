@@ -6,7 +6,7 @@
 ### VisualDL
 VisualDL在2.0.0b8版本之后增加了对BOS的支持，可使用下述命令安装
 ```shell
-pip install visualdl==2.0.0b8
+pip install visualdl
 ```
 
 ### BOS
