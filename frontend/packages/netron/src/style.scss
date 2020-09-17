@@ -45,6 +45,10 @@ text {
     font-size: 11px;
     text-rendering: geometricPrecision;
     fill: #000;
+
+    .dark & {
+        fill: #CFCFD1;
+    }
 }
 
 .node-item {
@@ -184,6 +188,10 @@ text {
 .node-attribute path {
     fill: #fff;
     stroke-width: 0;
+
+    .dark & {
+        fill: #262629;
+    }
 }
 
 .graph-item-input {

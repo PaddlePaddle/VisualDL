@@ -14,7 +14,8 @@ const DropZone = styled.div<{actived: boolean}>`
             radius: em(16),
             color: props.actived ? 'var(--primary-color)' : undefined
         })}
-    background-color: ${props => (props.actived ? '#f2f6ff' : '#f9f9f9')};
+    background-color: ${props =>
+        props.actived ? 'var(--graph-uploader-active-background-color)' : 'var(--graph-uploader-background-color)'};
     ${size('43.2%', '68%')}
     display: flex;
     flex-direction: column;

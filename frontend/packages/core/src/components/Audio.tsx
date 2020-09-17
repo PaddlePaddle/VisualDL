@@ -28,6 +28,7 @@ const Container = styled.div`
 
     > .control {
         font-size: ${rem(16)};
+        ${size(rem(16), rem(16))}
         line-height: 1;
         margin: 0 ${rem(10)};
         color: var(--primary-color);

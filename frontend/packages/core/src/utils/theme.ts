@@ -52,12 +52,20 @@ export const themes = {
         inputBackgroundColor: '#fff',
         selectSelectedTextColor: '#1a73e8',
         sliderRailColor: '#dbdeeb',
+        sliderGripperColor: '#fff',
         modelHeaderBackgroundColor: '#eee',
+        codeColor: '#666',
+        codeBackgroundColor: 'rgba(216, 216, 216, 0.5)',
         audioBackgroundColor: '#f2f6ff',
         tooltipTextColor: '#fff',
         tooltipBackgroundColor: 'rgba(0, 0, 0, 0.6)',
         progressBarColor: '#fff',
-        maskColor: 'rgba(255, 255, 255, 0.8)'
+        maskColor: 'rgba(255, 255, 255, 0.8)',
+
+        graphUploaderBackgroundColor: '#f9f9f9',
+        graphUploaderActiveBackgroundColor: '#f2f6ff',
+        graphCopyrightColor: '#ddd',
+        graphCopyrightLogoFilter: 'opacity(25%)'
     },
     dark: {
         textColor: '#cfcfd1',
@@ -83,13 +91,21 @@ export const themes = {
         tagActiveBackgroundColor: lighten(0.4, '#333'),
         inputBackgroundColor: '#262629',
         selectSelectedTextColor: '#1a73e8',
-        sliderRailColor: '#292929',
-        modelHeaderBackgroundColor: '#eee', // TODO
-        audioBackgroundColor: '#f2f6ff', // TODO
+        sliderRailColor: '#727275',
+        sliderGripperColor: '#cfcfd1',
+        modelHeaderBackgroundColor: '#303033',
+        codeColor: '#cfcfd1',
+        codeBackgroundColor: '#3f3f42',
+        audioBackgroundColor: '#303033',
         tooltipTextColor: '#d1d1d1',
         tooltipBackgroundColor: '#292929',
         progressBarColor: '#fff',
-        maskColor: 'rgba(0, 0, 0, 0.8)'
+        maskColor: 'rgba(0, 0, 0, 0.8)',
+
+        graphUploaderBackgroundColor: '#262629',
+        graphUploaderActiveBackgroundColor: '#303033',
+        graphCopyrightColor: '#565657',
+        graphCopyrightLogoFilter: 'invert(35%) sepia(5%) saturate(79%) hue-rotate(202deg) brightness(88%) contrast(86%)'
     }
 } as const;
 

@@ -64,7 +64,7 @@ const Wrapper = styled.div<{disabled?: boolean}>`
                     color: props.disabled ? 'var(--text-lighter-color)' : 'var(--color)',
                     radius: half(thumbSize)
                 })}
-            background-color: var(--background-color);
+            background-color: var(--slider-gripper-color);
             ${transitionProps(['border-color', 'background-color'])}
         }
     }

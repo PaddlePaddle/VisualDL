@@ -105,6 +105,10 @@ view.View = class {
         return this._showHorizontal;
     }
 
+    toggleTheme(theme) {
+        this._host.document.body.className = theme;
+    }
+
     _reload() {
         this._host.status('loading');
         if (this._model && this._activeGraph) {
