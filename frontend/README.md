@@ -19,7 +19,7 @@ English | [简体中文](https://github.com/PaddlePaddle/VisualDL/blob/develop/f
 
 ## Usage
 
-> nodejs ≥ 10 and npm ≥ 6 are required.
+> nodejs ≥ 12 and npm ≥ 6 are required.
 
 ```bash
 npm install -g @visualdl/cli
@@ -66,6 +66,8 @@ yarn
 
 ## Build & Deploy
 
+> nodejs ≥ 14 and npm ≥ 6 are required.
+
 > We only support building on Linux/MacOS now.
 
 Run:
@@ -78,7 +80,7 @@ You will get `server.tar.gz` and `serverless.tar.gz` in `output` directory.
 
 ### Server deployment
 
-> nodejs ≥ 10 and npm ≥ 6 are required.
+> nodejs ≥ 12 and npm ≥ 6 are required.
 
 Extract `server.tar.gz` to wherever you want.
 `cd` into the directory and run:
@@ -110,6 +112,7 @@ This project is based on following projects:
 
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
+- [Snowpack]](https://www.snowpack.dev/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 - [Netron](https://github.com/lutzroeder/netron)
 
