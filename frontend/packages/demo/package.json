@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/demo",
-    "version": "2.0.0",
+    "version": "2.0.9",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -28,7 +28,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "rimraf dist && ts-node --script-mode builder/index.ts && tsc && cpy data dist/ --parents",
+        "build": "rimraf dist data && ts-node --script-mode builder/index.ts && tsc && cpy data dist/ --parents",
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {

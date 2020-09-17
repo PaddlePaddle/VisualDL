@@ -2,6 +2,7 @@
 
 import {config} from 'dotenv';
 import express from 'express';
+import {promises as fs} from 'fs';
 import path from 'path';
 import resolve from 'enhanced-resolve';
 
@@ -14,15 +15,45 @@ const host = process.env.HOST || 'localhost';
 const port = Number.parseInt(process.env.PORT || '', 10) || 8999;
 const backend = process.env.BACKEND;
 const delay = Number.parseInt(process.env.DELAY || '', 10);
-const publicPath = process.env.PUBLIC_PATH || '/';
-const apiUrl = process.env.API_URL || `${process.env.PUBLIC_PATH || ''}/api`;
 const pingUrl = process.env.PING_URL;
 
 const root = path.dirname(resolve.sync(__dirname, '@visualdl/core'));
 
 const app = express();
 
+async function parseTemplate() {
+    const template = await fs.readFile(path.resolve(root, 'index.tpl.html'), {encoding: 'utf-8'});
+    return template.replace(/%(.+?)%/g, (_matched, key) => process.env[key] ?? '');
+}
+
+async function extendEnv() {
+    const content = await fs.readFile(path.resolve(root, '__snowpack__/env.local.js'), {encoding: 'utf-8'});
+    const match = content.match(/export default\s*({.*})/);
+    const env = JSON.parse(match[1]);
+    return Object.keys(env).reduce((m, key) => {
+        if (process.env[key] != null) {
+            m[key] = process.env[key];
+        }
+        return m;
+    }, env);
+}
+
 async function start() {
+    require('@visualdl/core/builder/environment');
+
+    // snowpack uses PUBLIC_URL & MODE in template
+    // https://www.snowpack.dev/#environment-variables
+    process.env.MODE = process.env.NODE_ENV;
+    if (process.env.PUBLIC_PATH != null) {
+        process.env.PUBLIC_URL = process.env.PUBLIC_PATH;
+    }
+
+    const baseUri = process.env.SNOWPACK_PUBLIC_BASE_URI;
+    const apiUrl = process.env.SNOWPACK_PUBLIC_API_URL;
+
+    const template = await parseTemplate();
+    const env = await extendEnv();
+
     if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');
         app.use(
@@ -46,20 +77,25 @@ async function start() {
         console.warn('Server is running in production mode but no backend address specified.');
     }
 
-    if (publicPath !== '/') {
+    if (baseUri !== '') {
         app.get('/', (_req, res) => {
-            res.redirect(publicPath);
+            res.redirect(baseUri);
         });
     }
 
-    if (pingUrl && pingUrl !== '/' && pingUrl !== publicPath && pingUrl.startsWith('/')) {
+    if (pingUrl && pingUrl !== '/' && pingUrl !== baseUri && pingUrl.startsWith('/')) {
         app.get(pingUrl, (_req, res) => {
-            res.type('text/plain');
-            res.status(200).send('OK!');
+            res.type('text/plain').status(200).send('OK!');
         });
     }
 
-    app.use(publicPath, express.static(root, {index: false}));
+    app.get(`${baseUri}/__snowpack__/env.local.js`, (_req, res) => {
+        res.type('.js')
+            .status(200)
+            .send(`export default ${JSON.stringify(env)};`);
+    });
+
+    app.use(baseUri || '/', express.static(root, {index: false}));
 
     app.get(/\.wasm/, (_req, res, next) => {
         res.type('application/wasm');
@@ -67,7 +103,7 @@ async function start() {
     });
 
     app.get('*', (_req, res) => {
-        res.sendFile('index.html', {root});
+        res.type('.html').status(200).send(template);
     });
 
     const server = app.listen(port, host, () => {

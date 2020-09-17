@@ -43,6 +43,8 @@ class DefaultArgs(object):
         self.product = args.get('product', default_product)
         self.telemetry = args.get('telemetry', True)
         self.theme = args.get('theme', None)
+        self.dest = args.get('dest', '')
+        self.behavior = args.get('behavior', '')
 
 
 def get_host(host=default_host, port=default_port):
@@ -108,6 +110,8 @@ class ParseArgs(object):
         self.product = args.product
         self.telemetry = args.telemetry
         self.theme = args.theme
+        self.dest = args.dest
+        self.behavior = args.behavior
 
 
 def parse_args():
@@ -206,6 +210,15 @@ def parse_args():
         default=None,
         choices=support_themes,
         help="set theme"
+    )
+    parser.add_argument(
+        'dest',
+        nargs='?',
+        help='set destination for log'
+    )
+    parser.add_argument(
+        "behavior",
+        nargs='?'
     )
 
     args = parser.parse_args()

@@ -32,6 +32,7 @@ from flask_babel import Babel
 
 import visualdl.server
 from visualdl.server.api import create_api_call
+from visualdl.server.serve import upload_to_dev
 from visualdl.server.args import (ParseArgs, parse_args)
 from visualdl.server.log import info
 from visualdl.server.template import Template
@@ -86,7 +87,9 @@ def create_app(args):
 
         template = Template(
             os.path.join(server_path, template_file_path),
-            PUBLIC_PATH=public_path.lstrip('/'),
+            PUBLIC_PATH=public_path,
+            BASE_URI=public_path,
+            API_URL=api_path,
             TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else '',
             THEME='' if args.theme is None else args.theme
         )
@@ -167,7 +170,11 @@ def run(logdir=None, **options):
 
 def main():
     args = parse_args()
-    _run(args)
+    if args.get('dest') == 'service':
+        if args.get('behavior') == 'upload':
+            upload_to_dev(args.get('logdir'), args.get('model'))
+    else:
+        _run(args)
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ import styled from 'styled-components';
 import useNavItems from '~/hooks/useNavItems';
 import {useTranslation} from 'react-i18next';
 
+const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 
@@ -182,7 +183,7 @@ const Navbar: FunctionComponent = () => {
         i18n.changeLanguage(nextLanguage);
     }, [i18n]);
 
-    const currentPath = useMemo(() => pathname.replace(PUBLIC_PATH, ''), [pathname]);
+    const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
     const [navItems] = useNavItems();
     const [items, setItems] = useState<NavbarItemProps[]>([]);
@@ -227,7 +228,7 @@ const Navbar: FunctionComponent = () => {
     return (
         <Nav>
             <div className="left">
-                <Logo href={appendApiToken(PUBLIC_PATH + '/index')}>
+                <Logo href={appendApiToken(BASE_URI + '/index')}>
                     <img alt="PaddlePaddle" src={PUBLIC_PATH + logo} />
                     <span>VisualDL</span>
                 </Logo>

@@ -13,8 +13,9 @@ build_frontend() {
     cd "$FRONTEND_DIR"
     . ./scripts/install.sh
     SCOPE="serverless" \
-      PUBLIC_PATH="/{{PUBLIC_PATH}}" \
-      API_URL="/{{PUBLIC_PATH}}/api" \
+      PUBLIC_PATH="{{PUBLIC_PATH}}" \
+      BASE_URI="{{BASE_URI}}" \
+      API_URL="{{API_URL}}" \
       API_TOKEN_KEY="{{API_TOKEN_KEY}}" \
       TELEMETRY_ID="{{TELEMETRY_ID}}" \
       THEME="{{THEME}}" \
