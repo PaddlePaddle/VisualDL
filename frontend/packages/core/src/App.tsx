@@ -16,6 +16,7 @@ import routes from '~/routes';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
+const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 const Main = styled.main`
@@ -53,7 +54,7 @@ const Progress: FunctionComponent = () => {
 const Telemetry: FunctionComponent = () => {
     const location = useLocation();
     useEffect(() => {
-        globalThis._hmt.push(['_trackPageview', PUBLIC_PATH + location.pathname]);
+        globalThis._hmt.push(['_trackPageview', BASE_URI + location.pathname]);
     }, [location.pathname]);
     return null;
 };
@@ -89,7 +90,7 @@ const App: FunctionComponent = () => {
                     <BodyLoading />
                 ) : (
                     <Main>
-                        <Router basename={PUBLIC_PATH || '/'}>
+                        <Router basename={BASE_URI || '/'}>
                             <Telemetry />
                             <Header>
                                 <Navbar />

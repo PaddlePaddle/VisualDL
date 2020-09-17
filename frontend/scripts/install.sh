@@ -27,7 +27,7 @@ fi
 export PATH=$PATH
 
 # yarn install
-yarn install --frozen-lockfile
+yarn install --frozen-lockfile --network-timeout 1000000
 
 # re-install esbuild
 # I don't know why...

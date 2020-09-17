@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/server",
-    "version": "2.0.0",
+    "version": "2.0.9",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -36,7 +36,7 @@
         "ecosystem.config.d.ts"
     ],
     "dependencies": {
-        "@visualdl/core": "2.0.0",
+        "@visualdl/core": "2.0.9",
         "dotenv": "8.2.0",
         "enhanced-resolve": "4.3.0",
         "express": "4.17.1",
@@ -47,14 +47,14 @@
         "@types/enhanced-resolve": "3.0.6",
         "@types/express": "4.17.8",
         "@types/node": "14.6.4",
-        "@visualdl/mock": "2.0.0",
+        "@visualdl/mock": "2.0.9",
         "cross-env": "7.0.2",
         "nodemon": "2.0.4",
         "ts-node": "9.0.0",
         "typescript": "4.0.2"
     },
     "optionalDependencies": {
-        "@visualdl/demo": "2.0.0"
+        "@visualdl/demo": "2.0.9"
     },
     "engines": {
         "node": ">=12",
