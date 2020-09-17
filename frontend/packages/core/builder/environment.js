@@ -33,3 +33,5 @@ process.env.SNOWPACK_PUBLIC_API_TOKEN_KEY = process.env.API_TOKEN_KEY || '';
 process.env.SNOWPACK_PUBLIC_LANGUAGES = process.env.LANGUAGES || 'en,zh';
 // default language
 process.env.SNOWPACK_PUBLIC_DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || 'en';
+// theme
+process.env.SNOWPACK_PUBLIC_THEME = process.env.THEME || '';

@@ -1,16 +1,5 @@
 import React, {FunctionComponent, useCallback, useState} from 'react';
-import {
-    WithStyled,
-    em,
-    primaryActiveColor,
-    primaryColor,
-    primaryFocusedColor,
-    rem,
-    textColor,
-    textLightColor,
-    textLighterColor,
-    transitionProps
-} from '~/utils/style';
+import {WithStyled, em, rem, transitionProps} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import type {Icons} from '~/components/Icon';
@@ -28,19 +17,19 @@ const Toolbox = styled.div<{reversed?: boolean}>`
 
 const ToolboxItem = styled.a<{active?: boolean; reversed?: boolean}>`
     cursor: pointer;
-    color: ${props => (props.active ? primaryColor : textLighterColor)};
+    color: ${props => (props.active ? 'var(--primary-color)' : 'var(--text-lighter-color)')};
     ${transitionProps('color')}
 
     &:hover {
-        color: ${props => (props.active ? primaryFocusedColor : textLightColor)};
+        color: ${props => (props.active ? 'var(--primary-focused-color)' : 'var(--text-light-color)')};
     }
 
     &:active {
-        color: ${props => (props.active ? primaryActiveColor : textColor)};
+        color: ${props => (props.active ? 'var(--primary-active-color)' : 'var(--text-color)')};
     }
 
     & + & {
-        ${props => `margin-${props.reversed ? 'right' : 'left'}: ${rem(14)};`}
+        margin: ${props => (props.reversed ? `0 ${rem(14)} 0 0` : `0 0 0 ${rem(14)}`)};
     }
 `;
 

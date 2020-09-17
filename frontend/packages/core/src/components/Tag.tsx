@@ -1,15 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {
-    WithStyled,
-    backgroundColor,
-    em,
-    half,
-    lightActiveColor,
-    lightColor,
-    lightFocusedColor,
-    primaryColor,
-    transitionProps
-} from '~/utils/style';
+import {WithStyled, em, half, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 
@@ -21,17 +11,17 @@ const Span = styled.span<{active?: boolean}>`
     line-height: ${height};
     display: inline-block;
     border-radius: ${half(height)};
-    color: ${prop => (prop.active ? backgroundColor : primaryColor)};
-    background-color: ${prop => (prop.active ? primaryColor : lightColor)};
+    color: ${prop => (prop.active ? 'var(--background-color)' : 'var(--primary-color)')};
+    background-color: ${prop => (prop.active ? 'var(--primary-color)' : 'var(--tag-background-color)')};
     cursor: pointer;
     ${transitionProps(['color', 'background-color'])}
 
     &:hover {
-        background-color: ${prop => (prop.active ? primaryColor : lightFocusedColor)};
+        background-color: ${prop => (prop.active ? 'var(--primary-color)' : 'var(--tag-focused-background-color)')};
     }
 
     &:active {
-        background-color: ${prop => (prop.active ? primaryColor : lightActiveColor)};
+        background-color: ${prop => (prop.active ? 'var(--primary-color)' : 'var(--tag-active-background-color)')};
     }
 `;
 

@@ -1,6 +1,6 @@
 import React, {FunctionComponent, useCallback} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {borderRadius, em, textLightColor} from '~/utils/style';
+import {borderRadius, em, transitionProps} from '~/utils/style';
 
 import type {Documentation as DocumentationType} from '~/resource/graph/types';
 import GraphSidebar from '~/components/GraphPage/GraphSidebar';
@@ -46,11 +46,12 @@ const Documentation = styled.div`
 
     pre {
         font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-        background-color: rgba(216, 216, 216, 0.5);
-        color: ${textLightColor};
+        background-color: var(--code-background-color);
+        color: var(--code-color);
         padding: ${em(10)};
         border-radius: ${borderRadius};
         overflow: auto;
+        ${transitionProps('color')}
 
         code {
             background-color: transparent;
@@ -61,10 +62,11 @@ const Documentation = styled.div`
 
     code {
         font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-        background-color: rgba(216, 216, 216, 0.5);
-        color: ${textLightColor};
+        background-color: var(--code-background-color);
+        color: var(--code-color);
         padding: ${em(2)} ${em(4)};
         border-radius: ${em(2)};
+        ${transitionProps('color')}
     }
 `;
 

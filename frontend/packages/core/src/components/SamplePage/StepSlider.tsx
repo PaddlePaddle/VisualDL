@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
-import {em, textLightColor} from '~/utils/style';
+import {em, transitionProps} from '~/utils/style';
 
 import RangeSlider from '~/components/RangeSlider';
 import styled from 'styled-components';
@@ -8,9 +8,10 @@ import {useTranslation} from 'react-i18next';
 const Label = styled.div`
     display: flex;
     justify-content: space-between;
-    color: ${textLightColor};
+    color: var(--text-light-color);
     font-size: ${em(12)};
     margin-bottom: ${em(5)};
+    ${transitionProps('color')}
 
     > :not(:first-child) {
         flex-grow: 0;

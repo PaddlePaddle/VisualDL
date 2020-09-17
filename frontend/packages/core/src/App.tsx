@@ -1,5 +1,6 @@
-import React, {FunctionComponent, Suspense, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo, useState} from 'react';
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
+import {THEME, matchMedia} from '~/utils/theme';
 import {headerHeight, position, size} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
@@ -10,10 +11,12 @@ import NProgress from 'nprogress';
 import Navbar from '~/components/Navbar';
 import {SWRConfig} from 'swr';
 import {ToastContainer} from 'react-toastify';
+import {actions} from '~/store';
 import {fetcher} from '~/utils/fetch';
 import init from '@visualdl/wasm';
 import routes from '~/routes';
 import styled from 'styled-components';
+import {useDispatch} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
@@ -73,6 +76,22 @@ const App: FunctionComponent = () => {
             }
         })();
     }, [inited]);
+
+    const dispatch = useDispatch();
+
+    const toggleTheme = useCallback(
+        (e: MediaQueryListEvent) => dispatch(actions.theme.setTheme(e.matches ? 'dark' : 'light')),
+        [dispatch]
+    );
+
+    useEffect(() => {
+        if (!THEME) {
+            matchMedia.addEventListener('change', toggleTheme);
+            return () => {
+                matchMedia.removeEventListener('change', toggleTheme);
+            };
+        }
+    }, [toggleTheme]);
 
     return (
         <div className="app">

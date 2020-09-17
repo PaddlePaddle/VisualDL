@@ -1,10 +1,6 @@
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import {
     WithStyled,
-    backgroundColor,
-    backgroundFocusedColor,
-    borderColor,
-    borderFocusedColor,
     borderRadius,
     borderRadiusShortHand,
     css,
@@ -12,9 +8,7 @@ import {
     em,
     math,
     sameBorder,
-    selectedColor,
     size,
-    textLighterColor,
     transitionProps
 } from '~/utils/style';
 
@@ -34,15 +28,13 @@ const Wrapper = styled.div<{opened?: boolean}>`
     max-width: 100%;
     display: inline-block;
     position: relative;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     ${sameBorder({radius: true})}
     ${props => (props.opened ? borderRadiusShortHand('bottom', '0') : '')}
-    ${transitionProps(
-        'border-color'
-    )}
+    ${transitionProps('border-color', 'background-color')}
 
     &:hover {
-        border-color: ${borderFocusedColor};
+        border-color: var(--border-focused-color);
     }
 `;
 
@@ -53,7 +45,8 @@ const Trigger = styled.div<{selected?: boolean}>`
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    ${props => (props.selected ? '' : `color: ${textLighterColor}`)}
+    ${props => (props.selected ? '' : 'color: var(--text-lighter-color)')}
+    ${transitionProps('color')}
 `;
 
 const TriggerIcon = styled(Icon)<{opened?: boolean}>`
@@ -81,17 +74,18 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     left: -1px;
     padding: ${padding} 0;
     border: inherit;
-    border-top-color: ${borderColor};
+    border-top-color: var(--border-color);
     ${borderRadiusShortHand('bottom', borderRadius)}
     display: ${props => (props.opened ? 'block' : 'none')};
     z-index: 9999;
     line-height: 1;
     background-color: inherit;
     box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
+    ${transitionProps(['border-color', 'color'])}
     ${props =>
         props.empty
             ? {
-                  color: textLighterColor,
+                  color: 'var(--text-lighter-color)',
                   textAlign: 'center'
               }
             : ''}
@@ -106,14 +100,14 @@ const listItem = css`
     ${transitionProps(['color', 'background-color'])}
 
     &:hover {
-        background-color: ${backgroundFocusedColor};
+        background-color: var(--background-focused-color);
     }
 `;
 
 const ListItem = styled.div<{selected?: boolean}>`
     ${ellipsis()}
     ${listItem}
-    ${props => (props.selected ? `color: ${selectedColor};` : '')}
+    ${props => (props.selected ? `color: var(--select-selected-text-color);` : '')}
 `;
 
 const MultipleListItem = styled(Checkbox)<{selected?: boolean}>`
@@ -167,7 +161,6 @@ const Select = <T extends unknown>({
         setValue
     ]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const isSelected = useMemo(() => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : (value as T)), [
         multiple,
         value
@@ -178,7 +171,7 @@ const Select = <T extends unknown>({
             (onChange as OnSingleChange<T>)?.(mutateValue);
             setIsOpenedFalse();
         },
-        [setIsOpenedFalse, onChange] // eslint-disable-line react-hooks/exhaustive-deps
+        [setIsOpenedFalse, onChange]
     );
     const changeMultipleValue = useCallback(
         (mutateValue: T, checked: boolean) => {
@@ -195,7 +188,7 @@ const Select = <T extends unknown>({
             setValue(newValue);
             (onChange as OnMultipleChange<T>)?.(newValue);
         },
-        [value, onChange] // eslint-disable-line react-hooks/exhaustive-deps
+        [value, onChange]
     );
 
     const ref = useClickOutside<HTMLDivElement>(setIsOpenedFalse);
@@ -207,11 +200,10 @@ const Select = <T extends unknown>({
                     ? {value: item as T, label: item + ''}
                     : (item as SelectListItem<T>)
             ) ?? [],
-        [propList] // eslint-disable-line react-hooks/exhaustive-deps
+        [propList]
     );
     const isListEmpty = useMemo(() => list.length === 0, [list]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const findLabelByValue = useCallback((v: T) => list.find(item => item.value === v)?.label ?? '', [list]);
     const label = useMemo(
         () =>
@@ -220,7 +212,7 @@ const Select = <T extends unknown>({
                     ? (value as T[]).map(findLabelByValue).join(' / ')
                     : findLabelByValue(value as T)
                 : placeholder || t('common:select'),
-        [multiple, value, findLabelByValue, isSelected, placeholder, t] // eslint-disable-line react-hooks/exhaustive-deps
+        [multiple, value, findLabelByValue, isSelected, placeholder, t]
     );
 
     return (

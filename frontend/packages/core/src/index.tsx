@@ -2,10 +2,11 @@ import '~/utils/i18n';
 
 import App from './App';
 import BodyLoading from '~/components/BodyLoading';
-import GlobalState from '~/components/GlobalState';
 import {GlobalStyle} from '~/utils/style';
+import {Provider} from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import store from '~/store';
 
 const TELEMETRY_ID: string = import.meta.env.SNOWPACK_PUBLIC_TELEMETRY_ID;
 
@@ -23,9 +24,9 @@ ReactDOM.render(
     <React.StrictMode>
         <GlobalStyle />
         <React.Suspense fallback={<BodyLoading />}>
-            <GlobalState>
+            <Provider store={store}>
                 <App />
-            </GlobalState>
+            </Provider>
         </React.Suspense>
     </React.StrictMode>,
     document.getElementById('root')

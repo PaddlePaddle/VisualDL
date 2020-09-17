@@ -1,25 +1,12 @@
 import InputRange, {Range} from 'react-input-range';
 import React, {FunctionComponent, useCallback} from 'react';
-import {
-    WithStyled,
-    backgroundColor,
-    em,
-    half,
-    position,
-    primaryActiveColor,
-    primaryColor,
-    primaryFocusedColor,
-    sameBorder,
-    size,
-    textLighterColor
-} from '~/utils/style';
+import {WithStyled, em, half, position, sameBorder, size, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 
 const height = em(20);
 const railHeight = em(4);
 const thumbSize = em(12);
-const railColor = '#DBDEEB';
 
 const Wrapper = styled.div<{disabled?: boolean}>`
     height: ${height};
@@ -32,14 +19,14 @@ const Wrapper = styled.div<{disabled?: boolean}>`
             display: none;
         }
 
-        --color: ${primaryColor};
+        --color: var(--primary-color);
 
         &:hover {
-            --color: ${primaryFocusedColor};
+            --color: var(--primary-focused-color);
         }
 
         &:active {
-            --color: ${primaryActiveColor};
+            --color: var(--primary-active-color);
         }
 
         &__track {
@@ -49,16 +36,18 @@ const Wrapper = styled.div<{disabled?: boolean}>`
                 ${size(railHeight, '100%')}
                 ${position('absolute', '50%', null, null, null)}
                 margin-top: -${half(railHeight)};
-                background-color: ${railColor};
+                background-color: var(--slider-rail-color);
                 border-radius: ${half(railHeight)};
+                ${transitionProps('background-color')}
             }
 
             &--active {
                 height: ${railHeight};
                 position: absolute;
-                background-color: ${props => (props.disabled ? textLighterColor : 'var(--color)')};
+                background-color: ${props => (props.disabled ? 'var(--text-lighter-color)' : 'var(--color)')};
                 border-radius: ${half(railHeight)};
                 outline: none;
+                ${transitionProps('background-color')}
             }
         }
 
@@ -72,10 +61,11 @@ const Wrapper = styled.div<{disabled?: boolean}>`
             ${props =>
                 sameBorder({
                     width: em(3),
-                    color: props.disabled ? textLighterColor : 'var(--color)',
+                    color: props.disabled ? 'var(--text-lighter-color)' : 'var(--color)',
                     radius: half(thumbSize)
                 })}
-            background-color: ${backgroundColor};
+            background-color: var(--slider-gripper-color);
+            ${transitionProps(['border-color', 'background-color'])}
         }
     }
 `;

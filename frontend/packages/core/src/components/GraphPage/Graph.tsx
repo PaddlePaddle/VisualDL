@@ -1,12 +1,13 @@
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {backgroundColor, borderColor, contentHeight, position, primaryColor, rem, size} from '~/utils/style';
+import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
+import useTheme from '~/hooks/useTheme';
 import {useTranslation} from 'react-i18next';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -22,11 +23,12 @@ const toolboxHeight = rem(40);
 const Wrapper = styled.div`
     position: relative;
     height: ${contentHeight};
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    ${transitionProps('background-color')}
 `;
 
 const RenderContent = styled.div<{show: boolean}>`
@@ -41,8 +43,9 @@ const RenderContent = styled.div<{show: boolean}>`
 
 const Toolbox = styled(ChartToolbox)`
     height: ${toolboxHeight};
-    border-bottom: 1px solid ${borderColor};
+    border-bottom: 1px solid var(--border-color);
     padding: 0 ${rem(20)};
+    ${transitionProps('border-color')}
 `;
 
 const Content = styled.div`
@@ -57,13 +60,13 @@ const Content = styled.div`
     > .powered-by {
         display: block;
         ${position('absolute', null, null, rem(20), rem(30))}
-        color: #ddd;
+        color: var(--graph-copyright-color);
         font-size: ${rem(14)};
         user-select: none;
 
         img {
             height: 1em;
-            opacity: 0.5;
+            filter: var(--graph-copyright-logo-filter);
             vertical-align: middle;
         }
     }
@@ -124,6 +127,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         ref
     ) => {
         const {t} = useTranslation('graph');
+
+        const theme = useTheme();
 
         const [ready, setReady] = useState(false);
         const [loading, setLoading] = useState(false);
@@ -203,6 +208,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             horizontal,
             ready
         ]);
+
+        useEffect(() => (ready && dispatch('toggle-theme', theme)) || undefined, [dispatch, theme, ready]);
 
         useImperativeHandle(ref, () => ({
             export(type) {

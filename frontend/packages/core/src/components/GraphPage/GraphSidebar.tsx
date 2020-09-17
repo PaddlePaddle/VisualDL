@@ -1,12 +1,12 @@
 import React, {FunctionComponent} from 'react';
-import {backgroundColor, borderColor, rem, textLightColor} from '~/utils/style';
+import {rem, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
 const Sidebar = styled.div`
     height: 100%;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
 `;
 
 const Title = styled.div`
@@ -15,13 +15,15 @@ const Title = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid ${borderColor};
+    border-bottom: 1px solid var(--border-color);
     margin: 0 ${rem(20)};
+    ${transitionProps('border-color')}
 
     > .close {
         flex: none;
-        color: ${textLightColor};
+        color: var(--text-light-color);
         cursor: pointer;
+        ${transitionProps('color')}
     }
 `;
 

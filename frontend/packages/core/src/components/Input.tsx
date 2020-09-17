@@ -1,4 +1,4 @@
-import {WithStyled, borderFocusedColor, em, half, sameBorder, textLighterColor, transitionProps} from '~/utils/style';
+import {WithStyled, em, half, sameBorder, transitionProps} from '~/utils/style';
 
 import React from 'react';
 import styled from 'styled-components';
@@ -13,15 +13,19 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     display: inline-block;
     outline: none;
     ${props => sameBorder({radius: !props.rounded || half(height)})};
-    ${transitionProps('border-color')}
+    background-color: var(--input-background-color);
+    color: var(--text-color);
+    caret-color: var(--text-color);
+    ${transitionProps(['border-color', 'background-color', 'caret-color', 'color'])}
 
     &:hover,
     &:focus {
-        border-color: ${borderFocusedColor};
+        border-color: var(--border-focused-color);
     }
 
     &::placeholder {
-        color: ${textLighterColor};
+        color: var(--text-lighter-color);
+        ${transitionProps('color')}
     }
 `;
 

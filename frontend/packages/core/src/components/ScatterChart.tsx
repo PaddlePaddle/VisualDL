@@ -1,13 +1,14 @@
 import React, {FunctionComponent, useEffect, useMemo} from 'react';
-import {WithStyled, backgroundColor, position, primaryColor, size} from '~/utils/style';
+import {WithStyled, position, primaryColor, size, transitionProps} from '~/utils/style';
+import useECharts, {useChartTheme} from '~/hooks/useECharts';
 
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
-import useECharts from '~/hooks/useECharts';
 
 const Wrapper = styled.div`
     position: relative;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
+    ${transitionProps('background-color')}
 
     > .echarts {
         height: 100%;
@@ -70,17 +71,20 @@ const ScatterChart: FunctionComponent<ScatterChartProps & WithStyled> = ({data, 
         gl,
         autoFit: true
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {tooltip, ...theme} = useChartTheme(gl);
 
     const chartOptions = useMemo(
         () => ({
             ...(gl ? options3D : options2D),
+            ...theme,
             series:
                 data?.map(series => ({
                     ...(gl ? series3D : series2D),
                     ...series
                 })) ?? []
         }),
-        [gl, data]
+        [gl, data, theme]
     );
 
     useEffect(() => {

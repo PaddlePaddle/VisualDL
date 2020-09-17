@@ -1,15 +1,5 @@
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {
-    WithStyled,
-    primaryActiveColor,
-    primaryBackgroundColor,
-    primaryColor,
-    primaryFocusedColor,
-    rem,
-    size,
-    textLightColor,
-    textLighterColor
-} from '~/utils/style';
+import {WithStyled, primaryColor, rem, size, transitionProps} from '~/utils/style';
 
 import {AudioPlayer} from '~/utils/audio';
 import type {BlobResponse} from '~/utils/fetch';
@@ -28,35 +18,39 @@ import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
 const Container = styled.div`
-    background-color: ${primaryBackgroundColor};
+    background-color: var(--audio-background-color);
     border-radius: ${rem(8)};
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 ${rem(20)};
+    ${transitionProps('background-color')}
 
     > .control {
         font-size: ${rem(16)};
+        ${size(rem(16), rem(16))}
         line-height: 1;
         margin: 0 ${rem(10)};
-        color: ${primaryColor};
+        color: var(--primary-color);
         cursor: pointer;
+        ${transitionProps('color')}
 
         &.volumn {
             font-size: ${rem(20)};
+            ${size(rem(20), rem(20))}
         }
 
         &.disabled {
-            color: ${textLightColor};
+            color: var(--text-light-color);
             cursor: not-allowed;
         }
 
         &:hover {
-            color: ${primaryFocusedColor};
+            color: var(--primary-focused-color);
         }
 
         &:active {
-            color: ${primaryActiveColor};
+            color: var(--primary-active-color);
         }
     }
 
@@ -66,9 +60,10 @@ const Container = styled.div`
     }
 
     > .time {
-        color: ${textLighterColor};
+        color: var(--text-lighter-color);
         font-size: ${rem(12)};
         margin: 0 ${rem(5)};
+        ${transitionProps('color')}
     }
 `;
 
@@ -82,15 +77,16 @@ const VolumnSlider = styled(Slider)`
     outline: none;
     border-radius: ${rem(2)};
     user-select: none;
+    ${transitionProps('color')}
 
-    --color: ${primaryColor};
+    --color: var(--primary-color);
 
     &:hover {
-        --color: ${primaryFocusedColor};
+        --color: var(--primary-focused-color);
     }
 
     &:active {
-        --color: ${primaryActiveColor};
+        --color: var(--primary-active-color);
     }
 
     .rangeslider__fill {
@@ -102,6 +98,7 @@ const VolumnSlider = styled(Slider)`
         border-bottom-right-radius: ${rem(2)};
         border-top: ${rem(4)} solid var(--color);
         box-sizing: content-box;
+        ${transitionProps(['background-color', 'color'])}
     }
 
     .rangeslider__handle {
@@ -111,6 +108,7 @@ const VolumnSlider = styled(Slider)`
         left: -${rem(2)};
         border-radius: 50%;
         outline: none;
+        ${transitionProps('background-color')}
 
         .rangeslider__handle-tooltip,
         .rangeslider__handle-label {

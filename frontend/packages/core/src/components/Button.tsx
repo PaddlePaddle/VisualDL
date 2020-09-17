@@ -1,49 +1,17 @@
 import React, {FunctionComponent} from 'react';
-import {
-    WithStyled,
-    borderActiveColor,
-    borderColor,
-    borderFocusedColor,
-    borderRadius,
-    css,
-    dangerActiveColor,
-    dangerColor,
-    dangerFocusedColor,
-    ellipsis,
-    em,
-    half,
-    primaryActiveColor,
-    primaryColor,
-    primaryFocusedColor,
-    sameBorder,
-    textColor,
-    textInvertColor,
-    textLighterColor,
-    transitionProps
-} from '~/utils/style';
+import {WithStyled, borderRadius, css, ellipsis, em, half, sameBorder, transitionProps} from '~/utils/style';
 
 import type {Icons} from '~/components/Icon';
 import RawIcon from '~/components/Icon';
+import {colors} from '~/utils/theme';
 import styled from 'styled-components';
 
 const height = em(36);
-const colors = {
-    primary: {
-        default: primaryColor,
-        active: primaryActiveColor,
-        focused: primaryFocusedColor
-    },
-    danger: {
-        default: dangerColor,
-        active: dangerActiveColor,
-        focused: dangerFocusedColor
-    }
-};
 
 const defaultColor = {
-    default: borderColor,
-    active: borderActiveColor,
-    focused: borderFocusedColor
+    default: 'var(--border-color)',
+    focused: 'var(--border-focused-color)',
+    active: 'var(--border-active-color)'
 } as const;
 
 type colorTypes = keyof typeof colors;
@@ -61,13 +29,14 @@ const Wrapper = styled.a<{type?: colorTypes; rounded?: boolean; disabled?: boole
     border-radius: ${props => (props.rounded ? half(height) : borderRadius)};
     ${props => (props.type ? '' : sameBorder({color: defaultColor.default}))}
     background-color: ${props => (props.type ? colors[props.type].default : 'transparent')};
-    color: ${props => (props.disabled ? textLighterColor : props.type ? textInvertColor : textColor)};
+    color: ${props =>
+        props.disabled ? 'var(--text-lighter-color)' : props.type ? colors[props.type].text : 'var(--text-color)'};
     cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
     display: inline-block;
     vertical-align: top;
     text-align: center;
     padding: 0 ${em(20)};
-    ${transitionProps(['background-color', 'border-color'])}
+    ${transitionProps(['background-color', 'border-color', 'color'])}
     ${ellipsis()}
 
     &:hover,

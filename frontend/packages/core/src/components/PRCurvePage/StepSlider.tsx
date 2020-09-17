@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import {ellipsis, size, textLighterColor} from '~/utils/style';
+import {ellipsis, size, transitionProps} from '~/utils/style';
 
 import Field from '~/components/Field';
 import RangeSlider from '~/components/RangeSlider';
@@ -13,10 +13,11 @@ import {useTranslation} from 'react-i18next';
 const relativeFormatter = format('.2f');
 
 const TimeDisplay = styled.div`
-    color: ${textLighterColor};
+    color: var(--text-lighter-color);
     font-size: 0.857142857em;
     padding-left: 1.666666667em;
     margin-bottom: 0.416666667em;
+    ${transitionProps('color')}
 `;
 
 const Label = styled.span<{color: string}>`

@@ -32,6 +32,7 @@
         "imports": "导入",
         "inputs": "输入",
         "license": "许可证",
+        "location": "位置",
         "name": "名称",
         "outputs": "输出",
         "producer": "框架",

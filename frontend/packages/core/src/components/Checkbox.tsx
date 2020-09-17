@@ -1,21 +1,5 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
-import {
-    WithStyled,
-    backgroundColor,
-    darken,
-    ellipsis,
-    em,
-    half,
-    lighten,
-    math,
-    position,
-    primaryColor,
-    sameBorder,
-    size,
-    textInvertColor,
-    textLighterColor,
-    transitionProps
-} from '~/utils/style';
+import {WithStyled, ellipsis, em, half, math, position, sameBorder, size, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 
@@ -43,20 +27,21 @@ const Input = styled.input.attrs<{disabled?: boolean}>(props => ({
 `;
 
 const Inner = styled.div<{checked?: boolean; size?: string; disabled?: boolean}>`
-    color: ${props => (props.checked ? textInvertColor : 'transparent')};
+    color: ${props => (props.checked ? 'var(--text-invert-color)' : 'transparent')};
     flex-shrink: 0;
     ${props => size(math(`${checkSize} * ${props.size === 'small' ? 0.875 : 1}`))}
     margin: ${half(`${height} - ${checkSize}`)} 0;
     margin-right: ${em(10)};
-    ${props => sameBorder({color: props.disabled || !props.checked ? textLighterColor : primaryColor})};
+    ${props =>
+        sameBorder({color: props.disabled || !props.checked ? 'var(--text-lighter-color)' : 'var(--primary-color)'})};
     background-color: ${props =>
         props.disabled
             ? props.checked
-                ? textLighterColor
-                : lighten(1 / 3, textLighterColor)
+                ? 'var(--text-lighter-color)'
+                : 'var(--text-lighter-color)'
             : props.checked
-            ? primaryColor
-            : backgroundColor};
+            ? 'var(--primary-color)'
+            : 'var(--background-color)'};
     background-image: ${props => (props.checked ? `url("${checkMark}")` : 'none')};
     background-repeat: no-repeat;
     background-position: center center;
@@ -66,14 +51,19 @@ const Inner = styled.div<{checked?: boolean; size?: string; disabled?: boolean}>
 
     ${Wrapper}:hover > & {
         border-color: ${props =>
-            props.disabled ? textLighterColor : props.checked ? primaryColor : darken(0.1, textLighterColor)};
+            props.disabled
+                ? 'var(--text-lighter-color)'
+                : props.checked
+                ? 'var(--primary-color)'
+                : 'var(--text-lighter-color)'};
     }
 `;
 
 const Content = styled.div<{disabled?: boolean}>`
     line-height: ${height};
     flex-grow: 1;
-    ${props => (props.disabled ? `color: ${textLighterColor};` : '')}
+    ${props => (props.disabled ? 'color: var(--text-lighter-color);' : '')}
+    ${transitionProps('color')}
     ${ellipsis()}
 `;
 

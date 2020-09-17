@@ -17,6 +17,14 @@ module.exports = {
     plugins: [
         '@snowpack/plugin-dotenv',
         [
+            '@snowpack/plugin-optimize',
+            {
+                minifyHTML: false, // we will do it later in post-build
+                preloadModules: true,
+                target: ['chrome63', 'firefox67', 'safari11.1', 'edge79'] // browsers support es module
+            }
+        ],
+        [
             '@snowpack/plugin-run-script',
             {
                 cmd: 'node builder/icons.js && node builder/netron.js && node builder/wasm.js',
@@ -43,7 +51,7 @@ module.exports = {
         port
     },
     buildOptions: {
-        baseUrl: process.env.SNOWPACK_PUBLIC_PATH || '/',
+        baseUrl: '/', // set it in post-build
         clean: true
     },
     installOptions: {

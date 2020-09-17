@@ -2,8 +2,8 @@ import * as chart from '~/utils/chart';
 
 import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
-import useECharts, {Options, Wrapper} from '~/hooks/useECharts';
+import {WithStyled, primaryColor, transitionProps} from '~/utils/style';
+import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -13,11 +13,12 @@ import useThrottleFn from '~/hooks/useThrottleFn';
 const Tooltip = styled.div`
     position: absolute;
     z-index: 1;
-    background-color: rgba(0, 0, 0, 0.75);
-    color: #fff;
+    background-color: var(--tooltip-background-color);
+    color: var(--tooltip-text-color);
     border-radius: 4px;
     padding: 5px;
     display: none;
+    ${transitionProps(['color', 'background-color'])}
 `;
 
 type renderItem = NonNullable<EChartOption.SeriesCustom['renderItem']>;
@@ -150,6 +151,8 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
             [pointerLabelFormatter]
         );
 
+        const theme = useChartTheme();
+
         const chartOptions = useMemo<EChartOption>(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, toolbox, series, ...defaults} = chart;
@@ -213,9 +216,10 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                     ]
                 },
                 options,
+                theme,
                 defaults
             );
-        }, [options, title, rawData, minX, maxX, minY, maxY, negativeY, renderItem, axisPointerLabelFormatter]);
+        }, [options, title, theme, rawData, minX, maxX, minY, maxY, negativeY, renderItem, axisPointerLabelFormatter]);
 
         const mouseout = useCallback(() => {
             setHighlight(null);

@@ -1,6 +1,6 @@
 import Input, {InputProps, padding} from '~/components/Input';
 import React, {FunctionComponent, useCallback, useRef} from 'react';
-import {WithStyled, math, position, textColor, textLightColor, textLighterColor} from '~/utils/style';
+import {WithStyled, math, position, transitionProps} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import styled from 'styled-components';
@@ -24,7 +24,8 @@ const SearchIcon = styled(Icon)`
     transform-origin: center;
     ${position('absolute', '50%', null, null, padding)}
     pointer-events: none;
-    color: ${textLighterColor};
+    color: var(--text-lighter-color);
+    ${transitionProps('color')}
 `;
 
 const CloseIcon = styled(Icon)`
@@ -33,14 +34,15 @@ const CloseIcon = styled(Icon)`
     transform-origin: center;
     ${position('absolute', '50%', padding, null, null)}
     cursor: pointer;
-    color: ${textLighterColor};
+    color: var(--text-lighter-color);
+    ${transitionProps('color')}
 
     &:hover {
-        color: ${textLightColor};
+        color: var(--text-light-color);
     }
 
     &:active {
-        color: ${textColor};
+        color: var(--text-color);
     }
 `;
 

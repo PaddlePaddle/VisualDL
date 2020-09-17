@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {backgroundColor, contentHeight, contentMargin, headerHeight, position} from '~/utils/style';
+import {contentHeight, contentMargin, headerHeight, position, transitionProps} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
 import styled from 'styled-components';
@@ -16,11 +16,12 @@ const Article = styled.article`
 
 const Aside = styled.aside`
     flex: none;
-    background-color: ${backgroundColor};
+    background-color: var(--background-color);
     height: ${`calc(100vh - ${headerHeight})`};
     ${position('sticky', headerHeight, 0, null, null)}
     overflow-x: hidden;
     overflow-y: auto;
+    ${transitionProps('background-color')}
 `;
 
 type ContentProps = {

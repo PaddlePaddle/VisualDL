@@ -32,6 +32,7 @@
         "imports": "Imports",
         "inputs": "Inputs",
         "license": "License",
+        "location": "Location",
         "name": "Name",
         "outputs": "Outputs",
         "producer": "Producer",

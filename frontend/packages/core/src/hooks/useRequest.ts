@@ -23,7 +23,7 @@ function useRequest<D = unknown, E extends Error = Error>(
     config?: ConfigInterface<D, E, fetcherFn<D>>
 ): Response<D, E> {
     const {data, error, ...other} = useSWR<D, E>(key, fetcher, config);
-    const loading = useMemo(() => !!key && !data && !error, [key, data, error]);
+    const loading = useMemo(() => !!key && data === void 0 && !error, [key, data, error]);
 
     useEffect(() => {
         if (error) {

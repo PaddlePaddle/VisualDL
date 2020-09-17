@@ -90,8 +90,8 @@ def create_app(args):
             PUBLIC_PATH=public_path,
             BASE_URI=public_path,
             API_URL=api_path,
-            API_TOKEN_KEY='',
-            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else ''
+            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else '',
+            THEME='' if args.theme is None else args.theme
         )
 
         @app.route('/')
