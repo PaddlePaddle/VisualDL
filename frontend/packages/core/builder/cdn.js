@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 
 const path = require('path');
-const {promises: fs} = require('fs');
+const fs = require('fs/promises');
 const {BosClient} = require('@baiducloud/sdk');
 const mime = require('mime-types');
 

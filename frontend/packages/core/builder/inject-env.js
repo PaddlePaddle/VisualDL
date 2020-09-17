@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path');
-const {promises: fs} = require('fs');
+const fs = require('fs/promises');
 
 const ENV_INJECT = 'const env = window.__snowpack_env__ || {}; export default env;';
 
