@@ -253,9 +253,9 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Toolbox
                         items={[
                             {
-                                icon: 'restore-size',
-                                tooltip: t('graph:restore-size'),
-                                onClick: () => dispatch('zoom-reset')
+                                icon: 'zoom-in',
+                                tooltip: t('graph:zoom-in'),
+                                onClick: () => dispatch('zoom-in')
                             },
                             {
                                 icon: 'zoom-out',
@@ -263,9 +263,9 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 onClick: () => dispatch('zoom-out')
                             },
                             {
-                                icon: 'zoom-in',
-                                tooltip: t('graph:zoom-in'),
-                                onClick: () => dispatch('zoom-in')
+                                icon: 'restore-size',
+                                tooltip: t('graph:restore-size'),
+                                onClick: () => dispatch('zoom-reset')
                             }
                         ]}
                         reversed
