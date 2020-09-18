@@ -22,7 +22,7 @@ const Audio: FunctionComponent = () => {
     const audioContext = useRef<AudioContext>();
     useEffect(() => {
         // safari only has webkitAudioContext
-        const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
         audioContext.current = new AudioContext();
 
         return () => {

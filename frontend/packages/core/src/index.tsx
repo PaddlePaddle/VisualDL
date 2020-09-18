@@ -10,7 +10,7 @@ import store from '~/store';
 
 const TELEMETRY_ID: string = import.meta.env.SNOWPACK_PUBLIC_TELEMETRY_ID;
 
-globalThis._hmt = globalThis._hmt || [];
+window._hmt = window._hmt || [];
 if (import.meta.env.MODE === 'production' && TELEMETRY_ID) {
     (function () {
         const hm = document.createElement('script');

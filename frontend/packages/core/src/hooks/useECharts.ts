@@ -26,54 +26,55 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     saveAsImage: (filename?: string) => void;
 } => {
     const ref = useRef<T | null>(null);
-    const echartInstance = useRef<ECharts | null>(null);
     const [echart, setEchart] = useState<ECharts | null>(null);
     const theme = useTheme();
 
     const onInit = useRef(options.onInit);
     const onDispose = useRef(options.onDispose);
 
-    const hideTip = useCallback(() => echartInstance.current?.dispatchAction({type: 'hideTip'}), []);
+    const hideTip = useCallback(() => echart?.dispatchAction({type: 'hideTip'}), [echart]);
 
     const createChart = useCallback(() => {
         (async () => {
+            if (!ref.current) {
+                return;
+            }
+
             const {default: echarts} = await import('echarts');
             if (options.gl) {
                 await import('echarts-gl');
             }
-            if (!ref.current) {
-                return;
-            }
-            echartInstance.current = echarts.init((ref.current as unknown) as HTMLDivElement);
+
+            const echartInstance = echarts.init((ref.current as unknown) as HTMLDivElement);
 
             ref.current.addEventListener('mouseleave', hideTip);
 
             setTimeout(() => {
                 if (options.zoom) {
-                    echartInstance.current?.dispatchAction({
+                    echartInstance.dispatchAction({
                         type: 'takeGlobalCursor',
                         key: 'dataZoomSelect',
                         dataZoomSelectActive: true
                     });
                 }
 
-                if (echartInstance.current) {
-                    onInit.current?.(echartInstance.current);
+                if (echartInstance) {
+                    onInit.current?.(echartInstance);
                 }
             }, 0);
 
-            setEchart(echartInstance.current);
+            setEchart(echartInstance);
         })();
     }, [options.gl, options.zoom, hideTip]);
 
     const destroyChart = useCallback(() => {
-        if (echartInstance.current) {
-            onDispose.current?.(echartInstance.current);
+        if (echart) {
+            onDispose.current?.(echart);
+            echart.dispose();
+            ref.current?.removeEventListener('mouseleave', hideTip);
+            setEchart(null);
         }
-        echartInstance.current?.dispose();
-        ref.current?.removeEventListener('mouseleave', hideTip);
-        setEchart(null);
-    }, [hideTip]);
+    }, [hideTip, echart]);
 
     useEffect(() => {
         createChart();
@@ -82,7 +83,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
 
     useEffect(() => {
         if (options.loading) {
-            echartInstance.current?.showLoading('default', {
+            echart?.showLoading('default', {
                 text: '',
                 color: primaryColor,
                 textColor: themes[theme].textColor,
@@ -90,9 +91,9 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 zlevel: 0
             });
         } else {
-            echartInstance.current?.hideLoading();
+            echart?.hideLoading();
         }
-    }, [options.loading, theme]);
+    }, [options.loading, theme, echart]);
 
     const wrapper = useRef<W | null>(null);
     useLayoutEffect(() => {
@@ -100,13 +101,13 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
             const w = wrapper.current;
             if (w) {
                 const observer = new ResizeObserver(() => {
-                    echartInstance.current?.resize();
+                    echart?.resize();
                 });
                 observer.observe(w);
                 return () => observer.unobserve(w);
             }
         }
-    }, [options.autoFit]);
+    }, [options.autoFit, echart]);
 
     const saveAsImage = useCallback(
         (filename?: string) => {

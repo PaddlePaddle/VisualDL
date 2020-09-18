@@ -2,11 +2,11 @@
 /* eslint-disable no-console */
 
 const path = require('path');
-const {promises: fs} = require('fs');
+const fs = require('fs/promises');
 const {BosClient} = require('@baiducloud/sdk');
 const mime = require('mime-types');
 
-const endpoint = process.env.BOS_ENDPOINT || 'http://bj.bcebos.com';
+const endpoint = process.env.BOS_ENDPOINT || 'https://bos.bj.baidubce.com';
 const ak = process.env.BOS_AK;
 const sk = process.env.BOS_SK;
 
@@ -33,7 +33,7 @@ async function getFiles(dir) {
                 const name = path.join(dir, file.name);
                 result.push({
                     name,
-                    mime: mime.lookup(name),
+                    mime: mime.contentType(path.extname(name)),
                     size: (await fs.stat(name)).size
                 });
             } else if (file.isDirectory()) {
@@ -46,7 +46,7 @@ async function getFiles(dir) {
     return result;
 }
 
-async function main(directory) {
+async function push(directory, options) {
     if (!ak || !sk) {
         console.error('No AK and SK specified!');
         process.exit(1);
@@ -56,12 +56,14 @@ async function main(directory) {
     try {
         const stats = await fs.stat(directory);
         if (stats.isDirectory()) {
-            files = (await getFiles(directory)).map(file => ({filename: path.relative(directory, file.name), ...file}));
+            files = (await getFiles(directory))
+                .map(file => ({filename: path.relative(directory, file.name), ...file}))
+                .filter(file => options?.exclude?.includes(file.filename) !== true);
         } else if (stats.isFile()) {
             files.push({
                 filename: path.relative(path.basename(directory)),
                 name: directory,
-                mime: mime.lookup(directory),
+                mime: mime.contentType(path.extname(directory)),
                 size: stats.size
             });
         } else {
@@ -76,8 +78,8 @@ async function main(directory) {
         (function (f) {
             client
                 .putObjectFromFile(bucket, `assets/${version}/${f.filename}`, f.name, {
-                    'content-length': f.size,
-                    'content-type': `${f.mime}; charset=utf-8`
+                    'Content-Length': f.size,
+                    'Content-Type': `${f.mime}`
                 })
                 .then(() => console.log([f.name, f.mime, f.size].join(', ')))
                 .catch(error => console.error(f, error));
@@ -85,4 +87,4 @@ async function main(directory) {
     }
 }
 
-module.exports = main;
+module.exports = push;

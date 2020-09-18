@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path');
-const {promises: fs} = require('fs');
+const fs = require('fs/promises');
 const {minify} = require('html-minifier');
 
 const dist = path.resolve(__dirname, '../dist');

@@ -6,16 +6,19 @@ import type {Icons} from '~/components/Icon';
 import Tippy from '@tippyjs/react';
 import styled from 'styled-components';
 
-const Toolbox = styled.div<{reversed?: boolean}>`
+const Toolbox = styled.div<{size?: number; reversed?: boolean}>`
     font-size: ${em(16)};
     line-height: 1;
     height: 1em;
-    display: flex;
-    flex-direction: ${props => (props.reversed ? 'row-reverse' : 'row')};
-    align-items: center;
+    display: grid;
+    grid-template-columns: ${props => (props.size == null ? 'repeat(auto-fill, 1em)' : `repeat(${props.size}, 1em)`)};
+    grid-gap: ${rem(14)};
+    place-items: center;
+    justify-content: ${props => (props.reversed ? 'end' : 'start')};
+    align-content: center;
 `;
 
-const ToolboxItem = styled.a<{active?: boolean; reversed?: boolean}>`
+const ToolboxItem = styled.a<{active?: boolean}>`
     cursor: pointer;
     color: ${props => (props.active ? 'var(--primary-color)' : 'var(--text-lighter-color)')};
     ${transitionProps('color')}
@@ -26,10 +29,6 @@ const ToolboxItem = styled.a<{active?: boolean; reversed?: boolean}>`
 
     &:active {
         color: ${props => (props.active ? 'var(--primary-active-color)' : 'var(--text-color)')};
-    }
-
-    & + & {
-        margin: ${props => (props.reversed ? `0 ${rem(14)} 0 0` : `0 0 0 ${rem(14)}`)};
     }
 `;
 
@@ -86,19 +85,18 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
         (item: ChartTooboxItem, index: number) => (
             <ToolboxItem
                 key={index}
-                reversed={reversed}
                 active={item.toggle && !item.activeIcon && activeStatus[index]}
                 onClick={() => onClick(index)}
             >
                 <Icon type={item.toggle ? (activeStatus[index] && item.activeIcon) || item.icon : item.icon} />
             </ToolboxItem>
         ),
-        [activeStatus, onClick, reversed]
+        [activeStatus, onClick]
     );
 
     return (
         <>
-            <Toolbox className={className} reversed={reversed}>
+            <Toolbox className={className} size={items.length} reversed={reversed}>
                 {items.map((item, index) =>
                     item.tooltip ? (
                         <Tippy

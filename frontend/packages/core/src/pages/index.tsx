@@ -10,16 +10,17 @@ import {useTranslation} from 'react-i18next';
 
 const CenterWrapper = styled.div`
     ${size(`calc(100vh - ${headerHeight})`, '100vw')}
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     overscroll-behavior: none;
 `;
 
 const Loading = styled.div`
     font-size: ${rem(16)};
+    height: 100%;
     line-height: ${rem(60)};
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
 
 const IndexPage: FunctionComponent = () => {

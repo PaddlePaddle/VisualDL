@@ -19,7 +19,7 @@
 
 ## 使用
 
-> 要求 nodejs ≥ 10 并且 npm ≥ 6
+> 要求 nodejs ≥ 12 并且 npm ≥ 6
 
 ```bash
 npm install -g @visualdl/cli
@@ -66,6 +66,8 @@ yarn
 
 ## 编译和部署
 
+> 要求 nodejs ≥ 14 并且 npm ≥ 6
+
 > 目前仅支持 Linux/MacOS 上编译。
 
 运行：
@@ -78,7 +80,7 @@ yarn build
 
 ### Server 部署
 
-> 要求 nodejs ≥ 10 并且 npm ≥ 6
+> 要求 nodejs ≥ 12 并且 npm ≥ 6
 
 解压 `server.tar.gz` 到任何地方。
 `cd` 到那个文件夹然后运行：
@@ -110,6 +112,7 @@ VisualDL 支持最新版本的 [Google Chrome](https://www.google.com/chrome/) �
 
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
+- [Snowpack]](https://www.snowpack.dev/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 - [Netron](https://github.com/lutzroeder/netron)
 

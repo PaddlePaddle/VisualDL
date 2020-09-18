@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path');
-const {promises: fs} = require('fs');
+const fs = require('fs/promises');
 const {default: svgr} = require('@svgr/core');
 const babel = require('@babel/core');
 const {camelCase} = require('lodash');

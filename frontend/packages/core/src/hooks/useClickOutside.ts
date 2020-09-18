@@ -22,16 +22,14 @@ const useClickOutside = <T extends HTMLElement>(callback: () => void) => {
     );
 
     useEffect(() => {
-        if (globalThis.document) {
-            document.addEventListener('mousedown', clickListener);
-            document.addEventListener('touchstart', clickListener);
-            document.addEventListener('keyup', escapeListener);
-            return () => {
-                document.removeEventListener('mousedown', clickListener);
-                document.removeEventListener('touchstart', clickListener);
-                document.removeEventListener('keyup', escapeListener);
-            };
-        }
+        document.addEventListener('mousedown', clickListener);
+        document.addEventListener('touchstart', clickListener);
+        document.addEventListener('keyup', escapeListener);
+        return () => {
+            document.removeEventListener('mousedown', clickListener);
+            document.removeEventListener('touchstart', clickListener);
+            document.removeEventListener('keyup', escapeListener);
+        };
     }, [clickListener, escapeListener]);
 
     return ref;

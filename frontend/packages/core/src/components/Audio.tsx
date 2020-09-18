@@ -208,7 +208,7 @@ const Audio = React.forwardRef<AudioRef, AudioProps & WithStyled>(
         }, []);
         const startTimer = useCallback(() => {
             tick();
-            timer.current = (globalThis.setInterval(tick, 250) as unknown) as number;
+            timer.current = (window.setInterval(tick, 250) as unknown) as number;
         }, [tick]);
         const stopTimer = useCallback(() => {
             if (player.current) {
@@ -217,7 +217,7 @@ const Audio = React.forwardRef<AudioRef, AudioProps & WithStyled>(
                 }
             }
             if (timer.current) {
-                globalThis.clearInterval(timer.current);
+                window.clearInterval(timer.current);
                 timer.current = null;
             }
         }, [tick]);
