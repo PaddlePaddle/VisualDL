@@ -169,9 +169,10 @@ def get_pr_curve(log_reader, run, tag):
 
 
 def get_pr_curve_step(log_reader, run, tag=None):
+    fake_run = run
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     run2tag = get_pr_curve_tags(log_reader)
-    tag = run2tag['tags'][run2tag['runs'].index(run)][0]
+    tag = run2tag['tags'][run2tag['runs'].index(fake_run)][0]
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
         run, decode_tag(tag))
