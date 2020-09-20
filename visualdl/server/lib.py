@@ -16,10 +16,26 @@
 from __future__ import absolute_import
 import sys
 import time
+import os
 import numpy as np
 from visualdl.server.log import logger
 from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
+
+
+MODIFY_PREFIX = {}
+MODIFIED_RUNS = []
+
+
+def find2substr(substr, str, cnt=0):
+    index = -1
+    for i in range(0, cnt):
+        temp = str.find(substr, index+1)
+        if temp != -1:
+            index = temp
+        else:
+            return index
+    return index
 
 
 def s2ms(timestamp):
@@ -57,6 +73,9 @@ def get_logs(log_reader, component):
             tags[run].append(tag)
         else:
             tags[run] = [tag]
+        if run not in log_reader.tags2name.keys():
+            log_reader.tags2name[run] = run
+            log_reader.name2tags[run] = run
     fake_tags = {}
     for key, value in tags.items():
         if key in log_reader.tags2name:
@@ -68,6 +87,29 @@ def get_logs(log_reader, component):
     for run, tags in fake_tags.items():
         run2tag['runs'].append(run)
         run2tag['tags'].append(tags)
+
+    run_prefix = os.getenv('VISUALDL_RUN_PREFIX')
+    global MODIFY_PREFIX, MODIFIED_RUNS
+    if component not in MODIFY_PREFIX:
+        MODIFY_PREFIX.update({component: False})
+    if run_prefix and not MODIFY_PREFIX[component]:
+        MODIFY_PREFIX[component] = True
+        run_prefix = int(run_prefix)
+        temp_name2tags = log_reader.name2tags.copy()
+        for key, value in temp_name2tags.items():
+            if key in MODIFIED_RUNS:
+                continue
+            index = find2substr('/', key, run_prefix)
+            temp_key = key[index+1:]
+            if temp_key != key:
+                log_reader.name2tags.pop(key)
+                log_reader.name2tags.update({temp_key: value})
+
+                log_reader.tags2name.pop(value)
+                log_reader.tags2name.update({value: temp_key})
+
+                run2tag['runs'][run2tag['runs'].index(key)] = temp_key
+            MODIFIED_RUNS.append(temp_key)
 
     return run2tag
 
