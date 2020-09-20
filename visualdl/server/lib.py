@@ -27,17 +27,6 @@ MODIFY_PREFIX = {}
 MODIFIED_RUNS = []
 
 
-def find2substr(substr, str, cnt=0):
-    index = -1
-    for i in range(0, cnt):
-        temp = str.find(substr, index+1)
-        if temp != -1:
-            index = temp
-        else:
-            return index
-    return index
-
-
 def s2ms(timestamp):
     return timestamp * 1000 if timestamp < 2000000000 else timestamp
 
@@ -94,13 +83,15 @@ def get_logs(log_reader, component):
         MODIFY_PREFIX.update({component: False})
     if run_prefix and not MODIFY_PREFIX[component]:
         MODIFY_PREFIX[component] = True
-        run_prefix = int(run_prefix)
         temp_name2tags = log_reader.name2tags.copy()
         for key, value in temp_name2tags.items():
             if key in MODIFIED_RUNS:
                 continue
-            index = find2substr('/', key, run_prefix)
-            temp_key = key[index+1:]
+            index = key.find(run_prefix)
+            if index != -1:
+                temp_key = key[index+len(run_prefix):]
+            else:
+                temp_key = key
             if temp_key != key:
                 log_reader.name2tags.pop(key)
                 log_reader.name2tags.update({temp_key: value})
