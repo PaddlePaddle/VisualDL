@@ -116,4 +116,4 @@ def upload_to_dev(logdir=None, model=None):
             bos_fs.upload_object_from_file(path=bucket_id, filename=model)
     url = get_url(path=bucket_id, model=model)
 
-    print("View your visualization results at:`%s`." % url)
+    print("View your visualization results at: `%s`." % url)
