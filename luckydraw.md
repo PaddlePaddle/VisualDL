@@ -10,7 +10,7 @@
 
 •     **奖项设置**：
 
-VDL Github抽取10名，PaddleX Github抽取10名（以下奖项均分）
+VDL Github抽取9名，PaddleX Github抽取9名（以下奖项均分）
 
 **一等奖（2名）：**蓝牙键盘、飞桨充电宝
 
