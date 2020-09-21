@@ -1,4 +1,4 @@
-[**中文**](./docs/components/README.md)
+[**中文**](./README.md)
 
 # VisualDL Guide
 
@@ -7,6 +7,7 @@
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
 Currently, VisualDL provides seven components: scalar, image, audio, graph, histogram, pr curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
+
 
 
 
@@ -20,7 +21,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
-
+At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
 ## Scalar--Line Chart
 
@@ -174,6 +175,25 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
   <img src="https://user-images.githubusercontent.com/48054808/90873112-2b74d080-e3d0-11ea-8a69-24b7b4abae96.png" width="40%"/>
 </p>
 
+* Display the global extrema
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732753-46bc4100-fc05-11ea-92ca-35c89467815b.png" width="30%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732766-58054d80-fc05-11ea-89e0-bc00a283f559.png" width="60%"/>
+</p>
+
+* Only display smoothed data 
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732799-7f5c1a80-fc05-11ea-886f-193c3bcc9b5f.png" width="30%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732815-9569db00-fc05-11ea-8353-ffa5086d3d52.png" width="60%"/>
+</p>
 
 * There are three measurement scales of X axis
 
@@ -718,4 +738,37 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
   <p align="center">
     <img src="https://user-images.githubusercontent.com/48054808/90880856-bf986500-e3db-11ea-8ffd-261b56d8e730.png" width="27%"/>
+  </p>
+
+
+## VDL.service
+
+### Introduction
+
+VDL.service enables developers to easily save, track and share visualization results with anyone for free.
+
+### Usage Steps
+
+1. Make sure that your get the lastest version of VisualDL, if not, please update by:
+
+```
+pip install visualdl --upgrade
+
+```
+
+2. Upload log/model to save, track and share the visualization results.
+
+```
+visualdl service upload --logdir ./log \
+                        --model ./__model__
+```                       
+                       
+3. An unique URL will be given. Then you can view the visualization results by simply copying and pasting the URL to the browser. 
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/93733769-5ccc0080-fc09-11ea-88c0-6f17c04ebdce.png" width="100%"/>
+  </p>
+  
+   <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/93734496-057b5f80-fc0c-11ea-9b52-229ff8847bc0.png" width="100%"/>
   </p>
