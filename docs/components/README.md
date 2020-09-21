@@ -18,7 +18,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
-同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#VDL.service) 生成链接，保存并分享可视化结果
+同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
 
 ## Scalar--标量组件
 

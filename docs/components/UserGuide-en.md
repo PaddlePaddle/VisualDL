@@ -1,4 +1,4 @@
-[**中文**](./docs/components/README.md)
+[**中文**](./README.md)
 
 # VisualDL Guide
 
@@ -21,7 +21,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
-At the same time, VisualDL provides [VDL.service](#VDL.service) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
+At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
 ## Scalar--Line Chart
 
