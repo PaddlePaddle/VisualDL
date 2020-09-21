@@ -18,7 +18,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
-
+同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#VDL.service) 生成链接，保存并分享可视化结果
 
 ## Scalar--标量组件
 
@@ -93,7 +93,7 @@ visualdl --logdir ./log --port 8080
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看以下折线图。
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/82397559-478c6d00-9a83-11ea-80db-a0844dcaca35.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/93732057-36ef2d80-fc02-11ea-9dac-b8fdce194d09.png" width="100%"/>
 </p>
 
 - 多组实验对比
@@ -173,6 +173,25 @@ visualdl --logdir ./log --port 8080
   <img src="https://visualdl.bj.bcebos.com/images/scalar-searchstream.png" width="40%"/>
 </p>
 
+* 选择显示最值，展示最大最小值以及对应的训练步数
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732336-65213d00-fc03-11ea-96f4-cc6497094a06.png" width="20%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732424-d8c34a00-fc03-11ea-8b7b-0a728274f50f.png" width="60%"/>
+</p>
+
+* 选择仅显示平滑后的数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732485-263fb700-fc04-11ea-9edb-40cb8676aad0.png" width="25%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732514-4cfded80-fc04-11ea-99c9-9053f9945c8b.png" width="60%"/>
+</p>
 
 * X轴有三种衡量尺度
 
@@ -715,4 +734,37 @@ visualdl --logdir ./log --port 8080
 
   <p align="center">
     <img src="https://user-images.githubusercontent.com/48054808/83006747-3fb16780-a045-11ea-83e0-a314b7765108.png" width="27%"/>
+  </p>
+
+
+## VDL.service
+
+### 简介
+
+VisualDL可视化结果保存服务，以链接形式将可视化结果保存下来，方便用户快速、便捷的进行托管与分享。
+
+### 使用步骤
+
+1. 确保VisualDL已升级到最新版本，如未升级，请使用以下命令进行升级
+
+```
+pip install visualdl --upgrade
+
+```
+
+2. 上传需保存/分享的日志/模型文件
+
+```
+visualdl service upload --logdir ./log \
+                        --model ./__model__
+```                       
+                       
+3. VDL.service将返回一个URL链接，复制粘贴链接至浏览器中即可查看可视化结果
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/93733769-5ccc0080-fc09-11ea-88c0-6f17c04ebdce.png" width="100%"/>
+  </p>
+  
+   <p align="center">
+    <img src="https://user-images.githubusercontent.com/48054808/93733790-69e8ef80-fc09-11ea-9256-68a88072f5d2.png" width="100%"/>
   </p>
