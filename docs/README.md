@@ -282,7 +282,7 @@ app.run(logdir="./log")
 
 ### VDL.service
 
-VisualDL可视化结果保存服务，以链接形式将可视化结果保存下来，便于托管与分享。
+VisualDL可视化结果保存服务，以链接形式将可视化结果保存下来，方便用户快速、便捷的进行托管与分享。
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/93729521-72382f00-fbf7-11ea-91ff-6b6ab4b41e32.png" width="85%"/>
