@@ -74,6 +74,7 @@
         "@babel/preset-env": "7.11.5",
         "@babel/preset-react": "7.10.4",
         "@baiducloud/sdk": "1.0.0-rc.22",
+        "@simbathesailor/use-what-changed": "0.1.25",
         "@snowpack/app-scripts-react": "1.10.0",
         "@snowpack/plugin-dotenv": "2.0.1",
         "@snowpack/plugin-optimize": "0.2.1",

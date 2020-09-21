@@ -146,7 +146,77 @@ export const Wrapper = styled.div`
 export const useChartTheme = (gl?: boolean) => {
     const theme = useTheme();
     const tt = useMemo(() => themes[theme], [theme]);
-    if (gl) {
+    const result = useMemo(() => {
+        if (gl) {
+            return {
+                title: {
+                    textStyle: {
+                        color: tt.textColor
+                    }
+                },
+                tooltip: {
+                    backgroundColor: tt.tooltipBackgroundColor,
+                    borderColor: tt.tooltipBackgroundColor,
+                    textStyle: {
+                        color: tt.tooltipTextColor
+                    }
+                },
+                xAxis3D: {
+                    nameTextStyle: {
+                        color: tt.textLighterColor
+                    },
+                    axisLabel: {
+                        color: tt.textLighterColor
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: tt.borderColor
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: tt.borderColor
+                        }
+                    }
+                },
+                yAxis3D: {
+                    nameTextStyle: {
+                        color: tt.textLighterColor
+                    },
+                    axisLabel: {
+                        color: tt.textLighterColor
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: tt.borderColor
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: tt.borderColor
+                        }
+                    }
+                },
+                zAxis3D: {
+                    nameTextStyle: {
+                        color: tt.textLighterColor
+                    },
+                    axisLabel: {
+                        color: tt.textLighterColor
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: tt.borderColor
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: tt.borderColor
+                        }
+                    }
+                }
+            };
+        }
         return {
             title: {
                 textStyle: {
@@ -160,7 +230,7 @@ export const useChartTheme = (gl?: boolean) => {
                     color: tt.tooltipTextColor
                 }
             },
-            xAxis3D: {
+            xAxis: {
                 nameTextStyle: {
                     color: tt.textLighterColor
                 },
@@ -178,25 +248,7 @@ export const useChartTheme = (gl?: boolean) => {
                     }
                 }
             },
-            yAxis3D: {
-                nameTextStyle: {
-                    color: tt.textLighterColor
-                },
-                axisLabel: {
-                    color: tt.textLighterColor
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: tt.borderColor
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: tt.borderColor
-                    }
-                }
-            },
-            zAxis3D: {
+            yAxis: {
                 nameTextStyle: {
                     color: tt.textLighterColor
                 },
@@ -215,55 +267,6 @@ export const useChartTheme = (gl?: boolean) => {
                 }
             }
         };
-    }
-    return {
-        title: {
-            textStyle: {
-                color: tt.textColor
-            }
-        },
-        tooltip: {
-            backgroundColor: tt.tooltipBackgroundColor,
-            borderColor: tt.tooltipBackgroundColor,
-            textStyle: {
-                color: tt.tooltipTextColor
-            }
-        },
-        xAxis: {
-            nameTextStyle: {
-                color: tt.textLighterColor
-            },
-            axisLabel: {
-                color: tt.textLighterColor
-            },
-            axisLine: {
-                lineStyle: {
-                    color: tt.borderColor
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: tt.borderColor
-                }
-            }
-        },
-        yAxis: {
-            nameTextStyle: {
-                color: tt.textLighterColor
-            },
-            axisLabel: {
-                color: tt.textLighterColor
-            },
-            axisLine: {
-                lineStyle: {
-                    color: tt.borderColor
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: tt.borderColor
-                }
-            }
-        }
-    };
+    }, [tt, gl]);
+    return result;
 };
