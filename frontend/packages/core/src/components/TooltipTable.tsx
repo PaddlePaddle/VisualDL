@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {ellipsis, rem, size} from '~/utils/style';
+import {rem, size} from '~/utils/style';
 
 import type {Run} from '~/types';
 import styled from 'styled-components';
