@@ -90,9 +90,7 @@ def get_logs(log_reader, component):
             index = key.find(run_prefix)
             if index != -1:
                 temp_key = key[index+len(run_prefix):]
-            else:
-                temp_key = key
-            if temp_key != key:
+
                 log_reader.name2tags.pop(key)
                 log_reader.name2tags.update({temp_key: value})
 
@@ -100,6 +98,9 @@ def get_logs(log_reader, component):
                 log_reader.tags2name.update({value: temp_key})
 
                 run2tag['runs'][run2tag['runs'].index(key)] = temp_key
+            else:
+                temp_key = key
+
             MODIFIED_RUNS.append(temp_key)
 
     return run2tag
