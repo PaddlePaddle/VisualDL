@@ -93,7 +93,7 @@ visualdl --logdir ./log --port 8080
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看以下折线图。
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/82397559-478c6d00-9a83-11ea-80db-a0844dcaca35.png" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/93732057-36ef2d80-fc02-11ea-9dac-b8fdce194d09.png" width="100%"/>
 </p>
 
 - 多组实验对比
@@ -173,6 +173,25 @@ visualdl --logdir ./log --port 8080
   <img src="https://visualdl.bj.bcebos.com/images/scalar-searchstream.png" width="40%"/>
 </p>
 
+* 选择显示最值，展示最大最小值以及对应的训练步数
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732336-65213d00-fc03-11ea-96f4-cc6497094a06.png" width="20%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732424-d8c34a00-fc03-11ea-8b7b-0a728274f50f.png" width="60%"/>
+</p>
+
+* 选择仅显示平滑后的数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732485-263fb700-fc04-11ea-9edb-40cb8676aad0.png" width="25%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/93732514-4cfded80-fc04-11ea-99c9-9053f9945c8b.png" width="60%"/>
+</p>
 
 * X轴有三种衡量尺度
 
