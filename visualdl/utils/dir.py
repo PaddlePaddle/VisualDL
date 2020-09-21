@@ -17,7 +17,7 @@ import os
 import json
 
 
-VDL_SERVER = "http://paddlepaddle.org.cn/visualdl"
+VDL_SERVER = "https://paddlepaddle.org.cn/paddle/visualdl/service/server"
 
 default_vdl_config = {
     'server_url': VDL_SERVER

@@ -21,6 +21,9 @@ const Wrapper = styled.div`
 
             > span {
                 display: inline-block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
         }
 
@@ -28,11 +31,6 @@ const Wrapper = styled.div`
             font-size: 1.166666667em;
             font-weight: bold;
             padding: 0 0.285714286em;
-
-            &.run > span {
-                min-width: 4.285714286em;
-                max-width: 12.857142857em;
-            }
         }
 
         td {
@@ -43,6 +41,11 @@ const Wrapper = styled.div`
                 border-radius: 6px;
                 vertical-align: middle;
                 background-color: currentColor;
+            }
+
+            &.run > span {
+                min-width: 4.285714286em;
+                max-width: 8.571428572em;
             }
         }
     }
@@ -85,7 +88,7 @@ const TooltipTable: FunctionComponent<TooltipTableProps> = ({run, runs, columns,
                                 <span style={{color: runs[j]?.colors[0]}}></span>
                             </td>
                             <td className="run">
-                                <span>{runs[j]?.label}</span>
+                                <span title={runs[j]?.label}>{runs[j]?.label}</span>
                             </td>
                             {row.map((cell, k) => (
                                 <td key={k}>
