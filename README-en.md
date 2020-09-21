@@ -41,6 +41,7 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 The high-level design of API makes it easy to use. Only one click can initiate the visualization of model structures.
 
+
 ### Various Functions
 
 The function contains the visualization of training parameters, data samples, graph structures, histograms of tensors, PR curves and high-dimensional data.
@@ -54,6 +55,7 @@ VisualDL provides the visualization of the mainstream model structures such as P
 By Integrating into PaddlePaddle and related modules, VisualDL allows developers to use different components unobstructed, and thus have the best experience in the PaddlePaddle ecosystem.
 
 ## Installation
+
 
 ### Install by PiP
 
@@ -70,6 +72,7 @@ python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-*.whl
 ```
 Please note that Python 2 is no longer maintained officially since January 1, 2020. VisualDL now only supports Python 3 in order to ensure the usability of codes.
+
 
 ## Usage Guideline
 
@@ -147,6 +150,7 @@ visualdl --logdir ./log
 ```
 
 #### Launch in Python Script
+
 
 Developers can start the VisualDL panel in Python script as follows:
 
