@@ -15,8 +15,23 @@
 
 import logging
 
-logger = logging
 
-logger.basicConfig(
-    format='[%(levelname)s %(asctime)s %(filename)s:%(lineno)s] %(message)s')
-logger.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('[%(levelname)s %(asctime)s %(filename)s:%(lineno)s] %(message)s'))
+logger.addHandler(handler)
+
+info_logger = logging.getLogger('visualdl.info')
+info_logger.setLevel(logging.INFO)
+info_handler = logging.StreamHandler()
+info_handler.setFormatter(logging.Formatter('%(message)s'))
+info_logger.addHandler(info_handler)
+info_logger.propagate = False
+info = info_logger.info
+
+
+def init_logger(verbose):
+    level = max(logging.ERROR - verbose * 10, logging.NOTSET)
+
+    logger.setLevel(level)
+    logging.getLogger('werkzeug').setLevel(level)

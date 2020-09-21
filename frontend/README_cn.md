@@ -4,7 +4,7 @@
 <br />
 
 <p align="center">
-    <a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/PaddlePaddle/VisualDL?style=flat-square" alt="Build Status" /></a>
+    <a href="https://actions-badge.atrox.dev/PaddlePaddle/VisualDL/goto?ref=develop"><img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FPaddlePaddle%2FVisualDL%2Fbadge%3Fref%3Ddevelop&style=flat-square" alt="Build Status" /></a>
     <a href="https://github.com/PaddlePaddle/VisualDL"><img src="https://img.shields.io/github/languages/top/PaddlePaddle/VisualDL?style=flat-square" alt="GitHub top language" /></a>
     <a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square" alt="code style: prettier" /></a>
     <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="lerna"></a>
@@ -19,7 +19,7 @@
 
 ## 使用
 
-> 要求 nodejs ≥ 10 并且 npm ≥ 6
+> 要求 nodejs ≥ 12 并且 npm ≥ 6
 
 ```bash
 npm install -g @visualdl/cli
@@ -59,13 +59,14 @@ yarn
 
 [core](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/core/README.md)
 [server](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/server/README.md)
-[serverless](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/serverless/README.md)
+[netron](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/netron/README.md)
 [cli](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/cli/README.md)
-[i18n](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/i18n/README.md)
 [wasm](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/wasm/README.md)
 [mock](https://github.com/PaddlePaddle/VisualDL/blob/develop/frontend/packages/mock/README.md)
 
 ## 编译和部署
+
+> 要求 nodejs ≥ 14 并且 npm ≥ 6
 
 > 目前仅支持 Linux/MacOS 上编译。
 
@@ -79,7 +80,7 @@ yarn build
 
 ### Server 部署
 
-> 要求 nodejs ≥ 10 并且 npm ≥ 6
+> 要求 nodejs ≥ 12 并且 npm ≥ 6
 
 解压 `server.tar.gz` 到任何地方。
 `cd` 到那个文件夹然后运行：
@@ -109,9 +110,9 @@ VisualDL 支持最新版本的 [Google Chrome](https://www.google.com/chrome/) �
 
 本项目基于以下项目：
 
-- [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
+- [Snowpack]](https://www.snowpack.dev/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 - [Netron](https://github.com/lutzroeder/netron)
 

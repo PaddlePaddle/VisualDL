@@ -1,6 +1,3 @@
-/* jshint esversion: 6 */
-/* eslint "indent": [ "error", 4, { "SwitchCase": 1 } ] */
-
 const sidebar = {};
 const long = {Long: require('long')};
 const marked = require('marked');
@@ -43,7 +40,7 @@ sidebar.NodeSidebar = class {
 
         const attributes = node.attributes;
         if (attributes && attributes.length > 0) {
-            let sortedAttributes = node.attributes.slice();
+            const sortedAttributes = node.attributes.slice();
             sortedAttributes.sort((a, b) => {
                 const au = a.name.toUpperCase();
                 const bu = b.name.toUpperCase();
@@ -90,7 +87,7 @@ sidebar.NodeSidebar = class {
     }
 
     _addProperty(name, value) {
-        let item = new sidebar.NameValueView(this._host, name, value);
+        const item = new sidebar.NameValueView(this._host, name, value);
         this._properties.push(item.render());
     }
 
@@ -118,9 +115,6 @@ sidebar.NodeSidebar = class {
     static formatAttributeValue(value, type, quote) {
         if (typeof value === 'function') {
             return value();
-        }
-        if (value && long.Long.isLong(value)) {
-            return value.toString();
         }
         if (value && long.Long.isLong(value)) {
             return value.toString();
@@ -161,7 +155,7 @@ sidebar.NodeSidebar = class {
                 value = value.slice(0, 1000);
                 ellipsis = true;
             }
-            let array = value.map(item => {
+            const array = value.map(item => {
                 if (item && long.Long.isLong(item)) {
                     return item.toString();
                 }
@@ -184,7 +178,7 @@ sidebar.NodeSidebar = class {
         if (value !== Object(value)) {
             return value.toString();
         }
-        let list = [];
+        const list = [];
         const keys = Object.keys(value).filter(key => !key.startsWith('__') && !key.endsWith('__'));
         if (keys.length == 1) {
             list.push(sidebar.NodeSidebar.formatAttributeValue(value[Object.keys(value)[0]], null, true));
@@ -194,7 +188,7 @@ sidebar.NodeSidebar = class {
             }
         }
         let objectType = value.__type__;
-        if (!objectType && value.constructor.name && value.constructor.name && value.constructor.name !== 'Object') {
+        if (!objectType && value.constructor.name && value.constructor.name !== 'Object') {
             objectType = value.constructor.name;
         }
         if (objectType) {
@@ -530,25 +524,24 @@ sidebar.ModelSidebar = class {
             this._addProperty('runtime', new sidebar.ValueTextView(this._host, this._model.runtime));
         }
 
-        let metadata = this._model.metadata;
+        const metadata = this._model.metadata;
         if (metadata) {
-            for (const property of this._model.metadata) {
+            for (const property of metadata) {
                 this._addProperty(property.name, new sidebar.ValueTextView(this._host, property.value));
             }
         }
 
-        // TODO: graph select
-        // if (this._model._graphs.length > 1) {
-        //     let graphSelector = new sidebar.SelectView(
-        //         this._host,
-        //         this._model.graphs.map(g => g.name),
-        //         graph.name
-        //     );
-        //     graphSelector.on('change', (sender, data) => {
-        //         this._raise('update-active-graph', data);
-        //     });
-        //     this._addProperty('subgraph', graphSelector);
-        // }
+        if (this._model._graphs.length > 1) {
+            // let graphSelector = new sidebar.SelectView(
+            //     this._host,
+            //     this._model.graphs.map(g => g.name),
+            //     graph.name
+            // );
+            // graphSelector.on('change', (sender, data) => {
+            //     this._raise('update-active-graph', data);
+            // });
+            this._addProperty('subgraph', new sidebar.ValueTextView(this._host, graph.name));
+        }
 
         if (graph) {
             if (graph.version) {
@@ -598,7 +591,7 @@ sidebar.ModelSidebar = class {
     }
 
     _addProperty(name, value) {
-        let item = new sidebar.NameValueView(this._host, name, value);
+        const item = new sidebar.NameValueView(this._host, name, value);
         this._properties.push(item.render());
     }
 

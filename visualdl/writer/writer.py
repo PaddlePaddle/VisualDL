@@ -16,7 +16,7 @@ import os
 import time
 import numpy as np
 from visualdl.writer.record_writer import RecordFileWriter
-from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve
+from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve, meta_data
 
 
 class DummyFileWriter(object):
@@ -66,6 +66,8 @@ class LogWriter(object):
                  flush_secs=120,
                  filename_suffix='',
                  write_to_disk=True,
+                 display_name='',
+                 file_name='',
                  **kwargs):
         """Create a instance of class `LogWriter` and create a vdl log file with
         given args.
@@ -93,11 +95,13 @@ class LogWriter(object):
         self._filename_suffix = filename_suffix
         self._write_to_disk = write_to_disk
         self.kwargs = kwargs
+        self._file_name = file_name
 
         self._file_writer = None
         self._all_writers = {}
         self._get_file_writer()
         self.loggers = {}
+        self.add_meta(display_name=display_name)
 
     @property
     def logdir(self):
@@ -114,9 +118,30 @@ class LogWriter(object):
                 logdir=self._logdir,
                 max_queue_size=self._max_queue,
                 flush_secs=self._flush_secs,
-                filename_suffix=self._filename_suffix)
+                filename_suffix=self._filename_suffix,
+                filename=self._file_name)
             self._all_writers.update({self._logdir: self._file_writer})
         return self._file_writer
+
+    @property
+    def file_name(self):
+        return self._file_writer.get_filename()
+
+    def add_meta(self, tag='meta_data_tag', display_name='', step=0, walltime=None):
+        """Add a meta to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            display_name (string): Display name of `runs`.
+            step (int): Step of meta.
+            walltime (int): Wall time of scalar
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        walltime = round(time.time() * 1000) if walltime is None else walltime
+        self._get_file_writer().add_record(
+            meta_data(tag=tag, display_name=display_name, step=step,
+                      walltime=walltime))
 
     def add_scalar(self, tag, value, step, walltime=None):
         """Add a scalar to vdl record file.
@@ -134,11 +159,11 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
 
-    def add_image(self, tag, img, step, walltime=None):
+    def add_image(self, tag, img, step, walltime=None, dataformats="HWC"):
         """Add an image to vdl record file.
 
         Args:
@@ -146,6 +171,7 @@ class LogWriter(object):
             img (numpy.ndarray): Image represented by a numpy.array
             step (int): Step of image
             walltime (int): Wall time of image
+            dataformats (string): Format of image
 
         Example:
             from PIL import Image
@@ -157,9 +183,10 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            image(tag=tag, image_array=img, step=step, walltime=walltime))
+            image(tag=tag, image_array=img, step=step, walltime=walltime,
+                  dataformats=dataformats))
 
     def add_embeddings(self, tag, labels, hot_vectors, walltime=None):
         """Add embeddings to vdl record file.
@@ -182,7 +209,7 @@ class LogWriter(object):
             labels = ["label_1", "label_2", "label_3", "label_4", "label_5"]
 
             writer.add_embedding(labels=labels, vectors=hot_vectors,
-                                 walltime=round(time.time()))
+                                 walltime=round(time.time() * 1000))
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
@@ -191,7 +218,7 @@ class LogWriter(object):
         if isinstance(labels, np.ndarray):
             labels = labels.tolist()
         step = 0
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             embedding(
                 tag=tag,
@@ -235,7 +262,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         if isinstance(audio_array, list):
             audio_array = np.array(audio_array)
         self._get_file_writer().add_record(
@@ -272,7 +299,7 @@ class LogWriter(object):
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
         hist, bin_edges = np.histogram(values, bins=buckets)
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             histogram(
                 tag=tag,
@@ -313,7 +340,7 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(time.time()) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             pr_curve(
                 tag=tag,

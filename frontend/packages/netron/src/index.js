@@ -60,8 +60,14 @@ host.BrowserHost = class {
                             return this._view.toggleInitializers(data);
                         case 'toggle-names':
                             return this._view.toggleNames(data);
+                        case 'toggle-direction':
+                            return this._view.toggleDirection(data);
+                        case 'toggle-theme':
+                            return this._view.toggleTheme(data);
                         case 'export':
                             return this._view.export(`${document.title}.${data}`);
+                        case 'change-graph':
+                            return this._view.changeGraph(data);
                         case 'search':
                             return this._view.find(data);
                         case 'select':
@@ -87,7 +93,7 @@ host.BrowserHost = class {
 
     message(type, data) {
         if (window.parent) {
-            window.parent.postMessage({type: type, data: data});
+            window.parent.postMessage({type: type, data: data}, '*');
         }
     }
 
@@ -115,7 +121,7 @@ host.BrowserHost = class {
         }
         return new Promise((resolve, reject) => {
             window.module = {exports: {}};
-            let script = document.createElement('script');
+            const script = document.createElement('script');
             script.setAttribute('id', id);
             script.setAttribute('type', 'text/javascript');
             script.setAttribute('src', url);
@@ -138,7 +144,7 @@ host.BrowserHost = class {
     }
 
     export(file, blob) {
-        let element = this.document.createElement('a');
+        const element = this.document.createElement('a');
         element.download = file;
         element.href = URL.createObjectURL(blob);
         this.document.body.appendChild(element);
@@ -149,10 +155,6 @@ host.BrowserHost = class {
     request(base, file, encoding) {
         const url = base ? base + '/' + file : this._url(file);
         return this._request(url, null, encoding);
-    }
-
-    openURL(url) {
-        window.open(url, '_target');
     }
 
     _changeFiles(files) {
@@ -446,7 +448,7 @@ class BrowserFileContext {
             return Promise.reject(new Error("File not found '" + file + "'."));
         }
         return new Promise((resolve, reject) => {
-            let reader = new FileReader();
+            const reader = new FileReader();
             reader.onload = e => {
                 resolve(encoding ? e.target.result : new Uint8Array(e.target.result));
             };

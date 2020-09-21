@@ -1,0 +1,13 @@
+{
+    "audio": "音频",
+    "brightness": "亮度",
+    "contrast": "对比度",
+    "download-audio": "下载$t(audio)",
+    "download-image": "下载$t(image)",
+    "image": "图片",
+    "sample": "样本",
+    "sample-rate": "采样率",
+    "show-actual-size": "按真实大小展示",
+    "step": "Step",
+    "text": "文本"
+}

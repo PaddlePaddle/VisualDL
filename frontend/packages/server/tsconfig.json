@@ -6,9 +6,11 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "declaration": true,
+        "resolveJsonModule": true,
         "outDir": "dist"
     },
     "files": [
-        "index.ts"
+        "index.ts",
+        "global.d.ts"
     ]
 }

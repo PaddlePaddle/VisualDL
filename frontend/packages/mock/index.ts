@@ -1,67 +1,41 @@
-import {Request, Response} from 'express';
+/* eslint-disable no-console */
 
-import faker from 'faker';
-import path from 'path';
+import express from 'express';
+import middleware from './middleware';
 
-const sleep = (time: number) => {
-    return new Promise(resolve => setTimeout(resolve, time));
-};
+const host = process.env.HOST || 'localhost';
+const port = Number.parseInt(process.env.PORT || '', 10) || 8998;
+const apiUrl = process.env.API_URL || '/api';
 
-export type Options = {
-    path?: string;
-    delay?: number | ((method: string) => number);
-};
+export interface Options {
+    host?: string;
+    port?: number;
+    apiUrl?: string;
+}
 
-export default (options: Options) => {
-    return async (req: Request, res: Response) => {
-        let method = req.path;
-        if (!method) {
-            method = Array.isArray(req.query.method)
-                ? req.query.method.join('/')
-                : 'string' === typeof req.query.method
-                ? req.query.method
-                : '';
-        } else {
-            method = method.replace(/^\//, '');
-        }
+const server = express();
 
-        if (!method) {
-            res.status(404).send({});
-            return;
-        }
+async function start(options?: Options) {
+    const config = Object.assign({host, port, apiUrl}, options);
 
-        try {
-            let {default: mock} = await import(path.resolve(options.path || path.join(__dirname, 'data'), method));
+    server.use(config.apiUrl, middleware());
 
-            if ('function' === typeof mock) {
-                mock = await mock(req, res);
-            }
-
-            let delay = 0;
-            if ('function' === typeof options.delay) {
-                delay = options.delay(method);
-            } else if (options.delay) {
-                delay = options.delay;
-            }
-
-            if (delay) {
-                await sleep(delay);
-            }
-
-            if (mock instanceof ArrayBuffer) {
-                res.send(Buffer.from(mock));
-            } else {
-                const result = JSON.parse(faker.fake(JSON.stringify(mock, null, 4)));
-                if (result && 'status' in result && 'data' in result) {
-                    res.json(result);
-                } else {
-                    res.json({status: 0, msg: '', data: result});
+    const s = server.listen(config.port, config.host, () => {
+        process.send?.('ready');
+        console.log(`> Ready on http://${config.host}:${config.port}${config.apiUrl}`);
+        process.on('SIGINT', () => {
+            s.close((err: Error | undefined) => {
+                if (err) {
+                    throw err;
                 }
-            }
-        } catch (e) {
-            res.status(500).send(e.message);
-            // eslint-disable-next-line no-console
-            console.error(e);
-        }
-    };
-};
+                process.exit(0);
+            });
+        });
+    });
+}
+
+if (require.main === module) {
+    start();
+}
+
+export {start, middleware};

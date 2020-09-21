@@ -94,11 +94,11 @@ class Api(object):
         return self._get('data/logs', lib.get_logs)
 
     @result()
-    def scalars_tags(self):
+    def scalar_tags(self):
         return self._get_with_retry('data/plugin/scalars/tags', lib.get_scalar_tags)
 
     @result()
-    def images_tags(self):
+    def image_tags(self):
         return self._get_with_retry('data/plugin/images/tags', lib.get_image_tags)
 
     @result()
@@ -106,7 +106,7 @@ class Api(object):
         return self._get_with_retry('data/plugin/audio/tags', lib.get_audio_tags)
 
     @result()
-    def embeddings_tags(self):
+    def embedding_tags(self):
         return self._get_with_retry('data/plugin/embeddings/tags', lib.get_embeddings_tags)
 
     @result()
@@ -114,17 +114,17 @@ class Api(object):
         return self._get_with_retry('data/plugin/pr_curves/tags', lib.get_pr_curve_tags)
 
     @result()
-    def scalars_list(self, run, tag):
+    def scalar_list(self, run, tag):
         key = os.path.join('data/plugin/scalars/scalars', run, tag)
         return self._get_with_retry(key, lib.get_scalar, run, tag)
 
     @result()
-    def images_list(self, mode, tag):
+    def image_list(self, mode, tag):
         key = os.path.join('data/plugin/images/images', mode, tag)
         return self._get_with_retry(key, lib.get_image_tag_steps, mode, tag)
 
     @result('image/png')
-    def images_image(self, mode, tag, index=0):
+    def image_image(self, mode, tag, index=0):
         index = int(index)
         key = os.path.join('data/plugin/images/individualImage', mode, tag, str(index))
         return self._get_with_retry(key, lib.get_individual_image, mode, tag, index)
@@ -134,14 +134,14 @@ class Api(object):
         key = os.path.join('data/plugin/audio/audio', run, tag)
         return self._get_with_retry(key, lib.get_audio_tag_steps, run, tag)
 
-    @result()
+    @result('audio/wav')
     def audio_audio(self, run, tag, index=0):
         index = int(index)
         key = os.path.join('data/plugin/audio/individualAudio', run, tag, str(index))
         return self._get_with_retry(key, lib.get_individual_audio, run, tag, index)
 
     @result()
-    def embeddings_embedding(self, run, tag='default', reduction='pca', dimension=2):
+    def embedding_embedding(self, run, tag='default', reduction='pca', dimension=2):
         dimension = int(dimension)
         key = os.path.join('data/plugin/embeddings/embeddings', run, str(dimension), reduction)
         return self._get_with_retry(key, lib.get_embeddings, run, tag, reduction, dimension)
@@ -166,7 +166,7 @@ class Api(object):
         return self._get_with_retry(key, lib.get_pr_curve_step, run)
 
     @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
-    def graphs_graph(self):
+    def graph_graph(self):
         key = os.path.join('data/plugin/graphs/graph')
         return self._get_with_retry(key, lib.get_graph)
 
@@ -178,20 +178,20 @@ def create_api_call(logdir, model, cache_timeout):
         'runs': (api.runs, []),
         'tags': (api.tags, []),
         'logs': (api.logs, []),
-        'scalars/tags': (api.scalars_tags, []),
-        'images/tags': (api.images_tags, []),
+        'scalar/tags': (api.scalar_tags, []),
+        'image/tags': (api.image_tags, []),
         'audio/tags': (api.audio_tags, []),
-        'embeddings/tags': (api.embeddings_tags, []),
+        'embedding/tags': (api.embedding_tags, []),
         'histogram/tags': (api.histogram_tags, []),
         'pr-curve/tags': (api.pr_curve_tags, []),
-        'scalars/list': (api.scalars_list, ['run', 'tag']),
-        'images/list': (api.images_list, ['run', 'tag']),
-        'images/image': (api.images_image, ['run', 'tag', 'index']),
+        'scalar/list': (api.scalar_list, ['run', 'tag']),
+        'image/list': (api.image_list, ['run', 'tag']),
+        'image/image': (api.image_image, ['run', 'tag', 'index']),
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
-        'embeddings/embedding': (api.embeddings_embedding, ['run', 'tag', 'reduction', 'dimension']),
+        'embedding/embedding': (api.embedding_embedding, ['run', 'tag', 'reduction', 'dimension']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
-        'graphs/graph': (api.graphs_graph, []),
+        'graph/graph': (api.graph_graph, []),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'pr-curve/steps': (api.pr_curves_steps, ['run'])
     }
@@ -199,7 +199,7 @@ def create_api_call(logdir, model, cache_timeout):
     def call(path: str, args):
         route = routes.get(path)
         if not route:
-            return gen_result(status=1, msg='api not found')
+            return json.dumps(gen_result(status=1, msg='api not found')), 'application/json', None
         method, call_arg_names = route
         call_args = [args.get(name) for name in call_arg_names]
         return method(*call_args)

@@ -9,14 +9,14 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: 'module'
     },
-    ignorePatterns: ['node_modules/', 'dist/', 'output/', '_next'],
+    ignorePatterns: ['node_modules/', 'dist/', 'output/'],
     rules: {
         'no-console': 'warn',
         'sort-imports': 'error'
     },
     overrides: [
         {
-            files: ['packages/cli/**/*', 'packages/mock/**/*', 'packages/server/**/*', 'packages/serverless/**/*'],
+            files: ['packages/cli/**/*', 'packages/mock/**/*', 'packages/demo/**/*', 'packages/server/**/*'],
             extends: [
                 'plugin:@typescript-eslint/recommended',
                 'prettier/@typescript-eslint',
@@ -30,7 +30,7 @@ module.exports = {
             }
         },
         {
-            files: ['packages/core/**/*', 'packages/i18n/**/*'],
+            files: ['packages/core/**/*'],
             extends: [
                 'plugin:@typescript-eslint/recommended',
                 'plugin:react/recommended',

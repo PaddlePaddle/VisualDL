@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/netron",
-    "version": "2.0.0-beta.43",
+    "version": "2.0.9",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -24,7 +24,7 @@
     },
     "scripts": {
         "build": "rimraf dist && webpack",
-        "test": "echo \"Error: no test specified\" && exit 0; #"
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "files": [
         "dist"
@@ -33,35 +33,32 @@
     "dependencies": {
         "d3": "5.16.0",
         "dagre": "0.8.5",
+        "flatbuffers": "1.12.0",
         "long": "4.0.0",
-        "marked": "1.1.0",
+        "marked": "1.1.1",
         "netron": "PeterPanZH/netron",
-        "pako": "1.0.11",
-        "protobufjs": "lutzroeder/protobuf.js#b9a9d027589356226f4704f9d77f2639f52172f3"
+        "pako": "1.0.11"
     },
     "devDependencies": {
-        "autoprefixer": "9.8.4",
-        "copy-webpack-plugin": "6.0.2",
-        "css-loader": "3.6.0",
-        "html-webpack-plugin": "4.3.0",
-        "mini-css-extract-plugin": "0.9.0",
-        "postcss-loader": "3.0.0",
+        "autoprefixer": "10.0.0",
+        "copy-webpack-plugin": "6.1.0",
+        "css-loader": "4.3.0",
+        "html-webpack-plugin": "4.4.1",
+        "mini-css-extract-plugin": "0.11.2",
+        "postcss": "8.0.5",
+        "postcss-loader": "4.0.2",
         "rimraf": "3.0.2",
-        "sass": "1.26.9",
-        "sass-loader": "8.0.2",
-        "terser": "4.8.0",
-        "webpack": "4.43.0"
+        "sass": "1.26.10",
+        "sass-loader": "10.0.2",
+        "terser": "5.3.1",
+        "webpack": "4.44.1",
+        "webpack-cli": "3.3.12"
     },
     "engines": {
-        "node": ">=10",
+        "node": ">=12",
         "npm": ">=6"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }

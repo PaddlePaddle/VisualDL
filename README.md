@@ -7,7 +7,7 @@
 
 
 <p align="center">
-<a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/paddlepaddle/visualdl/develop?style=flat-square" alt="Build Status" /></a>
+<a href="https://actions-badge.atrox.dev/PaddlePaddle/VisualDL/goto?ref=develop"><img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FPaddlePaddle%2FVisualDL%2Fbadge%3Fref%3Ddevelop&style=flat-square" alt="Build Status" /></a>
 <a href="https://pypi.org/project/visualdl/"><img src="https://img.shields.io/pypi/v/visualdl?style=flat-square" alt="PyPI" /></a>
 <a href="https://pypi.org/project/visualdl/#files"><img src="https://img.shields.io/pypi/dm/visualdl?style=flat-square" alt="Downloads" /></a>
 <a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/paddlepaddle/visualdl?style=flat-square" alt="License" /></a>
@@ -20,7 +20,9 @@
 ## 介绍
 VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持实时训练参数分析、图结构、数据样本可视化及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+
+VisualDL支持浏览器种类：Chrome（81和83）、Safari 13、FireFox（77和78）、Edge（Chromium版）。
 
 VisualDL原生支持python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
@@ -58,7 +60,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 
 ### 功能丰富
 
-功能覆盖训练参数、数据样本、图结构及数据降维可视化。
+功能覆盖标量、数据样本、图结构、直方图、PR曲线及数据降维可视化。
 
 ### 高兼容性
 
@@ -75,7 +77,7 @@ API设计简洁易懂，使用简单。模型结构一键实现可视化。
 ### 使用pip安装
 
 ```shell
-pip install --upgrade --pre visualdl
+python -m pip install visualdl -i https://mirror.baidu.com/pypi/simple
 ```
 ### 使用代码安装
 
@@ -103,6 +105,8 @@ class LogWriter(logdir=None,
                 flush_secs=120,
                 filename_suffix='',
                 write_to_disk=True,
+                display_name='',
+                file_name='',
                 **kwargs)
 ```
 
@@ -116,6 +120,8 @@ class LogWriter(logdir=None,
 | flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件 |
 | filename_suffix | string  | 为默认的日志文件名添加后缀                                   |
 | write_to_disk   | boolean | 是否写入到磁盘                                               |
+| display_name    | string  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
+| file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，文件名必须包括`vdlrecords` |
 
 #### 示例
 
@@ -237,7 +243,14 @@ app.run(logdir="./log")
 实时展示训练过程中的图像数据，用于观察不同训练阶段的图像变化，进而深入了解训练过程及效果。
 
 <p align="center">
-<img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90356439-24715980-e082-11ea-8896-01c27fc2fc9b.gif" width="85%"/>
+</p>
+
+### Audio
+实时查看训练过程中的音频数据，监控语音识别与合成等任务的训练过程。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/87659138-b4746880-c78f-11ea-965b-c33804e7c296.png" width="85%"/>
 </p>
 
 ### Graph
@@ -247,6 +260,29 @@ app.run(logdir="./log")
 <img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
 </p>
 
+### Histogram
+
+以直方图形式展示Tensor（weight、bias、gradient等）数据在训练过程中的变化趋势。深入了解模型各层效果，帮助开发者精准调整模型结构。
+
+- Offset模式
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86551031-86647c80-bf76-11ea-8ec2-8c86826c8137.png" width="85%"/>
+</p>
+
+- Overlay模式
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86551033-882e4000-bf76-11ea-8e6a-af954c662ced.png" width="85%"/>
+</p>
+
+### PR Curve
+
+精度-召回率曲线，帮助开发者权衡模型精度和召回率之间的平衡，设定最佳阈值。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/86738774-ee46c000-c067-11ea-90d2-a98aac445cca.png" width="85%"/>
+</p>
 
 ### High Dimensional
 
@@ -254,6 +290,14 @@ app.run(logdir="./log")
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+</p>
+
+### VDL.service
+
+VisualDL可视化结果保存服务，以链接形式将可视化结果保存下来，方便用户快速、便捷的进行托管与分享。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/93729521-72382f00-fbf7-11ea-91ff-6b6ab4b41e32.png" width="85%"/>
 </p>
 
 ## 开源贡献

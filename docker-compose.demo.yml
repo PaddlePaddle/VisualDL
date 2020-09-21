@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    ports:
+      - "8999:8999"
+    environment:
+      PING_URL: /ping
+      PORT: 8999

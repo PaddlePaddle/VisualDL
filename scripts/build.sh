@@ -4,43 +4,43 @@ set -e
 TOP_DIR=$(pwd)
 FRONTEND_DIR=${TOP_DIR}/frontend
 BUILD_DIR=${TOP_DIR}/build
-
-mkdir -p "$BUILD_DIR"
-
-build_frontend_fake() {
-    mkdir -p "$BUILD_DIR/package/dist"
-}
+FRONTEND_DIST="$BUILD_DIR/package/dist"
 
 build_frontend() {
-    mkdir -p "$BUILD_DIR/package/dist"
+    rm -rf "$FRONTEND_DIST"
+    mkdir -p "$FRONTEND_DIST"
 
     cd "$FRONTEND_DIR"
     . ./scripts/install.sh
-    SCOPE="serverless" PUBLIC_PATH="/{{PUBLIC_PATH}}" API_URL="/{{PUBLIC_PATH}}/api" PATH="$PATH" ./scripts/build.sh
+    SCOPE="serverless" \
+      PUBLIC_PATH="{{PUBLIC_PATH}}" \
+      BASE_URI="{{BASE_URI}}" \
+      API_URL="{{API_URL}}" \
+      API_TOKEN_KEY="{{API_TOKEN_KEY}}" \
+      TELEMETRY_ID="{{TELEMETRY_ID}}" \
+      THEME="{{THEME}}" \
+      PATH="$PATH" \
+      ./scripts/build.sh
 
     # extract
-    tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$BUILD_DIR/package/dist"
+    tar zxf "$FRONTEND_DIR/output/serverless.tar.gz" -C "$FRONTEND_DIST"
 }
 
 clean_env() {
     rm -rf "$TOP_DIR/visualdl/server/dist"
-    rm -rf "$BUILD_DIR/bdist*"
-    rm -rf "$BUILD_DIR/lib*"
-    rm -rf "$BUILD_DIR/package"
+    rm -rf "$BUILD_DIR"
+    rm -rf "$TOP_DIR/*.egg-info"
 }
 
 package() {
     cp -rf "$BUILD_DIR/package/dist" "$TOP_DIR/visualdl/server/"
 }
 
-ARG=$1
-echo "ARG: ${ARG}"
-
 clean_env
 
-if [[ "$ARG" = "travis-CI" ]]; then
-    build_frontend_fake
-else
+mkdir -p "$BUILD_DIR"
+
+if [ -z "$USE_CACHED_FRONTEND" ] || [ ! -d "$FRONTEND_DIST" ]; then
     build_frontend
 fi
 

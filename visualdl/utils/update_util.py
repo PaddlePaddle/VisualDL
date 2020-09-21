@@ -29,7 +29,8 @@ def md5(text):
 
 
 class PbUpdater(threading.Thread):
-    def __init__(self):
+    def __init__(self, product='normal'):
+        self.product = product
         threading.Thread.__init__(self)
 
     def update_pb(self,
@@ -39,7 +40,8 @@ class PbUpdater(threading.Thread):
         payload = {
             "data": {
                 "version": version,
-                "md5": md5_code
+                "md5": md5_code,
+                "product": self.product
             }
         }
         url = 'https://paddlepaddle.org.cn/paddlehub/stat?from=vdl'
@@ -50,7 +52,7 @@ class PbUpdater(threading.Thread):
                 with open('/visualdl/proto/record_pb2.py', mode='wb') as fp:
                     fp.write(pb_bin)
                     print('Update pb file successfully.')
-        except Exception as err:
+        except Exception:
             pass
 
     def run(self):

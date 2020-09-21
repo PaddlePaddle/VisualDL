@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/mock",
-    "version": "2.0.0-beta.43",
+    "version": "2.0.9",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -23,37 +23,36 @@
         "directory": "frontend/packages/mock"
     },
     "main": "dist/index.js",
+    "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
         "dist"
     ],
     "scripts": {
-        "build": "tsc",
-        "test": "echo \"Error: no test specified\" && exit 0; #"
+        "build": "rimraf dist && tsc && cpy assets dist/ --parents",
+        "dev": "ts-node index.ts",
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "dependencies": {
-        "faker": "4.1.0",
-        "isomorphic-unfetch": "3.0.0"
+        "express": "4.17.1",
+        "faker": "5.1.0",
+        "isomorphic-unfetch": "3.0.0",
+        "mime-types": "2.1.27"
     },
     "devDependencies": {
-        "@types/express": "4.17.6",
-        "@types/faker": "4.1.12",
-        "@types/node": "14.0.14",
-        "typescript": "3.9.5"
-    },
-    "peerDependencies": {
-        "express": "^4.17.1"
+        "@types/express": "4.17.8",
+        "@types/faker": "5.1.0",
+        "@types/node": "14.10.3",
+        "cpy-cli": "3.1.1",
+        "rimraf": "3.0.2",
+        "ts-node": "9.0.0",
+        "typescript": "4.0.2"
     },
     "engines": {
-        "node": ">=10",
+        "node": ">=12",
         "npm": ">=6"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }

@@ -1,15 +1,16 @@
 module.exports = {
-    presets: ['next/babel'],
-    plugins: [
+    extends: '@snowpack/app-scripts-react/babel.config.json',
+    presets: [
         [
-            'styled-components',
+            '@babel/preset-env',
             {
-                ssr: true,
-                displayName: true,
-                preprocess: false
+                targets: {
+                    esmodules: true
+                },
+                bugfixes: true,
+                modules: false
             }
-        ],
-        ['emotion'],
-        ...(process.env.NODE_ENV !== 'production' ? ['typescript-to-proptypes'] : [])
-    ]
+        ]
+    ],
+    plugins: ['styled-components', '@babel/plugin-proposal-class-properties']
 };

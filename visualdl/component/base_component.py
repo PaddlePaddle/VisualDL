@@ -14,7 +14,6 @@
 # =======================================================================
 from visualdl.proto.record_pb2 import Record
 import numpy as np
-import cv2
 from PIL import Image
 
 
@@ -36,6 +35,27 @@ def scalar(tag, value, step, walltime=None):
     ])
 
 
+def meta_data(tag='meta_data_tag', display_name="", step=0, walltime=None):
+    """Package data to one meta_data.
+
+    Meta data is info for one record file, include `display_name` etc.
+
+    Args:
+        tag (string): Data identifier
+        display_name (string): Replace
+        step (int): Step of scalar
+        walltime (int): Wall time of scalar
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+    meta = Record.MetaData(display_name=display_name)
+    return Record(values=[
+        Record.Value(id=step, tag=tag, timestamp=walltime,
+                     meta_data=meta)
+    ])
+
+
 def imgarray2bytes(np_array):
     """Convert image ndarray to bytes.
 
@@ -45,14 +65,80 @@ def imgarray2bytes(np_array):
     Returns:
         Binary bytes of np_array.
     """
-    np_array = cv2.cvtColor(np_array, cv2.COLOR_BGR2RGB)
-    ret, buf = cv2.imencode(".png", np_array)
+    try:
+        import cv2
 
-    img_bin = Image.fromarray(np.uint8(buf)).tobytes("raw")
+        np_array = cv2.cvtColor(np_array, cv2.COLOR_BGR2RGB)
+        ret, buf = cv2.imencode(".png", np_array)
+        img_bin = Image.fromarray(np.uint8(buf)).tobytes("raw")
+    except ImportError:
+        import io
+        im = Image.fromarray(np_array)
+        with io.BytesIO() as fp:
+            im.save(fp, format='png')
+            img_bin = fp.getvalue()
     return img_bin
 
 
-def image(tag, image_array, step, walltime=None):
+def make_grid(I, ncols=8):
+    assert isinstance(
+        I, np.ndarray), 'plugin error, should pass numpy array here'
+    if I.shape[1] == 1:
+        I = np.concatenate([I, I, I], 1)
+    assert I.ndim == 4 and I.shape[1] == 3 or I.shape[1] == 4
+    nimg = I.shape[0]
+    H = I.shape[2]
+    W = I.shape[3]
+    ncols = min(nimg, ncols)
+    nrows = int(np.ceil(float(nimg) / ncols))
+    canvas = np.zeros((I.shape[1], H * nrows, W * ncols), dtype=I.dtype)
+    i = 0
+    for y in range(nrows):
+        for x in range(ncols):
+            if i >= nimg:
+                break
+            canvas[:, y * H:(y + 1) * H, x * W:(x + 1) * W] = I[i]
+            i = i + 1
+    return canvas
+
+
+def convert_to_HWC(tensor, input_format):
+    """Convert `NCHW`, `HWC`, `HW` to `HWC`
+
+    Args:
+        tensor (numpy.ndarray): Value of image
+        input_format (string): Format of image
+
+    Return:
+        Image of format `HWC`.
+    """
+    assert(len(set(input_format)) == len(input_format)), "You can not use the same dimension shordhand twice. \
+        input_format: {}".format(input_format)
+    assert(len(tensor.shape) == len(input_format)), "size of input tensor and input format are different. \
+        tensor shape: {}, input_format: {}".format(tensor.shape, input_format)
+    input_format = input_format.upper()
+
+    if len(input_format) == 4:
+        index = [input_format.find(c) for c in 'NCHW']
+        tensor_NCHW = tensor.transpose(index)
+        tensor_CHW = make_grid(tensor_NCHW)
+        return tensor_CHW.transpose(1, 2, 0)
+
+    if len(input_format) == 3:
+        index = [input_format.find(c) for c in 'HWC']
+        tensor_HWC = tensor.transpose(index)
+        if tensor_HWC.shape[2] == 1:
+            tensor_HWC = np.concatenate([tensor_HWC, tensor_HWC, tensor_HWC], 2)
+        return tensor_HWC
+
+    if len(input_format) == 2:
+        index = [input_format.find(c) for c in 'HW']
+        tensor = tensor.transpose(index)
+        tensor = np.stack([tensor, tensor, tensor], 2)
+        return tensor
+
+
+def image(tag, image_array, step, walltime=None, dataformats="HWC"):
     """Package data to one image.
 
     Args:
@@ -60,10 +146,12 @@ def image(tag, image_array, step, walltime=None):
         image_array (numpy.ndarray): Value of iamge
         step (int): Step of image
         walltime (int): Wall time of image
+        dataformats (string): Format of image
 
     Return:
         Package with format of record_pb2.Record
     """
+    image_array = convert_to_HWC(image_array, dataformats)
     image_bytes = imgarray2bytes(image_array)
     image = Record.Image(encoded_image_string=image_bytes)
     return Record(values=[
@@ -110,15 +198,26 @@ def audio(tag, audio_array, sample_rate, step, walltime):
     Return:
         Package with format of record_pb2.Record
     """
+    audio_array = audio_array.squeeze()
+    if abs(audio_array).max() > 1:
+        print('warning: audio amplitude out of range, auto clipped.')
+        audio_array = audio_array.clip(-1, 1)
+    assert (audio_array.ndim == 1), 'input tensor should be 1 dimensional.'
+
+    audio_array = [int(32767.0 * x) for x in audio_array]
+
     import io
     import wave
+    import struct
 
     fio = io.BytesIO()
     wave_writer = wave.open(fio, 'wb')
     wave_writer.setnchannels(1)
     wave_writer.setsampwidth(2)
     wave_writer.setframerate(sample_rate)
-    wave_writer.writeframes(audio_array)
+    audio_enc = b''
+    audio_enc += struct.pack("<" + "h" * len(audio_array), *audio_array)
+    wave_writer.writeframes(audio_enc)
     wave_writer.close()
     audio_string = fio.getvalue()
     fio.close()
@@ -163,6 +262,10 @@ def compute_curve(labels, predictions, num_thresholds=None, weights=None):
         num_thresholds (int): Number of thresholds used to draw the curve.
         weights (float): Multiple of data to display on the curve.
     """
+    if isinstance(labels, list):
+        labels = np.array(labels)
+    if isinstance(predictions, list):
+        predictions = np.array(predictions)
     _MINIMUM_COUNT = 1e-7
 
     if weights is None:

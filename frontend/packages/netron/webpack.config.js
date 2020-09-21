@@ -18,6 +18,33 @@ const metadata = src.filter(file => path.extname(file) === '.json');
 module.exports = {
     mode: 'production',
     context: __dirname,
+    stats: {
+        assets: false,
+        builtAt: true,
+        cached: false,
+        cachedAssets: false,
+        children: false,
+        chunks: false,
+        chunkGroups: false,
+        chunkModules: false,
+        chunkOrigins: false,
+        colors: true,
+        entrypoints: false,
+        errors: true,
+        errorDetails: true,
+        hash: true,
+        modules: false,
+        moduleTrace: false,
+        performance: false,
+        providedExports: false,
+        publicPath: true,
+        reasons: false,
+        source: false,
+        timings: true,
+        usedExports: false,
+        version: true,
+        warnings: false
+    },
     entry: {
         index: './src/index.js',
         shim: './src/shim.js',
@@ -64,12 +91,14 @@ module.exports = {
             patterns: commons.map(file => ({
                 from: path.join(netron, file),
                 to: file,
-                transform: content => {
+                transform: async content => {
                     try {
-                        const result = Terser.minify(content.toString());
-                        if (result.error) {
-                            throw result.error;
-                        }
+                        // It is important to keep class names and function names after compressing
+                        // Netron relies on Class.constructor.name and Function.prototype.name to show attribute's value
+                        const result = await Terser.minify(content.toString(), {
+                            keep_classnames: true,
+                            keep_fnames: true
+                        });
                         return result.code;
                     } catch (e) {
                         console.error(e);

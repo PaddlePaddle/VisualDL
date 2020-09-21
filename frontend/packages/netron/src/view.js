@@ -1,8 +1,7 @@
 const zip = require('netron/src/zip');
 const gzip = require('netron/src/gzip');
 const tar = require('netron/src/tar');
-const protobuf = require('protobufjs');
-const prototxt = require('protobufjs/ext/prototxt');
+const protobuf = require('netron/src/protobuf');
 
 const d3 = require('d3');
 const dagre = require('dagre');
@@ -25,6 +24,7 @@ view.View = class {
                 this._showAttributes = false;
                 this._showInitializers = true;
                 this._showNames = false;
+                this._showHorizontal = false;
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
             })
             .catch(err => {
@@ -91,6 +91,22 @@ view.View = class {
 
     get showNames() {
         return this._showNames;
+    }
+
+    toggleDirection(toggle) {
+        if (toggle != null && !(toggle ^ this._showHorizontal)) {
+            return;
+        }
+        this._showHorizontal = toggle == null ? !this._showHorizontal : toggle;
+        this._reload();
+    }
+
+    get showHorizontal() {
+        return this._showHorizontal;
+    }
+
+    toggleTheme(theme) {
+        this._host.document.body.className = theme;
     }
 
     _reload() {
@@ -178,10 +194,18 @@ view.View = class {
             return this._modelFactoryService.open(context).then(model => {
                 return this._timeout(20).then(() => {
                     const graph = model.graphs.length > 0 ? model.graphs[0] : null;
+                    this._host.message('opened', {
+                        graphs: model.graphs.map(g => g.name || ''),
+                        selected: graph && (graph.name || '')
+                    });
                     return this._updateGraph(model, graph);
                 });
             });
         });
+    }
+
+    changeGraph(name) {
+        this._updateActiveGraph(name);
     }
 
     _updateActiveGraph(name) {
@@ -254,6 +278,9 @@ view.View = class {
                 const graphOptions = {};
                 graphOptions.nodesep = 25;
                 graphOptions.ranksep = 20;
+                if (this._showHorizontal) {
+                    graphOptions.rankdir = 'LR';
+                }
 
                 const g = new dagre.graphlib.Graph({compound: groups});
                 g.setGraph(graphOptions);
@@ -637,17 +664,13 @@ view.View = class {
                             ys.push(inputTransform.f);
                         }
                         let x = xs[0];
-                        let y = ys[0];
+                        const y = ys[0];
                         if (ys.every(y => y == ys[0])) {
-                            x =
-                                xs.reduce((a, b) => {
-                                    return a + b;
-                                }) / xs.length;
+                            x = xs.reduce((a, b) => a + b) / xs.length;
                         }
-                        this._zoom.transform(
-                            svg,
-                            d3.zoomIdentity.translate(svgSize.width / 2 - x, svgSize.height / 4 - y)
-                        );
+                        const sx = svgSize.width / (this._showHorizontal ? 4 : 2) - x;
+                        const sy = svgSize.height / (this._showHorizontal ? 2 : 4) - y;
+                        this._zoom.transform(svg, d3.zoomIdentity.translate(sx, sy));
                     } else {
                         this._zoom.transform(
                             svg,
@@ -799,7 +822,7 @@ view.View = class {
             //                         ['quint8', 'u1'],
             //                         ['quint16', 'u2']
             //                     ]);
-            //                     let array = new numpy.Array();
+            //                     const array = new numpy.Array();
             //                     array.shape = tensor.type.shape.dimensions;
             //                     array.data = tensor.value;
             //                     array.dataType = dataTypeMap.has(tensor.type.dataType)
@@ -922,7 +945,7 @@ class ModelContext {
                         ) {
                             break;
                         }
-                        const reader = prototxt.TextReader.create(this.text);
+                        const reader = protobuf.TextReader.create(this.text);
                         reader.start(false);
                         while (!reader.end(false)) {
                             const tag = reader.tag();
@@ -932,10 +955,16 @@ class ModelContext {
                         break;
                     }
                     case 'pb': {
-                        const reader = new protobuf.Reader.create(this.buffer);
-                        while (reader.pos < reader.len) {
+                        const tagTypes = new Set([0, 1, 2, 3, 5]);
+                        const reader = protobuf.Reader.create(this.buffer);
+                        const end = reader.next();
+                        while (reader.pos < end) {
                             const tagType = reader.uint32();
                             tags.set(tagType >>> 3, tagType & 7);
+                            if (!tagTypes.has(tagType & 7)) {
+                                tags = new Map();
+                                break;
+                            }
                             try {
                                 reader.skipType(tagType & 7);
                             } catch (err) {
@@ -1198,7 +1227,7 @@ view.ModelFactoryService = class {
         }
 
         try {
-            let folders = {};
+            const folders = {};
             for (const entry of archive.entries) {
                 if (entry.name.indexOf('/') != -1) {
                     folders[entry.name.split('/').shift() + '/'] = true;
@@ -1212,7 +1241,7 @@ view.ModelFactoryService = class {
             let rootFolder = Object.keys(folders).length == 1 ? Object.keys(folders)[0] : '';
             rootFolder = rootFolder == '/' ? '' : rootFolder;
             let matches = [];
-            let entries = archive.entries.slice();
+            const entries = archive.entries.slice();
             const nextEntry = () => {
                 if (entries.length > 0) {
                     const entry = entries.shift();

@@ -19,5 +19,8 @@ import os
 
 from visualdl.writer.writer import LogWriter  # noqa
 from visualdl.version import vdl_version as __version__
+from visualdl.utils.dir import init_vdl_config
+
+init_vdl_config()
 
 ROOT = os.path.dirname(__file__)

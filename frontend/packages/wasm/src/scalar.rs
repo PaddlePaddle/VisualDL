@@ -47,7 +47,7 @@ pub fn transform(datasets: &Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smooth
             let mut r: Smoothed = Smoothed(0, d.1, d.2, 0.0, 0.0);
             let next_val: f64 = d.2;
             // second to millisecond.
-            let millisecond: i64 = ((d.0 as f64) * 1000_f64).floor() as i64;
+            let millisecond: i64 = d.0.floor() as i64;
             r.0 = millisecond;
             if i == 0 {
                 start_value = millisecond;
@@ -72,7 +72,27 @@ pub fn transform(datasets: &Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smooth
     return result;
 }
 
-pub fn range(datasets: &Vec<Vec<Smoothed>>, outlier: bool) -> Range {
+pub fn range(datasets: &Vec<Vec<Smoothed>>) -> Vec<Range> {
+    let mut ranges: Vec<Range> = vec![];
+
+    for data in datasets.iter() {
+        let n: usize = data.len();
+
+        if n == 0 {
+            ranges.push(Range::new(f64::NAN, f64::NAN));
+        }
+
+        let values: Vec<f64> = data.iter().map(|x| x.2).collect();
+        let mut sorted: Vec<f64> = values.clone();
+        sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+        ranges.push(Range::new(sorted[0], sorted[n - 1]));
+    }
+
+    return ranges;
+}
+
+pub fn axis_range(datasets: &Vec<Vec<Smoothed>>, outlier: bool) -> Range {
     let mut ranges: Vec<Range> = vec![];
 
     for data in datasets.iter() {

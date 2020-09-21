@@ -1,8 +1,7 @@
 window.base = require('netron/src/base');
-window.flatbuffers = require('flatbuffers').flatbuffers;
+window.flatbuffers = require('netron/src/flatbuffers');
 window.long = {
     Long: require('long')
 };
-window.protobuf = require('protobufjs');
-window.prototxt = require('protobufjs/ext/prototxt');
+window.protobuf = require('netron/src/protobuf');
 window.zip = require('netron/src/zip');

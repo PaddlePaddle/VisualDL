@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/cli",
-    "version": "2.0.0-beta.43",
+    "version": "2.0.9",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -23,10 +23,10 @@
         "directory": "frontend/packages/cli"
     },
     "scripts": {
-        "dev": "cross-env NODE_ENV=development ts-node index.ts",
         "build": "tsc",
+        "dev": "cross-env NODE_ENV=development ts-node index.ts",
         "start": "node index.js",
-        "test": "echo \"Error: no test specified\" && exit 0; #"
+        "test": "echo \"Error: no test specified\" && exit 0"
     },
     "bin": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -34,29 +34,24 @@
         "dist"
     ],
     "dependencies": {
-        "@visualdl/server": "2.0.0-beta.43",
-        "open": "7.0.4",
-        "ora": "4.0.4",
-        "pm2": "4.4.0",
-        "yargs": "15.3.1"
+        "@visualdl/server": "2.0.9",
+        "open": "7.2.1",
+        "ora": "5.1.0",
+        "pm2": "4.4.1",
+        "yargs": "16.0.3"
     },
     "devDependencies": {
-        "@types/node": "14.0.14",
+        "@types/node": "14.10.3",
         "@types/yargs": "15.0.5",
         "cross-env": "7.0.2",
-        "ts-node": "8.10.2",
-        "typescript": "3.9.5"
+        "ts-node": "9.0.0",
+        "typescript": "4.0.2"
     },
     "engines": {
-        "node": ">=10",
+        "node": ">=12",
         "npm": ">=6"
     },
     "publishConfig": {
         "access": "public"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }

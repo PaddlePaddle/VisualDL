@@ -1,0 +1,23 @@
+{
+    "download-image": "下载图片",
+    "ignore-outliers": "图表缩放时忽略极端值",
+    "max": "最大值",
+    "maximize": "最大化",
+    "min": "最小值",
+    "minimize": "最小化",
+    "restore": "还原图表框选",
+    "show-most-value": "显示最值",
+    "smoothed": "Smoothed",
+    "smoothed-data-only": "仅显示平滑后数据",
+    "smoothing": "平滑度",
+    "toggle-log-axis": "切换对数坐标轴",
+    "tooltip-sorting": "详情数据排序",
+    "tooltip-sorting-value": {
+        "ascending": "升序",
+        "default": "默认",
+        "descending": "降序",
+        "nearest": "最近"
+    },
+    "value": "Value",
+    "x-axis": "X轴"
+}

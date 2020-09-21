@@ -17,6 +17,7 @@ import os
 import tempfile
 import hashlib
 import base64
+import time
 
 try:
     import hdfs
@@ -27,6 +28,8 @@ except ImportError:
 try:
     from baidubce.services.bos.bos_client import BosClient
     from baidubce import exception
+    from baidubce.bce_client_configuration import BceClientConfiguration
+    from baidubce.auth.bce_credentials import BceCredentials
     BOS_ENABLED = True
 except ImportError:
     BOS_ENABLED = False
@@ -96,6 +99,15 @@ class LocalFileSystem(object):
     def join(path, *paths):
         return os.path.join(path, *paths)
 
+    def isfile(self, filename):
+        return os.path.isfile(filename)
+
+    def read_file(self, filename, binary_mode=True):
+        mode = "rb" if binary_mode else "r"
+        with open(filename, mode) as reader:
+            data = reader.read()
+        return data
+
     def read(self, filename, binary_mode=False, size=None, continue_from=None):
         mode = "rb" if binary_mode else "r"
         encoding = None if binary_mode else "utf-8"
@@ -115,12 +127,21 @@ class LocalFileSystem(object):
             fp.write(file_content)
 
     def append(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "ab" if binary_mode else "a")
+        try:
+            self._write(filename, file_content, "ab" if binary_mode else "a")
+        except FileNotFoundError:
+            self.makedirs(os.path.dirname(filename))
 
     def write(self, filename, file_content, binary_mode=False):
-        self._write(filename, file_content, "wb" if binary_mode else "w")
+        try:
+            self._write(filename, file_content, "ab" if binary_mode else "a")
+        except FileNotFoundError:
+            self.makedirs(os.path.dirname(filename))
+        # self._write(filename, file_content, "wb" if binary_mode else "w")
 
     def walk(self, dir):
+        if 'posix' == os.name:
+            return os.walk(dir, followlinks=True)
         return os.walk(dir)
 
 
@@ -136,6 +157,14 @@ class HDFileSystem(object):
             return False
         else:
             return True
+
+    def isfile(self, filename):
+        return exists(filename)
+
+    def read_file(self, filename, binary_mode=True):
+        with self.cli.read(hdfs_path=filename[7:]) as reader:
+            data = reader.read()
+        return data
 
     def makedirs(self, path):
         self.cli.makedirs(hdfs_path=path[7:])
@@ -153,7 +182,8 @@ class HDFileSystem(object):
 
         encoding = None if binary_mode else "utf-8"
         try:
-            with self.cli.read(hdfs_path=filename[7:], offset=offset, encoding=encoding) as reader:
+            with self.cli.read(hdfs_path=filename[7:], offset=offset,
+                               encoding=encoding) as reader:
                 data = reader.read()
                 continue_from_token = {"last_offset": offset + len(data)}
                 return data, continue_from_token
@@ -164,29 +194,118 @@ class HDFileSystem(object):
         self.cli.write(hdfs_path=filename[7:], data=file_content, append=True)
 
     def write(self, filename, file_content, binary_mode=False):
-        self.cli.write(hdfs_path=filename[7:], data=file_content)
+        self.cli.write(hdfs_path=filename[7:], data=file_content, append=True)
+        # self.cli.write(hdfs_path=filename[7:], data=file_content)
 
     def walk(self, dir):
         walks = self.cli.walk(hdfs_path=dir[7:])
-        return (['hdfs://'+root, dirs, files] for root, dirs, files in walks)
+        return (['hdfs://' + root, dirs, files] for root, dirs, files in walks)
+
+
+def get_object_info(path):
+    path = path[6:]
+    index = path.index('/')
+    bucket_name = path[0:index]
+    object_key = path[index + 1:]
+    return bucket_name, object_key
+
+
+class BosConfigClient(object):
+    def __init__(self, bos_ak, bos_sk, bos_sts, bos_host="bj.bcebos.com"):
+        self.config = BceClientConfiguration(
+            credentials=BceCredentials(bos_ak, bos_sk),
+            endpoint=bos_host, security_token=bos_sts)
+        self.bos_client = BosClient(self.config)
+
+    def exists(self, path):
+        bucket_name, object_key = get_object_info(path)
+        try:
+            self.bos_client.get_object_meta_data(bucket_name, object_key)
+            return True
+        except exception.BceError:
+            return False
+
+    def makedirs(self, path):
+        if not path.endswith('/'):
+            path += '/'
+        if self.exists(path):
+            return
+        bucket_name, object_key = get_object_info(path)
+        if not object_key.endswith('/'):
+            object_key += '/'
+        init_data = b''
+        self.bos_client.append_object(bucket_name=bucket_name,
+                                      key=object_key,
+                                      data=init_data,
+                                      content_md5=content_md5(init_data),
+                                      content_length=len(init_data))
+
+    @staticmethod
+    def join(path, *paths):
+        result = os.path.join(path, *paths)
+        result.replace('\\', '/')
+        return result
+
+    def upload_object_from_file(self, path, filename):
+        if not self.exists(path):
+            self.makedirs(path)
+        bucket_name, object_key = get_object_info(path)
+
+        object_key = self.join(object_key, filename)
+        # if not object_key.endswith('/'):
+        #     object_key += '/'
+        print('Uploading file `%s`' % filename)
+        self.bos_client.put_object_from_file(bucket=bucket_name,
+                                             key=object_key,
+                                             file_name=filename)
 
 
 class BosFileSystem(object):
-    def __init__(self):
-        from visualdl.io import bos_conf
-        self.bos_client = BosClient(bos_conf.config)
-        self.file_length_map = {}
+    def __init__(self, write_flag=True):
+        if write_flag:
+            self.max_contents_count = 1
+            self.max_contents_time = 1
+            self.get_bos_config()
+            self.bos_client = BosClient(self.config)
+            self.file_length_map = {}
 
-    @staticmethod
-    def _get_object_info(path):
-        path = path[6:]
-        index = path.index('/')
-        bucket_name = path[0:index]
-        object_key = path[index+1:]
-        return bucket_name, object_key
+            self._file_contents_to_add = b''
+            self._file_contents_count = 0
+            self._start_append_time = time.time()
+
+    def get_bos_config(self):
+        bos_host = os.getenv("BOS_HOST")
+        if not bos_host:
+            raise KeyError('${BOS_HOST} is not found.')
+        access_key_id = os.getenv("BOS_AK")
+        if not access_key_id:
+            raise KeyError('${BOS_AK} is not found.')
+        secret_access_key = os.getenv("BOS_SK")
+        if not secret_access_key:
+            raise KeyError('${BOS_SK} is not found.')
+        self.max_contents_count = int(os.getenv('BOS_CACHE_COUNT', 1))
+        self.max_contents_time = int(os.getenv('BOS_CACHE_TIME', 1))
+        bos_sts = os.getenv("BOS_STS")
+        self.config = BceClientConfiguration(
+            credentials=BceCredentials(access_key_id, secret_access_key),
+            endpoint=bos_host, security_token=bos_sts)
+
+    def set_bos_config(self, bos_ak, bos_sk, bos_sts, bos_host="bj.bcebos.com"):
+        self.config = BceClientConfiguration(
+            credentials=BceCredentials(bos_ak, bos_sk),
+            endpoint=bos_host, security_token=bos_sts)
+        self.bos_client = BosClient(self.config)
+
+    def isfile(self, filename):
+        return exists(filename)
+
+    def read_file(self, filename, binary=True):
+        bucket_name, object_key = get_object_info(filename)
+        result = self.bos_client.get_object_as_string(bucket_name, object_key)
+        return result
 
     def exists(self, path):
-        bucket_name, object_key = BosFileSystem._get_object_info(path)
+        bucket_name, object_key = get_object_info(path)
         try:
             self.bos_client.get_object_meta_data(bucket_name, object_key)
             return True
@@ -201,7 +320,7 @@ class BosFileSystem(object):
             path += '/'
         if self.exists(path):
             return
-        bucket_name, object_key = BosFileSystem._get_object_info(path)
+        bucket_name, object_key = get_object_info(path)
         if not object_key.endswith('/'):
             object_key += '/'
         init_data = b''
@@ -218,44 +337,78 @@ class BosFileSystem(object):
         return result
 
     def read(self, filename, binary_mode=False, size=0, continue_from=None):
-        bucket_name, object_key = BosFileSystem._get_object_info(filename)
+        bucket_name, object_key = get_object_info(filename)
         offset = 0
         if continue_from is not None:
             offset = continue_from.get("last_offset", 0)
-        data = self.bos_client.get_object_as_string(bucket_name=bucket_name,
-                                                    key=object_key)
-        data = data[offset:]
-        continue_from_token = {"last_offset": len(data)}
+        length = int(
+            self.get_meta(bucket_name, object_key).metadata.content_length)
+        if offset < length:
+            data = self.bos_client.get_object_as_string(bucket_name=bucket_name,
+                                                        key=object_key,
+                                                        range=[offset,
+                                                               length - 1])
+        else:
+            data = b''
+
+        continue_from_token = {"last_offset": length}
         return data, continue_from_token
 
-    def append(self, filename, file_content, binary_mode=False):
-        bucket_name, object_key = BosFileSystem._get_object_info(filename)
+    def ready_to_append(self):
+        if self._file_contents_count >= self.max_contents_count or \
+                time.time() - self._start_append_time > self.max_contents_time:
+            return True
+        else:
+            return False
+
+    def append(self, filename, file_content, binary_mode=False, force=False):
+        self._file_contents_to_add += file_content
+        self._file_contents_count += 1
+
+        if not force and not self.ready_to_append():
+            return
+        file_content = self._file_contents_to_add
+        bucket_name, object_key = get_object_info(filename)
         if not self.exists(filename):
             init_data = b''
             self.bos_client.append_object(bucket_name=bucket_name,
                                           key=object_key,
                                           data=init_data,
                                           content_md5=content_md5(init_data),
-                                          content_length=len(init_data),
-                                          offset=0)
+                                          content_length=len(init_data))
         content_length = len(file_content)
 
-        offset = self.get_meta(bucket_name, object_key).metadata.content_length
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=file_content,
-                                      content_md5=content_md5(file_content),
-                                      content_length=content_length,
-                                      offset=offset)
+        try:
+            offset = self.get_meta(bucket_name,
+                                   object_key).metadata.content_length
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=object_key,
+                                          data=file_content,
+                                          content_md5=content_md5(file_content),
+                                          content_length=content_length,
+                                          offset=offset)
+        except (exception.BceServerError, exception.BceHttpClientError) as e:
+            init_data = b''
+            self.bos_client.append_object(bucket_name=bucket_name,
+                                          key=object_key,
+                                          data=init_data,
+                                          content_md5=content_md5(init_data),
+                                          content_length=len(init_data))
+
+        self._file_contents_to_add = b''
+        self._file_contents_count = 0
+        self._start_append_time = time.time()
 
     def write(self, filename, file_content, binary_mode=False):
-        bucket_name, object_key = BosFileSystem._get_object_info(filename)
+        self.append(filename, file_content, binary_mode=False)
 
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=file_content,
-                                      content_md5=content_md5(file_content),
-                                      content_length=len(file_content))
+        # bucket_name, object_key = BosFileSystem._get_object_info(filename)
+        #
+        # self.bos_client.append_object(bucket_name=bucket_name,
+        #                               key=object_key,
+        #                               data=file_content,
+        #                               content_md5=content_md5(file_content),
+        #                               content_length=len(file_content))
 
     def walk(self, dir):
         class WalkGenerator():
@@ -282,8 +435,9 @@ class BosFileSystem(object):
                         contents_map[key] = [value]
                 temp_walk = []
                 for key, value in contents_map.items():
-                    temp_walk.append([BosFileSystem.join('bos://' + self.bucket, key), [], value])
-                # print("temp_walk=", temp_walk)
+                    temp_walk.append(
+                        [BosFileSystem.join('bos://' + self.bucket, key), [],
+                         value])
                 self.length = len(temp_walk)
                 self.contents = temp_walk
 
@@ -297,7 +451,7 @@ class BosFileSystem(object):
                 else:
                     raise StopIteration
 
-        bucket_name, object_key = BosFileSystem._get_object_info(dir)
+        bucket_name, object_key = get_object_info(dir)
 
         if object_key in ['.', './']:
             prefix = None
@@ -340,6 +494,9 @@ class BFile(object):
     def __iter__(self):
         return self
 
+    def isfile(self, filename):
+        return self.fs.isfile(filename)
+
     def _read_buffer_to_offset(self, new_buff_offset):
         """Read buffer from index self.buffer_offset to index new_buff_offset.
 
@@ -354,6 +511,9 @@ class BFile(object):
         read_size = min(len(self.buff), new_buff_offset) - old_buff_offset
         self.buff_offset += read_size
         return self.buff[old_buff_offset:old_buff_offset + read_size]
+
+    def read_file(self, filename, binnary=True):
+        return self.fs.read_file(filename, binnary)
 
     def read(self, n=None):
         """Read `n` or all contents of self.buff or file.
@@ -471,6 +631,11 @@ class BFile(object):
                     self.write_temp.seek(len(chunk))
 
     def close(self):
+        if isinstance(self.fs, BosFileSystem):
+            try:
+                self.fs.append(self._filename, b'', self.binary_mode, force=True)
+            except:
+                pass
         self.flush()
         if self.write_temp is not None:
             self.write_temp.close()

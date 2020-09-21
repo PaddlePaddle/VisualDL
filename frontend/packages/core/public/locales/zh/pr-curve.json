@@ -1,8 +1,12 @@
 {
+    "download-image": "下载图片",
     "false-negatives": "FN",
     "false-positives": "FP",
+    "maximize": "最大化",
+    "minimize": "最小化",
     "precision": "Precision",
     "recall": "Recall",
+    "restore": "还原图表框选",
     "threshold": "Threshold",
     "time-display-type": "时间显示类型",
     "true-negatives": "TN",

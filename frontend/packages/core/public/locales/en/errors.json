@@ -7,7 +7,24 @@
         "description": "Possible reasons are:",
         "title": "No visualized data."
     },
-    "error-with-status": "A {{statusCode}} error occurred on server",
-    "error-without-status": "An error occurred on the server",
-    "page-not-found": "Page Not Found"
+    "error": "Error occurred",
+    "network-error": "Network Error",
+    "page-not-found": "Page Not Found",
+    "parse-error": "Parse Error",
+    "response-error": {
+        "400": "Bad Request",
+        "401": "Unauthorized",
+        "403": "Permission Denied",
+        "404": "Interface Does Not Exist",
+        "405": "Method Not Allowed",
+        "408": "Request Timeout",
+        "413": "Request Entity Too Large",
+        "414": "Request-URI Too Long",
+        "500": "Internal Server Error",
+        "501": "Not Implemented",
+        "502": "Bad Gateway",
+        "503": "Service Unavailable",
+        "504": "Gateway Timeout",
+        "unknown": "Server Error"
+    }
 }

@@ -6,7 +6,7 @@
 
 
 <p align="center">
-<a href="https://travis-ci.org/PaddlePaddle/VisualDL"><img src="https://img.shields.io/travis/paddlepaddle/visualdl/develop?style=flat-square" alt="Build Status" /></a>
+<a href="https://actions-badge.atrox.dev/PaddlePaddle/VisualDL/goto?ref=develop"><img alt="Build Status" src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FPaddlePaddle%2FVisualDL%2Fbadge%3Fref%3Ddevelop&style=flat-square" alt="Build Status" /></a>
 <a href="https://pypi.org/project/visualdl/"><img src="https://img.shields.io/pypi/v/visualdl?style=flat-square" alt="PyPI" /></a>
 <a href="https://pypi.org/project/visualdl/#files"><img src="https://img.shields.io/pypi/dm/visualdl?style=flat-square" alt="Downloads" /></a>
 <a href="https://github.com/PaddlePaddle/VisualDL/blob/develop/LICENSE"><img src="https://img.shields.io/github/license/paddlepaddle/visualdl?style=flat-square" alt="License" /></a>
@@ -17,17 +17,17 @@
 </p>
 
 ## Introduction
-VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
+VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors, pr curves and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
-VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
+VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
 
-VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training. 
+VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training.
 
 ## Contents
 
 * [Key Highlights](#Key-Highlights)
-* [Installation ](#Installation)
-* [Usage Guidline](#Usage-Guidline)
+* [Installation](#Installation)
+* [Usage Guideline](#Usage-Guideline)
 * [Function Preview](#Function-Preview)
 * [Contribution](#Contribution)
 * [More Details](#More-Details)
@@ -35,17 +35,18 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 
 
-## Key highlights
+## Key Highlights
 
 ### Easy to Use
 
 The high-level design of API makes it easy to use. Only one click can initiate the visualization of model structures.
 
-### Various Functions 
+
+### Various Functions
 
 The function contains the visualization of training parameters, data samples, graph structures, histograms of tensors, PR curves and high-dimensional data.
 
-### High Compatibility 
+### High Compatibility
 
 VisualDL provides the visualization of the mainstream model structures such as Paddle, ONNX, Caffe, widely supporting visual analysis for diverse users.
 
@@ -55,10 +56,11 @@ By Integrating into PaddlePaddle and related modules, VisualDL allows developers
 
 ## Installation
 
-### Install by Pip
+
+### Install by PiP
 
 ```shell
-pip install --upgrade --pre visualdl
+python -m pip install visualdl -i https://mirror.baidu.com/pypi/simple
 ```
 ### Install by Code
 
@@ -71,7 +73,8 @@ pip install --upgrade dist/visualdl-*.whl
 ```
 Please note that Python 2 is no longer maintained officially since January 1, 2020. VisualDL now only supports Python 3 in order to ensure the usability of codes.
 
-## Usage Guideline 
+
+## Usage Guideline
 
 VisualDL stores the data, parameters and other information of the training process in a log file. Users can launch the panel to observe the visualization results.
 
@@ -99,6 +102,7 @@ class LogWriter(logdir=None,
 | flush_secs      | int     | The maximum cache time of the data generated before recording in a log file, when this time is reached, the data is immediately written to the log file. |
 | filename_suffix | string  | Add a suffix to the default log file name.                   |
 | write_to_disk   | boolean | Write into disk or not.                                      |
+| display_name  | string | Set the name of different runs when `logdir` is too long or needed to be hidden. If not set, the default name is `logdir`.|
 
 #### Example
 
@@ -147,7 +151,8 @@ visualdl --logdir ./log
 
 #### Launch in Python Script
 
-Developers can start the VisualDL panel in Python script as follows: 
+
+Developers can start the VisualDL panel in Python script as follows:
 
 ```python
 visualdl.server.app.run(logdir,
@@ -186,7 +191,7 @@ app.run(logdir="./log")
 After launching the panel by one of the above methods, developers can see the visualization results on the browser shown as blow:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/82786044-67ae9880-9e96-11ea-8a2b-3a0951a6ec19.png" width="60%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90868674-ba321f00-e3c9-11ea-83c1-f03c6dd19187.png" width="70%"/>
 </p>
 
 
@@ -210,15 +215,22 @@ After the launchment of VisualDL Board, the LogReader will continuously record t
 Developers can compare with multiple experiments by specifying and uploading the path of each experiment at the same time so as to visualize the same parameters in the same chart.
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/multi_experiments.gif" width="100%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/90869567-fdd95880-e3ca-11ea-9855-6c97ad5c8ae7.gif" width="100%"/>
 </p>
 
 
 ### Image
-**Image** provides real-time visualizations of the image data during the training process, allowing developers to observe the changes of images in different training stages and  to deeply understand the effects of the training process. 
+**Image** provides real-time visualizations of the image data during the training process, allowing developers to observe the changes of images in different training stages and  to deeply understand the effects of the training process.
 
 <p align="center">
-<img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90869677-22353500-e3cb-11ea-9830-2334bdd8e52e.gif" width="55%"/>
+</p>
+
+### Audio
+**Audio** aims to allow developers to listen to the audio data in real-time during the training process, helping developers to monitor the process of speech recognition and text-to-speech.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/90869771-47c23e80-e3cb-11ea-8b2a-a38b6c33d64b.png" width="85%"/>
 </p>
 
 ### Graph
@@ -226,24 +238,48 @@ Developers can compare with multiple experiments by specifying and uploading the
 **Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows Developers to explore model attributes, node information, node input and output. aiding them analyze model structure quickly and understand the direction of data flow easily.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90869866-6aecee00-e3cb-11ea-8211-b8af070239e6.png" width="85%"/>
 </p>
 
+### Histogram
+
+Histogram displays how the trend of tensors (weight, bias, gradient, etc.) changes during the training process in the form of histogram. Developers can adjust the model structures accurately by having an in-depth understanding of the effect of each layer.
+
+- Offset Mode
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/90870121-bd2e0f00-e3cb-11ea-89cf-6622cb607b89.png" width="85%"/>
+</p>
+
+
+- Overlay Mode
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/90870194-cfa84880-e3cb-11ea-8a66-bebcad267a10.png" width="85%"/>
+</p>
 
 ### High Dimensional
 
-**High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis. 
+**High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>
 </p>
 
+### VDL.service
+
+**VDL.service** enables developers to easily save, track and share visualization results with anyone for free.
+
+<p align="center">
+<img src=https://user-images.githubusercontent.com/48054808/93731055-fbeafb00-fbfd-11ea-80f4-bbfd08a0fc35.png
+</p> 
+  
 ## Contribution
 
-VisualDL is an open source project supported by  [PaddlePaddle](https://www.paddlepaddle.org/) and [ECharts](https://echarts.apache.org/) . Developers are warmly welcomed to use, comment and contribute.
+VisualDL, in which Graph is powered by [Netron](https://github.com/lutzroeder/netron), is an open source project supported by  [PaddlePaddle](https://www.paddlepaddle.org/) and [ECharts](https://echarts.apache.org/) . Developers are warmly welcomed to use, comment and contribute.
 
 
-## More details
+## More Details
 
 For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md)。
 
