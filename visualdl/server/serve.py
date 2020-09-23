@@ -25,7 +25,7 @@ from visualdl.server.log import logger
 
 
 def get_server_url():
-    with open(CONFIG_PATH, 'r') as fp:
+    with open(CONFIG_PATH, 'r', encoding='utf-8') as fp:
         server_url = json.load(fp)['server_url']
     return server_url
 

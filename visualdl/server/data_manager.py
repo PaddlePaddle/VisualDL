@@ -16,17 +16,33 @@
 from __future__ import absolute_import
 import threading
 import random
+import json
 import collections
 
-DEFAULT_PLUGIN_MAXSIZE = {
-    "scalar": 1000,
-    "image": 10,
-    "histogram": 100,
-    "embeddings": 50000,
-    "audio": 10,
-    "pr_curve": 300,
-    "meta_data": 100
-}
+from visualdl.utils.dir import CONFIG_PATH
+
+try:
+    with open(CONFIG_PATH, 'r', encoding='utf-8') as fp:
+        data = json.load(fp)
+        DEFAULT_PLUGIN_MAXSIZE = {
+            "scalar": data.get('scalar_sample', 1000),
+            "image": data.get('image_sample', 10),
+            "histogram": data.get('histogram_sample', 100),
+            "embeddings": data.get('embedding_sample', 50000),
+            "audio": data.get('audio_sample', 10),
+            "pr_curve": data.get('pr_curve_sample', 300),
+            "meta_data": 100
+        }
+except Exception:
+    DEFAULT_PLUGIN_MAXSIZE = {
+        "scalar": 1000,
+        "image": 10,
+        "histogram": 100,
+        "embeddings": 50000,
+        "audio": 10,
+        "pr_curve": 300,
+        "meta_data": 100
+    }
 
 
 class Reservoir(object):
