@@ -20,7 +20,7 @@
 ## 介绍
 VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL支持浏览器种类：Chrome（81和83）、Safari 13、FireFox（77和78）、Edge（Chromium版）。
 
@@ -40,7 +40,17 @@ VisualDL原生支持python的使用， 通过在模型的Python配置中添加�
 
 * [更多细节](#更多细节)
 
+## **[HOT]活动公告**
 
+9月21日晚19:00, 有颜有才的百度小姐姐依依将于[飞桨B 站直播间](https://live.bilibili.com/21689802) 举办**深度学习可视化调优**主题直播。
+
+将会在 B 站开启一场直播，通过实际案例，教你从数据收集、数据半自动标注、模型训练及调优到模型手机部署，实现一个目标检计数方案，并深入介绍如何应用 VisualDL 可视化分析工具对训练参数、网络结构等进行分析，从而指导开发者快速理解训练过程、进行算法优化。由此项目，可延伸泛化到「工业零件检测计数」『人流量统计』等领域应用。
+
+另外，还有丰富奖品等着大家噢：蓝牙键盘、飞桨充电宝、京东电子购物卡、百度网盘超级会员、飞桨鸭舌帽、飞桨帆布袋等等~
+
+具体抽奖规则请查看：[抽奖规则](./luckydraw.md)
+
+实践项目请查看[AI Studio螺丝螺母计数项目](https://aistudio.baidu.com/aistudio/projectdetail/954530)
 
 ## 核心亮点
 
@@ -280,6 +290,14 @@ app.run(logdir="./log")
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+</p>
+
+### VDL.service
+
+VisualDL可视化结果保存服务，以链接形式将可视化结果保存下来，方便用户快速、便捷的进行托管与分享。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/93729521-72382f00-fbf7-11ea-91ff-6b6ab4b41e32.png" width="85%"/>
 </p>
 
 ## 开源贡献

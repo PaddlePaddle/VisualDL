@@ -2549,6 +2549,11 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
+"@simbathesailor/use-what-changed@0.1.25":
+  version "0.1.25"
+  resolved "https://registry.yarnpkg.com/@simbathesailor/use-what-changed/-/use-what-changed-0.1.25.tgz#adf9373fb8d71dd8ab41c7cd789d8dd1fd80a058"
+  integrity sha512-hBzjQYMaSd/IFiFW3XEs4V+Cjklv65XSvtS1nCCsX07J5PjQWXR52AL+fZfJgw52RvgyrVFVRcT611/UffBmhg==
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"

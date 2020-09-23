@@ -19,7 +19,7 @@
 ## Introduction
 VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors, pr curves and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
-VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
+VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). Currently, VisualDL iterates rapidly and new functions will be continously added.
 
 VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training.
 
@@ -41,6 +41,7 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 The high-level design of API makes it easy to use. Only one click can initiate the visualization of model structures.
 
+
 ### Various Functions
 
 The function contains the visualization of training parameters, data samples, graph structures, histograms of tensors, PR curves and high-dimensional data.
@@ -54,6 +55,7 @@ VisualDL provides the visualization of the mainstream model structures such as P
 By Integrating into PaddlePaddle and related modules, VisualDL allows developers to use different components unobstructed, and thus have the best experience in the PaddlePaddle ecosystem.
 
 ## Installation
+
 
 ### Install by PiP
 
@@ -70,6 +72,7 @@ python setup.py bdist_wheel
 pip install --upgrade dist/visualdl-*.whl
 ```
 Please note that Python 2 is no longer maintained officially since January 1, 2020. VisualDL now only supports Python 3 in order to ensure the usability of codes.
+
 
 ## Usage Guideline
 
@@ -147,6 +150,7 @@ visualdl --logdir ./log
 ```
 
 #### Launch in Python Script
+
 
 Developers can start the VisualDL panel in Python script as follows:
 
@@ -262,6 +266,14 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 <img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>
 </p>
 
+### VDL.service
+
+**VDL.service** enables developers to easily save, track and share visualization results with anyone for free.
+
+<p align="center">
+<img src=https://user-images.githubusercontent.com/48054808/93731055-fbeafb00-fbfd-11ea-80f4-bbfd08a0fc35.png
+</p> 
+  
 ## Contribution
 
 VisualDL, in which Graph is powered by [Netron](https://github.com/lutzroeder/netron), is an open source project supported by  [PaddlePaddle](https://www.paddlepaddle.org/) and [ECharts](https://echarts.apache.org/) . Developers are warmly welcomed to use, comment and contribute.
