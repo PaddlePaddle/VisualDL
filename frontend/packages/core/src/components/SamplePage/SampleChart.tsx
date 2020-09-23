@@ -135,6 +135,25 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
     const cached = useRef<Record<number, {src: string; timer: number}>>({});
     const timer = useRef<number | null>(null);
 
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handler = (event: KeyboardEvent) => {
+            const hoveredNodes = document.querySelectorAll(':hover');
+            if (Array.from(hoveredNodes).some(node => node.isSameNode(wrapperRef.current))) {
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                    setStep(s => (s > 0 ? s - 1 : s));
+                    event.preventDefault();
+                } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                    setStep(s => (s < steps.length - 1 ? s + 1 : s));
+                    event.preventDefault();
+                }
+            }
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [steps]);
+
     // clear cache if tag or run changed
     useEffect(() => {
         Object.values(cached.current).forEach(({timer}) => clearTimeout(timer));
@@ -218,7 +237,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
     }, [viewed, loading, error, data, step, src, t, content]);
 
     return (
-        <Wrapper>
+        <Wrapper ref={wrapperRef}>
             <Title color={run.colors[0]}>
                 <h4>{tag}</h4>
                 <span>{run.label}</span>
