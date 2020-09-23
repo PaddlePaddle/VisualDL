@@ -1,8 +1,13 @@
-import Image, {ImageRef} from '~/components/Image';
 import React, {FunctionComponent, useCallback} from 'react';
-import SampleChart, {SampleChartBaseProps} from '~/components/SamplePage/SampleChart';
+import SampleChart, {
+    SampleChartBaseProps,
+    SampleEntityProps,
+    SamplePreviewerProps
+} from '~/components/SamplePage/SampleChart';
 import {size, transitionProps} from '~/utils/style';
 
+import Image from '~/components/Image';
+import ImagePreviewer from '~/components/SamplePage/ImagePreviewer';
 import styled from 'styled-components';
 
 const StyledImage = styled(Image)<{brightness?: number; contrast?: number; fit?: boolean}>`
@@ -23,12 +28,13 @@ type ImageChartProps = {
 
 const ImageChart: FunctionComponent<ImageChartProps> = ({brightness, contrast, fit, ...props}) => {
     const content = useCallback(
-        (ref: React.RefObject<ImageRef>, src: string) => (
-            <StyledImage src={src} cache={cache} ref={ref} brightness={brightness} contrast={contrast} fit={fit} />
-        ),
+        (props: SampleEntityProps) => <StyledImage {...props} brightness={brightness} contrast={contrast} fit={fit} />,
         [brightness, contrast, fit]
     );
-    return <SampleChart type="image" cache={cache} content={content} {...props} />;
+
+    const previewer = useCallback((props: SamplePreviewerProps) => <ImagePreviewer {...props} />, []);
+
+    return <SampleChart type="image" cache={cache} content={content} previewer={previewer} {...props} />;
 };
 
 export default ImageChart;

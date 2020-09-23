@@ -32,6 +32,15 @@ export const asideWidth = rem(260);
 export const borderRadius = '4px';
 export const progressSpinnerSize = '20px';
 
+export const zIndexes = {
+    progress: 99999,
+    toast: 90000,
+    tooltip: 80000,
+    component: 30000,
+    dialog: 20000,
+    header: 10000
+};
+
 // shims
 // TODO: remove and use colors in theme instead
 export const primaryColor = colors.primary.default;
@@ -143,7 +152,7 @@ export const GlobalStyle = createGlobalStyle`
 
     #nprogress .bar {
         background-color: var(--progress-bar-color);
-        z-index: 99999;
+        z-index: ${zIndexes.progress};
         ${position('fixed', 0, null, null, 0)}
         ${size('2px', '100%')}
         ${transitionProps('background-color')}
@@ -161,7 +170,7 @@ export const GlobalStyle = createGlobalStyle`
 
     #nprogress .spinner {
         display: block;
-        z-index: 99999;
+        z-index: ${zIndexes.progress};
         ${position('fixed', progressSpinnerSize, progressSpinnerSize, null, null)}
     }
 
@@ -190,7 +199,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     .Toastify__toast-container {
-        z-index: 10001;
+        z-index: ${zIndexes.toast};
 
         .Toastify__toast {
             border-radius: ${borderRadius};
@@ -207,7 +216,7 @@ export const GlobalStyle = createGlobalStyle`
     }
 
     [data-tippy-root] .tippy-box {
-        z-index: 10002;
+        z-index: ${zIndexes.tooltip};
         color: var(--text-color);
         background-color: var(--background-color);
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
