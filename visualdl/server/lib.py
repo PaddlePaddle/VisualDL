@@ -17,10 +17,12 @@ from __future__ import absolute_import
 import sys
 import time
 import os
+from functools import partial
 import numpy as np
 from visualdl.server.log import logger
 from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
+from visualdl.component import components
 
 
 MODIFY_PREFIX = {}
@@ -106,8 +108,8 @@ def get_logs(log_reader, component):
     return run2tag
 
 
-def get_scalar_tags(log_reader):
-    return get_logs(log_reader, "scalar")
+for name in components.keys():
+    exec("get_%s_tags=partial(get_logs, component='%s')" % (name, name))
 
 
 def get_scalar(log_reader, run, tag):
@@ -117,10 +119,6 @@ def get_scalar(log_reader, run, tag):
         run, decode_tag(tag))
     results = [[s2ms(item.timestamp), item.id, item.value] for item in records]
     return results
-
-
-def get_image_tags(log_reader):
-    return get_logs(log_reader, "image")
 
 
 def get_image_tag_steps(log_reader, run, tag):
@@ -143,10 +141,6 @@ def get_individual_image(log_reader, run, tag, step_index):
     return records[step_index].image.encoded_image_string
 
 
-def get_audio_tags(log_reader):
-    return get_logs(log_reader, "audio")
-
-
 def get_audio_tag_steps(log_reader, run, tag):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
@@ -166,18 +160,6 @@ def get_individual_audio(log_reader, run, tag, step_index):
         run, decode_tag(tag))
     result = records[step_index].audio.encoded_audio_string
     return result
-
-
-def get_embeddings_tags(log_reader):
-    return get_logs(log_reader, "embeddings")
-
-
-def get_histogram_tags(log_reader):
-    return get_logs(log_reader, "histogram")
-
-
-def get_pr_curve_tags(log_reader):
-    return get_logs(log_reader, "pr_curve")
 
 
 def get_pr_curve(log_reader, run, tag):
