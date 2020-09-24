@@ -9,7 +9,9 @@ export const THEME: Theme | undefined = import.meta.env.SNOWPACK_PUBLIC_THEME;
 
 export const matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
 
-export const theme = THEME || (matchMedia.matches ? 'dark' : 'light');
+export const autoTheme: Theme = matchMedia.matches ? 'dark' : 'light';
+
+export const theme = THEME || autoTheme;
 
 export const colors = {
     primary: {
@@ -134,18 +136,23 @@ function generateThemeVariables(theme: Record<string, string>) {
         .join('\n');
 }
 
-const mediaQuery = css`
-    @media (prefers-color-scheme: dark) {
-        ${generateThemeVariables(themes.dark)}
-    }
-`;
-
 export const variables = css`
     :root {
         ${generateColorVariables(colors)}
 
         ${generateThemeVariables(themes[THEME || 'light'])}
 
-        ${(!THEME && mediaQuery) || ''}
+        body.auto {
+            ${generateThemeVariables(themes.light)}
+            @media (prefers-color-scheme: dark) {
+                ${generateThemeVariables(themes.dark)}
+            }
+        }
+        body.light {
+            ${generateThemeVariables(themes.light)}
+        }
+        body.dark {
+            ${generateThemeVariables(themes.dark)}
+        }
     }
 `;

@@ -31,6 +31,11 @@
     "stop": "Stop",
     "stop-realtime-refresh": "Stop realtime refresh",
     "stopped": "Stopped",
+    "theme": {
+        "auto": "Auto",
+        "dark": "Dark",
+        "light": "Light"
+    },
     "time-mode": {
         "relative": "Relative",
         "step": "Step",

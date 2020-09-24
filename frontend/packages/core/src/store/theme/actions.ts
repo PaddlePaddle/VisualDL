@@ -7,3 +7,10 @@ export function setTheme(theme: Theme) {
         theme
     };
 }
+
+export function selectTheme(theme: Theme | 'auto') {
+    return {
+        type: ActionTypes.SELECT_THEME,
+        theme
+    };
+}

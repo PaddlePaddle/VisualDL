@@ -3,11 +3,13 @@ import type {Theme} from '~/utils/theme';
 export type {Theme} from '~/utils/theme';
 
 export enum ActionTypes {
-    SET_THEME = 'SET_THEME'
+    SET_THEME = 'SET_THEME',
+    SELECT_THEME = 'SELECT_THEME'
 }
 
 export interface ThemeState {
     theme: Theme;
+    selected: Theme | 'auto';
 }
 
 interface SetThemeAction {
@@ -15,4 +17,9 @@ interface SetThemeAction {
     theme: Theme;
 }
 
-export type ThemeActionTypes = SetThemeAction;
+interface SelectThemeAction {
+    type: ActionTypes.SELECT_THEME;
+    theme: Theme | 'auto';
+}
+
+export type ThemeActionTypes = SetThemeAction | SelectThemeAction;
