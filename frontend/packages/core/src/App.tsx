@@ -1,7 +1,7 @@
 import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo, useState} from 'react';
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';
-import {headerHeight, position, size} from '~/utils/style';
+import {headerHeight, position, size, zIndexes} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
 import ErrorBoundary from '~/components/ErrorBoundary';
@@ -27,7 +27,7 @@ const Main = styled.main`
 `;
 
 const Header = styled.header`
-    z-index: 10000;
+    z-index: ${zIndexes.header};
 
     ${size(headerHeight, '100%')}
     ${position('fixed', 0, 0, null, 0)}

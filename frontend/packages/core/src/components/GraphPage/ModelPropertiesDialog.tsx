@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import {em, size, transitionProps} from '~/utils/style';
+import {em, size, transitionProps, zIndexes} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import Properties from '~/components/GraphPage/Properties';
@@ -15,7 +15,7 @@ const Dialog = styled.div`
     height: 100vh;
     overscroll-behavior: none;
     background-color: var(--mask-color);
-    z-index: 999;
+    z-index: ${zIndexes.dialog};
     ${transitionProps('background-color')}
 
     > .modal {
@@ -42,8 +42,8 @@ const Dialog = styled.div`
 
             > .modal-close {
                 flex: none;
-                ${size(em(14, 18), em(14, 18))}
-                font-size: ${em(14, 18)};
+                ${size(em(20, 18), em(20, 18))}
+                font-size: ${em(20, 18)};
                 text-align: center;
                 cursor: pointer;
             }

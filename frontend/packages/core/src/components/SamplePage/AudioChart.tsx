@@ -1,6 +1,6 @@
-import Audio, {AudioProps, AudioRef} from '~/components/Audio';
+import Audio, {AudioProps} from '~/components/Audio';
 import React, {FunctionComponent, useCallback, useState} from 'react';
-import SampleChart, {SampleChartBaseProps} from '~/components/SamplePage/SampleChart';
+import SampleChart, {SampleChartBaseProps, SampleEntityProps} from '~/components/SamplePage/SampleChart';
 
 import {format} from 'd3-format';
 import styled from 'styled-components';
@@ -32,15 +32,8 @@ const AudioChart: FunctionComponent<AudioChartProps> = ({audioContext, ...props}
     );
 
     const content = useCallback(
-        (ref: React.RefObject<AudioRef>, src: string) => (
-            <StyledAudio
-                audioContext={audioContext}
-                src={src}
-                cache={cache}
-                onLoading={onLoading}
-                onLoad={onLoad}
-                ref={ref}
-            />
+        (props: SampleEntityProps) => (
+            <StyledAudio audioContext={audioContext} {...props} onLoading={onLoading} onLoad={onLoad} />
         ),
         [onLoading, onLoad, audioContext]
     );

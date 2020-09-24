@@ -9,7 +9,8 @@ import {
     math,
     sameBorder,
     size,
-    transitionProps
+    transitionProps,
+    zIndexes
 } from '~/utils/style';
 
 import Checkbox from '~/components/Checkbox';
@@ -77,7 +78,7 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     border-top-color: var(--border-color);
     ${borderRadiusShortHand('bottom', borderRadius)}
     display: ${props => (props.opened ? 'block' : 'none')};
-    z-index: 9999;
+    z-index: ${zIndexes.component};
     line-height: 1;
     background-color: inherit;
     box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);

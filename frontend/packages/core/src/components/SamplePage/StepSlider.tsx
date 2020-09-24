@@ -1,13 +1,16 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import {em, transitionProps} from '~/utils/style';
 
+import Icon from '~/components/Icon';
 import RangeSlider from '~/components/RangeSlider';
+import Tippy from '@tippyjs/react';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
 const Label = styled.div`
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: var(--text-light-color);
     font-size: ${em(12)};
     margin-bottom: ${em(5)};
@@ -15,6 +18,37 @@ const Label = styled.div`
 
     > :not(:first-child) {
         flex-grow: 0;
+    }
+
+    .step-indicator {
+        display: flex;
+        align-items: center;
+
+        .step-buttons {
+            margin-left: ${em(10)};
+            display: flex;
+            flex-direction: column;
+            font-size: ${em(10)};
+
+            > a {
+                display: inline-blcok;
+                line-height: 1;
+                height: ${em(14)};
+
+                &:hover {
+                    color: var(--text-lighter-color);
+                }
+
+                > i {
+                    display: inline-block;
+                    height: 100%;
+
+                    > svg {
+                        vertical-align: top;
+                    }
+                }
+            }
+        }
     }
 `;
 
@@ -43,10 +77,34 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeCompl
         [onChange]
     );
 
+    const prevStep = useCallback(() => {
+        if (value > 0) {
+            changeStep(value - 1);
+        }
+    }, [value, changeStep]);
+
+    const nextStep = useCallback(() => {
+        if (value < steps.length - 1) {
+            changeStep(value + 1);
+        }
+    }, [value, steps, changeStep]);
+
     return (
         <>
             <Label>
-                <span>{`${t('sample:step')}: ${steps[step] ?? '...'}`}</span>
+                <div className="step-indicator">
+                    <div>{`${t('sample:step')}: ${steps[step] ?? '...'}`}</div>
+                    <Tippy placement="right" theme="tooltip" content={t('sample:step-tip')}>
+                        <div className="step-buttons">
+                            <a href="javascript:void(0)" onClick={prevStep}>
+                                <Icon type="chevron-up" />
+                            </a>
+                            <a href="javascript:void(0)" onClick={nextStep}>
+                                <Icon type="chevron-down" />
+                            </a>
+                        </div>
+                    </Tippy>
+                </div>
                 {children && <span>{children}</span>}
             </Label>
             <FullWidthRangeSlider

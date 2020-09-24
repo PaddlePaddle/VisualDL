@@ -1,14 +1,19 @@
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {ellipsis, em, primaryColor, rem, size, transitionProps} from '~/utils/style';
 
+import type {BlobResponse} from '~/utils/fetch';
 import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
 import type {Run} from '~/types';
 import StepSlider from '~/components/SamplePage/StepSlider';
+import {fetcher} from '~/utils/fetch';
 import {formatTime} from '~/utils';
 import isEmpty from 'lodash/isEmpty';
+import mime from 'mime-types';
 import queryString from 'query-string';
+import {saveAs} from 'file-saver';
 import styled from 'styled-components';
+import useRequest from '~/hooks/useRequest';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
@@ -64,7 +69,7 @@ const Title = styled.div<{color: string}>`
     }
 `;
 
-const Container = styled.div<{brightness?: number; contrast?: number; fit?: boolean}>`
+const Container = styled.div<{preview?: boolean}>`
     flex-grow: 1;
     flex-shrink: 1;
     margin: ${em(20)} 0;
@@ -72,6 +77,7 @@ const Container = styled.div<{brightness?: number; contrast?: number; fit?: bool
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    cursor: ${props => (props.preview ? 'zoom-in' : 'default')};
 `;
 
 const Footer = styled.div`
@@ -103,24 +109,43 @@ export type SampleChartBaseProps = {
     running?: boolean;
 };
 
-type SampleChartRef = {
-    save: (filename: string) => void;
+export type SampleEntityProps = {
+    data?: BlobResponse;
+    loading?: boolean;
+    error?: Error;
+};
+
+export type SamplePreviewerProps = SampleEntityProps & {
+    steps: number[];
+    step?: number;
+    onClose?: () => unknown;
+    onChange?: (value: number) => unknown;
+    onChangeComplete?: () => unknown;
 };
 
 type SampleChartProps = {
     type: 'image' | 'audio';
     cache: number;
+    step?: number;
     footer?: JSX.Element;
-    content: (ref: React.RefObject<SampleChartRef>, src: string) => JSX.Element;
+    content: (props: SampleEntityProps) => React.ReactNode;
+    previewer?: (props: SamplePreviewerProps) => React.ReactNode;
 } & SampleChartBaseProps;
 
 const getUrl = (type: string, index: number, run: string, tag: string, wallTime: number): string =>
     `/${type}/${type}?${queryString.stringify({index, ts: wallTime, run, tag})}`;
 
-const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, type, cache, footer, content}) => {
+const SampleChart: FunctionComponent<SampleChartProps> = ({
+    run,
+    tag,
+    running,
+    type,
+    cache,
+    footer,
+    content,
+    previewer
+}) => {
     const {t, i18n} = useTranslation(['sample', 'common']);
-
-    const sampleRef = useRef<SampleChartRef>(null);
 
     const {data, error, loading} = useRunningRequest<SampleData[]>(
         `/${type}/list?${queryString.stringify({run: run.label, tag})}`,
@@ -129,11 +154,31 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
 
     const steps = useMemo(() => data?.map(item => item.step) ?? [], [data]);
 
+    const [preview, setPreview] = useState(false);
     const [step, setStep] = useState(0);
     const [src, setSrc] = useState<string>();
 
     const cached = useRef<Record<number, {src: string; timer: number}>>({});
     const timer = useRef<number | null>(null);
+
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handler = (event: KeyboardEvent) => {
+            const hoveredNodes = document.querySelectorAll(':hover');
+            if (preview || Array.from(hoveredNodes).some(node => node.isSameNode(wrapperRef.current))) {
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                    setStep(s => (s > 0 ? s - 1 : s));
+                    event.preventDefault();
+                } else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                    setStep(s => (s < steps.length - 1 ? s + 1 : s));
+                    event.preventDefault();
+                }
+            }
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [steps, preview]);
 
     // clear cache if tag or run changed
     useEffect(() => {
@@ -157,10 +202,6 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
         setSrc(url);
         timer.current = null;
     }, [type, step, run.label, tag, wallTime, data, cache]);
-
-    const download = useCallback(() => {
-        sampleRef.current?.save(`${run.label}-${tag}-${steps[step]}-${wallTime.toString().replace(/\./, '_')}`);
-    }, [run.label, tag, steps, step, wallTime]);
 
     useEffect(() => {
         if (cached.current[step]) {
@@ -200,6 +241,33 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
         }
     }, []);
 
+    const {data: entityData, error: entityError, loading: entityLoading} = useRequest<BlobResponse>(
+        src ?? null,
+        fetcher,
+        {
+            dedupingInterval: 5 * 60 * 1000
+        }
+    );
+
+    const download = useCallback(() => {
+        if (entityData) {
+            const ext = entityData.type ? mime.extension(entityData.type) : null;
+            saveAs(
+                entityData.data,
+                `${run.label}-${tag}-${steps[step]}-${wallTime.toString().replace(/\./, '_')}`.replace(
+                    /[/\\?%*:|"<>]/g,
+                    '_'
+                ) + (ext ? `.${ext}` : '')
+            );
+        }
+    }, [entityData, run.label, tag, steps, step, wallTime]);
+
+    const entityProps = useMemo(() => {
+        if (src) {
+            return {data: entityData, error: entityError, loading: entityLoading};
+        }
+    }, [src, entityData, entityError, entityLoading]);
+
     const Content = useMemo(() => {
         // show loading when deferring
         if (loading || !cached.current[step] || !viewed) {
@@ -211,14 +279,35 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
         if (isEmpty(data)) {
             return <span>{t('common:empty')}</span>;
         }
-        if (src) {
-            return content(sampleRef, src);
+        if (entityProps) {
+            return content(entityProps);
         }
         return null;
-    }, [viewed, loading, error, data, step, src, t, content]);
+    }, [viewed, loading, error, data, step, entityProps, t, content]);
+
+    const Previewer = useMemo(() => {
+        if (!previewer) {
+            return null;
+        }
+        if (!preview) {
+            return null;
+        }
+        if (!entityProps) {
+            return null;
+        }
+        return previewer({
+            ...entityProps,
+            loading: !cached.current[step] || entityProps.loading,
+            steps,
+            step,
+            onClose: () => setPreview(false),
+            onChange: setStep,
+            onChangeComplete: cacheSrc
+        });
+    }, [previewer, entityProps, preview, steps, step, cacheSrc]);
 
     return (
-        <Wrapper>
+        <Wrapper ref={wrapperRef}>
             <Title color={run.colors[0]}>
                 <h4>{tag}</h4>
                 <span>{run.label}</span>
@@ -226,7 +315,10 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({run, tag, running, ty
             <StepSlider value={step} steps={steps} onChange={setStep} onChangeComplete={cacheSrc}>
                 {formatTime(wallTime, i18n.language)}
             </StepSlider>
-            <Container ref={container}>{Content}</Container>
+            <Container ref={container} preview={!!previewer && !!src} onClick={() => setPreview(true)}>
+                {Content}
+            </Container>
+            {Previewer}
             <Footer>
                 <ChartToolbox
                     items={[
