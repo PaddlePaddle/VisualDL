@@ -5,6 +5,7 @@ import {border, borderRadius, rem, size, transitionProps} from '~/utils/style';
 import Icon from '~/components/Icon';
 import Language from '~/components/Language';
 import type {Route} from '~/routes';
+import ThemeToggle from '~/components/ThemeToggle';
 import Tippy from '@tippyjs/react';
 import ee from '~/utils/event';
 import {getApiToken} from '~/utils/fetch';
@@ -264,6 +265,24 @@ const Navbar: FunctionComponent = () => {
                 })}
             </div>
             <div className="right">
+                <Tippy
+                    placement="bottom-end"
+                    animation="shift-away-subtle"
+                    interactive
+                    arrow={false}
+                    offset={[18, 0]}
+                    hideOnClick={false}
+                    role="menu"
+                    content={
+                        <SubNav>
+                            <ThemeToggle />
+                        </SubNav>
+                    }
+                >
+                    <NavItem className="nav-item">
+                        <Icon type="theme" />
+                    </NavItem>
+                </Tippy>
                 <NavItem className="nav-item" onClick={changeLanguage}>
                     <Language />
                 </NavItem>
