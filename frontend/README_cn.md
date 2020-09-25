@@ -112,7 +112,7 @@ VisualDL 支持最新版本的 [Google Chrome](https://www.google.com/chrome/) �
 
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
-- [Snowpack]](https://www.snowpack.dev/)
+- [Snowpack](https://www.snowpack.dev/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 - [Netron](https://github.com/lutzroeder/netron)
 
