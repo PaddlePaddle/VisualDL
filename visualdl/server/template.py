@@ -19,7 +19,8 @@ from flask import (Response, send_from_directory)
 
 
 class Template(object):
-    extname = [".html", ".js", ".css"]
+    extname = ['.html', '.js', '.css']
+    mimetypes = ['text/html', 'application/javascript', 'text/css']
 
     defaults = {
         'PUBLIC_PATH': '/app',
@@ -28,12 +29,14 @@ class Template(object):
         'THEME': ''
     }
 
+    __files = {}
+
     def __init__(self, path, **context):
         if not os.path.exists(path):
             raise Exception("template file does not exist.")
         self.path = path
-        self.files = {}
-        for root, dirs, files in os.walk(path):
+        self.__add_mime_types()
+        for root, _dirs, files in os.walk(path):
             for file in files:
                 if any(file.endswith(name) for name in self.extname):
                     file_path = os.path.join(root, file)
@@ -44,9 +47,13 @@ class Template(object):
                         envs.update(context)
                         for key, value in envs.items():
                             content = content.replace("{{" + key + "}}", value)
-                    self.files[rel_path] = content, mimetypes.guess_type(file)[0]
+                    self.__files[rel_path] = content, mimetypes.guess_type(file)[0]
 
     def render(self, file):
-        if file in self.files:
-            return Response(response=self.files[file][0], mimetype=self.files[file][1])
+        if file in self.__files:
+            return Response(response=self.__files[file][0], mimetype=self.__files[file][1])
         return send_from_directory(self.path, file)
+
+    def __add_mime_types(self):
+        for i, ext in enumerate(self.extname):
+            mimetypes.add_type(self.mimetypes[i] or 'application/octet-stream', ext)

@@ -9,5 +9,6 @@
     "sample-rate": "采样率",
     "show-actual-size": "按真实大小展示",
     "step": "Step",
+    "step-tip": "您还可以通过键盘 ↑ ↓ 键，快速调节step哦~",
     "text": "文本"
 }

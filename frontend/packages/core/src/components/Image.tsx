@@ -1,39 +1,37 @@
-import React, {useImperativeHandle, useLayoutEffect, useState} from 'react';
+/**
+ * Copyright 2020 Baidu Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, {FunctionComponent, useLayoutEffect, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 
 import type {BlobResponse} from '~/utils/fetch';
 import GridLoader from 'react-spinners/GridLoader';
-import {fetcher} from '~/utils/fetch';
-import mime from 'mime-types';
-import {saveAs} from 'file-saver';
-import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
-export type ImageRef = {
-    save(filename: string): void;
-};
-
 type ImageProps = {
-    src?: string;
-    cache?: number;
+    data?: BlobResponse;
+    loading?: boolean;
+    error?: Error;
+    onClick?: () => unknown;
 };
 
-const Image = React.forwardRef<ImageRef, ImageProps & WithStyled>(({src, cache, className}, ref) => {
+const Image: FunctionComponent<ImageProps & WithStyled> = ({data, loading, error, onClick, className}) => {
     const {t} = useTranslation('common');
 
     const [url, setUrl] = useState('');
-    const {data, error, loading} = useRequest<BlobResponse>(src ?? null, fetcher, {
-        dedupingInterval: cache ?? 2000
-    });
-
-    useImperativeHandle(ref, () => ({
-        save: (filename: string) => {
-            if (data) {
-                const ext = data.type ? mime.extension(data.type) : null;
-                saveAs(data.data, filename.replace(/[/\\?%*:|"<>]/g, '_') + (ext ? `.${ext}` : ''));
-            }
-        }
-    }));
 
     // use useLayoutEffect hook to prevent image render after url revoked
     useLayoutEffect(() => {
@@ -55,7 +53,7 @@ const Image = React.forwardRef<ImageRef, ImageProps & WithStyled>(({src, cache, 
         return <div>{t('common:error')}</div>;
     }
 
-    return <img className={className} src={url} />;
-});
+    return <img className={className} src={url} onClick={onClick} />;
+};
 
 export default Image;

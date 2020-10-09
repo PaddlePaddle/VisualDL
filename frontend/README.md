@@ -112,7 +112,7 @@ This project is based on following projects:
 
 - [React](https://reactjs.org/)
 - [ECharts](https://echarts.apache.org/)
-- [Snowpack]](https://www.snowpack.dev/)
+- [Snowpack](https://www.snowpack.dev/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 - [Netron](https://github.com/lutzroeder/netron)
 
