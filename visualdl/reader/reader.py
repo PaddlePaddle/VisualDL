@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-import os
+import collections
+from functools import partial
 from visualdl.io import bfile
 from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
@@ -40,7 +41,7 @@ class LogReader(object):
 
     """
 
-    def __init__(self, logdir):
+    def __init__(self, logdir='', file_name=''):
         """Instance of LogReader
 
         Args:
@@ -59,13 +60,23 @@ class LogReader(object):
         self.tags2name = {}
 
         self.file_readers = {}
-        self._environments = components
-        self.data_manager = default_data_manager
-        self.load_new_data(update=True)
-        self._a_tags = {}
 
-        self._model = ""
+        if file_name:
+            self._log_data = collections.defaultdict(lambda: collections.defaultdict(list))
+            self.get_file_reader(file_name=file_name)
+            remain = self.get_remain()
+            self.read_log_data(remain=remain)
 
+            components_name = components.keys()
+
+            for name in components_name:
+                exec("self.get_%s=partial(self.get_data, '%s')" % (name, name))
+        elif logdir:
+            self.data_manager = default_data_manager
+            self.load_new_data(update=True)
+            self._a_tags = {}
+
+            self._model = ""
 
     @property
     def model(self):
@@ -86,6 +97,19 @@ class LogReader(object):
     @property
     def logdir(self):
         return self.dir
+
+    def _get_log_tags(self):
+        component_keys = self._log_data.keys()
+        log_tags = {}
+        for key in component_keys:
+            log_tags[key] = list(self._log_data[key].keys())
+        return log_tags
+
+    def get_tags(self):
+        return self._get_log_tags()
+
+    def get_data(self, component, tag):
+        return self._log_data[component][tag]
 
     def parse_from_bin(self, record_bin):
         """Register to self._tags by component type.
@@ -134,21 +158,6 @@ class LogReader(object):
             for root, dirs, files in bfile.walk(dir):
                 self.walks.update({root: files})
 
-    def components_listing(self):
-        """Get available component types.
-
-        Indicates what components are included.
-
-        Returns:
-            self._environments: A dict like `{"image": False, "scalar":
-                True}`
-        """
-        keys_enable = self.data_manager.get_keys()
-        for key in self._environments.keys():
-            if key in keys_enable:
-                self._environments[key].update({"enable": True})
-        return self._environments
-
     def logs(self, update=False):
         """Get logs.
 
@@ -191,7 +200,20 @@ class LogReader(object):
         self.reader = self.readers[filepath]
         return self.reader
 
-    def _register_reader(self, path, dir):
+    def get_file_reader(self, file_name):
+        """Get file reader for specified vdl log file.
+
+        Get instance of class RecordReader base on BFile.
+
+        Args:
+            file_name: Vdl log file name.
+        """
+        self._register_reader(file_name)
+        self.reader = self.readers[file_name]
+        self.reader.dir = file_name
+        return self.reader
+
+    def _register_reader(self, path, dir=None):
         if path not in list(self.readers.keys()):
             reader = RecordReader(filepath=path, dir=dir)
             self.readers[path] = reader
@@ -215,10 +237,10 @@ class LogReader(object):
         """
         for reader in self.readers.values():
             self.reader = reader
-
             remain = self.reader.get_remain()
             for item in remain:
                 component, dir, tag, record = self.parse_from_bin(item)
+
                 self.data_manager.add_item(component, self.reader.dir, tag,
                                            record)
 
@@ -228,6 +250,20 @@ class LogReader(object):
         if self.reader is None:
             raise RuntimeError("Please specify log path!")
         return self.reader.get_remain()
+
+    def read_log_data(self, remain):
+        """Parse data from log file without sampling.
+
+        Args:
+            remain: Raw data from log file.
+        """
+        for item in remain:
+            component, dir, tag, record = self.parse_from_bin(item)
+            self._log_data[component][tag].append(record)
+
+    @property
+    def log_data(self):
+        return self._log_data
 
     def runs(self, update=True):
         self.logs(update=update)
@@ -259,3 +295,9 @@ class LogReader(object):
         if self.logdir is not None:
             self.register_readers(update=update)
             self.add_remain()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass

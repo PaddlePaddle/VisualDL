@@ -19,7 +19,7 @@ import functools
 import json
 import os
 
-from visualdl.reader.reader import LogReader
+from visualdl import LogReader
 from visualdl.server import lib
 from visualdl.server.log import logger
 from visualdl.python.cache import MemCache

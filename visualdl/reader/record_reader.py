@@ -109,3 +109,7 @@ class RecordReader(object):
     @property
     def dir(self):
         return self._dir
+
+    @dir.setter
+    def dir(self, value):
+        self._dir = value

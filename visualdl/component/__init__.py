@@ -30,5 +30,11 @@ components = {
     },
     "graph": {
         "enabled": False
+    },
+    "pr_curve": {
+        "enabled": False
+    },
+    "meta_data": {
+        "enabled": False
     }
 }
