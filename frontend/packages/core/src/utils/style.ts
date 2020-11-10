@@ -74,6 +74,7 @@ export const sameBorder = (
     width = '1px' as
         | string
         | number
+        | true
         | {width?: string | number; type?: string; color?: string; radius?: string | boolean},
     type = 'solid',
     color = 'var(--border-color)',
@@ -84,6 +85,9 @@ export const sameBorder = (
         color = width.color ?? 'var(--border-color)';
         radius = width.radius === true ? borderRadius : width.radius;
         width = width.width ?? '1px';
+    } else if (width === true) {
+        width = '1px';
+        radius = true;
     }
     return Object.assign(
         {},

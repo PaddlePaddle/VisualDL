@@ -8,7 +8,9 @@ mod utils;
 #[macro_use]
 extern crate serde_derive;
 
-pub fn main() {}
+pub fn main() {
+    // high_dimensional::pca(vec![51.0_f64, 51.0_f64, 163.0_f64, 64.0_f64, 0.0_f64, 0.0_f64, 96.0_f64, 64.0_f64, 51.0_f64, 51.0_f64, 179.0_f64, 63.0_f64, 205.0_f64, 204.0_f64, 76.0_f64, 62.0_f64, 205.0_f64, 204.0_f64, 156.0_f64, 64.0_f64], 4, 3);
+}
 
 #[wasm_bindgen]
 pub fn scalar_transform(js_datasets: &JsValue, smoothing: f64) -> JsValue {
@@ -52,16 +54,9 @@ pub fn histogram_transform(js_data: &JsValue, mode: &str) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn high_dimensional_divide(
-    js_points: &JsValue,
-    js_labels: &JsValue,
-    visibility: bool,
-    keyword: &str,
-) -> JsValue {
+pub fn high_dimensional_pca(js_input: &JsValue, dim: usize, n_components: usize) -> JsValue {
     utils::set_panic_hook();
-    let points: Vec<Vec<f64>> = js_points.into_serde().unwrap();
-    let labels: Vec<String> = js_labels.into_serde().unwrap();
-    let result: high_dimensional::DividedPoints =
-        high_dimensional::divide(&points, &labels, visibility, keyword);
+    let input: Vec<f64> = js_input.into_serde().unwrap();
+    let result = high_dimensional::pca(input, dim, n_components);
     JsValue::from_serde(&result).unwrap()
 }

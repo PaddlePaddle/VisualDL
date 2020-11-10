@@ -68,18 +68,23 @@ module.exports = {
     },
     output: {
         path: output,
-        filename: '[name].[hash].js',
+        filename: '[name].[contenthash].js',
         publicPath: './'
     },
     optimization: {
         splitChunks: {
             cacheGroups: {
-                vendors: {
+                defaultVendors: {
                     name: 'vendors',
                     test: /[\\/]node_modules[\\/](?!netron)/,
                     chunks: 'all'
                 }
             }
+        }
+    },
+    resolve: {
+        fallback: {
+            zlib: false
         }
     },
     module: {

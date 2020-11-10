@@ -31,7 +31,7 @@ const Wrapper = styled.div`
     z-index: ${zIndexes.dialog};
     height: 100vh;
     width: 100vw;
-    background-color: var(--sample-preview-mask-color);
+    background-color: var(--dark-mask-color);
 `;
 
 const Header = styled.div`

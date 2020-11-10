@@ -42,3 +42,5 @@ export const quantile = (values: number[], p: number) => {
 
 export const distance = (p1: [number, number], p2: [number, number]): number =>
     Math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2);
+
+export const safeSplit = (s: string, d: string) => (s.length ? s.split(d) : []);

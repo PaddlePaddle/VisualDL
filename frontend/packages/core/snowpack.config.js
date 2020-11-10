@@ -62,11 +62,11 @@ module.exports = {
         }, {})
     },
     devOptions: {
-        out: 'dist',
         hostname: process.env.HOST || 'localhost',
         port
     },
     buildOptions: {
+        out: 'dist',
         baseUrl: '/', // set it in post-build
         clean: true
     },

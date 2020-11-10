@@ -14,120 +14,129 @@
  * limitations under the License.
  */
 
-import type {Dimension, Reduction} from '~/resource/high-dimensional';
-import React, {FunctionComponent, useMemo} from 'react';
-import {contentHeight, primaryColor, rem} from '~/utils/style';
+import React, {FunctionComponent, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import ScatterChart, {ScatterChartRef} from '~/components/ScatterChart';
 
-import ScatterChart from '~/components/ScatterChart';
-import {divide} from '~/resource/high-dimensional';
-import type {high_dimensional_divide} from '@visualdl/wasm'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import queryString from 'query-string';
+import ChartOperations from '~/components/HighDimensionalPage/ChartOperations';
+import type {PcaResult} from '~/resource/high-dimensional';
+import type {WithStyled} from '~/utils/style';
+import {rem} from '~/utils/style';
 import styled from 'styled-components';
-import useHeavyWork from '~/hooks/useHeavyWork';
-import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
-import wasm from '~/utils/wasm';
+import useWebAssembly from '~/hooks/useWebAssembly';
 
-const divideWasm = () =>
-    wasm<typeof high_dimensional_divide>(
-        'high_dimensional_divide'
-    ).then((high_dimensional_divide): typeof divide => params =>
-        high_dimensional_divide(params.points, params.labels, !!params.visibility, params.keyword ?? '')
-    );
-// const divideWorker = () => new Worker('~/worker/high-dimensional/divide.worker.ts', {type: 'module'});
-
-const StyledScatterChart = styled(ScatterChart)`
-    height: ${contentHeight};
-`;
-
-const Empty = styled.div`
+const Wrapper = styled.div`
+    height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: ${rem(20)};
-    height: ${contentHeight};
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
 `;
 
-const label = {
-    show: true,
-    position: 'top',
-    formatter: (params: {data: {name: string; showing: boolean}}) => (params.data.showing ? params.data.name : '')
-};
+const Toolbar = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: ${rem(20)};
 
-type Data = {
-    embedding: ([number, number] | [number, number, number])[];
-    labels: string[];
-};
+    > .info {
+        color: var(--text-light-color);
+
+        > .sep {
+            display: inline-block;
+            width: 1px;
+            background-color: var(--border-color);
+            margin: 0 1em;
+            height: 1em;
+            vertical-align: middle;
+        }
+    }
+`;
+
+const Chart = styled.div`
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-size: 0;
+    * {
+        outline: none;
+    }
+`;
 
 type HighDimensionalChartProps = {
-    run: string;
-    tag: string;
-    running?: boolean;
-    labelVisibility?: boolean;
-    reduction: Reduction;
-    keyword: string;
-    dimension: Dimension;
+    vectors: Float32Array;
+    metadata: string[][];
+    dim: number;
+    is3D: boolean;
+    onCalculate?: () => unknown;
+    onCalculated?: (data: PcaResult) => unknown;
+    onError?: (e: Error) => unknown;
 };
 
-const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
-    run,
-    tag,
-    running,
-    labelVisibility,
-    keyword,
-    reduction,
-    dimension
+const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps & WithStyled> = ({
+    vectors,
+    // metadata,
+    dim,
+    is3D,
+    onCalculate,
+    onCalculated,
+    onError,
+    className
 }) => {
-    const {t} = useTranslation('common');
+    const {t} = useTranslation(['high-dimensional', 'common']);
 
-    const {data, error, loading} = useRunningRequest<Data>(
-        run && tag
-            ? `/embedding/embedding?${queryString.stringify({
-                  run,
-                  tag,
-                  dimension: Number.parseInt(dimension, 10),
-                  reduction
-              })}`
-            : null,
-        !!running
+    const chartElement = useRef<HTMLDivElement>(null);
+    const chart = useRef<ScatterChartRef>(null);
+
+    const [width, setWidth] = useState(0);
+    const [height, setHeight] = useState(0);
+
+    const points = useMemo(() => Math.floor(vectors.length / dim), [vectors, dim]);
+
+    useLayoutEffect(() => {
+        const c = chartElement.current;
+        if (c) {
+            const observer = new ResizeObserver(() => {
+                const rect = c.getBoundingClientRect();
+                setWidth(rect.width);
+                setHeight(rect.height);
+            });
+            observer.observe(c);
+            return () => observer.unobserve(c);
+        }
+    }, []);
+
+    const params = useMemo(() => [Array.from(vectors), dim, 3] as const, [vectors, dim]);
+    const {data, error} = useWebAssembly<PcaResult>('high_dimensional_pca', params);
+    useEffect(() => {
+        if (error) {
+            onError?.(error);
+        } else if (data) {
+            onCalculated?.(data);
+        } else {
+            onCalculate?.();
+        }
+    }, [data, error, onCalculate, onCalculated, onError]);
+
+    return (
+        <Wrapper className={className}>
+            <Toolbar>
+                <div className="info">
+                    {t('high-dimensional:points')}
+                    {t('common:colon')}
+                    {points}
+                    <span className="sep"></span>
+                    {t('high-dimensional:data-dimension')}
+                    {t('common:colon')}
+                    {dim}
+                </div>
+                <ChartOperations onReset={() => chart.current?.reset()} />
+            </Toolbar>
+            <Chart ref={chartElement}>
+                <ScatterChart ref={chart} width={width} height={height} data={data?.vectors ?? []} is3D={is3D} />
+            </Chart>
+        </Wrapper>
     );
-
-    const divideParams = useMemo(
-        () => ({
-            points: data?.embedding ?? [],
-            keyword,
-            labels: data?.labels ?? [],
-            visibility: labelVisibility
-        }),
-        [data, labelVisibility, keyword]
-    );
-    const points = useHeavyWork(divideWasm, null, divide, divideParams);
-
-    const chartData = useMemo(() => {
-        return [
-            {
-                name: 'highlighted',
-                data: points?.[0] ?? [],
-                label
-            },
-            {
-                name: 'others',
-                data: points?.[1] ?? [],
-                label,
-                color: primaryColor
-            }
-        ];
-    }, [points]);
-
-    if (!data && error) {
-        return <Empty>{t('common:error')}</Empty>;
-    }
-
-    if (!data && !loading) {
-        return <Empty>{t('common:empty')}</Empty>;
-    }
-
-    return <StyledScatterChart loading={loading} data={chartData} gl={dimension === '3d'} />;
 };
 
 export default HighDimensionalChart;

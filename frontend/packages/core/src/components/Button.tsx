@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent} from 'react';
-import {WithStyled, borderRadius, css, ellipsis, em, half, sameBorder, transitionProps} from '~/utils/style';
+import React, {FunctionComponent, useCallback, useMemo} from 'react';
+import {WithStyled, borderRadius, ellipsis, em, half, transitionProps} from '~/utils/style';
 
 import type {Icons} from '~/components/Icon';
 import RawIcon from '~/components/Icon';
@@ -24,30 +24,25 @@ import styled from 'styled-components';
 
 const height = em(36);
 
-const defaultColor = {
-    default: 'var(--border-color)',
-    focused: 'var(--border-focused-color)',
-    active: 'var(--border-active-color)'
+const buttonColors = {
+    ...colors,
+    default: {
+        default: 'var(--border-color)',
+        focused: 'var(--border-focused-color)',
+        active: 'var(--border-active-color)',
+        text: 'var(--text-color)'
+    } as const
 } as const;
 
-type colorTypes = keyof typeof colors;
+type colorTypes = keyof typeof buttonColors;
 
-const statusButtonColor: (
-    status: 'focused' | 'active'
-) => (props: {disabled?: boolean; type?: colorTypes}) => ReturnType<typeof css> = status => ({disabled, type}) => css`
-    ${disabled || type ? '' : sameBorder({color: defaultColor[status]})}
-    background-color: ${disabled ? '' : type ? colors[type][status] : 'transparent'};
-`;
-
-const Wrapper = styled.a<{type?: colorTypes; rounded?: boolean; disabled?: boolean}>`
+const Wrapper = styled.a<{type: colorTypes}>`
     height: ${height};
     line-height: ${height};
-    border-radius: ${props => (props.rounded ? half(height) : borderRadius)};
-    ${props => (props.type ? '' : sameBorder({color: defaultColor.default}))}
-    background-color: ${props => (props.type ? colors[props.type].default : 'transparent')};
-    color: ${props =>
-        props.disabled ? 'var(--text-lighter-color)' : props.type ? colors[props.type].text : 'var(--text-color)'};
-    cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+    border-radius: ${borderRadius};
+    background-color: ${props => buttonColors[props.type].default};
+    color: ${props => buttonColors[props.type].text};
+    cursor: pointer;
     display: inline-block;
     vertical-align: top;
     text-align: center;
@@ -57,11 +52,47 @@ const Wrapper = styled.a<{type?: colorTypes; rounded?: boolean; disabled?: boole
 
     &:hover,
     &:focus {
-        ${statusButtonColor('focused')}
+        background-color: ${props => buttonColors[props.type].focused};
     }
 
     &:active {
-        ${statusButtonColor('active')}
+        background-color: ${props => buttonColors[props.type].active};
+    }
+
+    &.rounded {
+        border-radius: ${half(height)};
+    }
+
+    &.outline {
+        color: ${props => buttonColors[props.type][props.type === 'default' ? 'text' : 'default']};
+        background-color: transparent;
+        border: 1px solid ${props => buttonColors[props.type].default};
+
+        &:hover,
+        &:focus {
+            color: ${props => buttonColors[props.type][props.type === 'default' ? 'text' : 'focused']};
+            border-color: ${props => buttonColors[props.type].focused};
+        }
+
+        &:active {
+            color: ${props => buttonColors[props.type][props.type === 'default' ? 'text' : 'active']};
+            border-color: ${props => buttonColors[props.type].active};
+        }
+    }
+
+    &.disabled {
+        &,
+        &:hover,
+        &:focus,
+        &:active {
+            color: var(--text-lighter-color);
+            background-color: var(--border-color);
+
+            &.outline {
+                border-color: var(--border-color);
+            }
+        }
+        cursor: not-allowed;
     }
 `;
 
@@ -71,6 +102,7 @@ const Icon = styled(RawIcon)`
 
 type ButtonProps = {
     rounded?: boolean;
+    outline?: boolean;
     icon?: Icons;
     type?: colorTypes;
     disabled?: boolean;
@@ -80,16 +112,34 @@ type ButtonProps = {
 const Button: FunctionComponent<ButtonProps & WithStyled> = ({
     disabled,
     rounded,
+    outline,
     icon,
     type,
     children,
     className,
     onClick
-}) => (
-    <Wrapper className={className} onClick={onClick} type={type} rounded={rounded} disabled={disabled}>
-        {icon && <Icon type={icon}></Icon>}
-        {children}
-    </Wrapper>
-);
+}) => {
+    const click = useCallback(() => {
+        if (disabled) {
+            return;
+        }
+        onClick?.();
+    }, [disabled, onClick]);
+
+    const buttonType = useMemo(() => type || 'default', [type]);
+
+    return (
+        <Wrapper
+            className={`${className} ${rounded ? 'rounded' : ''} ${disabled ? 'disabled' : ''} ${
+                buttonType === 'default' || outline ? 'outline' : ''
+            }`}
+            type={buttonType}
+            onClick={click}
+        >
+            {icon && <Icon type={icon}></Icon>}
+            {children}
+        </Wrapper>
+    );
+};
 
 export default Button;

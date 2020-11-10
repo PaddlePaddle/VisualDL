@@ -1,9 +1,39 @@
 {
-    "2d": "2D",
-    "3d": "3D",
+    "3d-label": "Enable/disable 3D labels mode",
+    "component": "Component #{{index}}",
+    "data": "Data",
+    "data-dimension": "Types",
+    "data-path": "Data Path",
     "dimension": "Dimension",
-    "display-all-label": "Display All Labels",
+    "dimension-value": {
+        "2d": "2D",
+        "3d": "3D"
+    },
+    "loading": {
+        "calculating": "Calculating...",
+        "parsing": "Parsing data...",
+        "reading-metadata": "Reading metadata...",
+        "reading-vector": "Reading tensor..."
+    },
     "pca": "PCA",
-    "reduction-method": "Reduction Method",
-    "tsne": "T-SNE"
+    "points": "Points",
+    "reduction-value": {
+        "pca": "PCA",
+        "tsne": "T-SNE",
+        "umap": "UMAP"
+    },
+    "reset-zoom": "Reset zoom to fit all points",
+    "select-color": "Color by",
+    "select-data": "Select Data",
+    "select-file": "Select File",
+    "select-label": "Label by",
+    "selection": "Bounding box selection",
+    "total-variance-described": "Total variance described",
+    "tsne": "T-SNE",
+    "upload": {
+        "step1": "Step 1: Load a TSV file of vectors.<1/> Example of 3 vectors with dimension 4:",
+        "step2": "Step 2 (optional): Load a TSV file of metadata.<1/>Example of 3 data points and 2 columns.<3/><4>Note: If there is more than one column, the first row will be parsed as column labels.</4>"
+    },
+    "upload-data": "Upload Data",
+    "upload-from-computer": "Load data from your computer"
 }

@@ -15,10 +15,58 @@
  */
 
 export type Dimension = '2d' | '3d';
-export type Reduction = 'pca' | 'tsne';
+export type Reduction = 'pca' | 'tsne' | 'umap';
 
-export type Point = {
-    name: string;
-    value: [number, number] | [number, number, number];
-    showing: boolean;
+export type Vectors = [number, number, number][];
+
+export type VectorResult = {
+    dimension: number;
+    count: number;
+    vectors: Float32Array;
+};
+
+export type MetadataResult = {
+    dimension: number;
+    labels: string[];
+    metadata: string[][];
+};
+
+export type ParseFromStringParams = {
+    vectors: string;
+    metadata: string;
+};
+
+export type ParseFromBlobParams = {
+    shape: [number, number];
+    vectors: Blob;
+    metadata: string;
+};
+
+export type ParseParams =
+    | {
+          from: 'blob';
+          params: ParseFromBlobParams;
+      }
+    | {
+          from: 'string';
+          params: ParseFromStringParams;
+      }
+    | null;
+
+export type ParseResult = {
+    dimension: number;
+    vectors: Float32Array;
+    labels: string[];
+    metadata: string[][];
+};
+
+export type PcaParams = {
+    input: number[];
+    dim: number;
+    n: number;
+};
+
+export type PcaResult = {
+    vectors: Vectors;
+    variance: number[];
 };

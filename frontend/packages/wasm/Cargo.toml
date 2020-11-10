@@ -27,6 +27,7 @@ lto = true
 [dependencies]
 serde = "1.0.112"
 serde_derive = "1.0.112"
+rulinalg = "0.4.2"
 
 # The `wasm-bindgen` crate provides the bare minimum functionality needed
 # to interact with JavaScript.

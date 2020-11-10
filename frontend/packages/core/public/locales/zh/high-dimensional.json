@@ -1,9 +1,39 @@
 {
-    "2d": "二维",
-    "3d": "三维",
+    "3d-label": "开启/关闭3D数据标签",
+    "component": "主成分{{index}}",
+    "data": "数据",
+    "data-dimension": "数据类别",
+    "data-path": "数据路径",
     "dimension": "维度",
-    "display-all-label": "展示所有标签",
+    "dimension-value": {
+        "2d": "2D",
+        "3d": "3D"
+    },
+    "loading": {
+        "calculating": "计算中……",
+        "parsing": "解析数据中……",
+        "reading-metadata": "读取元数据中……",
+        "reading-vector": "读取数据中……"
+    },
     "pca": "PCA",
-    "reduction-method": "降维方法",
-    "tsne": "T-SNE"
+    "points": "数据点",
+    "reduction-value": {
+        "pca": "PCA",
+        "tsne": "T-SNE",
+        "umap": "UMAP"
+    },
+    "reset-zoom": "重置大小设置",
+    "select-color": "颜色分类方式",
+    "select-data": "选择可视化数据",
+    "select-file": "选择文件",
+    "select-label": "数据标签",
+    "selection": "框选数据",
+    "total-variance-described": "主成分解释原变量总方差",
+    "tsne": "T-SNE",
+    "upload": {
+        "step1": "步骤一：上传向量的TSV文件<1/>以下是三个带有四个维度的向量的例子",
+        "step2": "步骤二（可选）：上传Metadata的TSV文件<1/>以下是四列三个数据点的例子：<3/><4>注意：如果数据列数大于一，那么第一行数据会默认为列名</4>"
+    },
+    "upload-data": "上传数据",
+    "upload-from-computer": "从本地电脑上传数据"
 }
