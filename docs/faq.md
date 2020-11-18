@@ -10,7 +10,7 @@
 若经过上述尝试仍无法解决，可在VisualDL GitHub Issue进行提问[VDL Issue](https://github.com/PaddlePaddle/VisualDL/issues)
 
 ## 使用Image、Audio、Text组件仅显示10个样本
-为保证使用体验，防止由于数据量过大造成前端页面卡死或崩溃，在展示Image、Audio、Text组件时使用采样算法进行了数据采样后展示。
+为保证使用体验，防止由于数据量过大造成前端页面卡死或崩溃，在展示Image、Audio、Text组件时使用采样算法进行了数据采样后展示。  
 尽管数据在前端展示进行了采样，但在日志中保存的数据仍为全部数据，可通过`VisualDL.LogReader`进行全部数据获取，可参考[LogReader使用教程](./components#LogReader)
 
 ## 为什么Scalar绘制的曲线是迂回的
