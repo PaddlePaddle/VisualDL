@@ -38,6 +38,8 @@ VisualDL原生支持python的使用， 通过在模型的Python配置中添加�
 
 * [开源贡献](#开源贡献)
 
+* [常见问题](#常见问题)
+
 * [更多细节](#更多细节)
 
 ## **[HOT]活动公告**
@@ -214,6 +216,21 @@ app.run(logdir="./log")
   <img src="https://user-images.githubusercontent.com/48054808/82786044-67ae9880-9e96-11ea-8a2b-3a0951a6ec19.png" width="60%"/>
 </p>
 
+### 3. 使用LogReader获取日志中的数据
+
+VisualDL的后端也提供了获取日志数据的组件`LogWriter`，可通过其获取日志中任意数据，接口如下：
+```python
+class LogReader(logdir=None,
+                file_name='')
+```
+#### 接口参数
+
+| 参数            | 格式    | 含义                                                         |
+| --------------- | ------- | ------------------------------------------------------------ |
+| logdir          | string  | 日志文件所在的路径，必填|
+| file_name       | string  | 指定要读的日志文件名，必填|
+
+关于LogReader的更多具体用法，可参考[LogReader](./docs/io/LogReader.md)
 
 
 ## 可视化功能概览
@@ -299,6 +316,9 @@ VisualDL可视化结果保存服务，以链接形式将可视化结果保存下
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/93729521-72382f00-fbf7-11ea-91ff-6b6ab4b41e32.png" width="85%"/>
 </p>
+
+## 常见问题
+在使用VisualDL的过程中可能遇到的一些问题，可参考[常见问题](./docs/faq.md)帮助解决
 
 ## 开源贡献
 
