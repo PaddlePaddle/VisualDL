@@ -1,3 +1,21 @@
+/**
+ * Copyright 2020 Baidu Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// cSpell:words quantile accum debias exponentiated
+
 import type {Dataset, ScalarDataset} from './types';
 
 import BigNumber from 'bignumber.js';
@@ -21,8 +39,8 @@ export const transform = ({datasets, smoothing}: {datasets: ScalarDataset[]; smo
             if (i === 0) {
                 startValue = millisecond;
             }
-            // relative time, millisecond to hours.
-            d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
+            // relative time in millisecond.
+            d[4] = Math.floor(millisecond - startValue);
             if (!nextVal.isFinite()) {
                 d[3] = nextVal.toNumber();
             } else {
@@ -65,12 +83,12 @@ export const range = ({datasets}: {datasets: Dataset[]}) => {
 export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: boolean}) => {
     const ranges = compact(
         datasets?.map(dataset => {
-            if (dataset.length == 0) {
-                return;
+            if (dataset.length === 0) {
+                return void 0;
             }
             const values = dataset.map(v => v[2]);
             if (!outlier) {
-                // Get the orgin data range.
+                // Get the origin data range.
                 return {
                     min: Math.min(...values) ?? 0,
                     max: Math.max(...values) ?? 0
@@ -97,32 +115,23 @@ export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: bo
     }
 };
 
-export const nearestPoint = (data: Dataset[], runs: Run[], step: number) =>
-    data.map((series, index) => {
-        let nearestItem;
-        if (step === 0) {
-            nearestItem = series[0];
-        } else {
-            for (let i = 0; i < series.length; i++) {
-                const item = series[i];
-                if (item[1] === step) {
-                    nearestItem = item;
-                    break;
-                }
-                if (item[1] > step) {
-                    nearestItem = series[i - 1 >= 0 ? i - 1 : 0];
-                    break;
-                }
-                if (!nearestItem) {
-                    nearestItem = series[series.length - 1];
-                }
+export const nearestPoint = (data: Dataset[], runs: Run[], idx: number, value: number) => {
+    const result: {run: Run; item: Dataset[number]}[] = [];
+    data.forEach((series, index) => {
+        const run = runs[index];
+        let d = Number.POSITIVE_INFINITY;
+        let dv = value;
+        for (let i = 0; i < series.length; i++) {
+            const dd = Math.abs(series[i][idx] - value);
+            if (d > dd) {
+                d = dd;
+                dv = series[i][idx];
             }
         }
-        return {
-            run: runs[index],
-            item: nearestItem || [0, 0, 0, 0, 0]
-        };
+        result.push(...series.filter(s => s[idx] === dv).map(item => ({run, item})));
     });
+    return result;
+};
 
 export const parseSmoothing = (value: unknown) => {
     const parsedValue = Number.parseFloat(String(value));

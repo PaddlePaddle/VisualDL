@@ -2,7 +2,7 @@
 pub struct Dataset(f64, i64, f64);
 
 #[derive(Serialize, Deserialize)]
-pub struct Smoothed(i64, i64, f64, f64, f64);
+pub struct Smoothed(i64, i64, f64, f64, i64);
 
 #[derive(Serialize, Deserialize)]
 pub struct Range {
@@ -44,7 +44,7 @@ pub fn transform(datasets: &Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smooth
         let mut num_accum: i32 = 0;
         let mut start_value: i64 = 0;
         for (i, d) in dataset.iter().enumerate() {
-            let mut r: Smoothed = Smoothed(0, d.1, d.2, 0.0, 0.0);
+            let mut r: Smoothed = Smoothed(0, d.1, d.2, 0.0, 0);
             let next_val: f64 = d.2;
             // second to millisecond.
             let millisecond: i64 = d.0.floor() as i64;
@@ -52,8 +52,8 @@ pub fn transform(datasets: &Vec<Vec<Dataset>>, smoothing: f64) -> Vec<Vec<Smooth
             if i == 0 {
                 start_value = millisecond;
             }
-            // Relative time, millisecond to hours.
-            r.4 = ((millisecond - start_value) as f64) / (60 * 60 * 1000) as f64;
+            // Relative time in millisecond.
+            r.4 = millisecond - start_value;
             if next_val.is_infinite() {
                 r.3 = next_val;
             } else {
@@ -122,7 +122,7 @@ pub fn axis_range(datasets: &Vec<Vec<Smoothed>>, outlier: bool) -> Range {
     if ranges.len() != 0 {
         min = ranges
             .iter()
-            .min_by(|x, y| x.min.partial_cmp(&y.max).unwrap())
+            .min_by(|x, y| x.min.partial_cmp(&y.min).unwrap())
             .unwrap()
             .min;
         max = ranges

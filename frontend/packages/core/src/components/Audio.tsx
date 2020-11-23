@@ -48,7 +48,7 @@ const Container = styled.div`
         cursor: pointer;
         ${transitionProps('color')}
 
-        &.volumn {
+        &.volume {
             font-size: ${rem(20)};
             ${size(rem(20), rem(20))}
         }
@@ -80,7 +80,7 @@ const Container = styled.div`
     }
 `;
 
-const VolumnSlider = styled(Slider)`
+const VolumeSlider = styled(Slider)`
     margin: ${rem(15)} ${rem(18)};
     width: ${rem(4)};
     height: ${rem(100)};
@@ -170,7 +170,7 @@ const Audio: FunctionComponent<AudioProps & WithStyled> = ({
     const [duration, setDuration] = useState('00:00');
     const [decoding, setDecoding] = useState(false);
     const [playing, setPlaying] = useState(false);
-    const [volumn, setVolumn] = useState(100);
+    const [volume, setVolume] = useState(100);
     const [playAfterSeek, setPlayAfterSeek] = useState(false);
 
     const play = useCallback(() => player.current?.play(), []);
@@ -199,7 +199,7 @@ const Audio: FunctionComponent<AudioProps & WithStyled> = ({
     const toggleMute = useCallback(() => {
         if (player.current) {
             player.current.toggleMute();
-            setVolumn(player.current.volumn);
+            setVolume(player.current.volume);
         }
     }, []);
 
@@ -228,9 +228,9 @@ const Audio: FunctionComponent<AudioProps & WithStyled> = ({
 
     useEffect(() => {
         if (player.current) {
-            player.current.volumn = volumn;
+            player.current.volume = volume;
         }
-    }, [volumn]);
+    }, [volume]);
 
     useEffect(() => {
         let p: AudioPlayer | null = null;
@@ -269,15 +269,15 @@ const Audio: FunctionComponent<AudioProps & WithStyled> = ({
         };
     }, [data, startTimer, stopTimer, onLoading, onLoad, audioContext]);
 
-    const volumnIcon = useMemo(() => {
-        if (volumn === 0) {
+    const volumeIcon = useMemo(() => {
+        if (volume === 0) {
             return 'mute';
         }
-        if (volumn <= 50) {
-            return 'volumn-low';
+        if (volume <= 50) {
+            return 'volume-low';
         }
-        return 'volumn';
-    }, [volumn]);
+        return 'volume';
+    }, [volume]);
 
     if (loading) {
         return <SyncLoader color={primaryColor} size="15px" />;
@@ -313,18 +313,18 @@ const Audio: FunctionComponent<AudioProps & WithStyled> = ({
                 interactive
                 hideOnClick={false}
                 content={
-                    <VolumnSlider
-                        value={volumn}
+                    <VolumeSlider
+                        value={volume}
                         min={0}
                         max={100}
                         step={1}
-                        onChange={setVolumn}
+                        onChange={setVolume}
                         orientation="vertical"
                     />
                 }
             >
-                <a className="control volumn" onClick={toggleMute}>
-                    <Icon type={volumnIcon} />
+                <a className="control volume" onClick={toggleMute}>
+                    <Icon type={volumeIcon} />
                 </a>
             </Tippy>
         </Container>
