@@ -183,7 +183,7 @@ export const tooltip = (data: TooltipData[], stepLength: number, i18n: typeof I1
             valueFormatter(min ?? Number.NaN),
             valueFormatter(max ?? Number.NaN),
             formatTime(item[0], i18n.language),
-            humanizeDuration(item[4] * 60 * 60 * 1000)
+            humanizeDuration(item[4])
         ])
     };
 };

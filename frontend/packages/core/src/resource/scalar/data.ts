@@ -39,8 +39,8 @@ export const transform = ({datasets, smoothing}: {datasets: ScalarDataset[]; smo
             if (i === 0) {
                 startValue = millisecond;
             }
-            // relative time, millisecond to hours.
-            d[4] = Math.floor(millisecond - startValue) / (60 * 60 * 1000);
+            // relative time in millisecond.
+            d[4] = Math.floor(millisecond - startValue);
             if (!nextVal.isFinite()) {
                 d[3] = nextVal.toNumber();
             } else {
@@ -83,8 +83,8 @@ export const range = ({datasets}: {datasets: Dataset[]}) => {
 export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: boolean}) => {
     const ranges = compact(
         datasets?.map(dataset => {
-            if (dataset.length == 0) {
-                return;
+            if (dataset.length === 0) {
+                return void 0;
             }
             const values = dataset.map(v => v[2]);
             if (!outlier) {
