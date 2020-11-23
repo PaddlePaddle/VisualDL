@@ -1,6 +1,22 @@
+/**
+ * Copyright 2020 Baidu Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 interface AudioPlayerOptions {
     context?: AudioContext;
-    volumn?: number;
+    volume?: number;
     onplay?: () => void;
     onstop?: () => void;
 }
@@ -17,7 +33,7 @@ export class AudioPlayer {
     private stopAt = 0;
     private offset = 0;
 
-    private toggleVolumn = 100;
+    private toggleVolume = 100;
 
     public playing = false;
 
@@ -44,10 +60,10 @@ export class AudioPlayer {
         return this.decodedSampleRate;
     }
 
-    get volumn() {
+    get volume() {
         return this.gain.gain.value * 100;
     }
-    set volumn(value: number) {
+    set volume(value: number) {
         if (value > 100) {
             value = 100;
         } else if (value < 0) {
@@ -59,7 +75,7 @@ export class AudioPlayer {
     constructor(options?: AudioPlayerOptions) {
         this.options = {
             context: options?.context ?? new AudioContext(),
-            volumn: 100,
+            volume: 100,
             onplay: () => void 0,
             onstop: () => void 0,
             ...options
@@ -67,7 +83,7 @@ export class AudioPlayer {
         this.contextFromOptions = !!options?.context;
         this.context = this.options.context;
         this.gain = this.context.createGain();
-        this.volumn = this.options.volumn;
+        this.volume = this.options.volume;
     }
 
     private reset() {
@@ -208,11 +224,11 @@ export class AudioPlayer {
     }
 
     toggleMute() {
-        if (this.volumn === 0) {
-            this.volumn = this.toggleVolumn || 100;
+        if (this.volume === 0) {
+            this.volume = this.toggleVolume || 100;
         } else {
-            this.toggleVolumn = this.volumn;
-            this.volumn = 0;
+            this.toggleVolume = this.volume;
+            this.volume = 0;
         }
     }
 

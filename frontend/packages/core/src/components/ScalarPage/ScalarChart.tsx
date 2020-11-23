@@ -201,7 +201,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const series: Dataset[number] = Array.isArray(params) ? params[0].data : params.data;
-            const points = nearestPoint(smoothedDatasets ?? [], runs, series[1]).map((point, index) => ({
+            const idx = xAxisMap[xAxis];
+            const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map((point, index) => ({
                 ...point,
                 ...datasetRanges?.[index]
             }));
@@ -212,7 +213,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 <TooltipTable run={t('common:runs')} runs={sorted.map(i => i.run)} columns={columns} data={data} />
             );
         },
-        [smoothedDatasets, datasetRanges, runs, sortingMethod, maxStepLength, t, i18n]
+        [smoothedDatasets, datasetRanges, runs, sortingMethod, xAxis, maxStepLength, t, i18n]
     );
 
     const options = useMemo(
