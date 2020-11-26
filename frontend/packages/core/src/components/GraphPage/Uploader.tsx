@@ -22,16 +22,16 @@ import Icon from '~/components/Icon';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
-const DropZone = styled.div<{actived: boolean}>`
+const DropZone = styled.div<{active: boolean}>`
     ${props =>
         sameBorder({
             width: '1px',
             type: 'dashed',
             radius: em(16),
-            color: props.actived ? 'var(--primary-color)' : undefined
+            color: props.active ? 'var(--primary-color)' : undefined
         })}
     background-color: ${props =>
-        props.actived ? 'var(--graph-uploader-active-background-color)' : 'var(--graph-uploader-background-color)'};
+        props.active ? 'var(--graph-uploader-active-background-color)' : 'var(--graph-uploader-background-color)'};
     ${size('43.2%', '68%')}
     display: flex;
     flex-direction: column;
@@ -82,12 +82,12 @@ type UploaderProps = {
 const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}) => {
     const {t} = useTranslation('graph');
 
-    const [actived, setActived] = useState(false);
+    const [active, setActive] = useState(false);
     const onClick = useCallback(() => onClickUpload?.(), [onClickUpload]);
     const onDrop = useCallback(
         (e: React.DragEvent<HTMLDivElement>) => {
             e.preventDefault();
-            setActived(false);
+            setActive(false);
             if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
                 onDropFiles?.(e.dataTransfer.files);
             }
@@ -99,16 +99,16 @@ const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}
         if (e.currentTarget.contains(e.relatedTarget as Node | null)) {
             return;
         }
-        setActived(false);
+        setActive(false);
     }, []);
 
     return (
         <>
             <DropZone
-                actived={actived}
+                active={active}
                 onDrop={onDrop}
                 onDragOver={e => e.preventDefault()}
-                onDragEnter={() => setActived(true)}
+                onDragEnter={() => setActive(true)}
                 onDragLeave={onDragLeave}
             >
                 <Icon type="upload" className="upload-icon" />

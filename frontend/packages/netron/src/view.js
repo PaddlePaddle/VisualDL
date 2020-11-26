@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words grapher selectall nodesep ranksep rankdir pbtxt
+
 const zip = require('netron/src/zip');
 const gzip = require('netron/src/gzip');
 const tar = require('netron/src/tar');
@@ -1337,7 +1339,7 @@ view.ModelFactoryService = class {
 
     _filter(context) {
         const identifier = context.identifier.toLowerCase();
-        const list = this._extensions.filter(entry => identifier.endsWith(entry.extension)).map(extry => extry.id);
+        const list = this._extensions.filter(entry => identifier.endsWith(entry.extension)).map(entry => entry.id);
         return Array.from(new Set(list));
     }
 
@@ -1347,6 +1349,7 @@ view.ModelFactoryService = class {
             return Promise.reject(new ModelError('File has no content.', true));
         }
         const list = [
+            // cSpell:disable
             {name: 'ELF executable', value: /^\x7FELF/},
             {name: 'Git LFS header', value: /^version https:\/\/git-lfs.github.com\/spec\/v1\n/},
             {name: 'Git LFS header', value: /^oid sha256:/},
@@ -1358,6 +1361,7 @@ view.ModelFactoryService = class {
             {name: 'StringIntLabelMapProto data', value: /^item\s*{\r?\n\s*id:/},
             {name: 'StringIntLabelMapProto data', value: /^item\s*{\r?\n\s*name:/},
             {name: 'Python source code', value: /^\s*import sys, types, os;/}
+            // cSpell:enable
         ];
         const text = new TextDecoder().decode(buffer.subarray(0, Math.min(1024, buffer.length)));
         for (const item of list) {

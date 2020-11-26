@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words strs
+
 import React, {FunctionComponent, useCallback} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
 import {borderRadius, em, transitionProps} from '~/utils/style';

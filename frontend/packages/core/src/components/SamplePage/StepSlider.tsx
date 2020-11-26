@@ -47,7 +47,8 @@ const Label = styled.div`
             font-size: ${em(10)};
 
             > a {
-                display: inline-blcok;
+                display: inline-block;
+                cursor: pointer;
                 line-height: 1;
                 height: ${em(14)};
 
@@ -112,10 +113,10 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeCompl
                     <div>{`${t('sample:step')}: ${steps[step] ?? '...'}`}</div>
                     <Tippy placement="right" theme="tooltip" content={t('sample:step-tip')}>
                         <div className="step-buttons">
-                            <a href="javascript:void(0)" onClick={prevStep}>
+                            <a onClick={prevStep}>
                                 <Icon type="chevron-up" />
                             </a>
-                            <a href="javascript:void(0)" onClick={nextStep}>
+                            <a onClick={nextStep}>
                                 <Icon type="chevron-down" />
                             </a>
                         </div>

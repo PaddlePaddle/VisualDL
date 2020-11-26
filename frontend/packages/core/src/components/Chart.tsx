@@ -45,7 +45,7 @@ type ChartProps = {
 
 const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, width, height, className, children}) => {
     const [maximized, setMaximized] = useState(false);
-    const toggleMaximze = useCallback(
+    const toggleMaximize = useCallback(
         (id: symbol, value: boolean) => {
             if (id === cid) {
                 setMaximized(value);
@@ -54,11 +54,11 @@ const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, width, height, 
         [cid]
     );
     useEffect(() => {
-        ee.on('toggle-chart-size', toggleMaximze);
+        ee.on('toggle-chart-size', toggleMaximize);
         return () => {
-            ee.off('toggle-chart-size', toggleMaximze);
+            ee.off('toggle-chart-size', toggleMaximize);
         };
-    }, [toggleMaximze]);
+    }, [toggleMaximize]);
 
     return (
         <Div

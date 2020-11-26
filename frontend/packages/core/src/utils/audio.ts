@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words mpga
+
 interface AudioPlayerOptions {
     context?: AudioContext;
     volume?: number;

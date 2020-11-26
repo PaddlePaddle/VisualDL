@@ -76,10 +76,10 @@ const Wrapper = styled.div`
 type ArgumentProps = {
     value: ArgumentType | PropertyType;
     expand?: boolean;
-    showNodeDodumentation?: () => unknown;
+    showNodeDocumentation?: () => unknown;
 };
 
-const Argument: FunctionComponent<ArgumentProps> = ({value, expand, showNodeDodumentation}) => {
+const Argument: FunctionComponent<ArgumentProps> = ({value, expand, showNodeDocumentation}) => {
     const [expanded, setExpanded] = useState(expand ?? false);
 
     const expandable = useMemo(() => {
@@ -105,7 +105,7 @@ const Argument: FunctionComponent<ArgumentProps> = ({value, expand, showNodeDodu
                     )}
                 </span>
                 {(value as PropertyType).documentation && (
-                    <a className="argument-operation" onClick={() => showNodeDodumentation?.()}>
+                    <a className="argument-operation" onClick={() => showNodeDocumentation?.()}>
                         <Icon type="question-circle" />
                     </a>
                 )}

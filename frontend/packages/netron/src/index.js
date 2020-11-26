@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words actived nextcode
+
 const view = require('./view');
 
 const host = {};

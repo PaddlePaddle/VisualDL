@@ -301,7 +301,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         return null;
     }, [viewed, loading, error, data, step, entityProps, t, content]);
 
-    const Previewer = useMemo(() => {
+    const Previewer = useMemo<React.ReactNode>(() => {
         if (!previewer) {
             return null;
         }
