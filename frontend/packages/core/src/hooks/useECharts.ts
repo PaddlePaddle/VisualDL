@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words zlevel
+
 import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {position, primaryColor, size} from '~/utils/style';
 

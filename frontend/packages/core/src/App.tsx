@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words pageview inited
+
 import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo, useState} from 'react';
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';

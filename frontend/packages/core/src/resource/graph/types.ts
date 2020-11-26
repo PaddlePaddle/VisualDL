@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words strs
+
 export type Property = {
     name?: string;
     value: string;

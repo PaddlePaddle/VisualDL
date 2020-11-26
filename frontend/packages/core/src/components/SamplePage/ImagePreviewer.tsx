@@ -61,7 +61,7 @@ const Header = styled.div`
             font-size: ${em(10)};
 
             > a {
-                display: inline-blcok;
+                display: inline-block;
                 line-height: 1;
                 height: ${em(14)};
 

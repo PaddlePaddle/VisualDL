@@ -24,19 +24,19 @@ import {useTranslation} from 'react-i18next';
 type NodePropertiesSidebarProps = {
     data?: PropertiesType | null;
     onClose?: () => unknown;
-    showNodeDodumentation?: () => unknown;
+    showNodeDocumentation?: () => unknown;
 };
 
 const NodePropertiesSidebar: FunctionComponent<NodePropertiesSidebarProps> = ({
     data,
     onClose,
-    showNodeDodumentation
+    showNodeDocumentation
 }) => {
     const {t} = useTranslation('graph');
 
     return (
         <GraphSidebar title={t('graph:node-properties')} onClose={onClose}>
-            <Properties {...data} showNodeDodumentation={showNodeDodumentation} />
+            <Properties {...data} showNodeDocumentation={showNodeDocumentation} />
         </GraphSidebar>
     );
 };

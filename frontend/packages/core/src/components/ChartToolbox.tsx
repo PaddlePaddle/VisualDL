@@ -65,10 +65,10 @@ type ToggleChartToolboxItem = {
     onClick?: (value: boolean) => unknown;
 } & BaseChartToolboxItem;
 
-export type ChartTooboxItem = NormalChartToolboxItem | ToggleChartToolboxItem;
+export type ChartToolboxItem = NormalChartToolboxItem | ToggleChartToolboxItem;
 
 type ChartToolboxProps = {
-    items: ChartTooboxItem[];
+    items: ChartToolboxItem[];
     reversed?: boolean;
     tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right';
 };
@@ -98,7 +98,7 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
     );
 
     const getToolboxItem = useCallback(
-        (item: ChartTooboxItem, index: number) => (
+        (item: ChartToolboxItem, index: number) => (
             <ToolboxItem
                 key={index}
                 active={item.toggle && !item.activeIcon && activeStatus[index]}

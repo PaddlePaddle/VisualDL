@@ -30,10 +30,10 @@ const Header = styled.div`
 
 type PropertiesProps = PropertiesType & {
     expand?: boolean;
-    showNodeDodumentation?: () => unknown;
+    showNodeDocumentation?: () => unknown;
 };
 
-const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, expand, showNodeDodumentation}) => {
+const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, expand, showNodeDocumentation}) => {
     const {t} = useTranslation('graph');
 
     return (
@@ -43,7 +43,7 @@ const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, exp
                     name={t(`graph:properties.${property.name}`)}
                     values={property.values}
                     key={index}
-                    showNodeDodumentation={showNodeDodumentation}
+                    showNodeDocumentation={showNodeDocumentation}
                 />
             ))}
             {groups?.map((group, index) => (
@@ -54,7 +54,7 @@ const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, exp
                             {...property}
                             key={anotherIndex}
                             expand={expand}
-                            showNodeDodumentation={showNodeDodumentation}
+                            showNodeDocumentation={showNodeDocumentation}
                         />
                     ))}
                 </React.Fragment>

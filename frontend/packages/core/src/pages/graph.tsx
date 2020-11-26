@@ -115,7 +115,7 @@ const Graph: FunctionComponent = () => {
 
     useEffect(() => {
         if (data?.data.size) {
-            setFiles([new File([data.data], data.filename || 'unknwon_model')]);
+            setFiles([new File([data.data], data.filename || 'unknown_model')]);
         }
     }, [data]);
 
@@ -185,7 +185,7 @@ const Graph: FunctionComponent = () => {
                     <NodePropertiesSidebar
                         data={nodeData}
                         onClose={() => setNodeData(null)}
-                        showNodeDodumentation={() => graph.current?.showNodeDocumentation(nodeData)}
+                        showNodeDocumentation={() => graph.current?.showNodeDocumentation(nodeData)}
                     />
                 </Aside>
             );

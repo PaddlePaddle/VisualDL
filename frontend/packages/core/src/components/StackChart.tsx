@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words coord zlevel
+
 import * as chart from '~/utils/chart';
 
 import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';

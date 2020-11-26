@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words npts
+
 import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';
 import type {HistogramData, OffsetData, OverlayData, OverlayDataItem} from '~/resource/histogram';
 import LineChart, {LineChartRef} from '~/components/LineChart';

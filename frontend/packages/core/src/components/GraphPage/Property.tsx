@@ -49,10 +49,10 @@ const Wrapper = styled.div`
 
 type PropertyProps = NameValues<ArgumentType | PropertyType> & {
     expand?: boolean;
-    showNodeDodumentation?: () => unknown;
+    showNodeDocumentation?: () => unknown;
 };
 
-const Property: FunctionComponent<PropertyProps> = ({name, values, expand, showNodeDodumentation}) => {
+const Property: FunctionComponent<PropertyProps> = ({name, values, expand, showNodeDocumentation}) => {
     return (
         <Wrapper>
             <label className="property-name" title={name}>
@@ -60,7 +60,7 @@ const Property: FunctionComponent<PropertyProps> = ({name, values, expand, showN
             </label>
             <div className="property-values">
                 {values.map((value, index) => (
-                    <Argument key={index} value={value} expand={expand} showNodeDodumentation={showNodeDodumentation} />
+                    <Argument key={index} value={value} expand={expand} showNodeDocumentation={showNodeDocumentation} />
                 ))}
             </div>
         </Wrapper>

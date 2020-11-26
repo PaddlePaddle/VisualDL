@@ -45,14 +45,14 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     }
 `;
 
-type CustomeInputProps = {
+type CustomInputProps = {
     rounded?: boolean;
     value?: string;
     onChange?: (value: string) => unknown;
 };
 
-export type InputProps = Omit<React.ComponentPropsWithoutRef<'input'>, keyof CustomeInputProps | 'type' | 'className'> &
-    CustomeInputProps;
+export type InputProps = Omit<React.ComponentPropsWithoutRef<'input'>, keyof CustomInputProps | 'type' | 'className'> &
+    CustomInputProps;
 
 const Input = React.forwardRef<HTMLInputElement, InputProps & WithStyled>(
     ({rounded, value, onChange, className, ...props}, ref) => (

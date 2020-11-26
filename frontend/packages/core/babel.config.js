@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cSpell:words esmodules
+
 module.exports = {
     extends: '@snowpack/app-scripts-react/babel.config.json',
     presets: [
