@@ -22,9 +22,14 @@ VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变
 
 VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
-VisualDL支持浏览器种类：Chrome（81和83）、Safari 13、FireFox（77和78）、Edge（Chromium版）。
+VisualDL支持浏览器：
 
-VisualDL原生支持python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
+- Google Chrome ≥ 79
+- Firefox ≥ 67
+- Microsoft Edge ≥ 79
+- Safari ≥ 11.1
+
+VisualDL原生支持Python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
 ## 目录
 
@@ -102,16 +107,16 @@ class LogWriter(logdir=None,
 
 #### 接口参数
 
-| 参数            | 格式    | 含义                                                         |
-| --------------- | ------- | ------------------------------------------------------------ |
+|      参数       |  格式   |                                                  含义                                                  |
+| --------------- | ------- | ------------------------------------------------------------------------------------------------------ |
 | logdir          | string  | 日志文件所在的路径，VisualDL将在此路径下建立日志文件并进行记录，如果不填则默认为`runs/${CURRENT_TIME}` |
-| comment         | string  | 为日志文件夹名添加后缀，如果制定了logdir则此项无效           |
-| max_queue       | int     | 日志记录消息队列的最大容量，达到此容量则立即写入到日志文件   |
-| flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件 |
-| filename_suffix | string  | 为默认的日志文件名添加后缀                                   |
-| write_to_disk   | boolean | 是否写入到磁盘                                               |
-| display_name    | string  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
-| file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，文件名必须包括`vdlrecords` |
+| comment         | string  | 为日志文件夹名添加后缀，如果制定了logdir则此项无效                                                     |
+| max_queue       | int     | 日志记录消息队列的最大容量，达到此容量则立即写入到日志文件                                             |
+| flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件                                         |
+| filename_suffix | string  | 为默认的日志文件名添加后缀                                                                             |
+| write_to_disk   | boolean | 是否写入到磁盘                                                                                         |
+| display_name    | string  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数                   |
+| file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，文件名必须包括`vdlrecords`     |
 
 #### 示例
 
@@ -137,21 +142,21 @@ with LogWriter(logdir="./log/scalar_test/train") as writer:
 使用命令行启动VisualDL面板，命令格式如下：
 
 ```python
-visualdl --logdir <dir_1, dir_2, ... , dir_n> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --model <model_file> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
 ```
 
 参数详情：
 
-|      参数       |                                                                                             意义                                                                                             |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化                                                                                     |
-| --model         | 设定模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2)            |
-| --host          | 设定IP，默认为`127.0.0.1`                                                                                                                                                                    |
-| --port          | 设定端口，默认为`8040`                                                                                                                                                                       |
-| --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒                                                                                                            |
-| --language      | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言                                                                                                                                   |
-| --public-path   | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                    |
-| --api-only      | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
+|      参数       |                                                                                                                                意义                                                                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化                                                                                                                                                           |
+| --model         | 设定模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2) |
+| --host          | 设定IP，默认为`127.0.0.1`                                                                                                                                                                                                                                          |
+| --port          | 设定端口，默认为`8040`                                                                                                                                                                                                                                             |
+| --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒                                                                                                                                                                                  |
+| --language      | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言                                                                                                                                                                                                         |
+| --public-path   | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                                                                              |
+| --api-only      | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api'                                         |
 
 针对上一步生成的日志，启动命令为：
 
@@ -165,6 +170,7 @@ visualdl --logdir ./log
 
 ```python
 visualdl.server.app.run(logdir,
+                        model="path/to/model",
                         host="127.0.0.1",
                         port=8080,
                         cache_timeout=20,
@@ -178,17 +184,17 @@ visualdl.server.app.run(logdir,
 
 接口参数具体如下：
 
-|     参数      |                       格式                       |                                                                                             含义                                                                                             |
-| ------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| logdir        | string或list[string_1, string_2, ... , string_n] | 日志文件所在的路径，VisualDL将在此路径下递归搜索日志文件并进行可视化，可指定单个或多个路径                                                                                                   |
-| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化                                                                                                   |
-| host          | string                                           | 指定启动服务的ip，默认为`127.0.0.1`                                                                                                                                                          |
-| port          | int                                              | 启动服务端口，默认为`8040`                                                                                                                                                                   |
-| cache_timeout | int                                              | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒                                                                                                            |
-| language      | string                                           | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言                                                                                                                                   |
-| public_path   | string                                           | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                    |
+|     参数      |                       格式                       |                                                                                                            含义                                                                                                            |
+| ------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| logdir        | string或list[string_1, string_2, ... , string_n] | 日志文件所在的路径，VisualDL将在此路径下递归搜索日志文件并进行可视化，可指定单个或多个路径                                                                                                                                 |
+| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化                                                                                                                                                     |
+| host          | string                                           | 指定启动服务的ip，默认为`127.0.0.1`                                                                                                                                                                                        |
+| port          | int                                              | 启动服务端口，默认为`8040`                                                                                                                                                                                                 |
+| cache_timeout | int                                              | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒                                                                                                                                          |
+| language      | string                                           | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言                                                                                                                                                                 |
+| public_path   | string                                           | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                                      |
 | api_only      | boolean                                          | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
-| open_browser  | boolean                                          | 是否打开浏览器，设置为True则在启动后自动打开浏览器并访问VisualDL面板，若设置api_only，则忽略此参数                                                                                           |
+| open_browser  | boolean                                          | 是否打开浏览器，设置为True则在启动后自动打开浏览器并访问VisualDL面板，若设置api_only，则忽略此参数                                                                                                                         |
 
 针对上一步生成的日志，我们的启动脚本为：
 
@@ -207,16 +213,17 @@ app.run(logdir="./log")
 ### 3. 使用LogReader获取日志中的数据
 
 VisualDL的后端也提供了获取日志数据的组件`LogReader`，可通过其获取日志中任意数据，接口如下：
+
 ```python
 class LogReader(logdir=None,
                 file_name='')
 ```
 #### 接口参数
 
-| 参数            | 格式    | 含义                                                         |
-| --------------- | ------- | ------------------------------------------------------------ |
-| logdir          | string  | 日志文件所在的路径，必填|
-| file_name       | string  | 指定要读的日志文件名，必填|
+|   参数    |  格式  |            含义            |
+| --------- | ------ | -------------------------- |
+| logdir    | string | 日志文件所在的路径，必填   |
+| file_name | string | 指定要读的日志文件名，必填 |
 
 #### 示例
 
@@ -229,7 +236,9 @@ reader = LogReader(logdir='./log', file_name='vdlrecords.1605533348.log')
 data = reader.get_data('scalar', 'loss')
 print(data)
 ```
+
 结果为列表形式，如下
+
 ```python
 ...
 id: 5
@@ -239,9 +248,7 @@ value: 3.1297709941864014
 ...
 ```
 
-关于LogReader的更多具体用法，可参考[LogReader](./docs/io/LogReader.md)
-
-
+关于LogReader的更多具体用法，可参考[LogReader](./docs/io/LogReader.md)。
 
 ## 可视化功能概览
 
