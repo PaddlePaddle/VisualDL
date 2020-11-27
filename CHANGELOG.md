@@ -6,6 +6,8 @@ This is the Changelog for the VisualDL 2.0 project.
 
 ## v2.0.5 - 2020-11-24
 
+**ZH**
+
 - 问题修复
     - **FE**: 修复histogram页面图表坐标轴名称会重复渲染的问题 (#824)
     - **FE**: 修复图表提示窗中表格内容过长的问题 (#829)
