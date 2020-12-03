@@ -23,7 +23,7 @@ export enum Pages {
     Audio = 'audio',
     Graph = 'graph',
     HighDimensional = 'high-dimensional',
-    PRCurve = 'pr-curve'
+    PRCurve = 'pr-curve',
     ROC_Curve = 'roc-curve'
 }
 
