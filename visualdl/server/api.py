@@ -112,6 +112,9 @@ class Api(object):
     @result()
     def pr_curve_tags(self):
         return self._get_with_retry('data/plugin/pr_curves/tags', lib.get_pr_curve_tags)
+    @result()
+    def roc_curve_tags(self):
+        return self._get_with_retry('data/plugin/roc_curves/tags', lib.get_roc_curve_tags)
 
     @result()
     def scalar_list(self, run, tag):
@@ -159,11 +162,18 @@ class Api(object):
     def pr_curves_pr_curve(self, run, tag):
         key = os.path.join('data/plugin/pr_curves/pr_curve', run, tag)
         return self._get_with_retry(key, lib.get_pr_curve, run, tag)
-
+    @result()
+    def roc_curves_roc_curve(self, run, tag):
+        key = os.path.join('data/plugin/roc_curves/roc_curve', run, tag)
+        return self._get_with_retry(key, lib.get_roc_curve, run, tag)
     @result()
     def pr_curves_steps(self, run):
         key = os.path.join('data/plugin/pr_curves/steps', run)
         return self._get_with_retry(key, lib.get_pr_curve_step, run)
+    @result()
+    def roc_curves_steps(self, run):
+        key = os.path.join('data/plugin/roc_curves/steps', run)
+        return self._get_with_retry(key, lib.get_roc_curve_step, run)
 
     @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
     def graph_graph(self):
@@ -184,6 +194,7 @@ def create_api_call(logdir, model, cache_timeout):
         'embedding/tags': (api.embedding_tags, []),
         'histogram/tags': (api.histogram_tags, []),
         'pr-curve/tags': (api.pr_curve_tags, []),
+        'roc-curve/tags': (api.roc_curve_tags, []),
         'scalar/list': (api.scalar_list, ['run', 'tag']),
         'image/list': (api.image_list, ['run', 'tag']),
         'image/image': (api.image_image, ['run', 'tag', 'index']),
@@ -193,7 +204,9 @@ def create_api_call(logdir, model, cache_timeout):
         'histogram/list': (api.histogram_list, ['run', 'tag']),
         'graph/graph': (api.graph_graph, []),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
+        'roc-curve/list': (api.roc_curves_roc_curve, ['run', 'tag']),
         'pr-curve/steps': (api.pr_curves_steps, ['run'])
+        'roc-curve/steps': (api.roc_curves_steps, ['run'])
     }
 
     def call(path: str, args):

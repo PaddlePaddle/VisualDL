@@ -24,6 +24,7 @@ export enum Pages {
     Graph = 'graph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve'
+    ROC_Curve = 'roc-curve'
 }
 
 export interface Route {
@@ -82,6 +83,11 @@ const routes: Route[] = [
         id: Pages.PRCurve,
         path: '/pr-curve',
         component: React.lazy(() => import('~/pages/pr-curve'))
+    },
+    {
+        id: Pages.ROC_Curve,
+        path: '/roc-curve',
+        component: React.lazy(() => import('~/pages/roc-curve'))
     }
 ];
 

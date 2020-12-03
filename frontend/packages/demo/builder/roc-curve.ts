@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-import type {RunsActionTypes, RunsState} from './types';
+import type {Data, Worker} from './types';
 
-import {ActionTypes} from './types';
+const worker: Worker = async io => {
+    const components = await io.getData<string[]>('/components');
+    if (!components.includes('roc_curve')) {
+        return;
+    }
 
-const initState: RunsState = {
-    scalar: [],
-    histogram: [],
-    image: [],
-    audio: [],
-    'pr-curve': []
-    'roc-curve': []
+    const {runs, tags} = await io.save<Data>('/roc-curve/tags');
+    for (const [index, run] of runs.entries()) {
+        await io.save('/roc-curve/steps', {run});
+        for (const tag of tags[index]) {
+            await io.save('/roc-curve/list', {run, tag});
+        }
+    }
 };
 
-function runsReducer(state = initState, action: RunsActionTypes): RunsState {
-    switch (action.type) {
-        case ActionTypes.SET_SELECTED_RUNS:
-            return {
-                ...state,
-                [action.page]: action.runs
-            };
-        default:
-            return state;
-    }
-}
-
-export default runsReducer;
+export default worker;

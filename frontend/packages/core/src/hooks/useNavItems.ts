@@ -28,7 +28,8 @@ export const navMap = {
     audio: Pages.Audio,
     graph: Pages.Graph,
     embeddings: Pages.HighDimensional,
-    pr_curve: Pages.PRCurve
+    pr_curve: Pages.PRCurve,
+    roc_curve: Pages.ROC_Curve
 } as const;
 
 const useNavItems = () => {

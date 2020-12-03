@@ -26,6 +26,7 @@ export interface RunsState {
     image: Runs;
     audio: Runs;
     'pr-curve': Runs;
+    'roc-curve': Runs;
 }
 
 export type Page = keyof RunsState;
