@@ -42,6 +42,7 @@ message Record {
     repeated double precision = 5;
     repeated double recall = 6;
   }
+  
   message ROC_Curve {
     repeated int64 TP = 1 [packed = true];
     repeated int64 FP = 2 [packed = true];
@@ -66,8 +67,8 @@ message Record {
       Embeddings embeddings = 7;
       Histogram histogram = 8;
       PRCurve pr_curve = 9;
-      ROC_Curve roc_curve = 10;
-      MetaData meta_data = 11;
+      MetaData meta_data = 10;
+      ROC_Curve roc_curve = 11;
     }
   }
 
