@@ -182,6 +182,8 @@ def get_pr_curve(log_reader, run, tag):
                         list(pr_curve.FN),
                         num_thresholds])
     return results
+ 
+    
 def get_roc_curve(log_reader, run, tag):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
@@ -214,6 +216,8 @@ def get_pr_curve_step(log_reader, run, tag=None):
         run, decode_tag(tag))
     results = [[s2ms(item.timestamp), item.id] for item in records]
     return results
+
+
 def get_roc_curve_step(log_reader, run, tag=None):
     fake_run = run
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
