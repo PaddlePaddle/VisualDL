@@ -205,7 +205,7 @@ def create_api_call(logdir, model, cache_timeout):
         'graph/graph': (api.graph_graph, []),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'roc-curve/list': (api.roc_curves_roc_curve, ['run', 'tag']),
-        'pr-curve/steps': (api.pr_curves_steps, ['run'])
+        'pr-curve/steps': (api.pr_curves_steps, ['run']),
         'roc-curve/steps': (api.roc_curves_steps, ['run'])
     }
 
