@@ -9,15 +9,13 @@ VisualDL可通过LogReader获取保存的日志中所有数据，帮助用户进
 
 LogReader的初始化接口如下：
 ```python
-class LogReader(logdir=None,
-                file_name='')
+class LogReader(file_name)
 ```
 #### 接口参数
 
 | 参数            | 格式    | 含义                                                         |
 | --------------- | ------- | ------------------------------------------------------------ |
-| logdir          | string  | 日志文件所在的路径，必填|
-| file_name       | string  | 指定要读的日志文件名，必填|
+| file_name       | string  | 指定要读的日志文件路径，必填|
 
 #### 示例
 
@@ -26,7 +24,7 @@ class LogReader(logdir=None,
 ```python
 from visualdl import LogReader
 
-reader = LogReader(logdir='./log', file_name='vdlrecords.1605533348.log')
+reader = LogReader(file_name='./log/vdlrecords.1605533348.log')
 ```
 
 ### 2. 获取所有数据的tag信息
