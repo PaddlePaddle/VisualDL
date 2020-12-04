@@ -495,8 +495,8 @@ def roc_curve_raw(tag, tp, fp, tn, fn, tpr, fpr, step, walltime):
                              FP=fp,
                              TN=tn,
                              FN=fn,
-                             precision=precision,
-                             recall=recall)
+                             tpr=tpr,
+                             fpr=fpr)
     return Record(values=[
         Record.Value(
             id=step, tag=tag, timestamp=walltime, roc_curve=roc_curve)
