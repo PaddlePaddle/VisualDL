@@ -19,7 +19,7 @@ from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
 from visualdl.server.data_manager import default_data_manager
 from visualdl.proto import record_pb2
-from visualdl.utils.string_util import decode_tag
+from visualdl.utils.string_util import decode_tag, encode_tag
 
 
 def is_VDLRecord_file(path):
@@ -102,14 +102,17 @@ class LogReader(object):
         component_keys = self._log_data.keys()
         log_tags = {}
         for key in component_keys:
-            log_tags[key] = list(self._log_data[key].keys())
+            _tags = list(self._log_data[key].keys())
+            tags = list(map(lambda x: encode_tag(x), _tags))
+            log_tags[key] = tags
+
         return log_tags
 
     def get_tags(self):
         return self._get_log_tags()
 
     def get_data(self, component, tag):
-        return self._log_data[component][tag]
+        return self._log_data[component][decode_tag(tag)]
 
     def parse_from_bin(self, record_bin):
         """Register to self._tags by component type.
