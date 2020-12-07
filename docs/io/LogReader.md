@@ -3,14 +3,14 @@
 ## 简介
 VisualDL可通过LogReader获取保存的日志中所有数据，帮助用户进行更详细的分析工作。
 
-## 使用方式
+## LogReader主要方法说明
 
-### 1. 获取LogReader实例
+### __init__(file_name)
 
-LogReader的初始化接口如下：
-```python
-class LogReader(file_name)
-```
+#### 功能
+
+初始化一个LogReader实例，用于读取指定日志的内容。
+
 #### 接口参数
 
 | 参数            | 格式    | 含义                                                         |
@@ -27,28 +27,53 @@ from visualdl import LogReader
 reader = LogReader(file_name='./log/vdlrecords.1605533348.log')
 ```
 
-### 2. 获取所有数据的tag信息
-通过接口`tags()`可获取LogReader实例对应日志中的所有数据tag信息，如下：
+### get_tags()
+
+#### 功能
+
+获取日志中所有记录的组件及其包括的tag
+
+#### 接口参数
+
+无
+
+#### 示例
+
 ```python
-tags = reader.tags()
+tags = reader.get_tags()
 ```
-结果如下，格式为`${file_name}/${tag}:${component_name}`
+结果如下，格式为`{component_name1: [tag1, tag2,  ... tagn], component_name2: [tag1, tag2,  ... tagn]}`
 ```python
-{'vdlrecords.1605533348.log/meta_data_tag': 'meta_data', 'vdlrecords.1605533348.log/Metrics%Training(Step): loss': 'scalar', 'vdlrecords.1605533348.log/Metrics%Training(Step): acc1': 'scalar', 'vdlrecords.1605533348.log/Metrics%Training(Step): acc5': 'scalar', 'vdlrecords.1605533348.log/Metrics%Training(Step): lr': 'scalar', 'vdlrecords.1605533348.log/Metrics%Eval(Epoch): acc1': 'scalar', 'vdlrecords.1605533348.log/Metrics%Eval(Epoch): acc5': 'scalar'}
+# 这表示日志中有两个组件，分别是默认的`meta_data`和含有两个tag的`scalar`
+{'meta_data': ['meta_data_tag'], 'scalar': ['tag/train', 'tag/test']}
 ```
 
-### 3. 获取某tag对应的数据
-通过接口`get_data(component, tag)`可获取某组件某tag对应的所有数据，例如：
+### get_data(component, tag)
+
+#### 功能
+
+获取指定component（如`scalar`、`image`等）下某个tag的所有数据，返回值为一个列表
+
+#### 接口参数
+
+| 参数            | 格式    | 含义                                                         |
+| --------------- | ------- | ------------------------------------------------------------ |
+| component       | string  | 指定要读取的组件类型，可以为`scalar`、`image`等|
+| tag       | string  | 指定要读取的tag|
+
+#### 示例
+
+假设要获取tag为`tag/test`的数据，则代码如下：
 ```python
-# 获取scalar组件tag为`Metrics%Training(Step): loss`的数据
-data = reader.get_data('scalar', 'Metrics%Training(Step): loss')
+data = reader.get_data('scalar', 'tag/test')
 ```
 结果为列表形式，如下
 ```python
 ...
 id: 5
-tag: "Metrics/Training(Step): loss"
+tag: "Metrics/Training(Step): tag%test"
 timestamp: 1605533356039
 value: 3.1297709941864014
 ...
 ```
+PS：为了兼容前端URL请求，此处的%是由/替换生成，不影响数据本身
