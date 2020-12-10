@@ -11,6 +11,8 @@
     },
     "loading": {
         "calculating": "计算中……",
+        "fetching-metadata": "获取元数据中……",
+        "fetching-tensor": "获取数据中……",
         "parsing": "解析数据中……",
         "reading-metadata": "读取元数据中……",
         "reading-vector": "读取数据中……"

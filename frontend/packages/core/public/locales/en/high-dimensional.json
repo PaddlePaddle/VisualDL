@@ -11,6 +11,8 @@
     },
     "loading": {
         "calculating": "Calculating...",
+        "fetching-metadata": "Fetching metadata...",
+        "fetching-tensor": "Fetching tensor...",
         "parsing": "Parsing data...",
         "reading-metadata": "Reading metadata...",
         "reading-vector": "Reading tensor..."
