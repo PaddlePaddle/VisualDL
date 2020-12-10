@@ -1,4 +1,5 @@
-[**中文**](./README.md)
+[**中文**](./README_CN.md)
+
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/PaddlePaddle/VisualDL/develop/frontend/packages/core/public/images/logo-visualdl.svg?sanitize=true" width="70%"/>
