@@ -5,7 +5,7 @@ VisualDL可通过LogReader获取保存的日志中所有数据，帮助用户进
 
 ## LogReader主要方法说明
 
-### __init__(file_name)
+### __init__(file_path)
 
 #### 功能
 
@@ -15,7 +15,7 @@ VisualDL可通过LogReader获取保存的日志中所有数据，帮助用户进
 
 | 参数            | 格式    | 含义                                                         |
 | --------------- | ------- | ------------------------------------------------------------ |
-| file_name       | string  | 指定要读的日志文件路径，必填|
+| file_path       | string  | 指定要读的日志文件路径，必填，注意这里与file_name不同，需填写具体路径|
 
 #### 示例
 
@@ -24,7 +24,7 @@ VisualDL可通过LogReader获取保存的日志中所有数据，帮助用户进
 ```python
 from visualdl import LogReader
 
-reader = LogReader(file_name='./log/vdlrecords.1605533348.log')
+reader = LogReader(file_path='./log/vdlrecords.1605533348.log')
 ```
 
 ### get_tags()
