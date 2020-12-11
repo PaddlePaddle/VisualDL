@@ -23,6 +23,7 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 type WorkerResult<D, E extends Error> = {
     data?: D;
     error?: E;
+    worker?: WebWorker;
 };
 
 const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params: P): WorkerResult<D, E> => {
@@ -33,11 +34,11 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
     useEffect(() => {
         const worker = new WebWorker(`${PUBLIC_PATH}/_dist_/worker/${name}.js`, {type: 'module'});
         worker.on('INITIALIZED', () => {
-            setResult({});
+            setResult({worker});
             worker.emit('RUN', p);
         });
-        worker.on<D>('RESULT', data => setResult({data}));
-        worker.on<E>('ERROR', error => setResult({error}));
+        worker.on<D>('RESULT', data => setResult({data, worker}));
+        worker.on<E>('ERROR', error => setResult({error, worker}));
         return () => {
             worker.terminate();
         };

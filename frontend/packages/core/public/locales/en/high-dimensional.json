@@ -1,6 +1,7 @@
 {
     "3d-label": "Enable/disable 3D labels mode",
     "component": "Component #{{index}}",
+    "continue": "Resume",
     "data": "Data",
     "data-dimension": "Types",
     "data-path": "Data Path",
@@ -9,6 +10,8 @@
         "2d": "2D",
         "3d": "3D"
     },
+    "iteration": "Iteration",
+    "learning-rate": "Learning rate",
     "loading": {
         "calculating": "Calculating...",
         "fetching-metadata": "Fetching metadata...",
@@ -17,7 +20,9 @@
         "reading-metadata": "Reading metadata...",
         "reading-vector": "Reading tensor..."
     },
+    "pause": "Pause",
     "pca": "PCA",
+    "perplexity": "Perplexity",
     "points": "Points",
     "reduction-value": {
         "pca": "PCA",

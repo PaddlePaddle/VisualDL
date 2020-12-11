@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-export type {Dimension, Reduction, PcaParams, PcaResult, Vectors, ParseParams, ParseResult} from './types';
+export type {
+    Dimension,
+    Reduction,
+    PcaParams,
+    PCAResult,
+    Vectors,
+    ParseParams,
+    ParseResult,
+    TSNEParams,
+    TSNEResult
+} from './types';
 
 export {parseFromBlob, parseFromString, ParserError} from './parser';
+
+export {default as tSNE} from './tsne';

@@ -16,7 +16,7 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Dimension, Reduction} from '~/resource/high-dimensional';
-import type {ParseParams, ParseResult, PcaResult} from '~/resource/high-dimensional';
+import type {PCAResult, ParseParams, ParseResult, TSNEResult} from '~/resource/high-dimensional';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 
@@ -28,10 +28,11 @@ import DimensionSwitch from '~/components/HighDimensionalPage/DimensionSwitch';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
 import HighDimensionalChart from '~/components/HighDimensionalPage/HighDimensionalChart';
+import PCADetail from '~/components/HighDimensionalPage/PCADetail';
 import ReductionTab from '~/components/HighDimensionalPage/ReductionTab';
+import TSNEDetail from '~/components/HighDimensionalPage/TSNEDetail';
 import Title from '~/components/Title';
 import UploadDialog from '~/components/HighDimensionalPage/UploadDialog';
-import {format} from 'd3-format';
 import queryString from 'query-string';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
@@ -39,8 +40,6 @@ import {toast} from 'react-toastify';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 import useWorker from '~/hooks/useWorker';
-
-const formatRatio = format('.2%');
 
 const AsideTitle = styled.div`
     font-size: ${rem(16)};
@@ -57,12 +56,12 @@ const FullWidthButton = styled(Button)`
     width: 100%;
 `;
 
-const AsideTip = styled.div`
-    color: var(--text-light-color);
-`;
-
 const RightAside = styled(Aside)`
     border-left: 1px solid var(--border-color);
+
+    .secondary {
+        color: var(--text-light-color);
+    }
 `;
 
 const LeftAside = styled(Aside)`
@@ -71,10 +70,6 @@ const LeftAside = styled(Aside)`
 
 const HDContent = styled(Content)`
     background-color: var(--background-color);
-`;
-
-const PCADetail = styled(Field)`
-    line-height: 2.4;
 `;
 
 type EmbeddingInfo = {
@@ -228,23 +223,47 @@ const HighDimensional: FunctionComponent = () => {
 
     const is3D = useMemo(() => dimension === '3d', [dimension]);
 
-    const [pcaData, setPcaData] = useState({
-        variance: ['--', '--', '--'],
-        totalVariance: '--'
-    });
+    const [data, setData] = useState<PCAResult | TSNEResult>();
 
-    const calculate = useCallback(() => setLoadingPhase('calculating'), []);
-    const calculated = useCallback(
-        (data: PcaResult) => {
-            const variance = data.variance.slice(0, is3D ? 3 : 2);
-            setPcaData({
-                variance: variance.map(formatRatio),
-                totalVariance: formatRatio(variance.reduce((s, c) => s + c, 0))
-            });
-            setLoading(false);
-        },
-        [is3D]
-    );
+    const calculate = useCallback(() => {
+        setData(undefined);
+        setLoadingPhase('calculating');
+    }, []);
+    const calculated = useCallback((data: PCAResult | TSNEResult) => {
+        setData(data);
+        setLoading(false);
+    }, []);
+
+    const [perplexity, setPerplexity] = useState(5);
+    const [learningRate, setLearningRate] = useState(10);
+    const [paused, setPaused] = useState(false);
+    useEffect(() => {
+        if (reduction === 'tsne') {
+            setPaused(false);
+        }
+    }, [reduction]);
+
+    const detail = useMemo(() => {
+        switch (reduction) {
+            case 'pca':
+                return <PCADetail dimension={dimension} variance={(data as PCAResult)?.variance ?? []} />;
+            case 'tsne':
+                return (
+                    <TSNEDetail
+                        iteration={(data as TSNEResult)?.step ?? 0}
+                        perplexity={perplexity}
+                        learningRate={learningRate}
+                        paused={paused}
+                        onChangePerplexity={setPerplexity}
+                        onChangeLearningRate={setLearningRate}
+                        onPause={() => setPaused(true)}
+                        onResume={() => setPaused(false)}
+                    />
+                );
+            default:
+                return null as never;
+        }
+    }, [reduction, dimension, data, perplexity, learningRate, paused]);
 
     const aside = useMemo(
         () => (
@@ -273,11 +292,11 @@ const HighDimensional: FunctionComponent = () => {
                     </Field>
                     <Field>
                         {dataPath && (
-                            <AsideTip>
+                            <div className="secondary">
                                 {t('high-dimensional:data-path')}
                                 {t('common:colon')}
                                 {dataPath}
-                            </AsideTip>
+                            </div>
                         )}
                     </Field>
                 </AsideSection>
@@ -288,37 +307,11 @@ const HighDimensional: FunctionComponent = () => {
                     <Field label={t('high-dimensional:dimension')}>
                         <DimensionSwitch value={dimension} onChange={setDimension} />
                     </Field>
-                    {reduction === 'pca' && (
-                        <PCADetail>
-                            {(dimension === '3d' ? [1, 2, 3] : [1, 2]).map(index => (
-                                <div key={index}>
-                                    {t('high-dimensional:component', {index})}
-                                    {t('common:colon')}
-                                    {pcaData.variance[index - 1]}
-                                </div>
-                            ))}
-                            <AsideTip>
-                                {t('high-dimensional:total-variance-described')}
-                                {t('common:colon')}
-                                {pcaData.totalVariance}
-                            </AsideTip>
-                        </PCADetail>
-                    )}
+                    {detail}
                 </AsideSection>
             </RightAside>
         ),
-        [
-            t,
-            dataPath,
-            reduction,
-            dimension,
-            pcaData,
-            metadataFile,
-            labels,
-            labelBy,
-            embeddingList,
-            selectedEmbeddingName
-        ]
+        [t, dataPath, reduction, dimension, metadataFile, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
     );
 
     const leftAside = useMemo(() => <LeftAside></LeftAside>, []);
@@ -334,6 +327,10 @@ const HighDimensional: FunctionComponent = () => {
                         metadata={metadata}
                         dim={dim}
                         is3D={is3D}
+                        reduction={reduction}
+                        perplexity={perplexity}
+                        learningRate={learningRate}
+                        paused={paused}
                         onCalculate={calculate}
                         onCalculated={calculated}
                         onError={showError}

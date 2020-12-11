@@ -32,6 +32,7 @@ export type ScatterChartProps = {
     height: number;
     data: [number, number, number][];
     is3D: boolean;
+    rotate?: boolean;
 };
 
 export type ScatterChartRef = {
@@ -39,7 +40,7 @@ export type ScatterChartRef = {
 };
 
 const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithStyled>(
-    ({width, height, data, is3D, className}, ref) => {
+    ({width, height, data, is3D, rotate, className}, ref) => {
         const theme = useTheme();
 
         const canvas = useRef<HTMLCanvasElement>(null);
@@ -54,7 +55,14 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
 
         useEffect(() => {
             chart.current?.setDimension(is3D);
-        }, [is3D]);
+            if (is3D) {
+                if (rotate) {
+                    chart.current?.startRotate();
+                } else {
+                    chart.current?.stopRotate();
+                }
+            }
+        }, [is3D, rotate]);
 
         useEffect(() => {
             chart.current?.setData(data);

@@ -77,6 +77,8 @@ export default class ScatterChart {
         if (this.is3D) {
             this.addAxes();
         }
+
+        this.reset();
     }
 
     private initScene() {
@@ -392,6 +394,6 @@ export default class ScatterChart {
         });
         this.points = new THREE.Points(geometry, material);
         this.scene.add(this.points);
-        this.reset();
+        this.render();
     }
 }

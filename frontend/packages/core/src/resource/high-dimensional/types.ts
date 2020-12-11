@@ -66,7 +66,20 @@ export type PcaParams = {
     n: number;
 };
 
-export type PcaResult = {
+export type PCAResult = {
     vectors: Vectors;
     variance: number[];
+};
+
+export type TSNEParams = {
+    input: Float32Array;
+    dim: number;
+    n: number;
+    perplexity?: number;
+    epsilon?: number;
+};
+
+export type TSNEResult = {
+    vectors: Vectors;
+    step: number;
 };

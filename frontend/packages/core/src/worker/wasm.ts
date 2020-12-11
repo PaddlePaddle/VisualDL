@@ -29,9 +29,15 @@ async function init() {
     await initWasm(`${PUBLIC_PATH}/wasm/visualdl.wasm`);
     workerSelf.emit('INITIALIZED');
     workerSelf.on<{name: FuncNames; params: unknown[]}>('RUN', ({name, params}) => {
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        const result = (funcs[name] as Function)(...params);
-        workerSelf.emit('RESULT', result);
+        try {
+            // eslint-disable-next-line @typescript-eslint/ban-types
+            const result = (funcs[name] as Function)(...params);
+            workerSelf.emit('RESULT', result);
+        } catch (e) {
+            if (e.message !== 'unreachable') {
+                throw e;
+            }
+        }
     });
 }
 

@@ -1,6 +1,7 @@
 {
     "3d-label": "开启/关闭3D数据标签",
     "component": "主成分{{index}}",
+    "continue": "继续",
     "data": "数据",
     "data-dimension": "数据类别",
     "data-path": "数据路径",
@@ -9,6 +10,8 @@
         "2d": "2D",
         "3d": "3D"
     },
+    "iteration": "迭代",
+    "learning-rate": "学习率",
     "loading": {
         "calculating": "计算中……",
         "fetching-metadata": "获取元数据中……",
@@ -17,7 +20,9 @@
         "reading-metadata": "读取元数据中……",
         "reading-vector": "读取数据中……"
     },
+    "pause": "暂停",
     "pca": "PCA",
+    "perplexity": "困惑度",
     "points": "数据点",
     "reduction-value": {
         "pca": "PCA",
