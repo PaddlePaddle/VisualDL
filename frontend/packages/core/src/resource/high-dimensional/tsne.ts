@@ -267,7 +267,7 @@ export default class tSNE {
         let cost = 0.0;
         const grad: number[][] = [];
         for (let i = 0; i < N; i++) {
-            const gSum: number[] = new Array(dim).fill(0.0);
+            const gSum = Array.from<number>({length: dim}).fill(0.0);
             for (let j = 0; j < N; j++) {
                 cost += -P[i * N + j] * Math.log(Q[i * N + j]);
                 const premult = 4 * (pMul * P[i * N + j] - Q[i * N + j]) * Qu[i * N + j];

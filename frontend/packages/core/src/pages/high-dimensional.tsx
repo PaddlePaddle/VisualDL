@@ -15,9 +15,17 @@
  */
 
 import Aside, {AsideSection} from '~/components/Aside';
-import type {Dimension, Reduction} from '~/resource/high-dimensional';
-import type {PCAResult, ParseParams, ParseResult, TSNEResult} from '~/resource/high-dimensional';
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import type {
+    Dimension,
+    PCAResult,
+    ParseParams,
+    ParseResult,
+    Reduction,
+    TSNEResult,
+    UMAPResult
+} from '~/resource/high-dimensional';
+import HighDimensionalChart, {HighDimensionalChartRef} from '~/components/HighDimensionalPage/HighDimensionalChart';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 
 import type {BlobResponse} from '~/utils/fetch';
@@ -27,11 +35,11 @@ import Content from '~/components/Content';
 import DimensionSwitch from '~/components/HighDimensionalPage/DimensionSwitch';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
-import HighDimensionalChart from '~/components/HighDimensionalPage/HighDimensionalChart';
 import PCADetail from '~/components/HighDimensionalPage/PCADetail';
 import ReductionTab from '~/components/HighDimensionalPage/ReductionTab';
 import TSNEDetail from '~/components/HighDimensionalPage/TSNEDetail';
 import Title from '~/components/Title';
+import UMAPDetail from '~/components/HighDimensionalPage/UMAPDetail';
 import UploadDialog from '~/components/HighDimensionalPage/UploadDialog';
 import queryString from 'query-string';
 import {rem} from '~/utils/style';
@@ -40,6 +48,8 @@ import {toast} from 'react-toastify';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 import useWorker from '~/hooks/useWorker';
+
+const MODE = import.meta.env.MODE;
 
 const AsideTitle = styled.div`
     font-size: ${rem(16)};
@@ -80,6 +90,8 @@ type EmbeddingInfo = {
 
 const HighDimensional: FunctionComponent = () => {
     const {t} = useTranslation(['high-dimensional', 'common']);
+
+    const chart = useRef<HighDimensionalChartRef>(null);
 
     const {data: list, loading: loadingList} = useRequest<EmbeddingInfo[]>('/embedding/list');
     const embeddingList = useMemo(() => list?.map(item => ({value: item.name, label: item.name, ...item})) ?? [], [
@@ -171,6 +183,10 @@ const HighDimensional: FunctionComponent = () => {
             position: toast.POSITION.TOP_CENTER,
             type: toast.TYPE.ERROR
         });
+        if (MODE !== 'production') {
+            // eslint-disable-next-line no-console
+            console.error(e);
+        }
         setLoading(false);
     }, []);
 
@@ -223,25 +239,25 @@ const HighDimensional: FunctionComponent = () => {
 
     const is3D = useMemo(() => dimension === '3d', [dimension]);
 
-    const [data, setData] = useState<PCAResult | TSNEResult>();
+    const [perplexity, setPerplexity] = useState(5);
+    const [learningRate, setLearningRate] = useState(10);
+
+    const [neighbors, setNeighbors] = useState(15);
+    const runUMAP = useCallback((n: number) => {
+        setNeighbors(n);
+        chart.current?.rerunUMAP();
+    }, []);
+
+    const [data, setData] = useState<PCAResult | TSNEResult | UMAPResult>();
 
     const calculate = useCallback(() => {
         setData(undefined);
         setLoadingPhase('calculating');
     }, []);
-    const calculated = useCallback((data: PCAResult | TSNEResult) => {
+    const calculated = useCallback((data: PCAResult | TSNEResult | UMAPResult) => {
         setData(data);
         setLoading(false);
     }, []);
-
-    const [perplexity, setPerplexity] = useState(5);
-    const [learningRate, setLearningRate] = useState(10);
-    const [paused, setPaused] = useState(false);
-    useEffect(() => {
-        if (reduction === 'tsne') {
-            setPaused(false);
-        }
-    }, [reduction]);
 
     const detail = useMemo(() => {
         switch (reduction) {
@@ -253,17 +269,20 @@ const HighDimensional: FunctionComponent = () => {
                         iteration={(data as TSNEResult)?.step ?? 0}
                         perplexity={perplexity}
                         learningRate={learningRate}
-                        paused={paused}
                         onChangePerplexity={setPerplexity}
                         onChangeLearningRate={setLearningRate}
-                        onPause={() => setPaused(true)}
-                        onResume={() => setPaused(false)}
+                        onPause={chart.current?.pauseTSNE}
+                        onResume={chart.current?.resumeTSNE}
+                        onStop={chart.current?.pauseTSNE}
+                        onRerun={chart.current?.rerunTSNE}
                     />
                 );
+            case 'umap':
+                return <UMAPDetail neighbors={neighbors} onRun={runUMAP} />;
             default:
                 return null as never;
         }
-    }, [reduction, dimension, data, perplexity, learningRate, paused]);
+    }, [reduction, dimension, data, perplexity, learningRate, neighbors, runUMAP]);
 
     const aside = useMemo(
         () => (
@@ -323,6 +342,7 @@ const HighDimensional: FunctionComponent = () => {
             <HDContent aside={aside} leftAside={leftAside}>
                 {hasVector ? (
                     <HighDimensionalChart
+                        ref={chart}
                         vectors={vectors}
                         metadata={metadata}
                         dim={dim}
@@ -330,7 +350,7 @@ const HighDimensional: FunctionComponent = () => {
                         reduction={reduction}
                         perplexity={perplexity}
                         learningRate={learningRate}
-                        paused={paused}
+                        neighbors={neighbors}
                         onCalculate={calculate}
                         onCalculated={calculated}
                         onError={showError}

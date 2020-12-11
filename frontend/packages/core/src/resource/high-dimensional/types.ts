@@ -83,3 +83,16 @@ export type TSNEResult = {
     vectors: Vectors;
     step: number;
 };
+
+export type UMAPParams = {
+    input: Float32Array;
+    dim: number;
+    n: number;
+    neighbors: number;
+};
+
+export type UMAPResult = {
+    vectors: Vectors;
+    epoch: number;
+    nEpochs: number;
+};

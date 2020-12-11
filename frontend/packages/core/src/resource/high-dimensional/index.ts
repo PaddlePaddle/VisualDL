@@ -23,9 +23,12 @@ export type {
     ParseParams,
     ParseResult,
     TSNEParams,
-    TSNEResult
+    TSNEResult,
+    UMAPParams,
+    UMAPResult
 } from './types';
 
 export {parseFromBlob, parseFromString, ParserError} from './parser';
 
 export {default as tSNE} from './tsne';
+export {default as UMAP} from './umap';

@@ -19,28 +19,38 @@ import React, {FunctionComponent, useCallback, useState} from 'react';
 import Button from '~/components/Button';
 import Field from '~/components/Field';
 import Slider from '~/components/Slider';
+import {rem} from '~/utils/style';
+import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
+
+const ButtonField = styled(Field)`
+    > *:not(:last-child) {
+        margin-right: ${rem(10)};
+    }
+`;
 
 export type TSNEDetailProps = {
     iteration: number;
     perplexity: number;
     learningRate: number;
-    paused: boolean;
     onChangePerplexity?: (perplexity: number) => void;
     onChangeLearningRate?: (learningRate: number) => void;
     onPause?: () => void;
     onResume?: () => void;
+    onStop?: () => void;
+    onRerun?: () => void;
 };
 
 const TSNEDetail: FunctionComponent<TSNEDetailProps> = ({
     iteration,
     perplexity,
     learningRate,
-    paused,
     onChangePerplexity,
     onChangeLearningRate,
     onPause,
-    onResume
+    onResume,
+    onStop,
+    onRerun
 }) => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
@@ -62,7 +72,7 @@ const TSNEDetail: FunctionComponent<TSNEDetailProps> = ({
         [onChangeLearningRate]
     );
 
-    const [localPaused, setPaused] = useState(paused);
+    const [paused, setPaused] = useState(false);
     const togglePaused = useCallback(
         () =>
             setPaused(p => {
@@ -75,6 +85,18 @@ const TSNEDetail: FunctionComponent<TSNEDetailProps> = ({
             }),
         [onResume, onPause]
     );
+    const [stopped, setStopped] = useState(false);
+    const toggleStopped = useCallback(() => {
+        setPaused(false);
+        setStopped(s => {
+            if (s) {
+                onRerun?.();
+            } else {
+                onStop?.();
+            }
+            return !s;
+        });
+    }, [onRerun, onStop]);
 
     return (
         <>
@@ -88,11 +110,14 @@ const TSNEDetail: FunctionComponent<TSNEDetailProps> = ({
                     onChange={changeLearningRate}
                 />
             </Field>
-            <Field>
-                <Button type="primary" outline rounded onClick={togglePaused}>
-                    {localPaused ? t('high-dimensional:continue') : t('high-dimensional:pause')}
+            <ButtonField>
+                <Button type="primary" outline rounded onClick={toggleStopped}>
+                    {stopped ? t('high-dimensional:run') : t('high-dimensional:stop')}
                 </Button>
-            </Field>
+                <Button type="primary" outline rounded disabled={stopped} onClick={togglePaused}>
+                    {paused ? t('high-dimensional:continue') : t('high-dimensional:pause')}
+                </Button>
+            </ButtonField>
             <Field className="secondary">
                 {t('high-dimensional:iteration')}
                 {t('common:colon')}

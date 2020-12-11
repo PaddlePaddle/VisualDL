@@ -20,6 +20,7 @@
         "reading-metadata": "读取元数据中……",
         "reading-vector": "读取数据中……"
     },
+    "neighbors": "相邻数据点数量",
     "pause": "暂停",
     "pca": "PCA",
     "perplexity": "困惑度",
@@ -30,11 +31,13 @@
         "umap": "UMAP"
     },
     "reset-zoom": "重置大小设置",
+    "run": "运行",
     "select-color": "颜色分类方式",
     "select-data": "选择可视化数据",
     "select-file": "选择文件",
     "select-label": "数据标签",
     "selection": "框选数据",
+    "stop": "停止",
     "total-variance-described": "主成分解释原变量总方差",
     "tsne": "T-SNE",
     "upload": {

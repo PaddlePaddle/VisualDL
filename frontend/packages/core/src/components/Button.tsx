@@ -130,7 +130,7 @@ const Button: FunctionComponent<ButtonProps & WithStyled> = ({
 
     return (
         <Wrapper
-            className={`${className} ${rounded ? 'rounded' : ''} ${disabled ? 'disabled' : ''} ${
+            className={`${className ?? ''} ${rounded ? 'rounded' : ''} ${disabled ? 'disabled' : ''} ${
                 buttonType === 'default' || outline ? 'outline' : ''
             }`}
             type={buttonType}

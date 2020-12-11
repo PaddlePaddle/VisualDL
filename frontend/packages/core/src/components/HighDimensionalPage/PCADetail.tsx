@@ -41,7 +41,7 @@ const PCADetail: FunctionComponent<PCADetailProps> = ({dimension, variance}) => 
 
     return (
         <Wrapper>
-            {new Array(dim).fill(0).map((_, index) => (
+            {Array.from({length: dim}).map((_, index) => (
                 <div key={index}>
                     {t('high-dimensional:component', {index: index + 1})}
                     {t('common:colon')}

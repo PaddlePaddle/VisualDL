@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type {PCAResult, Reduction, TSNEResult} from '~/resource/high-dimensional';
-import React, {FunctionComponent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import type {PCAResult, Reduction, TSNEResult, UMAPResult} from '~/resource/high-dimensional';
+import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import ScatterChart, {ScatterChartRef} from '~/components/ScatterChart';
 
 import ChartOperations from '~/components/HighDimensionalPage/ChartOperations';
@@ -33,7 +33,8 @@ function useComputeHighDimensional(
     dim: number,
     is3D: boolean,
     perplexity: number,
-    learningRate: number
+    learningRate: number,
+    neighbors: number
 ) {
     const pcaParams = useMemo(() => {
         if (reduction === 'pca') {
@@ -60,14 +61,35 @@ function useComputeHighDimensional(
         };
     }, [reduction, vectors, dim, is3D]);
 
+    const umapParams = useMemo(() => {
+        if (reduction === 'umap') {
+            return {
+                input: vectors,
+                dim,
+                n: is3D ? 3 : 2,
+                neighbors
+            };
+        }
+        return {
+            input: new Float32Array(),
+            dim: 0,
+            n: is3D ? 3 : 2,
+            neighbors: 15
+        };
+    }, [reduction, vectors, dim, is3D, neighbors]);
+
     const pcaResult = useWebAssembly<PCAResult>('high_dimensional_pca', pcaParams);
     const tsneResult = useWorker<TSNEResult>('high-dimensional/tsne', tsneParams);
+    const umapResult = useWorker<UMAPResult>('high-dimensional/umap', umapParams);
 
     if (reduction === 'pca') {
         return pcaResult;
     }
     if (reduction === 'tsne') {
         return tsneResult;
+    }
+    if (reduction === 'umap') {
+        return umapResult;
     }
     return null as never;
 }
@@ -118,92 +140,111 @@ type HighDimensionalChartProps = {
     reduction: Reduction;
     perplexity: number;
     learningRate: number;
-    paused: boolean;
+    neighbors: number;
     onCalculate?: () => unknown;
-    onCalculated?: (data: PCAResult | TSNEResult) => unknown;
+    onCalculated?: (data: PCAResult | TSNEResult | UMAPResult) => unknown;
     onError?: (e: Error) => unknown;
 };
 
-const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps & WithStyled> = ({
-    vectors,
-    // metadata,
-    dim,
-    is3D,
-    reduction,
-    perplexity,
-    learningRate,
-    paused,
-    onCalculate,
-    onCalculated,
-    onError,
-    className
-}) => {
-    const {t} = useTranslation(['high-dimensional', 'common']);
+export type HighDimensionalChartRef = {
+    pauseTSNE(): void;
+    resumeTSNE(): void;
+    rerunTSNE(): void;
+    rerunUMAP(): void;
+};
 
-    const chartElement = useRef<HTMLDivElement>(null);
-    const chart = useRef<ScatterChartRef>(null);
+const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimensionalChartProps & WithStyled>(
+    (
+        {
+            vectors,
+            // metadata,
+            dim,
+            is3D,
+            reduction,
+            perplexity,
+            learningRate,
+            neighbors,
+            onCalculate,
+            onCalculated,
+            onError,
+            className
+        },
+        ref
+    ) => {
+        const {t} = useTranslation(['high-dimensional', 'common']);
 
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
+        const chartElement = useRef<HTMLDivElement>(null);
+        const chart = useRef<ScatterChartRef>(null);
 
-    const points = useMemo(() => Math.floor(vectors.length / dim), [vectors, dim]);
+        const [width, setWidth] = useState(0);
+        const [height, setHeight] = useState(0);
 
-    useLayoutEffect(() => {
-        const c = chartElement.current;
-        if (c) {
-            const observer = new ResizeObserver(() => {
-                const rect = c.getBoundingClientRect();
-                setWidth(rect.width);
-                setHeight(rect.height);
-            });
-            observer.observe(c);
-            return () => observer.unobserve(c);
-        }
-    }, []);
+        const points = useMemo(() => Math.floor(vectors.length / dim), [vectors, dim]);
 
-    const {data, error, worker} = useComputeHighDimensional(reduction, vectors, dim, is3D, perplexity, learningRate);
-
-    const iterationId = useRef<number | null>(null);
-    const startIteration = useCallback(() => {
-        if (reduction === 'tsne') {
-            const iteration = () => {
-                if (worker) {
-                    worker.emit<InfoData>('INFO', {type: 'step'});
-                }
-                iterationId.current = requestAnimationFrame(iteration);
-            };
-            iteration();
-        }
-    }, [reduction, worker]);
-    const stopIteration = useCallback(() => {
-        if (reduction === 'tsne') {
-            // if (worker) {
-            //     worker.emit<InfoData>('INFO', {type: 'reset'});
-            // }
-            if (iterationId.current) {
-                cancelAnimationFrame(iterationId.current);
-                iterationId.current = null;
+        useLayoutEffect(() => {
+            const c = chartElement.current;
+            if (c) {
+                const observer = new ResizeObserver(() => {
+                    const rect = c.getBoundingClientRect();
+                    setWidth(rect.width);
+                    setHeight(rect.height);
+                });
+                observer.observe(c);
+                return () => observer.unobserve(c);
             }
-        }
-    }, [reduction]);
+        }, []);
 
-    useEffect(() => {
-        if (reduction === 'tsne') {
-            if (paused) {
+        const {data, error, worker} = useComputeHighDimensional(
+            reduction,
+            vectors,
+            dim,
+            is3D,
+            perplexity,
+            learningRate,
+            neighbors
+        );
+
+        const iterationId = useRef<number | null>(null);
+        const iteration = useCallback(() => {
+            worker?.emit<InfoData>('INFO', {type: 'step'});
+        }, [worker]);
+        const nextIteration = useCallback(() => {
+            iterationId.current = requestAnimationFrame(iteration);
+        }, [iteration]);
+        const startIteration = useCallback(() => {
+            if (reduction === 'tsne') {
+                worker?.on('RESULT', nextIteration);
+                iteration();
+            }
+        }, [reduction, worker, nextIteration, iteration]);
+        const stopIteration = useCallback(() => {
+            if (reduction === 'tsne') {
+                if (iterationId.current) {
+                    cancelAnimationFrame(iterationId.current);
+                    iterationId.current = null;
+                }
+                worker?.off('RESULT', nextIteration);
+            }
+        }, [reduction, worker, nextIteration]);
+        const restartIteration = useCallback(() => {
+            if (reduction === 'tsne') {
                 stopIteration();
-            } else {
+                worker?.emit<InfoData>('INFO', {type: 'reset'});
+                worker?.once('RESULT', () => startIteration());
+            }
+        }, [reduction, startIteration, stopIteration, worker]);
+        useEffect(() => {
+            if (reduction === 'tsne') {
                 startIteration();
                 return () => {
                     stopIteration();
                 };
             }
-        }
-    }, [reduction, paused, startIteration, stopIteration]);
+        }, [reduction, startIteration, stopIteration]);
 
-    useEffect(() => {
-        if (reduction === 'tsne') {
-            if (worker) {
-                worker.emit<InfoData>('INFO', {
+        useEffect(() => {
+            if (reduction === 'tsne') {
+                worker?.emit<InfoData>('INFO', {
                     type: 'params',
                     data: {
                         perplexity,
@@ -211,45 +252,60 @@ const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps & WithSt
                     }
                 });
             }
-        }
-    }, [reduction, perplexity, learningRate, worker]);
+        }, [reduction, perplexity, learningRate, worker]);
 
-    useEffect(() => {
-        if (error) {
-            onError?.(error);
-        } else if (data) {
-            onCalculated?.(data);
-        } else {
-            onCalculate?.();
-        }
-    }, [data, error, onCalculate, onCalculated, onError]);
+        const rerunUMAP = useCallback(() => {
+            if (reduction === 'umap') {
+                worker?.emit('INFO');
+            }
+        }, [reduction, worker]);
 
-    return (
-        <Wrapper className={className}>
-            <Toolbar>
-                <div className="info">
-                    {t('high-dimensional:points')}
-                    {t('common:colon')}
-                    {points}
-                    <span className="sep"></span>
-                    {t('high-dimensional:data-dimension')}
-                    {t('common:colon')}
-                    {dim}
-                </div>
-                <ChartOperations onReset={() => chart.current?.reset()} />
-            </Toolbar>
-            <Chart ref={chartElement}>
-                <ScatterChart
-                    ref={chart}
-                    width={width}
-                    height={height}
-                    data={data?.vectors ?? []}
-                    is3D={is3D}
-                    rotate={reduction !== 'tsne'}
-                />
-            </Chart>
-        </Wrapper>
-    );
-};
+        useEffect(() => {
+            if (error) {
+                onError?.(error);
+            } else if (data) {
+                onCalculated?.(data);
+            } else {
+                onCalculate?.();
+            }
+        }, [data, error, onCalculate, onCalculated, onError]);
+
+        useImperativeHandle(ref, () => ({
+            pauseTSNE: stopIteration,
+            resumeTSNE: startIteration,
+            rerunTSNE: restartIteration,
+            rerunUMAP
+        }));
+
+        return (
+            <Wrapper className={className}>
+                <Toolbar>
+                    <div className="info">
+                        {t('high-dimensional:points')}
+                        {t('common:colon')}
+                        {points}
+                        <span className="sep"></span>
+                        {t('high-dimensional:data-dimension')}
+                        {t('common:colon')}
+                        {dim}
+                    </div>
+                    <ChartOperations onReset={() => chart.current?.reset()} />
+                </Toolbar>
+                <Chart ref={chartElement}>
+                    <ScatterChart
+                        ref={chart}
+                        width={width}
+                        height={height}
+                        data={data?.vectors ?? []}
+                        is3D={is3D}
+                        rotate={reduction !== 'tsne'}
+                    />
+                </Chart>
+            </Wrapper>
+        );
+    }
+);
+
+HighDimensionalChart.displayName = 'HighDimensionalChart';
 
 export default HighDimensionalChart;

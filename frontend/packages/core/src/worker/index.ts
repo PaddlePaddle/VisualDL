@@ -14,28 +14,69 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import type {WorkerMessage, WorkerMessageEvent} from '~/worker/types';
 
 type WorkerMessageType<T> = WorkerMessage<T>['type'];
 type Handler<T> = (data: T) => unknown;
+type Listeners = Partial<Record<WorkerMessageType<any>, Handler<any>[]>>;
 
-export class WorkerSelf {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private listeners: Partial<Record<WorkerMessageType<any>, Handler<any>[]>> = {};
+interface IWorker {
+    emit<T>(type: WorkerMessageType<T>, data?: T): void;
+    on<T>(type: WorkerMessageType<T>, handler: Handler<T>): void;
+    off<T>(type: WorkerMessageType<T>, handler?: Handler<T>): void;
+    once<T>(type: WorkerMessageType<T>, handler: Handler<T>): void;
+}
+
+function handlerInListener<T>(listeners: Listeners, type: WorkerMessageType<T>, handler: Handler<T>) {
+    return listeners[type]!.findIndex(f => Object.is(f, handler));
+}
+function pushFunctionToListener<T>(listeners: Listeners, type: WorkerMessageType<T>, handler: Handler<T>) {
+    if (!listeners[type]) {
+        listeners[type] = [];
+    }
+    if (handlerInListener(listeners, type, handler) !== -1) {
+        return;
+    }
+    listeners[type]!.push(handler);
+}
+function removeFunctionFromListener<T>(listeners: Listeners, type: WorkerMessageType<T>, handler?: Handler<T>) {
+    if (listeners[type]) {
+        if (!handler) {
+            delete listeners[type];
+        } else {
+            const index = handlerInListener(listeners, type, handler);
+            if (index !== -1) {
+                listeners[type]!.splice(index, 1);
+            }
+        }
+    }
+}
+function callListener<T>(this: IWorker, listeners: Listeners, data: WorkerMessage<T>) {
+    listeners[data.type]?.forEach(handler => {
+        try {
+            handler(data.data);
+        } catch (e) {
+            const error = e instanceof Error ? e : new Error(e);
+            this.emit('ERROR', error);
+        }
+    });
+}
+
+export class WorkerSelf implements IWorker {
+    private listeners: Listeners = {};
+    private onceListeners: Listeners = {};
 
     constructor() {
         self.addEventListener('message', this.listener.bind(this));
     }
 
     private listener<T>(e: WorkerMessageEvent<T>) {
-        this.listeners[e.data.type]?.forEach(handler => {
-            try {
-                handler(e.data.data);
-            } catch (e) {
-                const error = e instanceof Error ? e : new Error(e);
-                this.emit('ERROR', error);
-            }
-        });
+        callListener.call(this, this.onceListeners, e.data);
+        callListener.call(this, this.listeners, e.data);
+        delete this.onceListeners[e.data.type];
     }
 
     emit<T>(type: WorkerMessageType<T>, data?: T) {
@@ -46,34 +87,22 @@ export class WorkerSelf {
     }
 
     on<T>(type: WorkerMessageType<T>, handler: Handler<T>) {
-        if (!this.listeners[type]) {
-            this.listeners[type] = [];
-        }
-        /* eslint-disable @typescript-eslint/no-non-null-assertion */
-        if (this.listeners[type]!.findIndex(f => Object.is(f, handler)) !== -1) {
-            return;
-        }
-        this.listeners[type]!.push(handler);
-        /* eslint-enable @typescript-eslint/no-non-null-assertion */
+        pushFunctionToListener(this.listeners, type, handler);
     }
 
     off<T>(type: WorkerMessageType<T>, handler?: Handler<T>) {
-        if (this.listeners[type]) {
-            if (!handler) {
-                delete this.listeners[type];
-            } else {
-                /* eslint-disable @typescript-eslint/no-non-null-assertion */
-                const index = this.listeners[type]!.findIndex(f => Object.is(f, handler));
-                this.listeners[type]!.splice(index, 1);
-                /* eslint-enable @typescript-eslint/no-non-null-assertion */
-            }
-        }
+        removeFunctionFromListener(this.listeners, type, handler);
+        removeFunctionFromListener(this.onceListeners, type, handler);
+    }
+
+    once<T>(type: WorkerMessageType<T>, handler: Handler<T>) {
+        pushFunctionToListener(this.onceListeners, type, handler);
     }
 }
 
-export class WebWorker extends Worker {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private listeners: Partial<Record<WorkerMessageType<any>, Handler<any>[]>> = {};
+export class WebWorker extends Worker implements IWorker {
+    private listeners: Listeners = {};
+    private onceListeners: Listeners = {};
 
     constructor(...args: ConstructorParameters<typeof Worker>) {
         super(...args);
@@ -81,7 +110,9 @@ export class WebWorker extends Worker {
     }
 
     private listener<T>(e: WorkerMessageEvent<T>) {
-        this.listeners[e.data.type]?.forEach(handler => handler(e.data.data));
+        callListener.call(this, this.onceListeners, e.data);
+        callListener.call(this, this.listeners, e.data);
+        delete this.onceListeners[e.data.type];
     }
 
     emit<T>(type: WorkerMessageType<T>, data?: T) {
@@ -92,27 +123,15 @@ export class WebWorker extends Worker {
     }
 
     on<T>(type: WorkerMessageType<T>, handler: Handler<T>) {
-        if (!this.listeners[type]) {
-            this.listeners[type] = [];
-        }
-        /* eslint-disable @typescript-eslint/no-non-null-assertion */
-        if (this.listeners[type]!.findIndex(f => Object.is(f, handler)) !== -1) {
-            return;
-        }
-        this.listeners[type]!.push(handler);
-        /* eslint-enable @typescript-eslint/no-non-null-assertion */
+        pushFunctionToListener(this.listeners, type, handler);
     }
 
     off<T>(type: WorkerMessageType<T>, handler?: Handler<T>) {
-        if (this.listeners[type]) {
-            if (!handler) {
-                delete this.listeners[type];
-            } else {
-                /* eslint-disable @typescript-eslint/no-non-null-assertion */
-                const index = this.listeners[type]!.findIndex(f => Object.is(f, handler));
-                this.listeners[type]!.splice(index, 1);
-                /* eslint-enable @typescript-eslint/no-non-null-assertion */
-            }
-        }
+        removeFunctionFromListener(this.listeners, type, handler);
+        removeFunctionFromListener(this.onceListeners, type, handler);
+    }
+
+    once<T>(type: WorkerMessageType<T>, handler: Handler<T>) {
+        pushFunctionToListener(this.onceListeners, type, handler);
     }
 }

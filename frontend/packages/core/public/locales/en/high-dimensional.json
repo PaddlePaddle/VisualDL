@@ -20,6 +20,7 @@
         "reading-metadata": "Reading metadata...",
         "reading-vector": "Reading tensor..."
     },
+    "neighbors": "Neighbors",
     "pause": "Pause",
     "pca": "PCA",
     "perplexity": "Perplexity",
@@ -30,11 +31,13 @@
         "umap": "UMAP"
     },
     "reset-zoom": "Reset zoom to fit all points",
+    "run": "Run",
     "select-color": "Color by",
     "select-data": "Select Data",
     "select-file": "Select File",
     "select-label": "Label by",
     "selection": "Bounding box selection",
+    "stop": "Stop",
     "total-variance-described": "Total variance described",
     "tsne": "T-SNE",
     "upload": {

@@ -82,4 +82,6 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
     }
 );
 
+ScatterChart.displayName = 'ScatterChart';
+
 export default ScatterChart;
