@@ -41,7 +41,7 @@ class LogReader(object):
 
     """
 
-    def __init__(self, logdir='', file_name=''):
+    def __init__(self, logdir='', file_path=''):
         """Instance of LogReader
 
         Args:
@@ -61,9 +61,9 @@ class LogReader(object):
 
         self.file_readers = {}
 
-        if file_name:
+        if file_path:
             self._log_data = collections.defaultdict(lambda: collections.defaultdict(list))
-            self.get_file_reader(file_name=file_name)
+            self.get_file_reader(file_path=file_path)
             remain = self.get_remain()
             self.read_log_data(remain=remain)
 
@@ -203,17 +203,17 @@ class LogReader(object):
         self.reader = self.readers[filepath]
         return self.reader
 
-    def get_file_reader(self, file_name):
+    def get_file_reader(self, file_path):
         """Get file reader for specified vdl log file.
 
         Get instance of class RecordReader base on BFile.
 
         Args:
-            file_name: Vdl log file name.
+            file_path: Vdl log file path.
         """
-        self._register_reader(file_name)
-        self.reader = self.readers[file_name]
-        self.reader.dir = file_name
+        self._register_reader(file_path)
+        self.reader = self.readers[file_path]
+        self.reader.dir = file_path
         return self.reader
 
     def _register_reader(self, path, dir=None):
