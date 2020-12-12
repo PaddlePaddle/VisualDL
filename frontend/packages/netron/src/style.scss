@@ -12,6 +12,11 @@ body {
         sans-serif, 'PingFang SC';
     font-size: 12px;
     text-rendering: geometricPrecision;
+    background-color: #fff;
+
+    &.dark {
+        background-color: #1d1d1f;
+    }
 }
 
 .graph {

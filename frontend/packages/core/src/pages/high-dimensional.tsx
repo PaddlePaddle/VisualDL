@@ -151,6 +151,15 @@ const HighDimensional: FunctionComponent = () => {
     const [labelBy, setLabelBy] = useState<string>();
     const [metadata, setMetadata] = useState<string[][]>([]);
     const [dim, setDim] = useState<number>(0);
+    const labelByLabels = useMemo(() => {
+        if (labelBy != null) {
+            const labelIndex = labels.indexOf(labelBy);
+            if (labelIndex !== -1) {
+                return metadata.map(row => row[labelIndex]);
+            }
+        }
+        return [];
+    }, [labelBy, labels, metadata]);
 
     const readFile = useCallback(
         (phase: string, file: File | null, setter: React.Dispatch<React.SetStateAction<string>>) => {
@@ -344,7 +353,7 @@ const HighDimensional: FunctionComponent = () => {
                     <HighDimensionalChart
                         ref={chart}
                         vectors={vectors}
-                        metadata={metadata}
+                        labels={labelByLabels}
                         dim={dim}
                         is3D={is3D}
                         reduction={reduction}

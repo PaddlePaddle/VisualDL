@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-// cSpell:words persp coord
+// cSpell:words persp coord roboto
 
 import * as THREE from 'three';
 import * as d3 from 'd3';
 
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import type {Point2D} from './types';
+import ScatterChartLabel from './ScatterChartLabel';
 
 function createShaders() {
     const MIN_POINT_SIZE = 5;
@@ -116,7 +118,9 @@ export default class ScatterChart {
     background: string | number | THREE.Color = '#fff';
     is3D = true;
     data: Vec3[] = [];
-    private readonly canvas: HTMLCanvasElement;
+    labels: string[] = [];
+    private readonly container: HTMLElement;
+    private canvas: HTMLCanvasElement | null;
     private scene: THREE.Scene;
     private renderer: THREE.WebGLRenderer;
     private camera: THREE.OrthographicCamera | THREE.PerspectiveCamera;
@@ -125,12 +129,14 @@ export default class ScatterChart {
     private geometry: THREE.BufferGeometry;
     private renderMaterial: THREE.ShaderMaterial | null = null;
     private pickingMaterial: THREE.ShaderMaterial | null = null;
+    private positions: Float32Array | null = null;
     private renderColors: Float32Array | null = null;
     private pickingColors: Float32Array | null = null;
     private scaleFactors: Float32Array | null = null;
     private axes: THREE.AxesHelper | null = null;
     private points: THREE.Points | null = null;
     private hoveredPointIndices: number[] = [];
+    private label: ScatterChartLabel;
     private mouseCoordinates: {
         x: number;
         y: number;
@@ -141,12 +147,20 @@ export default class ScatterChart {
     private rotate = false;
     private animationId: number | null = null;
 
-    constructor(canvas: HTMLCanvasElement, options: ScatterChartOptions) {
-        this.canvas = canvas;
+    constructor(container: HTMLElement, options: ScatterChartOptions) {
+        this.container = container;
         this.width = options.width;
         this.height = options.height;
         this.is3D = options.is3D ?? this.is3D;
         this.background = options.background ?? this.background;
+
+        this.canvas = this.initCanvas();
+        this.container.appendChild(this.canvas);
+
+        this.label = new ScatterChartLabel(this.container, {
+            width: this.width,
+            height: this.height
+        });
 
         this.scene = this.initScene();
         this.camera = this.initCamera();
@@ -164,6 +178,13 @@ export default class ScatterChart {
         }
 
         this.reset();
+    }
+
+    private initCanvas() {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        return canvas;
     }
 
     private initScene() {
@@ -207,7 +228,7 @@ export default class ScatterChart {
 
     private initRenderer() {
         const renderer = new THREE.WebGLRenderer({
-            canvas: this.canvas,
+            canvas: this.canvas ?? undefined,
             alpha: true,
             premultipliedAlpha: false,
             antialias: false
@@ -422,12 +443,41 @@ export default class ScatterChart {
         this.hoveredPointIndices = pointIndices;
     }
 
+    private updateHoveredLabels() {
+        this.label.clear();
+        if (!this.hoveredPointIndices[0] || !this.camera || !this.positions) {
+            return;
+        }
+        const dpr = window.devicePixelRatio || 1;
+        const w = this.width;
+        const h = this.height;
+        const index = this.hoveredPointIndices[0];
+        const pi = index * 3;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const point = new THREE.Vector3(this.positions![pi], this.positions![pi + 1], this.positions![pi + 2]);
+        const pv = new THREE.Vector3().copy(point).project(this.camera);
+        const coord: Point2D = [((pv.x + 1) / 2) * w * dpr, -(((pv.y - 1) / 2) * h) * dpr];
+        const labels = [
+            {
+                text: this.labels[index] ?? '',
+                fontSize: 40,
+                fillColor: '#000',
+                strokeColor: '#fff',
+                opacity: 1,
+                x: coord[0] + 4,
+                y: coord[1]
+            }
+        ];
+
+        this.label.render(labels);
+    }
+
     private bindEventListeners() {
-        this.canvas.addEventListener('mousemove', this.onMouseMoveBindThis);
+        this.canvas?.addEventListener('mousemove', this.onMouseMoveBindThis);
     }
 
     private removeEventListeners() {
-        this.canvas.removeEventListener('mousemove', this.onMouseMoveBindThis);
+        this.canvas?.removeEventListener('mousemove', this.onMouseMoveBindThis);
     }
 
     private onMouseMove(e: MouseEvent) {
@@ -460,11 +510,6 @@ export default class ScatterChart {
         lightPos.x += 1;
         lightPos.y += 1;
         light.position.set(lightPos.x, lightPos.y, lightPos.z);
-
-        // if (this.points) {
-        //     const material = this.points.material as THREE.ShaderMaterial;
-        //     material.uniforms.color.value = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
-        // }
 
         // TODO: remake fog
         // const fog = this.scene.fog as THREE.Fog | null;
@@ -506,6 +551,7 @@ export default class ScatterChart {
         // }
 
         this.updateHoveredPoints();
+        this.updateHoveredLabels();
         this.updatePointsAttribute();
         if (this.pickingMaterial) {
             if (this.axes) {
@@ -575,6 +621,7 @@ export default class ScatterChart {
             camera.updateProjectionMatrix();
         }
         this.renderer.setSize(width, height);
+        this.label.setSize(width, height);
         this.pickingTexture = this.initRenderTarget();
         this.controls.update();
     }
@@ -604,8 +651,8 @@ export default class ScatterChart {
             this.scene.remove(this.points);
         }
 
-        const positions = this.convertPointsPosition();
-        this.setPointsPosition(positions);
+        this.positions = this.convertPointsPosition();
+        this.setPointsPosition(this.positions);
         this.pickingColors = this.convertPointsPickingColor();
         this.updatePointsAttribute();
 
@@ -617,8 +664,17 @@ export default class ScatterChart {
         this.render();
     }
 
+    setLabels(labels: string[]) {
+        this.labels = labels;
+    }
+
     dispose() {
         this.removeEventListeners();
+        this.label.dispose();
+        if (this.canvas) {
+            this.container.removeChild(this.canvas);
+            this.canvas = null;
+        }
         this.renderer.dispose();
         this.controls.dispose();
         this.pickingTexture.dispose();

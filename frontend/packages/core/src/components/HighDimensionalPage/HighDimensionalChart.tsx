@@ -134,7 +134,7 @@ const Chart = styled.div`
 
 type HighDimensionalChartProps = {
     vectors: Float32Array;
-    metadata: string[][];
+    labels: string[];
     dim: number;
     is3D: boolean;
     reduction: Reduction;
@@ -157,7 +157,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
     (
         {
             vectors,
-            // metadata,
+            labels,
             dim,
             is3D,
             reduction,
@@ -297,6 +297,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         width={width}
                         height={height}
                         data={data?.vectors ?? []}
+                        labels={labels}
                         is3D={is3D}
                         rotate={reduction !== 'tsne'}
                     />

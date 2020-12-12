@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import Chart, {ScatterChartOptions as ChartOptions} from '~/resource/ScatterChart';
+import Chart, {ScatterChartOptions as ChartOptions} from './ScatterChart';
 import React, {useEffect, useImperativeHandle, useRef} from 'react';
 
+import type {Point3D} from './types';
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
 
-const Canvas = styled.canvas<{dark?: boolean}>`
+const Wrapper = styled.div<{dark?: boolean}>`
+    position: relative;
     filter: ${props =>
         props.dark ? 'invert(99%) sepia(7%) saturate(5670%) hue-rotate(204deg) brightness(96%) contrast(79%)' : ''};
 `;
@@ -30,7 +32,8 @@ const Canvas = styled.canvas<{dark?: boolean}>`
 export type ScatterChartProps = {
     width: number;
     height: number;
-    data: [number, number, number][];
+    data: Point3D[];
+    labels: string[];
     is3D: boolean;
     rotate?: boolean;
 };
@@ -40,16 +43,16 @@ export type ScatterChartRef = {
 };
 
 const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithStyled>(
-    ({width, height, data, is3D, rotate, className}, ref) => {
+    ({width, height, data, labels, is3D, rotate, className}, ref) => {
         const theme = useTheme();
 
-        const canvas = useRef<HTMLCanvasElement>(null);
+        const element = useRef<HTMLDivElement>(null);
         const chart = useRef<Chart | null>(null);
         const options = useRef<ChartOptions>({width, height, is3D, background: themes.light.backgroundColor});
 
         useEffect(() => {
-            if (canvas.current) {
-                chart.current = new Chart(canvas.current, options.current);
+            if (element.current) {
+                chart.current = new Chart(element.current, options.current);
                 return () => {
                     chart.current?.dispose();
                 };
@@ -69,7 +72,8 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
 
         useEffect(() => {
             chart.current?.setData(data);
-        }, [data]);
+            chart.current?.setLabels(labels);
+        }, [data, labels]);
 
         useEffect(() => {
             chart.current?.setSize(width, height);
@@ -81,7 +85,7 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
             }
         }));
 
-        return <Canvas className={className} ref={canvas} dark={theme === 'dark'} />;
+        return <Wrapper className={className} ref={element} dark={theme === 'dark'} />;
     }
 );
 
