@@ -21,12 +21,74 @@ import * as d3 from 'd3';
 
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
+function createShaders() {
+    const MIN_POINT_SIZE = 5;
+
+    return {
+        vertexShader: `
+            attribute vec3 color;
+            attribute float scaleFactor;
+
+            uniform bool sizeAttenuation;
+            uniform float pointSize;
+
+            varying vec3 vColor;
+
+            ${THREE.ShaderChunk['fog_pars_vertex']}
+
+            void main() {
+                vColor = color;
+
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+
+                float outputPointSize = pointSize;
+                if (sizeAttenuation) {
+                    outputPointSize = -pointSize / mvPosition.z;
+                } else {
+                    const float PI = 3.1415926535897932384626433832795;
+                    const float minScale = 0.1;  // minimum scaling factor
+                    const float outSpeed = 2.0;  // shrink speed when zooming out
+                    const float outNorm = (1. - minScale) / atan(outSpeed);
+                    const float maxScale = 15.0;  // maximum scaling factor
+                    const float inSpeed = 0.02;  // enlarge speed when zooming in
+                    const float zoomOffset = 0.3;  // offset zoom pivot
+                    float zoom = projectionMatrix[0][0] + zoomOffset;  // zoom pivot
+                    float scale = zoom < 1. ? 1. + outNorm * atan(outSpeed * (zoom - 1.)) :
+                                    1. + 2. / PI * (maxScale - 1.) * atan(inSpeed * (zoom - 1.));
+                    outputPointSize = pointSize * scale;
+                }
+                gl_PointSize = max(outputPointSize * scaleFactor, ${MIN_POINT_SIZE.toFixed(1)});
+                ${THREE.ShaderChunk['fog_vertex']}
+            }
+        `,
+        fragmentShader: `
+            varying vec3 vColor;
+
+            ${THREE.ShaderChunk['common']}
+            ${THREE.ShaderChunk['fog_pars_fragment']}
+
+            void main() {
+                float r = distance(gl_PointCoord, vec2(0.5, 0.5));
+                if (r < 0.5) {
+                    gl_FragColor = vec4(vColor, 1);
+                } else {
+                    discard;
+                }
+                ${THREE.ShaderChunk['fog_fragment']}
+            }
+        `
+    };
+}
+
 export type ScatterChartOptions = {
     width: number;
     height: number;
     is3D?: boolean;
     background?: string | number | THREE.Color;
 };
+
+type Vec3 = [number, number, number];
 
 export default class ScatterChart {
     static CUBE_LENGTH = 2;
@@ -39,9 +101,12 @@ export default class ScatterChart {
     static ORBIT_MOUSE_ROTATION_SPEED = 1;
     static ORBIT_ANIMATION_ROTATION_CYCLE_IN_SECONDS = 2;
     static NUM_POINTS_FOG_THRESHOLD = 5000;
-    static MIN_POINT_SIZE = 5;
 
     static POINT_COLOR_NO_SELECTION = 0x7575d9;
+    static POINT_COLOR_HOVER = 0x760b4f;
+
+    static POINT_SCALE_DEFAULT = 1.0;
+    static POINT_SCALE_HOVER = 1.2;
 
     static PERSP_CAMERA_INIT_POSITION = [0.45, 0.9, 1.6] as const;
     static ORTHO_CAMERA_INIT_POSITION = [0, 0, 4] as const;
@@ -50,14 +115,28 @@ export default class ScatterChart {
     height: number;
     background: string | number | THREE.Color = '#fff';
     is3D = true;
-    data: [number, number, number][] = [];
+    data: Vec3[] = [];
     private readonly canvas: HTMLCanvasElement;
     private scene: THREE.Scene;
     private renderer: THREE.WebGLRenderer;
     private camera: THREE.OrthographicCamera | THREE.PerspectiveCamera;
     private controls: OrbitControls;
+    private pickingTexture: THREE.WebGLRenderTarget;
+    private geometry: THREE.BufferGeometry;
+    private renderMaterial: THREE.ShaderMaterial | null = null;
+    private pickingMaterial: THREE.ShaderMaterial | null = null;
+    private renderColors: Float32Array | null = null;
+    private pickingColors: Float32Array | null = null;
+    private scaleFactors: Float32Array | null = null;
     private axes: THREE.AxesHelper | null = null;
     private points: THREE.Points | null = null;
+    private hoveredPointIndices: number[] = [];
+    private mouseCoordinates: {
+        x: number;
+        y: number;
+    } | null = null;
+
+    private onMouseMoveBindThis: (e: MouseEvent) => void;
 
     private rotate = false;
     private animationId: number | null = null;
@@ -73,6 +152,12 @@ export default class ScatterChart {
         this.camera = this.initCamera();
         this.renderer = this.initRenderer();
         this.controls = this.initControls();
+        this.pickingTexture = this.initRenderTarget();
+        this.geometry = this.createGeometry();
+
+        this.onMouseMoveBindThis = this.onMouseMove.bind(this);
+
+        this.bindEventListeners();
 
         if (this.is3D) {
             this.addAxes();
@@ -152,6 +237,207 @@ export default class ScatterChart {
         return controls;
     }
 
+    private initRenderTarget() {
+        const renderCanvasSize = new THREE.Vector2();
+        this.renderer.getSize(renderCanvasSize);
+        const pixelRadio = this.renderer.getPixelRatio();
+        const renderTarget = new THREE.WebGLRenderTarget(
+            renderCanvasSize.width * pixelRadio,
+            renderCanvasSize.height * pixelRadio
+        );
+        renderTarget.texture.minFilter = THREE.LinearFilter;
+        return renderTarget;
+    }
+
+    private createShaderUniforms() {
+        const fog = this.scene.fog as THREE.Fog | null;
+        return {
+            pointSize: {value: 200 / Math.log(this.data.length) / Math.log(8) / (this.is3D ? 1 : 1.5)},
+            sizeAttenuation: {value: this.is3D},
+            fogColor: {value: fog?.color},
+            fogNear: {value: fog?.near},
+            fogFar: {value: fog?.far}
+        };
+    }
+
+    private createGeometry() {
+        const geometry = new THREE.BufferGeometry();
+        geometry.computeBoundingSphere();
+        return geometry;
+    }
+
+    private setPointsPosition(positions: Float32Array) {
+        this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    }
+
+    private setPointsColor(colors: Float32Array) {
+        this.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    }
+
+    private setPointsScaleFactor(scaleFactors: Float32Array) {
+        this.geometry.setAttribute('scaleFactor', new THREE.BufferAttribute(scaleFactors, 1));
+    }
+
+    private createRenderMaterial() {
+        const uniforms = this.createShaderUniforms();
+        return new THREE.ShaderMaterial({
+            transparent: true,
+            depthTest: false,
+            depthWrite: false,
+            fog: true,
+            blending: THREE.MultiplyBlending,
+            uniforms,
+            ...createShaders()
+        });
+    }
+
+    private createPickingMaterial() {
+        const uniforms = this.createShaderUniforms();
+        return new THREE.ShaderMaterial({
+            transparent: true,
+            depthTest: true,
+            depthWrite: true,
+            fog: false,
+            blending: THREE.NormalBlending,
+            uniforms: uniforms,
+            ...createShaders()
+        });
+    }
+
+    private convertPointsPosition() {
+        const data = this.data;
+
+        const xScaler = d3.scaleLinear();
+        const yScaler = d3.scaleLinear();
+        let zScaler: d3.ScaleLinear<number, number> | null = null;
+        const xExtent = d3.extent(data, (_p, i) => data[i][0]) as [number, number];
+        const yExtent = d3.extent(data, (_p, i) => data[i][1]) as [number, number];
+        const range = [-ScatterChart.CUBE_LENGTH / 2, ScatterChart.CUBE_LENGTH / 2];
+        xScaler.domain(xExtent).range(range);
+        yScaler.domain(yExtent).range(range);
+        if (this.is3D) {
+            zScaler = d3.scaleLinear();
+            const zExtent = d3.extent(data, (_p, i) => data[i][2]) as [number, number];
+            zScaler.domain(zExtent).range(range);
+        }
+
+        const dataInRange = data.map(d => [xScaler(d[0]) ?? 0, yScaler(d[1]) ?? 0, zScaler?.(d[2]) ?? 0] as Vec3);
+
+        const positions = new Float32Array(dataInRange.length * 3);
+        let dst = 0;
+        dataInRange.forEach(d => {
+            positions[dst++] = d[0];
+            positions[dst++] = d[1];
+            positions[dst++] = d[2];
+        });
+        return positions;
+    }
+
+    private convertPointsColor() {
+        const count = this.data.length;
+        const colors = new Float32Array(count * 3);
+        let dst = 0;
+        const color = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
+        const hoveredColor = new THREE.Color(ScatterChart.POINT_COLOR_HOVER);
+        for (let i = 0; i < count; i++) {
+            if (i === this.hoveredPointIndices[0]) {
+                colors[dst++] = hoveredColor.r;
+                colors[dst++] = hoveredColor.g;
+                colors[dst++] = hoveredColor.b;
+            } else {
+                colors[dst++] = color.r;
+                colors[dst++] = color.g;
+                colors[dst++] = color.b;
+            }
+        }
+        return colors;
+    }
+
+    private convertPointsScaleFactor() {
+        const count = this.data.length;
+        const scaleFactor = new Float32Array(count);
+        for (let i = 0; i < count; i++) {
+            if (i === this.hoveredPointIndices[0]) {
+                scaleFactor[i] = ScatterChart.POINT_SCALE_HOVER;
+            } else {
+                scaleFactor[i] = ScatterChart.POINT_SCALE_DEFAULT;
+            }
+        }
+        return scaleFactor;
+    }
+
+    private convertPointsPickingColor() {
+        const count = this.data.length;
+        const colors = new Float32Array(count * 3);
+        let dst = 0;
+        for (let i = 0; i < count; i++) {
+            const color = new THREE.Color(i);
+            colors[dst++] = color.r;
+            colors[dst++] = color.g;
+            colors[dst++] = color.b;
+        }
+        return colors;
+    }
+
+    private updatePointsAttribute() {
+        this.renderColors = this.convertPointsColor();
+        this.setPointsColor(this.renderColors);
+        this.scaleFactors = this.convertPointsScaleFactor();
+        this.setPointsScaleFactor(this.scaleFactors);
+    }
+
+    private updateHoveredPoints() {
+        if (!this.mouseCoordinates) {
+            return;
+        }
+        const dpr = window.devicePixelRatio || 1;
+        const x = Math.floor(this.mouseCoordinates.x * dpr);
+        const y = Math.floor(this.mouseCoordinates.y * dpr);
+        const pointCount = this.data.length;
+        const width = Math.floor(dpr);
+        const height = Math.floor(dpr);
+        const pixelBuffer = new Uint8Array(width * height * 4);
+        this.renderer.readRenderTargetPixels(
+            this.pickingTexture,
+            x,
+            this.pickingTexture.height - y,
+            width,
+            height,
+            pixelBuffer
+        );
+        const pointIndicesSelection = new Uint8Array(pointCount);
+        const pixels = width * height;
+        for (let i = 0; i < pixels; i++) {
+            const id = (pixelBuffer[i * 4] << 16) | (pixelBuffer[i * 4 + 1] << 8) | pixelBuffer[i * 4 + 2];
+            if (id !== 16777215 && id < pointCount) {
+                pointIndicesSelection[id] = 1;
+            }
+        }
+        const pointIndices: number[] = [];
+        for (let i = 0; i < pointIndicesSelection.length; i++) {
+            if (pointIndicesSelection[i] === 1) {
+                pointIndices.push(i);
+            }
+        }
+        this.hoveredPointIndices = pointIndices;
+    }
+
+    private bindEventListeners() {
+        this.canvas.addEventListener('mousemove', this.onMouseMoveBindThis);
+    }
+
+    private removeEventListeners() {
+        this.canvas.removeEventListener('mousemove', this.onMouseMoveBindThis);
+    }
+
+    private onMouseMove(e: MouseEvent) {
+        this.mouseCoordinates = {
+            x: e.offsetX,
+            y: e.offsetY
+        };
+        this.render();
+    }
+
     private addAxes() {
         if (this.axes) {
             this.removeAxes();
@@ -175,10 +461,10 @@ export default class ScatterChart {
         lightPos.y += 1;
         light.position.set(lightPos.x, lightPos.y, lightPos.z);
 
-        if (this.points) {
-            const material = this.points.material as THREE.ShaderMaterial;
-            material.uniforms.color.value = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
-        }
+        // if (this.points) {
+        //     const material = this.points.material as THREE.ShaderMaterial;
+        //     material.uniforms.color.value = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
+        // }
 
         // TODO: remake fog
         // const fog = this.scene.fog as THREE.Fog | null;
@@ -219,6 +505,30 @@ export default class ScatterChart {
         //     }
         // }
 
+        this.updateHoveredPoints();
+        this.updatePointsAttribute();
+        if (this.pickingMaterial) {
+            if (this.axes) {
+                this.scene.remove(this.axes);
+            }
+            if (this.points) {
+                this.points.material = this.pickingMaterial;
+            }
+            if (this.pickingColors) {
+                this.setPointsColor(this.pickingColors);
+            }
+            this.renderer.setRenderTarget(this.pickingTexture);
+            this.renderer.render(this.scene, this.camera);
+            if (this.axes) {
+                this.scene.add(this.axes);
+            }
+            if (this.points && this.renderMaterial) {
+                this.points.material = this.renderMaterial;
+            }
+            if (this.renderColors) {
+                this.setPointsColor(this.renderColors);
+            }
+        }
         this.renderer.setRenderTarget(null);
         this.renderer.render(this.scene, this.camera);
     }
@@ -264,8 +574,9 @@ export default class ScatterChart {
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
         }
-        this.controls.update();
         this.renderer.setSize(width, height);
+        this.pickingTexture = this.initRenderTarget();
+        this.controls.update();
     }
 
     setDimension(is3D: boolean) {
@@ -286,114 +597,33 @@ export default class ScatterChart {
         this.setData(this.data);
     }
 
-    setData(data: [number, number, number][]) {
+    setData(data: Vec3[]) {
         this.data = data;
 
         if (this.points) {
             this.scene.remove(this.points);
         }
 
-        const xScaler = d3.scaleLinear();
-        const yScaler = d3.scaleLinear();
-        let zScaler: d3.ScaleLinear<number, number> | null = null;
-        const xExtent = d3.extent(data, (_p, i) => data[i][0]) as [number, number];
-        const yExtent = d3.extent(data, (_p, i) => data[i][1]) as [number, number];
-        const range = [-ScatterChart.CUBE_LENGTH / 2, ScatterChart.CUBE_LENGTH / 2];
-        xScaler.domain(xExtent).range(range);
-        yScaler.domain(yExtent).range(range);
-        if (this.is3D) {
-            zScaler = d3.scaleLinear();
-            const zExtent = d3.extent(data, (_p, i) => data[i][2]) as [number, number];
-            zScaler.domain(zExtent).range(range);
-        }
+        const positions = this.convertPointsPosition();
+        this.setPointsPosition(positions);
+        this.pickingColors = this.convertPointsPickingColor();
+        this.updatePointsAttribute();
 
-        const dataInRange = data.map(d => [xScaler(d[0]) ?? 0, yScaler(d[1]) ?? 0, zScaler?.(d[2]) ?? 0]);
-
-        const positions = new Float32Array(data.length * 3);
-        let dst = 0;
-        dataInRange.forEach(d => {
-            positions[dst++] = d[0];
-            positions[dst++] = d[1];
-            positions[dst++] = d[2];
-        });
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        geometry.computeBoundingSphere();
-
-        const fog = this.scene.fog as THREE.Fog | null;
-        const material = new THREE.ShaderMaterial({
-            transparent: true,
-            depthTest: false,
-            depthWrite: false,
-            fog: true,
-            blending: THREE.MultiplyBlending,
-            uniforms: {
-                pointSize: {value: 200 / Math.log(data.length) / Math.log(8) / (this.is3D ? 1 : 1.5)},
-                scale: {value: 1},
-                color: {value: new THREE.Color()},
-                opacity: {value: 1},
-                sizeAttenuation: {value: this.is3D},
-                fogColor: {value: fog?.color},
-                fogNear: {value: fog?.near},
-                fogFar: {value: fog?.far}
-            },
-            vertexShader: `
-                uniform vec3 color;
-                uniform bool sizeAttenuation;
-                uniform float pointSize;
-
-                varying vec3 vColor;
-
-                ${THREE.ShaderChunk['fog_pars_vertex']}
-
-                void main() {
-                    vColor = color;
-
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    gl_Position = projectionMatrix * mvPosition;
-
-                    float outputPointSize = pointSize;
-                    if (sizeAttenuation) {
-                        outputPointSize = -pointSize / mvPosition.z;
-                    } else {
-                        const float PI = 3.1415926535897932384626433832795;
-                        const float minScale = 0.1;  // minimum scaling factor
-                        const float outSpeed = 2.0;  // shrink speed when zooming out
-                        const float outNorm = (1. - minScale) / atan(outSpeed);
-                        const float maxScale = 15.0;  // maximum scaling factor
-                        const float inSpeed = 0.02;  // enlarge speed when zooming in
-                        const float zoomOffset = 0.3;  // offset zoom pivot
-                        float zoom = projectionMatrix[0][0] + zoomOffset;  // zoom pivot
-                        float scale = zoom < 1. ? 1. + outNorm * atan(outSpeed * (zoom - 1.)) :
-                                        1. + 2. / PI * (maxScale - 1.) * atan(inSpeed * (zoom - 1.));
-                        outputPointSize = pointSize * scale;
-                    }
-                    gl_PointSize = max(outputPointSize, ${ScatterChart.MIN_POINT_SIZE.toFixed(1)});
-                    ${THREE.ShaderChunk['fog_vertex']}
-                }
-            `,
-            fragmentShader: `
-                uniform float opacity;
-
-                varying vec3 vColor;
-
-                ${THREE.ShaderChunk['common']}
-                ${THREE.ShaderChunk['fog_pars_fragment']}
-
-                void main() {
-                    float r = distance(gl_PointCoord, vec2(0.5, 0.5));
-                    if (r < 0.5) {
-                        gl_FragColor = vec4(vColor, opacity);
-                    } else {
-                        discard;
-                    }
-                    ${THREE.ShaderChunk['fog_fragment']}
-                }
-            `
-        });
-        this.points = new THREE.Points(geometry, material);
+        this.renderMaterial = this.createRenderMaterial();
+        this.pickingMaterial = this.createPickingMaterial();
+        this.points = new THREE.Points(this.geometry, this.renderMaterial);
+        this.points.frustumCulled = false;
         this.scene.add(this.points);
         this.render();
+    }
+
+    dispose() {
+        this.removeEventListeners();
+        this.renderer.dispose();
+        this.controls.dispose();
+        this.pickingTexture.dispose();
+        this.geometry.dispose();
+        this.renderMaterial?.dispose();
+        this.pickingMaterial?.dispose();
     }
 }

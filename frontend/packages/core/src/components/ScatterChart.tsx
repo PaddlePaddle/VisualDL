@@ -50,6 +50,9 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
         useEffect(() => {
             if (canvas.current) {
                 chart.current = new Chart(canvas.current, options.current);
+                return () => {
+                    chart.current?.dispose();
+                };
             }
         }, []);
 
