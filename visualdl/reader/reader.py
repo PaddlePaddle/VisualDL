@@ -22,18 +22,28 @@ from visualdl.proto import record_pb2
 from visualdl.utils.string_util import decode_tag, encode_tag
 
 
-def is_VDLRecord_file(path):
+def is_VDLRecord_file(path, check=False):
     """Determine whether it is a VDL log file according to the file name.
 
     File name of a VDL log file must contain `vdlrecords`.
 
     Args:
         path: File name to determine.
+        check: Check file is valid or not.
 
     Returns:
         True if the file is a VDL log file, otherwise false.
     """
-    return "vdlrecords" in path
+    if not "vdlrecords" in path:
+        return False
+    if check:
+        _reader = RecordReader(filepath=path)
+        meta_data = _reader.get_next()
+        record = record_pb2.Record()
+        record.ParseFromString(meta_data)
+        if 'meta_data_tag' != record.values[0].tag:
+            return False
+    return True
 
 
 class LogReader(object):
