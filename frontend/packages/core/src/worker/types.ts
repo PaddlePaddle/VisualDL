@@ -19,12 +19,23 @@ type WorkerMessageType<T extends string, D = void> = {
     data: D;
 };
 
+export type InitializeData = {
+    env: Record<string, string>;
+};
+
+type InitializeMessage = WorkerMessageType<'INITIALIZE', InitializeData>;
 type InitializedMessage = WorkerMessageType<'INITIALIZED'>;
 type RunMessage<T> = WorkerMessageType<'RUN', T>;
 type ResultMessage<T> = WorkerMessageType<'RESULT', T>;
 type InfoMessage<T> = WorkerMessageType<'INFO', T>;
 type ErrorMessage<E extends Error = Error> = WorkerMessageType<'ERROR', E>;
 
-export type WorkerMessage<T> = InitializedMessage | RunMessage<T> | ResultMessage<T> | InfoMessage<T> | ErrorMessage;
+export type WorkerMessage<T> =
+    | InitializeMessage
+    | InitializedMessage
+    | RunMessage<T>
+    | ResultMessage<T>
+    | InfoMessage<T>
+    | ErrorMessage;
 
 export type WorkerMessageEvent<T> = MessageEvent<WorkerMessage<T>>;

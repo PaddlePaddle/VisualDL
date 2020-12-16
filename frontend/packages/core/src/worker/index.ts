@@ -17,7 +17,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type {WorkerMessage, WorkerMessageEvent} from '~/worker/types';
+import type {InitializeData, WorkerMessage, WorkerMessageEvent} from '~/worker/types';
+
+export type {InitializeData};
 
 type WorkerMessageType<T> = WorkerMessage<T>['type'];
 type Handler<T> = (data: T) => unknown;
@@ -71,6 +73,9 @@ export class WorkerSelf implements IWorker {
 
     constructor() {
         self.addEventListener('message', this.listener.bind(this));
+        this.on<InitializeData>('INITIALIZE', ({env}) => {
+            self.__snowpack_env__ = env;
+        });
     }
 
     private listener<T>(e: WorkerMessageEvent<T>) {

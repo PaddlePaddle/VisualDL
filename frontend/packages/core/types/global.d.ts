@@ -19,6 +19,7 @@ declare global {
         webkitAudioContext: AudioContext;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         _hmt: any[];
+        __snowpack_env__: Record<string, string>;
     }
 }
 

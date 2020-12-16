@@ -16,6 +16,7 @@
 
 import {useEffect, useMemo, useState} from 'react';
 
+import type {InitializeData} from '~/worker';
 import {WebWorker} from '~/worker';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -33,6 +34,7 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
 
     useEffect(() => {
         const worker = new WebWorker(`${PUBLIC_PATH}/_dist_/worker/${name}.js`, {type: 'module'});
+        worker.emit<InitializeData>('INITIALIZE', {env: import.meta.env});
         worker.on('INITIALIZED', () => {
             setResult({worker});
             worker.emit('RUN', p);

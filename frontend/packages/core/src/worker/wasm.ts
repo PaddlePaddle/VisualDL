@@ -16,17 +16,19 @@
 
 import * as funcs from '@visualdl/wasm';
 
+import type {InitializeData} from '~/worker';
 import {WorkerSelf} from '~/worker';
 import initWasm from '@visualdl/wasm';
 
 const workerSelf = new WorkerSelf();
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
-
 type FuncNames = Exclude<keyof typeof funcs, 'default'>;
 
-async function init() {
+async function init(env: Record<string, string>) {
+    const PUBLIC_PATH = env.SNOWPACK_PUBLIC_PATH;
+
     await initWasm(`${PUBLIC_PATH}/wasm/visualdl.wasm`);
+
     workerSelf.emit('INITIALIZED');
     workerSelf.on<{name: FuncNames; params: unknown[]}>('RUN', ({name, params}) => {
         try {
@@ -41,4 +43,6 @@ async function init() {
     });
 }
 
-init();
+workerSelf.on<InitializeData>('INITIALIZE', ({env}) => {
+    init(env);
+});
