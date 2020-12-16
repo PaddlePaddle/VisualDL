@@ -25,6 +25,7 @@ import type {
     UMAPResult
 } from '~/resource/high-dimensional';
 import HighDimensionalChart, {HighDimensionalChartRef} from '~/components/HighDimensionalPage/HighDimensionalChart';
+import LabelSearchInput, {LabelSearchInputProps} from '~/components/HighDimensionalPage/LabelSearchInput';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 
@@ -35,6 +36,7 @@ import Content from '~/components/Content';
 import DimensionSwitch from '~/components/HighDimensionalPage/DimensionSwitch';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
+import LabelSearchResult from '~/components/HighDimensionalPage/LabelSearchResult';
 import PCADetail from '~/components/HighDimensionalPage/PCADetail';
 import ReductionTab from '~/components/HighDimensionalPage/ReductionTab';
 import TSNEDetail from '~/components/HighDimensionalPage/TSNEDetail';
@@ -66,16 +68,30 @@ const FullWidthButton = styled(Button)`
     width: 100%;
 `;
 
-const RightAside = styled(Aside)`
-    border-left: 1px solid var(--border-color);
-
+const HDAside = styled(Aside)`
     .secondary {
         color: var(--text-light-color);
     }
 `;
 
-const LeftAside = styled(Aside)`
+const RightAside = styled(HDAside)`
+    border-left: 1px solid var(--border-color);
+`;
+
+const LeftAside = styled(HDAside)`
     border-right: 1px solid var(--border-color);
+
+    ${AsideSection} {
+        border-bottom: none;
+    }
+
+    > .aside-top > .search-result {
+        margin-top: 0;
+        margin-left: 0;
+        margin-right: 0;
+        flex: auto;
+        overflow: hidden auto;
+    }
 `;
 
 const HDContent = styled(Content)`
@@ -150,16 +166,21 @@ const HighDimensional: FunctionComponent = () => {
     const [labels, setLabels] = useState<string[]>([]);
     const [labelBy, setLabelBy] = useState<string>();
     const [metadata, setMetadata] = useState<string[][]>([]);
+    // dimension of data
     const [dim, setDim] = useState<number>(0);
-    const labelByLabels = useMemo(() => {
-        if (labelBy != null) {
-            const labelIndex = labels.indexOf(labelBy);
-            if (labelIndex !== -1) {
-                return metadata.map(row => row[labelIndex]);
+    const getLabelByLabels = useCallback(
+        (value: string | undefined) => {
+            if (value != null) {
+                const labelIndex = labels.indexOf(value);
+                if (labelIndex !== -1) {
+                    return metadata.map(row => row[labelIndex]);
+                }
             }
-        }
-        return [];
-    }, [labelBy, labels, metadata]);
+            return [];
+        },
+        [labels, metadata]
+    );
+    const labelByLabels = useMemo(() => getLabelByLabels(labelBy), [getLabelByLabels, labelBy]);
 
     const readFile = useCallback(
         (phase: string, file: File | null, setter: React.Dispatch<React.SetStateAction<string>>) => {
@@ -243,6 +264,7 @@ const HighDimensional: FunctionComponent = () => {
         selectedEmbedding
     ]);
 
+    // dimension of display
     const [dimension, setDimension] = useState<Dimension>('3d');
     const [reduction, setReduction] = useState<Reduction>('pca');
 
@@ -267,6 +289,37 @@ const HighDimensional: FunctionComponent = () => {
         setData(data);
         setLoading(false);
     }, []);
+
+    const [searchResult, setSearchResult] = useState<Parameters<NonNullable<LabelSearchInputProps['onChange']>>['0']>({
+        labelBy: undefined,
+        value: ''
+    });
+
+    const searchedResult = useMemo(() => {
+        if (searchResult.labelBy == null || searchResult.value === '') {
+            return {
+                indices: [],
+                metadata: []
+            };
+        }
+        const labelByLabels = getLabelByLabels(searchResult.labelBy);
+        const metadataResult: string[] = [];
+        const vectorsIndices: number[] = [];
+        for (let i = 0; i < labelByLabels.length; i++) {
+            if (labelByLabels[i].includes(searchResult.value)) {
+                metadataResult.push(labelByLabels[i]);
+                vectorsIndices.push(i);
+            }
+        }
+        // const vectorsResult = new Float32Array(vectorsIndices.length * dim);
+        // for (let i = 0; i < vectorsIndices.length; i++) {
+        //     vectorsResult.set(vectors.subarray(vectorsIndices[i] * dim, vectorsIndices[i] * dim + dim), i * dim);
+        // }
+        return {
+            indices: vectorsIndices,
+            metadata: metadataResult
+        };
+    }, [getLabelByLabels, searchResult.labelBy, searchResult.value]);
 
     const detail = useMemo(() => {
         switch (reduction) {
@@ -342,7 +395,32 @@ const HighDimensional: FunctionComponent = () => {
         [t, dataPath, reduction, dimension, metadataFile, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
     );
 
-    const leftAside = useMemo(() => <LeftAside></LeftAside>, []);
+    const leftAside = useMemo(
+        () => (
+            <LeftAside>
+                <AsideSection>
+                    <Field>
+                        <LabelSearchInput labels={labels} onChange={setSearchResult} />
+                    </Field>
+                    {searchResult.value !== '' && (
+                        <Field className="secondary">
+                            <span>
+                                {t('high-dimensional:matched-result-count', {
+                                    count: searchedResult.metadata.length
+                                })}
+                            </span>
+                        </Field>
+                    )}
+                </AsideSection>
+                <AsideSection className="search-result">
+                    <Field>
+                        <LabelSearchResult list={searchedResult.metadata} />
+                    </Field>
+                </AsideSection>
+            </LeftAside>
+        ),
+        [labels, searchResult.value, searchedResult.metadata, t]
+    );
 
     return (
         <>
@@ -360,6 +438,7 @@ const HighDimensional: FunctionComponent = () => {
                         perplexity={perplexity}
                         learningRate={learningRate}
                         neighbors={neighbors}
+                        highlightIndices={searchedResult.indices}
                         onCalculate={calculate}
                         onCalculated={calculated}
                         onError={showError}

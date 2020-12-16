@@ -141,6 +141,7 @@ type HighDimensionalChartProps = {
     perplexity: number;
     learningRate: number;
     neighbors: number;
+    highlightIndices?: number[];
     onCalculate?: () => unknown;
     onCalculated?: (data: PCAResult | TSNEResult | UMAPResult) => unknown;
     onError?: (e: Error) => unknown;
@@ -164,6 +165,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
             perplexity,
             learningRate,
             neighbors,
+            highlightIndices,
             onCalculate,
             onCalculated,
             onError,
@@ -300,6 +302,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         labels={labels}
                         is3D={is3D}
                         rotate={reduction !== 'tsne'}
+                        highlightIndices={highlightIndices ?? []}
                     />
                 </Chart>
             </Wrapper>

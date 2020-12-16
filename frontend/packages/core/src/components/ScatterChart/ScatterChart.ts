@@ -104,8 +104,8 @@ export default class ScatterChart {
     static ORBIT_ANIMATION_ROTATION_CYCLE_IN_SECONDS = 2;
     static NUM_POINTS_FOG_THRESHOLD = 5000;
 
-    static POINT_COLOR_NO_SELECTION = 0x7575d9;
-    static POINT_COLOR_HOVER = 0x760b4f;
+    static POINT_COLOR_NO_SELECTION = 0x7e7e7e;
+    static POINT_COLOR_HOVER = 0x2932e1;
 
     static POINT_SCALE_DEFAULT = 1.0;
     static POINT_SCALE_HOVER = 1.2;
@@ -137,6 +137,7 @@ export default class ScatterChart {
     private points: THREE.Points | null = null;
     private hoveredPointIndices: number[] = [];
     private label: ScatterChartLabel;
+    private highLightPointIndices: number[] = [];
     private mouseCoordinates: {
         x: number;
         y: number;
@@ -361,7 +362,7 @@ export default class ScatterChart {
         const color = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
         const hoveredColor = new THREE.Color(ScatterChart.POINT_COLOR_HOVER);
         for (let i = 0; i < count; i++) {
-            if (i === this.hoveredPointIndices[0]) {
+            if (i === this.hoveredPointIndices[0] || this.highLightPointIndices.includes(i)) {
                 colors[dst++] = hoveredColor.r;
                 colors[dst++] = hoveredColor.g;
                 colors[dst++] = hoveredColor.b;
@@ -444,8 +445,8 @@ export default class ScatterChart {
     }
 
     private updateHoveredLabels() {
-        this.label.clear();
         if (!this.hoveredPointIndices[0] || !this.camera || !this.positions) {
+            this.label.clear();
             return;
         }
         const dpr = window.devicePixelRatio || 1;
@@ -654,7 +655,6 @@ export default class ScatterChart {
         this.positions = this.convertPointsPosition();
         this.setPointsPosition(this.positions);
         this.pickingColors = this.convertPointsPickingColor();
-        this.updatePointsAttribute();
 
         this.renderMaterial = this.createRenderMaterial();
         this.pickingMaterial = this.createPickingMaterial();
@@ -666,6 +666,11 @@ export default class ScatterChart {
 
     setLabels(labels: string[]) {
         this.labels = labels;
+    }
+
+    setHighLightIndices(highLightIndices: number[]) {
+        this.highLightPointIndices = highLightIndices;
+        this.render();
     }
 
     dispose() {

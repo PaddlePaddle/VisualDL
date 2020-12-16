@@ -20,6 +20,7 @@
         "reading-metadata": "Reading metadata...",
         "reading-vector": "Reading tensor..."
     },
+    "matched-result-count": "{{count}} matched.",
     "neighbors": "Neighbors",
     "pause": "Pause",
     "pca": "PCA",
@@ -32,6 +33,7 @@
     },
     "reset-zoom": "Reset zoom to fit all points",
     "run": "Run",
+    "search-empty": "Nothing matched",
     "select-color": "Color by",
     "select-data": "Select Data",
     "select-file": "Select File",

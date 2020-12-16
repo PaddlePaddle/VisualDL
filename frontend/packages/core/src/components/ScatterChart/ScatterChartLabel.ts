@@ -82,6 +82,7 @@ export default class ScatterChartLabel {
     }
 
     render(labels: LabelRenderContext[]) {
+        this.clear();
         const ctx = this.canvas?.getContext('2d');
         if (ctx) {
             ctx.miterLimit = 2;

@@ -36,6 +36,7 @@ export type ScatterChartProps = {
     labels: string[];
     is3D: boolean;
     rotate?: boolean;
+    highlightIndices: number[];
 };
 
 export type ScatterChartRef = {
@@ -43,7 +44,7 @@ export type ScatterChartRef = {
 };
 
 const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithStyled>(
-    ({width, height, data, labels, is3D, rotate, className}, ref) => {
+    ({width, height, data, labels, is3D, rotate, highlightIndices, className}, ref) => {
         const theme = useTheme();
 
         const element = useRef<HTMLDivElement>(null);
@@ -74,6 +75,10 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
             chart.current?.setData(data);
             chart.current?.setLabels(labels);
         }, [data, labels]);
+
+        useEffect(() => {
+            chart.current?.setHighLightIndices(highlightIndices);
+        }, [highlightIndices]);
 
         useEffect(() => {
             chart.current?.setSize(width, height);
