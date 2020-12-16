@@ -153,12 +153,12 @@ class Api(object):
     @result('text/tab-separated-values')
     def embedding_metadata(self, name):
         key = os.path.join('data/plugin/embeddings/metadata', name)
-        return self._get_with_retry(key, lib.get_embedding_labels(), name)
+        return self._get_with_retry(key, lib.get_embedding_labels, name)
 
     @result('text/plain')
     def embedding_tensor(self, name):
         key = os.path.join('data/plugin/embeddings/tensor', name)
-        return self._get_with_retry(key, lib.get_embedding_tensors(), name)
+        return self._get_with_retry(key, lib.get_embedding_tensors, name)
 
     @result()
     def histogram_tags(self):

@@ -17,6 +17,8 @@ from __future__ import absolute_import
 import sys
 import time
 import os
+import io
+import csv
 from functools import partial
 import numpy as np
 from visualdl.server.log import logger
@@ -199,17 +201,18 @@ def get_pr_curve_step(log_reader, run, tag=None):
 
 
 def get_embeddings_list(log_reader):
-    run2tag = get_logs(log_reader, 'embedding')
+    run2tag = get_logs(log_reader, 'embeddings')
 
-    for run, tag in zip(run2tag['runs'], run2tag['tags']):
-        name = path = os.path.join(run, tag)
-        EMBEDDING_NAME.update({name: {'run': run, 'tag': tag}})
-        records = log_reader.data_manager.get_reservoir("embeddings").get_items(
-            run, decode_tag(tag))
-        row_len = len(records[0].embeddings.embeddings)
-        col_len = len(records[0].embeddings.embeddings[0].vectors)
-        shape = [row_len, col_len]
-        embedding_names.append({'name': name, 'shape': shape, 'path': path})
+    for run, _tags in zip(run2tag['runs'], run2tag['tags']):
+        for tag in _tags:
+            name = path = os.path.join(run, tag)
+            EMBEDDING_NAME.update({name: {'run': run, 'tag': tag}})
+            records = log_reader.data_manager.get_reservoir("embeddings").get_items(
+                run, decode_tag(tag))
+            row_len = len(records[0].embeddings.embeddings)
+            col_len = len(records[0].embeddings.embeddings[0].vectors)
+            shape = [row_len, col_len]
+            embedding_names.append({'name': name, 'shape': shape, 'path': path})
     return embedding_names
 
 
@@ -222,11 +225,18 @@ def get_embedding_labels(log_reader, name):
     labels = []
     for item in records[0].embeddings.embeddings:
         labels.append(item.label)
+    '''
+    先不用csv试试看
+    with io.StringIO() as fp:
+        csv_writer = csv.writer(fp, delimiter='\t')
+        csv_writer.writerows(labels)
+        labels = fp.getvalue()
+    '''
     labels = "\n".join(str(i) for i in labels)
     return labels
 
 
-def get_embedding_tensor(log_reader, name):
+def get_embedding_tensors(log_reader, name):
     run = EMBEDDING_NAME[name]['run']
     tag = EMBEDDING_NAME[name]['tag']
     log_reader.load_new_data()
