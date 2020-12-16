@@ -71,14 +71,15 @@ class LogReader(object):
 
         self.file_readers = {}
 
+        # {'run': {'scalar': {'tag1': data, 'tag2': data}}}
+        self._log_datas = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
+
         if file_path:
             self._log_data = collections.defaultdict(lambda: collections.defaultdict(list))
             self.get_file_reader(file_path=file_path)
             remain = self.get_remain()
             self.read_log_data(remain=remain)
-
             components_name = components.keys()
-
             for name in components_name:
                 exec("self.get_%s=partial(self.get_data, '%s')" % (name, name))
         elif logdir:
@@ -108,6 +109,14 @@ class LogReader(object):
     def logdir(self):
         return self.dir
 
+    def parsing_from_proto(self, component, proto_datas):
+        data = []
+        if 'scalar' == component:
+            for item in proto_datas:
+                data.append([item.id, item.tag, item.timestamp, item.value])
+            return data
+        return proto_datas
+
     def _get_log_tags(self):
         component_keys = self._log_data.keys()
         log_tags = {}
@@ -117,6 +126,18 @@ class LogReader(object):
             log_tags[key] = tags
 
         return log_tags
+
+    def get_log_data(self, component, run, tag):
+        if run in self._log_datas.keys() and component in self._log_datas[run].keys() and tag in self._log_datas[run][component].keys():
+            return self._log_datas[run][component][tag]
+        else:
+            file_path = bfile.join(run, self.walks[run])
+            reader = self._get_file_reader(file_path=file_path, update=False)
+            remain = self.get_remain(reader=reader)
+            data = self.read_log_data(remain=remain, update=False)[component][tag]
+            data = self.parsing_from_proto(component, data)
+            self._log_datas[run][component][tag] = data
+            return data
 
     def get_tags(self):
         return self._get_log_tags()
@@ -221,15 +242,28 @@ class LogReader(object):
         Args:
             file_path: Vdl log file path.
         """
-        self._register_reader(file_path)
-        self.reader = self.readers[file_path]
-        self.reader.dir = file_path
-        return self.reader
+        return self._get_file_reader(file_path, True)
+
+    def _get_file_reader(self, file_path, update=True):
+        if update:
+            self._register_reader(file_path)
+            self.reader = self.readers[file_path]
+            self.reader.dir = file_path
+            return self.reader
+        else:
+            reader = RecordReader(filepath=file_path)
+            return reader
 
     def _register_reader(self, path, dir=None):
-        if path not in list(self.readers.keys()):
-            reader = RecordReader(filepath=path, dir=dir)
-            self.readers[path] = reader
+        self.register_reader(path=path, dir=dir, update=True)
+
+    def register_reader(self, path, dir=None, update=True):
+        if update:
+            if path not in list(self.readers.keys()):
+                reader = RecordReader(filepath=path, dir=dir)
+                self.readers[path] = reader
+        else:
+            pass
 
     def register_readers(self, update=False):
         """Register all readers for all vdl log files.
@@ -257,22 +291,26 @@ class LogReader(object):
                 self.data_manager.add_item(component, self.reader.dir, tag,
                                            record)
 
-    def get_remain(self):
+    def get_remain(self, reader=None):
         """Get all remain data by self.reader.
         """
-        if self.reader is None:
+        if self.reader is None and reader is None:
             raise RuntimeError("Please specify log path!")
-        return self.reader.get_remain()
+        return self.reader.get_remain() if reader is None else reader.get_remain()
 
-    def read_log_data(self, remain):
+    def read_log_data(self, remain, update=True):
         """Parse data from log file without sampling.
 
         Args:
             remain: Raw data from log file.
         """
+        _log_data = collections.defaultdict(lambda: collections.defaultdict(list))
         for item in remain:
             component, dir, tag, record = self.parse_from_bin(item)
-            self._log_data[component][tag].append(record)
+            _log_data[component][tag].append(record)
+        if update:
+            self._log_data = _log_data
+        return _log_data
 
     @property
     def log_data(self):

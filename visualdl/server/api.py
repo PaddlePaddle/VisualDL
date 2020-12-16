@@ -119,6 +119,11 @@ class Api(object):
         return self._get_with_retry(key, lib.get_scalar, run, tag)
 
     @result()
+    def scalar_data(self, run, tag):
+        key = os.path.join('data/plugin/scalars/data', run, tag)
+        return self._get_with_retry(key, lib.get_scalar_data, run, tag)
+
+    @result()
     def image_list(self, mode, tag):
         key = os.path.join('data/plugin/images/images', mode, tag)
         return self._get_with_retry(key, lib.get_image_tag_steps, mode, tag)
@@ -185,6 +190,7 @@ def create_api_call(logdir, model, cache_timeout):
         'histogram/tags': (api.histogram_tags, []),
         'pr-curve/tags': (api.pr_curve_tags, []),
         'scalar/list': (api.scalar_list, ['run', 'tag']),
+        'scalar/data': (api.scalar_data, ['run', 'tag']),
         'image/list': (api.image_list, ['run', 'tag']),
         'image/image': (api.image_image, ['run', 'tag', 'index']),
         'audio/list': (api.audio_list, ['run', 'tag']),

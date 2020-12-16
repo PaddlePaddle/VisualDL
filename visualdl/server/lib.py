@@ -17,6 +17,8 @@ from __future__ import absolute_import
 import sys
 import time
 import os
+import io
+import csv
 from functools import partial
 import numpy as np
 from visualdl.server.log import logger
@@ -119,6 +121,18 @@ def get_scalar(log_reader, run, tag):
         run, decode_tag(tag))
     results = [[s2ms(item.timestamp), item.id, item.value] for item in records]
     return results
+
+
+def get_scalar_data(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    result = log_reader.get_log_data('scalar', run, tag)
+    with io.StringIO() as fp:
+        csv_writer = csv.writer(fp, delimiter='\t')
+        csv_writer.writerow(['id', 'tag', 'timestamp', 'value'])
+        csv_writer.writerows(result)
+        result = fp.getvalue()
+        return result
 
 
 def get_image_tag_steps(log_reader, run, tag):
