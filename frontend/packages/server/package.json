@@ -46,7 +46,7 @@
     "devDependencies": {
         "@types/enhanced-resolve": "3.0.6",
         "@types/express": "4.17.9",
-        "@types/node": "14.14.12",
+        "@types/node": "14.14.14",
         "@visualdl/mock": "2.0.9",
         "cross-env": "7.0.3",
         "nodemon": "2.0.6",

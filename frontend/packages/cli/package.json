@@ -41,8 +41,8 @@
         "yargs": "16.2.0"
     },
     "devDependencies": {
-        "@types/node": "14.14.12",
-        "@types/yargs": "15.0.11",
+        "@types/node": "14.14.14",
+        "@types/yargs": "15.0.12",
         "cross-env": "7.0.3",
         "ts-node": "9.1.1",
         "typescript": "4.0.5"

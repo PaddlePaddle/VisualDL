@@ -19,8 +19,9 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
 
+import type {Point2D, Point3D} from './types';
+
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import type {Point2D} from './types';
 import ScatterChartLabel from './ScatterChartLabel';
 
 function createShaders() {
@@ -90,8 +91,6 @@ export type ScatterChartOptions = {
     background?: string | number | THREE.Color;
 };
 
-type Vec3 = [number, number, number];
-
 export default class ScatterChart {
     static CUBE_LENGTH = 2;
     static MAX_ZOOM = 5 * ScatterChart.CUBE_LENGTH;
@@ -110,14 +109,14 @@ export default class ScatterChart {
     static POINT_SCALE_DEFAULT = 1.0;
     static POINT_SCALE_HOVER = 1.2;
 
-    static PERSP_CAMERA_INIT_POSITION = [0.45, 0.9, 1.6] as const;
-    static ORTHO_CAMERA_INIT_POSITION = [0, 0, 4] as const;
+    static PERSP_CAMERA_INIT_POSITION: Point3D = [0.45, 0.9, 1.6];
+    static ORTHO_CAMERA_INIT_POSITION: Point3D = [0, 0, 4];
 
     width: number;
     height: number;
     background: string | number | THREE.Color = '#fff';
     is3D = true;
-    data: Vec3[] = [];
+    data: Point3D[] = [];
     labels: string[] = [];
     private readonly container: HTMLElement;
     private canvas: HTMLCanvasElement | null;
@@ -138,10 +137,7 @@ export default class ScatterChart {
     private hoveredPointIndices: number[] = [];
     private label: ScatterChartLabel;
     private highLightPointIndices: number[] = [];
-    private mouseCoordinates: {
-        x: number;
-        y: number;
-    } | null = null;
+    private mouseCoordinates: Point2D | null = null;
 
     private onMouseMoveBindThis: (e: MouseEvent) => void;
 
@@ -343,7 +339,7 @@ export default class ScatterChart {
             zScaler.domain(zExtent).range(range);
         }
 
-        const dataInRange = data.map(d => [xScaler(d[0]) ?? 0, yScaler(d[1]) ?? 0, zScaler?.(d[2]) ?? 0] as Vec3);
+        const dataInRange = data.map(d => [xScaler(d[0]) ?? 0, yScaler(d[1]) ?? 0, zScaler?.(d[2]) ?? 0] as Point3D);
 
         const positions = new Float32Array(dataInRange.length * 3);
         let dst = 0;
@@ -413,8 +409,8 @@ export default class ScatterChart {
             return;
         }
         const dpr = window.devicePixelRatio || 1;
-        const x = Math.floor(this.mouseCoordinates.x * dpr);
-        const y = Math.floor(this.mouseCoordinates.y * dpr);
+        const x = Math.floor(this.mouseCoordinates[0] * dpr);
+        const y = Math.floor(this.mouseCoordinates[1] * dpr);
         const pointCount = this.data.length;
         const width = Math.floor(dpr);
         const height = Math.floor(dpr);
@@ -445,7 +441,7 @@ export default class ScatterChart {
     }
 
     private updateHoveredLabels() {
-        if (!this.hoveredPointIndices[0] || !this.camera || !this.positions) {
+        if (this.hoveredPointIndices[0] == null || !this.camera || !this.positions) {
             this.label.clear();
             return;
         }
@@ -482,10 +478,7 @@ export default class ScatterChart {
     }
 
     private onMouseMove(e: MouseEvent) {
-        this.mouseCoordinates = {
-            x: e.offsetX,
-            y: e.offsetY
-        };
+        this.mouseCoordinates = [e.offsetX, e.offsetY];
         this.render();
     }
 
@@ -645,7 +638,7 @@ export default class ScatterChart {
         this.setData(this.data);
     }
 
-    setData(data: Vec3[]) {
+    setData(data: Point3D[]) {
         this.data = data;
 
         if (this.points) {
