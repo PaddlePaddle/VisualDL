@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type {PCAResult, Reduction, TSNEResult, UMAPResult} from '~/resource/high-dimensional';
+import type {CalculateParams, CalculateResult, Reduction} from '~/resource/high-dimensional';
 import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import ScatterChart, {ScatterChartRef} from '~/components/ScatterChart';
 
@@ -24,75 +24,7 @@ import type {WithStyled} from '~/utils/style';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import useWebAssembly from '~/hooks/useWebAssembly';
 import useWorker from '~/hooks/useWorker';
-
-function useComputeHighDimensional(
-    reduction: Reduction,
-    vectors: Float32Array,
-    dim: number,
-    is3D: boolean,
-    perplexity: number,
-    learningRate: number,
-    neighbors: number
-) {
-    const pcaParams = useMemo(() => {
-        if (reduction === 'pca') {
-            return [Array.from(vectors), dim, 3] as const;
-        }
-        return [[], 0, 3];
-    }, [reduction, vectors, dim]);
-
-    const tsneInitParams = useRef({perplexity, epsilon: learningRate});
-    const tsneParams = useMemo(() => {
-        if (reduction === 'tsne') {
-            return {
-                input: vectors,
-                dim,
-                n: is3D ? 3 : 2,
-                ...tsneInitParams.current
-            };
-        }
-        return {
-            input: new Float32Array(),
-            dim: 0,
-            n: is3D ? 3 : 2,
-            perplexity: 5
-        };
-    }, [reduction, vectors, dim, is3D]);
-
-    const umapParams = useMemo(() => {
-        if (reduction === 'umap') {
-            return {
-                input: vectors,
-                dim,
-                n: is3D ? 3 : 2,
-                neighbors
-            };
-        }
-        return {
-            input: new Float32Array(),
-            dim: 0,
-            n: is3D ? 3 : 2,
-            neighbors: 15
-        };
-    }, [reduction, vectors, dim, is3D, neighbors]);
-
-    const pcaResult = useWebAssembly<PCAResult>('high_dimensional_pca', pcaParams);
-    const tsneResult = useWorker<TSNEResult>('high-dimensional/tsne', tsneParams);
-    const umapResult = useWorker<UMAPResult>('high-dimensional/umap', umapParams);
-
-    if (reduction === 'pca') {
-        return pcaResult;
-    }
-    if (reduction === 'tsne') {
-        return tsneResult;
-    }
-    if (reduction === 'umap') {
-        return umapResult;
-    }
-    return null as never;
-}
 
 const Wrapper = styled.div`
     height: 100%;
@@ -143,7 +75,7 @@ type HighDimensionalChartProps = {
     neighbors: number;
     highlightIndices?: number[];
     onCalculate?: () => unknown;
-    onCalculated?: (data: PCAResult | TSNEResult | UMAPResult) => unknown;
+    onCalculated?: (data: CalculateResult) => unknown;
     onError?: (e: Error) => unknown;
 };
 
@@ -196,15 +128,42 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
             }
         }, []);
 
-        const {data, error, worker} = useComputeHighDimensional(
-            reduction,
-            vectors,
-            dim,
-            is3D,
-            perplexity,
-            learningRate,
-            neighbors
-        );
+        const params = useMemo<CalculateParams>(() => {
+            const result = {
+                input: vectors,
+                dim,
+                n: is3D ? 3 : 2
+            };
+            switch (reduction) {
+                case 'pca':
+                    return {
+                        reduction,
+                        params: {
+                            ...result
+                        }
+                    };
+                case 'tsne':
+                    return {
+                        reduction,
+                        params: {
+                            perplexity,
+                            epsilon: learningRate,
+                            ...result
+                        }
+                    };
+                case 'umap':
+                    return {
+                        reduction,
+                        params: {
+                            neighbors,
+                            ...result
+                        }
+                    };
+                default:
+                    return null as never;
+            }
+        }, [dim, is3D, learningRate, neighbors, perplexity, reduction, vectors]);
+        const {data, error, worker} = useWorker<CalculateResult>('high-dimensional/calculate', params);
 
         const iterationId = useRef<number | null>(null);
         const iteration = useCallback(() => {

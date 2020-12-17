@@ -31,13 +31,13 @@ const Wrapper = styled(Field)`
 export type PCADetailProps = {
     dimension: Dimension;
     variance: number[];
+    totalVariance: number;
 };
 
-const PCADetail: FunctionComponent<PCADetailProps> = ({dimension, variance}) => {
+const PCADetail: FunctionComponent<PCADetailProps> = ({dimension, variance, totalVariance}) => {
     const {t} = useTranslation(['high-dimensional', 'common']);
 
     const dim = useMemo(() => (dimension === '3d' ? 3 : 2), [dimension]);
-    const totalVariance = useMemo(() => variance.reduce((s, c) => s + c, 0), [variance]);
 
     return (
         <Wrapper>

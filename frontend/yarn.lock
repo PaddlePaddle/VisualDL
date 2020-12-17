@@ -3325,6 +3325,11 @@
   resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.0.tgz#86c593682d4199212a0509cc3c4d562bbbd6e45f"
   integrity sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==
 
+"@types/numeric@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@types/numeric/-/numeric-1.2.1.tgz#6bce5d0c4f1b20f2cbd4a3d47922b8fe6e36ad56"
+  integrity sha512-30gQPisgZW5+ErkDVTZkoVKmwIWdjf2O6HmgKr3E1FJBdMYFldOPSJlQYP2VMafHuhOKvbLFA4Hf+ohvArz1+w==
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -10600,6 +10605,11 @@ number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
+
+numeric@1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/numeric/-/numeric-1.2.6.tgz#765b02bef97988fcf880d4eb3f36b80fa31335aa"
+  integrity sha1-dlsCvvl5iPz4gNTrPza4D6MTNao=
 
 nwsapi@^2.2.0:
   version "2.2.0"

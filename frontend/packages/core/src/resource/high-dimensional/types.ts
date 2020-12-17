@@ -31,16 +31,20 @@ export type MetadataResult = {
     metadata: string[][];
 };
 
-export type ParseFromStringParams = {
-    vectors: string;
+interface BaseParseParams {
     metadata: string;
-};
+    maxCount?: number;
+    maxDimension?: number;
+}
 
-export type ParseFromBlobParams = {
+export interface ParseFromStringParams extends BaseParseParams {
+    vectors: string;
+}
+
+export interface ParseFromBlobParams extends BaseParseParams {
     shape: [number, number];
     vectors: Blob;
-    metadata: string;
-};
+}
 
 export type ParseParams =
     | {
@@ -54,14 +58,15 @@ export type ParseParams =
     | null;
 
 export type ParseResult = {
+    count: number;
     dimension: number;
     vectors: Float32Array;
     labels: string[];
     metadata: string[][];
 };
 
-export type PcaParams = {
-    input: number[];
+export type PCAParams = {
+    input: Float32Array;
     dim: number;
     n: number;
 };
@@ -69,6 +74,7 @@ export type PcaParams = {
 export type PCAResult = {
     vectors: Vectors;
     variance: number[];
+    totalVariance: number;
 };
 
 export type TSNEParams = {
@@ -96,3 +102,19 @@ export type UMAPResult = {
     epoch: number;
     nEpochs: number;
 };
+
+export type CalculateParams =
+    | {
+          reduction: 'pca';
+          params: PCAParams;
+      }
+    | {
+          reduction: 'tsne';
+          params: TSNEParams;
+      }
+    | {
+          reduction: 'umap';
+          params: UMAPParams;
+      };
+
+export type CalculateResult = PCAResult | TSNEResult | UMAPResult;
