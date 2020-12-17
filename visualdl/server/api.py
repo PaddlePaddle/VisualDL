@@ -155,7 +155,7 @@ class Api(object):
         key = os.path.join('data/plugin/embeddings/metadata', name)
         return self._get_with_retry(key, lib.get_embedding_labels, name)
 
-    @result('text/plain')
+    @result('application/octet-stream')
     def embedding_tensor(self, name):
         key = os.path.join('data/plugin/embeddings/tensor', name)
         return self._get_with_retry(key, lib.get_embedding_tensors, name)

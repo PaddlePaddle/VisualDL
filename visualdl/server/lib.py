@@ -206,6 +206,8 @@ def get_embeddings_list(log_reader):
     for run, _tags in zip(run2tag['runs'], run2tag['tags']):
         for tag in _tags:
             name = path = os.path.join(run, tag)
+            if name in EMBEDDING_NAME:
+                return embedding_names
             EMBEDDING_NAME.update({name: {'run': run, 'tag': tag}})
             records = log_reader.data_manager.get_reservoir("embeddings").get_items(
                 run, decode_tag(tag))
@@ -224,15 +226,14 @@ def get_embedding_labels(log_reader, name):
         run, decode_tag(tag))
     labels = []
     for item in records[0].embeddings.embeddings:
-        labels.append(item.label)
-    '''
-    先不用csv试试看
+        labels.append([item.label])
+
     with io.StringIO() as fp:
         csv_writer = csv.writer(fp, delimiter='\t')
         csv_writer.writerows(labels)
         labels = fp.getvalue()
-    '''
-    labels = "\n".join(str(i) for i in labels)
+
+    # labels = "\n".join(str(i) for i in labels)
     return labels
 
 
