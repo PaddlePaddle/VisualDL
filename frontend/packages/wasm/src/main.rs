@@ -8,9 +8,7 @@ mod utils;
 #[macro_use]
 extern crate serde_derive;
 
-pub fn main() {
-    // high_dimensional::pca(vec![51.0_f64, 51.0_f64, 163.0_f64, 64.0_f64, 0.0_f64, 0.0_f64, 96.0_f64, 64.0_f64, 51.0_f64, 51.0_f64, 179.0_f64, 63.0_f64, 205.0_f64, 204.0_f64, 76.0_f64, 62.0_f64, 205.0_f64, 204.0_f64, 156.0_f64, 64.0_f64], 4, 3);
-}
+pub fn main() {}
 
 #[wasm_bindgen]
 pub fn scalar_transform(js_datasets: &JsValue, smoothing: f64) -> JsValue {

@@ -23,7 +23,6 @@
     "matched-result-count": "匹配结果 {{count}}",
     "neighbors": "相邻数据点数量",
     "pause": "暂停",
-    "pca": "PCA",
     "perplexity": "困惑度",
     "points": "数据点",
     "reduction-value": {
