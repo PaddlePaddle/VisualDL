@@ -19,7 +19,7 @@
 import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';
 import type {HistogramData, OffsetData, OverlayData, OverlayDataItem} from '~/resource/histogram';
 import LineChart, {LineChartRef} from '~/components/LineChart';
-import {Modes, options as chartOptions, transform} from '~/resource/histogram';
+import {Modes, options as chartOptions} from '~/resource/histogram';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import StackChart, {StackChartProps, StackChartRef} from '~/components/StackChart';
 import {rem, size} from '~/utils/style';
@@ -30,24 +30,16 @@ import {distance} from '~/utils';
 import ee from '~/utils/event';
 import {fetcher} from '~/utils/fetch';
 import {format} from 'd3-format';
-import type {histogram_transform} from '@visualdl/wasm'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import minBy from 'lodash/minBy';
 import queryString from 'query-string';
 import styled from 'styled-components';
-import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import useThrottleFn from '~/hooks/useThrottleFn';
 import {useTranslation} from 'react-i18next';
-import wasm from '~/utils/wasm';
+import useWebAssembly from '~/hooks/useWebAssembly';
 
 const formatTooltipXValue = format('.4f');
 const formatTooltipYValue = format('.4');
-
-const transformWasm = () =>
-    wasm<typeof histogram_transform>('histogram_transform').then((histogram_transform): typeof transform => params =>
-        histogram_transform(params.data, params.mode)
-    );
-// const transformWorker = () => new Worker('~/worker/histogram/transform.worker.ts', {type: 'module'});
 
 const Wrapper = styled.div`
     ${size('100%', '100%')}
@@ -108,14 +100,8 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
 
     const title = useMemo(() => `${tag} (${run.label})`, [tag, run.label]);
 
-    const params = useMemo(
-        () => ({
-            data: dataset ?? [],
-            mode
-        }),
-        [dataset, mode]
-    );
-    const data = useHeavyWork(transformWasm, null, transform, params);
+    const params = useMemo(() => [dataset ?? [], mode], [dataset, mode]);
+    const {data} = useWebAssembly<OffsetData | OverlayData>('histogram_transform', params);
 
     const [highlight, setHighlight] = useState<number | null>(null);
     useEffect(() => setHighlight(null), [mode]);

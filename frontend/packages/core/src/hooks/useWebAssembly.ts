@@ -22,7 +22,7 @@ import useWorker from '~/hooks/useWorker';
 type FuncNames = Exclude<keyof typeof funcs, 'default'>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const useWebAssembly = <D, P = any, E extends Error = Error>(name: FuncNames, params: P) => {
+const useWebAssembly = <D, P extends Array<unknown> = any, E extends Error = Error>(name: FuncNames, params: P) => {
     const p = useMemo(() => ({name, params}), [name, params]);
     return useWorker<D, typeof p, E>('wasm', p);
 };
