@@ -45,9 +45,9 @@ export class ParserError extends Error {
     }
 }
 
-function split<T = string>(str: string, processer?: (item: string) => T): T[][] {
+function split<T = string>(str: string, handler?: (item: string) => T): T[][] {
     return safeSplit(str, '\n')
-        .map(r => safeSplit(r, '\t').map(n => (processer ? processer(n) : n) as T))
+        .map(r => safeSplit(r, '\t').map(n => (handler ? handler(n) : n) as T))
         .filter(r => r.length);
 }
 
@@ -64,13 +64,19 @@ function alignItems<T>(data: T[][], dimension: number, defaultValue: T): T[][] {
     });
 }
 
-function parseVectors(str: string): VectorResult {
+function parseVectors(str: string, maxCount?: number, maxDimension?: number): VectorResult {
     if (!str) {
         throw new ParserError('Tenser file is empty', ParserError.CODES.TENSER_EMPTY);
     }
     let vectors = split(str, Number.parseFloat);
-    // TODO: sampling
-    const dimension = Math.min(...vectors.map(vector => vector.length));
+    // TODO: random sampling
+    if (maxCount) {
+        vectors = vectors.slice(0, maxCount);
+    }
+    let dimension = Math.min(...vectors.map(vector => vector.length));
+    if (maxDimension) {
+        dimension = Math.min(dimension, maxDimension);
+    }
     vectors = alignItems(vectors, dimension, 0);
     return {
         dimension,
@@ -124,31 +130,51 @@ function genMetadataAndLabels(metadata: string, count: number) {
     };
 }
 
-export function parseFromString({vectors: v, metadata: m}: ParseFromStringParams): ParseResult {
+export function parseFromString({vectors: v, metadata: m, maxCount, maxDimension}: ParseFromStringParams): ParseResult {
     const result: ParseResult = {
+        count: 0,
         dimension: 0,
         vectors: new Float32Array(),
         labels: [],
         metadata: []
     };
     if (v) {
-        const {dimension, vectors, count} = parseVectors(v);
+        const {dimension, vectors, count} = parseVectors(v, maxCount, maxDimension);
         result.dimension = dimension;
         result.vectors = vectors;
-        Object.assign(result, genMetadataAndLabels(m, count));
+        const metadataAndLabels = genMetadataAndLabels(m, count);
+        metadataAndLabels.metadata = metadataAndLabels.metadata.slice(0, count);
+        Object.assign(result, metadataAndLabels);
     }
     return result;
 }
 
-export async function parseFromBlob({shape, vectors: v, metadata: m}: ParseFromBlobParams): Promise<ParseResult> {
-    const [count, dimension] = shape;
-    const vectors = new Float32Array(await v.arrayBuffer());
-    if (count * dimension !== vectors.length) {
+export async function parseFromBlob({
+    shape,
+    vectors: v,
+    metadata: m,
+    maxCount,
+    maxDimension
+}: ParseFromBlobParams): Promise<ParseResult> {
+    // TODO: random sampling
+    const [originalCount, originalDimension] = shape;
+    const originalVectors = new Float32Array(await v.arrayBuffer());
+    if (originalCount * originalDimension !== originalVectors.length) {
         throw new ParserError('Size of tensor does not match.', ParserError.CODES.SHAPE_MISMATCH);
     }
+    const count = maxCount ? Math.min(originalCount, maxCount) : originalCount;
+    const dimension = maxDimension ? Math.min(originalDimension, maxDimension) : originalDimension;
+    const vectors = new Float32Array(count * dimension);
+    for (let c = 0; c < count; c++) {
+        const offset = c * originalDimension;
+        vectors.set(originalVectors.subarray(offset, offset + dimension), c * dimension);
+    }
+    const metadataAndLabels = genMetadataAndLabels(m, originalCount);
+    metadataAndLabels.metadata = metadataAndLabels.metadata.slice(0, count);
     return {
+        count,
         dimension,
         vectors,
-        ...genMetadataAndLabels(m, count)
+        ...metadataAndLabels
     };
 }

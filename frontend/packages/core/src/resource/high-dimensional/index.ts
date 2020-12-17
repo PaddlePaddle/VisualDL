@@ -15,20 +15,23 @@
  */
 
 export type {
+    CalculateParams,
+    CalculateResult,
     Dimension,
-    Reduction,
-    PcaParams,
-    PCAResult,
-    Vectors,
     ParseParams,
     ParseResult,
+    PCAParams,
+    PCAResult,
+    Reduction,
     TSNEParams,
     TSNEResult,
     UMAPParams,
-    UMAPResult
+    UMAPResult,
+    Vectors
 } from './types';
 
 export {parseFromBlob, parseFromString, ParserError} from './parser';
 
+export {default as PCA} from './pca';
 export {default as tSNE} from './tsne';
 export {default as UMAP} from './umap';

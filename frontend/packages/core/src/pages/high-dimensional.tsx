@@ -53,6 +53,18 @@ import useWorker from '~/hooks/useWorker';
 
 const MODE = import.meta.env.MODE;
 
+const MAX_COUNT: Record<Reduction, number | undefined> = {
+    pca: 50000,
+    tsne: 10000,
+    umap: 5000
+} as const;
+
+const MAX_DIMENSION: Record<Reduction, number | undefined> = {
+    pca: 200,
+    tsne: undefined,
+    umap: undefined
+};
+
 const AsideTitle = styled.div`
     font-size: ${rem(16)};
     line-height: ${rem(16)};
@@ -182,6 +194,12 @@ const HighDimensional: FunctionComponent = () => {
     );
     const labelByLabels = useMemo(() => getLabelByLabels(labelBy), [getLabelByLabels, labelBy]);
 
+    // dimension of display
+    const [dimension, setDimension] = useState<Dimension>('3d');
+    const [reduction, setReduction] = useState<Reduction>('pca');
+
+    const is3D = useMemo(() => dimension === '3d', [dimension]);
+
     const readFile = useCallback(
         (phase: string, file: File | null, setter: React.Dispatch<React.SetStateAction<string>>) => {
             if (file) {
@@ -221,12 +239,17 @@ const HighDimensional: FunctionComponent = () => {
     }, []);
 
     const params = useMemo<ParseParams>(() => {
+        const maxValues = {
+            maxCount: MAX_COUNT[reduction],
+            maxDimension: MAX_DIMENSION[reduction]
+        };
         if (vectorContent) {
             return {
                 from: 'string',
                 params: {
                     vectors: vectorContent,
-                    metadata: metadataContent
+                    metadata: metadataContent,
+                    ...maxValues
                 }
             };
         }
@@ -236,12 +259,13 @@ const HighDimensional: FunctionComponent = () => {
                 params: {
                     shape: selectedEmbedding.shape,
                     vectors: tensorData.data,
-                    metadata: metadataData ?? ''
+                    metadata: metadataData ?? '',
+                    ...maxValues
                 }
             };
         }
         return null;
-    }, [vectorContent, metadataContent, selectedEmbedding, tensorData, metadataData]);
+    }, [reduction, vectorContent, selectedEmbedding, tensorData, metadataContent, metadataData]);
     const result = useWorker<ParseResult, ParseParams>('high-dimensional/parse-data', params);
     useEffect(() => {
         const {error, data} = result;
@@ -263,12 +287,6 @@ const HighDimensional: FunctionComponent = () => {
         vectorFile,
         selectedEmbedding
     ]);
-
-    // dimension of display
-    const [dimension, setDimension] = useState<Dimension>('3d');
-    const [reduction, setReduction] = useState<Reduction>('pca');
-
-    const is3D = useMemo(() => dimension === '3d', [dimension]);
 
     const [perplexity, setPerplexity] = useState(5);
     const [learningRate, setLearningRate] = useState(10);
@@ -324,7 +342,13 @@ const HighDimensional: FunctionComponent = () => {
     const detail = useMemo(() => {
         switch (reduction) {
             case 'pca':
-                return <PCADetail dimension={dimension} variance={(data as PCAResult)?.variance ?? []} />;
+                return (
+                    <PCADetail
+                        dimension={dimension}
+                        variance={(data as PCAResult)?.variance ?? []}
+                        totalVariance={(data as PCAResult)?.totalVariance ?? 0}
+                    />
+                );
             case 'tsne':
                 return (
                     <TSNEDetail

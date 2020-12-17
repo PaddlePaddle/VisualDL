@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import type {TSNEParams, TSNEResult} from '~/resource/high-dimensional';
+import type {
+    CalculateParams,
+    PCAParams,
+    PCAResult,
+    TSNEParams,
+    TSNEResult,
+    UMAPParams,
+    UMAPResult,
+    Vectors
+} from '~/resource/high-dimensional';
+import {PCA, UMAP, tSNE} from '~/resource/high-dimensional';
 
 import {WorkerSelf} from '~/worker';
-import {tSNE} from '~/resource/high-dimensional';
 import type {tSNEOptions} from '~/resource/high-dimensional/tsne';
 
 type InfoStepData = {
@@ -34,7 +43,29 @@ export type InfoData = InfoStepData | InfoResetData | InfoParamsData;
 
 const workerSelf = new WorkerSelf();
 workerSelf.emit('INITIALIZED');
-workerSelf.on<TSNEParams>('RUN', data => {
+workerSelf.on<CalculateParams>('RUN', ({reduction, params}) => {
+    switch (reduction) {
+        case 'pca':
+            return pca(params as PCAParams);
+        case 'tsne':
+            return tsne(params as TSNEParams);
+        case 'umap':
+            return umap(params as UMAPParams);
+        default:
+            return null as never;
+    }
+});
+
+function pca(data: PCAParams) {
+    const {vectors, variance, totalVariance} = PCA(data.input, data.dim, data.n);
+    workerSelf.emit<PCAResult>('RESULT', {
+        vectors: vectors as Vectors,
+        variance,
+        totalVariance
+    });
+}
+
+function tsne(data: TSNEParams) {
     const t_sne = new tSNE({
         dimension: data.n,
         perplexity: data.perplexity,
@@ -43,7 +74,7 @@ workerSelf.on<TSNEParams>('RUN', data => {
 
     const reset = () => {
         t_sne.setData(data.input, data.dim);
-        return workerSelf.emit<TSNEResult>('RESULT', {
+        workerSelf.emit<TSNEResult>('RESULT', {
             vectors: t_sne.solution as [number, number, number][],
             step: t_sne.step
         });
@@ -78,4 +109,18 @@ workerSelf.on<TSNEParams>('RUN', data => {
                 return null as never;
         }
     });
-});
+}
+
+function umap(data: UMAPParams) {
+    const result = UMAP(data.n, data.neighbors, data.input, data.dim);
+    if (result) {
+        workerSelf.emit<UMAPResult>('RESULT', {
+            vectors: result.embedding as [number, number, number][],
+            epoch: result.nEpochs,
+            nEpochs: result.nEpochs
+        });
+    }
+    workerSelf.on('INFO', () => {
+        workerSelf.emit('INITIALIZED');
+    });
+}
