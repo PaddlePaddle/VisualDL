@@ -21,7 +21,7 @@ import {position, primaryColor, size} from '~/utils/style';
 
 import type {ECharts} from 'echarts';
 import {dataURL2Blob} from '~/utils/image';
-import {saveAs} from 'file-saver';
+import fileSaver from 'file-saver';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
@@ -131,7 +131,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
         (filename?: string) => {
             if (echart) {
                 const blob = dataURL2Blob(echart.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'}));
-                saveAs(blob, `${filename?.replace(/[/\\?%*:|"<>]/g, '_') || 'chart'}.png`);
+                fileSaver.saveAs(blob, `${filename?.replace(/[/\\?%*:|"<>]/g, '_') || 'chart'}.png`);
             }
         },
         [echart]

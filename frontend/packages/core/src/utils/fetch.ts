@@ -80,8 +80,9 @@ function logErrorAndReturnT(e: unknown) {
 }
 
 export function fetcher(url: string, options?: RequestInit): Promise<BlobResponse>;
+export function fetcher(url: string, options?: RequestInit): Promise<string>;
 export function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<T>;
-export async function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<BlobResponse | T> {
+export async function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<BlobResponse | string | T> {
     let res: Response;
     try {
         res = await fetch(API_URL + url, addApiToken(options));
@@ -95,8 +96,9 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         throw new Error(t([`errors:response-error.${res.status}`, 'errors:response-error.unknown']));
     }
 
-    let response: Data<T> | T;
-    if (res.headers.get('content-type')?.includes('application/json')) {
+    const contentType = res.headers.get('content-type') ?? '';
+    if (contentType.includes('application/json')) {
+        let response: Data<T> | T;
         try {
             response = await res.json();
         } catch (e) {
@@ -110,6 +112,15 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
             } else {
                 return (response as SuccessData<T>).data;
             }
+        }
+        return response;
+    } else if (contentType.startsWith('text/')) {
+        let response: string;
+        try {
+            response = await res.text();
+        } catch (e) {
+            const t = await logErrorAndReturnT(e);
+            throw new Error(t('errors:parse-error'));
         }
         return response;
     } else {

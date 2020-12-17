@@ -16,12 +16,11 @@
 
 // cSpell:words pageview inited
 
-import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo} from 'react';
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';
 import {headerHeight, position, size, zIndexes} from '~/utils/style';
 
-import BodyLoading from '~/components/BodyLoading';
 import ErrorBoundary from '~/components/ErrorBoundary';
 import ErrorPage from '~/pages/error';
 import {Helmet} from 'react-helmet';
@@ -31,14 +30,12 @@ import {SWRConfig} from 'swr';
 import {ToastContainer} from 'react-toastify';
 import {actions} from '~/store';
 import {fetcher} from '~/utils/fetch';
-import init from '@visualdl/wasm';
 import routes from '~/routes';
 import styled from 'styled-components';
 import {useDispatch} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 const Main = styled.main`
     padding-top: ${headerHeight};
@@ -85,16 +82,6 @@ const App: FunctionComponent = () => {
 
     const dir = useMemo(() => (i18n.language ? i18n.dir(i18n.language) : ''), [i18n]);
 
-    const [inited, setInited] = useState(false);
-    useEffect(() => {
-        (async () => {
-            if (!inited) {
-                await init(`${PUBLIC_PATH}/wasm/visualdl.wasm`);
-                setInited(true);
-            }
-        })();
-    }, [inited]);
-
     const dispatch = useDispatch();
 
     const toggleTheme = useCallback(
@@ -123,31 +110,27 @@ const App: FunctionComponent = () => {
                     revalidateOnReconnect: false
                 }}
             >
-                {!inited ? (
-                    <BodyLoading />
-                ) : (
-                    <Main>
-                        <Router basename={BASE_URI || '/'}>
-                            <Telemetry />
-                            <Header>
-                                <Navbar />
-                            </Header>
-                            <ErrorBoundary fallback={<ErrorPage />}>
-                                <Suspense fallback={<Progress />}>
-                                    <Switch>
-                                        <Redirect exact from="/" to={defaultRoute?.path ?? '/index'} />
-                                        {routers.map(route => (
-                                            <Route key={route.id} path={route.path} component={route.component} />
-                                        ))}
-                                        <Route path="*">
-                                            <ErrorPage title={t('errors:page-not-found')} />
-                                        </Route>
-                                    </Switch>
-                                </Suspense>
-                            </ErrorBoundary>
-                        </Router>
-                    </Main>
-                )}
+                <Main>
+                    <Router basename={BASE_URI || '/'}>
+                        <Telemetry />
+                        <Header>
+                            <Navbar />
+                        </Header>
+                        <ErrorBoundary fallback={<ErrorPage />}>
+                            <Suspense fallback={<Progress />}>
+                                <Switch>
+                                    <Redirect exact from="/" to={defaultRoute?.path ?? '/index'} />
+                                    {routers.map(route => (
+                                        <Route key={route.id} path={route.path} component={route.component} />
+                                    ))}
+                                    <Route path="*">
+                                        <ErrorPage title={t('errors:page-not-found')} />
+                                    </Route>
+                                </Switch>
+                            </Suspense>
+                        </ErrorBoundary>
+                    </Router>
+                </Main>
                 <ToastContainer />
             </SWRConfig>
         </div>

@@ -20,7 +20,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const root = path.dirname(require('enhanced-resolve').sync(__dirname, '@visualdl/netron'));
+const root = path.dirname(require('enhanced-resolve').sync(__dirname, '@visualdl/netron') || '');
 const pathname = '/netron';
 const dist = path.resolve(__dirname, '../dist');
 const dest = path.join(dist, pathname);

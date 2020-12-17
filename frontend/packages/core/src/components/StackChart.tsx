@@ -39,13 +39,7 @@ const Tooltip = styled.div`
     ${transitionProps(['color', 'background-color'])}
 `;
 
-type renderItem = NonNullable<EChartOption.SeriesCustom['renderItem']>;
-type renderItemArguments = NonNullable<renderItem['arguments']>;
-type RenderItem = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    params: any,
-    api: Required<NonNullable<renderItemArguments['api']>>
-) => NonNullable<renderItem['return']>;
+type RenderItem = EChartOption.SeriesCustom.RenderItem;
 type GetValue = (i: number) => number;
 type GetCoord = (p: [number, number]) => [number, number];
 
@@ -126,11 +120,11 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                 return {
                     type: 'polygon',
                     silent: true,
-                    z: api.value(1),
+                    z: api.value?.(1),
                     shape: {
                         points
                     },
-                    style: api.style({
+                    style: api.style?.({
                         stroke: chart.xAxis.axisLine.lineStyle.color,
                         lineWidth: 1
                     })

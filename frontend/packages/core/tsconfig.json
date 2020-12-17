@@ -23,8 +23,22 @@
             "~/*": [
                 "./src/*"
             ]
-        }
+        },
         // Feel free to add/edit new config options below:
         // ...
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ESNext",
+            "ESNext.Array",
+            "ESNext.AsyncIterable",
+            "ESNext.BigInt",
+            "ESNext.Intl",
+            "ESNext.Promise",
+            "ESNext.String",
+            "ESNext.Symbol",
+            "ScriptHost",
+            "WebWorker"
+        ]
     }
 }

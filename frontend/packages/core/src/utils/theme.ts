@@ -79,8 +79,7 @@ export const themes = {
         tooltipBackgroundColor: 'rgba(0, 0, 0, 0.6)',
         progressBarColor: '#fff',
         maskColor: 'rgba(255, 255, 255, 0.8)',
-
-        samplePreviewMaskColor: 'rgba(0, 0, 0, 0.5)',
+        darkMaskColor: 'rgba(0, 0, 0, 0.5)',
 
         graphUploaderBackgroundColor: '#f9f9f9',
         graphUploaderActiveBackgroundColor: '#f2f6ff',
@@ -121,8 +120,7 @@ export const themes = {
         tooltipBackgroundColor: '#292929',
         progressBarColor: '#fff',
         maskColor: 'rgba(0, 0, 0, 0.8)',
-
-        samplePreviewMaskColor: 'rgba(0, 0, 0, 0.8)',
+        darkMaskColor: 'rgba(0, 0, 0, 0.8)',
 
         graphUploaderBackgroundColor: '#262629',
         graphUploaderActiveBackgroundColor: '#303033',

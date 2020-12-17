@@ -14,120 +14,302 @@
  * limitations under the License.
  */
 
-import type {Dimension, Reduction} from '~/resource/high-dimensional';
-import React, {FunctionComponent, useMemo} from 'react';
-import {contentHeight, primaryColor, rem} from '~/utils/style';
+import type {PCAResult, Reduction, TSNEResult, UMAPResult} from '~/resource/high-dimensional';
+import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import ScatterChart, {ScatterChartRef} from '~/components/ScatterChart';
 
-import ScatterChart from '~/components/ScatterChart';
-import {divide} from '~/resource/high-dimensional';
-import type {high_dimensional_divide} from '@visualdl/wasm'; // eslint-disable-line @typescript-eslint/no-unused-vars
-import queryString from 'query-string';
+import ChartOperations from '~/components/HighDimensionalPage/ChartOperations';
+import type {InfoData} from '~/worker/high-dimensional/tsne';
+import type {WithStyled} from '~/utils/style';
+import {rem} from '~/utils/style';
 import styled from 'styled-components';
-import useHeavyWork from '~/hooks/useHeavyWork';
-import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
-import wasm from '~/utils/wasm';
+import useWebAssembly from '~/hooks/useWebAssembly';
+import useWorker from '~/hooks/useWorker';
 
-const divideWasm = () =>
-    wasm<typeof high_dimensional_divide>(
-        'high_dimensional_divide'
-    ).then((high_dimensional_divide): typeof divide => params =>
-        high_dimensional_divide(params.points, params.labels, !!params.visibility, params.keyword ?? '')
-    );
-// const divideWorker = () => new Worker('~/worker/high-dimensional/divide.worker.ts', {type: 'module'});
+function useComputeHighDimensional(
+    reduction: Reduction,
+    vectors: Float32Array,
+    dim: number,
+    is3D: boolean,
+    perplexity: number,
+    learningRate: number,
+    neighbors: number
+) {
+    const pcaParams = useMemo(() => {
+        if (reduction === 'pca') {
+            return [Array.from(vectors), dim, 3] as const;
+        }
+        return [[], 0, 3];
+    }, [reduction, vectors, dim]);
 
-const StyledScatterChart = styled(ScatterChart)`
-    height: ${contentHeight};
-`;
+    const tsneInitParams = useRef({perplexity, epsilon: learningRate});
+    const tsneParams = useMemo(() => {
+        if (reduction === 'tsne') {
+            return {
+                input: vectors,
+                dim,
+                n: is3D ? 3 : 2,
+                ...tsneInitParams.current
+            };
+        }
+        return {
+            input: new Float32Array(),
+            dim: 0,
+            n: is3D ? 3 : 2,
+            perplexity: 5
+        };
+    }, [reduction, vectors, dim, is3D]);
 
-const Empty = styled.div`
+    const umapParams = useMemo(() => {
+        if (reduction === 'umap') {
+            return {
+                input: vectors,
+                dim,
+                n: is3D ? 3 : 2,
+                neighbors
+            };
+        }
+        return {
+            input: new Float32Array(),
+            dim: 0,
+            n: is3D ? 3 : 2,
+            neighbors: 15
+        };
+    }, [reduction, vectors, dim, is3D, neighbors]);
+
+    const pcaResult = useWebAssembly<PCAResult>('high_dimensional_pca', pcaParams);
+    const tsneResult = useWorker<TSNEResult>('high-dimensional/tsne', tsneParams);
+    const umapResult = useWorker<UMAPResult>('high-dimensional/umap', umapParams);
+
+    if (reduction === 'pca') {
+        return pcaResult;
+    }
+    if (reduction === 'tsne') {
+        return tsneResult;
+    }
+    if (reduction === 'umap') {
+        return umapResult;
+    }
+    return null as never;
+}
+
+const Wrapper = styled.div`
+    height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: ${rem(20)};
-    height: ${contentHeight};
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
 `;
 
-const label = {
-    show: true,
-    position: 'top',
-    formatter: (params: {data: {name: string; showing: boolean}}) => (params.data.showing ? params.data.name : '')
-};
+const Toolbar = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: ${rem(20)};
 
-type Data = {
-    embedding: ([number, number] | [number, number, number])[];
-    labels: string[];
-};
+    > .info {
+        color: var(--text-light-color);
+
+        > .sep {
+            display: inline-block;
+            width: 1px;
+            background-color: var(--border-color);
+            margin: 0 1em;
+            height: 1em;
+            vertical-align: middle;
+        }
+    }
+`;
+
+const Chart = styled.div`
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-size: 0;
+    * {
+        outline: none;
+    }
+`;
 
 type HighDimensionalChartProps = {
-    run: string;
-    tag: string;
-    running?: boolean;
-    labelVisibility?: boolean;
+    vectors: Float32Array;
+    labels: string[];
+    dim: number;
+    is3D: boolean;
     reduction: Reduction;
-    keyword: string;
-    dimension: Dimension;
+    perplexity: number;
+    learningRate: number;
+    neighbors: number;
+    highlightIndices?: number[];
+    onCalculate?: () => unknown;
+    onCalculated?: (data: PCAResult | TSNEResult | UMAPResult) => unknown;
+    onError?: (e: Error) => unknown;
 };
 
-const HighDimensionalChart: FunctionComponent<HighDimensionalChartProps> = ({
-    run,
-    tag,
-    running,
-    labelVisibility,
-    keyword,
-    reduction,
-    dimension
-}) => {
-    const {t} = useTranslation('common');
+export type HighDimensionalChartRef = {
+    pauseTSNE(): void;
+    resumeTSNE(): void;
+    rerunTSNE(): void;
+    rerunUMAP(): void;
+};
 
-    const {data, error, loading} = useRunningRequest<Data>(
-        run && tag
-            ? `/embedding/embedding?${queryString.stringify({
-                  run,
-                  tag,
-                  dimension: Number.parseInt(dimension, 10),
-                  reduction
-              })}`
-            : null,
-        !!running
-    );
+const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimensionalChartProps & WithStyled>(
+    (
+        {
+            vectors,
+            labels,
+            dim,
+            is3D,
+            reduction,
+            perplexity,
+            learningRate,
+            neighbors,
+            highlightIndices,
+            onCalculate,
+            onCalculated,
+            onError,
+            className
+        },
+        ref
+    ) => {
+        const {t} = useTranslation(['high-dimensional', 'common']);
 
-    const divideParams = useMemo(
-        () => ({
-            points: data?.embedding ?? [],
-            keyword,
-            labels: data?.labels ?? [],
-            visibility: labelVisibility
-        }),
-        [data, labelVisibility, keyword]
-    );
-    const points = useHeavyWork(divideWasm, null, divide, divideParams);
+        const chartElement = useRef<HTMLDivElement>(null);
+        const chart = useRef<ScatterChartRef>(null);
 
-    const chartData = useMemo(() => {
-        return [
-            {
-                name: 'highlighted',
-                data: points?.[0] ?? [],
-                label
-            },
-            {
-                name: 'others',
-                data: points?.[1] ?? [],
-                label,
-                color: primaryColor
+        const [width, setWidth] = useState(0);
+        const [height, setHeight] = useState(0);
+
+        const points = useMemo(() => Math.floor(vectors.length / dim), [vectors, dim]);
+
+        useLayoutEffect(() => {
+            const c = chartElement.current;
+            if (c) {
+                const observer = new ResizeObserver(() => {
+                    const rect = c.getBoundingClientRect();
+                    setWidth(rect.width);
+                    setHeight(rect.height);
+                });
+                observer.observe(c);
+                return () => observer.unobserve(c);
             }
-        ];
-    }, [points]);
+        }, []);
 
-    if (!data && error) {
-        return <Empty>{t('common:error')}</Empty>;
+        const {data, error, worker} = useComputeHighDimensional(
+            reduction,
+            vectors,
+            dim,
+            is3D,
+            perplexity,
+            learningRate,
+            neighbors
+        );
+
+        const iterationId = useRef<number | null>(null);
+        const iteration = useCallback(() => {
+            worker?.emit<InfoData>('INFO', {type: 'step'});
+        }, [worker]);
+        const nextIteration = useCallback(() => {
+            iterationId.current = requestAnimationFrame(iteration);
+        }, [iteration]);
+        const startIteration = useCallback(() => {
+            if (reduction === 'tsne') {
+                worker?.on('RESULT', nextIteration);
+                iteration();
+            }
+        }, [reduction, worker, nextIteration, iteration]);
+        const stopIteration = useCallback(() => {
+            if (reduction === 'tsne') {
+                if (iterationId.current) {
+                    cancelAnimationFrame(iterationId.current);
+                    iterationId.current = null;
+                }
+                worker?.off('RESULT', nextIteration);
+            }
+        }, [reduction, worker, nextIteration]);
+        const restartIteration = useCallback(() => {
+            if (reduction === 'tsne') {
+                stopIteration();
+                worker?.emit<InfoData>('INFO', {type: 'reset'});
+                worker?.once('RESULT', () => startIteration());
+            }
+        }, [reduction, startIteration, stopIteration, worker]);
+        useEffect(() => {
+            if (reduction === 'tsne') {
+                startIteration();
+                return () => {
+                    stopIteration();
+                };
+            }
+        }, [reduction, startIteration, stopIteration]);
+
+        useEffect(() => {
+            if (reduction === 'tsne') {
+                worker?.emit<InfoData>('INFO', {
+                    type: 'params',
+                    data: {
+                        perplexity,
+                        epsilon: learningRate
+                    }
+                });
+            }
+        }, [reduction, perplexity, learningRate, worker]);
+
+        const rerunUMAP = useCallback(() => {
+            if (reduction === 'umap') {
+                worker?.emit('INFO');
+            }
+        }, [reduction, worker]);
+
+        useEffect(() => {
+            if (error) {
+                onError?.(error);
+            } else if (data) {
+                onCalculated?.(data);
+            } else {
+                onCalculate?.();
+            }
+        }, [data, error, onCalculate, onCalculated, onError]);
+
+        useImperativeHandle(ref, () => ({
+            pauseTSNE: stopIteration,
+            resumeTSNE: startIteration,
+            rerunTSNE: restartIteration,
+            rerunUMAP
+        }));
+
+        return (
+            <Wrapper className={className}>
+                <Toolbar>
+                    <div className="info">
+                        {t('high-dimensional:points')}
+                        {t('common:colon')}
+                        {points}
+                        <span className="sep"></span>
+                        {t('high-dimensional:data-dimension')}
+                        {t('common:colon')}
+                        {dim}
+                    </div>
+                    <ChartOperations onReset={() => chart.current?.reset()} />
+                </Toolbar>
+                <Chart ref={chartElement}>
+                    <ScatterChart
+                        ref={chart}
+                        width={width}
+                        height={height}
+                        data={data?.vectors ?? []}
+                        labels={labels}
+                        is3D={is3D}
+                        rotate={reduction !== 'tsne'}
+                        highlightIndices={highlightIndices ?? []}
+                    />
+                </Chart>
+            </Wrapper>
+        );
     }
+);
 
-    if (!data && !loading) {
-        return <Empty>{t('common:empty')}</Empty>;
-    }
-
-    return <StyledScatterChart loading={loading} data={chartData} gl={dimension === '3d'} />;
-};
+HighDimensionalChart.displayName = 'HighDimensionalChart';
 
 export default HighDimensionalChart;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useState} from 'react';
+import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
 import {height, padding} from '~/components/Input';
 import {rem, size, transitionProps} from '~/utils/style';
 
@@ -53,66 +53,124 @@ const FullWidthRangeSlider = styled(RangeSlider)`
 `;
 
 type SliderProps = {
-    min: number;
-    max: number;
-    step: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    steps?: number[];
     value: number;
     onChange?: (value: number) => unknown;
     onChangeComplete?: (value: number) => unknown;
 };
 
-const Slider: FunctionComponent<SliderProps> = ({onChange, onChangeComplete, value, min, max, step}) => {
+const Slider: FunctionComponent<SliderProps> = ({onChange, onChangeComplete, value, min, max, step, steps}) => {
+    const sortedSteps = useMemo(() => steps?.sort() ?? [], [steps]);
+    const fixedMin = useMemo(() => (sortedSteps.length ? 0 : min ?? 0), [min, sortedSteps]);
+    const fixedMax = useMemo(() => (sortedSteps.length ? sortedSteps.length - 1 : max ?? 1), [max, sortedSteps]);
+    const fixedStep = useMemo(() => (sortedSteps.length ? 1 : step ?? 1), [step, sortedSteps]);
+
     const fixNumber = useCallback(
         (v: number) =>
-            new BigNumber(v).dividedBy(step).integerValue(BigNumber.ROUND_HALF_UP).multipliedBy(step).toNumber(),
-        [step]
+            new BigNumber(v)
+                .dividedBy(fixedStep)
+                .integerValue(BigNumber.ROUND_HALF_UP)
+                .multipliedBy(fixedStep)
+                .toNumber(),
+        [fixedStep]
     );
 
-    const [sliderValue, setSliderValue] = useState(fixNumber(value));
-    const [inputValue, setInputValue] = useState(sliderValue + '');
+    const actualValueByInput = useCallback(
+        (v: number) => {
+            if (sortedSteps.length) {
+                let r = Number.NaN;
+                let d = Number.POSITIVE_INFINITY;
+                for (let i = 0; i < sortedSteps.length; i++) {
+                    const c = Math.abs(sortedSteps[i] - v);
+                    if (d > c) {
+                        d = c;
+                        r = sortedSteps[i];
+                    }
+                }
+                return r;
+            }
+            return fixNumber(v);
+        },
+        [fixNumber, sortedSteps]
+    );
+    const sliderValueByInput = useCallback(
+        (v: number) => {
+            if (sortedSteps.length) {
+                let r = -1;
+                let d = Number.POSITIVE_INFINITY;
+                for (let i = 0; i < sortedSteps.length; i++) {
+                    const c = Math.abs(sortedSteps[i] - v);
+                    if (d > c) {
+                        d = c;
+                        r = i;
+                    }
+                }
+                return r;
+            }
+            return fixNumber(v);
+        },
+        [fixNumber, sortedSteps]
+    );
+    const actualValueBySlider = useCallback(
+        (v: number) => {
+            if (sortedSteps.length) {
+                return sortedSteps[v];
+            }
+            return v;
+        },
+        [sortedSteps]
+    );
+
+    const [sliderValue, setSliderValue] = useState(sliderValueByInput(value));
+    const [inputValue, setInputValue] = useState(actualValueByInput(value) + '');
 
     const changeSliderValue = useCallback(
-        (value: number) => {
-            const v = fixNumber(value);
-            setInputValue(v + '');
+        (v: number) => {
             setSliderValue(v);
-            onChange?.(v);
+            const actualValue = actualValueBySlider(v);
+            setInputValue(actualValue + '');
+            onChange?.(actualValue);
         },
-        [fixNumber, onChange]
+        [actualValueBySlider, onChange]
     );
+    const changeSliderValueComplete = useCallback(() => {
+        onChangeComplete?.(actualValueBySlider(sliderValue));
+    }, [sliderValue, onChangeComplete, actualValueBySlider]);
 
     const changeInputValue = useCallback(
-        (value: string) => {
-            setInputValue(value);
+        (stringValue: string) => {
+            setInputValue(stringValue);
 
-            const v = Number.parseFloat(value);
+            const v = Number.parseFloat(stringValue);
 
-            if (v < min || v > max || Number.isNaN(v)) {
+            if (v < fixedMin || v > fixedMax || Number.isNaN(v)) {
                 return;
             }
 
-            const result = fixNumber(v);
-
-            setSliderValue(result);
-            onChange?.(result);
-            onChangeComplete?.(result);
+            setSliderValue(sliderValueByInput(v));
+            const actualValue = actualValueByInput(v);
+            onChange?.(actualValue);
+            onChangeComplete?.(actualValue);
         },
-        [onChange, onChangeComplete, min, max, fixNumber]
+        [fixedMin, fixedMax, sliderValueByInput, actualValueByInput, onChange, onChangeComplete]
     );
 
     const confirmInput = useCallback(() => {
-        setInputValue(sliderValue + '');
-    }, [sliderValue]);
+        setInputValue(actualValueBySlider(sliderValue) + '');
+    }, [actualValueBySlider, sliderValue]);
 
     return (
         <Wrapper>
             <FullWidthRangeSlider
-                min={min}
-                max={max}
-                step={step}
+                min={fixedMin}
+                max={fixedMax}
+                step={fixedStep}
                 value={sliderValue}
                 onChange={changeSliderValue}
-                onChangeComplete={() => onChangeComplete?.(sliderValue)}
+                onChangeComplete={changeSliderValueComplete}
             />
             <Input
                 type="text"
