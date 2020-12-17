@@ -17,6 +17,8 @@ from __future__ import absolute_import
 import sys
 import time
 import os
+import io
+import csv
 from functools import partial
 import numpy as np
 from visualdl.server.log import logger
@@ -27,6 +29,8 @@ from visualdl.component import components
 
 MODIFY_PREFIX = {}
 MODIFIED_RUNS = []
+EMBEDDING_NAME = {}
+embedding_names = []
 
 
 def s2ms(timestamp):
@@ -194,6 +198,56 @@ def get_pr_curve_step(log_reader, run, tag=None):
         run, decode_tag(tag))
     results = [[s2ms(item.timestamp), item.id] for item in records]
     return results
+
+
+def get_embeddings_list(log_reader):
+    run2tag = get_logs(log_reader, 'embeddings')
+
+    for run, _tags in zip(run2tag['runs'], run2tag['tags']):
+        for tag in _tags:
+            name = path = os.path.join(run, tag)
+            if name in EMBEDDING_NAME:
+                return embedding_names
+            EMBEDDING_NAME.update({name: {'run': run, 'tag': tag}})
+            records = log_reader.data_manager.get_reservoir("embeddings").get_items(
+                run, decode_tag(tag))
+            row_len = len(records[0].embeddings.embeddings)
+            col_len = len(records[0].embeddings.embeddings[0].vectors)
+            shape = [row_len, col_len]
+            embedding_names.append({'name': name, 'shape': shape, 'path': path})
+    return embedding_names
+
+
+def get_embedding_labels(log_reader, name):
+    run = EMBEDDING_NAME[name]['run']
+    tag = EMBEDDING_NAME[name]['tag']
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("embeddings").get_items(
+        run, decode_tag(tag))
+    labels = []
+    for item in records[0].embeddings.embeddings:
+        labels.append([item.label])
+
+    with io.StringIO() as fp:
+        csv_writer = csv.writer(fp, delimiter='\t')
+        csv_writer.writerows(labels)
+        labels = fp.getvalue()
+
+    # labels = "\n".join(str(i) for i in labels)
+    return labels
+
+
+def get_embedding_tensors(log_reader, name):
+    run = EMBEDDING_NAME[name]['run']
+    tag = EMBEDDING_NAME[name]['tag']
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("embeddings").get_items(
+        run, decode_tag(tag))
+    vectors = []
+    for item in records[0].embeddings.embeddings:
+        vectors.append(item.vectors)
+    vectors = np.array(vectors).flatten().astype(np.float32).tobytes()
+    return vectors
 
 
 def get_embeddings(log_reader, run, tag, reduction, dimension=2):
