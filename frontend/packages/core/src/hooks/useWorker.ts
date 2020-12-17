@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 
 import type {InitializeData} from '~/worker';
 import {WebWorker} from '~/worker';
@@ -28,8 +28,6 @@ type WorkerResult<D, E extends Error> = {
 };
 
 const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params: P): WorkerResult<D, E> => {
-    const p = useMemo(() => params, [params]);
-
     const [result, setResult] = useState<WorkerResult<D, E>>({});
 
     useEffect(() => {
@@ -37,14 +35,14 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
         worker.emit<InitializeData>('INITIALIZE', {env: import.meta.env});
         worker.on('INITIALIZED', () => {
             setResult({worker});
-            worker.emit('RUN', p);
+            worker.emit('RUN', params);
         });
         worker.on<D>('RESULT', data => setResult({data, worker}));
         worker.on<E>('ERROR', error => setResult({error, worker}));
         return () => {
             worker.terminate();
         };
-    }, [name, p]);
+    }, [name, params]);
 
     return result;
 };
