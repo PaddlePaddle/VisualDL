@@ -394,11 +394,9 @@ const HighDimensional: FunctionComponent = () => {
                     <Field label={t('high-dimensional:select-label')}>
                         <FullWidthSelect list={labels} value={labelBy} onChange={setLabelBy} />
                     </Field>
-                    {metadataFile && (
-                        <Field label={t('high-dimensional:select-color')}>
-                            <FullWidthSelect />
-                        </Field>
-                    )}
+                    {/* <Field label={t('high-dimensional:select-color')}>
+                        <FullWidthSelect />
+                    </Field> */}
                     <Field>
                         <FullWidthButton rounded outline type="primary" onClick={() => setUploadModal(true)}>
                             {t('high-dimensional:upload-data')}
@@ -425,7 +423,7 @@ const HighDimensional: FunctionComponent = () => {
                 </AsideSection>
             </RightAside>
         ),
-        [t, dataPath, reduction, dimension, metadataFile, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
+        [t, dataPath, reduction, dimension, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
     );
 
     const leftAside = useMemo(
