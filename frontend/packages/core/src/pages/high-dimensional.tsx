@@ -342,6 +342,12 @@ const HighDimensional: FunctionComponent = () => {
         };
     }, [getLabelByLabels, searchResult.labelBy, searchResult.value]);
 
+    const [hoveredIndices, setHoveredIndices] = useState<number[]>([]);
+    const hoverSearchResult = useCallback(
+        (index?: number) => setHoveredIndices(index == null ? [] : [searchedResult.indices[index]]),
+        [searchedResult.indices]
+    );
+
     const detail = useMemo(() => {
         switch (reduction) {
             case 'pca':
@@ -441,12 +447,12 @@ const HighDimensional: FunctionComponent = () => {
                 </AsideSection>
                 <AsideSection className="search-result">
                     <Field>
-                        <LabelSearchResult list={searchedResult.metadata} />
+                        <LabelSearchResult list={searchedResult.metadata} onHovered={hoverSearchResult} />
                     </Field>
                 </AsideSection>
             </LeftAside>
         ),
-        [labels, searchResult.value, searchedResult.metadata, t]
+        [hoverSearchResult, labels, searchResult.value, searchedResult.metadata, t]
     );
 
     return (
@@ -466,6 +472,7 @@ const HighDimensional: FunctionComponent = () => {
                         perplexity={perplexity}
                         learningRate={learningRate}
                         neighbors={neighbors}
+                        focusedIndices={hoveredIndices}
                         highlightIndices={searchedResult.indices}
                         onCalculate={calculate}
                         onCalculated={calculated}

@@ -103,11 +103,15 @@ export default class ScatterChart {
     static ORBIT_ANIMATION_ROTATION_CYCLE_IN_SECONDS = 2;
     static NUM_POINTS_FOG_THRESHOLD = 5000;
 
-    static POINT_COLOR_NO_SELECTION = 0x7e7e7e;
-    static POINT_COLOR_HOVER = 0x2932e1;
+    static POINT_COLOR_DEFAULT = new THREE.Color(0x7e7e7e);
+    static POINT_COLOR_HOVER = new THREE.Color(0x2932e1);
+    static POINT_COLOR_HIGHLIGHT = new THREE.Color(0x2932e1);
+    static POINT_COLOR_FOCUS = new THREE.Color(0x2932e1);
 
     static POINT_SCALE_DEFAULT = 1.0;
     static POINT_SCALE_HOVER = 1.2;
+    static POINT_SCALE_HIGHLIGHT = 1.0;
+    static POINT_SCALE_FOCUS = 1.2;
 
     static PERSP_CAMERA_INIT_POSITION: Point3D = [0.45, 0.9, 1.6];
     static ORTHO_CAMERA_INIT_POSITION: Point3D = [0, 0, 4];
@@ -135,6 +139,7 @@ export default class ScatterChart {
     private scaleFactors: Float32Array | null = null;
     private axes: THREE.AxesHelper | null = null;
     private points: THREE.Points | null = null;
+    private focusedPointIndices: number[] = [];
     private hoveredPointIndices: number[] = [];
     private label: ScatterChartLabel;
     private highLightPointIndices: number[] = [];
@@ -360,17 +365,23 @@ export default class ScatterChart {
         const count = this.data.length;
         const colors = new Float32Array(count * 3);
         let dst = 0;
-        const color = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
-        const hoveredColor = new THREE.Color(ScatterChart.POINT_COLOR_HOVER);
         for (let i = 0; i < count; i++) {
-            if (i === this.hoveredPointIndices[0] || this.highLightPointIndices.includes(i)) {
-                colors[dst++] = hoveredColor.r;
-                colors[dst++] = hoveredColor.g;
-                colors[dst++] = hoveredColor.b;
+            if (this.hoveredPointIndices.includes(i)) {
+                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.b;
+            } else if (this.focusedPointIndices.includes(i)) {
+                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.b;
+            } else if (this.highLightPointIndices.includes(i)) {
+                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.b;
             } else {
-                colors[dst++] = color.r;
-                colors[dst++] = color.g;
-                colors[dst++] = color.b;
+                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.b;
             }
         }
         return colors;
@@ -380,8 +391,12 @@ export default class ScatterChart {
         const count = this.data.length;
         const scaleFactor = new Float32Array(count);
         for (let i = 0; i < count; i++) {
-            if (i === this.hoveredPointIndices[0]) {
+            if (this.hoveredPointIndices.includes(i)) {
                 scaleFactor[i] = ScatterChart.POINT_SCALE_HOVER;
+            } else if (this.focusedPointIndices.includes(i)) {
+                scaleFactor[i] = ScatterChart.POINT_SCALE_FOCUS;
+            } else if (this.highLightPointIndices.includes(i)) {
+                scaleFactor[i] = ScatterChart.POINT_SCALE_HIGHLIGHT;
             } else {
                 scaleFactor[i] = ScatterChart.POINT_SCALE_DEFAULT;
             }
@@ -446,21 +461,26 @@ export default class ScatterChart {
     }
 
     private updateHoveredLabels() {
-        if (this.hoveredPointIndices[0] == null || !this.camera || !this.positions) {
+        if (!this.camera || !this.positions) {
+            return;
+        }
+
+        const indices = this.focusedPointIndices.length ? this.focusedPointIndices : this.hoveredPointIndices;
+        if (!indices.length) {
             this.label.clear();
             return;
         }
+
         const dpr = window.devicePixelRatio || 1;
         const w = this.width;
         const h = this.height;
-        const index = this.hoveredPointIndices[0];
-        const pi = index * 3;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const point = new THREE.Vector3(this.positions![pi], this.positions![pi + 1], this.positions![pi + 2]);
-        const pv = new THREE.Vector3().copy(point).project(this.camera);
-        const coord: Point2D = [((pv.x + 1) / 2) * w * dpr, -(((pv.y - 1) / 2) * h) * dpr];
-        const labels = [
-            {
+        const labels = indices.map(index => {
+            const pi = index * 3;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const point = new THREE.Vector3(this.positions![pi], this.positions![pi + 1], this.positions![pi + 2]);
+            const pv = new THREE.Vector3().copy(point).project(this.camera);
+            const coord: Point2D = [((pv.x + 1) / 2) * w * dpr, -(((pv.y - 1) / 2) * h) * dpr];
+            return {
                 text: this.labels[index] ?? '',
                 fontSize: 40,
                 fillColor: '#000',
@@ -468,8 +488,8 @@ export default class ScatterChart {
                 opacity: 1,
                 x: coord[0] + 4,
                 y: coord[1]
-            }
-        ];
+            };
+        });
 
         this.label.render(labels);
     }
@@ -685,10 +705,16 @@ export default class ScatterChart {
 
     setLabels(labels: string[]) {
         this.labels = labels;
+        this.render();
     }
 
     setHighLightIndices(highLightIndices: number[]) {
         this.highLightPointIndices = highLightIndices;
+        this.render();
+    }
+
+    setFocusedPointIndices(focusedPointIndices: number[]) {
+        this.focusedPointIndices = focusedPointIndices;
         this.render();
     }
 

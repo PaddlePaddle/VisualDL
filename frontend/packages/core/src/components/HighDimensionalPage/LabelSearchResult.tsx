@@ -63,19 +63,20 @@ const List = styled.ul`
 
 type LabelSearchResultProps = {
     list: string[];
+    onHovered?: (index?: number) => unknown;
 };
 
-const LabelSearchResult: FunctionComponent<LabelSearchResultProps> = ({list}) => {
+const LabelSearchResult: FunctionComponent<LabelSearchResultProps> = ({list, onHovered}) => {
     const {t} = useTranslation('high-dimensional');
 
     if (!list.length) {
         return <Empty>{t('high-dimensional:search-empty')}</Empty>;
     }
     return (
-        <List>
+        <List onMouseLeave={() => onHovered?.()}>
             {list.map((label, index) => (
                 <li key={index}>
-                    <a>{label}</a>
+                    <a onMouseEnter={() => onHovered?.(index)}>{label}</a>
                 </li>
             ))}
         </List>
