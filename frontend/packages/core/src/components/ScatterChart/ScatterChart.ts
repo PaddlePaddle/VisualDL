@@ -124,6 +124,7 @@ export default class ScatterChart {
     private renderer: THREE.WebGLRenderer;
     private camera: THREE.OrthographicCamera | THREE.PerspectiveCamera;
     private controls: OrbitControls;
+    private fog: THREE.Fog;
     private pickingTexture: THREE.WebGLRenderTarget;
     private geometry: THREE.BufferGeometry;
     private renderMaterial: THREE.ShaderMaterial | null = null;
@@ -163,6 +164,7 @@ export default class ScatterChart {
         this.camera = this.initCamera();
         this.renderer = this.initRenderer();
         this.controls = this.initControls();
+        this.fog = this.initFog();
         this.pickingTexture = this.initRenderTarget();
         this.geometry = this.createGeometry();
 
@@ -190,7 +192,6 @@ export default class ScatterChart {
         const light = new THREE.PointLight(16772287, 1, 0);
         light.name = 'light';
         scene.add(light);
-        scene.fog = new THREE.Fog(0xffffff);
         return scene;
     }
 
@@ -253,6 +254,10 @@ export default class ScatterChart {
             this.render();
         });
         return controls;
+    }
+
+    private initFog() {
+        return new THREE.Fog(this.background);
     }
 
     private initRenderTarget() {
@@ -469,6 +474,69 @@ export default class ScatterChart {
         this.label.render(labels);
     }
 
+    private updateLight() {
+        const light = this.scene.getObjectByName('light') as THREE.PointLight;
+        const cameraPos = this.camera.position;
+        const lightPos = cameraPos.clone();
+        lightPos.x += 1;
+        lightPos.y += 1;
+        light.position.set(lightPos.x, lightPos.y, lightPos.z);
+    }
+
+    private updateFog() {
+        const fog = this.fog;
+
+        fog.color = new THREE.Color(this.background);
+
+        if (this.is3D && this.positions) {
+            const cameraPos = this.camera.position;
+            const cameraTarget = this.controls.target;
+
+            let shortestDist = Number.POSITIVE_INFINITY;
+            let furthestDist = 0;
+
+            const camToTarget = new THREE.Vector3().copy(cameraTarget).sub(cameraPos);
+            const camPlaneNormal = new THREE.Vector3().copy(camToTarget).normalize();
+
+            const n = this.positions.length / 3;
+            let src = 0;
+            const p = new THREE.Vector3();
+            const camToPoint = new THREE.Vector3();
+            for (let i = 0; i < n; i++) {
+                p.x = this.positions[src++];
+                p.y = this.positions[src++];
+                p.z = this.positions[src++];
+
+                camToPoint.copy(p).sub(cameraPos);
+                const dist = camPlaneNormal.dot(camToPoint);
+                if (dist < 0) {
+                    continue;
+                }
+
+                furthestDist = dist > furthestDist ? dist : furthestDist;
+                shortestDist = dist < shortestDist ? dist : shortestDist;
+            }
+
+            const multiplier =
+                2 - Math.min(n, ScatterChart.NUM_POINTS_FOG_THRESHOLD) / ScatterChart.NUM_POINTS_FOG_THRESHOLD;
+
+            fog.near = shortestDist;
+            fog.far = furthestDist * multiplier;
+        } else {
+            fog.near = Number.POSITIVE_INFINITY;
+            fog.far = Number.POSITIVE_INFINITY;
+        }
+
+        if (this.points) {
+            const material = this.points.material as THREE.ShaderMaterial;
+            material.uniforms.fogColor.value = fog.color;
+            material.uniforms.fogNear.value = fog.near;
+            material.uniforms.fogFar.value = fog.far;
+        }
+
+        this.scene.fog = fog;
+    }
+
     private bindEventListeners() {
         this.canvas?.addEventListener('mousemove', this.onMouseMoveBindThis);
     }
@@ -498,55 +566,13 @@ export default class ScatterChart {
     }
 
     private render() {
-        const light = this.scene.getObjectByName('light') as THREE.PointLight;
-        const cameraPos = this.camera.position;
-        const lightPos = cameraPos.clone();
-        lightPos.x += 1;
-        lightPos.y += 1;
-        light.position.set(lightPos.x, lightPos.y, lightPos.z);
-
-        // TODO: remake fog
-        // const fog = this.scene.fog as THREE.Fog | null;
-        // if (fog) {
-        //     if (this.is3D) {
-        //         const cameraTarget = this.controls.target ?? new THREE.Vector3();
-        //         let shortestDist = Number.POSITIVE_INFINITY;
-        //         let furthestDist = 0;
-        //         const camToTarget = new THREE.Vector3().copy(cameraTarget).sub(cameraPos);
-        //         const camPlaneNormal = new THREE.Vector3().copy(camToTarget).normalize();
-
-        //         const camToPoint = new THREE.Vector3();
-        //         this.data.forEach(d => {
-        //             camToPoint.copy(new THREE.Vector3(...d)).sub(cameraPos);
-        //             const dist = camPlaneNormal.dot(camToPoint);
-        //             if (dist < 0) {
-        //                 return;
-        //             }
-        //             furthestDist = dist > furthestDist ? dist : furthestDist;
-        //             shortestDist = dist < shortestDist ? dist : shortestDist;
-        //         });
-        //         const multiplier =
-        //             2 -
-        //             Math.min(this.data.length, ScatterChart.NUM_POINTS_FOG_THRESHOLD) /
-        //                 ScatterChart.NUM_POINTS_FOG_THRESHOLD;
-        //         fog.near = shortestDist;
-        //         fog.far = furthestDist * multiplier;
-        //     } else {
-        //         fog.near = Number.POSITIVE_INFINITY;
-        //         fog.far = Number.POSITIVE_INFINITY;
-        //     }
-        //     console.log(fog.near, fog.far, fog.color);
-        //     if (this.points) {
-        //         const material = this.points.material as THREE.ShaderMaterial;
-        //         material.uniforms.fogColor.value = fog.color;
-        //         material.uniforms.fogNear.value = fog.near;
-        //         material.uniforms.fogFar.value = fog.far;
-        //     }
-        // }
+        this.updateLight();
+        this.updateFog();
 
         this.updateHoveredPoints();
         this.updateHoveredLabels();
         this.updatePointsAttribute();
+
         if (this.pickingMaterial) {
             if (this.axes) {
                 this.scene.remove(this.axes);
