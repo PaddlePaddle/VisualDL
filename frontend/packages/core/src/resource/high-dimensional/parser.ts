@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import type {MetadataResult, ParseFromBlobParams, ParseFromStringParams, ParseResult, VectorResult} from './types';
+import type {
+    MetadataResult,
+    ParseFromBlobParams,
+    ParseFromStringParams,
+    ParseResult,
+    Shape,
+    VectorResult
+} from './types';
 
 import {safeSplit} from '~/utils';
 
@@ -68,17 +75,21 @@ function parseVectors(str: string, maxCount?: number, maxDimension?: number): Ve
     if (!str) {
         throw new ParserError('Tenser file is empty', ParserError.CODES.TENSER_EMPTY);
     }
+    const rawShape: Shape = [0, 0];
     let vectors = split(str, Number.parseFloat);
+    rawShape[0] = vectors.length;
     // TODO: random sampling
     if (maxCount) {
         vectors = vectors.slice(0, maxCount);
     }
     let dimension = Math.min(...vectors.map(vector => vector.length));
+    rawShape[1] = dimension;
     if (maxDimension) {
         dimension = Math.min(dimension, maxDimension);
     }
     vectors = alignItems(vectors, dimension, 0);
     return {
+        rawShape,
         dimension,
         count: vectors.length,
         vectors: new Float32Array(vectors.flat())
@@ -132,6 +143,7 @@ function genMetadataAndLabels(metadata: string, count: number) {
 
 export function parseFromString({vectors: v, metadata: m, maxCount, maxDimension}: ParseFromStringParams): ParseResult {
     const result: ParseResult = {
+        rawShape: [0, 0],
         count: 0,
         dimension: 0,
         vectors: new Float32Array(),
@@ -172,6 +184,7 @@ export async function parseFromBlob({
     const metadataAndLabels = genMetadataAndLabels(m, originalCount);
     metadataAndLabels.metadata = metadataAndLabels.metadata.slice(0, count);
     return {
+        rawShape: shape,
         count,
         dimension,
         vectors,

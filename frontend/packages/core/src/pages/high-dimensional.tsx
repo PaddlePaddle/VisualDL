@@ -21,6 +21,7 @@ import type {
     ParseParams,
     ParseResult,
     Reduction,
+    Shape,
     TSNEResult,
     UMAPResult
 } from '~/resource/high-dimensional';
@@ -180,6 +181,7 @@ const HighDimensional: FunctionComponent = () => {
     const [metadata, setMetadata] = useState<string[][]>([]);
     // dimension of data
     const [dim, setDim] = useState<number>(0);
+    const [rawShape, setRawShape] = useState<Shape>([0, 0]);
     const getLabelByLabels = useCallback(
         (value: string | undefined) => {
             if (value != null) {
@@ -272,6 +274,7 @@ const HighDimensional: FunctionComponent = () => {
         if (error) {
             showError(error);
         } else if (data) {
+            setRawShape(data.rawShape);
             setDim(data.dimension);
             setVectors(data.vectors);
             setLabels(data.labels);
@@ -456,6 +459,7 @@ const HighDimensional: FunctionComponent = () => {
                         ref={chart}
                         vectors={vectors}
                         labels={labelByLabels}
+                        shape={rawShape}
                         dim={dim}
                         is3D={is3D}
                         reduction={reduction}

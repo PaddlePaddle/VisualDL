@@ -19,7 +19,10 @@ export type Reduction = 'pca' | 'tsne' | 'umap';
 
 export type Vectors = [number, number, number][];
 
+export type Shape = [number, number];
+
 export type VectorResult = {
+    rawShape: Shape;
     dimension: number;
     count: number;
     vectors: Float32Array;
@@ -42,7 +45,7 @@ export interface ParseFromStringParams extends BaseParseParams {
 }
 
 export interface ParseFromBlobParams extends BaseParseParams {
-    shape: [number, number];
+    shape: Shape;
     vectors: Blob;
 }
 
@@ -58,6 +61,7 @@ export type ParseParams =
     | null;
 
 export type ParseResult = {
+    rawShape: Shape;
     count: number;
     dimension: number;
     vectors: Float32Array;
