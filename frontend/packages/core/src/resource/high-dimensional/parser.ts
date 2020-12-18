@@ -71,22 +71,62 @@ function alignItems<T>(data: T[][], dimension: number, defaultValue: T): T[][] {
     });
 }
 
-function parseVectors(str: string, maxCount?: number, maxDimension?: number): VectorResult {
+// Fisher-Yates (aka Knuth) Shuffle
+function shuffleIndices(length: number) {
+    const indices = Array.from<number>({length}).map((_, i) => i);
+    let currentIndex = length;
+    while (currentIndex) {
+        const randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        const temporaryValue = indices[currentIndex];
+        indices[currentIndex] = indices[randomIndex];
+        indices[randomIndex] = temporaryValue;
+    }
+    return indices;
+}
+
+function shuffle(data: ParseResult, maxCount?: number, maxDimension?: number): ParseResult {
+    const {
+        count: originalCount,
+        dimension: originalDimension,
+        vectors: originalVectors,
+        metadata: originalMetadata
+    } = data;
+    const count = maxCount ? Math.min(originalCount, maxCount) : originalCount;
+    const dimension = maxDimension ? Math.min(originalDimension, maxDimension) : originalDimension;
+    const shuffledIndices = shuffleIndices(originalCount);
+    const shuffledDimensionIndices = shuffleIndices(originalDimension);
+    const vectors = new Float32Array(count * dimension);
+    const metadata: string[][] = [];
+    for (let c = 0; c < count; c++) {
+        const offset = shuffledIndices[c] * originalDimension;
+        if (dimension < originalDimension) {
+            for (let i = 0; i < dimension; i++) {
+                vectors[c + i] = originalVectors[offset + shuffledDimensionIndices[i]];
+            }
+        } else {
+            vectors.set(originalVectors.subarray(offset, offset + dimension), c * dimension);
+        }
+        metadata.push(originalMetadata[shuffledIndices[c]]);
+    }
+    return {
+        ...data,
+        count,
+        dimension,
+        vectors,
+        metadata
+    };
+}
+
+function parseVectors(str: string): VectorResult {
     if (!str) {
         throw new ParserError('Tenser file is empty', ParserError.CODES.TENSER_EMPTY);
     }
     const rawShape: Shape = [0, 0];
     let vectors = split(str, Number.parseFloat);
     rawShape[0] = vectors.length;
-    // TODO: random sampling
-    if (maxCount) {
-        vectors = vectors.slice(0, maxCount);
-    }
-    let dimension = Math.min(...vectors.map(vector => vector.length));
+    const dimension = Math.min(...vectors.map(vector => vector.length));
     rawShape[1] = dimension;
-    if (maxDimension) {
-        dimension = Math.min(dimension, maxDimension);
-    }
     vectors = alignItems(vectors, dimension, 0);
     return {
         rawShape,
@@ -151,14 +191,10 @@ export function parseFromString({vectors: v, metadata: m, maxCount, maxDimension
         metadata: []
     };
     if (v) {
-        const {dimension, vectors, count} = parseVectors(v, maxCount, maxDimension);
-        result.dimension = dimension;
-        result.vectors = vectors;
-        const metadataAndLabels = genMetadataAndLabels(m, count);
-        metadataAndLabels.metadata = metadataAndLabels.metadata.slice(0, count);
-        Object.assign(result, metadataAndLabels);
+        Object.assign(result, parseVectors(v));
+        Object.assign(result, genMetadataAndLabels(m, result.count));
     }
-    return result;
+    return shuffle(result, maxCount, maxDimension);
 }
 
 export async function parseFromBlob({
@@ -168,26 +204,20 @@ export async function parseFromBlob({
     maxCount,
     maxDimension
 }: ParseFromBlobParams): Promise<ParseResult> {
-    // TODO: random sampling
-    const [originalCount, originalDimension] = shape;
-    const originalVectors = new Float32Array(await v.arrayBuffer());
-    if (originalCount * originalDimension !== originalVectors.length) {
+    const [count, dimension] = shape;
+    const vectors = new Float32Array(await v.arrayBuffer());
+    if (count * dimension !== vectors.length) {
         throw new ParserError('Size of tensor does not match.', ParserError.CODES.SHAPE_MISMATCH);
     }
-    const count = maxCount ? Math.min(originalCount, maxCount) : originalCount;
-    const dimension = maxDimension ? Math.min(originalDimension, maxDimension) : originalDimension;
-    const vectors = new Float32Array(count * dimension);
-    for (let c = 0; c < count; c++) {
-        const offset = c * originalDimension;
-        vectors.set(originalVectors.subarray(offset, offset + dimension), c * dimension);
-    }
-    const metadataAndLabels = genMetadataAndLabels(m, originalCount);
-    metadataAndLabels.metadata = metadataAndLabels.metadata.slice(0, count);
-    return {
-        rawShape: shape,
-        count,
-        dimension,
-        vectors,
-        ...metadataAndLabels
-    };
+    return shuffle(
+        {
+            rawShape: shape,
+            count,
+            dimension,
+            vectors,
+            ...genMetadataAndLabels(m, count)
+        },
+        maxCount,
+        maxDimension
+    );
 }
