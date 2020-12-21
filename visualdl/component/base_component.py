@@ -159,12 +159,12 @@ def image(tag, image_array, step, walltime=None, dataformats="HWC"):
     ])
 
 
-def embedding(tag, labels, hot_vectors, step, walltime=None):
+def embedding(tag, labels, hot_vectors, step, labels_meta=None, walltime=None):
     """Package data to one embedding.
 
     Args:
         tag (string): Data identifier
-        labels (numpy.array or list): A list of labels.
+        labels (list): A list of labels.
         hot_vectors (numpy.array or list): A matrix which each row is
             feature of labels.
         step (int): Step of embeddings.
@@ -175,9 +175,18 @@ def embedding(tag, labels, hot_vectors, step, walltime=None):
     """
     embeddings = Record.Embeddings()
 
-    for index in range(len(hot_vectors)):
-        embeddings.embeddings.append(
-            Record.Embedding(label=labels[index], vectors=hot_vectors[index]))
+    if labels_meta:
+        embeddings.label_meta.extend(labels_meta)
+
+    if isinstance(labels[0], list):
+        temp = []
+        for index in range(len(labels[0])):
+            temp.append([label[index] for label in labels])
+        labels = temp
+    for label, hot_vector in zip(labels, hot_vectors):
+        if not isinstance(label, list):
+            label = [label]
+        embeddings.embeddings.append(Record.Embedding(label=label, vectors=hot_vector))
 
     return Record(values=[
         Record.Value(
