@@ -226,7 +226,11 @@ def get_embedding_labels(log_reader, name):
         run, decode_tag(tag))
     labels = []
     for item in records[0].embeddings.embeddings:
-        labels.append([item.label])
+        labels.append(item.label)
+
+    label_meta = records[0].embeddings.label_meta
+    if label_meta:
+        labels = [label_meta] + labels
 
     with io.StringIO() as fp:
         csv_writer = csv.writer(fp, delimiter='\t')

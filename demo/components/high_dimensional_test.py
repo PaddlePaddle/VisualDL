@@ -29,3 +29,22 @@ if __name__ == '__main__':
         writer.add_embeddings(tag='default',
                               labels=labels,
                               hot_vectors=hot_vectors)
+
+    """
+    # You can code as follow if use multi-dimensional labels.
+    hot_vectors = [
+        [1.3561076367500755, 1.3116267195134017, 1.6785401875616097],
+        [1.1039614644440658, 1.8891609992484688, 1.32030488587171],
+        [1.9924524852447711, 1.9358920727142739, 1.2124401279391606],
+        [1.4129542689796446, 1.7372166387197474, 1.7317806077076527],
+        [1.3913371800587777, 1.4684674577930312, 1.5214136352476377]]
+
+    labels = [["label_a_1", "label_a_2", "label_a_3", "label_a_4", "label_a_5"],
+              ["label_b_1", "label_b_2", "label_b_3", "label_b_4", "label_b_5"]]
+    labels_meta = ["label_a", "label_b"]
+    with LogWriter(logdir="./log/high_dimensional_test/train") as writer:
+        writer.add_embeddings(tag='default',
+                              labels=labels,
+                              labels_meta=labels_meta,
+                              hot_vectors=hot_vectors)
+    """

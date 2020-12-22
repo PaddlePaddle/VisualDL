@@ -16,12 +16,13 @@ message Record {
   }
 
   message Embedding {
-    string label = 1;
+    repeated string label = 1;
     repeated float vectors = 2;
   }
 
   message Embeddings {
     repeated Embedding embeddings = 1;
+    repeated string label_meta = 2;
   }
 
   message bytes_embeddings {
