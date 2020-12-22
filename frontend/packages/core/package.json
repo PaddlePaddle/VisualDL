@@ -47,6 +47,7 @@
         "i18next": "19.8.4",
         "i18next-browser-languagedetector": "6.0.1",
         "i18next-fetch-backend": "3.0.0",
+        "jszip": "3.5.0",
         "lodash": "4.17.20",
         "mime-types": "2.1.27",
         "moment": "2.29.1",

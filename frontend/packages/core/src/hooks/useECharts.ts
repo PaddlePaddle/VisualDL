@@ -21,7 +21,7 @@ import {position, primaryColor, size} from '~/utils/style';
 
 import type {ECharts} from 'echarts';
 import {dataURL2Blob} from '~/utils/image';
-import fileSaver from 'file-saver';
+import {saveFile} from '~/utils/saveFile';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
@@ -118,8 +118,15 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
         if (options.autoFit) {
             const w = wrapper.current;
             if (w) {
+                let animationId: number | null = null;
                 const observer = new ResizeObserver(() => {
-                    echart?.resize();
+                    if (animationId != null) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                    animationId = requestAnimationFrame(() => {
+                        echart?.resize();
+                    });
                 });
                 observer.observe(w);
                 return () => observer.unobserve(w);
@@ -131,7 +138,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
         (filename?: string) => {
             if (echart) {
                 const blob = dataURL2Blob(echart.getDataURL({type: 'png', pixelRatio: 2, backgroundColor: '#FFF'}));
-                fileSaver.saveAs(blob, `${filename?.replace(/[/\\?%*:|"<>]/g, '_') || 'chart'}.png`);
+                saveFile(blob, `${filename || 'chart'}.png`);
             }
         },
         [echart]
