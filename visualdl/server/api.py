@@ -118,7 +118,7 @@ class Api(object):
         key = os.path.join('data/plugin/scalars/scalars', run, tag)
         return self._get_with_retry(key, lib.get_scalar, run, tag)
 
-    @result()
+    @result('text/tab-separated-values')
     def scalar_data(self, run, tag):
         key = os.path.join('data/plugin/scalars/data', run, tag)
         return self._get_with_retry(key, lib.get_scalar_data, run, tag)
