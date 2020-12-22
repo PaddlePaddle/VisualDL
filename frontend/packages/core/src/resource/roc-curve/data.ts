@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-export type Runs = string[];
-
-export enum ActionTypes {
-    SET_SELECTED_RUNS = 'SET_SELECTED_RUNS'
-}
-
-export interface RunsState {
-    scalar: Runs;
-    histogram: Runs;
-    image: Runs;
-    audio: Runs;
-    'pr-curve': Runs;
-    'roc-curve': Runs;
-}
-
-export type Page = keyof RunsState;
-
-interface SetSelectedRunsAction {
-    type: ActionTypes.SET_SELECTED_RUNS;
-    page: Page;
-    runs: Runs;
-}
-
-export type RunsActionTypes = SetSelectedRunsAction;
+export const nearestPoint = (data: number[][][], recall: number): number[][][] => {
+    return data.map(series => {
+        let delta = Number.POSITIVE_INFINITY;
+        let nearestRecall = 0;
+        for (let i = 0; i < series.length; i++) {
+            const d = Math.abs(series[i][1] - recall);
+            if (d < Number.EPSILON) {
+                nearestRecall = series[i][1];
+                break;
+            }
+            if (d < delta) {
+                delta = d;
+                nearestRecall = series[i][1];
+            }
+        }
+        return series.filter(s => s[1] === nearestRecall);
+    });
+};

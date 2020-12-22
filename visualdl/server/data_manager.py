@@ -24,6 +24,7 @@ DEFAULT_PLUGIN_MAXSIZE = {
     "embeddings": 50000000,
     "audio": 10,
     "pr_curve": 300,
+    "roc_curve": 300,
     "meta_data": 100
 }
 
@@ -346,6 +347,8 @@ class DataManager(object):
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["audio"]),
             "pr_curve":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["pr_curve"]),
+            "roc_curve":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["roc_curve"]),
             "meta_data":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["meta_data"])
         }

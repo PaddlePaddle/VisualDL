@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-export type Runs = string[];
+import type {Data, Worker} from './types';
 
-export enum ActionTypes {
-    SET_SELECTED_RUNS = 'SET_SELECTED_RUNS'
-}
+const worker: Worker = async io => {
+    const components = await io.getData<string[]>('/components');
+    if (!components.includes('roc_curve')) {
+        return;
+    }
 
-export interface RunsState {
-    scalar: Runs;
-    histogram: Runs;
-    image: Runs;
-    audio: Runs;
-    'pr-curve': Runs;
-    'roc-curve': Runs;
-}
+    const {runs, tags} = await io.save<Data>('/roc-curve/tags');
+    for (const [index, run] of runs.entries()) {
+        await io.save('/roc-curve/steps', {run});
+        for (const tag of tags[index]) {
+            await io.save('/roc-curve/list', {run, tag});
+        }
+    }
+};
 
-export type Page = keyof RunsState;
-
-interface SetSelectedRunsAction {
-    type: ActionTypes.SET_SELECTED_RUNS;
-    page: Page;
-    runs: Runs;
-}
-
-export type RunsActionTypes = SetSelectedRunsAction;
+export default worker;
