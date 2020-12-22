@@ -149,7 +149,7 @@ export const GlobalStyle = createGlobalStyle`
 
     html,
     body {
-        height: 100%;
+        min-height: 100%;
         background-color: var(--body-background-color);
         color: var(--text-color);
         ${transitionProps(['background-color', 'color'])}
