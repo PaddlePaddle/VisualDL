@@ -27,7 +27,7 @@ import {spawn} from 'child_process';
 
 const host = '127.0.0.1';
 const publicPath = '/visualdl';
-const pages = ['common', 'scalar', 'histogram', 'image', 'audio', 'graph', 'pr-curve', 'high-dimensional'];
+const pages = ['common', 'scalar', 'histogram', 'image', 'audio', 'graph', 'pr-curve', 'roc-curve', 'high-dimensional'];
 const dataDir = path.resolve(__dirname, '../data');
 
 async function start() {

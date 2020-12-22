@@ -23,7 +23,8 @@ const initState: RunsState = {
     histogram: [],
     image: [],
     audio: [],
-    'pr-curve': []
+    'pr-curve': [],
+    'roc-curve': []
 };
 
 function runsReducer(state = initState, action: RunsActionTypes): RunsState {

@@ -12,32 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-components = {
-    "scalar": {
-        "enabled": False
-    },
-    "image": {
-        "enabled": False
-    },
-    "embedding": {
-        "enabled": False
-    },
-    "audio": {
-        "enabled": False
-    },
-    "histogram": {
-        "enabled": False
-    },
-    "graph": {
-        "enabled": False
-    },
-    "pr_curve": {
-        "enabled": False
-    },
-    "roc_curve": {
-        "enabled": False
-    },
-    "meta_data": {
-        "enabled": False
-    }
-}
+# coding=utf-8
+from visualdl import LogWriter
+import numpy as np
+
+with LogWriter("./log/roc_curve_test/train") as writer:
+    for step in range(3):
+        labels = np.random.randint(2, size=100)
+        predictions = np.random.rand(100)
+        writer.add_roc_curve(tag='roc_curve',
+                            labels=labels,
+                            predictions=predictions,
+                            step=step,
+                            num_thresholds=5)

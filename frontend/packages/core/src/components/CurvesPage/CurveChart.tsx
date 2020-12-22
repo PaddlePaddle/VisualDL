@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type {CurveType, PRCurveData, Run} from '~/resource/curves';
 import LineChart, {LineChartRef} from '~/components/LineChart';
-import type {PRCurveData, Run} from '~/resource/pr-curve';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
-import {options as chartOptions, nearestPoint} from '~/resource/pr-curve';
+import {options as chartOptions, nearestPoint} from '~/resource/curves';
 import {rem, size} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
@@ -62,19 +62,20 @@ const Error = styled.div`
 `;
 
 type PRCurveChartProps = {
+    type: CurveType;
     cid: symbol;
     runs: Run[];
     tag: string;
     running?: boolean;
 };
 
-const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({cid, runs, tag, running}) => {
-    const {t} = useTranslation(['pr-curve', 'common']);
+const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, cid, runs, tag, running}) => {
+    const {t} = useTranslation(['curves', 'common']);
 
     const echart = useRef<LineChartRef>(null);
 
     const {data: dataset, error, loading} = useRunningRequest<PRCurveData[]>(
-        runs.map(run => `/pr-curve/list?${queryString.stringify({run: run.label, tag})}`),
+        runs.map(run => `/${type}-curve/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
@@ -136,25 +137,25 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({cid, runs, tag, run
             );
             const columns = [
                 {
-                    label: t('pr-curve:threshold')
+                    label: t('curves:threshold')
                 },
                 {
-                    label: t('pr-curve:precision')
+                    label: t('curves:precision')
                 },
                 {
-                    label: t('pr-curve:recall')
+                    label: t('curves:recall')
                 },
                 {
-                    label: t('pr-curve:true-positives')
+                    label: t('curves:true-positives')
                 },
                 {
-                    label: t('pr-curve:false-positives')
+                    label: t('curves:false-positives')
                 },
                 {
-                    label: t('pr-curve:true-negatives')
+                    label: t('curves:true-negatives')
                 },
                 {
-                    label: t('pr-curve:false-negatives')
+                    label: t('curves:false-negatives')
                 }
             ];
             const runData = points.reduce<Run[]>((m, runPoints, index) => {
@@ -208,19 +209,19 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({cid, runs, tag, run
                     {
                         icon: 'maximize',
                         activeIcon: 'minimize',
-                        tooltip: t('pr-curve:maximize'),
-                        activeTooltip: t('pr-curve:minimize'),
+                        tooltip: t('curves:maximize'),
+                        activeTooltip: t('curves:minimize'),
                         toggle: true,
                         onClick: toggleMaximized
                     },
                     {
                         icon: 'restore-size',
-                        tooltip: t('pr-curve:restore'),
+                        tooltip: t('curves:restore'),
                         onClick: () => echart.current?.restore()
                     },
                     {
                         icon: 'download',
-                        tooltip: t('pr-curve:download-image'),
+                        tooltip: t('curves:download-image'),
                         onClick: () => echart.current?.saveAsImage()
                     }
                 ]}

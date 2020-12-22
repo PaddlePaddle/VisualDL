@@ -19,8 +19,8 @@ import {ellipsis, size, transitionProps} from '~/utils/style';
 
 import Field from '~/components/Field';
 import RangeSlider from '~/components/RangeSlider';
-import type {Run} from '~/resource/pr-curve';
-import {TimeType} from '~/resource/pr-curve';
+import type {Run} from '~/resource/curves';
+import {TimeType} from '~/resource/curves';
 import {format} from 'd3-format';
 import {formatTime} from '~/utils';
 import styled from 'styled-components';
