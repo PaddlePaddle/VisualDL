@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import type {Run as CurveRun, Tag as CurveTag, CurveType, StepInfo} from '~/resource/curves';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
-import type {Run, StepInfo, Tag} from '~/resource/roc-curve';
 import {rem, transitionProps} from '~/utils/style';
 
 import {AsideSection} from '~/components/Aside';
-import Content from '~/components/Content';
-import Error from '~/components/Error';
 import Field from '~/components/Field';
-import ROC_CurveChart from '~/components/ROC_CurvePage/ROC_CurveChart';
 import RunAside from '~/components/RunAside';
-import StepSlider from '~/components/ROC_CurvePage/StepSlider';
+import StepSlider from '~/components/CurvesPage/StepSlider';
 import TimeModeSelect from '~/components/TimeModeSelect';
-import {TimeType} from '~/resource/roc-curve';
-import Title from '~/components/Title';
+import {TimeType} from '~/resource/curves';
 import {cycleFetcher} from '~/utils/fetch';
 import queryString from 'query-string';
 import styled from 'styled-components';
@@ -60,12 +55,29 @@ const StepSliderWrapper = styled.div`
     }
 `;
 
-const ROC_Curve: FunctionComponent = () => {
-    const {t} = useTranslation(['roc-curve', 'common']);
+type CurveAsideProps = {
+    type: CurveType;
+    onChangeLoading: (loading: boolean) => unknown;
+    onChangeSteps: (tags: CurveTag[]) => unknown;
+    onToggleRunning: (running: boolean) => unknown;
+};
+
+const CurveAside: FunctionComponent<CurveAsideProps> = ({type, onChangeLoading, onChangeSteps, onToggleRunning}) => {
+    const {t} = useTranslation('curves');
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tags, runsInTags, selectedRuns, onChangeRuns, loading} = useTagFilter('roc-curve', running);
+    // TODO: remove `as` after ts 4.1
+    const {runs, tags, runsInTags, selectedRuns, onChangeRuns, loading} = useTagFilter(
+        `${type}-curve` as 'pr-curve' | 'roc-curve',
+        running
+    );
+
+    const {data: stepInfo} = useRunningRequest<StepInfo[]>(
+        runsInTags.map(run => `/${type}-curve/steps?${queryString.stringify({run: run.label})}`),
+        !!running,
+        (...urls) => cycleFetcher(urls)
+    );
 
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const onChangeIndexes = useCallback(
@@ -89,12 +101,7 @@ const ROC_Curve: FunctionComponent = () => {
         [runsInTags]
     );
 
-    const {data: stepInfo} = useRunningRequest<StepInfo[]>(
-        runsInTags.map(run => `/roc-curve/steps?${queryString.stringify({run: run.label})}`),
-        !!running,
-        (...urls) => cycleFetcher(urls)
-    );
-    const runWithInfo = useMemo<Run[]>(
+    const curveRun = useMemo<CurveRun[]>(
         () =>
             runsInTags.map((run, i) => ({
                 ...run,
@@ -108,70 +115,52 @@ const ROC_Curve: FunctionComponent = () => {
 
     const [timeType, setTimeType] = useState<TimeType>(TimeType.Step);
 
-    const rocCurveTags = useMemo<Tag[]>(
-        () =>
-            tags.map(tag => ({
+    useEffect(() => {
+        onChangeSteps(
+            tags.map<CurveTag>(tag => ({
                 ...tag,
                 runs: tag.runs.map(run => ({
                     ...run,
                     index: 0,
-                    steps: [] as Run['steps'],
-                    wallTimes: [] as Run['wallTimes'],
-                    relatives: [] as Run['relatives'],
-                    ...runWithInfo.find(r => r.label === run.label)
+                    steps: [],
+                    wallTimes: [],
+                    relatives: [],
+                    ...curveRun.find(r => r.label === run.label)
                 }))
-            })),
-        [tags, runWithInfo]
-    );
+            }))
+        );
+    }, [tags, curveRun, onChangeSteps]);
 
-    const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                >
-                    <AsideSection>
-                        <Field label={t('roc-curve:time-display-type')}>
-                            <TimeModeSelect value={timeType} onChange={setTimeType} />
-                        </Field>
+    useEffect(() => {
+        onChangeLoading(loading);
+    }, [loading, onChangeLoading]);
+
+    useEffect(() => {
+        onToggleRunning(running);
+    }, [onToggleRunning, running]);
+
+    return runs.length ? (
+        <RunAside
+            runs={runs}
+            selectedRuns={selectedRuns}
+            onChangeRuns={onChangeRuns}
+            running={running}
+            onToggleRunning={setRunning}
+        >
+            <AsideSection>
+                <Field label={t('curves:time-display-type')}>
+                    <TimeModeSelect value={timeType} onChange={setTimeType} />
+                </Field>
+            </AsideSection>
+            <StepSliderWrapper>
+                {curveRun.map(run => (
+                    <AsideSection key={run.label}>
+                        <StepSlider run={run} type={timeType} onChange={index => onChangeIndexes(run.label, index)} />
                     </AsideSection>
-                    <StepSliderWrapper>
-                        {runWithInfo.map(run => (
-                            <AsideSection key={run.label}>
-                                <StepSlider
-                                    run={run}
-                                    type={timeType}
-                                    onChange={index => onChangeIndexes(run.label, index)}
-                                />
-                            </AsideSection>
-                        ))}
-                    </StepSliderWrapper>
-                </RunAside>
-            ) : null,
-        [t, onChangeRuns, running, runs, selectedRuns, timeType, runWithInfo, onChangeIndexes]
-    );
-
-    const withChart = useCallback<WithChart<Tag>>(
-        ({label, runs, ...args}) => <ROC_CurveChart runs={runs} tag={label} {...args} running={running} />,
-        [running]
-    );
-
-    return (
-        <>
-            <Title>{t('common:roc-curve')}</Title>
-            <Content aside={aside} loading={loading}>
-                {!loading && !runs.length ? (
-                    <Error />
-                ) : (
-                    <ChartPage items={rocCurveTags} withChart={withChart} loading={loading} />
-                )}
-            </Content>
-        </>
-    );
+                ))}
+            </StepSliderWrapper>
+        </RunAside>
+    ) : null;
 };
 
-export default ROC_Curve;
+export default CurveAside;

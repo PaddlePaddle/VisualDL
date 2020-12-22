@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type {CurveType, PRCurveData, Run} from '~/resource/curves';
 import LineChart, {LineChartRef} from '~/components/LineChart';
-import type {ROC_CurveData, Run} from '~/resource/roc-curve';
 import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
-import {options as chartOptions, nearestPoint} from '~/resource/roc-curve';
+import {options as chartOptions, nearestPoint} from '~/resource/curves';
 import {rem, size} from '~/utils/style';
 
 import ChartToolbox from '~/components/ChartToolbox';
@@ -61,20 +61,21 @@ const Error = styled.div`
     align-items: center;
 `;
 
-type ROC_CurveChartProps = {
+type PRCurveChartProps = {
+    type: CurveType;
     cid: symbol;
     runs: Run[];
     tag: string;
     running?: boolean;
 };
 
-const ROC_CurveChart: FunctionComponent<ROC_CurveChartProps> = ({cid, runs, tag, running}) => {
-    const {t} = useTranslation(['roc-curve', 'common']);
+const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, cid, runs, tag, running}) => {
+    const {t} = useTranslation(['curves', 'common']);
 
     const echart = useRef<LineChartRef>(null);
 
-    const {data: dataset, error, loading} = useRunningRequest<ROC_CurveData[]>(
-        runs.map(run => `/roc-curve/list?${queryString.stringify({run: run.label, tag})}`),
+    const {data: dataset, error, loading} = useRunningRequest<PRCurveData[]>(
+        runs.map(run => `/${type}-curve/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
@@ -136,25 +137,25 @@ const ROC_CurveChart: FunctionComponent<ROC_CurveChartProps> = ({cid, runs, tag,
             );
             const columns = [
                 {
-                    label: t('roc-curve:threshold')
+                    label: t('curves:threshold')
                 },
                 {
-                    label: t('roc-curve:tpr')
+                    label: t('curves:precision')
                 },
                 {
-                    label: t('roc-curve:fpr')
+                    label: t('curves:recall')
                 },
                 {
-                    label: t('roc-curve:true-positives')
+                    label: t('curves:true-positives')
                 },
                 {
-                    label: t('roc-curve:false-positives')
+                    label: t('curves:false-positives')
                 },
                 {
-                    label: t('roc-curve:true-negatives')
+                    label: t('curves:true-negatives')
                 },
                 {
-                    label: t('roc-curve:false-negatives')
+                    label: t('curves:false-negatives')
                 }
             ];
             const runData = points.reduce<Run[]>((m, runPoints, index) => {
@@ -163,10 +164,10 @@ const ROC_CurveChart: FunctionComponent<ROC_CurveChartProps> = ({cid, runs, tag,
             }, []);
             const data = points.reduce<(string | number)[][]>((m, runPoints) => {
                 m.push(
-                    ...runPoints.map(([tpr, fpr, tp, fp, tn, fn, threshold]) => [
+                    ...runPoints.map(([precision, recall, tp, fp, tn, fn, threshold]) => [
                         valueFormatter(threshold),
-                        axisFormatter(tpr),
-                        axisFormatter(fpr),
+                        axisFormatter(precision),
+                        axisFormatter(recall),
                         tp,
                         fp,
                         tn,
@@ -208,19 +209,19 @@ const ROC_CurveChart: FunctionComponent<ROC_CurveChartProps> = ({cid, runs, tag,
                     {
                         icon: 'maximize',
                         activeIcon: 'minimize',
-                        tooltip: t('roc-curve:maximize'),
-                        activeTooltip: t('roc-curve:minimize'),
+                        tooltip: t('curves:maximize'),
+                        activeTooltip: t('curves:minimize'),
                         toggle: true,
                         onClick: toggleMaximized
                     },
                     {
                         icon: 'restore-size',
-                        tooltip: t('roc-curve:restore'),
+                        tooltip: t('curves:restore'),
                         onClick: () => echart.current?.restore()
                     },
                     {
                         icon: 'download',
-                        tooltip: t('roc-curve:download-image'),
+                        tooltip: t('curves:download-image'),
                         onClick: () => echart.current?.saveAsImage()
                     }
                 ]}
@@ -229,4 +230,4 @@ const ROC_CurveChart: FunctionComponent<ROC_CurveChartProps> = ({cid, runs, tag,
     );
 };
 
-export default ROC_CurveChart;
+export default PRCurveChart;

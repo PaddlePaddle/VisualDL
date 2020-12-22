@@ -83,7 +83,7 @@ const StyledAside = styled(Aside)`
     }
 `;
 
-type RunAsideProps = {
+export type RunAsideProps = {
     runs?: Run[];
     selectedRuns?: Run[];
     onChangeRuns?: (runs: Run[]) => unknown;

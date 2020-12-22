@@ -29,7 +29,7 @@ export const navMap = {
     graph: Pages.Graph,
     embeddings: Pages.HighDimensional,
     pr_curve: Pages.PRCurve,
-    roc_curve: Pages.ROC_Curve
+    roc_curve: Pages.ROCCurve
 } as const;
 
 const useNavItems = () => {

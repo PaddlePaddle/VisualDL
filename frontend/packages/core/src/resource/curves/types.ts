@@ -18,11 +18,13 @@ import {Run as BaseRun, Tag as BaseTag, TimeMode} from '~/types';
 
 export {TimeMode as TimeType};
 
+export type CurveType = 'pr' | 'roc';
+
 type Step = number;
 type WallTime = number;
 type Relative = number;
-type Tpr = number;
-type Fpr = number;
+type Precision = number;
+type Recall = number;
 type TruePositives = number;
 type FalsePositives = number;
 type TrueNegatives = number;
@@ -32,15 +34,15 @@ type Thresholds = number;
 export type PRCurveDataItem = [
     WallTime,
     Step,
-    Tpr[],
-    Fpr[],
+    Precision[],
+    Recall[],
     TruePositives[],
     FalsePositives[],
     TrueNegatives[],
     FalseNegatives[],
     Thresholds[]
 ];
-export type ROC_CurveData = ROC_CurveDataItem[];
+export type PRCurveData = PRCurveDataItem[];
 
 export interface Run extends BaseRun {
     index: number;

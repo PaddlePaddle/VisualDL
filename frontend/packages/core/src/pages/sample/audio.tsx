@@ -32,7 +32,7 @@ const chartSize = {
     height: rem(244)
 };
 
-const Audio: FunctionComponent = () => {
+const AudioSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
 
     const audioContext = useRef<AudioContext>();
@@ -90,4 +90,4 @@ const Audio: FunctionComponent = () => {
     );
 };
 
-export default Audio;
+export default AudioSample;
