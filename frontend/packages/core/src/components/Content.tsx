@@ -15,7 +15,7 @@
  */
 
 import React, {FunctionComponent} from 'react';
-import {contentHeight, contentMargin, headerHeight, position, transitionProps} from '~/utils/style';
+import {WithStyled, contentHeight, contentMargin, headerHeight, position, transitionProps} from '~/utils/style';
 
 import BodyLoading from '~/components/BodyLoading';
 import styled from 'styled-components';
@@ -42,11 +42,13 @@ const Aside = styled.aside`
 
 type ContentProps = {
     aside?: React.ReactNode;
+    leftAside?: React.ReactNode;
     loading?: boolean;
 };
 
-const Content: FunctionComponent<ContentProps> = ({children, aside, loading}) => (
-    <Section>
+const Content: FunctionComponent<ContentProps & WithStyled> = ({children, aside, leftAside, loading, className}) => (
+    <Section className={className}>
+        {leftAside && <Aside>{leftAside}</Aside>}
         <Article>{children}</Article>
         {aside && <Aside>{aside}</Aside>}
         {loading && <BodyLoading />}

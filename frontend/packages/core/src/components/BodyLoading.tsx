@@ -15,7 +15,7 @@
  */
 
 import React, {FunctionComponent} from 'react';
-import {position, primaryColor, size, transitionProps} from '~/utils/style';
+import {position, primaryColor, rem, size, transitionProps, zIndexes} from '~/utils/style';
 
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
@@ -25,17 +25,24 @@ const Wrapper = styled.div`
     ${position('fixed', 0, 0, 0, 0)}
     background-color: var(--mask-color);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     overscroll-behavior: none;
     cursor: progress;
     ${transitionProps('background-color')}
+    z-index: ${zIndexes.component};
+
+    > .loading-detail {
+        margin-top: ${rem(20)};
+    }
 `;
 
-const BodyLoading: FunctionComponent = () => {
+const BodyLoading: FunctionComponent = ({children}) => {
     return (
         <Wrapper>
             <HashLoader size="60px" color={primaryColor} />
+            {children ? <div className="loading-detail">{children}</div> : null}
         </Wrapper>
     );
 };

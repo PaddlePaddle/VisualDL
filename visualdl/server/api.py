@@ -150,6 +150,20 @@ class Api(object):
         return self._get_with_retry(key, lib.get_embeddings, run, tag, reduction, dimension)
 
     @result()
+    def embedding_list(self):
+        return self._get_with_retry('data/plugin/embeddings/list', lib.get_embeddings_list)
+
+    @result('text/tab-separated-values')
+    def embedding_metadata(self, name):
+        key = os.path.join('data/plugin/embeddings/metadata', name)
+        return self._get_with_retry(key, lib.get_embedding_labels, name)
+
+    @result('application/octet-stream')
+    def embedding_tensor(self, name):
+        key = os.path.join('data/plugin/embeddings/tensor', name)
+        return self._get_with_retry(key, lib.get_embedding_tensors, name)
+
+    @result()
     def histogram_tags(self):
         return self._get_with_retry('data/plugin/histogram/tags', lib.get_histogram_tags)
 
@@ -201,6 +215,9 @@ def create_api_call(logdir, model, cache_timeout):
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
         'embedding/embedding': (api.embedding_embedding, ['run', 'tag', 'reduction', 'dimension']),
+        'embedding/list': (api.embedding_list, []),
+        'embedding/tensor': (api.embedding_tensor, ['name']),
+        'embedding/metadata': (api.embedding_metadata, ['name']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
         'graph/graph': (api.graph_graph, []),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),

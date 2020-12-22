@@ -20,19 +20,15 @@ import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from '
 import {
     SortingMethod,
     XAxis,
-    axisRange,
     chartData,
     options as chartOptions,
     nearestPoint,
-    range,
     singlePointRange,
     sortingMethodMap,
     tooltip,
-    transform,
     xAxisMap
 } from '~/resource/scalar';
 import {rem, size} from '~/utils/style';
-import type {scalar_axis_range, scalar_range, scalar_transform} from '@visualdl/wasm'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 import ChartToolbox from '~/components/ChartToolbox';
 import type {EChartOption} from 'echarts';
@@ -44,30 +40,11 @@ import {format} from 'd3-format';
 import queryString from 'query-string';
 import {renderToStaticMarkup} from 'react-dom/server';
 import styled from 'styled-components';
-import useHeavyWork from '~/hooks/useHeavyWork';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
-import wasm from '~/utils/wasm';
+import useWebAssembly from '~/hooks/useWebAssembly';
 
 const labelFormatter = format('.8');
-
-const smoothWasm = () =>
-    wasm<typeof scalar_transform>('scalar_transform').then((scalar_transform): typeof transform => params =>
-        scalar_transform(params.datasets, params.smoothing)
-    );
-
-const axisRangeWasm = () =>
-    wasm<typeof scalar_axis_range>('scalar_axis_range').then((scalar_axis_range): typeof axisRange => params =>
-        scalar_axis_range(params.datasets, params.outlier)
-    );
-
-const rangeWasm = () =>
-    wasm<typeof scalar_range>('scalar_range').then((scalar_range): typeof range => params =>
-        scalar_range(params.datasets)
-    );
-
-// const smoothWorker = () => new Worker('~/worker/scalar/smooth.worker.ts', {type: 'module'});
-// const rangeWorker = () => new Worker('~/worker/scalar/range.worker.ts', {type: 'module'});
 
 const Wrapper = styled.div`
     ${size('100%', '100%')}
@@ -142,30 +119,18 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         setYAxisType(t => (t === YAxisType.log ? YAxisType.value : YAxisType.log));
     }, [setYAxisType]);
 
-    const transformParams = useMemo(
-        () => ({
-            datasets: datasets?.map(data => data ?? []) ?? [],
-            smoothing
-        }),
-        [datasets, smoothing]
-    );
-    const smoothedDatasetsOrUndefined = useHeavyWork(smoothWasm, null, transform, transformParams);
+    const transformParams = useMemo(() => [datasets?.map(data => data ?? []) ?? [], smoothing], [datasets, smoothing]);
+    const {data: smoothedDatasetsOrUndefined} = useWebAssembly<Dataset[]>('scalar_transform', transformParams);
     const smoothedDatasets = useMemo<NonNullable<typeof smoothedDatasetsOrUndefined>>(
         () => smoothedDatasetsOrUndefined ?? [],
         [smoothedDatasetsOrUndefined]
     );
 
-    const axisRangeParams = useMemo(
-        () => ({
-            datasets: smoothedDatasets,
-            outlier: !!outlier
-        }),
-        [smoothedDatasets, outlier]
-    );
-    const yRange = useHeavyWork(axisRangeWasm, null, axisRange, axisRangeParams);
+    const axisRangeParams = useMemo(() => [smoothedDatasets, !!outlier], [smoothedDatasets, outlier]);
+    const {data: yRange} = useWebAssembly<Range>('scalar_axis_range', axisRangeParams);
 
-    const datasetRangesParams = useMemo(() => ({datasets: smoothedDatasets}), [smoothedDatasets]);
-    const datasetRanges = useHeavyWork(rangeWasm, null, range, datasetRangesParams);
+    const datasetRangesParams = useMemo(() => [smoothedDatasets], [smoothedDatasets]);
+    const {data: datasetRanges} = useWebAssembly<Range[]>('scalar_range', datasetRangesParams);
 
     const ranges: Record<'x' | 'y', Range | undefined> = useMemo(() => {
         let x: Range | undefined = undefined;

@@ -23,11 +23,11 @@ import GridLoader from 'react-spinners/GridLoader';
 import type {Run} from '~/types';
 import StepSlider from '~/components/SamplePage/StepSlider';
 import {fetcher} from '~/utils/fetch';
+import fileSaver from 'file-saver';
 import {formatTime} from '~/utils';
 import isEmpty from 'lodash/isEmpty';
 import mime from 'mime-types';
 import queryString from 'query-string';
-import {saveAs} from 'file-saver';
 import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 import {useRunningRequest} from '~/hooks/useRequest';
@@ -268,7 +268,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
     const download = useCallback(() => {
         if (entityData) {
             const ext = entityData.type ? mime.extension(entityData.type) : null;
-            saveAs(
+            fileSaver.saveAs(
                 entityData.data,
                 `${run.label}-${tag}-${steps[step]}-${wallTime.toString().replace(/\./, '_')}`.replace(
                     /[/\\?%*:|"<>]/g,

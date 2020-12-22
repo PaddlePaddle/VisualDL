@@ -52,16 +52,9 @@ pub fn histogram_transform(js_data: &JsValue, mode: &str) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn high_dimensional_divide(
-    js_points: &JsValue,
-    js_labels: &JsValue,
-    visibility: bool,
-    keyword: &str,
-) -> JsValue {
+pub fn high_dimensional_pca(js_input: &JsValue, dim: usize, n_components: usize) -> JsValue {
     utils::set_panic_hook();
-    let points: Vec<Vec<f64>> = js_points.into_serde().unwrap();
-    let labels: Vec<String> = js_labels.into_serde().unwrap();
-    let result: high_dimensional::DividedPoints =
-        high_dimensional::divide(&points, &labels, visibility, keyword);
+    let input: Vec<f64> = js_input.into_serde().unwrap();
+    let result = high_dimensional::pca(input, dim, n_components);
     JsValue::from_serde(&result).unwrap()
 }

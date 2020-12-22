@@ -21,7 +21,7 @@ DEFAULT_PLUGIN_MAXSIZE = {
     "scalar": 1000,
     "image": 10,
     "histogram": 100,
-    "embeddings": 50000,
+    "embeddings": 50000000,
     "audio": 10,
     "pr_curve": 300,
     "roc_curve": 300,

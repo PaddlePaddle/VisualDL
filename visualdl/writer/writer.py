@@ -168,7 +168,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            img (numpy.ndarray): Image represented by a numpy.array
+            img (np.ndarray): Image represented by a numpy.array
             step (int): Step of image
             walltime (int): Wall time of image
             dataformats (string): Format of image
@@ -188,17 +188,18 @@ class LogWriter(object):
             image(tag=tag, image_array=img, step=step, walltime=walltime,
                   dataformats=dataformats))
 
-    def add_embeddings(self, tag, labels, hot_vectors, walltime=None):
+    def add_embeddings(self, tag, labels, hot_vectors, labels_meta=None, walltime=None):
         """Add embeddings to vdl record file.
 
         Args:
             tag (string): Data identifier
-            labels (numpy.array or list): A list of labels.
+            labels (numpy.array or list): A 1D or 2D matrix of labels
             hot_vectors (numpy.array or list): A matrix which each row is
                 feature of labels.
+            labels_meta (numpy.array or list): Meta data of labels.
             walltime (int): Wall time of embeddings.
 
-        Example:
+        Example 1:
             hot_vectors = [
             [1.3561076367500755, 1.3116267195134017, 1.6785401875616097],
             [1.1039614644440658, 1.8891609992484688, 1.32030488587171],
@@ -207,9 +208,32 @@ class LogWriter(object):
             [1.3913371800587777, 1.4684674577930312, 1.5214136352476377]]
 
             labels = ["label_1", "label_2", "label_3", "label_4", "label_5"]
+            # or like this
+            # labels = [["label_1", "label_2", "label_3", "label_4", "label_5"]]
 
-            writer.add_embedding(labels=labels, vectors=hot_vectors,
-                                 walltime=round(time.time() * 1000))
+            writer.add_embeddings(tag='default',
+                                  labels=labels,
+                                  vectors=hot_vectors,
+                                  walltime=round(time.time() * 1000))
+
+        Example 2:
+            hot_vectors = [
+            [1.3561076367500755, 1.3116267195134017, 1.6785401875616097],
+            [1.1039614644440658, 1.8891609992484688, 1.32030488587171],
+            [1.9924524852447711, 1.9358920727142739, 1.2124401279391606],
+            [1.4129542689796446, 1.7372166387197474, 1.7317806077076527],
+            [1.3913371800587777, 1.4684674577930312, 1.5214136352476377]]
+
+            labels = [["label_a_1", "label_a_2", "label_a_3", "label_a_4", "label_a_5"],
+                      ["label_b_1", "label_b_2", "label_b_3", "label_b_4", "label_b_5"]]
+
+            labels_meta = ["label_a", "label_2"]
+
+            writer.add_embeddings(tag='default',
+                                  labels=labels,
+                                  labels_meta=labels_meta,
+                                  vectors=hot_vectors,
+                                  walltime=round(time.time() * 1000))
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
@@ -217,12 +241,17 @@ class LogWriter(object):
             hot_vectors = hot_vectors.tolist()
         if isinstance(labels, np.ndarray):
             labels = labels.tolist()
+
+        if isinstance(labels[0], list) and not labels_meta:
+            labels_meta = ["label_%d" % i for i in range(len(labels))]
+
         step = 0
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             embedding(
                 tag=tag,
                 labels=labels,
+                labels_meta=labels_meta,
                 hot_vectors=hot_vectors,
                 step=step,
                 walltime=walltime))
@@ -237,7 +266,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            audio (numpy.ndarray or list): audio represented by a numpy.array
+            audio (np.ndarray or list): audio represented by a numpy.array
             step (int): Step of audio
             sample_rate (int): Sample rate of audio
             walltime (int): Wall time of audio
@@ -283,7 +312,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            value (numpy.ndarray or list): value represented by a numpy.array or list
+            value (np.ndarray or list): value represented by a numpy.array or list
             step (int): Step of histogram
             walltime (int): Wall time of audio
             buckets (int): Number of buckets, default is 10
@@ -320,8 +349,8 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            labels (numpy.ndarray or list): Binary labels for each element.
-            predictions (numpy.ndarray or list): The probability that an element
+            labels (np.ndarray or list): Binary labels for each element.
+            predictions (np.ndarray or list): The probability that an element
                 be classified as true.
             step (int): Step of pr curve.
             weights (float): Multiple of data to display on the curve.

@@ -19,21 +19,31 @@ from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
 from visualdl.server.data_manager import default_data_manager
 from visualdl.proto import record_pb2
-from visualdl.utils.string_util import decode_tag
+from visualdl.utils.string_util import decode_tag, encode_tag
 
 
-def is_VDLRecord_file(path):
+def is_VDLRecord_file(path, check=False):
     """Determine whether it is a VDL log file according to the file name.
 
     File name of a VDL log file must contain `vdlrecords`.
 
     Args:
         path: File name to determine.
+        check: Check file is valid or not.
 
     Returns:
         True if the file is a VDL log file, otherwise false.
     """
-    return "vdlrecords" in path
+    if not "vdlrecords" in path:
+        return False
+    if check:
+        _reader = RecordReader(filepath=path)
+        meta_data = _reader.get_next()
+        record = record_pb2.Record()
+        record.ParseFromString(meta_data)
+        if 'meta_data_tag' != record.values[0].tag:
+            return False
+    return True
 
 
 class LogReader(object):
@@ -41,7 +51,7 @@ class LogReader(object):
 
     """
 
-    def __init__(self, logdir='', file_name=''):
+    def __init__(self, logdir='', file_path=''):
         """Instance of LogReader
 
         Args:
@@ -61,9 +71,9 @@ class LogReader(object):
 
         self.file_readers = {}
 
-        if file_name:
+        if file_path:
             self._log_data = collections.defaultdict(lambda: collections.defaultdict(list))
-            self.get_file_reader(file_name=file_name)
+            self.get_file_reader(file_path=file_path)
             remain = self.get_remain()
             self.read_log_data(remain=remain)
 
@@ -102,14 +112,17 @@ class LogReader(object):
         component_keys = self._log_data.keys()
         log_tags = {}
         for key in component_keys:
-            log_tags[key] = list(self._log_data[key].keys())
+            _tags = list(self._log_data[key].keys())
+            tags = list(map(lambda x: encode_tag(x), _tags))
+            log_tags[key] = tags
+
         return log_tags
 
     def get_tags(self):
         return self._get_log_tags()
 
     def get_data(self, component, tag):
-        return self._log_data[component][tag]
+        return self._log_data[component][decode_tag(tag)]
 
     def parse_from_bin(self, record_bin):
         """Register to self._tags by component type.
@@ -202,17 +215,17 @@ class LogReader(object):
         self.reader = self.readers[filepath]
         return self.reader
 
-    def get_file_reader(self, file_name):
+    def get_file_reader(self, file_path):
         """Get file reader for specified vdl log file.
 
         Get instance of class RecordReader base on BFile.
 
         Args:
-            file_name: Vdl log file name.
+            file_path: Vdl log file path.
         """
-        self._register_reader(file_name)
-        self.reader = self.readers[file_name]
-        self.reader.dir = file_name
+        self._register_reader(file_path)
+        self.reader = self.readers[file_path]
+        self.reader.dir = file_path
         return self.reader
 
     def _register_reader(self, path, dir=None):

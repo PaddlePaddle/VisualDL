@@ -169,13 +169,12 @@ const Select = <T extends unknown>({
 
     const [isOpened, setIsOpened] = useState(false);
     const toggleOpened = useCallback(() => setIsOpened(!isOpened), [isOpened]);
-    const setIsOpenedFalse = useCallback(() => setIsOpened(false), []);
+    const closeDropdown = useCallback(() => setIsOpened(false), []);
 
     const [value, setValue] = useState(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue);
     useEffect(() => setValue(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue), [
         multiple,
-        propValue,
-        setValue
+        propValue
     ]);
 
     const isSelected = useMemo(() => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : (value as T)), [
@@ -186,9 +185,9 @@ const Select = <T extends unknown>({
         (mutateValue: T) => {
             setValue(mutateValue);
             (onChange as OnSingleChange<T>)?.(mutateValue);
-            setIsOpenedFalse();
+            closeDropdown();
         },
-        [setIsOpenedFalse, onChange]
+        [closeDropdown, onChange]
     );
     const changeMultipleValue = useCallback(
         (mutateValue: T, checked: boolean) => {
@@ -208,7 +207,7 @@ const Select = <T extends unknown>({
         [value, onChange]
     );
 
-    const ref = useClickOutside<HTMLDivElement>(setIsOpenedFalse);
+    const ref = useClickOutside<HTMLDivElement>(closeDropdown);
 
     const list = useMemo<SelectListItem<T>[]>(
         () =>

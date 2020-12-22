@@ -121,8 +121,8 @@ _RECORD_EMBEDDING = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='label', full_name='visualdl.Record.Embedding.label', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -163,6 +163,13 @@ _RECORD_EMBEDDINGS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='label_meta', full_name='visualdl.Record.Embeddings.label_meta', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -176,7 +183,7 @@ _RECORD_EMBEDDINGS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=288,
-  serialized_end=348,
+  serialized_end=368,
 )
 
 _RECORD_BYTES_EMBEDDINGS = _descriptor.Descriptor(
@@ -212,8 +219,8 @@ _RECORD_BYTES_EMBEDDINGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=350,
-  serialized_end=417,
+  serialized_start=370,
+  serialized_end=437,
 )
 
 _RECORD_HISTOGRAM = _descriptor.Descriptor(
@@ -249,8 +256,8 @@ _RECORD_HISTOGRAM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=419,
-  serialized_end=471,
+  serialized_start=439,
+  serialized_end=491,
 )
 
 _RECORD_PRCURVE = _descriptor.Descriptor(
@@ -314,8 +321,8 @@ _RECORD_PRCURVE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=473,
-  serialized_end=581,
+  serialized_start=493,
+  serialized_end=601,
 )
 
 _RECORD_ROC_CURVE = _descriptor.Descriptor(

@@ -33,7 +33,7 @@ const backend = process.env.BACKEND;
 const delay = Number.parseInt(process.env.DELAY || '', 10);
 const pingUrl = process.env.PING_URL;
 
-const root = path.dirname(resolve.sync(__dirname, '@visualdl/core'));
+const root = path.dirname(resolve.sync(__dirname, '@visualdl/core') || '');
 
 const app = express();
 

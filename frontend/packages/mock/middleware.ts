@@ -71,6 +71,8 @@ export default (options?: Options) => {
                 res.send(mock);
             } else if (mock instanceof ArrayBuffer) {
                 res.send(Buffer.from(mock));
+            } else if ('string' === typeof mock) {
+                res.send(mock);
             } else {
                 const result = JSON.parse(faker.fake(JSON.stringify(mock, null, 4)));
                 if (result && 'status' in result && 'data' in result) {
