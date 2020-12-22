@@ -168,7 +168,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            img (numpy.ndarray): Image represented by a numpy.array
+            img (np.ndarray): Image represented by a numpy.array
             step (int): Step of image
             walltime (int): Wall time of image
             dataformats (string): Format of image
