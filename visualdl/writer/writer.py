@@ -168,7 +168,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            img (numpy.ndarray): Image represented by a numpy.array
+            img (np.ndarray): Image represented by a numpy.array
             step (int): Step of image
             walltime (int): Wall time of image
             dataformats (string): Format of image
@@ -266,7 +266,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            audio (numpy.ndarray or list): audio represented by a numpy.array
+            audio (np.ndarray or list): audio represented by a numpy.array
             step (int): Step of audio
             sample_rate (int): Sample rate of audio
             walltime (int): Wall time of audio
@@ -312,7 +312,7 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            value (numpy.ndarray or list): value represented by a numpy.array or list
+            value (np.ndarray or list): value represented by a numpy.array or list
             step (int): Step of histogram
             walltime (int): Wall time of audio
             buckets (int): Number of buckets, default is 10
@@ -349,8 +349,8 @@ class LogWriter(object):
 
         Args:
             tag (string): Data identifier
-            labels (numpy.ndarray or list): Binary labels for each element.
-            predictions (numpy.ndarray or list): The probability that an element
+            labels (np.ndarray or list): Binary labels for each element.
+            predictions (np.ndarray or list): The probability that an element
                 be classified as true.
             step (int): Step of pr curve.
             weights (float): Multiple of data to display on the curve.
