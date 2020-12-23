@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
+# coding=utf-8
+
 from visualdl import LogWriter
 
 if __name__ == '__main__':
@@ -20,4 +23,3 @@ if __name__ == '__main__':
         for step in range(1000):
             writer.add_scalar(tag="acc", step=step, value=value[step])
             writer.add_scalar(tag="loss", step=step, value=1/(value[step] + 1))
-

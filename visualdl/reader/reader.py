@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
 import collections
-from functools import partial
 from visualdl.io import bfile
 from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
@@ -34,7 +34,7 @@ def is_VDLRecord_file(path, check=False):
     Returns:
         True if the file is a VDL log file, otherwise false.
     """
-    if not "vdlrecords" in path:
+    if "vdlrecords" not in path:
         return False
     if check:
         _reader = RecordReader(filepath=path)
@@ -72,7 +72,8 @@ class LogReader(object):
         self.file_readers = {}
 
         # {'run': {'scalar': {'tag1': data, 'tag2': data}}}
-        self._log_datas = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
+        self._log_datas = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
 
         if file_path:
             self._log_data = collections.defaultdict(lambda: collections.defaultdict(list))
@@ -128,7 +129,9 @@ class LogReader(object):
         return log_tags
 
     def get_log_data(self, component, run, tag):
-        if run in self._log_datas.keys() and component in self._log_datas[run].keys() and tag in self._log_datas[run][component].keys():
+        if (run in self._log_datas.keys() and
+                component in self._log_datas[run].keys() and
+                tag in self._log_datas[run][component].keys()):
             return self._log_datas[run][component][tag]
         else:
             file_path = bfile.join(run, self.walks[run])

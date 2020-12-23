@@ -13,7 +13,6 @@
 # limitations under the License.
 # =======================================================================
 
-
 def encode_tag(tag):
     return tag.replace("%", "/")
 

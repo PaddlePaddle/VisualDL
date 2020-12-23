@@ -39,7 +39,7 @@ To stop VisualDL server, just type
 visualdl stop
 ```
 
-For more usage infomation, please type
+For more usage information, please type
 
 ```bash
 visualdl -h

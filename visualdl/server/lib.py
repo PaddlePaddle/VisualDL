@@ -19,7 +19,6 @@ import time
 import os
 import io
 import csv
-from functools import partial
 import numpy as np
 from visualdl.server.log import logger
 from visualdl.io import bfile
@@ -198,8 +197,8 @@ def get_pr_curve(log_reader, run, tag):
                         list(pr_curve.FN),
                         num_thresholds])
     return results
- 
-    
+
+
 def get_roc_curve(log_reader, run, tag):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
@@ -225,7 +224,7 @@ def get_roc_curve(log_reader, run, tag):
 def get_pr_curve_step(log_reader, run, tag=None):
     fake_run = run
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
-    run2tag = get_pr_curve_tags(log_reader)
+    run2tag = get_pr_curve_tags(log_reader)  # noqa: F821
     tag = run2tag['tags'][run2tag['runs'].index(fake_run)][0]
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("pr_curve").get_items(
@@ -237,7 +236,7 @@ def get_pr_curve_step(log_reader, run, tag=None):
 def get_roc_curve_step(log_reader, run, tag=None):
     fake_run = run
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
-    run2tag = get_roc_curve_tags(log_reader)
+    run2tag = get_roc_curve_tags(log_reader)  # noqa: F821
     tag = run2tag['tags'][run2tag['runs'].index(fake_run)][0]
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("roc_curve").get_items(
@@ -245,7 +244,7 @@ def get_roc_curve_step(log_reader, run, tag=None):
     results = [[s2ms(item.timestamp), item.id] for item in records]
     return results
 
-  
+
 def get_embeddings_list(log_reader):
     run2tag = get_logs(log_reader, 'embeddings')
 
@@ -356,26 +355,3 @@ def cache_get(cache):
         return data
 
     return _handler
-
-
-def simple_pca(x, dimension):
-    """
-    A simple PCA implementation to do the dimension reduction.
-    """
-
-    # Center the data.
-    x -= np.mean(x, axis=0)
-
-    # Computing the Covariance Matrix
-    cov = np.cov(x, rowvar=False)
-
-    # Get eigenvectors and eigenvalues from the covariance matrix
-    eigvals, eigvecs = np.linalg.eig(cov)
-
-    # Sort the eigvals from high to low
-    order = np.argsort(eigvals)[::-1]
-
-    # Drop the eigenvectors with low eigenvalues
-    eigvecs = eigvecs[:, order[:dimension]]
-
-    return np.dot(x, eigvecs)

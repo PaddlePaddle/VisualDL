@@ -387,7 +387,7 @@ class BosFileSystem(object):
                                           content_md5=content_md5(file_content),
                                           content_length=content_length,
                                           offset=offset)
-        except (exception.BceServerError, exception.BceHttpClientError) as e:
+        except (exception.BceServerError, exception.BceHttpClientError):
             init_data = b''
             self.bos_client.append_object(bucket_name=bucket_name,
                                           key=object_key,
@@ -634,7 +634,7 @@ class BFile(object):
         if isinstance(self.fs, BosFileSystem):
             try:
                 self.fs.append(self._filename, b'', self.binary_mode, force=True)
-            except:
+            except Exception:
                 pass
         self.flush()
         if self.write_temp is not None:

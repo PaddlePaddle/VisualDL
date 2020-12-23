@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
 # coding=utf-8
+
 import numpy as np
 from PIL import Image
 from visualdl import LogWriter

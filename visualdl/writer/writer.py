@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
 import os
 import time
 import numpy as np
@@ -380,14 +381,15 @@ class LogWriter(object):
                 num_thresholds=num_thresholds,
                 weights=weights
                 ))
+
     def add_roc_curve(self,
-                     tag,
-                     labels,
-                     predictions,
-                     step,
-                     num_thresholds=10,
-                     weights=None,
-                     walltime=None):
+                      tag,
+                      labels,
+                      predictions,
+                      step,
+                      num_thresholds=10,
+                      weights=None,
+                      walltime=None):
         """Add an ROC curve to vdl record file.
         Args:
             tag (string): Data identifier
@@ -421,7 +423,6 @@ class LogWriter(object):
                 num_thresholds=num_thresholds,
                 weights=weights
                 ))
-
 
     def flush(self):
         """Flush all data in cache to disk.

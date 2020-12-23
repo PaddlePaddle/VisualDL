@@ -13,4 +13,4 @@
 # limitations under the License.
 # =======================================================================
 
-from . import bfile  # noqa
+from . import bfile  # noqa: F401

@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
 import threading
 import hashlib
 import requests
-import json
 from visualdl import __version__
 from visualdl.proto.record_pb2 import DESCRIPTOR
 
