@@ -138,7 +138,7 @@ def convert_to_HWC(tensor, input_format):
         return tensor
 
 
-def renormalization(image_array):
+def denormalization(image_array):
     """Renormalise ndarray matrix.
 
     Args:
@@ -165,7 +165,7 @@ def image(tag, image_array, step, walltime=None, dataformats="HWC"):
     Return:
         Package with format of record_pb2.Record
     """
-    image_array = renormalization(image_array)
+    image_array = denormalization(image_array)
     image_array = convert_to_HWC(image_array, dataformats)
     image_bytes = imgarray2bytes(image_array)
     image = Record.Image(encoded_image_string=image_bytes)
