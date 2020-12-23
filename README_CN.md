@@ -360,6 +360,12 @@ VisualDL可视化结果保存服务，以链接形式将可视化结果保存下
 
 在使用VisualDL的过程中可能遇到的一些问题，可参考[常见问题](./docs/faq.md)帮助解决
 
+## 近期活动更新
+
+- 2020.12.22 
+
+  《手拆朋友圈斗图利器—『圣诞写真生成器』》b站直播中奖用户名单请点击[圣诞直播中奖名单](./docs/luckydraw.md)查看~
+
 ## 开源贡献
 
 VisualDL 是由 [PaddlePaddle](https://www.paddlepaddle.org/) 和 [ECharts](https://echarts.apache.org/) 合作推出的开源项目。
