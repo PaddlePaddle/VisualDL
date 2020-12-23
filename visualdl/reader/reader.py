@@ -230,7 +230,7 @@ class LogReader(object):
 
         filepath = bfile.join(dir, log)
         if filepath not in self.readers.keys():
-            self._register_reader(filepath, dir)
+            self.register_reader(filepath, dir)
         self.reader = self.readers[filepath]
         return self.reader
 
@@ -246,16 +246,13 @@ class LogReader(object):
 
     def _get_file_reader(self, file_path, update=True):
         if update:
-            self._register_reader(file_path)
+            self.register_reader(file_path)
             self.reader = self.readers[file_path]
             self.reader.dir = file_path
             return self.reader
         else:
             reader = RecordReader(filepath=file_path)
             return reader
-
-    def _register_reader(self, path, dir=None):
-        self.register_reader(path=path, dir=dir, update=True)
 
     def register_reader(self, path, dir=None, update=True):
         if update:
@@ -274,7 +271,7 @@ class LogReader(object):
         self.logs(update)
         for dir, path in self.walks.items():
             filepath = bfile.join(dir, path)
-            self._register_reader(filepath, dir)
+            self.register_reader(filepath, dir)
 
     def add_remain(self):
         """Add remain data to data_manager.
