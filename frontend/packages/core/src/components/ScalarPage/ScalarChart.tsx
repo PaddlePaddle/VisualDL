@@ -39,6 +39,7 @@ import ee from '~/utils/event';
 import {format} from 'd3-format';
 import queryString from 'query-string';
 import {renderToStaticMarkup} from 'react-dom/server';
+import saveFile from '~/utils/saveFile';
 import styled from 'styled-components';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
@@ -210,6 +211,49 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [formatter, ranges, xAxisType, yAxisType]
     );
 
+    const toolbox = useMemo(
+        () => [
+            {
+                icon: 'maximize',
+                activeIcon: 'minimize',
+                tooltip: t('scalar:maximize'),
+                activeTooltip: t('scalar:minimize'),
+                toggle: true,
+                onClick: toggleMaximized
+            },
+            {
+                icon: 'restore-size',
+                tooltip: t('scalar:restore'),
+                onClick: () => echart.current?.restore()
+            },
+            {
+                icon: 'log-axis',
+                tooltip: t('scalar:toggle-log-axis'),
+                toggle: true,
+                onClick: toggleYAxisType
+            },
+            {
+                icon: 'download',
+                menuList: [
+                    {
+                        label: t('scalar:download-image'),
+                        onClick: () => echart.current?.saveAsImage()
+                    },
+                    {
+                        label: t('scalar:download-data'),
+                        onClick: () =>
+                            saveFile(
+                                runs.map(run => `/scalar/data?${queryString.stringify({run: run.label, tag})}`),
+                                runs.map(run => `visualdl-scalar-${run.label}-${tag}.tsv`),
+                                `visualdl-scalar-${tag}.zip`
+                            )
+                    }
+                ]
+            }
+        ],
+        [runs, t, tag, toggleMaximized, toggleYAxisType]
+    );
+
     // display error only on first fetch
     if (!data && error) {
         return <Error>{t('common:error')}</Error>;
@@ -218,34 +262,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     return (
         <Wrapper>
             <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
-            <Toolbox
-                items={[
-                    {
-                        icon: 'maximize',
-                        activeIcon: 'minimize',
-                        tooltip: t('scalar:maximize'),
-                        activeTooltip: t('scalar:minimize'),
-                        toggle: true,
-                        onClick: toggleMaximized
-                    },
-                    {
-                        icon: 'restore-size',
-                        tooltip: t('scalar:restore'),
-                        onClick: () => echart.current?.restore()
-                    },
-                    {
-                        icon: 'log-axis',
-                        tooltip: t('scalar:toggle-log-axis'),
-                        toggle: true,
-                        onClick: toggleYAxisType
-                    },
-                    {
-                        icon: 'download',
-                        tooltip: t('scalar:download-image'),
-                        onClick: () => echart.current?.saveAsImage()
-                    }
-                ]}
-            />
+            <Toolbox items={toolbox} />
         </Wrapper>
     );
 };

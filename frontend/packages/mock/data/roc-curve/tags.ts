@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 
-export type Runs = string[];
-
-export enum ActionTypes {
-    SET_SELECTED_RUNS = 'SET_SELECTED_RUNS'
-}
-
-export interface RunsState {
-    scalar: Runs;
-    histogram: Runs;
-    image: Runs;
-    audio: Runs;
-    'pr-curve': Runs;
-    'roc-curve': Runs;
-}
-
-export type Page = keyof RunsState;
-
-interface SetSelectedRunsAction {
-    type: ActionTypes.SET_SELECTED_RUNS;
-    page: Page;
-    runs: Runs;
-}
-
-export type RunsActionTypes = SetSelectedRunsAction;
+export default {
+    runs: ['train', 'test'],
+    tags: [
+        ['layer2/biases/summaries/mean', 'test/1234', 'another'],
+        [
+            'layer2/biases/summaries/mean',
+            'layer2/biases/summaries/accuracy',
+            'layer2/biases/summaries/cost',
+            'test/431',
+            'others'
+        ]
+    ]
+};

@@ -18,6 +18,8 @@ import {Run as BaseRun, Tag as BaseTag, TimeMode} from '~/types';
 
 export {TimeMode as TimeType};
 
+export type CurveType = 'pr' | 'roc';
+
 type Step = number;
 type WallTime = number;
 type Relative = number;

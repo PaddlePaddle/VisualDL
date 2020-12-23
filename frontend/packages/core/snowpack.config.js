@@ -71,7 +71,6 @@ module.exports = {
         clean: true
     },
     installOptions: {
-        polyfillNode: true,
-        namedExports: ['file-saver']
+        polyfillNode: true
     }
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useState} from 'react';
+import React, {FunctionComponent, useCallback, useContext, useMemo, useState} from 'react';
 import {WithStyled, em, rem, transitionProps} from '~/utils/style';
 
 import Icon from '~/components/Icon';
@@ -48,6 +48,28 @@ const ToolboxItem = styled.a<{active?: boolean}>`
     }
 `;
 
+const ChartToolboxMenu = styled.div`
+    background-color: var(--background-color);
+    ${transitionProps('background-color')};
+
+    > a {
+        cursor: pointer;
+        display: block;
+        padding: ${rem(10)};
+        background-color: var(--background-color);
+        ${transitionProps(['color', 'background-color'])};
+
+        &:hover {
+            background-color: var(--background-focused-color);
+        }
+    }
+`;
+
+interface ChartToolboxItemChild {
+    label: string;
+    onClick?: () => unknown;
+}
+
 type BaseChartToolboxItem = {
     icon: Icons;
     tooltip?: string;
@@ -65,12 +87,111 @@ type ToggleChartToolboxItem = {
     onClick?: (value: boolean) => unknown;
 } & BaseChartToolboxItem;
 
-export type ChartToolboxItem = NormalChartToolboxItem | ToggleChartToolboxItem;
+type MenuChartToolboxItem = {
+    toggle?: false;
+    tooltip: undefined;
+    menuList: ChartToolboxItemChild[];
+} & BaseChartToolboxItem;
+
+export type ChartToolboxItem = NormalChartToolboxItem | ToggleChartToolboxItem | MenuChartToolboxItem;
+
+const ChartToolboxIcon = React.forwardRef<
+    HTMLAnchorElement,
+    {
+        toggle?: boolean;
+        icon: Icons;
+        activeIcon?: Icons;
+        activeStatus?: boolean;
+        onClick?: () => unknown;
+    }
+>(({toggle, icon, activeIcon, activeStatus, onClick}, ref) => {
+    return (
+        <ToolboxItem ref={ref} active={toggle && !activeIcon && activeStatus} onClick={() => onClick?.()}>
+            <Icon type={toggle ? (activeStatus && activeIcon) || icon : icon} />
+        </ToolboxItem>
+    );
+});
+
+ChartToolboxIcon.displayName = 'ChartToolboxIcon';
+
+type ChartToolboxItemProps = {
+    tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right';
+};
 
 type ChartToolboxProps = {
     items: ChartToolboxItem[];
     reversed?: boolean;
-    tooltipPlacement?: 'top' | 'bottom' | 'left' | 'right';
+} & ChartToolboxItemProps;
+
+const ChartToolboxItemContext = React.createContext<ChartToolboxItemProps>({
+    tooltipPlacement: 'top'
+});
+
+const NormalChartToolbox: FunctionComponent<NormalChartToolboxItem> = ({icon, tooltip, onClick}) => {
+    const toolboxIcon = useMemo(() => <ChartToolboxIcon icon={icon} onClick={onClick} />, [icon, onClick]);
+    const {tooltipPlacement} = useContext(ChartToolboxItemContext);
+
+    return tooltip ? (
+        <Tippy content={tooltip} placement={tooltipPlacement || 'top'} theme="tooltip">
+            {toolboxIcon}
+        </Tippy>
+    ) : (
+        toolboxIcon
+    );
+};
+
+const ToggleChartToolbox: FunctionComponent<ToggleChartToolboxItem> = ({
+    icon,
+    tooltip,
+    activeIcon,
+    activeTooltip,
+    onClick
+}) => {
+    const [active, setActive] = useState(false);
+    const click = useCallback(() => {
+        setActive(a => {
+            onClick?.(!a);
+            return !a;
+        });
+    }, [onClick]);
+    const toolboxIcon = useMemo(
+        () => <ChartToolboxIcon icon={icon} activeIcon={activeIcon} activeStatus={active} toggle onClick={click} />,
+        [icon, activeIcon, active, click]
+    );
+    const {tooltipPlacement} = useContext(ChartToolboxItemContext);
+
+    return tooltip ? (
+        <Tippy content={(active && activeTooltip) || tooltip} placement={tooltipPlacement || 'top'} theme="tooltip">
+            {toolboxIcon}
+        </Tippy>
+    ) : (
+        toolboxIcon
+    );
+};
+
+const MenuChartToolbox: FunctionComponent<MenuChartToolboxItem> = ({icon, menuList}) => {
+    return (
+        <Tippy
+            content={
+                <ChartToolboxMenu>
+                    {menuList.map((item, index) => (
+                        <a key={index} onClick={() => item.onClick?.()}>
+                            {item.label}
+                        </a>
+                    ))}
+                </ChartToolboxMenu>
+            }
+            placement="right-start"
+            animation="shift-away-subtle"
+            interactive
+            hideOnClick={false}
+            arrow={false}
+            role="menu"
+            theme="menu"
+        >
+            <ChartToolboxIcon icon={icon} />
+        </Tippy>
+    );
 };
 
 const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
@@ -79,56 +200,25 @@ const ChartToolbox: FunctionComponent<ChartToolboxProps & WithStyled> = ({
     reversed,
     className
 }) => {
-    const [activeStatus, setActiveStatus] = useState<boolean[]>(new Array(items.length).fill(false));
-    const onClick = useCallback(
-        (index: number) => {
-            const item = items[index];
-            if (item.toggle) {
-                item.onClick?.(!activeStatus[index]);
-                setActiveStatus(m => {
-                    const n = [...m];
-                    n.splice(index, 1, !m[index]);
-                    return n;
-                });
-            } else {
-                item.onClick?.();
-            }
-        },
-        [items, activeStatus]
-    );
-
-    const getToolboxItem = useCallback(
-        (item: ChartToolboxItem, index: number) => (
-            <ToolboxItem
-                key={index}
-                active={item.toggle && !item.activeIcon && activeStatus[index]}
-                onClick={() => onClick(index)}
-            >
-                <Icon type={item.toggle ? (activeStatus[index] && item.activeIcon) || item.icon : item.icon} />
-            </ToolboxItem>
-        ),
-        [activeStatus, onClick]
-    );
+    const contextValue = useMemo(() => ({tooltipPlacement}), [tooltipPlacement]);
 
     return (
         <>
             <Toolbox className={className} size={items.length} reversed={reversed}>
-                {items.map((item, index) =>
-                    item.tooltip ? (
-                        <Tippy
-                            content={
-                                item.toggle ? (activeStatus[index] && item.activeTooltip) || item.tooltip : item.tooltip
-                            }
-                            placement={tooltipPlacement || 'top'}
-                            theme="tooltip"
-                            key={index}
-                        >
-                            {getToolboxItem(item, index)}
-                        </Tippy>
-                    ) : (
-                        getToolboxItem(item, index)
-                    )
-                )}
+                <ChartToolboxItemContext.Provider value={contextValue}>
+                    {items.map((item, index) => {
+                        if ((item as MenuChartToolboxItem).menuList) {
+                            const i = item as MenuChartToolboxItem;
+                            return <MenuChartToolbox {...i} key={index} />;
+                        }
+                        if ((item as ToggleChartToolboxItem).toggle) {
+                            const i = item as ToggleChartToolboxItem;
+                            return <ToggleChartToolbox {...i} key={index} />;
+                        }
+                        const i = item as NormalChartToolboxItem;
+                        return <NormalChartToolbox {...i} key={index} />;
+                    })}
+                </ChartToolboxItemContext.Provider>
             </Toolbox>
         </>
     );

@@ -43,6 +43,15 @@ message Record {
     repeated double precision = 5;
     repeated double recall = 6;
   }
+  
+  message ROC_Curve {
+    repeated int64 TP = 1 [packed = true];
+    repeated int64 FP = 2 [packed = true];
+    repeated int64 TN = 3 [packed = true];
+    repeated int64 FN = 4 [packed = true];
+    repeated double tpr = 5;
+    repeated double fpr = 6;
+  }
 
   message MetaData {
     string display_name = 1;
@@ -60,6 +69,7 @@ message Record {
       Histogram histogram = 8;
       PRCurve pr_curve = 9;
       MetaData meta_data = 10;
+      ROC_Curve roc_curve = 11;
     }
   }
 

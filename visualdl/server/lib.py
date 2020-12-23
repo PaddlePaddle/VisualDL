@@ -198,6 +198,28 @@ def get_pr_curve(log_reader, run, tag):
                         list(pr_curve.FN),
                         num_thresholds])
     return results
+ 
+    
+def get_roc_curve(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("roc_curve").get_items(
+        run, decode_tag(tag))
+    results = []
+    for item in records:
+        roc_curve = item.roc_curve
+        length = len(roc_curve.tpr)
+        num_thresholds = [float(v) / length for v in range(1, length + 1)]
+        results.append([s2ms(item.timestamp),
+                        item.id,
+                        list(roc_curve.tpr),
+                        list(roc_curve.fpr),
+                        list(roc_curve.TP),
+                        list(roc_curve.FP),
+                        list(roc_curve.TN),
+                        list(roc_curve.FN),
+                        num_thresholds])
+    return results
 
 
 def get_pr_curve_step(log_reader, run, tag=None):
@@ -212,6 +234,18 @@ def get_pr_curve_step(log_reader, run, tag=None):
     return results
 
 
+def get_roc_curve_step(log_reader, run, tag=None):
+    fake_run = run
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    run2tag = get_roc_curve_tags(log_reader)
+    tag = run2tag['tags'][run2tag['runs'].index(fake_run)][0]
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("roc_curve").get_items(
+        run, decode_tag(tag))
+    results = [[s2ms(item.timestamp), item.id] for item in records]
+    return results
+
+  
 def get_embeddings_list(log_reader):
     run2tag = get_logs(log_reader, 'embeddings')
 
@@ -264,30 +298,6 @@ def get_embedding_tensors(log_reader, name):
         vectors.append(item.vectors)
     vectors = np.array(vectors).flatten().astype(np.float32).tobytes()
     return vectors
-
-
-def get_embeddings(log_reader, run, tag, reduction, dimension=2):
-    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
-    log_reader.load_new_data()
-    records = log_reader.data_manager.get_reservoir("embeddings").get_items(
-        run, decode_tag(tag))
-
-    labels = []
-    vectors = []
-    for item in records[0].embeddings.embeddings:
-        labels.append(item.label)
-        vectors.append(item.vectors)
-    vectors = np.array(vectors)
-
-    if reduction == 'tsne':
-        import visualdl.server.tsne as tsne
-        low_dim_embs = tsne.tsne(
-            vectors, dimension, initial_dims=50, perplexity=30.0)
-
-    elif reduction == 'pca':
-        low_dim_embs = simple_pca(vectors, dimension)
-
-    return {"embedding": low_dim_embs.tolist(), "labels": labels}
 
 
 def get_histogram(log_reader, run, tag):

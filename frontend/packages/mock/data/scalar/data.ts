@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export type {PRCurveData, Run, StepInfo, Tag} from './types';
-export {TimeType} from './types';
-export * from './chart';
-export * from './data';
+import {Request, Response} from 'express';
+
+export default (req: Request, res: Response) => {
+    const {run, tag} = req.query;
+    res.setHeader('Content-Type', 'text/tab-separated-values');
+    return `scalar\n${run}\n${tag}`;
+};

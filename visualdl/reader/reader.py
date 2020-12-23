@@ -171,6 +171,8 @@ class LogReader(object):
                 component = "histogram"
             elif "pr_curve" == value_type:
                 component = "pr_curve"
+            elif "roc_curve" == value_type:
+                component = "roc_curve"
             elif "meta_data" == value_type:
                 self.update_meta_data(record)
                 component = "meta_data"

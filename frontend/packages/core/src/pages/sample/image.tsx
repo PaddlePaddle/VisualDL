@@ -36,7 +36,7 @@ const chartSize = {
     height: rem(406)
 };
 
-const Image: FunctionComponent = () => {
+const ImageSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
 
     const [running, setRunning] = useState(true);
@@ -112,4 +112,4 @@ const Image: FunctionComponent = () => {
     );
 };
 
-export default Image;
+export default ImageSample;

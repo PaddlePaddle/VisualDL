@@ -118,10 +118,17 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
         useLayoutEffect(() => {
             const c = chartElement.current;
             if (c) {
+                let animationId: number | null = null;
                 const observer = new ResizeObserver(() => {
-                    const rect = c.getBoundingClientRect();
-                    setWidth(rect.width);
-                    setHeight(rect.height);
+                    if (animationId != null) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                    }
+                    animationId = requestAnimationFrame(() => {
+                        const rect = c.getBoundingClientRect();
+                        setWidth(rect.width);
+                        setHeight(rect.height);
+                    });
                 });
                 observer.observe(c);
                 return () => observer.unobserve(c);
