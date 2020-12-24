@@ -32,7 +32,7 @@ jobs:
           python-version: '3.8'
       - name: Install requirements
         run: |
-          echo "TODO"
+          pip install --disable-pip-version-check flake8
       - name: Lint
         run: |
-          echo "TODO"
+          flake8

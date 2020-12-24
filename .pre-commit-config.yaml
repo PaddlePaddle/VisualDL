@@ -11,3 +11,22 @@ repos:
       - id: check-yaml
       - id: check-symlinks
       - id: destroyed-symlinks
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
+        alias: be
+        exclude: ^frontend/
+  - repo: local
+    hooks:
+      - id: fe
+        name: lint-staged
+        entry: cd frontend && lint-staged
+        language: node
+        files: ^frontend/
+        pass_filenames: false
+        description: lint frontend code by lint-staged
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+      - id: check-useless-excludes
