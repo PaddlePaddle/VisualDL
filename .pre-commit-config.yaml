@@ -21,10 +21,9 @@ repos:
     hooks:
       - id: fe
         name: lint-staged
-        entry: cd frontend && lint-staged
+        entry: ./frontend/scripts/lint-staged.sh
         language: node
         files: ^frontend/
-        pass_filenames: false
         description: lint frontend code by lint-staged
   - repo: meta
     hooks:
