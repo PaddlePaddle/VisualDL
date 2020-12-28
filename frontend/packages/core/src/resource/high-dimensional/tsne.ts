@@ -50,7 +50,7 @@
  * You can find the PDF [here](http://jmlr.csail.mit.edu/papers/volume9/vandermaaten08a/vandermaaten08a.pdf).
  */
 
-// cSpell:words Maaten Andrej Karpathy Karpathy's Guass randn xtod premult dists gainid
+// cSpell:words Maaten Andrej Karpathy Karpathy's randn xtod premult dists gainid
 
 export type tSNEOptions = {
     perplexity?: number;
@@ -58,7 +58,7 @@ export type tSNEOptions = {
     dimension: number;
 };
 
-class GuassRandom {
+class GaussRandom {
     private returnV = false;
     private vVal = 0.0;
 
@@ -85,7 +85,7 @@ export default class tSNE {
     epsilon = 10;
     perplexity = 30;
 
-    private Random = new GuassRandom();
+    private Random = new GaussRandom();
 
     private data = new Float32Array();
     private P: Float32Array = new Float32Array();
