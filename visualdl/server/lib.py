@@ -14,6 +14,7 @@
 # =======================================================================
 
 from __future__ import absolute_import
+from functools import partial  # noqa: F401
 import sys
 import time
 import os
