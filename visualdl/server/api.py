@@ -112,6 +112,7 @@ class Api(object):
     @result()
     def pr_curve_tags(self):
         return self._get_with_retry('data/plugin/pr_curves/tags', lib.get_pr_curve_tags)
+
     @result()
     def roc_curve_tags(self):
         return self._get_with_retry('data/plugin/roc_curves/tags', lib.get_roc_curve_tags)
@@ -181,20 +182,26 @@ class Api(object):
     def pr_curves_pr_curve(self, run, tag):
         key = os.path.join('data/plugin/pr_curves/pr_curve', run, tag)
         return self._get_with_retry(key, lib.get_pr_curve, run, tag)
+
     @result()
     def roc_curves_roc_curve(self, run, tag):
         key = os.path.join('data/plugin/roc_curves/roc_curve', run, tag)
         return self._get_with_retry(key, lib.get_roc_curve, run, tag)
+
     @result()
     def pr_curves_steps(self, run):
         key = os.path.join('data/plugin/pr_curves/steps', run)
         return self._get_with_retry(key, lib.get_pr_curve_step, run)
+
     @result()
     def roc_curves_steps(self, run):
         key = os.path.join('data/plugin/roc_curves/steps', run)
         return self._get_with_retry(key, lib.get_roc_curve_step, run)
 
-    @result('application/octet-stream', lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None)
+    @result(
+        'application/octet-stream',
+        lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None
+    )
     def graph_graph(self):
         key = os.path.join('data/plugin/graphs/graph')
         return self._get_with_retry(key, lib.get_graph)

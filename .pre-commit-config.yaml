@@ -1,34 +1,32 @@
--   repo: https://github.com/pre-commit/mirrors-yapf.git
-    sha: v0.16.0
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
     hooks:
-    -   id: yapf
-        files: \.py$
-
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    sha: a11d9314b22d8f8c7556443875b731ef05965464
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: check-symlinks
+      - id: destroyed-symlinks
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
     hooks:
-    -   id: check-merge-conflict
-    -   id: check-symlinks
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
-    -   id: detect-private-key
-    -   id: check-symlinks
-    -   id: check-added-large-files
-
-
--   repo: local
+      - id: flake8
+        alias: be
+        exclude: ^frontend/
+  - repo: local
     hooks:
-    -   id: python-format-checker
-        name: python-format-checker
-        description: Format python files using PEP8 standard
-        entry: flake8
-        language: system
-        files: \.(py)$
-
--   repo: local
+      - id: fe
+        name: lint-staged
+        entry: cd frontend && lint-staged
+        language: node
+        files: ^frontend/
+        pass_filenames: false
+        description: lint frontend code by lint-staged
+  - repo: meta
     hooks:
-    -   id: eslint-format-checker
-        name: eslint-format-checker
-        description: Format files with ESLint.
-        entry: bash ./.eslint_format.hook
-        language: system
+      - id: check-hooks-apply
+      - id: check-useless-excludes

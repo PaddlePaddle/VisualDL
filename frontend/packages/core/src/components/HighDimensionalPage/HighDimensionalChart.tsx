@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type {CalculateParams, CalculateResult, Reduction} from '~/resource/high-dimensional';
+import type {CalculateParams, CalculateResult, Reduction, Shape} from '~/resource/high-dimensional';
 import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import ScatterChart, {ScatterChartRef} from '~/components/ScatterChart';
 
 import ChartOperations from '~/components/HighDimensionalPage/ChartOperations';
-import type {InfoData} from '~/worker/high-dimensional/tsne';
+import type {InfoData} from '~/worker/high-dimensional/calculate';
 import type {WithStyled} from '~/utils/style';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
@@ -67,12 +67,14 @@ const Chart = styled.div`
 type HighDimensionalChartProps = {
     vectors: Float32Array;
     labels: string[];
+    shape: Shape;
     dim: number;
     is3D: boolean;
     reduction: Reduction;
     perplexity: number;
     learningRate: number;
     neighbors: number;
+    focusedIndices?: number[];
     highlightIndices?: number[];
     onCalculate?: () => unknown;
     onCalculated?: (data: CalculateResult) => unknown;
@@ -91,12 +93,14 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
         {
             vectors,
             labels,
+            shape,
             dim,
             is3D,
             reduction,
             perplexity,
             learningRate,
             neighbors,
+            focusedIndices,
             highlightIndices,
             onCalculate,
             onCalculated,
@@ -112,8 +116,6 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
 
         const [width, setWidth] = useState(0);
         const [height, setHeight] = useState(0);
-
-        const points = useMemo(() => Math.floor(vectors.length / dim), [vectors, dim]);
 
         useLayoutEffect(() => {
             const c = chartElement.current;
@@ -251,11 +253,11 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                     <div className="info">
                         {t('high-dimensional:points')}
                         {t('common:colon')}
-                        {points}
+                        {shape[0]}
                         <span className="sep"></span>
                         {t('high-dimensional:data-dimension')}
                         {t('common:colon')}
-                        {dim}
+                        {shape[1]}
                     </div>
                     <ChartOperations onReset={() => chart.current?.reset()} />
                 </Toolbar>
@@ -268,7 +270,8 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         labels={labels}
                         is3D={is3D}
                         rotate={reduction !== 'tsne'}
-                        highlightIndices={highlightIndices ?? []}
+                        focusedIndices={focusedIndices}
+                        highlightIndices={highlightIndices}
                     />
                 </Chart>
             </Wrapper>

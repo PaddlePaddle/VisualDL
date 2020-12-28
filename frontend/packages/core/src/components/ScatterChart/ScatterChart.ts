@@ -103,11 +103,15 @@ export default class ScatterChart {
     static ORBIT_ANIMATION_ROTATION_CYCLE_IN_SECONDS = 2;
     static NUM_POINTS_FOG_THRESHOLD = 5000;
 
-    static POINT_COLOR_NO_SELECTION = 0x7e7e7e;
-    static POINT_COLOR_HOVER = 0x2932e1;
+    static POINT_COLOR_DEFAULT = new THREE.Color(0x7e7e7e);
+    static POINT_COLOR_HOVER = new THREE.Color(0x2932e1);
+    static POINT_COLOR_HIGHLIGHT = new THREE.Color(0x2932e1);
+    static POINT_COLOR_FOCUS = new THREE.Color(0x2932e1);
 
     static POINT_SCALE_DEFAULT = 1.0;
     static POINT_SCALE_HOVER = 1.2;
+    static POINT_SCALE_HIGHLIGHT = 1.0;
+    static POINT_SCALE_FOCUS = 1.2;
 
     static PERSP_CAMERA_INIT_POSITION: Point3D = [0.45, 0.9, 1.6];
     static ORTHO_CAMERA_INIT_POSITION: Point3D = [0, 0, 4];
@@ -124,6 +128,7 @@ export default class ScatterChart {
     private renderer: THREE.WebGLRenderer;
     private camera: THREE.OrthographicCamera | THREE.PerspectiveCamera;
     private controls: OrbitControls;
+    private fog: THREE.Fog;
     private pickingTexture: THREE.WebGLRenderTarget;
     private geometry: THREE.BufferGeometry;
     private renderMaterial: THREE.ShaderMaterial | null = null;
@@ -134,6 +139,7 @@ export default class ScatterChart {
     private scaleFactors: Float32Array | null = null;
     private axes: THREE.AxesHelper | null = null;
     private points: THREE.Points | null = null;
+    private focusedPointIndices: number[] = [];
     private hoveredPointIndices: number[] = [];
     private label: ScatterChartLabel;
     private highLightPointIndices: number[] = [];
@@ -163,6 +169,7 @@ export default class ScatterChart {
         this.camera = this.initCamera();
         this.renderer = this.initRenderer();
         this.controls = this.initControls();
+        this.fog = this.initFog();
         this.pickingTexture = this.initRenderTarget();
         this.geometry = this.createGeometry();
 
@@ -190,7 +197,6 @@ export default class ScatterChart {
         const light = new THREE.PointLight(16772287, 1, 0);
         light.name = 'light';
         scene.add(light);
-        scene.fog = new THREE.Fog(0xffffff);
         return scene;
     }
 
@@ -253,6 +259,10 @@ export default class ScatterChart {
             this.render();
         });
         return controls;
+    }
+
+    private initFog() {
+        return new THREE.Fog(this.background);
     }
 
     private initRenderTarget() {
@@ -355,17 +365,23 @@ export default class ScatterChart {
         const count = this.data.length;
         const colors = new Float32Array(count * 3);
         let dst = 0;
-        const color = new THREE.Color(ScatterChart.POINT_COLOR_NO_SELECTION);
-        const hoveredColor = new THREE.Color(ScatterChart.POINT_COLOR_HOVER);
         for (let i = 0; i < count; i++) {
-            if (i === this.hoveredPointIndices[0] || this.highLightPointIndices.includes(i)) {
-                colors[dst++] = hoveredColor.r;
-                colors[dst++] = hoveredColor.g;
-                colors[dst++] = hoveredColor.b;
+            if (this.hoveredPointIndices.includes(i)) {
+                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.b;
+            } else if (this.focusedPointIndices.includes(i)) {
+                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.b;
+            } else if (this.highLightPointIndices.includes(i)) {
+                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.b;
             } else {
-                colors[dst++] = color.r;
-                colors[dst++] = color.g;
-                colors[dst++] = color.b;
+                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.r;
+                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.g;
+                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.b;
             }
         }
         return colors;
@@ -375,8 +391,12 @@ export default class ScatterChart {
         const count = this.data.length;
         const scaleFactor = new Float32Array(count);
         for (let i = 0; i < count; i++) {
-            if (i === this.hoveredPointIndices[0]) {
+            if (this.hoveredPointIndices.includes(i)) {
                 scaleFactor[i] = ScatterChart.POINT_SCALE_HOVER;
+            } else if (this.focusedPointIndices.includes(i)) {
+                scaleFactor[i] = ScatterChart.POINT_SCALE_FOCUS;
+            } else if (this.highLightPointIndices.includes(i)) {
+                scaleFactor[i] = ScatterChart.POINT_SCALE_HIGHLIGHT;
             } else {
                 scaleFactor[i] = ScatterChart.POINT_SCALE_DEFAULT;
             }
@@ -441,21 +461,26 @@ export default class ScatterChart {
     }
 
     private updateHoveredLabels() {
-        if (this.hoveredPointIndices[0] == null || !this.camera || !this.positions) {
+        if (!this.camera || !this.positions) {
+            return;
+        }
+
+        const indices = this.focusedPointIndices.length ? this.focusedPointIndices : this.hoveredPointIndices;
+        if (!indices.length) {
             this.label.clear();
             return;
         }
+
         const dpr = window.devicePixelRatio || 1;
         const w = this.width;
         const h = this.height;
-        const index = this.hoveredPointIndices[0];
-        const pi = index * 3;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const point = new THREE.Vector3(this.positions![pi], this.positions![pi + 1], this.positions![pi + 2]);
-        const pv = new THREE.Vector3().copy(point).project(this.camera);
-        const coord: Point2D = [((pv.x + 1) / 2) * w * dpr, -(((pv.y - 1) / 2) * h) * dpr];
-        const labels = [
-            {
+        const labels = indices.map(index => {
+            const pi = index * 3;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const point = new THREE.Vector3(this.positions![pi], this.positions![pi + 1], this.positions![pi + 2]);
+            const pv = new THREE.Vector3().copy(point).project(this.camera);
+            const coord: Point2D = [((pv.x + 1) / 2) * w * dpr, -(((pv.y - 1) / 2) * h) * dpr];
+            return {
                 text: this.labels[index] ?? '',
                 fontSize: 40,
                 fillColor: '#000',
@@ -463,10 +488,73 @@ export default class ScatterChart {
                 opacity: 1,
                 x: coord[0] + 4,
                 y: coord[1]
-            }
-        ];
+            };
+        });
 
         this.label.render(labels);
+    }
+
+    private updateLight() {
+        const light = this.scene.getObjectByName('light') as THREE.PointLight;
+        const cameraPos = this.camera.position;
+        const lightPos = cameraPos.clone();
+        lightPos.x += 1;
+        lightPos.y += 1;
+        light.position.set(lightPos.x, lightPos.y, lightPos.z);
+    }
+
+    private updateFog() {
+        const fog = this.fog;
+
+        fog.color = new THREE.Color(this.background);
+
+        if (this.is3D && this.positions) {
+            const cameraPos = this.camera.position;
+            const cameraTarget = this.controls.target;
+
+            let shortestDist = Number.POSITIVE_INFINITY;
+            let furthestDist = 0;
+
+            const camToTarget = new THREE.Vector3().copy(cameraTarget).sub(cameraPos);
+            const camPlaneNormal = new THREE.Vector3().copy(camToTarget).normalize();
+
+            const n = this.positions.length / 3;
+            let src = 0;
+            const p = new THREE.Vector3();
+            const camToPoint = new THREE.Vector3();
+            for (let i = 0; i < n; i++) {
+                p.x = this.positions[src++];
+                p.y = this.positions[src++];
+                p.z = this.positions[src++];
+
+                camToPoint.copy(p).sub(cameraPos);
+                const dist = camPlaneNormal.dot(camToPoint);
+                if (dist < 0) {
+                    continue;
+                }
+
+                furthestDist = dist > furthestDist ? dist : furthestDist;
+                shortestDist = dist < shortestDist ? dist : shortestDist;
+            }
+
+            const multiplier =
+                2 - Math.min(n, ScatterChart.NUM_POINTS_FOG_THRESHOLD) / ScatterChart.NUM_POINTS_FOG_THRESHOLD;
+
+            fog.near = shortestDist;
+            fog.far = furthestDist * multiplier;
+        } else {
+            fog.near = Number.POSITIVE_INFINITY;
+            fog.far = Number.POSITIVE_INFINITY;
+        }
+
+        if (this.points) {
+            const material = this.points.material as THREE.ShaderMaterial;
+            material.uniforms.fogColor.value = fog.color;
+            material.uniforms.fogNear.value = fog.near;
+            material.uniforms.fogFar.value = fog.far;
+        }
+
+        this.scene.fog = fog;
     }
 
     private bindEventListeners() {
@@ -498,55 +586,13 @@ export default class ScatterChart {
     }
 
     private render() {
-        const light = this.scene.getObjectByName('light') as THREE.PointLight;
-        const cameraPos = this.camera.position;
-        const lightPos = cameraPos.clone();
-        lightPos.x += 1;
-        lightPos.y += 1;
-        light.position.set(lightPos.x, lightPos.y, lightPos.z);
-
-        // TODO: remake fog
-        // const fog = this.scene.fog as THREE.Fog | null;
-        // if (fog) {
-        //     if (this.is3D) {
-        //         const cameraTarget = this.controls.target ?? new THREE.Vector3();
-        //         let shortestDist = Number.POSITIVE_INFINITY;
-        //         let furthestDist = 0;
-        //         const camToTarget = new THREE.Vector3().copy(cameraTarget).sub(cameraPos);
-        //         const camPlaneNormal = new THREE.Vector3().copy(camToTarget).normalize();
-
-        //         const camToPoint = new THREE.Vector3();
-        //         this.data.forEach(d => {
-        //             camToPoint.copy(new THREE.Vector3(...d)).sub(cameraPos);
-        //             const dist = camPlaneNormal.dot(camToPoint);
-        //             if (dist < 0) {
-        //                 return;
-        //             }
-        //             furthestDist = dist > furthestDist ? dist : furthestDist;
-        //             shortestDist = dist < shortestDist ? dist : shortestDist;
-        //         });
-        //         const multiplier =
-        //             2 -
-        //             Math.min(this.data.length, ScatterChart.NUM_POINTS_FOG_THRESHOLD) /
-        //                 ScatterChart.NUM_POINTS_FOG_THRESHOLD;
-        //         fog.near = shortestDist;
-        //         fog.far = furthestDist * multiplier;
-        //     } else {
-        //         fog.near = Number.POSITIVE_INFINITY;
-        //         fog.far = Number.POSITIVE_INFINITY;
-        //     }
-        //     console.log(fog.near, fog.far, fog.color);
-        //     if (this.points) {
-        //         const material = this.points.material as THREE.ShaderMaterial;
-        //         material.uniforms.fogColor.value = fog.color;
-        //         material.uniforms.fogNear.value = fog.near;
-        //         material.uniforms.fogFar.value = fog.far;
-        //     }
-        // }
+        this.updateLight();
+        this.updateFog();
 
         this.updateHoveredPoints();
         this.updateHoveredLabels();
         this.updatePointsAttribute();
+
         if (this.pickingMaterial) {
             if (this.axes) {
                 this.scene.remove(this.axes);
@@ -659,10 +705,16 @@ export default class ScatterChart {
 
     setLabels(labels: string[]) {
         this.labels = labels;
+        this.render();
     }
 
     setHighLightIndices(highLightIndices: number[]) {
         this.highLightPointIndices = highLightIndices;
+        this.render();
+    }
+
+    setFocusedPointIndices(focusedPointIndices: number[]) {
+        this.focusedPointIndices = focusedPointIndices;
         this.render();
     }
 

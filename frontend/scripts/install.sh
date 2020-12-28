@@ -2,6 +2,10 @@
 
 set -e
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR/..
+
 # rust toolchain
 # https://rustup.rs/
 if ! hash rustup 2>/dev/null; then

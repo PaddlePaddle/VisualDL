@@ -23,6 +23,7 @@ export type {
     PCAParams,
     PCAResult,
     Reduction,
+    Shape,
     TSNEParams,
     TSNEResult,
     UMAPParams,

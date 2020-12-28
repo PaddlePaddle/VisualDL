@@ -1,2 +1,5 @@
 [flake8]
+extend-exclude = venv,build,dist,frontend,visualdl/proto/record_pb2.py,visualdl/server/dist
 max-line-length = 120
+max-doc-length = 120
+max-complexity = 15

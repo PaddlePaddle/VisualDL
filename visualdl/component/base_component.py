@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
 from visualdl.proto.record_pb2 import Record
 import numpy as np
 from PIL import Image
@@ -80,11 +81,11 @@ def imgarray2bytes(np_array):
     return img_bin
 
 
-def make_grid(I, ncols=8):
+def make_grid(I, ncols=8):  # noqa: E741
     assert isinstance(
         I, np.ndarray), 'plugin error, should pass numpy array here'
     if I.shape[1] == 1:
-        I = np.concatenate([I, I, I], 1)
+        I = np.concatenate([I, I, I], 1)  # noqa: E741
     assert I.ndim == 4 and I.shape[1] == 3 or I.shape[1] == 4
     nimg = I.shape[0]
     H = I.shape[2]
@@ -404,6 +405,8 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, step, walltime):
         Record.Value(
             id=step, tag=tag, timestamp=walltime, pr_curve=prcurve)
     ])
+
+
 def compute_roc_curve(labels, predictions, num_thresholds=None, weights=None):
     """ Compute ROC curve data by labels and predictions.
     Args:
@@ -454,8 +457,7 @@ def compute_roc_curve(labels, predictions, num_thresholds=None, weights=None):
     return data
 
 
-def roc_curve(tag, labels, predictions, step, walltime, num_thresholds=127,
-             weights=None):
+def roc_curve(tag, labels, predictions, step, walltime, num_thresholds=127, weights=None):
     """Package data to one roc_curve.
     Args:
         tag (string): Data identifier
@@ -473,14 +475,14 @@ def roc_curve(tag, labels, predictions, step, walltime, num_thresholds=127,
     roc_curve_map = compute_roc_curve(labels, predictions, num_thresholds, weights)
 
     return roc_curve_raw(tag=tag,
-                        tp=roc_curve_map['tp'],
-                        fp=roc_curve_map['fp'],
-                        tn=roc_curve_map['tn'],
-                        fn=roc_curve_map['fn'],
-                        tpr=roc_curve_map['tpr'],
-                        fpr=roc_curve_map['fpr'],
-                        step=step,
-                        walltime=walltime)
+                         tp=roc_curve_map['tp'],
+                         fp=roc_curve_map['fp'],
+                         tn=roc_curve_map['tn'],
+                         fn=roc_curve_map['fn'],
+                         tpr=roc_curve_map['tpr'],
+                         fpr=roc_curve_map['fpr'],
+                         step=step,
+                         walltime=walltime)
 
 
 def roc_curve_raw(tag, tp, fp, tn, fn, tpr, fpr, step, walltime):
@@ -516,13 +518,12 @@ def roc_curve_raw(tag, tp, fp, tn, fn, tpr, fpr, step, walltime):
         fpr = fpr.astype(int).tolist()
     """
     roc_curve = Record.ROC_Curve(TP=tp,
-                             FP=fp,
-                             TN=tn,
-                             FN=fn,
-                             tpr=tpr,
-                             fpr=fpr)
+                                 FP=fp,
+                                 TN=tn,
+                                 FN=fn,
+                                 tpr=tpr,
+                                 fpr=fpr)
     return Record(values=[
         Record.Value(
             id=step, tag=tag, timestamp=walltime, roc_curve=roc_curve)
     ])
-    

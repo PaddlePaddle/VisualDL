@@ -21,6 +21,7 @@ import type {
     ParseParams,
     ParseResult,
     Reduction,
+    Shape,
     TSNEResult,
     UMAPResult
 } from '~/resource/high-dimensional';
@@ -180,6 +181,7 @@ const HighDimensional: FunctionComponent = () => {
     const [metadata, setMetadata] = useState<string[][]>([]);
     // dimension of data
     const [dim, setDim] = useState<number>(0);
+    const [rawShape, setRawShape] = useState<Shape>([0, 0]);
     const getLabelByLabels = useCallback(
         (value: string | undefined) => {
             if (value != null) {
@@ -272,6 +274,7 @@ const HighDimensional: FunctionComponent = () => {
         if (error) {
             showError(error);
         } else if (data) {
+            setRawShape(data.rawShape);
             setDim(data.dimension);
             setVectors(data.vectors);
             setLabels(data.labels);
@@ -339,6 +342,12 @@ const HighDimensional: FunctionComponent = () => {
         };
     }, [getLabelByLabels, searchResult.labelBy, searchResult.value]);
 
+    const [hoveredIndices, setHoveredIndices] = useState<number[]>([]);
+    const hoverSearchResult = useCallback(
+        (index?: number) => setHoveredIndices(index == null ? [] : [searchedResult.indices[index]]),
+        [searchedResult.indices]
+    );
+
     const detail = useMemo(() => {
         switch (reduction) {
             case 'pca':
@@ -385,11 +394,9 @@ const HighDimensional: FunctionComponent = () => {
                     <Field label={t('high-dimensional:select-label')}>
                         <FullWidthSelect list={labels} value={labelBy} onChange={setLabelBy} />
                     </Field>
-                    {metadataFile && (
-                        <Field label={t('high-dimensional:select-color')}>
-                            <FullWidthSelect />
-                        </Field>
-                    )}
+                    {/* <Field label={t('high-dimensional:select-color')}>
+                        <FullWidthSelect />
+                    </Field> */}
                     <Field>
                         <FullWidthButton rounded outline type="primary" onClick={() => setUploadModal(true)}>
                             {t('high-dimensional:upload-data')}
@@ -416,7 +423,7 @@ const HighDimensional: FunctionComponent = () => {
                 </AsideSection>
             </RightAside>
         ),
-        [t, dataPath, reduction, dimension, metadataFile, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
+        [t, dataPath, reduction, dimension, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
     );
 
     const leftAside = useMemo(
@@ -438,12 +445,12 @@ const HighDimensional: FunctionComponent = () => {
                 </AsideSection>
                 <AsideSection className="search-result">
                     <Field>
-                        <LabelSearchResult list={searchedResult.metadata} />
+                        <LabelSearchResult list={searchedResult.metadata} onHovered={hoverSearchResult} />
                     </Field>
                 </AsideSection>
             </LeftAside>
         ),
-        [labels, searchResult.value, searchedResult.metadata, t]
+        [hoverSearchResult, labels, searchResult.value, searchedResult.metadata, t]
     );
 
     return (
@@ -456,12 +463,14 @@ const HighDimensional: FunctionComponent = () => {
                         ref={chart}
                         vectors={vectors}
                         labels={labelByLabels}
+                        shape={rawShape}
                         dim={dim}
                         is3D={is3D}
                         reduction={reduction}
                         perplexity={perplexity}
                         learningRate={learningRate}
                         neighbors={neighbors}
+                        focusedIndices={hoveredIndices}
                         highlightIndices={searchedResult.indices}
                         onCalculate={calculate}
                         onCalculated={calculated}

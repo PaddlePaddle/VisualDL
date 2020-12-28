@@ -77,7 +77,7 @@ const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onReset}) => 
 
     return (
         <Operations>
-            <Tippy content={t('high-dimensional:selection')} placement="bottom" theme="tooltip">
+            {/* <Tippy content={t('high-dimensional:selection')} placement="bottom" theme="tooltip">
                 <a>
                     <span>
                         <Icon type="selection" />
@@ -90,7 +90,7 @@ const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onReset}) => 
                         <Icon type="three-d" />
                     </span>
                 </a>
-            </Tippy>
+            </Tippy> */}
             <Tippy content={t('high-dimensional:reset-zoom')} placement="bottom" theme="tooltip">
                 <a onClick={() => onReset?.()}>
                     <span>

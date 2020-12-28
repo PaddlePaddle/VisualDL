@@ -13,7 +13,6 @@
 # limitations under the License.
 # =======================================================================
 
-
 from visualdl.io import bfile
 from visualdl.utils.crc32 import masked_crc32c
 from visualdl.proto import record_pb2
@@ -95,7 +94,7 @@ class RecordFileWriter(object):
                 fn = "vdlrecords.%010d.log%s" % (time.time(), filename_suffix)
                 self._file_name = bfile.join(logdir, fn)
                 print(
-                    'Since the log filename should contain `vdlrecords`, the filename is invalid and `{}` will replace `{}`'.format(
+                    'Since the log filename should contain `vdlrecords`, the filename is invalid and `{}` will replace `{}`'.format(  # noqa: E501
                         fn, filename))
         else:
             self._file_name = bfile.join(logdir, "vdlrecords.%010d.log%s" % (

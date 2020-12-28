@@ -1,9 +1,0 @@
-#!/bin/bash
-
-set -e
-
-(cd frontend && npm run lint)
-RESULT=$?
-
-[ $RESULT -ne 0 ] && exit 1
-exit 0

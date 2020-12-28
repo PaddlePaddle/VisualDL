@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+
 # coding=utf-8
+
 from visualdl import LogWriter
 import numpy as np
 
@@ -21,7 +23,7 @@ with LogWriter("./log/roc_curve_test/train") as writer:
         labels = np.random.randint(2, size=100)
         predictions = np.random.rand(100)
         writer.add_roc_curve(tag='roc_curve',
-                            labels=labels,
-                            predictions=predictions,
-                            step=step,
-                            num_thresholds=5)
+                             labels=labels,
+                             predictions=predictions,
+                             step=step,
+                             num_thresholds=5)
