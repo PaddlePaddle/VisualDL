@@ -223,7 +223,7 @@ After launching the panel by one of the above methods, developers can see the vi
 
 ### 3. Read data in log files using LogReader
 
-VisualDL also provide `LogReader` interface to read raw data from log files.
+VisualDL also provides `LogReader` interface to read raw data from log files.
 
 ```python
 class LogReader(file_path='')
@@ -233,14 +233,14 @@ class LogReader(file_path='')
 | ---------- | ------ | ------------------------------------ |
 | file_path  | string | File path of the log file. Required. |
 #### Example
-Suppose there is a log file named `vdlrecords.1605533348.log` in directory `./log`. We can get scalar data in `loss` tag by
+If there is a log file named `vdlrecords.1605533348.log` in the directory of `./log`, we can retrieve the data under the 'loss' tag in the scalar by:
 ```python
 from visualdl import LogReader
 reader = LogReader(file_path='./vdlrecords.1605533348.log')
 data = reader.get_data('scalar', 'loss')
 print(data)
 ```
-The result is a list：
+The result will be a list shown as below：
 ```python
 ...
 id: 5
