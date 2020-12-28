@@ -1,5 +1,6 @@
 {
     "download-data": "下载数据",
+    "download-data-format": "{{format}} 格式",
     "download-image": "下载图片",
     "ignore-outliers": "图表缩放时忽略极端值",
     "max": "最大值",

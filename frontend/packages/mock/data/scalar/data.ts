@@ -17,7 +17,14 @@
 import {Request, Response} from 'express';
 
 export default (req: Request, res: Response) => {
-    const {run, tag} = req.query;
-    res.setHeader('Content-Type', 'text/tab-separated-values');
-    return `scalar\n${run}\n${tag}`;
+    const {run, tag, type} = req.query;
+    switch (type) {
+        case 'tsv':
+            res.setHeader('Content-Type', 'text/tab-separated-values');
+            break;
+        case 'csv':
+            res.setHeader('Content-Type', 'text/comma-separated-values');
+            break;
+    }
+    return `scalar\n${run}\n${tag}\n${type}`;
 };
