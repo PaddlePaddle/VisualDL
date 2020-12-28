@@ -2,3 +2,4 @@ dist
 out
 wasm
 output
+license-header.js
