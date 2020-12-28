@@ -125,12 +125,13 @@ def get_scalar(log_reader, run, tag):
     return results
 
 
-def get_scalar_data(log_reader, run, tag):
+def get_scalar_data(log_reader, run, tag, type='tsv'):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
     result = log_reader.get_log_data('scalar', run, tag)
+    delimeter = '\t' if 'tsv' == type else ','
     with io.StringIO() as fp:
-        csv_writer = csv.writer(fp, delimiter='\t')
+        csv_writer = csv.writer(fp, delimiter=delimeter)
         csv_writer.writerow(['id', 'tag', 'timestamp', 'value'])
         csv_writer.writerows(result)
         result = fp.getvalue()
