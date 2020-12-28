@@ -295,7 +295,7 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 
 ### High Dimensional
 
-**High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis.
+**High Dimensional** provides three approaches--T-SNE, PCA and UMAP--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
