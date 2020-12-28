@@ -198,7 +198,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
 
     // clear cache if tag or run changed
     useEffect(() => {
-        Object.values(cached.current).forEach(({timer}) => clearTimeout(timer));
+        Object.values(cached.current).forEach(({timer}) => window.clearTimeout(timer));
         cached.current = {};
     }, [tag, run]);
 
@@ -211,7 +211,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         const url = getUrl(type, step, run.label, tag, wallTime);
         cached.current[step] = {
             src: url,
-            timer: setTimeout(() => {
+            timer: window.setTimeout(() => {
                 ((s: number) => delete cached.current[s])(step);
             }, cache)
         };
@@ -227,10 +227,10 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
             // first load, return immediately
             cacheSrc();
         } else {
-            timer.current = setTimeout(cacheSrc, 500);
+            timer.current = window.setTimeout(cacheSrc, 500);
             return () => {
                 if (timer.current != null) {
-                    clearTimeout(timer.current);
+                    window.clearTimeout(timer.current);
                     timer.current = null;
                 }
             };
