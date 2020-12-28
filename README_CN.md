@@ -124,6 +124,14 @@ class LogWriter(logdir=None,
 | display_name    | string  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
 | file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，文件名必须包括`vdlrecords` |
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/103187556-b9714280-48ff-11eb-9052-008e02a21199.png" width="100%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/103187552-b4ac8e80-48ff-11eb-998a-57d5a1bc7ee6.png" width="100%"/>
+</p>
+
 #### 示例
 
 设置日志文件并记录标量数据：
@@ -340,10 +348,10 @@ value: 3.1297709941864014
 
 ### High Dimensional
 
-将高维数据进行降维展示，目前支持T-SNE、PCA两种降维方式，用于深入分析高维数据间的关系，方便用户根据数据特征进行算法优化。
+将高维数据进行降维展示，目前支持T-SNE、PCA、UMAP三种降维方式，用于深入分析高维数据间的关系，方便用户根据数据特征进行算法优化。
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
 </p>
 
 

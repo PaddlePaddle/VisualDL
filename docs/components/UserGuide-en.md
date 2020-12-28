@@ -711,33 +711,33 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/90880543-341ed400-e3db-11ea-8fdc-8b914704b916.GIF" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
 </p>
 
 ### Functional Instrucions
 
-* Developers are allowed to select specific run of data to display
+* Developers are allowed to select specific runs of data or certain labels of data to display
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/90880592-48fb6780-e3db-11ea-9d87-bd54716839aa.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103191809-4e306c00-4911-11eb-853f-e143ef86e182.png" width="30%"/>
   </p>
 
-* Developers can find specific labels by searching tags or view the all labels
+* TSNE
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/90880759-9aa3f200-e3db-11ea-8b66-ecc890ffdaf9.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103192762-cea49c00-4914-11eb-896c-070b0bf0e2ea.png" width="27%"/>
   </p>
 
-* Support "2D" or "3D" forms to display the high-dimensional data distribution
+* PCA
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/90880813-ad1e2b80-e3db-11ea-8540-5e78075dfb69.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103192341-47a2f400-4913-11eb-9995-fdc0acadbdc9.png" width="27%"/>
   </p>
 
-* PCA and T-SNE are supported
+* UMAP
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/90880856-bf986500-e3db-11ea-8ffd-261b56d8e730.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
   </p>
 
 

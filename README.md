@@ -117,6 +117,16 @@ class LogWriter(logdir=None,
 | filename_suffix | string  | Add a suffix to the default log file name.                   |
 | write_to_disk   | boolean | Write into disk or not.                                      |
 | display_name    | string  | Set the name of different runs when `logdir` is too long or needed to be hidden. If not set, the default name is `logdir`. |
+| file_name    | string  | Set the name of the log file. If the file_name already exists, setting the file_name means to continue to add new records in the same log file. Note that the name should include 'vdlrecords'.|
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/103187556-b9714280-48ff-11eb-9052-008e02a21199.png" width="100%"/>
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/103187552-b4ac8e80-48ff-11eb-998a-57d5a1bc7ee6.png" width="100%"/>
+</p>
+
 
 #### Example
 
@@ -285,10 +295,10 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 
 ### High Dimensional
 
-**High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis.
+**High Dimensional** provides three approaches--T-SNE, PCA and UMAP--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
 </p>
 
 

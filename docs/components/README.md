@@ -707,33 +707,33 @@ visualdl --logdir ./log --port 8080
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看降维后的可视化数据。
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/dynamic_high_dimensional.gif" width="80%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
 </p>
 
 ### 功能操作说明
 
-* 支持展示特定打点数据
+* 支持选择特定实验数据进行展示，且支持根据所选择的数据标签进行展示
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006541-f6f9ae80-a044-11ea-82d9-03f1c99a310a.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103191809-4e306c00-4911-11eb-853f-e143ef86e182.png" width="30%"/>
   </p>
 
-* 可搜索展示特定数据标签或展示所有数据标签
+* 降维方式--TSNE
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006580-0842bb00-a045-11ea-9f7b-776f80ae8b90.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103192762-cea49c00-4914-11eb-896c-070b0bf0e2ea.png" width="27%"/>
   </p>
 
-* 支持「二维」或「三维」展示高维数据分布
+* 降维方式--PCA
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006687-2f998800-a045-11ea-888e-2b59e16a92b9.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103192341-47a2f400-4913-11eb-9995-fdc0acadbdc9.png" width="27%"/>
   </p>
 
-* 可选择「PCA」或「T-SNE」作为降维方式
+* 降维方式--UMAP
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/83006747-3fb16780-a045-11ea-83e0-a314b7765108.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
   </p>
 
 
