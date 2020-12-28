@@ -230,25 +230,23 @@ app.run(logdir="./log")
 VisualDL的后端也提供了获取日志数据的组件`LogReader`，可通过其获取日志中任意数据，接口如下：
 
 ```python
-class LogReader(logdir=None,
-                file_name='')
+class LogReader(file_path='')
 ```
 
 #### 接口参数
 
-| 参数      | 格式   | 含义                       |
-| --------- | ------ | -------------------------- |
-| logdir    | string | 日志文件所在的路径，必填   |
-| file_name | string | 指定要读的日志文件名，必填 |
+| 参数            | 格式    | 含义                                                         |
+| --------------- | ------- | ------------------------------------------------------------ |
+| file_path       | string  | 指定要读的日志文件路径，必填，注意这里与file_name不同，需填写具体路径|
 
 #### 示例
 
-假定在`./log`文件夹下有一个日志文件`vdlrecords.1605533348.log`，则获取此日志中tag为`loss`的scalar数据过程如下：
+假定在`./log`文件夹下有一个日志文件`vdlrecords.1605533348.log`，则获取LogReader实例如下：
 
 ```python
 from visualdl import LogReader
 
-reader = LogReader(logdir='./log', file_name='vdlrecords.1605533348.log')
+reader = LogReader(file_path='./log/vdlrecords.1605533348.log')
 data = reader.get_data('scalar', 'loss')
 print(data)
 ```
