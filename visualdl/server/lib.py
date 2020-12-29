@@ -128,7 +128,7 @@ def get_scalar(log_reader, run, tag):
 def get_scalar_data(log_reader, run, tag, type='tsv'):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
-    result = log_reader.get_log_data('scalar', run, tag)
+    result = log_reader.get_log_data('scalar', run, decode_tag(tag))
     delimeter = '\t' if 'tsv' == type else ','
     with io.StringIO() as fp:
         csv_writer = csv.writer(fp, delimiter=delimeter)
