@@ -721,6 +721,7 @@ High Dimensional 组件将高维数据进行降维展示，用于深入分析高
 
  - PCA : Principle Component Analysis 主成分分析
  - t-SNE : t-distributed stochastic neighbor embedding t-分布式随机领域嵌入
+ - umap: uniform manifold approximation and projection for dimension reduction 流形学习降维算法
 
 ### 记录接口
 
