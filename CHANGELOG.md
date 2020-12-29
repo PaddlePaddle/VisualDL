@@ -4,6 +4,38 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.1.0 - 2020-12-28
+
+**ZH**
+
+- 问题修复
+    - **BE**: 修复无关文件会被上传到 VDL-Service 的问题 (#866)
+    - **BE**: 改正错误的代码注释 @foreverseer (#877)
+- 功能新增
+    - 重写高维数据映射 (#868, #869, #870, #874)
+    - 增加标量数据图表中原始数据的下载功能 (#879, #893, #894, #896)
+    - 增加ROC曲线功能 @iceriver97 (#881)
+- 其他改进
+    - **FE**: 改进 WebAssembly 和 WebWorker 的执行方式 (#871)
+    - **BE**: 支持 `ndarray` 的 `float32` 和 `double64` 类型 (#878)
+- 重要改动
+    - **BE**: `LogReader` 中参数名由 `file_name` 改为 `file_path` (#864)
+
+**EN**
+
+- Bug Fixes
+    - **BE**: Fix unrelated files uploaded to VDL-Service (#866)
+    - **BE**: Fix confused code comments @foreverseer (#877)
+- Features
+    - Rewrite High-dimension (#868, #869, #870, #874)
+    - Add raw data download support in scalar chart (#879, #893, #894, #896)
+    - Add ROC Curve @iceriver97 (#881)
+- Enhancement
+    - **FE**: Improve execution of WebAssembly and WebWorker (#871)
+    - **BE**: Support `float32` and `double64` in `ndarray` (#878)
+- Breaking Changes
+    - **BE**: Use `file_path` instead of `file_name` in `LogReader` (#864)
+
 ## v2.0.5 - 2020-11-24
 
 **ZH**
