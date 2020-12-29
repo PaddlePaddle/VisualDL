@@ -19,7 +19,7 @@ import {useEffect, useState} from 'react';
 import type {InitializeData} from '~/worker';
 import {WebWorker} from '~/worker';
 
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
+const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 
 type WorkerResult<D, E extends Error> = {
     data?: D;
@@ -31,7 +31,7 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
     const [result, setResult] = useState<WorkerResult<D, E>>({});
 
     useEffect(() => {
-        const worker = new WebWorker(`${PUBLIC_PATH}/_dist_/worker/${name}.js`, {type: 'module'});
+        const worker = new WebWorker(`${BASE_URI}/_dist_/worker/${name}.js`, {type: 'module'});
         worker.emit<InitializeData>('INITIALIZE', {env: import.meta.env});
         worker.on('INITIALIZED', () => {
             setResult({worker});
