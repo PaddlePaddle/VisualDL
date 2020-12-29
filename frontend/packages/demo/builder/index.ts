@@ -17,7 +17,6 @@
 /* eslint-disable no-console */
 
 import IO from './io';
-import {SIGINT} from 'constants';
 import type {Worker} from './types';
 import getPort from 'get-port';
 import mkdirp from 'mkdirp';
@@ -63,7 +62,7 @@ async function start() {
 
     const stop = () => {
         if (!p.killed) {
-            p.kill(SIGINT);
+            p.kill('SIGINT');
         }
     };
 
