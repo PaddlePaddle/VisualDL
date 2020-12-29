@@ -48,7 +48,7 @@ const ToolboxItem = styled.a<{active?: boolean}>`
     }
 `;
 
-const ChartToolboxMenu = styled.div`
+const ChartToolboxMenuWrapper = styled.div`
     background-color: var(--background-color);
     ${transitionProps('background-color')};
 
@@ -65,9 +65,16 @@ const ChartToolboxMenu = styled.div`
     }
 `;
 
+const ChartToolboxMenuIcon = styled(Icon)`
+    vertical-align: middle;
+    font-size: 78%;
+    margin-left: 0.6em;
+`;
+
 interface ChartToolboxItemChild {
     label: string;
     onClick?: () => unknown;
+    children?: ChartToolboxItemChild[];
 }
 
 type BaseChartToolboxItem = {
@@ -169,17 +176,45 @@ const ToggleChartToolbox: FunctionComponent<ToggleChartToolboxItem> = ({
     );
 };
 
+const ChartToolboxMenu: FunctionComponent<ChartToolboxItemChild> = ({label, onClick, children}) => {
+    return children ? (
+        <Tippy
+            content={
+                <ChartToolboxMenuWrapper>
+                    {children.map((item, index) => (
+                        <ChartToolboxMenu {...item} key={index} />
+                    ))}
+                </ChartToolboxMenuWrapper>
+            }
+            placement="right-start"
+            animation="shift-away-subtle"
+            interactive
+            hideOnClick={false}
+            arrow={false}
+            role="menu"
+            theme="menu"
+            offset={[0, 0]}
+        >
+            <a>
+                {label} <ChartToolboxMenuIcon type="chevron-right" />
+            </a>
+        </Tippy>
+    ) : (
+        <ChartToolboxMenuWrapper>
+            <a onClick={() => onClick?.()}>{label}</a>
+        </ChartToolboxMenuWrapper>
+    );
+};
+
 const MenuChartToolbox: FunctionComponent<MenuChartToolboxItem> = ({icon, menuList}) => {
     return (
         <Tippy
             content={
-                <ChartToolboxMenu>
+                <ChartToolboxMenuWrapper>
                     {menuList.map((item, index) => (
-                        <a key={index} onClick={() => item.onClick?.()}>
-                            {item.label}
-                        </a>
+                        <ChartToolboxMenu {...item} key={index} />
                     ))}
-                </ChartToolboxMenu>
+                </ChartToolboxMenuWrapper>
             }
             placement="right-start"
             animation="shift-away-subtle"

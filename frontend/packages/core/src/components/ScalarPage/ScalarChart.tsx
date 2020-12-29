@@ -45,6 +45,12 @@ import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 import useWebAssembly from '~/hooks/useWebAssembly';
 
+const DownloadDataTypes = {
+    csv: 'csv',
+    tsv: 'tsv'
+    // excel: 'xlsx'
+} as const;
+
 const labelFormatter = format('.8');
 
 const Wrapper = styled.div`
@@ -211,6 +217,24 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [formatter, ranges, xAxisType, yAxisType]
     );
 
+    const downloadData = useCallback(
+        (type: keyof typeof DownloadDataTypes) => {
+            saveFile(
+                runs.map(
+                    run =>
+                        `/scalar/data?${queryString.stringify({
+                            run: run.label,
+                            tag,
+                            type
+                        })}`
+                ),
+                runs.map(run => `visualdl-scalar-${run.label}-${tag}.${DownloadDataTypes[type]}`),
+                `visualdl-scalar-${tag}.zip`
+            );
+        },
+        [runs, tag]
+    );
+
     const toolbox = useMemo(
         () => [
             {
@@ -241,17 +265,17 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                     },
                     {
                         label: t('scalar:download-data'),
-                        onClick: () =>
-                            saveFile(
-                                runs.map(run => `/scalar/data?${queryString.stringify({run: run.label, tag})}`),
-                                runs.map(run => `visualdl-scalar-${run.label}-${tag}.tsv`),
-                                `visualdl-scalar-${tag}.zip`
-                            )
+                        children: Object.keys(DownloadDataTypes)
+                            .sort((a, b) => a.localeCompare(b))
+                            .map(format => ({
+                                label: t('scalar:download-data-format', {format}),
+                                onClick: () => downloadData(format as keyof typeof DownloadDataTypes)
+                            }))
                     }
                 ]
             }
         ],
-        [runs, t, tag, toggleMaximized, toggleYAxisType]
+        [downloadData, t, toggleMaximized, toggleYAxisType]
     );
 
     // display error only on first fetch
