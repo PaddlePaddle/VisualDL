@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/demo",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
