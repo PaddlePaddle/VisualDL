@@ -22,7 +22,7 @@
 
 ## Introduction
 
-VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors, pr curves and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
+VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors, PR curves , ROC curves and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
 VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). Currently, VisualDL iterates rapidly and new functions will be continuously added.
 
@@ -308,7 +308,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 
 ### Histogram
 
-Histogram displays how the trend of tensors (weight, bias, gradient, etc.) changes during the training process in the form of histogram. Developers can adjust the model structures accurately by having an in-depth understanding of the effect of each layer.
+**Histogram** displays how the trend of tensors (weight, bias, gradient, etc.) changes during the training process in the form of histogram. Developers can adjust the model structures accurately by having an in-depth understanding of the effect of each layer.
 
 - Offset Mode
 
@@ -322,6 +322,22 @@ Histogram displays how the trend of tensors (weight, bias, gradient, etc.) chang
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/90870194-cfa84880-e3cb-11ea-8a66-bebcad267a10.png" width="85%"/>
+</p>
+
+### PR Curve
+
+**PR Curve** displays the precision and recall values under different thresholds, helping developers to find the best threshold efficiently.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/103274647-1ef72900-49fd-11eb-9284-2a5b63bdf2e3.png" width="85%"/>
+</p>
+
+### ROC Curve
+
+**ROC Curve** shows the performance of a classification model at all classification thresholds; the larger the area under the curve, the better the model performs, aiding developers to evaluate the model performance and choose an appropriate threshold.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/103274711-42ba6f00-49fd-11eb-9452-4dd492682dd8.png" width="85%"/>
 </p>
 
 

@@ -6,7 +6,7 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, audio，graph, histogram, pr curve, high dimensional 七个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, audio，graph, histogram, pr curve, ROC curve, high dimensional 七个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
@@ -16,6 +16,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
 |            [Histogram](#Histogram--直方图组件)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
+|              [ROC Curve](#ROC-Curve--ROC曲线组件)               |   折线图   | 展示不同阈值下的模型表现                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 
 同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
@@ -653,6 +654,65 @@ visualdl --logdir ./log --port 8080
     <img src="https://user-images.githubusercontent.com/48054808/86741304-db34ef80-c069-11ea-86eb-787b49ed3705.png" width="30%"/>
   </p>
 
+## ROC Curve--ROC曲线组件
+
+### 介绍
+
+ROC曲线展示不同不同阈值下模型的表现（TPR、TNR），曲线下面积越大，模型表现越好，辅助开发者进行阈值选择以及直观的掌握模型训练情况。
+
+### 记录接口
+
+ROC Curve组件的记录接口如下：
+
+```python
+add_roc_curve(tag, labels, predictions, step=None, num_thresholds=10)
+```
+
+接口参数说明如下：
+
+| 参数           | 格式                  | 含义                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
+| labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
+| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
+| step           | int                   | 记录的步数                                  |
+| num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
+| weights        | float                 | 用于设置TP/FP/TN/FN在计算precision和recall时的权重       |
+| walltime       | int                   | 记录数据的时间戳，默认为当前时间戳     |
+
+### Demo
+
+下面展示了使用 ROC Curve 组件记录数据的示例，代码见[ROC Curve组件](https://github.com/YixinKristy/VisualDL/blob/develop/demo/components/roc_curve_test.py)
+
+```python
+from visualdl import LogWriter
+import numpy as np
+
+with LogWriter("./log/roc_curve_test/train") as writer:
+    for step in range(3):
+        labels = np.random.randint(2, size=100)
+        predictions = np.random.rand(100)
+        writer.add_roc_curve(tag='roc_curve',
+                             labels=labels,
+                             predictions=predictions,
+                             step=step,
+                             num_thresholds=5)
+```
+
+运行上述程序后，在命令行执行
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+接着在浏览器打开`http://127.0.0.1:8080`，即可查看ROC Curve
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/103275084-51555600-49fe-11eb-8c16-d18d26b724e3.png" width="80%"/>
+</p>
+
+*Note：ROC前端页面使用和PR相同，请参考上述PR Curve的使用说明。
+
 ## High Dimensional--数据降维组件
 
 ### 介绍
@@ -661,6 +721,7 @@ High Dimensional 组件将高维数据进行降维展示，用于深入分析高
 
  - PCA : Principle Component Analysis 主成分分析
  - t-SNE : t-distributed stochastic neighbor embedding t-分布式随机领域嵌入
+ - umap: uniform manifold approximation and projection for dimension reduction 流形学习降维算法
 
 ### 记录接口
 
