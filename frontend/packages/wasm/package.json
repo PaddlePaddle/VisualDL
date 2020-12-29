@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/wasm",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [

@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/cli",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -34,7 +34,7 @@
         "dist"
     ],
     "dependencies": {
-        "@visualdl/server": "2.1.2",
+        "@visualdl/server": "2.1.3",
         "open": "7.3.0",
         "ora": "5.1.0",
         "pm2": "4.5.1",
