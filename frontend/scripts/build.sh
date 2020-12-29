@@ -11,6 +11,7 @@ OUTPUT="output"
 OUTPUT_PATH="$WORKING_PATH/$OUTPUT"
 
 if [ -f "$HOME/.cargo/env" ]; then
+    # shellcheck source=/dev/null
     source "$HOME/.cargo/env"
 fi
 

@@ -11,6 +11,7 @@ build_frontend() {
     mkdir -p "$FRONTEND_DIST"
 
     cd "$FRONTEND_DIR"
+    # shellcheck disable=SC1091
     . ./scripts/install.sh
     SCOPE="serverless" \
       PUBLIC_PATH="{{PUBLIC_PATH}}" \
