@@ -24,7 +24,7 @@
 
 VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线、ROC曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL支持浏览器：
 
@@ -343,6 +343,13 @@ value: 3.1297709941864014
 <img src="https://user-images.githubusercontent.com/48054808/86738774-ee46c000-c067-11ea-90d2-a98aac445cca.png" width="85%"/>
 </p>
 
+### ROC Curve
+
+展示不同不同阈值下模型的表现（TPR、TNR），曲线下面积越大，模型表现越好，辅助开发者进行阈值选择以及直观的掌握模型训练情况。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/103275084-51555600-49fe-11eb-8c16-d18d26b724e3.png" width="85%"/>
+</p>
 
 ### High Dimensional
 

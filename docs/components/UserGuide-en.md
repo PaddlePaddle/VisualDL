@@ -6,7 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides seven components: scalar, image, audio, graph, histogram, pr curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides seven components: scalar, image, audio, graph, histogram, pr curve, ROC curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
@@ -19,6 +19,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |              [Graph](#Graph--Network-Structure)              |       Network Structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
 |       [Histogram](#Histogram--Distribution-of-Tensors)       |    Distribution of Tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
+|                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
@@ -586,7 +587,7 @@ The interface parameters are described as follows:
 
 ### Demo
 
-The following shows an example of how to use High Dimensional component, and script can be found in [PR Curve Demo](../../demo/components/pr_curve_test.py)
+The following shows an example of how to use PR Curve component, and script can be found in [PR Curve Demo](../../demo/components/pr_curve_test.py)
 
 ```python
 from visualdl import LogWriter
@@ -657,6 +658,66 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
     <img src="https://user-images.githubusercontent.com/48054808/90880354-eace8480-e3da-11ea-921f-20f363eb1b1d.png" width="30%"/>
   </p>
 
+## ROC Curve
+
+### Introduction
+
+ROC Curve shows the performance of a classification model at all classification thresholds; the larger the area under the curve, the better the model performs, aiding developers to evaluate the model performance and choose an appropriate threshold.
+
+### Record Interface
+
+The interface of the PR Curve is shown as follows:
+
+```python
+add_roc_curve(tag, labels, predictions, step=None, num_thresholds=10)
+```
+
+The interface parameters are described as follows:
+
+| parameter          | format                  | meaning                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
+| values         | numpy.ndarray or list | Data is in ndarray or list format            |
+| predictions    | numpy.ndarray or list | Prediction data is in ndarray or list format            |
+| step           | int                   | Record the training steps                                  |
+| num_thresholds | int                   | Set the number of thresholds, default as 10, maximum as 127      |
+| weights        | float                   | Set the weights of TN/FN/TP/FP to calculate precision and recall      |
+| walltime       | int                   | Record the time-stamp of the data, and the default is the current time-stamp      |
+
+### Demo
+
+The following shows an example of how to use ROC curve component, and script can be found in [ROC Curve Demo](../../demo/components/roc_curve_test.py)
+
+```python
+from visualdl import LogWriter
+import numpy as np
+
+with LogWriter("./log/roc_curve_test/train") as writer:
+    for step in range(3):
+        labels = np.random.randint(2, size=100)
+        predictions = np.random.rand(100)
+        writer.add_roc_curve(tag='roc_curve',
+                             labels=labels,
+                             predictions=predictions,
+                             step=step,
+                             num_thresholds=5)
+
+```
+
+After running the above program, developers can launch the panel by:
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/103274711-42ba6f00-49fd-11eb-9452-4dd492682dd8.png" width="85%"/>
+</p>
+
+*Note: the use of ROC Curve in the frontend is the same as that of PR Curve, please refer to the instructions in PR Curve section if needed.
+
 ## High Dimensional--Data Dimensionality Reduction
 
 ### Introduction
@@ -665,6 +726,7 @@ High Dimensional projects high-dimensional data into a low dimensional space, ai
 
  - PCA : Principle Component Analysis 
  - t-SNE : t-distributed Stochastic Neighbor Embedding 
+ - umap: Uniform Manifold Approximation and Projection
 
 ### Record Interface
 
