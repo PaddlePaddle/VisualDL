@@ -14,6 +14,7 @@
 # =======================================================================
 
 import collections
+from functools import partial  # noqa: F401
 from visualdl.io import bfile
 from visualdl.component import components
 from visualdl.reader.record_reader import RecordReader
