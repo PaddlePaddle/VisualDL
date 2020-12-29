@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type {Worker} from './types';
+import type {Embedding, Worker} from './types';
 
 const worker: Worker = async io => {
     const components = await io.getData<string[]>('/components');
@@ -22,7 +22,12 @@ const worker: Worker = async io => {
         return;
     }
 
-    // await io.save<Record<string, string[]>>('/embedding/embedding');
+    const list = await io.save<Embedding[]>('/embedding/list');
+    await Promise.all(
+        list.map(({name}) =>
+            Promise.all([io.saveBinary('/embedding/tensor', {name}), io.saveBinary('/embedding/metadata', {name})])
+        )
+    );
 };
 
 export default worker;

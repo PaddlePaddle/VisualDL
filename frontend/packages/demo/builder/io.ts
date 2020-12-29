@@ -174,7 +174,7 @@ export default class IO {
 
         const response = await this.fetch(uri, query);
         if (!response.ok) {
-            throw new Error('not ok');
+            throw new Error(`not ok: ${uri}`);
         }
 
         let content: ResponseData<T> | ArrayBuffer;
