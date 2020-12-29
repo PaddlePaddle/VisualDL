@@ -22,3 +22,9 @@ export type Data = {
     runs: string[];
     tags: string[][];
 };
+
+export type Embedding = {
+    name: string;
+    shape: [number, number];
+    path: string;
+};

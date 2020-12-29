@@ -16,6 +16,8 @@
 
 import type {Data, Worker} from './types';
 
+const DataTypes = ['csv', 'tsv'];
+
 const worker: Worker = async io => {
     const components = await io.getData<string[]>('/components');
     if (!components.includes('scalar')) {
@@ -26,7 +28,10 @@ const worker: Worker = async io => {
     const q = [];
     for (const [index, run] of runs.entries()) {
         for (const tag of tags[index]) {
-            q.push(io.save('/scalar/list', {run, tag}));
+            q.push(
+                io.save('/scalar/list', {run, tag}),
+                ...DataTypes.map(type => io.saveBinary('/scalar/data', {run, tag, type}))
+            );
         }
     }
     await Promise.all(q);

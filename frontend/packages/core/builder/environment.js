@@ -23,7 +23,7 @@ process.env.SNOWPACK_PUBLIC_PATH = process.env.CDN_VERSION
     ? ''
     : process.env.PUBLIC_PATH;
 
-// BASE_URI is for env and router, must be local address which starts with a `/` or empty string
+// BASE_URI is for env, router and workers. Must be local address which starts with a `/` or empty string
 // if it is not set and PUBLIC_PATH is not a CDN address, it will be set to the same value of PUBLIC_PATH
 process.env.SNOWPACK_PUBLIC_BASE_URI =
     process.env.SNOWPACK_PUBLIC_PATH.startsWith('/') || process.env.PUBLIC_PATH === ''

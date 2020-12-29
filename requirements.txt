@@ -1,10 +1,11 @@
-numpy
-requests
+bce-python-sdk
 flake8 >= 3.7.9
-Pillow >= 7.0.0
-pre-commit
 flask >= 1.1.1
 Flask-Babel >= 1.0.0
-six >= 1.14.0
+numpy
+Pillow >= 7.0.0
+pre-commit
 protobuf >= 3.11.0
-bce-python-sdk
+requests
+shellcheck-py
+six >= 1.14.0
