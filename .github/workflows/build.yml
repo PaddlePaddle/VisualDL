@@ -22,8 +22,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install requirements
         run: |
-          pip install wheel
+          pip install -U wheel
+          pip install -U setuptools
           pip install -r requirements.txt
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
       - name: Build whl
         run: |
           python setup.py bdist_wheel
