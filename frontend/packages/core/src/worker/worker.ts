@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type {
     Handler,
     IWorker,
@@ -25,39 +23,15 @@ import type {
     WorkerMessageEvent,
     WorkerMessageType
 } from '~/worker/types';
-import {
-    callListener,
-    checkWorkerModuleSupport,
-    pushFunctionToListener,
-    removeFunctionFromListener,
-    runner
-} from '~/worker/utils';
+import {callListener, pushFunctionToListener, removeFunctionFromListener, runner} from '~/worker/utils';
 
-import EventEmitter from 'eventemitter3';
-
-const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
-
-export default class WebWorker implements IWorker {
+class WorkerSelf implements IWorker {
     private listeners: Listeners = {};
     private onceListeners: Listeners = {};
-    private worker: Worker | null = null;
-    private emitter: EventEmitter | null = null;
-    env = import.meta.env;
+    env = {};
 
-    constructor(name: string) {
-        const workerPath = `${BASE_URI}/_dist_/worker`;
-
-        if (checkWorkerModuleSupport()) {
-            this.worker = new Worker(`${workerPath}/worker.js`, {type: 'module'});
-            this.worker.addEventListener('message', this.listener.bind(this));
-            this.emit<InitializeData>('INITIALIZE', {name, env: import.meta.env});
-        } else {
-            this.emitter = new EventEmitter();
-            this.emitter.addListener('message', this.listener.bind(this));
-            window.setTimeout(() => {
-                runner(name, this);
-            }, 200);
-        }
+    constructor() {
+        self.addEventListener('message', this.listener.bind(this));
     }
 
     private listener<T>(e: WorkerMessageEvent<T>) {
@@ -67,14 +41,10 @@ export default class WebWorker implements IWorker {
     }
 
     emit<T>(type: WorkerMessageType<T>, data?: T) {
-        if (this.worker) {
-            this.worker.postMessage({
-                type,
-                data
-            } as WorkerMessage<T>);
-        } else if (this.emitter) {
-            this.emitter.emit('message', {data: {type, data}});
-        }
+        self.postMessage({
+            type,
+            data
+        } as WorkerMessage<T>);
     }
 
     on<T>(type: WorkerMessageType<T>, handler: Handler<T>) {
@@ -89,10 +59,11 @@ export default class WebWorker implements IWorker {
     once<T>(type: WorkerMessageType<T>, handler: Handler<T>) {
         pushFunctionToListener(this.onceListeners, type, handler);
     }
-
-    terminate() {
-        if (this.worker) {
-            this.worker.terminate();
-        }
-    }
 }
+
+const worker = new WorkerSelf();
+
+worker.once<InitializeData>('INITIALIZE', ({name, env}) => {
+    worker.env = env;
+    runner(name, worker);
+});

@@ -26,7 +26,7 @@ import type {
 } from '~/resource/high-dimensional';
 import {PCA, UMAP, tSNE} from '~/resource/high-dimensional';
 
-import {WorkerSelf} from '~/worker';
+import type {Runner} from '~/worker/types';
 import type {tSNEOptions} from '~/resource/high-dimensional/tsne';
 
 type InfoStepData = {
@@ -41,86 +41,90 @@ type InfoParamsData = {
 };
 export type InfoData = InfoStepData | InfoResetData | InfoParamsData;
 
-const workerSelf = new WorkerSelf();
-workerSelf.emit('INITIALIZED');
-workerSelf.on<CalculateParams>('RUN', ({reduction, params}) => {
-    switch (reduction) {
-        case 'pca':
-            return pca(params as PCAParams);
-        case 'tsne':
-            return tsne(params as TSNEParams);
-        case 'umap':
-            return umap(params as UMAPParams);
-        default:
-            return null as never;
-    }
-});
-
-function pca(data: PCAParams) {
-    const {vectors, variance, totalVariance} = PCA(data.input, data.dim, data.n);
-    workerSelf.emit<PCAResult>('RESULT', {
-        vectors: vectors as Vectors,
-        variance,
-        totalVariance
-    });
-}
-
-function tsne(data: TSNEParams) {
-    const t_sne = new tSNE({
-        dimension: data.n,
-        perplexity: data.perplexity,
-        epsilon: data.epsilon
-    });
-
-    const reset = () => {
-        t_sne.setData(data.input, data.dim);
-        workerSelf.emit<TSNEResult>('RESULT', {
-            vectors: t_sne.solution as [number, number, number][],
-            step: t_sne.step
+const runner: Runner = worker => {
+    const pca = (data: PCAParams) => {
+        const {vectors, variance, totalVariance} = PCA(data.input, data.dim, data.n);
+        worker.emit<PCAResult>('RESULT', {
+            vectors: vectors as Vectors,
+            variance,
+            totalVariance
         });
     };
 
-    reset();
+    const tsne = (data: TSNEParams) => {
+        const t_sne = new tSNE({
+            dimension: data.n,
+            perplexity: data.perplexity,
+            epsilon: data.epsilon
+        });
 
-    workerSelf.on<InfoData>('INFO', infoData => {
-        const type = infoData.type;
-        switch (type) {
-            case 'step': {
-                t_sne.run();
-                return workerSelf.emit<TSNEResult>('RESULT', {
-                    vectors: t_sne.solution as [number, number, number][],
-                    step: t_sne.step
-                });
-            }
-            case 'reset': {
-                return reset();
-            }
-            case 'params': {
-                const data = (infoData as InfoParamsData).data;
-                if (data?.perplexity != null) {
-                    t_sne.setPerplexity(data.perplexity);
+        const reset = () => {
+            t_sne.setData(data.input, data.dim);
+            worker.emit<TSNEResult>('RESULT', {
+                vectors: t_sne.solution as [number, number, number][],
+                step: t_sne.step
+            });
+        };
+
+        reset();
+
+        worker.on<InfoData>('INFO', infoData => {
+            const type = infoData.type;
+            switch (type) {
+                case 'step': {
+                    t_sne.run();
+                    return worker.emit<TSNEResult>('RESULT', {
+                        vectors: t_sne.solution as [number, number, number][],
+                        step: t_sne.step
+                    });
                 }
-                if (data?.epsilon != null) {
-                    t_sne.setEpsilon(data.epsilon);
+                case 'reset': {
+                    return reset();
                 }
-                return;
+                case 'params': {
+                    const data = (infoData as InfoParamsData).data;
+                    if (data?.perplexity != null) {
+                        t_sne.setPerplexity(data.perplexity);
+                    }
+                    if (data?.epsilon != null) {
+                        t_sne.setEpsilon(data.epsilon);
+                    }
+                    return;
+                }
+                default:
+                    return null as never;
             }
+        });
+    };
+
+    const umap = (data: UMAPParams) => {
+        const result = UMAP(data.n, data.neighbors, data.input, data.dim);
+        if (result) {
+            worker.emit<UMAPResult>('RESULT', {
+                vectors: result.embedding as [number, number, number][],
+                epoch: result.nEpochs,
+                nEpochs: result.nEpochs
+            });
+        }
+        worker.on('INFO', () => {
+            worker.emit('INITIALIZED');
+        });
+    };
+
+    worker.on<CalculateParams>('RUN', ({reduction, params}) => {
+        switch (reduction) {
+            case 'pca':
+                return pca(params as PCAParams);
+            case 'tsne':
+                return tsne(params as TSNEParams);
+            case 'umap':
+                return umap(params as UMAPParams);
             default:
                 return null as never;
         }
     });
-}
 
-function umap(data: UMAPParams) {
-    const result = UMAP(data.n, data.neighbors, data.input, data.dim);
-    if (result) {
-        workerSelf.emit<UMAPResult>('RESULT', {
-            vectors: result.embedding as [number, number, number][],
-            epoch: result.nEpochs,
-            nEpochs: result.nEpochs
-        });
-    }
-    workerSelf.on('INFO', () => {
-        workerSelf.emit('INITIALIZED');
-    });
-}
+    worker.emit('INITIALIZED');
+};
+
+export default runner;
