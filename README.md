@@ -337,7 +337,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 **ROC Curve** shows the performance of a classification model at all classification thresholds; the larger the area under the curve, the better the model performs, aiding developers to evaluate the model performance and choose an appropriate threshold.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/103274711-42ba6f00-49fd-11eb-9452-4dd492682dd8.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103344081-8928d000-4ac8-11eb-84d0-28f249886172.gif" width="85%"/>
 </p>
 
 
