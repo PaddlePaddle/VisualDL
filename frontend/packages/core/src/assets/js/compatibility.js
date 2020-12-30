@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-declare global {
-    interface Window {
-        webkitAudioContext: AudioContext;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _hmt: any[];
-    }
-}
+document.body.innerHTML =
+    '<p style="text-align: center;margin: 20px auto;">Your browser is not supported by VisualDL. <br /> Please refer to <a href="https://github.com/PaddlePaddle/VisualDL" target="_blank" rel="noreferrer noopener">VisualDL Document</a> for more information.</p>';
 
-export {};
+window.addEventListener('error', e => e.preventDefault());
