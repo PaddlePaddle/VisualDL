@@ -345,10 +345,10 @@ value: 3.1297709941864014
 
 ### ROC Curve
 
-展示不同不同阈值下模型的表现（TPR、TNR），曲线下面积越大，模型表现越好，辅助开发者进行阈值选择以及直观的掌握模型训练情况。
+展示不同阈值下模型指标的变化，同时曲线下的面积（AUC）直观的反应模型表现，辅助开发者掌握模型训练情况并高效进行阈值选择。
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/103275084-51555600-49fe-11eb-8c16-d18d26b724e3.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103344081-8928d000-4ac8-11eb-84d0-28f249886172.gif" width="85%"/>
 </p>
 
 ### High Dimensional
