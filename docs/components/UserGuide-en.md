@@ -19,7 +19,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |              [Graph](#Graph--Network-Structure)              |       Network Structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
 |       [Histogram](#Histogram--Distribution-of-Tensors)       |    Distribution of Tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
-|                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds |
+|                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
@@ -713,7 +713,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/103274711-42ba6f00-49fd-11eb-9452-4dd492682dd8.png" width="85%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/103344081-8928d000-4ac8-11eb-84d0-28f249886172.gif" width="85%"/>
 </p>
 
 *Note: the use of ROC Curve in the frontend is the same as that of PR Curve, please refer to the instructions in PR Curve section if needed.
