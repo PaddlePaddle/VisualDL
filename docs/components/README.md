@@ -673,8 +673,9 @@ add_embeddings(tag, labels, hot_vectors, walltime=None)
 |    参数     |        格式         |                         含义                         |
 | ----------- | ------------------- | ---------------------------------------------------- |
 | tag         | string              | 记录指标的标志，如`default`，不能含有`%`             |
-| labels      | numpy.array 或 list | 一维数组表示的标签，每个元素是一个string类型的字符串 |
+| labels      | numpy.array 或 list | 一维数组表示的标签，代表hot_vectors的标签，如果有多个维度的labels需要使用二维数组，其中每个元素为某维度下的一维标签数组 |
 | hot_vectors | numpy.array or list | 与labels一一对应，每个元素可以看作是某个标签的特征   |
+| labels_meta | numpy.array or list | labels的标签，与labels一一对应，不指定则使用默认值`__metadata__`，当labels为一维数组时无需指定   |
 | walltime    | int                 | 记录数据的时间戳，默认为当前时间戳                   |
 
 ### Demo
@@ -698,6 +699,18 @@ if __name__ == '__main__':
         writer.add_embeddings(tag='default',
                               labels=labels,
                               hot_vectors=hot_vectors)
+    """
+    # 也可以同时提供多个label，此时`labels`为二维数组，且需要提供`labels_meta`以供前端页面选择展示不同label.
+    labels = [["label_a_1", "label_a_2", "label_a_3", "label_a_4", "label_a_5"],
+              ["label_b_1", "label_b_2", "label_b_3", "label_b_4", "label_b_5"]]
+    # labels_meta需要和labels一一对应
+    labels_meta = ["label_a", "label_b"]
+    with LogWriter(logdir="./log/high_dimensional_test/train") as writer:
+        writer.add_embeddings(tag='default',
+                              labels=labels,
+                              labels_meta=labels_meta,
+                              hot_vectors=hot_vectors)
+    """
 ```
 运行上述程序后，在命令行执行
 ```shell
