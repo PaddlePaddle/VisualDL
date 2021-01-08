@@ -72,7 +72,7 @@ const AudioSample: FunctionComponent = () => {
     return (
         <>
             <Title>
-                {t('common:sample')} - {t('common:audio')}
+                {t('common:audio')} - {t('common:sample')}
             </Title>
             <Content aside={aside} loading={loading}>
                 {!loading && !runs.length ? (

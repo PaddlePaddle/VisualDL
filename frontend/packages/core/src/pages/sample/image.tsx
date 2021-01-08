@@ -94,7 +94,7 @@ const ImageSample: FunctionComponent = () => {
     return (
         <>
             <Title>
-                {t('common:sample')} - {t('common:image')}
+                {t('common:image')} - {t('common:sample')}
             </Title>
             <Content aside={aside} loading={loading}>
                 {!loading && !runs.length ? (
