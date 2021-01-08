@@ -21,6 +21,7 @@ import {ellipsis, em, rem, size} from '~/utils/style';
 import Checkbox from '~/components/Checkbox';
 import Field from '~/components/Field';
 import type {Run} from '~/types';
+import RunListLoader from '~/components/Loader/RunList';
 import RunningToggle from '~/components/RunningToggle';
 import SearchInput from '~/components/SearchInput';
 import styled from 'styled-components';
@@ -89,6 +90,7 @@ export type RunAsideProps = {
     onChangeRuns?: (runs: Run[]) => unknown;
     running?: boolean;
     onToggleRunning?: (running: boolean) => unknown;
+    loading?: boolean;
 };
 
 const RunAside: FunctionComponent<RunAsideProps> = ({
@@ -97,6 +99,7 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
     onChangeRuns,
     running,
     onToggleRunning,
+    loading,
     children
 }) => {
     const {t} = useTranslation('common');
@@ -150,20 +153,24 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
                         {t('common:select-all')}
                     </Checkbox>
                     <div className="run-list">
-                        {filteredRuns.map((run, index) => (
-                            <div key={index}>
-                                <Checkbox
-                                    value={selectedRuns?.map(r => r.label)?.includes(run.label)}
-                                    title={run.label}
-                                    onChange={value => setSelectedRuns(run, value)}
-                                >
-                                    <span className="run-item">
-                                        <i style={{backgroundColor: run.colors[0]}}></i>
-                                        {run.label}
-                                    </span>
-                                </Checkbox>
-                            </div>
-                        ))}
+                        {loading ? (
+                            <RunListLoader />
+                        ) : (
+                            filteredRuns.map((run, index) => (
+                                <div key={index}>
+                                    <Checkbox
+                                        value={selectedRuns?.map(r => r.label)?.includes(run.label)}
+                                        title={run.label}
+                                        onChange={value => setSelectedRuns(run, value)}
+                                    >
+                                        <span className="run-item">
+                                            <i style={{backgroundColor: run.colors[0]}}></i>
+                                            {run.label}
+                                        </span>
+                                    </Checkbox>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </Field>
             </AsideSection>

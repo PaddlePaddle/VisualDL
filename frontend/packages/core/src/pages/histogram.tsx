@@ -41,29 +41,29 @@ const Histogram: FunctionComponent = () => {
     const [mode, setMode] = useState<Modes>(Modes.Offset);
 
     const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                >
-                    <AsideSection>
-                        <Field label={t('histogram:mode')}>
-                            <RadioGroup value={mode} onChange={setMode}>
-                                {modes.map(value => (
-                                    <RadioButton key={value} value={value}>
-                                        {t(`histogram:mode-value.${value}`)}
-                                    </RadioButton>
-                                ))}
-                            </RadioGroup>
-                        </Field>
-                    </AsideSection>
-                </RunAside>
-            ) : null,
-        [t, mode, onChangeRuns, running, runs, selectedRuns]
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+                loading={loading}
+            >
+                <AsideSection>
+                    <Field label={t('histogram:mode')}>
+                        <RadioGroup value={mode} onChange={setMode}>
+                            {modes.map(value => (
+                                <RadioButton key={value} value={value}>
+                                    {t(`histogram:mode-value.${value}`)}
+                                </RadioButton>
+                            ))}
+                        </RadioGroup>
+                    </Field>
+                </AsideSection>
+            </RunAside>
+        ),
+        [loading, mode, onChangeRuns, running, runs, selectedRuns, t]
     );
 
     const withChart = useCallback<WithChart<TagWithSingleRun>>(
@@ -74,7 +74,7 @@ const Histogram: FunctionComponent = () => {
     return (
         <>
             <Title>{t('common:histogram')}</Title>
-            <Content aside={aside} loading={loading}>
+            <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
