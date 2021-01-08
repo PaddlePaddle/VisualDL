@@ -35,13 +35,13 @@
     ],
     "dependencies": {
         "@visualdl/server": "2.1.4",
-        "open": "7.3.0",
-        "ora": "5.1.0",
+        "open": "7.3.1",
+        "ora": "5.2.0",
         "pm2": "4.5.1",
         "yargs": "16.2.0"
     },
     "devDependencies": {
-        "@types/node": "14.14.16",
+        "@types/node": "14.14.20",
         "@types/yargs": "15.0.12",
         "cross-env": "7.0.3",
         "ts-node": "9.1.1",
