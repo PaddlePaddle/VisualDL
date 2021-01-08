@@ -86,6 +86,9 @@ def upload_to_dev(logdir=None, model=None):
     walks = {}
     if logdir:
         walks = get_vdl_log_file(logdir)
+        if not walks:
+            logger.error("There is no valid log file in %s" % logdir)
+            return
 
     res = apply_for_token()
 
