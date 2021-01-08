@@ -17,9 +17,8 @@
 import {ChartCollapseTitle as ChartCollapseTitleLoader, Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {WithStyled, headerHeight, link, primaryColor, rem, transitionProps} from '~/utils/style';
+import {WithStyled, headerHeight, link, rem, transitionProps} from '~/utils/style';
 
-import BarLoader from 'react-spinners/BarLoader';
 import Chart from '~/components/Chart';
 import ChartCollapse from '~/components/ChartCollapse';
 import Pagination from '~/components/Pagination';
@@ -56,14 +55,6 @@ const Wrapper = styled.div`
 const Search = styled.div`
     width: ${rem(280)};
     margin-bottom: ${rem(16)};
-`;
-
-const Loading = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: ${rem(200)};
-    padding: ${rem(40)} 0;
 `;
 
 const Empty = styled.div<{height?: string}>`
