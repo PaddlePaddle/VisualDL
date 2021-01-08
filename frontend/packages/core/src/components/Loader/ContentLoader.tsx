@@ -16,18 +16,20 @@
 
 import React, {FunctionComponent} from 'react';
 
-import ContentLoader from './ContentLoader';
+import ContentLoader from 'react-content-loader';
+import type {IContentLoaderProps} from 'react-content-loader';
+import {themes} from '~/utils/theme';
+import useTheme from '~/hooks/useTheme';
 
-const RunList: FunctionComponent<{count?: number}> = ({count}) => {
+const RunList: FunctionComponent<IContentLoaderProps> = ({children, ...props}) => {
+    const theme = useTheme();
     return (
-        <ContentLoader viewBox={`0 0 220 ${(count ?? 2) * 36}`}>
-            {Array.from({length: count ?? 2}).map((_, i) => (
-                <>
-                    <rect x="0" y={`${11 * (i + 1) + 25 * i + 4.5}`} width="16" height="16" />
-                    <circle cx="32" cy={`${11 * (i + 1) + 25 * i + 12.5}`} r="6" />
-                    <rect x="46" y={`${11 * (i + 1) + 25 * i + 5.5}`} rx="3" ry="3" width="100" height="14" />
-                </>
-            ))}
+        <ContentLoader
+            backgroundColor={themes[theme].loaderBackgroundColor}
+            foregroundColor={themes[theme].loaderForegroundColor}
+            {...props}
+        >
+            {children}
         </ContentLoader>
     );
 };

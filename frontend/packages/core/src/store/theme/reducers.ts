@@ -29,8 +29,8 @@ const initState: ThemeState = {
     selected: theme
 };
 
-window.document.body.classList.remove('light', 'dark', 'auto');
-window.document.body.classList.add(initState.selected);
+window.document.documentElement.classList.remove('light', 'dark', 'auto');
+window.document.documentElement.classList.add(initState.selected);
 
 function themeReducer(state = initState, action: ThemeActionTypes): ThemeState {
     switch (action.type) {
@@ -41,8 +41,8 @@ function themeReducer(state = initState, action: ThemeActionTypes): ThemeState {
             };
         case ActionTypes.SELECT_THEME:
             window.localStorage.setItem(STORAGE_KEY, action.theme);
-            window.document.body.classList.remove('light', 'dark', 'auto');
-            window.document.body.classList.add(action.theme);
+            window.document.documentElement.classList.remove('light', 'dark', 'auto');
+            window.document.documentElement.classList.add(action.theme);
             return {
                 ...state,
                 theme: action.theme === 'auto' ? autoTheme : action.theme,

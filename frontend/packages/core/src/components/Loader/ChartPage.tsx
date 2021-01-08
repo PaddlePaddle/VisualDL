@@ -16,7 +16,7 @@
 
 import React, {FunctionComponent} from 'react';
 
-import ContentLoader from 'react-content-loader';
+import ContentLoader from './ContentLoader';
 
 export const Chart: FunctionComponent = () => {
     return (
