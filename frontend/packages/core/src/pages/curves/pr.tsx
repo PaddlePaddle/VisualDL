@@ -50,7 +50,6 @@ const PRCurve: FunctionComponent = () => {
                         onToggleRunning={setRunning}
                     />
                 }
-                loading={loading}
             >
                 {!loading && !tags.length ? (
                     <Error />

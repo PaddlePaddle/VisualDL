@@ -68,7 +68,7 @@ const CollapseIcon = styled(Icon)<{opened?: boolean}>`
 `;
 
 type ChartCollapseProps = {
-    title: string;
+    title: React.ReactNode;
     opened?: boolean;
     total?: number;
 };

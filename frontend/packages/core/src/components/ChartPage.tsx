@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import {ChartCollapseTitle as ChartCollapseTitleLoader, Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
-import {WithStyled, headerHeight, link, primaryColor, rem, transitionProps} from '~/utils/style';
+import {WithStyled, headerHeight, link, rem, transitionProps} from '~/utils/style';
 
-import BarLoader from 'react-spinners/BarLoader';
 import Chart from '~/components/Chart';
 import ChartCollapse from '~/components/ChartCollapse';
 import Pagination from '~/components/Pagination';
@@ -57,14 +57,6 @@ const Search = styled.div`
     margin-bottom: ${rem(16)};
 `;
 
-const Loading = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: ${rem(200)};
-    padding: ${rem(40)} 0;
-`;
-
 const Empty = styled.div<{height?: string}>`
     width: 100%;
     text-align: center;
@@ -94,7 +86,7 @@ export interface WithChart<T extends Item> {
 type ChartPageProps<T extends Item> = {
     items?: T[];
     running?: boolean;
-    loading?: boolean;
+    loading?: boolean | React.ReactNode;
     chartSize?: {
         width?: string;
         height?: string;
@@ -154,44 +146,89 @@ const ChartPage = <T extends Item>({
     const total = useMemo(() => Math.ceil(matchedTags.length / pageSize), [matchedTags]);
 
     const withCharts = useCallback(
-        (charts: T[], search?: boolean) =>
-            loading ? (
-                <Loading>
-                    <BarLoader color={primaryColor} width="20%" height="4px" />
-                </Loading>
-            ) : (
-                <Wrapper>
-                    {charts.length ? (
-                        charts.map((item, j) => {
-                            const cid = Symbol(item.label);
-                            return (
-                                <Chart
-                                    cid={cid}
-                                    key={item.id || item.label}
-                                    width={chartSize?.width ?? rem(430)}
-                                    height={chartSize?.height ?? rem(337)}
-                                >
-                                    {withChart?.({...item, cid}, j)}
-                                </Chart>
-                            );
-                        })
-                    ) : (
-                        <Empty height={rem(500)}>
-                            {search ? (
-                                <Trans i18nKey="common:search-empty">
-                                    Nothing found. Please try again with another word.
-                                    <br />
-                                    Or you can <a onClick={() => setInputValue('')}>see all charts</a>.
-                                </Trans>
-                            ) : (
-                                t('common:empty')
-                            )}
-                        </Empty>
-                    )}
-                </Wrapper>
-            ),
-        [withChart, loading, chartSize, t]
+        (charts: T[], search?: boolean) => (
+            <Wrapper>
+                {loading ? (
+                    Array.from({length: 2}).map((_, index) => (
+                        <Chart
+                            cid={Symbol()}
+                            key={index}
+                            width={chartSize?.width ?? rem(430)}
+                            height={chartSize?.height ?? rem(337)}
+                        >
+                            {loading === true ? <ChartLoader /> : loading}
+                        </Chart>
+                    ))
+                ) : charts.length ? (
+                    charts.map((item, j) => {
+                        const cid = Symbol(item.label);
+                        return (
+                            <Chart
+                                cid={cid}
+                                key={item.id || item.label}
+                                width={chartSize?.width ?? rem(430)}
+                                height={chartSize?.height ?? rem(337)}
+                            >
+                                {withChart?.({...item, cid}, j)}
+                            </Chart>
+                        );
+                    })
+                ) : (
+                    <Empty height={rem(500)}>
+                        {search ? (
+                            <Trans i18nKey="common:search-empty">
+                                Nothing found. Please try again with another word.
+                                <br />
+                                Or you can <a onClick={() => setInputValue('')}>see all charts</a>.
+                            </Trans>
+                        ) : (
+                            t('common:empty')
+                        )}
+                    </Empty>
+                )}
+            </Wrapper>
+        ),
+        [loading, t, chartSize?.width, chartSize?.height, withChart]
     );
+
+    const content = useMemo(() => {
+        if (loading) {
+            return Array.from({length: 3}).map((_, index) => (
+                <ChartCollapse key={index} title={<ChartCollapseTitleLoader />} opened={!index}>
+                    {withCharts([])}
+                </ChartCollapse>
+            ));
+        }
+        if (searchValue) {
+            return (
+                <ChartCollapse title={t('common:search-result')} total={matchedTags.length}>
+                    {withCharts(pageMatchedTags, true)}
+                    {pageMatchedTags.length ? <StyledPagination page={page} total={total} onChange={setPage} /> : null}
+                </ChartCollapse>
+            );
+        }
+        if (groupedItems.length) {
+            return groupedItems.map((groupedItem, i) => (
+                <ChartCollapse
+                    title={groupedItem[0]}
+                    key={groupedItem[0]}
+                    total={groupedItem[1].length}
+                    opened={i === 0}
+                >
+                    {withCharts(groupedItem[1])}
+                </ChartCollapse>
+            ));
+        }
+        return (
+            <Empty height={`calc(100vh - ${headerHeight} - ${rem(96)})`}>
+                <Trans i18nKey="common:unselected-empty">
+                    Nothing selected.
+                    <br />
+                    Please select display data from right side.
+                </Trans>
+            </Empty>
+        );
+    }, [groupedItems, loading, matchedTags.length, page, pageMatchedTags, searchValue, t, total, withCharts]);
 
     return (
         <div className={className}>
@@ -203,31 +240,7 @@ const ChartPage = <T extends Item>({
                     onChange={(value: string) => setInputValue(value)}
                 />
             </Search>
-            {searchValue ? (
-                <ChartCollapse title={t('common:search-result')} total={matchedTags.length}>
-                    {withCharts(pageMatchedTags, true)}
-                    {pageMatchedTags.length ? <StyledPagination page={page} total={total} onChange={setPage} /> : null}
-                </ChartCollapse>
-            ) : groupedItems.length ? (
-                groupedItems.map((groupedItem, i) => (
-                    <ChartCollapse
-                        title={groupedItem[0]}
-                        key={groupedItem[0]}
-                        total={groupedItem[1].length}
-                        opened={i === 0}
-                    >
-                        {withCharts(groupedItem[1])}
-                    </ChartCollapse>
-                ))
-            ) : (
-                <Empty height={`calc(100vh - ${headerHeight} - ${rem(96)})`}>
-                    <Trans i18nKey="common:unselected-empty">
-                        Nothing selected.
-                        <br />
-                        Please select display data from right side.
-                    </Trans>
-                </Empty>
-            )}
+            {content}
         </div>
     );
 };

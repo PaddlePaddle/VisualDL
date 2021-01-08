@@ -22,6 +22,7 @@ import {AsideSection} from '~/components/Aside';
 import Field from '~/components/Field';
 import RunAside from '~/components/RunAside';
 import StepSlider from '~/components/CurvesPage/StepSlider';
+import StepSliderLoader from '~/components/Loader/curves/StepSlider';
 import TimeModeSelect from '~/components/TimeModeSelect';
 import {TimeType} from '~/resource/curves';
 import {cycleFetcher} from '~/utils/fetch';
@@ -139,13 +140,14 @@ const CurveAside: FunctionComponent<CurveAsideProps> = ({type, onChangeLoading, 
         onToggleRunning(running);
     }, [onToggleRunning, running]);
 
-    return runs.length ? (
+    return (
         <RunAside
             runs={runs}
             selectedRuns={selectedRuns}
             onChangeRuns={onChangeRuns}
             running={running}
             onToggleRunning={setRunning}
+            loading={loading}
         >
             <AsideSection>
                 <Field label={t('curves:time-display-type')}>
@@ -153,14 +155,24 @@ const CurveAside: FunctionComponent<CurveAsideProps> = ({type, onChangeLoading, 
                 </Field>
             </AsideSection>
             <StepSliderWrapper>
-                {curveRun.map(run => (
-                    <AsideSection key={run.label}>
-                        <StepSlider run={run} type={timeType} onChange={index => onChangeIndexes(run.label, index)} />
+                {loading ? (
+                    <AsideSection>
+                        <StepSliderLoader />
                     </AsideSection>
-                ))}
+                ) : (
+                    curveRun.map(run => (
+                        <AsideSection key={run.label}>
+                            <StepSlider
+                                run={run}
+                                type={timeType}
+                                onChange={index => onChangeIndexes(run.label, index)}
+                            />
+                        </AsideSection>
+                    ))
+                )}
             </StepSliderWrapper>
         </RunAside>
-    ) : null;
+    );
 };
 
 export default CurveAside;

@@ -26,6 +26,7 @@ import Error from '~/components/Error';
 import Field from '~/components/Field';
 import ImageChart from '~/components/SamplePage/ImageChart';
 import RunAside from '~/components/RunAside';
+import {SampleChart as SampleChartLoader} from '~/components/Loader/ChartPage';
 import Slider from '~/components/Slider';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
@@ -48,33 +49,33 @@ const ImageSample: FunctionComponent = () => {
     const [contrast, setContrast] = useState(1);
 
     const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                >
-                    <AsideSection>
-                        <Checkbox value={showActualSize} onChange={setShowActualSize}>
-                            {t('sample:show-actual-size')}
-                        </Checkbox>
-                    </AsideSection>
-                    <AsideSection>
-                        <Field label={t('sample:brightness')}>
-                            <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
-                        </Field>
-                    </AsideSection>
-                    <AsideSection>
-                        <Field label={t('sample:contrast')}>
-                            <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
-                        </Field>
-                    </AsideSection>
-                </RunAside>
-            ) : null,
-        [t, brightness, contrast, onChangeRuns, running, runs, selectedRuns, showActualSize]
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+                loading={loading}
+            >
+                <AsideSection>
+                    <Checkbox value={showActualSize} onChange={setShowActualSize}>
+                        {t('sample:show-actual-size')}
+                    </Checkbox>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('sample:brightness')}>
+                        <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('sample:contrast')}>
+                        <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
+                    </Field>
+                </AsideSection>
+            </RunAside>
+        ),
+        [brightness, contrast, loading, onChangeRuns, running, runs, selectedRuns, showActualSize, t]
     );
 
     const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
@@ -94,9 +95,9 @@ const ImageSample: FunctionComponent = () => {
     return (
         <>
             <Title>
-                {t('common:sample')} - {t('common:image')}
+                {t('common:image')} - {t('common:sample')}
             </Title>
-            <Content aside={aside} loading={loading}>
+            <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
@@ -104,7 +105,7 @@ const ImageSample: FunctionComponent = () => {
                         items={tagsWithSingleRun}
                         chartSize={chartSize}
                         withChart={withChart}
-                        loading={loading}
+                        loading={loading && <SampleChartLoader height={404} />}
                     />
                 )}
             </Content>

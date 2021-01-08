@@ -50,7 +50,6 @@ const ROCCurve: FunctionComponent = () => {
                         onToggleRunning={setRunning}
                     />
                 }
-                loading={loading}
             >
                 {!loading && !tags.length ? (
                     <Error />

@@ -23,6 +23,7 @@ import AudioChart from '~/components/SamplePage/AudioChart';
 import Content from '~/components/Content';
 import Error from '~/components/Error';
 import RunAside from '~/components/RunAside';
+import {SampleChart as SampleChartLoader} from '~/components/Loader/ChartPage';
 import Title from '~/components/Title';
 import {rem} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
@@ -51,17 +52,17 @@ const AudioSample: FunctionComponent = () => {
     const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('audio', running);
 
     const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                ></RunAside>
-            ) : null,
-        [onChangeRuns, running, runs, selectedRuns]
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+                loading={loading}
+            ></RunAside>
+        ),
+        [loading, onChangeRuns, running, runs, selectedRuns]
     );
 
     const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
@@ -72,9 +73,9 @@ const AudioSample: FunctionComponent = () => {
     return (
         <>
             <Title>
-                {t('common:sample')} - {t('common:audio')}
+                {t('common:audio')} - {t('common:sample')}
             </Title>
-            <Content aside={aside} loading={loading}>
+            <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
@@ -82,7 +83,7 @@ const AudioSample: FunctionComponent = () => {
                         items={tagsWithSingleRun}
                         chartSize={chartSize}
                         withChart={withChart}
-                        loading={loading}
+                        loading={loading && <SampleChartLoader height={242} />}
                     />
                 )}
             </Content>

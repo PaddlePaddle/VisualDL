@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-// cSpell:words esmodules
+import React, {FunctionComponent} from 'react';
 
-module.exports = {
-    extends: '@snowpack/app-scripts-react/babel.config.json',
-    presets: [
-        [
-            '@babel/preset-env',
-            {
-                targets: {
-                    esmodules: true
-                },
-                bugfixes: true,
-                modules: false
-            }
-        ]
-    ],
-    plugins: ['styled-components', '@babel/plugin-proposal-class-properties', 'emotion']
+import ContentLoader from '../ContentLoader';
+
+const StepSlider: FunctionComponent = () => {
+    return (
+        <ContentLoader viewBox="0 0 220 67">
+            <circle cx="6" cy="9.5" r="6" />
+            <rect x="20" y="2.5" width="50" height="14" />
+            <rect x="20" y="29.5" width="60" height="12" />
+            <rect x="0" y="55" rx="2" ry="2" width="220" height="4" />
+            <circle cx="220" cy="57" r="6" />
+        </ContentLoader>
+    );
 };
+
+export default StepSlider;
