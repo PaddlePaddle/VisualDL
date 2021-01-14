@@ -16,7 +16,6 @@ import math
 from functools import reduce
 
 import numpy as np
-import cv2
 
 from visualdl.component.base_component import convert_to_HWC
 
@@ -75,6 +74,16 @@ def merge_images(imgs, dataformats, scale=1.0, rows=-1):
     scale = 1.0/scale * rows if rows > cols else 1.0/scale * cols
 
     dsize = tuple(map(lambda x: math.floor(x/scale), imgs.shape))[-2::-1]
-    imgs = cv2.resize(src=imgs, dsize=dsize)
+
+    try:
+        import cv2
+
+        imgs = cv2.resize(src=imgs, dsize=dsize)
+    except ImportError:
+        from PIL import Image
+
+        imgs = Image.fromarray(imgs)
+        imgs.resize(dsize)
+        imgs = np.array(imgs)
 
     return imgs
