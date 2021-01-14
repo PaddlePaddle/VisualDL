@@ -24,7 +24,7 @@ from visualdl.component.base_component import convert_to_HWC
 def padding_image(img, height, width):
     height_old, width_old, _ = img.shape
     height_before = math.floor((height - height_old) / 2)
-    height_after = height - height_old -height_before
+    height_after = height - height_old - height_before
 
     width_before = math.floor((width - width_old) / 2)
     width_after = width - width_old - width_before
@@ -64,7 +64,7 @@ def merge_images(imgs, dataformats, scale=1.0, rows=-1):
 
     # add white sub-image
     for i in range(rows*cols-len_imgs):
-        imgs = np.concatenate((imgs, np.zeros((height, width, channel),dtype=np.uint8)[None, :]))
+        imgs = np.concatenate((imgs, np.zeros((height, width, channel), dtype=np.uint8)[None, :]))
 
     imgs = reduce(lambda x, y: np.concatenate((x, y)), [
         reduce(lambda x, y: np.concatenate((x, y), 1),
