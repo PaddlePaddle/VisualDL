@@ -56,7 +56,7 @@ The high-level design of API makes it easy to use. Only one click can initiate t
 
 ### Various Functions
 
-The function contains the visualization of training parameters, data samples, graph structures, histograms of tensors, PR curves and dimensionality reduction.
+The function contains the visualization of training parameters, data samples, graph structures, histograms of tensors, PR curves and high-dimensional data distributions.
 
 ### High Compatibility
 
@@ -116,8 +116,8 @@ class LogWriter(logdir=None,
 | flush_secs      | int     | The maximum cache time of the data generated before recording in a log file, when this time is reached, the data are immediately written to the log file. |
 | filename_suffix | string  | Add a suffix to the default log file name.                   |
 | write_to_disk   | boolean | Write into disk or not.                                      |
-| display_name    | string  | Give a new name to logair when `logdir` is too long or needed to be hidden. If not set, the default name is `logdir`. |
-| file_name    | string  | Set the name of the log file. If the file_name already exists, setting the file_name will be new records to continue the same log file. Note that the name should include 'vdlrecords'. |
+| display_name    | string  | Give a new name to `logdir` when `logdir` is too long or needed to be hidden. If not set, the default name is `logdir`. |
+| file_name    | string  | Set the name of the log file. If the file_name already exists, setting the file_name will be new records in the same log file, which will continue to be used. Note that the name should include 'vdlrecords'. |
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/103187556-b9714280-48ff-11eb-9052-008e02a21199.png" width="100%"/>
