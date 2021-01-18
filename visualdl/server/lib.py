@@ -158,6 +158,26 @@ def get_individual_image(log_reader, run, tag, step_index):
     return records[step_index].image.encoded_image_string
 
 
+def get_text_tag_steps(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("text").get_items(
+        run, decode_tag(tag))
+    result = [{
+        "step": item.id,
+        "wallTime": s2ms(item.timestamp)
+    } for item in records]
+    return result
+
+
+def get_individual_text(log_reader, run, tag, step_index):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("text").get_items(
+        run, decode_tag(tag))
+    return records[step_index].text.encoded_text_string
+
+
 def get_audio_tag_steps(log_reader, run, tag):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()

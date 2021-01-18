@@ -25,7 +25,8 @@ DEFAULT_PLUGIN_MAXSIZE = {
     "audio": 10,
     "pr_curve": 300,
     "roc_curve": 300,
-    "meta_data": 100
+    "meta_data": 100,
+    "text": 10
 }
 
 

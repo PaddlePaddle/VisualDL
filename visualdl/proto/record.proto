@@ -7,6 +7,10 @@ message Record {
     bytes encoded_image_string = 4;
   }
 
+  message Text {
+    bytes encoded_text_string = 1;
+  }
+
   message Audio {
     float sample_rate = 1;
     int64 num_channels = 2;
@@ -70,6 +74,7 @@ message Record {
       PRCurve pr_curve = 9;
       MetaData meta_data = 10;
       ROC_Curve roc_curve = 11;
+      Text text = 12;
     }
   }
 
