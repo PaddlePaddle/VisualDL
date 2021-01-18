@@ -2585,10 +2585,10 @@
     dotenv "^8.2.0"
     dotenv-expand "^5.1.0"
 
-"@snowpack/plugin-optimize@0.2.13":
-  version "0.2.13"
-  resolved "https://registry.yarnpkg.com/@snowpack/plugin-optimize/-/plugin-optimize-0.2.13.tgz#29cac194f0b5479afc3908a45fca01ad263bab4e"
-  integrity sha512-DW0+iaSc80vWZKDIKbdR5pqDkNDsv3ZbH8eVB8yppK/JlBmOqmsUGdKlZ2eq8XDxE23/V5+gmA9RXLWcTMJ1eQ==
+"@snowpack/plugin-optimize@0.2.10":
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/@snowpack/plugin-optimize/-/plugin-optimize-0.2.10.tgz#06472843b6cc4e52611a1e00b06c8b7c68ff9292"
+  integrity sha512-al8ZEMUBBqGsy90gFo0kMMMzhu/AgYXju6XAaW3vytKBpu/DYBFQQjpwH9lo1ZGqmuKPFlswqRI5ANNBQnFH4A==
   dependencies:
     csso "^4.1.0"
     es-module-lexer "^0.3.25"
@@ -2597,7 +2597,6 @@
     html-minifier "^4.0.0"
     hypertag "^0.0.3"
     kleur "^4.1.3"
-    mkdirp "^1.0.4"
     node-inject-html "^0.0.5"
     object.fromentries "^2.0.2"
     p-queue "^6.6.1"
@@ -11117,9 +11116,9 @@ parse-json@^4.0.0:
     json-parse-better-errors "^1.0.1"
 
 parse-json@^5.0.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-5.1.0.tgz#f96088cdf24a8faa9aea9a009f2d9d942c999646"
-  integrity sha512-+mi/lmVVNKFNVyLXV31ERiy2CY5E1/F6QtJFEzoChPRwwngMNXRDQ9GJ5WdE2Z2P4AujsOi0/+2qHID68KwfIQ==
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-5.2.0.tgz#c76fc66dee54231c962b22bcc8a72cf2f99753cd"
+  integrity sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     error-ex "^1.3.1"

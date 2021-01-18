@@ -83,7 +83,7 @@
         "@simbathesailor/use-what-changed": "0.1.25",
         "@snowpack/app-scripts-react": "1.12.6",
         "@snowpack/plugin-dotenv": "2.0.5",
-        "@snowpack/plugin-optimize": "0.2.13",
+        "@snowpack/plugin-optimize": "0.2.10",
         "@snowpack/plugin-run-script": "2.3.0",
         "@svgr/core": "5.5.0",
         "@testing-library/jest-dom": "5.11.9",
