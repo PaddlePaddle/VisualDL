@@ -71,7 +71,7 @@ def get_vdl_log_file(logdirs):
             walks_temp = {}
             for run, tags in walks.items():
                 tags_temp = [tag for tag in tags if
-                             is_VDLRecord_file(path=bfile.join(run, tag), check=True)]
+                             is_VDLRecord_file(path=bfile.join(run, tag), check=False)]
                 tags_temp.sort(reverse=True)
                 if len(tags_temp) > 0:
                     walks_temp.update({run: tags_temp[0]})
