@@ -25,6 +25,6 @@ Because there are two or more values in a certain step, you will find the curves
 
 ## How can I do when confronted with the error of official use cases, saying that the target of LogWriter does not have the mode attribute?
 
-Please check the version of VisualDL you use (which which visualdl). According to the error, it is most likely that you use the VisualDL 1.3, which attributes to Python 2 you use. Python 2 will install the old version of VisualDL automatically.
+Please check the version of VisualDL you use (which visualdl). According to the error, it is most likely that you are using the VisualDL 1.3, which attributes to Python 2 you use. Python 2 will install the old version of VisualDL automatically.
 
-At present, VisualDL does not support Python 2. And the instructions of existing official documents ae based on VisualDL 2.0, which also will not support Python 2. We suggest upgrading the Python's version to Python 3 and installing the latest version of VisualDL. In this way, the problem will not appear again.
+At present, VisualDL does not support Python 2 any more. And the instructions of existing official documents ae based on VisualDL 2.0, which also will not support Python 2. We suggest upgrading the Python's version to Python 3 and installing the latest version of VisualDL. In this way, the problem will not appear again.
