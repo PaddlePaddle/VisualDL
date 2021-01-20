@@ -41,6 +41,7 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 * [Installation](#Installation)
 * [Usage Guideline](#Usage-Guideline)
 * [Function Preview](#Function-Preview)
+* [Frequently Asked Questions](#Frequently Asked Questions)
 * [Contribution](#Contribution)
 * [More Details](#More-Details)
 * [Technical Communication](#Technical-Communication)
@@ -358,6 +359,10 @@ Developers can compare multiple experiments by specifying and uploading the path
 <img src=https://user-images.githubusercontent.com/48054808/93731055-fbeafb00-fbfd-11ea-80f4-bbfd08a0fc35.png width="85%"/>
 </p>
 
+
+## Frequently Asked Questions
+
+If you are confronted with some problems when using VisualDL, please refer to [our FAQs](./docs/faq_EN.md).
 
 ## Contribution
 
