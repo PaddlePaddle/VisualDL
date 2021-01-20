@@ -4,7 +4,7 @@
 
 ## How can I do when I see a blank page or error messages in the browser?
 To work out bugs, you can follow the steps： 
-1. You should ensure that the `logdir` path set by VisualDL is correct. In the meanwhile, there must be a log file and its name (including `vdlrecords`) is correct. And then you can check the folder set by `logdir`. If it is not okay, try the next step.
+1. You should ensure that the `logdir` path set by VisualDL is correct. In the meanwhile, there must be a log file and its name (including `vdlrecords`) should be correct. And then you can check the folder set by `logdir`. If it is not okay, try the next step.
 2. Please check the browser and its version, and ensure it fits VisualDL. We suggest using **the latest versions** of Chrome browser, browsers with Chrome’s kernel, Firefox browser. Please change browsers and upgrade it to the latest version. If it is not okay, try the next step.
 3. Please specify `--host`as `0.0.0.0` or `127.0.0.1`. And the latter one only supports the local address. If the server runs and you want to check by other addresses, please use `0.0.0.0` and ensure the end can be visited by outer net. If it is not okay, try the next step.
 4. Close and re-open the front-end page of VisualDL. Or do a hard refresh on the browser and wait for 15-30 seconds. If it is not okay, try the next step.
@@ -23,3 +23,8 @@ Because there are two or more values in a certain step, you will find the curves
 </p>
 
 
+## How can I do when confronted with the error of official use cases, saying that the target of LogWriter does not have the mode attribute?
+
+Please check the version of VisualDL you use (which which visualdl). According to the error, it is most likely that you use the VisualDL 1.3, which attributes to Python 2 you use. Python 2 will install the old version of VisualDL automatically.
+
+At present, VisualDL does not support Python 2. And the instructions of existing official documents ae based on VisualDL 2.0, which also will not support Python 2. We suggest upgrading the Python's version to Python 3 and installing the latest version of VisualDL. In this way, the problem will not appear again.
