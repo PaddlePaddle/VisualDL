@@ -41,7 +41,7 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 * [Installation](#Installation)
 * [Usage Guideline](#Usage-Guideline)
 * [Function Preview](#Function-Preview)
-* [Frequently Asked Questions](#Frequently Asked Questions)
+* [Frequently Asked Questions](#Frequently-Asked-Questions)
 * [Contribution](#Contribution)
 * [More Details](#More-Details)
 * [Technical Communication](#Technical-Communication)
