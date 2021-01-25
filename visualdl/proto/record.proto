@@ -8,7 +8,7 @@ message Record {
   }
 
   message Text {
-    bytes encoded_text_string = 1;
+    string encoded_text_string = 1;
   }
 
   message Audio {

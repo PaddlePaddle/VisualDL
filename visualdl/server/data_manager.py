@@ -351,7 +351,9 @@ class DataManager(object):
             "roc_curve":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["roc_curve"]),
             "meta_data":
-            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["meta_data"])
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["meta_data"]),
+            "text":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["text"])
         }
         self._mutex = threading.Lock()
 
