@@ -87,7 +87,11 @@ export const themes = {
         graphUploaderBackgroundColor: '#f9f9f9',
         graphUploaderActiveBackgroundColor: '#f2f6ff',
         graphCopyrightColor: '#ddd',
-        graphCopyrightLogoFilter: 'opacity(25%)'
+        graphCopyrightLogoFilter: 'opacity(25%)',
+
+        textChartTitleBackgroundColor: '#f8f8f8',
+        textChartTitleIndicatorColor: '#000',
+        textChartTagBackgroundColor: '#f6f6f6'
     },
     dark: {
         textColor: '#cfcfd1',
@@ -131,7 +135,12 @@ export const themes = {
         graphUploaderBackgroundColor: '#262629',
         graphUploaderActiveBackgroundColor: '#303033',
         graphCopyrightColor: '#565657',
-        graphCopyrightLogoFilter: 'invert(35%) sepia(5%) saturate(79%) hue-rotate(202deg) brightness(88%) contrast(86%)'
+        graphCopyrightLogoFilter:
+            'invert(35%) sepia(5%) saturate(79%) hue-rotate(202deg) brightness(88%) contrast(86%)',
+
+        textChartTitleBackgroundColor: '#1a1a1a',
+        textChartTitleIndicatorColor: '#fff',
+        textChartTagBackgroundColor: '#1c1c1c'
     }
 } as const;
 

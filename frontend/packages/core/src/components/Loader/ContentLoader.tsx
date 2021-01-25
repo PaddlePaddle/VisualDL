@@ -21,7 +21,7 @@ import type {IContentLoaderProps} from 'react-content-loader';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
 
-const RunList: FunctionComponent<IContentLoaderProps> = ({children, ...props}) => {
+const Loader: FunctionComponent<IContentLoaderProps> = ({children, ...props}) => {
     const theme = useTheme();
     return (
         <ContentLoader
@@ -34,4 +34,4 @@ const RunList: FunctionComponent<IContentLoaderProps> = ({children, ...props}) =
     );
 };
 
-export default RunList;
+export default Loader;

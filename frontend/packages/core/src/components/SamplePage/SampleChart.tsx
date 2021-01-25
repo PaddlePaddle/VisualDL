@@ -16,6 +16,7 @@
 
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {ellipsis, em, primaryColor, rem, size, transitionProps} from '~/utils/style';
+import useRequest, {useRunningRequest} from '~/hooks/useRequest';
 
 import type {BlobResponse} from '~/utils/fetch';
 import ChartToolbox from '~/components/ChartToolbox';
@@ -29,8 +30,6 @@ import mime from 'mime-types';
 import queryString from 'query-string';
 import {saveFile} from '~/utils/saveFile';
 import styled from 'styled-components';
-import useRequest from '~/hooks/useRequest';
-import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
 const Wrapper = styled.div`
@@ -114,7 +113,7 @@ const FooterInfo = styled.div`
     }
 `;
 
-type SampleData = {
+export type SampleData = {
     step: number;
     wallTime: number;
 };
@@ -144,11 +143,11 @@ type SampleChartProps = {
     cache: number;
     step?: number;
     footer?: JSX.Element;
-    content: (props: SampleEntityProps) => React.ReactNode;
-    previewer?: (props: SamplePreviewerProps) => React.ReactNode;
+    renderContent: (props: SampleEntityProps) => React.ReactNode;
+    renderPreviewer?: (props: SamplePreviewerProps) => React.ReactNode;
 } & SampleChartBaseProps;
 
-const getUrl = (type: string, index: number, run: string, tag: string, wallTime: number): string =>
+export const getEntityUrl = (type: string, index: number, run: string, tag: string, wallTime: number): string =>
     `/${type}/${type}?${queryString.stringify({index, ts: wallTime, run, tag})}`;
 
 const SampleChart: FunctionComponent<SampleChartProps> = ({
@@ -158,8 +157,8 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
     type,
     cache,
     footer,
-    content,
-    previewer
+    renderContent,
+    renderPreviewer
 }) => {
     const {t, i18n} = useTranslation(['sample', 'common']);
 
@@ -208,7 +207,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         if (!data) {
             return;
         }
-        const url = getUrl(type, step, run.label, tag, wallTime);
+        const url = getEntityUrl(type, step, run.label, tag, wallTime);
         cached.current[step] = {
             src: url,
             timer: window.setTimeout(() => {
@@ -278,7 +277,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         }
     }, [src, entityData, entityError, entityLoading]);
 
-    const Content = useMemo(() => {
+    const content = useMemo<React.ReactNode>(() => {
         // show loading when deferring
         if (loading || !cached.current[step] || !viewed) {
             return <GridLoader color={primaryColor} size="10px" />;
@@ -290,13 +289,13 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
             return <span>{t('common:empty')}</span>;
         }
         if (entityProps) {
-            return content(entityProps);
+            return renderContent(entityProps);
         }
         return null;
-    }, [viewed, loading, error, data, step, entityProps, t, content]);
+    }, [viewed, loading, error, data, step, entityProps, t, renderContent]);
 
-    const Previewer = useMemo<React.ReactNode>(() => {
-        if (!previewer) {
+    const previewer = useMemo<React.ReactNode>(() => {
+        if (!renderPreviewer) {
             return null;
         }
         if (!preview) {
@@ -305,7 +304,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         if (!entityProps) {
             return null;
         }
-        return previewer({
+        return renderPreviewer({
             ...entityProps,
             loading: !cached.current[step] || entityProps.loading,
             steps,
@@ -314,7 +313,7 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
             onChange: setStep,
             onChangeComplete: cacheSrc
         });
-    }, [previewer, entityProps, preview, steps, step, cacheSrc]);
+    }, [renderPreviewer, entityProps, preview, steps, step, cacheSrc]);
 
     return (
         <Wrapper ref={wrapperRef}>
@@ -325,10 +324,10 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
             <StepSlider value={step} steps={steps} onChange={setStep} onChangeComplete={cacheSrc}>
                 {formatTime(wallTime, i18n.language)}
             </StepSlider>
-            <Container ref={container} preview={!!previewer && !!src} onClick={() => setPreview(true)}>
-                {Content}
+            <Container ref={container} preview={!!renderPreviewer && !!src} onClick={() => setPreview(true)}>
+                {content}
             </Container>
-            {Previewer}
+            {previewer}
             <Footer>
                 <ChartToolbox
                     items={[

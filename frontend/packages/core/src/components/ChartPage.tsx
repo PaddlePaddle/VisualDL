@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import {ChartCollapseTitle as ChartCollapseTitleLoader, Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import React, {FunctionComponent, PropsWithChildren, useCallback, useEffect, useMemo, useState} from 'react';
 import {Trans, useTranslation} from 'react-i18next';
 import {WithStyled, headerHeight, link, rem, transitionProps} from '~/utils/style';
 
-import Chart from '~/components/Chart';
 import ChartCollapse from '~/components/ChartCollapse';
+import {ChartCollapseTitle as ChartCollapseTitleLoader} from '~/components/Loader/ChartPage';
 import Pagination from '~/components/Pagination';
 import SearchInput from '~/components/SearchInput';
 import groupBy from 'lodash/groupBy';
@@ -79,26 +78,23 @@ type Item = {
     label: string;
 };
 
-export interface WithChart<T extends Item> {
-    (item: T & {cid: symbol}, index: number): React.ReactNode;
+export interface RenderChart<T extends Item> {
+    (item: T, index: number): React.ReactNode;
 }
 
 type ChartPageProps<T extends Item> = {
     items?: T[];
     running?: boolean;
-    loading?: boolean | React.ReactNode;
-    chartSize?: {
-        width?: string;
-        height?: string;
-    };
-    withChart?: WithChart<T>;
+    loading?: boolean;
+    loader: React.ReactNode;
+    renderChart?: RenderChart<T>;
 };
 
 const ChartPage = <T extends Item>({
     items,
     loading,
-    chartSize,
-    withChart,
+    loader,
+    renderChart,
     className
 }: PropsWithChildren<ChartPageProps<T> & WithStyled>): ReturnType<FunctionComponent> => {
     const {t} = useTranslation('common');
@@ -145,33 +141,14 @@ const ChartPage = <T extends Item>({
 
     const total = useMemo(() => Math.ceil(matchedTags.length / pageSize), [matchedTags]);
 
-    const withCharts = useCallback(
+    const renderCharts = useCallback(
         (charts: T[], search?: boolean) => (
             <Wrapper>
                 {loading ? (
-                    Array.from({length: 2}).map((_, index) => (
-                        <Chart
-                            cid={Symbol()}
-                            key={index}
-                            width={chartSize?.width ?? rem(430)}
-                            height={chartSize?.height ?? rem(337)}
-                        >
-                            {loading === true ? <ChartLoader /> : loading}
-                        </Chart>
-                    ))
+                    loader
                 ) : charts.length ? (
                     charts.map((item, j) => {
-                        const cid = Symbol(item.label);
-                        return (
-                            <Chart
-                                cid={cid}
-                                key={item.id || item.label}
-                                width={chartSize?.width ?? rem(430)}
-                                height={chartSize?.height ?? rem(337)}
-                            >
-                                {withChart?.({...item, cid}, j)}
-                            </Chart>
-                        );
+                        return <React.Fragment key={item.id || item.label}>{renderChart?.(item, j)}</React.Fragment>;
                     })
                 ) : (
                     <Empty height={rem(500)}>
@@ -188,21 +165,21 @@ const ChartPage = <T extends Item>({
                 )}
             </Wrapper>
         ),
-        [loading, t, chartSize?.width, chartSize?.height, withChart]
+        [loading, t, loader, renderChart]
     );
 
     const content = useMemo(() => {
         if (loading) {
             return Array.from({length: 3}).map((_, index) => (
                 <ChartCollapse key={index} title={<ChartCollapseTitleLoader />} opened={!index}>
-                    {withCharts([])}
+                    {renderCharts([])}
                 </ChartCollapse>
             ));
         }
         if (searchValue) {
             return (
                 <ChartCollapse title={t('common:search-result')} total={matchedTags.length}>
-                    {withCharts(pageMatchedTags, true)}
+                    {renderCharts(pageMatchedTags, true)}
                     {pageMatchedTags.length ? <StyledPagination page={page} total={total} onChange={setPage} /> : null}
                 </ChartCollapse>
             );
@@ -215,7 +192,7 @@ const ChartPage = <T extends Item>({
                     total={groupedItem[1].length}
                     opened={i === 0}
                 >
-                    {withCharts(groupedItem[1])}
+                    {renderCharts(groupedItem[1])}
                 </ChartCollapse>
             ));
         }
@@ -228,7 +205,7 @@ const ChartPage = <T extends Item>({
                 </Trans>
             </Empty>
         );
-    }, [groupedItems, loading, matchedTags.length, page, pageMatchedTags, searchValue, t, total, withCharts]);
+    }, [groupedItems, loading, matchedTags.length, page, pageMatchedTags, searchValue, t, total, renderCharts]);
 
     return (
         <div className={className}>

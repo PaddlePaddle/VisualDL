@@ -25,6 +25,7 @@ export interface RunsState {
     histogram: Runs;
     image: Runs;
     audio: Runs;
+    text: Runs;
     'pr-curve': Runs;
     'roc-curve': Runs;
 }

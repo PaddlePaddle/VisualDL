@@ -26,6 +26,7 @@ const Section = styled.section`
 
 const Article = styled.article`
     flex: auto;
+    min-width: 0;
     margin: ${contentMargin};
     min-height: ${contentHeight};
 `;
