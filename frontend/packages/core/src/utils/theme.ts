@@ -138,9 +138,9 @@ export const themes = {
         graphCopyrightLogoFilter:
             'invert(35%) sepia(5%) saturate(79%) hue-rotate(202deg) brightness(88%) contrast(86%)',
 
-        textChartTitleBackgroundColor: '#1a1a1a',
+        textChartTitleBackgroundColor: '#2a2a2a',
         textChartTitleIndicatorColor: '#fff',
-        textChartTagBackgroundColor: '#1c1c1c'
+        textChartTagBackgroundColor: '#222'
     }
 } as const;
 

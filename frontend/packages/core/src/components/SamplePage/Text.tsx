@@ -44,6 +44,7 @@ const Title = styled.h4<{color: string; opened?: boolean}>`
     border-radius: ${borderRadius};
     font-weight: 400;
     font-size: ${em(14)};
+    ${transitionProps('background-color')}
 
     .tag {
         flex: auto;
@@ -57,12 +58,14 @@ const Title = styled.h4<{color: string; opened?: boolean}>`
             border-radius: ${rem(1.5)};
             vertical-align: middle;
             background-color: var(--text-chart-title-indicator-color);
+            ${transitionProps('background-color')}
         }
     }
 
     .run {
         flex: none;
         color: var(--text-lighter-color);
+        ${transitionProps('color')}
         ${ellipsis()}
         max-width: 50%;
 
@@ -88,7 +91,7 @@ const Title = styled.h4<{color: string; opened?: boolean}>`
         font-size: ${rem(10)};
         color: var(--text-lighter-color);
         transform: rotate(${props => (props.opened ? '180' : '0')}deg);
-        ${transitionProps('transform')};
+        ${transitionProps(['transform', 'color'])};
     }
 `;
 
@@ -100,6 +103,7 @@ const TextWrapper = styled.div`
     align-items: center;
     padding: 0 ${rem(20)} 0 ${rem(8)};
     ${sameBorder(true)}
+    ${transitionProps('border-color')}
 
     .step {
         flex: none;
@@ -108,6 +112,7 @@ const TextWrapper = styled.div`
         padding: ${rem(5)} ${rem(8)};
         margin-right: ${rem(14)};
         border-radius: ${borderRadius};
+        ${transitionProps(['background-color', 'color'])}
     }
 
     .text {
