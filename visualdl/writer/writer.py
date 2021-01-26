@@ -18,7 +18,8 @@ import time
 import numpy as np
 from visualdl.writer.record_writer import RecordFileWriter
 from visualdl.utils.img_util import merge_images
-from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve, roc_curve, meta_data
+from visualdl.component.base_component import scalar, image, embedding, audio, \
+    histogram, pr_curve, roc_curve, meta_data, text
 
 
 class DummyFileWriter(object):
@@ -189,6 +190,26 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             image(tag=tag, image_array=img, step=step, walltime=walltime,
                   dataformats=dataformats))
+
+    def add_text(self, tag, text_string, step=None, walltime=None):
+        """Add an text to vdl record file.
+        Args:
+            tag (string): Data identifier
+            text_string (string): Value of text
+            step (int): Step of text
+            walltime (int): Wall time of text
+        Example:
+            for index in range(1, 101):
+                writer.add_text(tag="train/loss", text_string=str(index) + 'text', step=index)
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        walltime = round(
+            time.time() * 1000) if walltime is None else walltime
+        self._get_file_writer().add_record(
+            text(
+                tag=tag, text_string=text_string, step=step,
+                walltime=walltime))
 
     def add_image_matrix(self, tag, imgs, step, rows=-1, scale=1.0, walltime=None, dataformats="HWC"):
         """Add an image to vdl record file.
