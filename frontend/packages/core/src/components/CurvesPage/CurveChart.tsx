@@ -20,11 +20,12 @@ import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from '
 import {options as chartOptions, nearestPoint} from '~/resource/curves';
 import {rem, size} from '~/utils/style';
 
+import Chart from '~/components/Chart';
+import {Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import ChartToolbox from '~/components/ChartToolbox';
 import type {EChartOption} from 'echarts';
 import TooltipTable from '~/components/TooltipTable';
 import {cycleFetcher} from '~/utils/fetch';
-import ee from '~/utils/event';
 import {format} from 'd3-format';
 import queryString from 'query-string';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -61,15 +62,23 @@ const Error = styled.div`
     align-items: center;
 `;
 
+const chartSize = {
+    width: 430,
+    height: 337
+};
+const chartSizeInRem = {
+    width: rem(chartSize.width),
+    height: rem(chartSize.height)
+};
+
 type PRCurveChartProps = {
     type: CurveType;
-    cid: symbol;
     runs: Run[];
     tag: string;
     running?: boolean;
 };
 
-const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, cid, runs, tag, running}) => {
+const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, running}) => {
     const {t} = useTranslation(['curves', 'common']);
 
     const echart = useRef<LineChartRef>(null);
@@ -81,10 +90,6 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, cid, runs, ta
     );
 
     const [maximized, setMaximized] = useState<boolean>(false);
-    const toggleMaximized = useCallback(() => {
-        ee.emit('toggle-chart-size', cid, !maximized);
-        setMaximized(m => !m);
-    }, [cid, maximized]);
 
     const selectedData = useMemo<[number, number, number[][]][]>(
         () =>
@@ -202,32 +207,45 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, cid, runs, ta
     }
 
     return (
-        <Wrapper>
-            <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
-            <Toolbox
-                items={[
-                    {
-                        icon: 'maximize',
-                        activeIcon: 'minimize',
-                        tooltip: t('curves:maximize'),
-                        activeTooltip: t('curves:minimize'),
-                        toggle: true,
-                        onClick: toggleMaximized
-                    },
-                    {
-                        icon: 'restore-size',
-                        tooltip: t('curves:restore'),
-                        onClick: () => echart.current?.restore()
-                    },
-                    {
-                        icon: 'download',
-                        tooltip: t('curves:download-image'),
-                        onClick: () => echart.current?.saveAsImage()
-                    }
-                ]}
-            />
-        </Wrapper>
+        <Chart maximized={maximized} {...chartSizeInRem}>
+            <Wrapper>
+                <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
+                <Toolbox
+                    items={[
+                        {
+                            icon: 'maximize',
+                            activeIcon: 'minimize',
+                            tooltip: t('curves:maximize'),
+                            activeTooltip: t('curves:minimize'),
+                            toggle: true,
+                            onClick: () => setMaximized(m => !m)
+                        },
+                        {
+                            icon: 'restore-size',
+                            tooltip: t('curves:restore'),
+                            onClick: () => echart.current?.restore()
+                        },
+                        {
+                            icon: 'download',
+                            tooltip: t('curves:download-image'),
+                            onClick: () => echart.current?.saveAsImage()
+                        }
+                    ]}
+                />
+            </Wrapper>
+        </Chart>
     );
 };
 
 export default PRCurveChart;
+
+export const Loader: FunctionComponent = () => (
+    <>
+        <Chart {...chartSizeInRem}>
+            <ChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+        <Chart {...chartSizeInRem}>
+            <ChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+    </>
+);

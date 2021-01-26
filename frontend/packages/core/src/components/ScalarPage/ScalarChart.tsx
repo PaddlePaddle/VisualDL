@@ -30,12 +30,13 @@ import {
 } from '~/resource/scalar';
 import {rem, size} from '~/utils/style';
 
+import Chart from '~/components/Chart';
+import {Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import ChartToolbox from '~/components/ChartToolbox';
 import type {EChartOption} from 'echarts';
 import type {Run} from '~/types';
 import TooltipTable from '~/components/TooltipTable';
 import {cycleFetcher} from '~/utils/fetch';
-import ee from '~/utils/event';
 import {format} from 'd3-format';
 import queryString from 'query-string';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -78,8 +79,16 @@ const Error = styled.div`
     align-items: center;
 `;
 
+const chartSize = {
+    width: 430,
+    height: 337
+};
+const chartSizeInRem = {
+    width: rem(chartSize.width),
+    height: rem(chartSize.height)
+};
+
 type ScalarChartProps = {
-    cid: symbol;
     runs: Run[];
     tag: string;
     smoothing: number;
@@ -92,7 +101,6 @@ type ScalarChartProps = {
 };
 
 const ScalarChart: FunctionComponent<ScalarChartProps> = ({
-    cid,
     runs,
     tag,
     smoothing,
@@ -114,10 +122,6 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     );
 
     const [maximized, setMaximized] = useState<boolean>(false);
-    const toggleMaximized = useCallback(() => {
-        ee.emit('toggle-chart-size', cid, !maximized);
-        setMaximized(m => !m);
-    }, [cid, maximized]);
 
     const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
 
@@ -243,7 +247,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 tooltip: t('scalar:maximize'),
                 activeTooltip: t('scalar:minimize'),
                 toggle: true,
-                onClick: toggleMaximized
+                onClick: () => setMaximized(m => !m)
             },
             {
                 icon: 'restore-size',
@@ -275,7 +279,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 ]
             }
         ],
-        [downloadData, t, toggleMaximized, toggleYAxisType]
+        [downloadData, t, toggleYAxisType]
     );
 
     // display error only on first fetch
@@ -284,11 +288,24 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     }
 
     return (
-        <Wrapper>
-            <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
-            <Toolbox items={toolbox} />
-        </Wrapper>
+        <Chart maximized={maximized} {...chartSizeInRem}>
+            <Wrapper>
+                <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
+                <Toolbox items={toolbox} />
+            </Wrapper>
+        </Chart>
     );
 };
 
 export default ScalarChart;
+
+export const Loader: FunctionComponent = () => (
+    <>
+        <Chart {...chartSizeInRem}>
+            <ChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+        <Chart {...chartSizeInRem}>
+            <ChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+    </>
+);

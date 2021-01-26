@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-import ChartPage, {RenderChart} from '~/components/ChartPage';
-import HistogramChart, {Loader as ChartLoader} from '~/components/HistogramPage/HistogramChart';
-import {Modes, modes} from '~/resource/histogram';
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+// cSpell:words ungrouped
 
-import {AsideSection} from '~/components/Aside';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
+import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import TextChart, {Loader as ChartLoader} from '~/components/SamplePage/Text';
+
 import Content from '~/components/Content';
 import Error from '~/components/Error';
-import Field from '~/components/Field';
-import RadioButton from '~/components/RadioButton';
-import RadioGroup from '~/components/RadioGroup';
 import RunAside from '~/components/RunAside';
-import type {TagWithSingleRun} from '~/types';
 import Title from '~/components/Title';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
 
-const Histogram: FunctionComponent = () => {
-    const {t} = useTranslation(['histogram', 'common']);
+const TextSample: FunctionComponent = () => {
+    const {t} = useTranslation(['sample', 'common']);
 
     const [running, setRunning] = useState(true);
 
-    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('histogram', running);
-
-    const [mode, setMode] = useState<Modes>(Modes.Offset);
+    const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('text', running);
 
     const aside = useMemo(
         () => (
@@ -49,38 +43,28 @@ const Histogram: FunctionComponent = () => {
                 running={running}
                 onToggleRunning={setRunning}
                 loading={loading}
-            >
-                <AsideSection>
-                    <Field label={t('histogram:mode')}>
-                        <RadioGroup value={mode} onChange={setMode}>
-                            {modes.map(value => (
-                                <RadioButton key={value} value={value}>
-                                    {t(`histogram:mode-value.${value}`)}
-                                </RadioButton>
-                            ))}
-                        </RadioGroup>
-                    </Field>
-                </AsideSection>
-            </RunAside>
+            ></RunAside>
         ),
-        [loading, mode, onChangeRuns, running, runs, selectedRuns, t]
+        [loading, onChangeRuns, running, runs, selectedRuns]
     );
 
-    const renderChart = useCallback<RenderChart<TagWithSingleRun>>(
-        ({label, run}) => <HistogramChart run={run} tag={label} mode={mode} running={running} />,
-        [running, mode]
+    const withChart = useCallback<RenderChart<typeof tagsWithSingleRun[number]>>(
+        ({run, label}, index) => <TextChart run={run} tag={label} opened={index === 0} running={running} />,
+        [running]
     );
 
     return (
         <>
-            <Title>{t('common:histogram')}</Title>
+            <Title>
+                {t('common:text')} - {t('common:sample')}
+            </Title>
             <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
                     <ChartPage
                         items={tagsWithSingleRun}
-                        renderChart={renderChart}
+                        renderChart={withChart}
                         loader={<ChartLoader />}
                         loading={loading}
                     />
@@ -90,4 +74,4 @@ const Histogram: FunctionComponent = () => {
     );
 };
 
-export default Histogram;
+export default TextSample;

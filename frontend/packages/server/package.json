@@ -39,15 +39,15 @@
     "dependencies": {
         "@visualdl/core": "2.1.4",
         "dotenv": "8.2.0",
-        "enhanced-resolve": "5.4.1",
+        "enhanced-resolve": "5.7.0",
         "express": "4.17.1",
         "http-proxy-middleware": "1.0.6",
         "pm2": "4.5.1"
     },
     "devDependencies": {
         "@types/enhanced-resolve": "3.0.6",
-        "@types/express": "4.17.9",
-        "@types/node": "14.14.20",
+        "@types/express": "4.17.11",
+        "@types/node": "14.14.22",
         "@visualdl/mock": "2.1.4",
         "cross-env": "7.0.3",
         "nodemon": "2.0.7",

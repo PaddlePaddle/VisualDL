@@ -26,6 +26,7 @@ export const navMap = {
     histogram: Pages.Histogram,
     image: Pages.Image,
     audio: Pages.Audio,
+    text: Pages.Text,
     graph: Pages.Graph,
     embeddings: Pages.HighDimensional,
     pr_curve: Pages.PRCurve,

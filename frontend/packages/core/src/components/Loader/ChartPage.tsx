@@ -18,9 +18,9 @@ import React, {FunctionComponent} from 'react';
 
 import ContentLoader from './ContentLoader';
 
-export const Chart: FunctionComponent = () => {
+export const Chart: FunctionComponent<{width: number; height: number}> = ({width, height}) => {
     return (
-        <ContentLoader viewBox="0 0 428 335">
+        <ContentLoader viewBox={`0 0 ${width} ${height}`}>
             <rect x="20" y="20" rx="3" ry="3" width="200" height="16" />
             <rect x="20" y="56" rx="3" ry="3" width="390" height="231" />
             <rect x="20" y="301" rx="3" ry="3" width="16" height="16" />
@@ -29,9 +29,9 @@ export const Chart: FunctionComponent = () => {
     );
 };
 
-export const SampleChart: FunctionComponent<{height: number}> = ({height}) => {
+export const SampleChart: FunctionComponent<{width: number; height: number}> = ({width, height}) => {
     return (
-        <ContentLoader viewBox={`0 0 428 ${height}`}>
+        <ContentLoader viewBox={`0 0 ${width} ${height}`}>
             <rect x="20" y="20" rx="3" ry="3" width="200" height="18" />
             <rect x="333" y="26.5" rx="2.5" ry="2.5" width="17" height="5" />
             <rect x="358" y="22" rx="3" ry="3" width="50" height="14" />
@@ -44,6 +44,15 @@ export const SampleChart: FunctionComponent<{height: number}> = ({height}) => {
             <rect x="20" y={`${height - 34}`} rx="3" ry="3" width="16" height="16" />
             <rect x="52" y={`${height - 34}`} rx="3" ry="3" width="16" height="16" />
             <rect x="358" y={`${height - 32}`} rx="3" ry="3" width="50" height="12" />
+        </ContentLoader>
+    );
+};
+
+export const TextChart: FunctionComponent<{width: number}> = ({width}) => {
+    return (
+        <ContentLoader viewBox="0 0 1098 38" height={38}>
+            <rect x="8" y="6" rx="4" ry="4" width="64" height="26" />
+            <rect x="86" y="11" rx="3" ry="3" width={width} height="16" />
         </ContentLoader>
     );
 };
