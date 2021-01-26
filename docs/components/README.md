@@ -287,6 +287,76 @@ visualdl --logdir ./log --port 8080
   <img src="https://visualdl.bj.bcebos.com/images/image-eye.gif" width="60%"/>
 </p>
 
+### 添加图片矩阵
+除使用add_image记录一张图片之外，还可以使用add_image_matrix一次添加多张图片并生成一张图片矩阵，接口及参数说明如下：
+add_image_matrix的记录接口如下：
+
+```python
+add_image_matrix(tag, imgs, step, rows=-1, scale=1, walltime=None, dataformats="HWC")
+```
+接口参数说明如下：
+|   参数   |     格式      |                    含义                     |
+| -------- | ------------- | ------------------------------------------- |
+| tag      | string        | 记录指标的标志，如`train/loss`，不能含有`%` |
+| imgs     | numpy.ndarray | 以ndarray格式表示的多张图片，第一维为图片的数量  |
+| step     | int           | 记录的步数                                  |
+| rows     | int           | 生成图片矩阵的行数，默认值为-1，表示尽量把传入的图片组合成行列数相近的形式 |
+| scale    | int           | 图片放大比例，默认为1 |
+| walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
+| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
+
+#### Demo
+下面展示了使用 Image 组件合成并记录多张图片数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_matrix_test.py)
+```python
+import numpy as np
+from PIL import Image
+from visualdl import LogWriter
+
+
+def random_crop(img):
+    """Get random block of img, which size is 100x100.
+    """
+    img = Image.open(img)
+    w, h = img.size
+    random_w = np.random.randint(0, w - 100)
+    random_h = np.random.randint(0, h - 100)
+    r = img.crop((random_w, random_h, random_w + 100, random_h + 100))
+    return np.asarray(r)
+
+
+if __name__ == '__main__':
+    imgs = []
+    # 获取8张图像
+    for step in range(8):
+        img = random_crop("../../docs/images/dog.jpg")
+        imgs.append(img)
+    imgs = np.array(imgs)
+
+    with LogWriter(logdir='./log/image_matrix_test/train') as writer:
+        # 合成长宽尽量接近的图形矩阵，本例生成3X3的矩阵
+        writer.add_image_matrix(tag='test_images', step=1, imgs=imgs, rows=-1)
+        # 合成长为1的图形矩阵，本例生成1x8的矩阵
+        writer.add_image_matrix(tag='test_images', step=2, imgs=imgs, rows=1)
+        # 合成长为2的图形矩阵，本例生成2X4的矩阵
+        writer.add_image_matrix(tag='test_images', step=3, imgs=imgs, rows=2)
+        # 合成长为3的图形矩阵，本例生成3X3的矩阵
+        writer.add_image_matrix(tag='test_images', step=4, imgs=imgs, rows=3)
+        # 合成长为4的图形矩阵，本例生成4X2的矩阵
+        writer.add_image_matrix(tag='test_images', step=5, imgs=imgs, rows=4)
+```
+运行上述程序后，在命令行执行
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+在浏览器输入`http://127.0.0.1:8080`，即可查看图片数据。
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/28444161/104555348-ad63df80-5678-11eb-9d68-04f7f7451eac.png" width="40%"/>
+  <img src="https://user-images.githubusercontent.com/28444161/104556243-2dd71000-567a-11eb-9222-225b0acdf56b.png" width="40%"/>
+</p>
+
+
 ## Audio--音频播放组件
 
 ### 介绍

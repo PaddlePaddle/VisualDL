@@ -17,6 +17,7 @@ import os
 import time
 import numpy as np
 from visualdl.writer.record_writer import RecordFileWriter
+from visualdl.utils.img_util import merge_images
 from visualdl.component.base_component import scalar, image, embedding, audio, histogram, pr_curve, roc_curve, meta_data
 
 
@@ -188,6 +189,36 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             image(tag=tag, image_array=img, step=step, walltime=walltime,
                   dataformats=dataformats))
+
+    def add_image_matrix(self, tag, imgs, step, rows=-1, scale=1.0, walltime=None, dataformats="HWC"):
+        """Add an image to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            imgs (np.ndarray): Image represented by a numpy.array
+            step (int): Step of image
+            rows (int): Number of rows, -1 means as close as possible to the square
+            scale (float): Image zoom scale
+            walltime (int): Wall time of image
+            dataformats (string): Format of image
+
+        Example:
+            from PIL import Image
+            import numpy as np
+
+            I = Image.open("./test.png")
+            I_array = np.array([I, I, I])
+            writer.add_image_matrix(tag="lll", imgs=I_array, step=0)
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        walltime = round(time.time() * 1000) if walltime is None else walltime
+        img = merge_images(imgs=imgs, dataformats=dataformats, scale=scale, rows=rows)
+        self.add_image(tag=tag,
+                       img=img,
+                       step=step,
+                       walltime=walltime,
+                       dataformats=dataformats)
 
     def add_embeddings(self, tag, labels, hot_vectors, labels_meta=None, walltime=None):
         """Add embeddings to vdl record file.
