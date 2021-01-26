@@ -102,6 +102,10 @@ class Api(object):
         return self._get_with_retry('data/plugin/images/tags', lib.get_image_tags)
 
     @result()
+    def text_tags(self):
+        return self._get_with_retry('data/plugin/text/tags', lib.get_text_tags)
+
+    @result()
     def audio_tags(self):
         return self._get_with_retry('data/plugin/audio/tags', lib.get_audio_tags)
 
@@ -137,6 +141,17 @@ class Api(object):
         index = int(index)
         key = os.path.join('data/plugin/images/individualImage', mode, tag, str(index))
         return self._get_with_retry(key, lib.get_individual_image, mode, tag, index)
+
+    @result()
+    def text_list(self, mode, tag):
+        key = os.path.join('data/plugin/text/text', mode, tag)
+        return self._get_with_retry(key, lib.get_text_tag_steps, mode, tag)
+
+    @result('text/plain')
+    def text_text(self, mode, tag, index=0):
+        index = int(index)
+        key = os.path.join('data/plugin/text/individualText', mode, tag, str(index))
+        return self._get_with_retry(key, lib.get_individual_text, mode, tag, index)
 
     @result()
     def audio_list(self, run, tag):
@@ -216,6 +231,7 @@ def create_api_call(logdir, model, cache_timeout):
         'logs': (api.logs, []),
         'scalar/tags': (api.scalar_tags, []),
         'image/tags': (api.image_tags, []),
+        'text/tags': (api.text_tags, []),
         'audio/tags': (api.audio_tags, []),
         'embedding/tags': (api.embedding_tags, []),
         'histogram/tags': (api.histogram_tags, []),
@@ -225,6 +241,8 @@ def create_api_call(logdir, model, cache_timeout):
         'scalar/data': (api.scalar_data, ['run', 'tag', 'type']),
         'image/list': (api.image_list, ['run', 'tag']),
         'image/image': (api.image_image, ['run', 'tag', 'index']),
+        'text/list': (api.text_list, ['run', 'tag']),
+        'text/text': (api.text_text, ['run', 'tag', 'index']),
         'audio/list': (api.audio_list, ['run', 'tag']),
         'audio/audio': (api.audio_audio, ['run', 'tag', 'index']),
         'embedding/embedding': (api.embedding_embedding, ['run', 'tag', 'reduction', 'dimension']),

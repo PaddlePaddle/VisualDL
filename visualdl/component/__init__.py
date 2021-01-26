@@ -20,6 +20,9 @@ components = {
     "image": {
         "enabled": False
     },
+    "text": {
+        "enabled": False
+    },
     "embedding": {
         "enabled": False
     },
