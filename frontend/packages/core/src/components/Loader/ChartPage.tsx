@@ -50,9 +50,9 @@ export const SampleChart: FunctionComponent<{width: number; height: number}> = (
 
 export const TextChart: FunctionComponent<{width: number}> = ({width}) => {
     return (
-        <ContentLoader viewBox="0 0 1070 38">
-            <rect x="0" y="6" rx="4" ry="4" width="64" height="26" />
-            <rect x="78" y="11" rx="3" ry="3" width={width} height="16" />
+        <ContentLoader viewBox="0 0 1098 38" height={38}>
+            <rect x="8" y="6" rx="4" ry="4" width="64" height="26" />
+            <rect x="86" y="11" rx="3" ry="3" width={width} height="16" />
         </ContentLoader>
     );
 };

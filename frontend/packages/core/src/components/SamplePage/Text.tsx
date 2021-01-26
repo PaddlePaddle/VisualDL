@@ -101,23 +101,56 @@ const TextWrapper = styled.div`
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding: 0 ${rem(20)} 0 ${rem(8)};
+    padding: 0;
     ${sameBorder(true)}
     ${transitionProps('border-color')}
+`;
+
+const TextGrid = styled.div`
+    margin-top: ${rem(12)};
+    display: grid;
+    grid-template-columns: fit-content(25%) auto;
+    grid-row-gap: ${rem(12)};
+    justify-items: stretch;
+    align-items: stretch;
+    ${transitionProps('border-color')}
+
+    > span {
+        height: ${rem(40)};
+        line-height: 1.857142857;
+        padding: ${rem(7)} 0;
+    }
 
     .step {
-        flex: none;
-        color: var(--text-light-color);
-        background-color: var(--text-chart-tag-background-color);
-        padding: ${rem(5)} ${rem(8)};
-        margin-right: ${rem(14)};
-        border-radius: ${borderRadius};
-        ${transitionProps(['background-color', 'color'])}
+        ${sameBorder()}
+        border-right: none;
+        border-top-left-radius: ${borderRadius};
+        border-bottom-left-radius: ${borderRadius};
+        padding-left: ${rem(8)};
+        padding-right: ${rem(14)};
+
+        > span {
+            display: block;
+            width: 100%;
+            color: var(--text-light-color);
+            background-color: var(--text-chart-tag-background-color);
+            padding: 0 ${rem(8)};
+            border-radius: ${borderRadius};
+            ${transitionProps(['background-color', 'color'])}
+        }
     }
 
     .text {
-        flex: 1;
+        ${sameBorder()}
+        border-left: none;
+        border-top-right-radius: ${borderRadius};
+        border-bottom-right-radius: ${borderRadius};
+        padding-right: ${rem(20)};
         ${ellipsis()}
+
+        > * {
+            vertical-align: middle;
+        }
     }
 `;
 
@@ -135,20 +168,22 @@ const Text: FunctionComponent<TextProps> = ({run, tag, step, wallTime, index}) =
     });
 
     return (
-        <TextWrapper>
+        <>
             <span className="step">
-                {t('sample:step')} {step}
-            </span>
-            {loading ? (
-                <ContentLoader viewBox="0 0 640 16" height="16">
-                    <rect x="0" y="0" rx="3" ry="3" width={((index + 1) * 250) % 640} height="16" />
-                </ContentLoader>
-            ) : (
-                <span className="text" title={text ?? ''}>
-                    {error ?? text}
+                <span>
+                    {t('sample:step')} {step}
                 </span>
-            )}
-        </TextWrapper>
+            </span>
+            <span className="text" title={text ?? ''}>
+                {loading ? (
+                    <ContentLoader viewBox="0 0 640 16" height="16">
+                        <rect x="0" y="0" rx="3" ry="3" width={((index + 1) * 250) % 640} height="16" />
+                    </ContentLoader>
+                ) : (
+                    error ?? text
+                )}
+            </span>
+        </>
     );
 };
 
@@ -187,7 +222,11 @@ const TextChart: FunctionComponent<TextChartProps> = ({run, tag, opened, running
                 ) : error ? (
                     <TextWrapper>{error}</TextWrapper>
                 ) : (
-                    data?.map((item, index) => <Text key={index} {...item} run={run.label} tag={tag} index={index} />)
+                    <TextGrid>
+                        {data?.map((item, index) => (
+                            <Text key={index} {...item} run={run.label} tag={tag} index={index} />
+                        ))}
+                    </TextGrid>
                 )
             ) : null}
         </Wrapper>
