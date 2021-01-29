@@ -21,6 +21,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 |                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
+| [Text](#Text) | Text | Visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model. |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
@@ -807,7 +808,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 ### Introduction
 
-Text displays the recorded text so that you can view the text result output in the middle of the NLP task.
+visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model.
 
 ### Record Interface
 
@@ -821,7 +822,7 @@ The interface parameters are described as follows:
 
 | parameter          | format                  | meaning                                        |
 | -------------- | --------------------- | ------------------------------------------- |
-| tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
+| tag            | string                | Record the name of the text data，e.g.train/loss. Notice that the name cannot contain `%` |
 | text_string    | string                | Value of text |
 | step           | int                   | Record the training steps                                  |
 | walltime       | int                   | Record the time-stamp of the data, and the default is the current time-stamp      |
