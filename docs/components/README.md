@@ -13,7 +13,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |      [ Scalar](#Scalar--标量组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
 |      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
 |      [Audio](#Audio--音频播放组件)      | 音频可视化 | 播放训练过程中的音频数据，监控语音识别与合成等任务的训练过程 |
-| [Text](#Text--文本组件) |  文本  | 展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。 |
+| [Text](#Text--文本组件) |  文本可视化  | 展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。 |
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
 |            [Histogram](#Histogram--直方图组件)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
@@ -306,6 +306,8 @@ add_image_matrix(tag, imgs, step, rows=-1, scale=1, walltime=None, dataformats="
 | scale    | int           | 图片放大比例，默认为1 |
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
 | dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
+
+PS：当给定的子图像数量不足时，将用空白图像填充，以保证生成的图形为完整矩形
 
 #### Demo
 下面展示了使用 Image 组件合成并记录多张图片数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_matrix_test.py)
