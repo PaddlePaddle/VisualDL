@@ -803,6 +803,82 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
   </p>
 
 
+## Text
+
+### Introduction
+
+Text displays the recorded text so that you can view the text result output in the middle of the NLP task.
+
+### Record Interface
+
+The interface of the Text is shown as follows:
+
+```python
+add_text(self, tag, text_string, step=None, walltime=None)
+```
+
+The interface parameters are described as follows:
+
+| parameter          | format                  | meaning                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
+| text_string    | string                | Value of text |
+| step           | int                   | Record the training steps                                  |
+| walltime       | int                   | Record the time-stamp of the data, and the default is the current time-stamp      |
+
+### Demo
+
+The following shows an example of how to use Text component, and script can be found in [Text Demo](../../demo/components/text_test.py)
+
+```python
+from visualdl import LogWriter
+if __name__ == '__main__':
+    texts = [
+        '上联: 众 佛 群 灵 光 圣 地	下联: 众 生 一 念 证 菩 提',
+        '上联: 乡 愁 何 处 解	下联: 故 事 几 时 休',
+        '上联: 清 池 荷 试 墨	下联: 碧 水 柳 含 情',
+        '上联: 既 近 浅 流 安 笔 砚	下联: 欲 将 直 气 定 乾 坤',
+        '上联: 日 丽 萱 闱 祝 无 量 寿	下联: 月 明 桂 殿 祝 有 余 龄',
+        '上联: 一 地 残 红 风 拾 起	下联: 半 窗 疏 影 月 窥 来'
+    ]
+    with LogWriter(logdir="./log/text_test/train") as writer:
+        for step in range(len(texts)):
+            writer.add_text(tag="output", step=step, text_string=texts[step])
+```
+
+After running the above program, developers can launch the panel by:
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="80%"/>
+</p>
+
+### Functional Instrucions
+
+- Developers can find the target text by searching corresponded tags.
+
+  <p align="center">
+    <img src="https://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
+  </p>
+
+- Developers can find the target runs by searching corresponded tags.
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/106249863-d88c2880-624d-11eb-96f9-daddd1ba188f.png" width="90%"/>
+  </p>
+
+- Developers can fold the tab of text.
+
+ <p align="center">
+   <img src="https://user-images.githubusercontent.com/28444161/106252364-28202380-6251-11eb-934c-d8893c2eaeca.png" width="90%"/>
+ </p>
+
+
 ## VDL.service
 
 ### Introduction
