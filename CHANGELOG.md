@@ -4,6 +4,36 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.1.1 - 2020-01-28
+
+**ZH**
+
+- 问题修复
+    - **FE**: 修复部分浏览器的兼容性问题 (#903)
+    - **FE**: 修复深色模式下切换页面会闪白的问题 (#903)
+    - **BE**: 修复旧版本的日志无法上传 VisualDL Service 的问题 (#912)
+- 功能新增
+    - 增加文本样本 (#917)
+    - **BE**: 增加图像组写入功能 (#909)
+- 其他改进
+    - **FE**: 增加了浏览器不兼容时的提示 (#903)
+    - **FE**: 调整样本页面的标题顺序 (#908)
+    - **FE**: 更好的载入提示 (#908)
+
+**EN**
+
+- Bug Fixes
+    - **FE**: Fix compatibility in some browsers (#903)
+    - **FE**: Fix flashing when switch between pages in dark mode (#903)
+    - **BE**: Fix the old version of log cannot be uploaded to VisualDL Service (#912)
+- Features
+    - Add Text Sample (#917)
+    - **BE**: Add images matrix writing function (#909)
+- 其他改进
+    - **FE**: Add browser compatibility tip (#903)
+    - **FE**: Adjust title order of sample pages (#908)
+    - **FE**: Better loading experience (#908)
+
 ## v2.1.0 - 2020-12-28
 
 **ZH**
