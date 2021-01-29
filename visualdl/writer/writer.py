@@ -241,71 +241,71 @@ class LogWriter(object):
                        walltime=walltime,
                        dataformats=dataformats)
 
-    def add_embeddings(self, tag, labels, hot_vectors, labels_meta=None, walltime=None):
+    def add_embeddings(self, tag, mat, metadata, metadata_header=None, walltime=None):
         """Add embeddings to vdl record file.
 
         Args:
             tag (string): Data identifier
-            labels (numpy.array or list): A 1D or 2D matrix of labels
-            hot_vectors (numpy.array or list): A matrix which each row is
+            mat (numpy.array or list): A matrix which each row is
                 feature of labels.
-            labels_meta (numpy.array or list): Meta data of labels.
+            metadata (numpy.array or list): A 1D or 2D matrix of labels
+            metadata_header (numpy.array or list): Meta data of labels.
             walltime (int): Wall time of embeddings.
 
         Example 1:
-            hot_vectors = [
+            mat = [
             [1.3561076367500755, 1.3116267195134017, 1.6785401875616097],
             [1.1039614644440658, 1.8891609992484688, 1.32030488587171],
             [1.9924524852447711, 1.9358920727142739, 1.2124401279391606],
             [1.4129542689796446, 1.7372166387197474, 1.7317806077076527],
             [1.3913371800587777, 1.4684674577930312, 1.5214136352476377]]
 
-            labels = ["label_1", "label_2", "label_3", "label_4", "label_5"]
+            metadata = ["label_1", "label_2", "label_3", "label_4", "label_5"]
             # or like this
-            # labels = [["label_1", "label_2", "label_3", "label_4", "label_5"]]
+            # metadata = [["label_1", "label_2", "label_3", "label_4", "label_5"]]
 
             writer.add_embeddings(tag='default',
-                                  labels=labels,
-                                  vectors=hot_vectors,
+                                  metadata=metadata,
+                                  mat=mat,
                                   walltime=round(time.time() * 1000))
 
         Example 2:
-            hot_vectors = [
+            mat = [
             [1.3561076367500755, 1.3116267195134017, 1.6785401875616097],
             [1.1039614644440658, 1.8891609992484688, 1.32030488587171],
             [1.9924524852447711, 1.9358920727142739, 1.2124401279391606],
             [1.4129542689796446, 1.7372166387197474, 1.7317806077076527],
             [1.3913371800587777, 1.4684674577930312, 1.5214136352476377]]
 
-            labels = [["label_a_1", "label_a_2", "label_a_3", "label_a_4", "label_a_5"],
+            metadata = [["label_a_1", "label_a_2", "label_a_3", "label_a_4", "label_a_5"],
                       ["label_b_1", "label_b_2", "label_b_3", "label_b_4", "label_b_5"]]
 
-            labels_meta = ["label_a", "label_2"]
+            metadata_header = ["label_a", "label_2"]
 
             writer.add_embeddings(tag='default',
-                                  labels=labels,
-                                  labels_meta=labels_meta,
-                                  vectors=hot_vectors,
+                                  metadata=metadata,
+                                  metadata_header=metadata_header,
+                                  mat=mat,
                                   walltime=round(time.time() * 1000))
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        if isinstance(hot_vectors, np.ndarray):
-            hot_vectors = hot_vectors.tolist()
-        if isinstance(labels, np.ndarray):
-            labels = labels.tolist()
+        if isinstance(mat, np.ndarray):
+            mat = mat.tolist()
+        if isinstance(metadata, np.ndarray):
+            metadata = metadata.tolist()
 
-        if isinstance(labels[0], list) and not labels_meta:
-            labels_meta = ["label_%d" % i for i in range(len(labels))]
+        if isinstance(metadata[0], list) and not metadata_header:
+            metadata_header = ["label_%d" % i for i in range(len(metadata))]
 
         step = 0
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             embedding(
                 tag=tag,
-                labels=labels,
-                labels_meta=labels_meta,
-                hot_vectors=hot_vectors,
+                labels=metadata,
+                labels_meta=metadata_header,
+                hot_vectors=mat,
                 step=step,
                 walltime=walltime))
 
