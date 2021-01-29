@@ -13,11 +13,13 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |      [ Scalar](#Scalar--标量组件)      |   折线图   | 动态展示损失函数值、准确率等标量数据                         |
 |      [Image](#Image--图片可视化组件)      | 图片可视化 | 显示图片，可显示输入图片和处理后的结果，便于查看中间过程的变化 |
 |      [Audio](#Audio--音频播放组件)      | 音频可视化 | 播放训练过程中的音频数据，监控语音识别与合成等任务的训练过程 |
+| [Text](#Text--文本组件) |  文本可视化  | 展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。 |
 |               [Graph](#Graph--网络结构组件)                |  网络结构  | 展示网络结构、节点属性及数据流向，辅助学习、优化网络结构     |
 |            [Histogram](#Histogram--直方图组件)             |   直方图   | 展示训练过程中权重、梯度等张量的分布                         |
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 |              [ROC Curve](#ROC-Curve--ROC曲线组件)               |   折线图   | 展示不同阈值下的模型表现                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
+
 
 同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
 
@@ -305,6 +307,8 @@ add_image_matrix(tag, imgs, step, rows=-1, scale=1, walltime=None, dataformats="
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
 | dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
 
+**PS：当给定的子图像数量不足时，将用空白图像填充，以保证生成的图形为完整矩形**
+
 #### Demo
 下面展示了使用 Image 组件合成并记录多张图片数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_matrix_test.py)
 ```python
@@ -438,6 +442,80 @@ visualdl --logdir ./log --port 8080
   <img src="https://user-images.githubusercontent.com/48054808/87661166-c277b880-c792-11ea-8ad7-5c60bb08379b.png" width="40%"/>
 </p>
 
+## Text--文本组件
+
+### 介绍
+
+Text展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。
+
+### 记录接口
+
+Text组件的记录接口如下：
+
+```python
+add_text(self, tag, text_string, step=None, walltime=None)
+```
+
+接口参数说明如下：
+
+| 参数           | 格式                  | 含义                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
+| text_string    | string                | 文本字符串           |
+| step           | int                   | 记录的步数                                  |
+| walltime       | int                   | 记录数据的时间戳，默认为当前时间戳     |
+
+### Demo
+
+下面展示了使用 Text 组件记录数据的示例，代码见[Text组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/text_test.py)
+
+```python
+from visualdl import LogWriter
+if __name__ == '__main__':
+    texts = [
+        '上联: 众 佛 群 灵 光 圣 地	下联: 众 生 一 念 证 菩 提',
+        '上联: 乡 愁 何 处 解	下联: 故 事 几 时 休',
+        '上联: 清 池 荷 试 墨	下联: 碧 水 柳 含 情',
+        '上联: 既 近 浅 流 安 笔 砚	下联: 欲 将 直 气 定 乾 坤',
+        '上联: 日 丽 萱 闱 祝 无 量 寿	下联: 月 明 桂 殿 祝 有 余 龄',
+        '上联: 一 地 残 红 风 拾 起	下联: 半 窗 疏 影 月 窥 来'
+    ]
+    with LogWriter(logdir="./log/text_test/train") as writer:
+        for step in range(len(texts)):
+            writer.add_text(tag="output", step=step, text_string=texts[step])
+```
+
+运行上述程序后，在命令行执行
+
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+接着在浏览器打开`http://127.0.0.1:8080`，即可查看Text
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="95%"/>
+</p>
+
+### 功能操作说明
+
+- 可搜索文本标签显示对应文本数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="40%"/>
+</p>
+
+- 可搜索数据流标签显示对应数据流数据
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/28444161/106256983-f4e09300-6256-11eb-9acc-a24a2ac9b70c.png" width="40%"/>
+</p>
+
+- 可折叠标签
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/28444161/106252364-28202380-6251-11eb-934c-d8893c2eaeca.png" width="80%"/>
+</p>
 
 ## Graph--网络结构组件
 
@@ -879,7 +957,6 @@ visualdl --logdir ./log --port 8080
   <p align="center">
     <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
   </p>
-
 
 ## VDL.service
 
