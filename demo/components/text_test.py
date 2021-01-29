@@ -28,7 +28,4 @@ if __name__ == '__main__':
     ]
     with LogWriter(logdir="./log/text_test/train") as writer:
         for step in range(len(texts)):
-            writer.add_text(tag="output/1", step=step, text_string=texts[step])
-            writer.add_text(tag="output/2", step=step, text_string=texts[step])
-            writer.add_text(tag="output/2/3", step=step, text_string=texts[step])
-            writer.add_text(tag="output/2/4", step=step, text_string=texts[step])
+            writer.add_text(tag="output", step=step, text_string=texts[step])
