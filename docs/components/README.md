@@ -947,7 +947,7 @@ visualdl --logdir ./log --port 8080
 - 可搜索数据流标签显示对应数据流数据
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/28444161/106249863-d88c2880-624d-11eb-96f9-daddd1ba188f.png" width="40%"/>
+  <img src="https://user-images.githubusercontent.com/28444161/106256983-f4e09300-6256-11eb-9acc-a24a2ac9b70c.png" width="40%"/>
 </p>
 
 - 可折叠标签

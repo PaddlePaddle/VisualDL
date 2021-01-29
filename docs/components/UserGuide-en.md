@@ -869,7 +869,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 - Developers can find the target runs by searching corresponded tags.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/106249863-d88c2880-624d-11eb-96f9-daddd1ba188f.png" width="40%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/106256983-f4e09300-6256-11eb-9acc-a24a2ac9b70c.png" width="40%"/>
   </p>
 
 - Developers can fold the tab of text.
