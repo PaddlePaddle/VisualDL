@@ -855,7 +855,7 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="95%"/>
 </p>
 
 ### Functional Instrucions
@@ -863,19 +863,19 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 - Developers can find the target text by searching corresponded tags.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="90%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="40%"/>
   </p>
 
 - Developers can find the target runs by searching corresponded tags.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/106249863-d88c2880-624d-11eb-96f9-daddd1ba188f.png" width="90%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/106249863-d88c2880-624d-11eb-96f9-daddd1ba188f.png" width="40%"/>
   </p>
 
 - Developers can fold the tab of text.
 
  <p align="center">
-   <img src="https://user-images.githubusercontent.com/28444161/106252364-28202380-6251-11eb-934c-d8893c2eaeca.png" width="90%"/>
+   <img src="https://user-images.githubusercontent.com/28444161/106252364-28202380-6251-11eb-934c-d8893c2eaeca.png" width="80%"/>
  </p>
 
 
