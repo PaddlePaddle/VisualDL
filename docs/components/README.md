@@ -941,7 +941,7 @@ visualdl --logdir ./log --port 8080
 - 可搜索文本标签显示对应文本数据
 
 <p align="center">
-  <img src="https://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
+  <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="90%"/>
 </p>
 
 - 可搜索数据流标签显示对应数据流数据

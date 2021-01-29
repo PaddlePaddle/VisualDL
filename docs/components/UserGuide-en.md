@@ -863,7 +863,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 - Developers can find the target text by searching corresponded tags.
 
   <p align="center">
-    <img src="https://visualdl.bj.bcebos.com/images/image-search.png" width="90%"/>
+    <img src="https://user-images.githubusercontent.com/48054808/86536503-baaa4f80-bf1a-11ea-80ab-cd988617d018.png" width="90%"/>
   </p>
 
 - Developers can find the target runs by searching corresponded tags.
