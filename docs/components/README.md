@@ -307,7 +307,7 @@ add_image_matrix(tag, imgs, step, rows=-1, scale=1, walltime=None, dataformats="
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
 | dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
 
-PS：当给定的子图像数量不足时，将用空白图像填充，以保证生成的图形为完整矩形
+**PS：当给定的子图像数量不足时，将用空白图像填充，以保证生成的图形为完整矩形**
 
 #### Demo
 下面展示了使用 Image 组件合成并记录多张图片数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_matrix_test.py)
