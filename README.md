@@ -371,7 +371,7 @@ For more details related to the use of VisualDL, please refer to [**VisualDL Use
 
 ## Technical Communication
 
-Welcome to join the official QQ group 104578336 to communicate with PaddlePaddle team and other developers.
+Welcome to join the official QQ group 1045783368 to communicate with PaddlePaddle team and other developers.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/82522691-c2758680-9b5c-11ea-9aee-fca994aba175.png" width="20%"/>
