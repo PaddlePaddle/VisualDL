@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import ScalarChart, {Loader as ChartLoader} from '~/components/ScalarPage/ScalarChart';
 import {SortingMethod, XAxis, parseSmoothing, sortingMethod as toolTipSortingValues} from '~/resource/scalar';
 
 import {AsideSection} from '~/components/Aside';
@@ -24,7 +25,6 @@ import Content from '~/components/Content';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
 import RunAside from '~/components/RunAside';
-import ScalarChart from '~/components/ScalarPage/ScalarChart';
 import Select from '~/components/Select';
 import Slider from '~/components/Slider';
 import type {Tag} from '~/types';
@@ -78,76 +78,76 @@ const Scalar: FunctionComponent = () => {
     const [showMostValue, setShowMostValue] = useState(false);
 
     const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                >
-                    <AsideSection>
-                        <Field>
-                            <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
-                                {t('scalar:ignore-outliers')}
-                            </Checkbox>
-                        </Field>
-                        <Field>
-                            <Checkbox value={showMostValue} onChange={setShowMostValue}>
-                                {t('scalar:show-most-value')}
-                            </Checkbox>
-                        </Field>
-                        <TooltipSortingDiv>
-                            <span>{t('scalar:tooltip-sorting')}</span>
-                            <Select
-                                list={toolTipSortingValues.map(value => ({
-                                    label: t(`scalar:tooltip-sorting-value.${value}`),
-                                    value
-                                }))}
-                                value={tooltipSorting}
-                                onChange={setTooltipSorting}
-                            />
-                        </TooltipSortingDiv>
-                    </AsideSection>
-                    <AsideSection>
-                        <Field label={t('scalar:smoothing')}>
-                            <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
-                        </Field>
-                        <Field>
-                            <Checkbox value={smoothedDataOnly} onChange={setSmoothedDataOnly}>
-                                {t('scalar:smoothed-data-only')}
-                            </Checkbox>
-                        </Field>
-                    </AsideSection>
-                    <AsideSection>
-                        <Field label={t('scalar:x-axis')}>
-                            <TimeModeSelect value={xAxis} onChange={setXAxis} />
-                        </Field>
-                    </AsideSection>
-                </RunAside>
-            ) : null,
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+                loading={loading}
+            >
+                <AsideSection>
+                    <Field>
+                        <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
+                            {t('scalar:ignore-outliers')}
+                        </Checkbox>
+                    </Field>
+                    <Field>
+                        <Checkbox value={showMostValue} onChange={setShowMostValue}>
+                            {t('scalar:show-most-value')}
+                        </Checkbox>
+                    </Field>
+                    <TooltipSortingDiv>
+                        <span>{t('scalar:tooltip-sorting')}</span>
+                        <Select
+                            list={toolTipSortingValues.map(value => ({
+                                label: t(`scalar:tooltip-sorting-value.${value}`),
+                                value
+                            }))}
+                            value={tooltipSorting}
+                            onChange={setTooltipSorting}
+                        />
+                    </TooltipSortingDiv>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('scalar:smoothing')}>
+                        <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
+                    </Field>
+                    <Field>
+                        <Checkbox value={smoothedDataOnly} onChange={setSmoothedDataOnly}>
+                            {t('scalar:smoothed-data-only')}
+                        </Checkbox>
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('scalar:x-axis')}>
+                        <TimeModeSelect value={xAxis} onChange={setXAxis} />
+                    </Field>
+                </AsideSection>
+            </RunAside>
+        ),
         [
-            t,
             ignoreOutliers,
-            showMostValue,
-            smoothedDataOnly,
+            loading,
             onChangeRuns,
             running,
             runs,
             selectedRuns,
+            showMostValue,
+            smoothedDataOnly,
             smoothing,
+            t,
             tooltipSorting,
             xAxis
         ]
     );
 
-    const withChart = useCallback<WithChart<Tag>>(
-        ({label, runs, ...args}) => (
+    const renderChart = useCallback<RenderChart<Tag>>(
+        ({label, runs}) => (
             <ScalarChart
                 runs={runs}
                 tag={label}
-                {...args}
                 smoothing={smoothing}
                 xAxis={xAxis}
                 sortingMethod={tooltipSorting}
@@ -163,11 +163,11 @@ const Scalar: FunctionComponent = () => {
     return (
         <>
             <Title>{t('common:scalar')}</Title>
-            <Content aside={aside} loading={loading}>
+            <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
-                    <ChartPage items={tags} withChart={withChart} loading={loading} />
+                    <ChartPage items={tags} renderChart={renderChart} loader={<ChartLoader />} loading={loading} />
                 )}
             </Content>
         </>

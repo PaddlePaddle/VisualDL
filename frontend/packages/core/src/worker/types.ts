@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-type WorkerMessageType<T extends string, D = void> = {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+type Env = Record<string, string>;
+export type InitializeData = {
+    name: string;
+    env: Env;
+};
+
+type WorkerMessageData<T extends string, D = void> = {
     type: T;
     data: D;
 };
 
-export type InitializeData = {
-    env: Record<string, string>;
-};
-
-type InitializeMessage = WorkerMessageType<'INITIALIZE', InitializeData>;
-type InitializedMessage = WorkerMessageType<'INITIALIZED'>;
-type RunMessage<T> = WorkerMessageType<'RUN', T>;
-type ResultMessage<T> = WorkerMessageType<'RESULT', T>;
-type InfoMessage<T> = WorkerMessageType<'INFO', T>;
-type ErrorMessage<E extends Error = Error> = WorkerMessageType<'ERROR', E>;
+type InitializeMessage = WorkerMessageData<'INITIALIZE', InitializeData>;
+type InitializedMessage = WorkerMessageData<'INITIALIZED'>;
+type RunMessage<T> = WorkerMessageData<'RUN', T>;
+type ResultMessage<T> = WorkerMessageData<'RESULT', T>;
+type InfoMessage<T> = WorkerMessageData<'INFO', T>;
+type ErrorMessage<E extends Error = Error> = WorkerMessageData<'ERROR', E>;
 
 export type WorkerMessage<T> =
     | InitializeMessage
@@ -39,3 +43,17 @@ export type WorkerMessage<T> =
     | ErrorMessage;
 
 export type WorkerMessageEvent<T> = MessageEvent<WorkerMessage<T>>;
+
+export type WorkerMessageType<T> = WorkerMessage<T>['type'];
+export type Handler<T> = (data: T) => unknown;
+export type Listeners = Partial<Record<WorkerMessageType<any>, Handler<any>[]>>;
+
+export interface IWorker {
+    env: Env;
+    emit<T>(type: WorkerMessageType<T>, data?: T): void;
+    on<T>(type: WorkerMessageType<T>, handler: Handler<T>): void;
+    off<T>(type: WorkerMessageType<T>, handler?: Handler<T>): void;
+    once<T>(type: WorkerMessageType<T>, handler: Handler<T>): void;
+}
+
+export type Runner = (worker: IWorker) => void;

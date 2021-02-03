@@ -30,5 +30,5 @@ module.exports = {
             }
         ]
     ],
-    plugins: ['styled-components', '@babel/plugin-proposal-class-properties']
+    plugins: ['styled-components', '@babel/plugin-proposal-class-properties', 'emotion']
 };

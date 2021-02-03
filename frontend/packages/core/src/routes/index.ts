@@ -21,6 +21,7 @@ export enum Pages {
     Histogram = 'histogram',
     Image = 'image',
     Audio = 'audio',
+    Text = 'text',
     Graph = 'graph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
@@ -66,6 +67,11 @@ const routes: Route[] = [
                 id: Pages.Audio,
                 path: '/sample/audio',
                 component: React.lazy(() => import('~/pages/sample/audio'))
+            },
+            {
+                id: Pages.Text,
+                path: '/sample/text',
+                component: React.lazy(() => import('~/pages/sample/text'))
             }
         ]
     },

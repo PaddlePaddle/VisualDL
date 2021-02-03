@@ -37,7 +37,7 @@ module.exports = {
             {
                 minifyHTML: false, // we will do it later in post-build
                 preloadModules: true,
-                target: ['chrome63', 'firefox67', 'safari11.1', 'edge79'] // browsers support es module
+                target: ['chrome79', 'firefox67', 'safari11.1', 'edge79'] // browsers support es module
             }
         ],
         [

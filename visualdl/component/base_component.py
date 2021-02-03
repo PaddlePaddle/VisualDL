@@ -257,6 +257,22 @@ def audio(tag, audio_array, sample_rate, step, walltime):
     ])
 
 
+def text(tag, text_string, step, walltime=None):
+    """Package data to one image.
+    Args:
+        tag (string): Data identifier
+        text_string (string): Value of text
+        step (int): Step of text
+        walltime (int): Wall time of text
+    Return:
+        Package with format of record_pb2.Record
+    """
+    _text = Record.Text(encoded_text_string=text_string)
+    return Record(values=[
+        Record.Value(id=step, tag=tag, timestamp=walltime, text=_text)
+    ])
+
+
 def histogram(tag, hist, bin_edges, step, walltime):
     """Package data to one histogram.
 

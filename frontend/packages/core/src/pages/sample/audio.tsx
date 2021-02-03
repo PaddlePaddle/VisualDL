@@ -16,21 +16,16 @@
 
 // cSpell:words ungrouped
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import AudioChart, {Loader as ChartLoader} from '~/components/SamplePage/Audio';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-import AudioChart from '~/components/SamplePage/AudioChart';
 import Content from '~/components/Content';
 import Error from '~/components/Error';
 import RunAside from '~/components/RunAside';
 import Title from '~/components/Title';
-import {rem} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
-
-const chartSize = {
-    height: rem(244)
-};
 
 const AudioSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
@@ -51,20 +46,20 @@ const AudioSample: FunctionComponent = () => {
     const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('audio', running);
 
     const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                ></RunAside>
-            ) : null,
-        [onChangeRuns, running, runs, selectedRuns]
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+                loading={loading}
+            ></RunAside>
+        ),
+        [loading, onChangeRuns, running, runs, selectedRuns]
     );
 
-    const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
+    const renderChart = useCallback<RenderChart<typeof tagsWithSingleRun[number]>>(
         ({run, label}) => <AudioChart audioContext={audioContext.current} run={run} tag={label} running={running} />,
         [running]
     );
@@ -72,16 +67,16 @@ const AudioSample: FunctionComponent = () => {
     return (
         <>
             <Title>
-                {t('common:sample')} - {t('common:audio')}
+                {t('common:audio')} - {t('common:sample')}
             </Title>
-            <Content aside={aside} loading={loading}>
+            <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
                     <ChartPage
                         items={tagsWithSingleRun}
-                        chartSize={chartSize}
-                        withChart={withChart}
+                        renderChart={renderChart}
+                        loader={<ChartLoader />}
                         loading={loading}
                     />
                 )}

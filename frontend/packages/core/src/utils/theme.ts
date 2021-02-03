@@ -59,6 +59,9 @@ export const themes = {
         borderFocusedColor: darken(0.15, '#ddd'),
         borderActiveColor: darken(0.3, '#ddd'),
 
+        loaderBackgroundColor: '#f5f6f7',
+        loaderForegroundColor: '#eee',
+
         navbarTextColor: '#fff',
         navbarBackgroundColor: '#1527c2',
         navbarHoverBackgroundColor: lighten(0.05, '#1527c2'),
@@ -84,7 +87,11 @@ export const themes = {
         graphUploaderBackgroundColor: '#f9f9f9',
         graphUploaderActiveBackgroundColor: '#f2f6ff',
         graphCopyrightColor: '#ddd',
-        graphCopyrightLogoFilter: 'opacity(25%)'
+        graphCopyrightLogoFilter: 'opacity(25%)',
+
+        textChartTitleBackgroundColor: '#f8f8f8',
+        textChartTitleIndicatorColor: '#000',
+        textChartTagBackgroundColor: '#f6f6f6'
     },
     dark: {
         textColor: '#cfcfd1',
@@ -99,6 +106,9 @@ export const themes = {
         borderColor: '#3f3f42',
         borderFocusedColor: lighten(0.15, '#3f3f42'),
         borderActiveColor: lighten(0.3, '#3f3f42'),
+
+        loaderBackgroundColor: '#333',
+        loaderForegroundColor: '#666',
 
         navbarTextColor: '#fff',
         navbarBackgroundColor: '#262629',
@@ -125,7 +135,12 @@ export const themes = {
         graphUploaderBackgroundColor: '#262629',
         graphUploaderActiveBackgroundColor: '#303033',
         graphCopyrightColor: '#565657',
-        graphCopyrightLogoFilter: 'invert(35%) sepia(5%) saturate(79%) hue-rotate(202deg) brightness(88%) contrast(86%)'
+        graphCopyrightLogoFilter:
+            'invert(35%) sepia(5%) saturate(79%) hue-rotate(202deg) brightness(88%) contrast(86%)',
+
+        textChartTitleBackgroundColor: '#2a2a2a',
+        textChartTitleIndicatorColor: '#fff',
+        textChartTagBackgroundColor: '#222'
     }
 } as const;
 
@@ -156,16 +171,16 @@ export const variables = css`
 
         ${generateThemeVariables(themes[THEME || 'light'])}
 
-        body.auto {
+        &.auto {
             ${generateThemeVariables(themes.light)}
             @media (prefers-color-scheme: dark) {
                 ${generateThemeVariables(themes.dark)}
             }
         }
-        body.light {
+        &.light {
             ${generateThemeVariables(themes.light)}
         }
-        body.dark {
+        &.dark {
             ${generateThemeVariables(themes.dark)}
         }
     }

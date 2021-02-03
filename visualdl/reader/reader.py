@@ -180,6 +180,8 @@ class LogReader(object):
             elif "meta_data" == value_type:
                 self.update_meta_data(record)
                 component = "meta_data"
+            elif "text" == value_type:
+                component = "text"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component

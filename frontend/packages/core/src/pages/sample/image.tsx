@@ -16,7 +16,8 @@
 
 // cSpell:words ungrouped
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
+import ImageChart, {Loader as ChartLoader} from '~/components/SamplePage/Image';
 import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
 
 import {AsideSection} from '~/components/Aside';
@@ -24,17 +25,11 @@ import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
-import ImageChart from '~/components/SamplePage/ImageChart';
 import RunAside from '~/components/RunAside';
 import Slider from '~/components/Slider';
 import Title from '~/components/Title';
-import {rem} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
-
-const chartSize = {
-    height: rem(406)
-};
 
 const ImageSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
@@ -48,36 +43,36 @@ const ImageSample: FunctionComponent = () => {
     const [contrast, setContrast] = useState(1);
 
     const aside = useMemo(
-        () =>
-            runs.length ? (
-                <RunAside
-                    runs={runs}
-                    selectedRuns={selectedRuns}
-                    onChangeRuns={onChangeRuns}
-                    running={running}
-                    onToggleRunning={setRunning}
-                >
-                    <AsideSection>
-                        <Checkbox value={showActualSize} onChange={setShowActualSize}>
-                            {t('sample:show-actual-size')}
-                        </Checkbox>
-                    </AsideSection>
-                    <AsideSection>
-                        <Field label={t('sample:brightness')}>
-                            <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
-                        </Field>
-                    </AsideSection>
-                    <AsideSection>
-                        <Field label={t('sample:contrast')}>
-                            <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
-                        </Field>
-                    </AsideSection>
-                </RunAside>
-            ) : null,
-        [t, brightness, contrast, onChangeRuns, running, runs, selectedRuns, showActualSize]
+        () => (
+            <RunAside
+                runs={runs}
+                selectedRuns={selectedRuns}
+                onChangeRuns={onChangeRuns}
+                running={running}
+                onToggleRunning={setRunning}
+                loading={loading}
+            >
+                <AsideSection>
+                    <Checkbox value={showActualSize} onChange={setShowActualSize}>
+                        {t('sample:show-actual-size')}
+                    </Checkbox>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('sample:brightness')}>
+                        <Slider min={0} max={2} step={0.01} value={brightness} onChange={setBrightness} />
+                    </Field>
+                </AsideSection>
+                <AsideSection>
+                    <Field label={t('sample:contrast')}>
+                        <Slider min={0} max={2} step={0.01} value={contrast} onChange={setContrast} />
+                    </Field>
+                </AsideSection>
+            </RunAside>
+        ),
+        [brightness, contrast, loading, onChangeRuns, running, runs, selectedRuns, showActualSize, t]
     );
 
-    const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
+    const renderChart = useCallback<RenderChart<typeof tagsWithSingleRun[number]>>(
         ({run, label}) => (
             <ImageChart
                 run={run}
@@ -94,16 +89,16 @@ const ImageSample: FunctionComponent = () => {
     return (
         <>
             <Title>
-                {t('common:sample')} - {t('common:image')}
+                {t('common:image')} - {t('common:sample')}
             </Title>
-            <Content aside={aside} loading={loading}>
+            <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
                     <ChartPage
                         items={tagsWithSingleRun}
-                        chartSize={chartSize}
-                        withChart={withChart}
+                        renderChart={renderChart}
+                        loader={<ChartLoader />}
                         loading={loading}
                     />
                 )}

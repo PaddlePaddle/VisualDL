@@ -17,18 +17,21 @@
 import {parseFromBlob, parseFromString} from '~/resource/high-dimensional';
 
 import type {ParseParams} from '~/resource/high-dimensional';
-import {WorkerSelf} from '~/worker';
+import type {Runner} from '~/worker/types';
 
-const workerSelf = new WorkerSelf();
-workerSelf.emit('INITIALIZED');
-workerSelf.on<ParseParams>('RUN', async data => {
-    if (data) {
-        if (data.from === 'string') {
-            return workerSelf.emit('RESULT', parseFromString(data.params));
+const runner: Runner = worker => {
+    worker.on<ParseParams>('RUN', async data => {
+        if (data) {
+            if (data.from === 'string') {
+                return worker.emit('RESULT', parseFromString(data.params));
+            }
+            if (data.from === 'blob') {
+                return worker.emit('RESULT', await parseFromBlob(data.params));
+            }
         }
-        if (data.from === 'blob') {
-            return workerSelf.emit('RESULT', await parseFromBlob(data.params));
-        }
-    }
-    workerSelf.emit('RESULT', null);
-});
+        worker.emit('RESULT', null);
+    });
+    worker.emit('INITIALIZED');
+};
+
+export default runner;
