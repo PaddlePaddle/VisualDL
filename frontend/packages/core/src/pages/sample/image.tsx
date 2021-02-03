@@ -16,7 +16,8 @@
 
 // cSpell:words ungrouped
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
+import ImageChart, {Loader as ChartLoader} from '~/components/SamplePage/Image';
 import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
 
 import {AsideSection} from '~/components/Aside';
@@ -24,18 +25,11 @@ import Checkbox from '~/components/Checkbox';
 import Content from '~/components/Content';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
-import ImageChart from '~/components/SamplePage/ImageChart';
 import RunAside from '~/components/RunAside';
-import {SampleChart as SampleChartLoader} from '~/components/Loader/ChartPage';
 import Slider from '~/components/Slider';
 import Title from '~/components/Title';
-import {rem} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
-
-const chartSize = {
-    height: rem(406)
-};
 
 const ImageSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
@@ -78,7 +72,7 @@ const ImageSample: FunctionComponent = () => {
         [brightness, contrast, loading, onChangeRuns, running, runs, selectedRuns, showActualSize, t]
     );
 
-    const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
+    const renderChart = useCallback<RenderChart<typeof tagsWithSingleRun[number]>>(
         ({run, label}) => (
             <ImageChart
                 run={run}
@@ -103,9 +97,9 @@ const ImageSample: FunctionComponent = () => {
                 ) : (
                     <ChartPage
                         items={tagsWithSingleRun}
-                        chartSize={chartSize}
-                        withChart={withChart}
-                        loading={loading && <SampleChartLoader height={404} />}
+                        renderChart={renderChart}
+                        loader={<ChartLoader />}
+                        loading={loading}
                     />
                 )}
             </Content>

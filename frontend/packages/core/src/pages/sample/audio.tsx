@@ -16,22 +16,16 @@
 
 // cSpell:words ungrouped
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import AudioChart, {Loader as ChartLoader} from '~/components/SamplePage/Audio';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-import AudioChart from '~/components/SamplePage/AudioChart';
 import Content from '~/components/Content';
 import Error from '~/components/Error';
 import RunAside from '~/components/RunAside';
-import {SampleChart as SampleChartLoader} from '~/components/Loader/ChartPage';
 import Title from '~/components/Title';
-import {rem} from '~/utils/style';
 import useTagFilter from '~/hooks/useTagFilter';
 import {useTranslation} from 'react-i18next';
-
-const chartSize = {
-    height: rem(244)
-};
 
 const AudioSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
@@ -65,7 +59,7 @@ const AudioSample: FunctionComponent = () => {
         [loading, onChangeRuns, running, runs, selectedRuns]
     );
 
-    const withChart = useCallback<WithChart<typeof tagsWithSingleRun[number]>>(
+    const renderChart = useCallback<RenderChart<typeof tagsWithSingleRun[number]>>(
         ({run, label}) => <AudioChart audioContext={audioContext.current} run={run} tag={label} running={running} />,
         [running]
     );
@@ -81,9 +75,9 @@ const AudioSample: FunctionComponent = () => {
                 ) : (
                     <ChartPage
                         items={tagsWithSingleRun}
-                        chartSize={chartSize}
-                        withChart={withChart}
-                        loading={loading && <SampleChartLoader height={242} />}
+                        renderChart={renderChart}
+                        loader={<ChartLoader />}
+                        loading={loading}
                     />
                 )}
             </Content>

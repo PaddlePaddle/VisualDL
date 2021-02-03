@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
+import React, {FunctionComponent} from 'react';
 import {WithStyled, borderRadius, headerHeight, math, rem, sameBorder, size, transitionProps} from '~/utils/style';
 
-import ee from '~/utils/event';
 import styled from 'styled-components';
 
 const Div = styled.div<{maximized?: boolean; divWidth?: string; divHeight?: string}>`
@@ -38,28 +37,12 @@ const Div = styled.div<{maximized?: boolean; divWidth?: string; divHeight?: stri
 `;
 
 type ChartProps = {
-    cid: symbol;
+    maximized?: boolean;
     width?: string;
     height?: string;
 };
 
-const Chart: FunctionComponent<ChartProps & WithStyled> = ({cid, width, height, className, children}) => {
-    const [maximized, setMaximized] = useState(false);
-    const toggleMaximize = useCallback(
-        (id: symbol, value: boolean) => {
-            if (id === cid) {
-                setMaximized(value);
-            }
-        },
-        [cid]
-    );
-    useEffect(() => {
-        ee.on('toggle-chart-size', toggleMaximize);
-        return () => {
-            ee.off('toggle-chart-size', toggleMaximize);
-        };
-    }, [toggleMaximize]);
-
+const Chart: FunctionComponent<ChartProps & WithStyled> = ({maximized, width, height, className, children}) => {
     return (
         <Div
             maximized={maximized}

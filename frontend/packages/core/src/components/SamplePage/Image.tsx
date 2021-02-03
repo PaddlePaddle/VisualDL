@@ -20,10 +20,12 @@ import SampleChart, {
     SampleEntityProps,
     SamplePreviewerProps
 } from '~/components/SamplePage/SampleChart';
-import {size, transitionProps} from '~/utils/style';
+import {rem, size, transitionProps} from '~/utils/style';
 
+import Chart from '~/components/Chart';
 import Image from '~/components/Image';
 import ImagePreviewer from '~/components/SamplePage/ImagePreviewer';
+import {SampleChart as SampleChartLoader} from '~/components/Loader/ChartPage';
 import styled from 'styled-components';
 
 const StyledImage = styled(Image)<{brightness?: number; contrast?: number; fit?: boolean}>`
@@ -36,6 +38,15 @@ const StyledImage = styled(Image)<{brightness?: number; contrast?: number; fit?:
 
 const cache = 5 * 60 * 1000;
 
+const chartSize = {
+    width: 430,
+    height: 406
+};
+const chartSizeInRem = {
+    width: rem(chartSize.width),
+    height: rem(chartSize.height)
+};
+
 type ImageChartProps = {
     brightness?: number;
     contrast?: number;
@@ -43,14 +54,35 @@ type ImageChartProps = {
 } & SampleChartBaseProps;
 
 const ImageChart: FunctionComponent<ImageChartProps> = ({brightness, contrast, fit, ...props}) => {
-    const content = useCallback(
+    const renderContent = useCallback(
         (props: SampleEntityProps) => <StyledImage {...props} brightness={brightness} contrast={contrast} fit={fit} />,
         [brightness, contrast, fit]
     );
 
-    const previewer = useCallback((props: SamplePreviewerProps) => <ImagePreviewer {...props} />, []);
+    const renderPreviewer = useCallback((props: SamplePreviewerProps) => <ImagePreviewer {...props} />, []);
 
-    return <SampleChart type="image" cache={cache} content={content} previewer={previewer} {...props} />;
+    return (
+        <Chart {...chartSizeInRem}>
+            <SampleChart
+                type="image"
+                cache={cache}
+                renderContent={renderContent}
+                renderPreviewer={renderPreviewer}
+                {...props}
+            />
+        </Chart>
+    );
 };
 
 export default ImageChart;
+
+export const Loader: FunctionComponent = () => (
+    <>
+        <Chart {...chartSizeInRem}>
+            <SampleChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+        <Chart {...chartSizeInRem}>
+            <SampleChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+    </>
+);

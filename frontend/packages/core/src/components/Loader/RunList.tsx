@@ -22,11 +22,11 @@ const RunList: FunctionComponent<{count?: number}> = ({count}) => {
     return (
         <ContentLoader viewBox={`0 0 220 ${(count ?? 2) * 36}`}>
             {Array.from({length: count ?? 2}).map((_, i) => (
-                <>
+                <React.Fragment key={i}>
                     <rect x="0" y={`${11 * (i + 1) + 25 * i + 4.5}`} width="16" height="16" />
                     <circle cx="32" cy={`${11 * (i + 1) + 25 * i + 12.5}`} r="6" />
                     <rect x="46" y={`${11 * (i + 1) + 25 * i + 5.5}`} rx="3" ry="3" width="100" height="14" />
-                </>
+                </React.Fragment>
             ))}
         </ContentLoader>
     );

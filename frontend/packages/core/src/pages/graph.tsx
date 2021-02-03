@@ -94,6 +94,13 @@ const Graph: FunctionComponent = () => {
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
     const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
+    const setModelFile = useCallback(
+        (f: FileList | File[]) => {
+            storeDispatch(actions.graph.setModel(f));
+            setFiles(f);
+        },
+        [storeDispatch]
+    );
     const onClickFile = useCallback(() => {
         if (file.current) {
             file.current.value = '';
@@ -104,11 +111,10 @@ const Graph: FunctionComponent = () => {
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
             if (target && target.files && target.files.length) {
-                storeDispatch(actions.graph.setModel(target.files));
-                setFiles(target.files);
+                setModelFile(target.files);
             }
         },
-        [storeDispatch]
+        [setModelFile]
     );
 
     const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
@@ -280,7 +286,10 @@ const Graph: FunctionComponent = () => {
         nodeDocumentation
     ]);
 
-    const uploader = useMemo(() => <Uploader onClickUpload={onClickFile} onDropFiles={setFiles} />, [onClickFile]);
+    const uploader = useMemo(() => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />, [
+        onClickFile,
+        setModelFile
+    ]);
 
     return (
         <>

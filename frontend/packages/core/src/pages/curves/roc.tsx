@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
+import CurveChart, {Loader as ChartLoader} from '~/components/CurvesPage/CurveChart';
 import React, {FunctionComponent, useCallback, useState} from 'react';
 
 import Content from '~/components/Content';
 import CurveAside from '~/components/CurvesPage/CurveAside';
-import CurveChart from '~/components/CurvesPage/CurveChart';
 import Error from '~/components/Error';
 import type {Tag} from '~/resource/curves';
 import Title from '~/components/Title';
@@ -33,8 +33,8 @@ const ROCCurve: FunctionComponent = () => {
 
     const [tags, setTags] = useState<Tag[]>([]);
 
-    const withChart = useCallback<WithChart<Tag>>(
-        ({label, runs, ...args}) => <CurveChart type="roc" runs={runs} tag={label} {...args} running={running} />,
+    const renderChart = useCallback<RenderChart<Tag>>(
+        ({label, runs}) => <CurveChart type="roc" runs={runs} tag={label} running={running} />,
         [running]
     );
 
@@ -54,7 +54,7 @@ const ROCCurve: FunctionComponent = () => {
                 {!loading && !tags.length ? (
                     <Error />
                 ) : (
-                    <ChartPage items={tags} withChart={withChart} loading={loading} />
+                    <ChartPage items={tags} renderChart={renderChart} loader={<ChartLoader />} loading={loading} />
                 )}
             </Content>
         </>

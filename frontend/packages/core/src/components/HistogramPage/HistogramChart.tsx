@@ -24,10 +24,11 @@ import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useSt
 import StackChart, {StackChartProps, StackChartRef} from '~/components/StackChart';
 import {rem, size} from '~/utils/style';
 
+import Chart from '~/components/Chart';
+import {Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import ChartToolbox from '~/components/ChartToolbox';
 import type {Run} from '~/types';
 import {distance} from '~/utils';
-import ee from '~/utils/event';
 import {fetcher} from '~/utils/fetch';
 import {format} from 'd3-format';
 import minBy from 'lodash/minBy';
@@ -70,15 +71,23 @@ const Error = styled.div`
     align-items: center;
 `;
 
+const chartSize = {
+    width: 430,
+    height: 337
+};
+const chartSizeInRem = {
+    width: rem(chartSize.width),
+    height: rem(chartSize.height)
+};
+
 type HistogramChartProps = {
-    cid: symbol;
     run: Run;
     tag: string;
     mode: Modes;
     running?: boolean;
 };
 
-const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, mode, running}) => {
+const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode, running}) => {
     const {t} = useTranslation(['histogram', 'common']);
 
     const echart = useRef<LineChartRef | StackChartRef>(null);
@@ -93,10 +102,6 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
     );
 
     const [maximized, setMaximized] = useState<boolean>(false);
-    const toggleMaximized = useCallback(() => {
-        ee.emit('toggle-chart-size', cid, !maximized);
-        setMaximized(m => !m);
-    }, [cid, maximized]);
 
     const title = useMemo(() => `${tag} (${run.label})`, [tag, run.label]);
 
@@ -278,27 +283,40 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({cid, run, tag, 
     }
 
     return (
-        <Wrapper>
-            {chart}
-            <Toolbox
-                items={[
-                    {
-                        icon: 'maximize',
-                        activeIcon: 'minimize',
-                        tooltip: t('histogram:maximize'),
-                        activeTooltip: t('histogram:minimize'),
-                        toggle: true,
-                        onClick: toggleMaximized
-                    },
-                    {
-                        icon: 'download',
-                        tooltip: t('histogram:download-image'),
-                        onClick: () => echart.current?.saveAsImage()
-                    }
-                ]}
-            />
-        </Wrapper>
+        <Chart maximized={maximized} {...chartSizeInRem}>
+            <Wrapper>
+                {chart}
+                <Toolbox
+                    items={[
+                        {
+                            icon: 'maximize',
+                            activeIcon: 'minimize',
+                            tooltip: t('histogram:maximize'),
+                            activeTooltip: t('histogram:minimize'),
+                            toggle: true,
+                            onClick: () => setMaximized(m => !m)
+                        },
+                        {
+                            icon: 'download',
+                            tooltip: t('histogram:download-image'),
+                            onClick: () => echart.current?.saveAsImage()
+                        }
+                    ]}
+                />
+            </Wrapper>
+        </Chart>
     );
 };
 
 export default HistogramChart;
+
+export const Loader: FunctionComponent = () => (
+    <>
+        <Chart {...chartSizeInRem}>
+            <ChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+        <Chart {...chartSizeInRem}>
+            <ChartLoader width={chartSize.width - 2} height={chartSize.height - 2} />
+        </Chart>
+    </>
+);

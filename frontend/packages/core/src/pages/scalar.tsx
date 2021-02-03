@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import ChartPage, {WithChart} from '~/components/ChartPage';
+import ChartPage, {RenderChart} from '~/components/ChartPage';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import ScalarChart, {Loader as ChartLoader} from '~/components/ScalarPage/ScalarChart';
 import {SortingMethod, XAxis, parseSmoothing, sortingMethod as toolTipSortingValues} from '~/resource/scalar';
 
 import {AsideSection} from '~/components/Aside';
@@ -24,7 +25,6 @@ import Content from '~/components/Content';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
 import RunAside from '~/components/RunAside';
-import ScalarChart from '~/components/ScalarPage/ScalarChart';
 import Select from '~/components/Select';
 import Slider from '~/components/Slider';
 import type {Tag} from '~/types';
@@ -143,12 +143,11 @@ const Scalar: FunctionComponent = () => {
         ]
     );
 
-    const withChart = useCallback<WithChart<Tag>>(
-        ({label, runs, ...args}) => (
+    const renderChart = useCallback<RenderChart<Tag>>(
+        ({label, runs}) => (
             <ScalarChart
                 runs={runs}
                 tag={label}
-                {...args}
                 smoothing={smoothing}
                 xAxis={xAxis}
                 sortingMethod={tooltipSorting}
@@ -168,7 +167,7 @@ const Scalar: FunctionComponent = () => {
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
-                    <ChartPage items={tags} withChart={withChart} loading={loading} />
+                    <ChartPage items={tags} renderChart={renderChart} loader={<ChartLoader />} loading={loading} />
                 )}
             </Content>
         </>

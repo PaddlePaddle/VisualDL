@@ -23,6 +23,7 @@ const initState: RunsState = {
     histogram: [],
     image: [],
     audio: [],
+    text: [],
     'pr-curve': [],
     'roc-curve': []
 };

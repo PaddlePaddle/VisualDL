@@ -13,8 +13,8 @@
     "loading": "数据载入中，请稍等",
     "next-page": "下一页",
     "pr-curve": "PR曲线",
-    "roc-curve": "ROC曲线",
     "previous-page": "上一页",
+    "roc-curve": "ROC曲线",
     "run": "运行",
     "running": "运行中",
     "runs": "数据流",
@@ -32,6 +32,7 @@
     "stop": "停止",
     "stop-realtime-refresh": "停止实时数据刷新",
     "stopped": "已停止",
+    "text": "文本",
     "theme": {
         "auto": "自动",
         "dark": "深色",
