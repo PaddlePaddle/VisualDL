@@ -317,36 +317,23 @@ from PIL import Image
 from visualdl import LogWriter
 
 
-def random_crop(img):
-    """Get random block of img, which size is 100x100.
-    """
-    img = Image.open(img)
-    w, h = img.size
-    random_w = np.random.randint(0, w - 100)
-    random_h = np.random.randint(0, h - 100)
-    r = img.crop((random_w, random_h, random_w + 100, random_h + 100))
-    return np.asarray(r)
-
-
 if __name__ == '__main__':
     imgs = []
-    # 获取8张图像
-    for step in range(8):
-        img = random_crop("../../docs/images/dog.jpg")
-        imgs.append(img)
-    imgs = np.array(imgs)
+    for index in range(6):
+        imgs.append(np.asarray(Image.open("../../docs/images/images_matrix/%s.jpg" % str((index)))))
 
     with LogWriter(logdir='./log/image_matrix_test/train') as writer:
-        # 合成长宽尽量接近的图形矩阵，本例生成3X3的矩阵
-        writer.add_image_matrix(tag='test_images', step=1, imgs=imgs, rows=-1)
-        # 合成长为1的图形矩阵，本例生成1x8的矩阵
-        writer.add_image_matrix(tag='test_images', step=2, imgs=imgs, rows=1)
-        # 合成长为2的图形矩阵，本例生成2X4的矩阵
-        writer.add_image_matrix(tag='test_images', step=3, imgs=imgs, rows=2)
-        # 合成长为3的图形矩阵，本例生成3X3的矩阵
-        writer.add_image_matrix(tag='test_images', step=4, imgs=imgs, rows=3)
-        # 合成长为4的图形矩阵，本例生成4X2的矩阵
-        writer.add_image_matrix(tag='test_images', step=5, imgs=imgs, rows=4)
+        writer.add_image(tag='detection', step=0, img=imgs[0])
+        # 合成长宽尽量接近的图形矩阵，本例生成3X2的矩阵
+        writer.add_image_matrix(tag='detection', step=1, imgs=imgs, rows=-1)
+        # 合成长为1的图形矩阵，本例生成1x6的矩阵
+        writer.add_image_matrix(tag='detection', step=2, imgs=imgs, rows=1)
+        # 合成长为2的图形矩阵，本例生成2X3的矩阵
+        writer.add_image_matrix(tag='detection', step=3, imgs=imgs, rows=2)
+        # 合成长为3的图形矩阵，本例生成3X2的矩阵
+        writer.add_image_matrix(tag='detection', step=4, imgs=imgs, rows=3)
+        # 合成长为4的图形矩阵，本例生成4X2的矩阵，自动补充子图像填充第四行
+        writer.add_image_matrix(tag='detection', step=5, imgs=imgs, rows=4)
 ```
 运行上述程序后，在命令行执行
 ```shell
