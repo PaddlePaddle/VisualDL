@@ -343,8 +343,8 @@ visualdl --logdir ./log --port 8080
 在浏览器输入`http://127.0.0.1:8080`，即可查看图片数据。
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/28444161/104555348-ad63df80-5678-11eb-9d68-04f7f7451eac.png" width="40%"/>
-  <img src="https://user-images.githubusercontent.com/28444161/104556243-2dd71000-567a-11eb-9222-225b0acdf56b.png" width="40%"/>
+  <img src="https://user-images.githubusercontent.com/28444161/106742199-aae11e00-6657-11eb-827a-c785f9ff336e.png" width="40%"/>
+  <img src="https://user-images.githubusercontent.com/28444161/106742248-c0eede80-6657-11eb-9c9e-3e858ae6562d.png" width="40%"/>
 </p>
 
 
