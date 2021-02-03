@@ -22,7 +22,5 @@
 
 ## 官方用例报错，LogWriter对象没有mode属性
 
-可以检查一下使用的visualdl的版本（which visualdl），因为按照此报错来看，大概率使用的是visualdl1.3版本，而自动安装旧版本的原因可能是因为使用的是Python2。
-
-由于目前VisualDL已经不维护python2了，且现有官方文档上的使用说明都是基于2.0版本的，也不维护旧版本了建议升级至python3，安装最新版的VisualDL，即不会出现上述问题。
-
+可以检查一下使用的VisualDL的版本（which visualdl），因为按照此报错来看，大概率是因使用的是Python2，自动安装了VisualDL 1.3版本，但官方示例均基于2.0版本的，故导致此报错。
+由于目前VisualDL已经不维护python2了，且现有官方文档上的使用说明都是基于2.0版本的，并且将不再维护旧版本，建议升级至Python3，安装最新版的VisualDL，即不会出现上述问题。
