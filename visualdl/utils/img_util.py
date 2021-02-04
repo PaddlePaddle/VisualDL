@@ -28,7 +28,9 @@ def padding_image(img, height, width):
     width_before = math.floor((width - width_old) / 2)
     width_after = width - width_old - width_before
 
-    return np.pad(img, ((height_before, height_after), (width_before, width_after), (0, 0)))
+    return np.pad(array=img,
+                  pad_width=((height_before, height_after), (width_before, width_after), (0, 0)),
+                  mode="constant")
 
 
 def merge_images(imgs, dataformats, scale=1.0, rows=-1):
