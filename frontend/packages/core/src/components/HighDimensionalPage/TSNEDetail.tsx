@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import Field from '~/components/Field';
@@ -33,6 +33,7 @@ export type TSNEDetailProps = {
     iteration: number;
     perplexity: number;
     learningRate: number;
+    is3D: boolean;
     onChangePerplexity?: (perplexity: number) => void;
     onChangeLearningRate?: (learningRate: number) => void;
     onPause?: () => void;
@@ -45,6 +46,7 @@ const TSNEDetail: FunctionComponent<TSNEDetailProps> = ({
     iteration,
     perplexity,
     learningRate,
+    is3D,
     onChangePerplexity,
     onChangeLearningRate,
     onPause,
@@ -97,6 +99,11 @@ const TSNEDetail: FunctionComponent<TSNEDetailProps> = ({
             return !s;
         });
     }, [onRerun, onStop]);
+
+    useEffect(() => {
+        setPaused(false);
+        setStopped(false);
+    }, [is3D]);
 
     return (
         <>
