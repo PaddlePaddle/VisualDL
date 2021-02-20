@@ -364,6 +364,7 @@ const HighDimensional: FunctionComponent = () => {
                         iteration={(data as TSNEResult)?.step ?? 0}
                         perplexity={perplexity}
                         learningRate={learningRate}
+                        is3D={is3D}
                         onChangePerplexity={setPerplexity}
                         onChangeLearningRate={setLearningRate}
                         onPause={chart.current?.pauseTSNE}
@@ -377,7 +378,7 @@ const HighDimensional: FunctionComponent = () => {
             default:
                 return null as never;
         }
-    }, [reduction, dimension, data, perplexity, learningRate, neighbors, runUMAP]);
+    }, [reduction, dimension, data, perplexity, learningRate, is3D, neighbors, runUMAP]);
 
     const aside = useMemo(
         () => (
