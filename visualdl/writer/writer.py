@@ -298,17 +298,17 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        if not mat and hot_vectors:
+        if (mat is None) and hot_vectors:
             mat = hot_vectors
             logger.warning('Parameter `hot_vectors` in function '
                            '`add_embeddings` will be deprecated in '
                            'future, use `mat` instead.')
-        if not metadata and labels:
+        if (metadata is None) and labels:
             metadata = labels
             logger.warning(
                 'Parameter `labels` in function `add_embeddings` will be '
                 'deprecated in future, use `metadata` instead.')
-        if not metadata_header and labels_meta:
+        if (metadata_header is None) and labels_meta:
             metadata_header = labels_meta
             logger.warning(
                 'Parameter `labels_meta` in function `add_embeddings` will be'
