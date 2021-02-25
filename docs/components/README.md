@@ -1,5 +1,5 @@
 [**English**](./UserGuide-en.md)
- 
+
 # VisualDL 使用指南
 
 ### 概述
@@ -543,9 +543,10 @@ Graph组件一键可视化模型的网络结构。用于查看模型属性、节
   ```shell
   visualdl --model ./log/model --port 8080
   ```
-*Graph目前只支持可视化网络结构格式的模型文件（如__model__（注意此处为两个下划线'_'））
+*Graph目前只支持可视化网络结构格式/[inference](https://www.paddlepaddle.org.cn/documentation/docs/zh/guides/01_paddle2.0_introduction/upgrade_guide_cn.html#id17)模型文件（如__model__（注意此处为两个下划线'_'）），2021年中旬即将支持动态图及Block节点展开可视化，敬请期待。
 
    
+
 启动后即可查看网络结构可视化：
 
 <p align="center">
@@ -978,14 +979,14 @@ pip install visualdl --upgrade
 ```
 visualdl service upload --logdir ./log \
                         --model ./__model__
-```                       
-                       
+```
+
 3. VDL.service将返回一个URL链接，复制粘贴链接至浏览器中即可查看可视化结果
 
   <p align="center">
     <img src="https://user-images.githubusercontent.com/48054808/93733769-5ccc0080-fc09-11ea-88c0-6f17c04ebdce.png" width="100%"/>
   </p>
-  
+
    <p align="center">
     <img src="https://user-images.githubusercontent.com/48054808/93733790-69e8ef80-fc09-11ea-9256-68a88072f5d2.png" width="100%"/>
   </p>
