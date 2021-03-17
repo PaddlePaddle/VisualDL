@@ -382,7 +382,7 @@ visualizes the text output of NLP models within any stage, aiding developers to 
 The interface of the Text is shown as follows:
 
 ```python
-add_text(self, tag, text_string, step=None, walltime=None)
+add_text(tag, text_string, step=None, walltime=None)
 ```
 
 The interface parameters are described as follows:
