@@ -440,7 +440,7 @@ Text展示文本任务任意阶段的数据输出，对比不同阶段的文本�
 Text组件的记录接口如下：
 
 ```python
-add_text(self, tag, text_string, step=None, walltime=None)
+add_text(tag, text_string, step=None, walltime=None)
 ```
 
 接口参数说明如下：
