@@ -798,7 +798,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 ### Introduction
 
-High Dimensional projects high-dimensional data into a low dimensional space, aiding users to have an in-depth analysis of the relationship between high-dimensional data. Two dimensionality reduction algorithms are supported:
+High Dimensional projects high-dimensional data into a low dimensional space, aiding users to have an in-depth analysis of the relationship between high-dimensional data. Three dimensionality reduction algorithms are supported:
 
  - PCA : Principle Component Analysis 
  - t-SNE : t-distributed Stochastic Neighbor Embedding 
