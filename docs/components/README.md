@@ -852,7 +852,7 @@ visualdl --logdir ./log --port 8080
 
 ### 介绍
 
-High Dimensional 组件将高维数据进行降维展示，用于深入分析高维数据间的关系。目前支持以下两种降维算法：
+High Dimensional 组件将高维数据进行降维展示，用于深入分析高维数据间的关系。目前支持以下三种降维算法：
 
  - PCA : Principle Component Analysis 主成分分析
  - t-SNE : t-distributed stochastic neighbor embedding t-分布式随机领域嵌入
