@@ -440,7 +440,7 @@ Text展示文本任务任意阶段的数据输出，对比不同阶段的文本�
 Text组件的记录接口如下：
 
 ```python
-add_text(self, tag, text_string, step=None, walltime=None)
+add_text(tag, text_string, step=None, walltime=None)
 ```
 
 接口参数说明如下：
@@ -852,7 +852,7 @@ visualdl --logdir ./log --port 8080
 
 ### 介绍
 
-High Dimensional 组件将高维数据进行降维展示，用于深入分析高维数据间的关系。目前支持以下两种降维算法：
+High Dimensional 组件将高维数据进行降维展示，用于深入分析高维数据间的关系。目前支持以下三种降维算法：
 
  - PCA : Principle Component Analysis 主成分分析
  - t-SNE : t-distributed stochastic neighbor embedding t-分布式随机领域嵌入

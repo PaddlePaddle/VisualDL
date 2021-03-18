@@ -382,7 +382,7 @@ visualizes the text output of NLP models within any stage, aiding developers to 
 The interface of the Text is shown as follows:
 
 ```python
-add_text(self, tag, text_string, step=None, walltime=None)
+add_text(tag, text_string, step=None, walltime=None)
 ```
 
 The interface parameters are described as follows:
@@ -798,7 +798,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 ### Introduction
 
-High Dimensional projects high-dimensional data into a low dimensional space, aiding users to have an in-depth analysis of the relationship between high-dimensional data. Two dimensionality reduction algorithms are supported:
+High Dimensional projects high-dimensional data into a low dimensional space, aiding users to have an in-depth analysis of the relationship between high-dimensional data. Three dimensionality reduction algorithms are supported:
 
  - PCA : Principle Component Analysis 
  - t-SNE : t-distributed Stochastic Neighbor Embedding 
