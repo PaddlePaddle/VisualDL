@@ -192,7 +192,7 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             image(tag=tag, image_array=img, step=step, walltime=walltime,
                   dataformats=dataformats))
-        
+
     def add_figure(self, tag, figure, step, walltime=None):
         """Add an figure to vdl record file.
 
