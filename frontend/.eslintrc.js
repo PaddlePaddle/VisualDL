@@ -35,11 +35,7 @@ module.exports = {
     overrides: [
         {
             files: ['packages/cli/**/*', 'packages/mock/**/*', 'packages/demo/**/*', 'packages/server/**/*'],
-            extends: [
-                'plugin:@typescript-eslint/recommended',
-                'prettier/@typescript-eslint',
-                'plugin:prettier/recommended'
-            ],
+            extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
             parser: '@typescript-eslint/parser',
             rules: {
                 '@typescript-eslint/explicit-function-return-type': 'off',
@@ -53,7 +49,6 @@ module.exports = {
                 'plugin:@typescript-eslint/recommended',
                 'plugin:react/recommended',
                 'plugin:react-hooks/recommended',
-                'prettier/@typescript-eslint',
                 'plugin:prettier/recommended'
             ],
             parser: '@typescript-eslint/parser',
