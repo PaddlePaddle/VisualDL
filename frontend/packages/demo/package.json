@@ -44,7 +44,7 @@
         "node-fetch": "2.6.1",
         "rimraf": "3.0.2",
         "ts-node": "9.1.1",
-        "typescript": "4.0.5"
+        "typescript": "4.2.3"
     },
     "peerDependencies": {
         "express": "^4.17.1"

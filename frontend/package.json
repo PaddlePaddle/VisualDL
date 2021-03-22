@@ -50,7 +50,7 @@
         "lint-staged": "10.5.4",
         "prettier": "2.2.1",
         "rimraf": "3.0.2",
-        "typescript": "4.0.5",
+        "typescript": "4.2.3",
         "yarn": "1.22.10"
     },
     "engines": {
