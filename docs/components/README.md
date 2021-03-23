@@ -41,7 +41,7 @@ add_scalar(tag, value, step, walltime=None)
 | -------- | ------ | ------------------------------------------- |
 | tag      | string | 记录指标的标志，如`train/loss`，不能含有`%` |
 | value    | float  | 要记录的数据值，不能为None                              |
-| step     | int    | 记录的标量数据的步数，前端将抽取若干step对应的数据进行展示                                  |
+| step     | int    | 记录的标量数据的步数，前端将抽取若干step对应的数据进行展示（VisualDL使用的采样算法为蓄水池采样，可参考[VisualDL采样算法](../../faq.md/# VisualDL的采样规则是什么)）                                  |
 | walltime | int    | 记录数据的时间戳，默认为当前时间戳          |
 
 *注意tag的使用规则为：

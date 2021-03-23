@@ -42,14 +42,14 @@ The interface parameters are described as follows:
 | parameter | format | meaning                                                      |
 | --------- | ------ | ------------------------------------------------------------ |
 | tag       | string | Record the name of the scalar data，e.g.train/loss. Notice that the name cannot contain `%` |
-| value     | float  | Record the data                                              |
-| step      | int    | Record the training steps                                    |
+| value     | float  | Record the data, can't be `None`                                              |
+| step      | int    | Record the training steps. The data corresponding to several steps will be extracted for display (the sampling algorithm used by VisualDL is reservoir sampling, please refer to [VisualDL sampling algorithm](../../faq.md/# What is the sampling rule of VisualDL)                                    |
 | walltime  | int    | Record the time-stamp of the data, the default is the current time-stamp |
 
 *Note that the rules of specifying tags (e.g.train/acc) are:
 
 1. The tag before the first  `/` is the parent tag and serves as the tag of the same raw
-2. The tag after the first `/` is a child tag, the charts with child tag will be displayed under the parent tag
+2. The tag after the first `/` is a child tag, the charts with child tag will be displayed under the parent tag. The data of the same parent tag but different child tags will be displayed in the same column, but not in the same picture.
 3. Users can use multiple `/`, but the tag of a raw is the parent tag--the tag before the first `/`
 
 Here are three examples:
@@ -108,7 +108,7 @@ The following shows the comparison of multiple sets of experiments using Scalar.
 There are two steps to achieve this function:
 
 1. Create sub-log files to store the parameter data of each group of experiments
-2. When recording data to the scalar component，developers can compare **the same type of parameters for different experiments**  by **using the same tag**
+2. When recording data to the scalar component，developers can compare **the same type of parameters for different experiments**  by **using the same tag**. Note that the log files you want to display must be placed in different directories because only one log file in a directory is valid and displayed.
 
 ```python
 from visualdl import LogWriter
@@ -144,6 +144,7 @@ Then, open the browser and enter the address: `http://127.0.0.1:8080` to view li
   <img src="https://user-images.githubusercontent.com/48054808/90884963-4dc41980-e3e3-11ea-824a-277a8d71823e.png" width="100%"/>
 </p>
 *For more specific details of how to compare multiple experiments, pleas refer to the project on AI Studio：[VisualDL 2.0--Visualization of eye disease recognition training](https://aistudio.baidu.com/aistudio/projectdetail/502834)
+It can be seen that the data of different experiments (determined by the path) are displayed in different pictures, and the data of the same tag is displayed on the same picture for comparison.
 
 ### Functional Instruction
 
@@ -231,10 +232,10 @@ The interface parameters are described as follows:
 | parameter | format        | meaning                                                      |
 | --------- | ------------- | ------------------------------------------------------------ |
 | tag       | string        | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
-| img       | numpy.ndarray | Images in ndarray format                                     |
+| img       | numpy.ndarray | Images in ndarray format. According to its format, it has different dimensions. The default `HWC` format dimension is [h, w, c], where c can be 1, 3, 4, and note that the image data cannot be None.                                     |
 | step      | int           | Record the training steps                                    |
 | walltime  | int           | Record the time-stamp of the data, the default is the current time-stamp |
-| dataformats| string       | Format of image，include `NCHW`、`HWC`、`HW`，default is `HWC`|
+| dataformats| string       | Format of image，include `NCHW`、`HWC`、`HW`，default is `HWC`. It will be converted to `HWC` format when stored.|
 
 ### Demo
 The following shows an example of using Image to record data, and the script can be found in [Image Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py).
@@ -308,9 +309,9 @@ The interface parameters are described as follows:
 | parameter | format        | meaning                                                      |
 | --------- | ------------- | ------------------------------------------------------------ |
 | tag      | string        | Record the name of the audio，e.g.audoi/sample. Notice that the name cannot contain `%` |
-| audio_arry      | numpy.ndarray | Audio in ndarray format                     |
+| audio_arry      | numpy.ndarray | Audio in ndarray format, whose elements are float values, and the range should be sampled in [-1, 1]                     |
 | step     | int           | Record the training steps                                  |
-| sample_rate | int           | Sample rate，**Please note that the rate should be the rate of the original audio**          |
+| sample_rate | int           | Sample rate，the default sampling rate is 8000. **Please note that the rate should be the rate of the original audio**          |
 
 ### Demo
 The following shows an example of using Audio to record data, and the script can be found in [Audio Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/audio_test.py).

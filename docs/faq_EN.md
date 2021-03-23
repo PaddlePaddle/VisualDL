@@ -28,3 +28,14 @@ Because there are two or more values in a certain step, you will find the curves
 Please check the version of VisualDL you use (which visualdl). According to the error, it is most likely that you are using the VisualDL 1.3, which attributes to Python 2 you use. Python 2 will install the old version of VisualDL automatically.
 
 At present, VisualDL does not support Python 2 any more. And the instructions of existing official documents ae based on VisualDL 2.0, which also will not support Python 2. We suggest upgrading the Python's version to Python 3 and installing the latest version of VisualDL. In this way, the problem will not appear again.
+
+
+## How to modify an existing log file
+Different needs have different solutions
+1. If you need to continue to add logs to the existing log file, specify the `file_name` parameter as the log name when using LogWriter to obtain the log generator, and this log will be written when subsequent data is added.
+2. If you need to add or delete some data in the log, you can read the log through LogReader and process it, and then write it back to a new file. Refer to [LogReader Tutorial](./components#LogReader)
+
+
+## What are the sampling rules of VisualDL
+In order to minimize the scale of data transmission and make the sampling as uniform as possible, while minimizing the CPU resource occupation required for sampling, VisualDL uses a reservoir sampling algorithm to complete all the back-end data sampling before transmitting to the front-end.
+Regarding the principle and proof of reservoir sampling, please refer to [Reservoir sampling](https://en.wikipedia.org/wiki/Reservoir_sampling). Reservoir sampling can avoid loading all data at once through streaming sampling. Memory, and ensure that the sampling sequence is as even as possible.
