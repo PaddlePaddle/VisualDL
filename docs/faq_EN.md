@@ -32,8 +32,8 @@ At present, VisualDL does not support Python 2 any more. And the instructions of
 
 ## How to modify an existing log file
 Different needs have different solutions
-1. If you need to continue to add logs to the existing log file, specify the `file_name` parameter as the log name when using LogWriter to obtain the log generator, and this log will be written when subsequent data is added.
-2. If you need to add or delete some data in the log, you can read the log through LogReader and process it, and then write it back to a new file. Refer to [LogReader Tutorial](./components#LogReader)
+1. If you need to continue to add logs to an existing log file, please specify the file_name parameter as the log name when using LogWriter to obtain the log generator, and this log will be written when subsequent data is added.
+2. If you need to add or delete some data in the log, you can read the log through LogReader and process it, and then write it back to a new file. Please refer to LogReader Tutorial.
 
 
 ## What are the sampling rules of VisualDL

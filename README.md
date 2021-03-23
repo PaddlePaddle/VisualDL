@@ -160,9 +160,9 @@ Parameter details:
 
 | parameters      | meaning                                                      |
 | --------------- | ------------------------------------------------------------ |
-| --logdir        | Set one or more directories of the log. VisualDL will search the log file recursively under this path to display all the experimental results. |
+| --logdir        | Set one or more directories of the log. All the logs in the paths or subdirectories will be displayed on the VisualDL Board indepentently. |
 | --model         | Set a path to the model file (not a directory). VisualDL will visualize the model file in Graph page. PaddlePaddle、ONNX、Keras、Core ML、Caffe and other model formats are supported. Please refer to [Graph - Functional Instructions](./docs/components/UserGuide-en.md#functional-instructions-2). |
-| --host          | Specify IP address. The default value is `127.0.0.1`. Specify it as `0.0.0.0` or public IP address so that other machine can visit VisualDL Board.       |
+| --host          | Specify IP address. The default value is `127.0.0.1`. Specify it as `0.0.0.0` or public IP address so that other machines can visit VisualDL Board.       |
 | --port          | Set the port. The default value is `8040`.                   |
 | --cache-timeout | Cache time of the backend. During the cache time, the front end requests the same URL multiple times, and then the returned data are obtained from the cache. The default cache time is 20 seconds. |
 | --language      | The language of the VisualDL panel. Language can be specified as 'en' or 'zh', and the default is the language used by the browser. |
@@ -198,9 +198,9 @@ The interface parameters are as follows:
 
 | parameters    | type                                               | meaning                                                      |
 | ------------- | -------------------------------------------------- | ------------------------------------------------------------ |
-| logdir        | string or list[string_1, string_2, ... , string_n] | Set one or more directories of the log. VisualDL will search the log file recursively under this path to display all the experimental results. The logs in each path and its subdirectories will be treated as independent logs and displayed on the VisualDL Board.|
+| logdir        | string or list[string_1, string_2, ... , string_n] | Set one or more directories of the log. All the logs in the paths or subdirectories will be displayed on the VisualDL Board indepentently.|
 | model         | string                                             | Set a path to the model file (not a directory). VisualDL will visualize the model file in Graph page. |
-| host          | string                                             | Specify IP address. The default value is `127.0.0.1`. Specify it as `0.0.0.0` or public IP address so that other machine can visit VisualDL Board.       |
+| host          | string                                             | Specify IP address. The default value is `127.0.0.1`. Specify it as `0.0.0.0` or public IP address so that other machines can visit VisualDL Board.       |
 | port          | int                                                | Set the port. The default value is `8040`.                   |
 | cache_timeout | int                                                | Cache time of the backend. During the cache time, the front end requests the same URL multiple times, and then the returned data are obtained from the cache. The default cache time is 20 seconds. |
 | language      | string                                             | The language of the VisualDL panel. Language can be specified as 'en' or 'zh', and the default is the language used by the browser. |
