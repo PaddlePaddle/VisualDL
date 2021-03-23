@@ -19,6 +19,7 @@ import numpy as np
 from visualdl.writer.record_writer import RecordFileWriter
 from visualdl.server.log import logger
 from visualdl.utils.img_util import merge_images
+from visualdl.utils.figure_util import figure_to_image
 from visualdl.component.base_component import scalar, image, embedding, audio, \
     histogram, pr_curve, roc_curve, meta_data, text
 
@@ -191,6 +192,33 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             image(tag=tag, image_array=img, step=step, walltime=walltime,
                   dataformats=dataformats))
+
+    def add_figure(self, tag, figure, step, walltime=None):
+        """Add an figure to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            figure (matplotlib.figure.Figure): Image represented by a Figure
+            step (int): Step of image
+            walltime (int): Wall time of image
+            dataformats (string): Format of image
+
+        Example:
+            form matplotlib import pyplot as plt
+            import numpy as np
+
+            x = np.arange(100)
+            y = x ** 2 + 1
+            plt.plot(x, y)
+            fig = plt.gcf()
+            writer.add_figure(tag="lll", figure=fig, step=0)
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        walltime = round(time.time() * 1000) if walltime is None else walltime
+        img = figure_to_image(figure)
+        self._get_file_writer().add_record(
+            image(tag=tag, image_array=img, step=step, walltime=walltime))
 
     def add_text(self, tag, text_string, step=None, walltime=None):
         """Add an text to vdl record file.
