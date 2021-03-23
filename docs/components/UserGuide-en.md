@@ -43,7 +43,7 @@ The interface parameters are described as follows:
 | --------- | ------ | ------------------------------------------------------------ |
 | tag       | string | Record the name of the scalar data，e.g.train/loss. Notice that the name cannot contain `%` |
 | value     | float  | Record the data, can't be `None`                                              |
-| step      | int    | Record the training steps. The data corresponding to several steps will be extracted for display (the sampling algorithm used by VisualDL is reservoir sampling, please refer to [VisualDL sampling algorithm](../../faq.md/# What is the sampling rule of VisualDL)                                    |
+| step      | int    | Record the training steps. The data corresponding to several steps will be extracted for display (the sampling algorithm used by VisualDL is reservoir sampling, please refer to [VisualDL sampling algorithm](../faq.md/#What is the sampling rule of VisualDL)                                    |
 | walltime  | int    | Record the time-stamp of the data, the default is the current time-stamp |
 
 *Note that the rules of specifying tags (e.g.train/acc) are:
