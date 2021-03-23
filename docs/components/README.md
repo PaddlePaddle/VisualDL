@@ -40,14 +40,14 @@ add_scalar(tag, value, step, walltime=None)
 |   参数   |  格式  |                    含义                     |
 | -------- | ------ | ------------------------------------------- |
 | tag      | string | 记录指标的标志，如`train/loss`，不能含有`%` |
-| value    | float  | 要记录的数据值                              |
-| step     | int    | 记录的步数                                  |
+| value    | float  | 要记录的数据值，不能为None                              |
+| step     | int    | 记录的标量数据的步数，前端将抽取若干step对应的数据进行展示                                  |
 | walltime | int    | 记录数据的时间戳，默认为当前时间戳          |
 
 *注意tag的使用规则为：
 
 1. 第一个`/`前的为父tag，并作为一栏图片的tag
-2. 第一个`/`后的为子tag，子tag的对应图片将显示在父tag下
+2. 第一个`/`后的为子tag，子tag的对应图片将显示在父tag下，同一个父tag而不同子tag的数据将展示在一栏，但不是一张图中
 3. 可以使用多次`/`，但一栏图片的tag依旧为第一个`/`前的tag
 
 具体使用参见以下三个例子：
@@ -106,21 +106,21 @@ visualdl --logdir ./log --port 8080
 多组实验对比的实现分为两步：
 
 1. 创建子日志文件储存每组实验的参数数据
-2. 将数据写入scalar组件时，**使用相同的tag**，即可实现对比**不同实验**的**同一类型参数**
+2. 将数据写入scalar组件时，**使用相同的tag**，即可实现对比**不同实验**的**同一类型参数**，这里注意想展示的日志文件必须放在不同的目录下，默认一个目录中只有一个日志文件有效且被展示
 
 ```python
 from visualdl import LogWriter
 
 if __name__ == '__main__':
     value = [i/1000.0 for i in range(1000)]
-    # 步骤一：创建父文件夹：log与子文件夹：scalar_test
+    # 步骤一：创建父文件夹：log，子文件夹：scalar_test
     with LogWriter(logdir="./log/scalar_test") as writer:
         for step in range(1000):
             # 步骤二：向记录器添加一个tag为`train/acc`的数据
             writer.add_scalar(tag="train/acc", step=step, value=value[step])
             # 步骤二：向记录器添加一个tag为`train/loss`的数据
             writer.add_scalar(tag="train/loss", step=step, value=1/(value[step] + 1))
-    # 步骤一：创建第二个子文件夹scalar_test2       
+    # 步骤一：创建第二个子文件夹：scalar_test2
     value = [i/500.0 for i in range(1000)]
     with LogWriter(logdir="./log/scalar_test2") as writer:
         for step in range(1000):
@@ -142,7 +142,9 @@ visualdl --logdir ./log --port 8080
   <img src="https://user-images.githubusercontent.com/48054808/84644158-5efb3080-af31-11ea-8e64-bbe4078425f4.png" width="100%"/>
 </p>
 
-*多组实验对比的应用案例可参考AI Studio项目：[VisualDL 2.0--眼疾识别训练可视化](https://aistudio.baidu.com/aistudio/projectdetail/502834)
+可以看出，不同实验（由路径决定）的数据在不同的图中展示，相同tag的数据在同一张图上展示，以便对比
+
+*多组实验对比的应用案例可以参考AI Studio项目：[VisualDL 2.0--眼疾识别训练可视化](https://aistudio.baidu.com/aistudio/projectdetail/502834)
 
 ### 功能操作说明
 
@@ -153,13 +155,11 @@ visualdl --logdir ./log --port 8080
 </p>
 
 
-
 * 数据点Hover展示详细信息
 
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/scalar-tooltip.png" width="60%"/>
 </p>
-
 
 
 * 可搜索卡片标签，展示目标图像
@@ -169,12 +169,12 @@ visualdl --logdir ./log --port 8080
 </p>
 
 
-
 * 可搜索打点数据标签，展示特定数据
 
 <p align="center">
   <img src="https://visualdl.bj.bcebos.com/images/scalar-searchstream.png" width="40%"/>
 </p>
+
 
 * 选择显示最值，展示最大最小值以及对应的训练步数
 
@@ -186,6 +186,7 @@ visualdl --logdir ./log --port 8080
   <img src="https://user-images.githubusercontent.com/48054808/93732424-d8c34a00-fc03-11ea-8b7b-0a728274f50f.png" width="60%"/>
 </p>
 
+
 * 选择仅显示平滑后的数据
 
 <p align="center">
@@ -195,6 +196,7 @@ visualdl --logdir ./log --port 8080
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/93732514-4cfded80-fc04-11ea-99c9-9053f9945c8b.png" width="60%"/>
 </p>
+
 
 * X轴有三种衡量尺度
 
@@ -229,10 +231,10 @@ add_image(tag, img, step, walltime=None, dataformats="HWC")
 |   参数   |     格式      |                    含义                     |
 | -------- | ------------- | ------------------------------------------- |
 | tag      | string        | 记录指标的标志，如`train/loss`，不能含有`%` |
-| img      | numpy.ndarray | 以ndarray格式表示的图片                     |
-| step     | int           | 记录的步数                                  |
+| img      | numpy.ndarray | 以ndarray格式表示的图片，根据其格式具有不同的维度，默认`HWC`格式维度为[h, w, c]其中c可以为1、3、4，注意图片数据不能为None                     |
+| step     | int           | 记录的图片数据步数                                  |
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
-| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
+| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`，在存储时会转化成`HWC`格式后继续存储|
 
 ### Demo
 下面展示了使用 Image 组件记录数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py)
@@ -249,6 +251,7 @@ def random_crop(img):
     w, h = img.size
     random_w = np.random.randint(0, w - 100)
     random_h = np.random.randint(0, h - 100)
+    # 生成HWC格式的图片
     r = img.crop((random_w, random_h, random_w + 100, random_h + 100))
     return np.asarray(r)
 
@@ -300,14 +303,14 @@ add_image_matrix(tag, imgs, step, rows=-1, scale=1, walltime=None, dataformats="
 |   参数   |     格式      |                    含义                     |
 | -------- | ------------- | ------------------------------------------- |
 | tag      | string        | 记录指标的标志，如`train/loss`，不能含有`%` |
-| imgs     | numpy.ndarray | 以ndarray格式表示的多张图片，第一维为图片的数量  |
-| step     | int           | 记录的步数                                  |
-| rows     | int           | 生成图片矩阵的行数，默认值为-1，表示尽量把传入的图片组合成行列数相近的形式 |
-| scale    | int           | 图片放大比例，默认为1 |
+| imgs     | numpy.ndarray | 以ndarray格式表示的多张图片，第一维为图片的数量，其他维度表示一张图片，根据其格式具有不同的维度，默认`HWC`格式维度为[h, w, c]其中c可以为1、3、4，注意图片数据不能为None  |
+| step     | int           | 记录的图片矩阵的步数                                  |
+| rows     | int           | 生成图片矩阵的行数，默认值为-1，表示尽量把传入的图片组合成行列数相近的形式，否则将自动将图片排列按照rows进行重新组织 |
+| scale    | int           | 图片放大比例，默认为1，放大缩小图片可能造成图片像素缺失 |
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
-| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`|
+| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`，在存储时会转化成`HWC`格式后继续存储|
 
-**PS：当给定的子图像数量不足时，将用空白图像填充，以保证生成的图形为完整矩形**
+**PS：当给定的子图像数量不足时，默认将用空白图像填充，以保证生成的图形为完整矩形**
 
 #### Demo
 下面展示了使用 Image 组件合成并记录多张图片数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_matrix_test.py)
@@ -323,6 +326,7 @@ if __name__ == '__main__':
         imgs.append(np.asarray(Image.open("../../docs/images/images_matrix/%s.jpg" % str((index)))))
 
     with LogWriter(logdir='./log/image_matrix_test/train') as writer:
+        # 使用add_image记录单张图片
         writer.add_image(tag='detection', step=0, img=imgs[0])
         # 合成长宽尽量接近的图形矩阵，本例生成3X2的矩阵
         writer.add_image_matrix(tag='detection', step=1, imgs=imgs, rows=-1)
@@ -365,9 +369,9 @@ add_audio(tag, audio_array, step, sample_rate)
 |   参数   |     格式      |                    含义                     |
 | -------- | ------------- | ------------------------------------------- |
 | tag      | string        | 记录指标的标志，如`audio_tag`，不能含有`%` |
-| audio_arry      | numpy.ndarray | 以ndarray格式表示的音频                     |
-| step     | int           | 记录的步数                                  |
-| sample_rate | int           | 采样率，**注意正确填写对应音频的采样率**          |
+| audio_arry      | numpy.ndarray | 以ndarray格式表示的音频，其元素为float值，范围应采样在[-1, 1]                     |
+| step     | int           | 记录的音频数据步数                                  |
+| sample_rate | int           | 采样率，默认采样率为8000，**注意正确填写对应音频的采样率**          |
 
 
 ### Demo
@@ -449,7 +453,7 @@ add_text(tag, text_string, step=None, walltime=None)
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
 | text_string    | string                | 文本字符串           |
-| step           | int                   | 记录的步数                                  |
+| step           | int                   | 记录的文本步数                                  |
 | walltime       | int                   | 记录数据的时间戳，默认为当前时间戳     |
 
 ### Demo
@@ -613,7 +617,7 @@ add_histogram(tag, values, step, walltime=None, buckets=10)
 | -------- | --------------------- | ------------------------------------------- |
 | tag      | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
 | values   | numpy.ndarray or list | 以ndarray或list格式表示的数据                     |
-| step     | int                   | 记录的步数                                  |
+| step     | int                   | 记录的直方图步数                                  |
 | walltime | int                   | 记录数据的时间戳，默认为当前时间戳          |
 | buckets  | int                   | 生成直方图的分段数，默认为10          |
 
@@ -712,7 +716,7 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 | tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
 | labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
 | predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
-| step           | int                   | 记录的步数                                  |
+| step           | int                   | 记录的pr curve曲线步数                                  |
 | num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
 | weights        | float                 | 用于设置TP/FP/TN/FN在计算precision和recall时的权重       |
 | walltime       | int                   | 记录数据的时间戳，默认为当前时间戳     |
@@ -725,10 +729,12 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 from visualdl import LogWriter
 import numpy as np
 
+# 生成一个日志记录器
 with LogWriter("./log/pr_curve_test/train") as writer:
     for step in range(3):
         labels = np.random.randint(2, size=100)
         predictions = np.random.rand(100)
+        # 添加一条pr curve曲线数据
         writer.add_pr_curve(tag='pr_curve',
                             labels=labels,
                             predictions=predictions,
@@ -810,7 +816,7 @@ add_roc_curve(tag, labels, predictions, step=None, num_thresholds=10)
 | tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
 | labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别           |
 | predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别           |
-| step           | int                   | 记录的步数                                  |
+| step           | int                   | 记录的roc curve曲线的步数                                  |
 | num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
 | weights        | float                 | 用于设置TP/FP/TN/FN在计算precision和recall时的权重       |
 | walltime       | int                   | 记录数据的时间戳，默认为当前时间戳     |
@@ -823,10 +829,12 @@ add_roc_curve(tag, labels, predictions, step=None, num_thresholds=10)
 from visualdl import LogWriter
 import numpy as np
 
+# 生成一个日志记录器
 with LogWriter("./log/roc_curve_test/train") as writer:
     for step in range(3):
         labels = np.random.randint(2, size=100)
         predictions = np.random.rand(100)
+        # 添加一条roc数据
         writer.add_roc_curve(tag='roc_curve',
                              labels=labels,
                              predictions=predictions,

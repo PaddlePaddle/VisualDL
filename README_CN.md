@@ -116,13 +116,13 @@ class LogWriter(logdir=None,
 | 参数            | 格式    | 含义                                                         |
 | --------------- | ------- | ------------------------------------------------------------ |
 | logdir          | string  | 日志文件所在的路径，VisualDL将在此路径下建立日志文件并进行记录，如果不填则默认为`runs/${CURRENT_TIME}` |
-| comment         | string  | 为日志文件夹名添加后缀，如果制定了logdir则此项无效           |
+| comment         | string  | 为日志文件夹名添加后缀，如果指定了logdir则此项无效           |
 | max_queue       | int     | 日志记录消息队列的最大容量，达到此容量则立即写入到日志文件   |
-| flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件 |
+| flush_secs      | int     | 日志记录消息队列的最大缓存时间，达到此时间则立即写入到日志文件（日志消息队列到达最大缓存时间或最大容量，都会立即写入日志文件） |
 | filename_suffix | string  | 为默认的日志文件名添加后缀                                   |
 | write_to_disk   | boolean | 是否写入到磁盘                                               |
-| display_name    | string  | 在面板中替换实际显示的`logdir`，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
-| file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，文件名必须包括`vdlrecords` |
+| display_name    | string  | 指定面板启动后显示的路径，如不指定此项则显示日志所在的实际路径，当日志所在路径过长或想隐藏日志所在路径时可指定此参数 |
+| file_name       | string  | 指定写入的日志文件名，如果指定的文件名已经存在，则将日志续写在此文件中，因此可通过此参数实现日志续写的功能，文件名必须包括`vdlrecords` |
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/103187556-b9714280-48ff-11eb-9052-008e02a21199.png" width="100%"/>
@@ -165,7 +165,7 @@ visualdl --logdir <dir_1, dir_2, ... , dir_n> --model <model_file> --host <host>
 | --------------- | ------------------------------------------------------------ |
 | --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化 |
 | --model         | 设定模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2) |
-| --host          | 设定IP，默认为`127.0.0.1`                                    |
+| --host          | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                                    |
 | --port          | 设定端口，默认为`8040`                                       |
 | --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
 | --language      | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言   |
@@ -200,9 +200,9 @@ visualdl.server.app.run(logdir,
 
 | 参数          | 格式                                             | 含义                                                         |
 | ------------- | ------------------------------------------------ | ------------------------------------------------------------ |
-| logdir        | string或list[string_1, string_2, ... , string_n] | 日志文件所在的路径，VisualDL将在此路径下递归搜索日志文件并进行可视化，可指定单个或多个路径 |
-| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化 |
-| host          | string                                           | 指定启动服务的ip，默认为`127.0.0.1`                          |
+| logdir        | string或list[string_1, string_2, ... , string_n] | 日志文件所在的路径，VisualDL将在此路径下递归搜索日志文件并进行可视化，可指定单个或多个路径，每个路径中及其子目录中的日志都将视为独立日志展现在前端面板上 |
+| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2) |
+| host          | string                                           | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                       |
 | port          | int                                              | 启动服务端口，默认为`8040`                                   |
 | cache_timeout | int                                              | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
 | language      | string                                           | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言   |
