@@ -235,7 +235,7 @@ The interface parameters are described as follows:
 | img       | numpy.ndarray | Images in ndarray format. The default `HWC` format dimension is [h, w, c], h and w are the height and width of the images, and c is the number of channels, which can be 1, 3, 4. Floating point data will be clipped to the range[0, 1), and note that the image data cannot be None.                                     |
 | step      | int           | Record the training steps                                    |
 | walltime  | int           | Record the time-stamp of the data, the default is the current time-stamp |
-| dataformats| string       | Format of image，include `NCHW`、`HWC`、`CHW`、`HW`，default is `HWC`. It will be converted to `HWC` format when stored.|
+| dataformats| string       | Format of image，include `NCHW`、`NHWC`、`HWC`、`CHW`、`HW`，default is `HWC`. It will be converted to `HWC` format when stored.|
 
 ### Demo
 The following shows an example of using Image to record data, and the script can be found in [Image Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py).
