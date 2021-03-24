@@ -1,40 +1,40 @@
-# 常见问题
+# Frequently Asked Questions
 
- [**English**](./faq_EN.md)
+[**中文**](./faq_CN.md)
 
-## 打开浏览器出现空白或者发生错误
-可参照下列步骤排除错误原因
-1. 确保启动VisualDL时指定的`logdir`路径正确，并确保其下有符合命名要求（文件名包含`vdlrecords`）的日志文件，可进入`logdir`指定的文件夹先行查看。若未解决，转下步。
-2. 确认浏览器及版本符合VisualDL要求，建议使用**最新版本**的chrome及chrome内核浏览器、火狐浏览器，尝试更换浏览器及升级到最新版本。若未解决，转下步。
-3. 将`--host`参数指定为`0.0.0.0`或`127.0.0.1`，注意后者仅支持本机查看，若在服务器启动并在异地查看，需使用`0.0.0.0`并确保使用的端口可被外网访问。若未解决，转下步。
-4. 关闭并重新打开VisualDL前端页面，或强制刷新浏览器并等待15-30秒。若未解决，转下步。
-5. 若是windows机器，可查看是否注册表被修改，参考解决[解决注册表修改导致无法查看日志](https://github.com/PaddlePaddle/VisualDL/issues/834)
-若经过上述尝试仍无法解决，可在VisualDL GitHub Issue进行提问[VDL Issue](https://github.com/PaddlePaddle/VisualDL/issues)
+## How can I do when I see a blank page or error messages in the browser?
+To work out bugs, you can follow the steps： 
+1. You should ensure that the `logdir` path set by VisualDL is correct. In the meanwhile, there must be a log file and its name (including `vdlrecords`) should be correct. And then you can check the folder set by `logdir`. If it is not okay, try the next step.
+2. Please check the browser and its version, and ensure it fits VisualDL. We suggest using **the latest versions** of Chrome browser, browsers with Chrome’s kernel, Firefox browser. Please change browsers and upgrade it to the latest version. If it is not okay, try the next step.
+3. Please specify `--host`as `0.0.0.0` or `127.0.0.1`. And the latter one only supports the local address. If the server runs and you want to check by other addresses, please use `0.0.0.0` and ensure the end can be visited by outer net. If it is not okay, try the next step.
+4. Close and re-open the front-end page of VisualDL. Or do a hard refresh on the browser and wait for 15-30 seconds. If it is not okay, try the next step.
+5. If you use windows, please check whether the registry is modified. For users who want to get into more details, please refer to https://github.com/PaddlePaddle/VisualDL/issues/834. If all the steps do not work, please ask questions in VisualDL GitHub Issue. The link is [VDL Issue](https://github.com/PaddlePaddle/VisualDL/issues).
 
-## 使用Image、Audio、Text组件仅显示10个样本
-为保证使用体验，防止由于数据量过大造成前端页面卡死或崩溃，在展示Image、Audio、Text组件时使用采样算法进行了数据采样后展示。  
-尽管数据在前端展示进行了采样，但在日志中保存的数据仍为全部数据，可通过`VisualDL.LogReader`进行全部数据获取，可参考[LogReader使用教程](./components#LogReader)
+## When I use modules of Image, Audio and Text, there are only ten samples.
+We apply random sampling algorithm to display sampled data, when using modules of Image, Audio and Text. In this way, the front-end page will not be stuck or will not crash because of too much data, and then we can ensure users’ experience. 
 
-## 为什么Scalar绘制的曲线是迂回的
-当你发现绘制的曲线如下图所示，某个step对应的value不止一个值时，请检查你的脚本，是否在使用`add_scalar`时为一个step重复添加了多次value。
+Though data shown in the front-page are sampled, all the data are saved in the log file. You can obtain all the data by using `VisualDL.LogReader`. For more details, please refer to our [LogReader tutorial](./components#LogReader).
+
+## Why are the curves drawn by Scalar twisty?
+Because there are two or more values in a certain step, you will find the curves you draw are like the following picture. Please check your script and find whether you add several values to one step, when using`add_scalar`.
+
 <p align="center">
     <img src="https://user-images.githubusercontent.com/28444161/99496785-de44d280-29af-11eb-8fbd-ebc7a4919f2f.png" width="40%"/>
 </p>
 
 
-## 官方用例报错，LogWriter对象没有mode属性
+## How can I do when confronted with the error of official use cases, saying that the target of LogWriter does not have the mode attribute?
 
-可以检查一下使用的VisualDL的版本（which visualdl），因为按照此报错来看，大概率是因使用的是Python2，自动安装了VisualDL 1.3版本，但官方示例均基于2.0版本的，故导致此报错。
-由于目前VisualDL已经不维护python2了，且现有官方文档上的使用说明都是基于2.0版本的，并且将不再维护旧版本，建议升级至Python3，安装最新版的VisualDL，即不会出现上述问题。
+Please check the version of VisualDL you use (which visualdl). According to the error, it is most likely that you are using the VisualDL 1.3, which attributes to Python 2 you use. Python 2 will install the old version of VisualDL automatically.
 
-
-## 如何修改已有的日志文件
-
-不同的需求距有不同的解决思路
-1. 如果需要在已有的日志文件中继续添加日志，则在使用LogWriter获取日志生成器时指定`file_name`参数为此日志名，则后续添加数据时都会写入此日志。
-2. 如果需要增加或删除日志中某些数据，则可以通过LogReader读取日志并处理后，重新写入到新的文件中，可参考[LogReader使用教程](./components#LogReader)
+At present, VisualDL does not support Python 2 any more. And the instructions of existing official documents ae based on VisualDL 2.0, which also will not support Python 2. We suggest upgrading the Python's version to Python 3 and installing the latest version of VisualDL. In this way, the problem will not appear again.
 
 
-## VisualDL的采样规则是什么
-为了尽量减少数据传输规模且尽可能均匀化采样，同时最小化采样所需的CPU资源占用，VisualDL使用蓄水池采样算法完成对后端所有数据采样后再向前端传输。
-关于蓄水池采样的原理和证明，可参考[Reservoir sampling](https://en.wikipedia.org/wiki/Reservoir_sampling)，蓄水池采样能够通过流式采样的方式避免一次性加载所有数据到内存，且保证采样序列尽量平均。
+## How to modify an existing log file
+Different needs have different solutions
+1. If you need to continue to add logs to an existing log file, please specify the file_name parameter as the log name when using LogWriter to obtain the log generator, and this log will be written when subsequent data is added.
+2. If you need to add or delete some data in the log, you can read the log through LogReader and process it, and then write it back to a new file. Please refer to LogReader Tutorial.
+
+
+## What are the sampling rules of VisualDL
+In order to minimize the CPU resource occupation for sampling,  we improve the efficiency of data transmission and make the sampling uniform by using a reservoir sampling algorithm. In this way, all the data will be sampled in the back-end and then transmitted to the front-end. Reservoir Sampling can avoid loading all data through streaming sampling at once. For more details of the sampling theory, please refer to Reservoir Sampling.
