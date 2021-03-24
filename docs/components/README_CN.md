@@ -234,7 +234,7 @@ add_image(tag, img, step, walltime=None, dataformats="HWC")
 | img      | numpy.ndarray | 以ndarray格式表示的图片，默认`HWC`格式维度为[h, w, c]，其中h和w代表图像的高度和宽度，c代表图像的通道数，可以为1、3、4，图像数据的浮点型数值会被归一化到[0, 1]。注意图片数据不能为None                     |
 | step     | int           | 记录的图片数据步数                                  |
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
-| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`CHW`、`HW`，默认为`HWC`，在存储时会转化成`HWC`格式后继续存储|
+| dataformats| string      | 传入的图片格式，包括`NCHW`、`NHWC`、`HWC`、`CHW`、`HW`，默认为`HWC`，在存储时会转化成`HWC`格式后继续存储|
 
 ### Demo
 下面展示了使用 Image 组件记录数据的示例，代码文件请见[Image组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/image_test.py)
@@ -308,7 +308,7 @@ add_image_matrix(tag, imgs, step, rows=-1, scale=1, walltime=None, dataformats="
 | rows     | int           | 生成图片矩阵的行数，默认值为-1，表示尽量把传入的图片组合成行列数相近的形式，否则将自动将图片排列按照rows进行重新组织 |
 | scale    | int           | 图片放大比例，默认为1，放大缩小图片可能造成图片像素缺失 |
 | walltime | int           | 记录数据的时间戳，默认为当前时间戳          |
-| dataformats| string      | 传入的图片格式，包括`NCHW`、`HWC`、`HW`，默认为`HWC`，在存储时会转化成`HWC`格式后继续存储|
+| dataformats| string      | 传入的图片格式，包括`NCHW`、`NHWC`、`HWC`、`HW`，默认为`HWC`，在存储时会转化成`HWC`格式后继续存储|
 
 **PS：当给定的子图像数量不足时，默认将用空白图像填充，以保证生成的图形为完整矩形**
 
