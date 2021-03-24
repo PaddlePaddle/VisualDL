@@ -616,7 +616,7 @@ add_histogram(tag, values, step, walltime=None, buckets=10)
 |   参数   |          格式          |                    含义                     |
 | -------- | --------------------- | ------------------------------------------- |
 | tag      | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
-| values   | numpy.ndarray or list | 以ndarray或list格式表示的数据，其维度为(N, 1)                     |
+| values   | numpy.ndarray or list | 以ndarray或list格式表示的数据，其维度为(N, )                     |
 | step     | int                   | 记录的直方图步数                                  |
 | walltime | int                   | 记录数据的时间戳，默认为当前时间戳          |
 | buckets  | int                   | 生成直方图的分段数，默认为10          |
@@ -714,8 +714,8 @@ add_pr_curve(tag, labels, predictions, step=None, num_thresholds=10)
 | 参数           | 格式                  | 含义                                        |
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
-| labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别，维度为(N, 1)，值为0或1          |
-| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别，维度为(N, 1)，值的范围应该在[0, 1]           |
+| labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别，维度为(N, )，值为0或1          |
+| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别，维度为(N, )，值的范围应该在[0, 1]           |
 | step           | int                   | 记录的pr curve曲线步数                                  |
 | num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
 | weights        | float                 | 用于设置TP/FP/TN/FN在计算precision和recall时的权重       |
@@ -814,8 +814,8 @@ add_roc_curve(tag, labels, predictions, step=None, num_thresholds=10)
 | 参数           | 格式                  | 含义                                        |
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | 记录指标的标志，如`train/loss`，不能含有`%` |
-| labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别，维度为(N, 1)，值为0或1           |
-| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别，维度为(N, 1)，值的范围应该在[0, 1]           |
+| labels         | numpy.ndarray or list | 以ndarray或list格式表示的实际类别，维度为(N, )，值为0或1           |
+| predictions    | numpy.ndarray or list | 以ndarray或list格式表示的预测类别，维度为(N, )，值的范围应该在[0, 1]           |
 | step           | int                   | 记录的roc curve曲线的步数                                  |
 | num_thresholds | int                   | 阈值设置的个数，默认为10，最大值为127       |
 | weights        | float                 | 用于设置TP/FP/TN/FN在计算precision和recall时的权重       |
@@ -877,7 +877,7 @@ add_embeddings(tag, labels, hot_vectors, walltime=None)
 |    参数     |        格式         |                         含义                         |
 | ----------- | ------------------- | ---------------------------------------------------- |
 | tag         | string              | 记录指标的标志，如`default`，不能含有`%`             |
-| labels      | numpy.array 或 list | 表示hot_vectors的标签，当只有一维时，labels的维度为(N, 1)，当有多个维度的labels时需要使用二维数组，其维度为(M, N, 1)，其中每个元素为某维度下的一维标签数组 |
+| labels      | numpy.array 或 list | 表示hot_vectors的标签，当只有一维时，labels的维度为(N, )，当有多个维度的labels时需要使用二维数组，其维度为(M, N)，其中每个元素为某维度下的一维标签数组 |
 | hot_vectors | numpy.array or list | 与labels一一对应，每个元素可以看作是某个标签的特征   |
 | labels_meta | numpy.array or list | labels的标签，与labels一一对应，不指定则使用默认值`__metadata__`，当labels为一维数组时无需指定   |
 | walltime    | int                 | 记录数据的时间戳，默认为当前时间戳                   |

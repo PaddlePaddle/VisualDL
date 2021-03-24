@@ -553,7 +553,7 @@ The interface parameters are described as follows:
 | parameter | format                | meaning                                                      |
 | --------- | --------------------- | ------------------------------------------------------------ |
 | tag       | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
-| values    | numpy.ndarray or list | Data is in ndarray or list format, which shape is (N, 1)        |
+| values    | numpy.ndarray or list | Data is in ndarray or list format, which shape is (N, )        |
 | step      | int                   | Record the training steps                                    |
 | walltime  | int                   | Record the time-stamp of the data, and the default is the current time-stamp |
 | buckets   | int                   | The number of segments to generate the histogram and the default value is 10 |
@@ -655,8 +655,8 @@ The interface parameters are described as follows:
 | parameter          | format                  | meaning                                        |
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
-| labels         | numpy.ndarray or list | Data is in ndarray or list format, which shape should be (N, 1) and value should be 0 or 1            |
-| predictions    | numpy.ndarray or list | Prediction data is in ndarray or list format, which shape should be (N, 1) and value should in [0, 1]           |
+| labels         | numpy.ndarray or list | Data is in ndarray or list format, which shape should be (N, ) and value should be 0 or 1            |
+| predictions    | numpy.ndarray or list | Prediction data is in ndarray or list format, which shape should be (N, ) and value should in [0, 1]           |
 | step           | int                   | Record the training steps                                  |
 | num_thresholds | int                   | Set the number of thresholds, default as 10, maximum as 127      |
 | weights        | float                 | Set the weights of TN/FN/TP/FP to calculate precision and recall      |
@@ -754,8 +754,8 @@ The interface parameters are described as follows:
 | parameter          | format                  | meaning                                        |
 | -------------- | --------------------- | ------------------------------------------- |
 | tag            | string                | Record the name of the image data，e.g.train/loss. Notice that the name cannot contain `%` |
-| values         | numpy.ndarray or list | Data is in ndarray or list format, which shape should be (N, 1) and value should be 0 or 1            |
-| predictions    | numpy.ndarray or list | Prediction data is in ndarray or list format, which shape should be (N, 1) and value should in [0, 1]             |
+| values         | numpy.ndarray or list | Data is in ndarray or list format, which shape should be (N, ) and value should be 0 or 1            |
+| predictions    | numpy.ndarray or list | Prediction data is in ndarray or list format, which shape should be (N, ) and value should in [0, 1]             |
 | step           | int                   | Record the training steps                                  |
 | num_thresholds | int                   | Set the number of thresholds, default as 10, maximum as 127      |
 | weights        | float                 | Set the weights of TN/FN/TP/FP to calculate precision and recall      |
@@ -816,7 +816,7 @@ The interface parameters are described as follows:
 | parameter   | format              | meaning                                                      |
 | ----------- | ------------------- | ------------------------------------------------------------ |
 | tag         | string              | Record the name of the high dimensional data, e.g.`default`. Notice that the name cannot contain `%` |
-| labels      | numpy.array or list | Represents the label of hot_vectors. The shape of `labels` should be (N, 1) if only one dimension, and should be (M, N, 1) if dimension of `labels` more than one, where each element is a one-dimensional label array. Each element is string type. |
+| labels      | numpy.array or list | Represents the label of hot_vectors. The shape of `labels` should be (N, ) if only one dimension, and should be (M, N) if dimension of `labels` more than one, where each element is a one-dimensional label array. Each element is string type. |
 | hot_vectors | numpy.array or list | Each element can be seen as a feature of the tag corresponding to the label. |
 | labels_meta | numpy.array or list | The labels of parameter `labels` correspond to `labels` one-to-one. If not specified, the default value `__metadata__` will be used. When parameter `labels` is a one-dimensional array, there is no need to specify this parameter  |
 | walltime    | int                 | Record the time stamp of the data, the default is the current time stamp. |
