@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import Chart, {ScatterChartOptions as ChartOptions} from './ScatterChart';
 import React, {useEffect, useImperativeHandle, useRef} from 'react';
 
+import type Chart from './ScatterChart';
+import type {ScatterChartOptions as ChartOptions} from './ScatterChart';
+import LabelChart from './Labels';
 import type {Point3D} from './types';
+import PointChart from './Points';
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
@@ -38,6 +41,7 @@ export type ScatterChartProps = {
     rotate?: boolean;
     focusedIndices?: number[];
     highlightIndices?: number[];
+    type: 'points' | 'labels';
 };
 
 export type ScatterChartRef = {
@@ -45,7 +49,7 @@ export type ScatterChartRef = {
 };
 
 const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithStyled>(
-    ({width, height, data, labels, is3D, rotate, focusedIndices, highlightIndices, className}, ref) => {
+    ({width, height, data, labels, is3D, rotate, focusedIndices, highlightIndices, type, className}, ref) => {
         const theme = useTheme();
 
         const element = useRef<HTMLDivElement>(null);
@@ -54,12 +58,18 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
 
         useEffect(() => {
             if (element.current) {
-                chart.current = new Chart(element.current, options.current);
+                if (type === 'points') {
+                    chart.current = new PointChart(element.current, options.current);
+                } else if (type === 'labels') {
+                    chart.current = new LabelChart(element.current, options.current);
+                } else {
+                    chart.current = null;
+                }
                 return () => {
                     chart.current?.dispose();
                 };
             }
-        }, []);
+        }, [type]);
 
         useEffect(() => {
             chart.current?.setDimension(is3D);
@@ -73,9 +83,8 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
         }, [is3D, rotate]);
 
         useEffect(() => {
-            chart.current?.setData(data);
-            chart.current?.setLabels(labels);
-        }, [data, labels]);
+            chart.current?.setData(data, labels);
+        }, [data, labels, type]);
 
         useEffect(() => {
             chart.current?.setFocusedPointIndices(focusedIndices ?? []);
@@ -87,7 +96,7 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
 
         useEffect(() => {
             chart.current?.setSize(width, height);
-        }, [width, height]);
+        }, [width, height, type]);
 
         useImperativeHandle(ref, () => ({
             reset: () => {
