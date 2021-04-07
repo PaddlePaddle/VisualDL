@@ -69,10 +69,11 @@ const Operations = styled.div`
 `;
 
 type ChartOperationsProps = {
+    onToggleLabelCloud?: () => unknown;
     onReset?: () => unknown;
 };
 
-const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onReset}) => {
+const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onToggleLabelCloud, onReset}) => {
     const {t} = useTranslation('high-dimensional');
 
     return (
@@ -83,14 +84,14 @@ const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onReset}) => 
                         <Icon type="selection" />
                     </span>
                 </a>
-            </Tippy>
+            </Tippy> */}
             <Tippy content={t('high-dimensional:3d-label')} placement="bottom" theme="tooltip">
-                <a className="three-d">
+                <a className="three-d" onClick={() => onToggleLabelCloud?.()}>
                     <span>
                         <Icon type="three-d" />
                     </span>
                 </a>
-            </Tippy> */}
+            </Tippy>
             <Tippy content={t('high-dimensional:reset-zoom')} placement="bottom" theme="tooltip">
                 <a onClick={() => onReset?.()}>
                     <span>

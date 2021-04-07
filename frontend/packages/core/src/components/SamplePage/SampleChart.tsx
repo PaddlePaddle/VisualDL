@@ -23,7 +23,6 @@ import ChartToolbox from '~/components/ChartToolbox';
 import GridLoader from 'react-spinners/GridLoader';
 import type {Run} from '~/types';
 import StepSlider from '~/components/SamplePage/StepSlider';
-import {fetcher} from '~/utils/fetch';
 import {formatTime} from '~/utils';
 import isEmpty from 'lodash/isEmpty';
 import mime from 'mime-types';
@@ -256,13 +255,9 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         }
     }, []);
 
-    const {data: entityData, error: entityError, loading: entityLoading} = useRequest<BlobResponse>(
-        src ?? null,
-        fetcher,
-        {
-            dedupingInterval: 5 * 60 * 1000
-        }
-    );
+    const {data: entityData, error: entityError, loading: entityLoading} = useRequest<BlobResponse>(src ?? null, {
+        dedupingInterval: 5 * 60 * 1000
+    });
 
     const download = useCallback(() => {
         if (entityData) {

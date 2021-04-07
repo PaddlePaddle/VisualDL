@@ -16,10 +16,11 @@
 
 import type {CalculateParams, CalculateResult, Reduction, Shape} from '~/resource/high-dimensional';
 import React, {useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import ScatterChart, {ScatterChartRef} from '~/components/ScatterChart';
+import type {ScatterChartProps, ScatterChartRef} from '~/components/ScatterChart';
 
 import ChartOperations from '~/components/HighDimensionalPage/ChartOperations';
 import type {InfoData} from '~/worker/high-dimensional/calculate';
+import ScatterChart from '~/components/ScatterChart';
 import type {WithStyled} from '~/utils/style';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
@@ -116,6 +117,10 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
 
         const [width, setWidth] = useState(0);
         const [height, setHeight] = useState(0);
+        const [showLabelCloud, setShowLabelCloud] = useState(false);
+        const chartType = useMemo<ScatterChartProps['type']>(() => (showLabelCloud ? 'labels' : 'points'), [
+            showLabelCloud
+        ]);
 
         useLayoutEffect(() => {
             const c = chartElement.current;
@@ -259,7 +264,10 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         {t('common:colon')}
                         {shape[1]}
                     </div>
-                    <ChartOperations onReset={() => chart.current?.reset()} />
+                    <ChartOperations
+                        onToggleLabelCloud={() => setShowLabelCloud(s => !s)}
+                        onReset={() => chart.current?.reset()}
+                    />
                 </Toolbar>
                 <Chart ref={chartElement}>
                     <ScatterChart
@@ -272,6 +280,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         rotate={reduction !== 'tsne'}
                         focusedIndices={focusedIndices}
                         highlightIndices={highlightIndices}
+                        type={chartType}
                     />
                 </Chart>
             </Wrapper>

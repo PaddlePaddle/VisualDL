@@ -19,7 +19,9 @@
 import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo} from 'react';
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';
+import {actions, selectors} from '~/store';
 import {headerHeight, position, size, zIndexes} from '~/utils/style';
+import {useDispatch, useSelector} from 'react-redux';
 
 import ErrorBoundary from '~/components/ErrorBoundary';
 import ErrorPage from '~/pages/error';
@@ -28,11 +30,9 @@ import NProgress from 'nprogress';
 import Navbar from '~/components/Navbar';
 import {SWRConfig} from 'swr';
 import {ToastContainer} from 'react-toastify';
-import {actions} from '~/store';
 import {fetcher} from '~/utils/fetch';
 import routes from '~/routes';
 import styled from 'styled-components';
-import {useDispatch} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
@@ -83,10 +83,15 @@ const App: FunctionComponent = () => {
     const dir = useMemo(() => (i18n.language ? i18n.dir(i18n.language) : ''), [i18n]);
 
     const dispatch = useDispatch();
+    const selectedTheme = useSelector(selectors.theme.selected);
 
     const toggleTheme = useCallback(
-        (e: MediaQueryListEvent) => dispatch(actions.theme.setTheme(e.matches ? 'dark' : 'light')),
-        [dispatch]
+        (e: MediaQueryListEvent) => {
+            if (selectedTheme === 'auto') {
+                dispatch(actions.theme.setTheme(e.matches ? 'dark' : 'light'));
+            }
+        },
+        [dispatch, selectedTheme]
     );
 
     useEffect(() => {
