@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cspell:words mipmaps
+
 import * as THREE from 'three';
 
 import type {Point2D} from '../types';
@@ -44,7 +46,6 @@ export default class LabelScatterChart extends ScatterChart {
 
     private glyphTexture: THREE.CanvasTexture | null = null;
     private mesh: THREE.Mesh | null = null;
-    private glyphTextureSize: Point2D = [0, 0];
     private textWidthInGlyphTexture: number[] = [];
     private textPositionInGlyphTexture: Position2D[] = [];
 
@@ -93,15 +94,14 @@ export default class LabelScatterChart extends ScatterChart {
         const count = this.dataCount;
         const vertexes = new Float32Array(count * VERTEX_COUNT_PER_LABEL * 2);
         const scaleFactor = 1 / (700 * LabelScatterChart.CUBE_LENGTH);
-        const deltaHeightInPixel =
-            (LabelScatterChart.LABEL_FONT_SIZE + 2 * LabelScatterChart.LABEL_PADDING[0]) * scaleFactor;
+        const height = (LabelScatterChart.LABEL_FONT_SIZE + 2 * LabelScatterChart.LABEL_PADDING[0]) * scaleFactor;
         for (let i = 0; i < count; i++) {
             const vi = i * VERTEX_COUNT_PER_LABEL * 2;
             const width = this.textWidthInGlyphTexture[i] * scaleFactor;
             const x1 = -width;
-            const y1 = -deltaHeightInPixel;
+            const y1 = -height;
             const x2 = width;
-            const y2 = deltaHeightInPixel;
+            const y2 = height;
             vertexes[vi] = x1;
             vertexes[vi + 1] = y1;
             vertexes[vi + 2] = x2;
@@ -121,7 +121,6 @@ export default class LabelScatterChart extends ScatterChart {
     private convertGlyphTexturePositionsToUV() {
         const count = this.dataCount;
         const uv = new Float32Array(count * VERTEX_COUNT_PER_LABEL * 2);
-        const [glyphWidth, glyphHeight] = this.glyphTextureSize;
         for (let i = 0; i < count; i++) {
             const vi = i * VERTEX_COUNT_PER_LABEL * 2;
             let x1 = 0;
@@ -130,23 +129,23 @@ export default class LabelScatterChart extends ScatterChart {
             let y2 = 1;
             if (this.textPositionInGlyphTexture[i]) {
                 const [topLeft, bottomRight] = this.textPositionInGlyphTexture[i];
-                x1 = topLeft[0] / glyphWidth;
-                y1 = topLeft[1] / glyphHeight;
-                x2 = bottomRight[0] / glyphWidth;
-                y2 = bottomRight[1] / glyphHeight;
+                x1 = topLeft[0];
+                y1 = 1 - topLeft[1];
+                x2 = bottomRight[0];
+                y2 = 1 - bottomRight[1];
             }
             uv[vi] = x1;
-            uv[vi + 1] = y1;
+            uv[vi + 1] = y2;
             uv[vi + 2] = x2;
-            uv[vi + 3] = y1;
+            uv[vi + 3] = y2;
             uv[vi + 4] = x1;
-            uv[vi + 5] = y2;
+            uv[vi + 5] = y1;
             uv[vi + 6] = x1;
-            uv[vi + 7] = y2;
+            uv[vi + 7] = y1;
             uv[vi + 8] = x2;
-            uv[vi + 9] = y1;
+            uv[vi + 9] = y2;
             uv[vi + 10] = x2;
-            uv[vi + 11] = y2;
+            uv[vi + 11] = y1;
         }
         return uv;
     }
@@ -178,46 +177,52 @@ export default class LabelScatterChart extends ScatterChart {
         const dpr = window.devicePixelRatio;
         const labelCount = this.labels.length;
         const fontSize = LabelScatterChart.LABEL_FONT_SIZE * dpr;
-        const [verticalPadding, horizontalPadding] = LabelScatterChart.LABEL_PADDING;
+        const font = `bold ${fontSize}px roboto`;
+        const [vPadding, hPadding] = LabelScatterChart.LABEL_PADDING;
         const canvas = document.createElement('canvas');
         canvas.width = CANVAS_MAX_WIDTH;
         canvas.height = fontSize;
-        const font = `bold ${fontSize}px roboto`;
+        const ctx = canvas.getContext('2d');
         let canvasWidth = 0;
-        let canvasHeight = fontSize + 2 * verticalPadding;
+        let canvasHeight = fontSize + 2 * vPadding;
         const positions: Position2D[] = [];
         const textWidths: number[] = [];
-        const ctx = canvas.getContext('2d');
         if (ctx) {
             ctx.font = font;
             ctx.fillStyle = LabelScatterChart.LABEL_COLOR.getStyle();
             ctx.textAlign = 'start';
             ctx.textBaseline = 'top';
-            let x = horizontalPadding;
-            let y = verticalPadding;
+            let x = hPadding;
+            let y = vPadding;
             for (let i = 0; i < labelCount; i++) {
                 const label = this.labels[i];
                 const index = this.labels.indexOf(label);
                 if (index >= 0 && i !== index) {
                     textWidths.push(textWidths[index]);
-                    positions.push(positions[index]);
+                    // deep copy position
+                    positions.push([
+                        [positions[index][0][0], positions[index][0][1]],
+                        [positions[index][1][0], positions[index][1][1]]
+                    ]);
                     continue;
                 }
-                const textWidth = ctx.measureText(label).width;
-                textWidths.push(textWidth / dpr + 2 * horizontalPadding);
-                if (x + textWidth + horizontalPadding > CANVAS_MAX_WIDTH) {
-                    x = horizontalPadding;
-                    y += fontSize + verticalPadding;
+                const textWidth = Math.ceil(ctx.measureText(label).width);
+                textWidths.push(Math.floor(textWidth / dpr) + 2 * hPadding);
+                const deltaX = textWidth + hPadding;
+                const deltaY = fontSize + vPadding;
+                if (x + deltaX > CANVAS_MAX_WIDTH) {
+                    x = hPadding;
+                    y += deltaY;
                     if (y > CANVAS_MAX_HEIGHT) {
                         throw new Error('Texture too large!');
                     }
-                    canvasHeight = y;
+                    canvasHeight = y + deltaY;
                 }
                 positions.push([
-                    [x - horizontalPadding, y - verticalPadding],
-                    [x + textWidth + horizontalPadding, y + fontSize + verticalPadding]
+                    [x - hPadding, y - vPadding],
+                    [x + deltaX, y + deltaY]
                 ]);
-                x += textWidth + horizontalPadding;
+                x += deltaX;
                 if (canvasWidth < x) {
                     canvasWidth = x;
                 }
@@ -237,8 +242,14 @@ export default class LabelScatterChart extends ScatterChart {
                     continue;
                 }
                 const [position] = positions[i];
-                ctx.fillText(label, position[0] + horizontalPadding, position[1] + verticalPadding);
+                ctx.fillText(label, position[0] + hPadding, position[1] + vPadding);
             }
+            positions.forEach(position => {
+                position[0][0] /= canvasWidth;
+                position[0][1] /= canvasHeight;
+                position[1][0] /= canvasWidth;
+                position[1][1] /= canvasHeight;
+            });
         }
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = true;
@@ -246,7 +257,6 @@ export default class LabelScatterChart extends ScatterChart {
         texture.generateMipmaps = false;
         texture.flipY = true;
         this.glyphTexture = texture;
-        this.glyphTextureSize = [canvas.width, canvas.height];
         this.textWidthInGlyphTexture = textWidths;
         this.textPositionInGlyphTexture = positions;
     }
@@ -284,6 +294,6 @@ export default class LabelScatterChart extends ScatterChart {
     }
 
     protected onDispose() {
-        // nothing to do
+        this.glyphTexture?.dispose();
     }
 }
