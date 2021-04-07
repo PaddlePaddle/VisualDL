@@ -72,6 +72,7 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
         }, [type]);
 
         useEffect(() => {
+            options.current.is3D = is3D;
             chart.current?.setDimension(is3D);
             if (is3D) {
                 if (rotate) {
@@ -88,13 +89,15 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
 
         useEffect(() => {
             chart.current?.setFocusedPointIndices(focusedIndices ?? []);
-        }, [focusedIndices]);
+        }, [focusedIndices, type]);
 
         useEffect(() => {
             chart.current?.setHighLightIndices(highlightIndices ?? []);
-        }, [highlightIndices]);
+        }, [highlightIndices, type]);
 
         useEffect(() => {
+            options.current.width = width;
+            options.current.height = height;
             chart.current?.setSize(width, height);
         }, [width, height, type]);
 
