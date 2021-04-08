@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, LazyExoticComponent} from 'react';
+import type {FunctionComponent, LazyExoticComponent} from 'react';
+
+import React from 'react';
 
 export enum Pages {
     Scalar = 'scalar',
@@ -25,7 +27,8 @@ export enum Pages {
     Graph = 'graph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
-    ROCCurve = 'roc-curve'
+    ROCCurve = 'roc-curve',
+    HyperParameter = 'hyper-parameter'
 }
 
 export interface Route {
