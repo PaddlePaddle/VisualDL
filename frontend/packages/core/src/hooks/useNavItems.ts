@@ -18,7 +18,6 @@ import routes, {Pages, Route} from '~/routes';
 import {useCallback, useEffect, useState} from 'react';
 
 import ee from '~/utils/event';
-import {fetcher} from '~/utils/fetch';
 import useRequest from '~/hooks/useRequest';
 
 export const navMap = {
@@ -36,7 +35,7 @@ export const navMap = {
 const useNavItems = () => {
     const [components, setComponents] = useState<Route[]>([]);
 
-    const {data, loading, error, mutate} = useRequest<(keyof typeof navMap)[]>('/components', fetcher, {
+    const {data, loading, error, mutate} = useRequest<(keyof typeof navMap)[]>('/components', {
         refreshInterval: components.length ? 61 * 1000 : 15 * 1000,
         dedupingInterval: 14 * 1000,
         errorRetryInterval: 15 * 1000,
