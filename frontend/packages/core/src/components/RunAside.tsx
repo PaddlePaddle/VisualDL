@@ -16,7 +16,7 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
-import {ellipsis, em, rem, size} from '~/utils/style';
+import {asideWidth, ellipsis, em, rem, size} from '~/utils/style';
 
 import Checkbox from '~/components/Checkbox';
 import Field from '~/components/Field';
@@ -26,7 +26,10 @@ import RunningToggle from '~/components/RunningToggle';
 import SearchInput from '~/components/SearchInput';
 import styled from 'styled-components';
 import uniqBy from 'lodash/uniqBy';
+import useLocalStorage from '~/hooks/useLocalStorage';
 import {useTranslation} from 'react-i18next';
+
+const SIDE_WIDTH_STORAGE_KEY = 'run_aside_width';
 
 const StyledAside = styled(Aside)`
     ${AsideSection}.run-section {
@@ -137,8 +140,16 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
         [running, onToggleRunning]
     );
 
+    const [width, setWidth] = useLocalStorage(SIDE_WIDTH_STORAGE_KEY);
+
     return (
-        <StyledAside bottom={bottom}>
+        <StyledAside
+            bottom={bottom}
+            resizable="left"
+            width={width == null ? asideWidth : +width}
+            minWidth={260}
+            onResized={width => setWidth(width + '')}
+        >
             {children}
             <AsideSection className="run-section">
                 <Field className="run-select" label={t('common:select-runs')}>
