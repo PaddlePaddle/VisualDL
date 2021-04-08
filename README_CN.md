@@ -197,7 +197,7 @@ visualdl.server.app.run(logdir,
 | 参数          | 格式                                             | 含义                                                         |
 | ------------- | ------------------------------------------------ | ------------------------------------------------------------ |
 | logdir        | string或list[string_1, string_2, ... , string_n] | 日志文件所在的路径，VisualDL将在此路径下递归搜索日志文件并进行可视化，可指定单个或多个路径，每个路径中及其子目录中的日志都将视为独立日志展现在前端面板上 |
-| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2) |
+| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README_CN.md#功能操作说明-4) |
 | host          | string                                           | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                       |
 | port          | int                                              | 启动服务端口，默认为`8040`                                   |
 | cache_timeout | int                                              | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
