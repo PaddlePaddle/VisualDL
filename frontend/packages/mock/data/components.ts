@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export default ['embeddings', 'scalar', 'image', 'audio', 'text', 'graph', 'histogram', 'pr_curve', 'roc_curve'];
+export default ['embeddings', 'scalar', 'image', 'text', 'graph', 'pr_curve', 'roc_curve'];
+// export default ['embeddings', 'scalar', 'image', 'audio', 'text', 'graph', 'histogram', 'pr_curve', 'roc_curve'];

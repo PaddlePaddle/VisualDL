@@ -21,7 +21,7 @@ import {useHistory, useLocation} from 'react-router-dom';
 import Error from '~/components/Error';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
-import useNavItems from '~/hooks/useNavItems';
+import useAvailableComponents from '~/hooks/useAvailableComponents';
 import {useTranslation} from 'react-i18next';
 
 const CenterWrapper = styled.div`
@@ -40,7 +40,7 @@ const Loading = styled.div`
 `;
 
 const IndexPage: FunctionComponent = () => {
-    const [navItems, loading] = useNavItems();
+    const [components, , loading] = useAvailableComponents();
     const history = useHistory();
 
     const {t} = useTranslation('common');
@@ -48,18 +48,20 @@ const IndexPage: FunctionComponent = () => {
     const location = useLocation();
 
     useEffect(() => {
-        if (navItems.length) {
-            if (navItems[0].path) {
-                history.replace(navItems[0].path + location.search);
-            } else if (navItems[0].children?.length && navItems[0].children[0].path) {
-                history.replace(navItems[0].children[0].path + location.search);
+        if (components.length) {
+            if (components[0].path) {
+                history.replace(components[0].path + location.search);
+            } else if (components[0].children?.length && components[0].children[0].path) {
+                history.replace(components[0].children[0].path + location.search);
             }
+        } else {
+            // TODO: no component available, add a error tip
         }
-    }, [navItems, history, location.search]);
+    }, [components, history, location.search]);
 
     return (
         <CenterWrapper>
-            {loading || navItems.length ? (
+            {loading || components.length ? (
                 <Loading>
                     <HashLoader size="60px" color={primaryColor} />
                     <span>{t('common:loading')}</span>
