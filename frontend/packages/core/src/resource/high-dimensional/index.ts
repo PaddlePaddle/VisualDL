@@ -18,6 +18,7 @@ export type {
     CalculateParams,
     CalculateResult,
     Dimension,
+    LabelMetadata,
     ParseParams,
     ParseResult,
     PCAParams,
@@ -30,6 +31,8 @@ export type {
     UMAPResult,
     Vectors
 } from './types';
+
+export {LabelType} from './types';
 
 export {parseFromBlob, parseFromString, ParserError} from './parser';
 

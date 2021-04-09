@@ -19,8 +19,9 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
 
-import type {Point2D, Point3D} from './types';
+import type {ColorMap, Point2D, Point3D} from './types';
 
+import {ColorType} from './types';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 
 export type ScatterChartOptions = {
@@ -43,6 +44,28 @@ export default abstract class ScatterChart {
 
     static readonly PERSP_CAMERA_INIT_POSITION: Point3D = [0.45, 0.9, 1.6];
     static readonly ORTHO_CAMERA_INIT_POSITION: Point3D = [0, 0, 4];
+
+    static readonly VALUE_COLOR_MAP_RANGE = ['#ffffdd', '#1f2d86'] as const;
+    static readonly CATEGORY_COLOR_MAP = [
+        '#9BB9E8',
+        '#8BB8FF',
+        '#B4CCB7',
+        '#A8E9B8',
+        '#DB989A',
+        '#6DCDE4',
+        '#93C2CA',
+        '#DE7CCE',
+        '#DA96BC',
+        '#309E51',
+        '#D6C482',
+        '#6D7CE4',
+        '#CDCB74',
+        '#2576AD',
+        '#E46D6D',
+        '#CA5353',
+        '#E49D6D',
+        '#E4E06D'
+    ].map(color => new THREE.Color(color));
 
     width: number;
     height: number;
@@ -78,6 +101,9 @@ export default abstract class ScatterChart {
     protected blending: THREE.Blending = THREE.NormalBlending;
     protected depth = true;
 
+    protected colorMap: ColorMap = {type: ColorType.Null, labels: []};
+    protected colorGenerator: ((value: string) => THREE.Color) | null = null;
+
     private mouseCoordinates: Point2D | null = null;
     private onMouseMoveBindThis: (e: MouseEvent) => void;
 
@@ -89,6 +115,10 @@ export default abstract class ScatterChart {
     private animationId: number | null = null;
 
     protected abstract get object(): (THREE.Object3D & {material: THREE.Material | THREE.Material[]}) | null;
+    protected abstract get defaultColor(): THREE.Color;
+    protected abstract get hoveredColor(): THREE.Color;
+    protected abstract get focusedColor(): THREE.Color;
+    protected abstract get highLightColor(): THREE.Color;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected abstract createShaderUniforms(picking: boolean): Record<string, THREE.IUniform<any>>;
     protected abstract onRender(): void;
@@ -249,6 +279,53 @@ export default abstract class ScatterChart {
             vertexShader: this.vertexShader,
             fragmentShader: this.fragmentShader
         });
+    }
+
+    private convertColorMap() {
+        switch (this.colorMap.type) {
+            case ColorType.Value: {
+                const {minValue, maxValue} = this.colorMap;
+                return (label: string) => {
+                    const value = Number.parseFloat(label);
+                    if (!Number.isFinite(value)) {
+                        return this.defaultColor;
+                    }
+                    const ranger = d3
+                        .scaleLinear<string, string>()
+                        .domain([minValue, maxValue])
+                        .range(ScatterChart.VALUE_COLOR_MAP_RANGE);
+                    return new THREE.Color(ranger(value));
+                };
+            }
+            case ColorType.Category: {
+                const categories = this.colorMap.categories;
+                return (label: string) => {
+                    const index = categories.indexOf(label);
+                    if (index === -1) {
+                        return this.defaultColor;
+                    }
+                    return ScatterChart.CATEGORY_COLOR_MAP[index % ScatterChart.CATEGORY_COLOR_MAP.length];
+                };
+            }
+            default:
+                return null;
+        }
+    }
+
+    protected getColorByIndex(index: number): THREE.Color {
+        if (this.hoveredDataIndices.includes(index)) {
+            return this.hoveredColor;
+        }
+        if (this.focusedDataIndices.includes(index)) {
+            return this.focusedColor;
+        }
+        if (this.highLightDataIndices.includes(index)) {
+            return this.highLightColor;
+        }
+        if (this.colorGenerator) {
+            return this.colorGenerator(this.colorMap.labels[index]);
+        }
+        return this.defaultColor;
     }
 
     protected createMaterial() {
@@ -476,15 +553,17 @@ export default abstract class ScatterChart {
         } else {
             this.removeAxes();
         }
-        this.setData(this.data, this.labels);
+        this.setData(this.data, this.labels, this.colorMap);
     }
 
-    setData(data: Point3D[], labels: string[]) {
+    setData(data: Point3D[], labels: string[], colorMap?: ColorMap | null) {
         if (this.object) {
             this.scene.remove(this.object);
         }
         this.labels = labels;
+        this.colorMap = colorMap ?? {type: ColorType.Null, labels: []};
         this.data = data;
+        this.colorGenerator = this.convertColorMap();
         this.positions = this.convertDataToPosition();
         this.pickingColors = this.convertDataPickingColor();
         this.onDataSet();

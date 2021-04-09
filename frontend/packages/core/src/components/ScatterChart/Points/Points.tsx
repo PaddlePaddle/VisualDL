@@ -23,7 +23,7 @@ import type {ScatterChartOptions} from '../ScatterChart';
 import fragmentShader from './fragment.glsl';
 import vertexShader from './vertex.glsl';
 
-export default class PointScatter extends ScatterChart {
+export default class PointScatterChart extends ScatterChart {
     static readonly NUM_POINTS_FOG_THRESHOLD = 5000;
 
     static readonly POINT_COLOR_DEFAULT = new THREE.Color(0x7e7e7e);
@@ -48,6 +48,19 @@ export default class PointScatter extends ScatterChart {
 
     get object() {
         return this.points;
+    }
+
+    get defaultColor() {
+        return PointScatterChart.POINT_COLOR_DEFAULT;
+    }
+    get hoveredColor() {
+        return PointScatterChart.POINT_COLOR_HOVER;
+    }
+    get focusedColor() {
+        return PointScatterChart.POINT_COLOR_FOCUS;
+    }
+    get highLightColor() {
+        return PointScatterChart.POINT_COLOR_HIGHLIGHT;
     }
 
     constructor(container: HTMLElement, options: ScatterChartOptions) {
@@ -82,25 +95,11 @@ export default class PointScatter extends ScatterChart {
     private convertPointsColor() {
         const count = this.dataCount;
         const colors = new Float32Array(count * 3);
-        let dst = 0;
         for (let i = 0; i < count; i++) {
-            if (this.hoveredDataIndices.includes(i)) {
-                colors[dst++] = PointScatter.POINT_COLOR_HOVER.r;
-                colors[dst++] = PointScatter.POINT_COLOR_HOVER.g;
-                colors[dst++] = PointScatter.POINT_COLOR_HOVER.b;
-            } else if (this.focusedDataIndices.includes(i)) {
-                colors[dst++] = PointScatter.POINT_COLOR_FOCUS.r;
-                colors[dst++] = PointScatter.POINT_COLOR_FOCUS.g;
-                colors[dst++] = PointScatter.POINT_COLOR_FOCUS.b;
-            } else if (this.highLightDataIndices.includes(i)) {
-                colors[dst++] = PointScatter.POINT_COLOR_HIGHLIGHT.r;
-                colors[dst++] = PointScatter.POINT_COLOR_HIGHLIGHT.g;
-                colors[dst++] = PointScatter.POINT_COLOR_HIGHLIGHT.b;
-            } else {
-                colors[dst++] = PointScatter.POINT_COLOR_DEFAULT.r;
-                colors[dst++] = PointScatter.POINT_COLOR_DEFAULT.g;
-                colors[dst++] = PointScatter.POINT_COLOR_DEFAULT.b;
-            }
+            const color = this.getColorByIndex(i);
+            colors[i * 3] = color.r;
+            colors[i * 3 + 1] = color.g;
+            colors[i * 3 + 2] = color.b;
         }
         return colors;
     }
@@ -110,13 +109,13 @@ export default class PointScatter extends ScatterChart {
         const scaleFactor = new Float32Array(count);
         for (let i = 0; i < count; i++) {
             if (this.hoveredDataIndices.includes(i)) {
-                scaleFactor[i] = PointScatter.POINT_SCALE_HOVER;
+                scaleFactor[i] = PointScatterChart.POINT_SCALE_HOVER;
             } else if (this.focusedDataIndices.includes(i)) {
-                scaleFactor[i] = PointScatter.POINT_SCALE_FOCUS;
+                scaleFactor[i] = PointScatterChart.POINT_SCALE_FOCUS;
             } else if (this.highLightDataIndices.includes(i)) {
-                scaleFactor[i] = PointScatter.POINT_SCALE_HIGHLIGHT;
+                scaleFactor[i] = PointScatterChart.POINT_SCALE_HIGHLIGHT;
             } else {
-                scaleFactor[i] = PointScatter.POINT_SCALE_DEFAULT;
+                scaleFactor[i] = PointScatterChart.POINT_SCALE_DEFAULT;
             }
         }
         return scaleFactor;
@@ -190,7 +189,9 @@ export default class PointScatter extends ScatterChart {
                 }
 
                 const multiplier =
-                    2 - Math.min(n, PointScatter.NUM_POINTS_FOG_THRESHOLD) / PointScatter.NUM_POINTS_FOG_THRESHOLD;
+                    2 -
+                    Math.min(n, PointScatterChart.NUM_POINTS_FOG_THRESHOLD) /
+                        PointScatterChart.NUM_POINTS_FOG_THRESHOLD;
 
                 fog.near = shortestDist;
                 fog.far = furthestDist * multiplier;

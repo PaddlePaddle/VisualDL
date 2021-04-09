@@ -68,6 +68,7 @@ const Chart = styled.div`
 type HighDimensionalChartProps = {
     vectors: Float32Array;
     labels: string[];
+    colorMap?: ScatterChartProps['colorMap'];
     shape: Shape;
     dim: number;
     is3D: boolean;
@@ -94,6 +95,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
         {
             vectors,
             labels,
+            colorMap,
             shape,
             dim,
             is3D,
@@ -265,6 +267,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         {shape[1]}
                     </div>
                     <ChartOperations
+                        labelCloud={showLabelCloud}
                         onToggleLabelCloud={() => setShowLabelCloud(s => !s)}
                         onReset={() => chart.current?.reset()}
                     />
@@ -276,6 +279,7 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
                         height={height}
                         data={data?.vectors ?? []}
                         labels={labels}
+                        colorMap={colorMap}
                         is3D={is3D}
                         rotate={reduction !== 'tsne'}
                         focusedIndices={focusedIndices}

@@ -36,7 +36,7 @@ export const color = [
     '#FF6600',
     '#FFEA00',
     '#FE4A3B'
-];
+] as const;
 export const colorAlt = [
     '#9498F0',
     '#66E0B8',
@@ -56,7 +56,7 @@ export const colorAlt = [
     '#FFB27F',
     '#FFF266',
     '#FE9289'
-];
+] as const;
 
 export const title = {
     textStyle: {

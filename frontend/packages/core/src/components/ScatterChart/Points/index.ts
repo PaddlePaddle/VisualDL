@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import PointScatter from './Points';
+import PointScatterChart from './Points';
 
-export default PointScatter;
+export default PointScatterChart;

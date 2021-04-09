@@ -53,6 +53,19 @@ export default class LabelScatterChart extends ScatterChart {
         return this.mesh;
     }
 
+    get defaultColor() {
+        return LabelScatterChart.LABEL_BACKGROUND_COLOR_DEFAULT;
+    }
+    get hoveredColor() {
+        return LabelScatterChart.LABEL_BACKGROUND_COLOR_HOVER;
+    }
+    get focusedColor() {
+        return LabelScatterChart.LABEL_BACKGROUND_COLOR_FOCUS;
+    }
+    get highLightColor() {
+        return LabelScatterChart.LABEL_BACKGROUND_COLOR_HIGHLIGHT;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected createShaderUniforms(picking: boolean): Record<string, THREE.IUniform<any>> {
         return {
@@ -154,16 +167,7 @@ export default class LabelScatterChart extends ScatterChart {
         const count = this.dataCount;
         const colors = new Float32Array(count * VERTEX_COUNT_PER_LABEL * 3);
         for (let i = 0; i < count; i++) {
-            let color: THREE.Color;
-            if (this.hoveredDataIndices.includes(i)) {
-                color = LabelScatterChart.LABEL_BACKGROUND_COLOR_HOVER;
-            } else if (this.focusedDataIndices.includes(i)) {
-                color = LabelScatterChart.LABEL_BACKGROUND_COLOR_FOCUS;
-            } else if (this.highLightDataIndices.includes(i)) {
-                color = LabelScatterChart.LABEL_BACKGROUND_COLOR_HIGHLIGHT;
-            } else {
-                color = LabelScatterChart.LABEL_BACKGROUND_COLOR_DEFAULT;
-            }
+            const color = this.getColorByIndex(i);
             for (let j = 0; j < VERTEX_COUNT_PER_LABEL; j++) {
                 colors[i * VERTEX_COUNT_PER_LABEL * 3 + j * 3] = color.r;
                 colors[i * VERTEX_COUNT_PER_LABEL * 3 + j * 3 + 1] = color.g;

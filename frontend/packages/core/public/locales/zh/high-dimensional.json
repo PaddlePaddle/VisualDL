@@ -1,5 +1,5 @@
 {
-    "3d-label": "开启/关闭3D数据标签",
+    "3d-label": "显示/隐藏数据详情",
     "component": "主成分{{index}}",
     "continue": "继续",
     "data": "数据",
@@ -22,6 +22,7 @@
     },
     "matched-result-count": "匹配结果 {{count}}",
     "neighbors": "相邻数据点数量",
+    "no-color-map": "无颜色",
     "pause": "暂停",
     "perplexity": "困惑度",
     "points": "数据点",
