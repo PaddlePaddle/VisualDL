@@ -24,7 +24,7 @@
 
 VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors, PR curves , ROC curves and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
-VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/UserGuide-en.md). For up-to-date experience, please feel free to try our [**Online Demo**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo). Currently, VisualDL iterates rapidly and new functions will be continuously added.
+VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). For up-to-date experience, please feel free to try our [**Online Demo**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo). Currently, VisualDL iterates rapidly and new functions will be continuously added.
 
 Browsers supported by VisualDL are:
 
@@ -156,7 +156,7 @@ Parameter details:
 | parameters      | meaning                                                      |
 | --------------- | ------------------------------------------------------------ |
 | --logdir        | Set one or more directories of the log. All the logs in the paths or subdirectories will be displayed on the VisualDL Board indepentently. |
-| --model         | Set a path to the model file (not a directory). VisualDL will visualize the model file in Graph page. PaddlePaddle、ONNX、Keras、Core ML、Caffe and other model formats are supported. Please refer to [Graph - Functional Instructions](./docs/components/UserGuide-en.md#functional-instructions-2). |
+| --model         | Set a path to the model file (not a directory). VisualDL will visualize the model file in Graph page. PaddlePaddle、ONNX、Keras、Core ML、Caffe and other model formats are supported. Please refer to [Graph - Functional Instructions](./docs/components/README.md#functional-instructions-2). |
 | --host          | Specify IP address. The default value is `127.0.0.1`. Specify it as `0.0.0.0` or public IP address so that other machines can visit VisualDL Board.       |
 | --port          | Set the port. The default value is `8040`.                   |
 | --cache-timeout | Cache time of the backend. During the cache time, the front end requests the same URL multiple times, and then the returned data are obtained from the cache. The default cache time is 20 seconds. |
@@ -357,7 +357,7 @@ Developers can compare multiple experiments by specifying and uploading the path
 
 ## Frequently Asked Questions
 
-If you are confronted with some problems when using VisualDL, please refer to [our FAQs](./docs/faq_EN.md).
+If you are confronted with some problems when using VisualDL, please refer to [our FAQs](./docs/faq.md).
 
 ## Contribution
 
@@ -367,7 +367,7 @@ Developers are warmly welcomed to use, comment and contribute.
 
 ## More Details
 
-For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/UserGuide-en.md)。
+For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md)。
 
 ## Technical Communication
 

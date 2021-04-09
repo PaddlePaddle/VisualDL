@@ -24,7 +24,7 @@
 
 VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线、ROC曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README.md)。如欲体验最新特性，欢迎试用我们的[**在线演示系统**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线、ROC曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README_CN.md)。如欲体验最新特性，欢迎试用我们的[**在线演示系统**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL支持浏览器：
 
@@ -160,7 +160,7 @@ visualdl --logdir <dir_1, dir_2, ... , dir_n> --model <model_file> --host <host>
 | 参数            | 意义                                                         |
 | --------------- | ------------------------------------------------------------ |
 | --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化 |
-| --model         | 设定模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2) |
+| --model         | 设定模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README_CN.md#功能操作说明-4) |
 | --host          | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                                    |
 | --port          | 设定端口，默认为`8040`                                       |
 | --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
@@ -197,7 +197,7 @@ visualdl.server.app.run(logdir,
 | 参数          | 格式                                             | 含义                                                         |
 | ------------- | ------------------------------------------------ | ------------------------------------------------------------ |
 | logdir        | string或list[string_1, string_2, ... , string_n] | 日志文件所在的路径，VisualDL将在此路径下递归搜索日志文件并进行可视化，可指定单个或多个路径，每个路径中及其子目录中的日志都将视为独立日志展现在前端面板上 |
-| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README.md#%E5%8A%9F%E8%83%BD%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E-2) |
+| model         | string                                           | 模型文件路径(非文件夹路径)，VisualDL将在此路径指定的模型文件进行可视化，目前可支持PaddlePaddle、ONNX、Keras、Core ML、Caffe等多种模型结构，详情可查看[graph支持模型种类](./docs/components/README_CN.md#功能操作说明-4) |
 | host          | string                                           | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                       |
 | port          | int                                              | 启动服务端口，默认为`8040`                                   |
 | cache_timeout | int                                              | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
@@ -367,7 +367,7 @@ VisualDL可视化结果保存服务，以链接形式将可视化结果保存下
 
 ## 常见问题
 
-在使用VisualDL的过程中可能遇到的一些问题，可参考[常见问题](./docs/faq.md)帮助解决
+在使用VisualDL的过程中可能遇到的一些问题，可参考[常见问题](./docs/faq_CN.md)帮助解决
 
 ## 近期活动更新
 
@@ -384,7 +384,7 @@ Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技�
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README.md)。
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)。
 
 ## 技术交流
 
