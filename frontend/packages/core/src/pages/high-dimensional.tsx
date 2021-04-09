@@ -42,6 +42,7 @@ import LabelSearchResult from '~/components/HighDimensionalPage/LabelSearchResul
 import {LabelType} from '~/resource/high-dimensional';
 import PCADetail from '~/components/HighDimensionalPage/PCADetail';
 import ReductionTab from '~/components/HighDimensionalPage/ReductionTab';
+import ScatterChart from '~/components/ScatterChart/ScatterChart';
 import Select from '~/components/Select';
 import TSNEDetail from '~/components/HighDimensionalPage/TSNEDetail';
 import Title from '~/components/Title';
@@ -194,7 +195,14 @@ const HighDimensional: FunctionComponent = () => {
                 label: t('high-dimensional:no-color-map'),
                 value: -1
             },
-            ...labelList.map(({label, type}, index) => ({label, value: index, disabled: type === LabelType.Null}))
+            ...labelList.map((item, index) => ({
+                label: item.label,
+                value: index,
+                disabled:
+                    item.type === LabelType.Null ||
+                    (item.type === LabelType.Category &&
+                        item.categories.length > ScatterChart.CATEGORY_COLOR_MAP.length)
+            }))
         ],
         [labelList, t]
     );

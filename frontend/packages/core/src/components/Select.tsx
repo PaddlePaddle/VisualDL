@@ -206,7 +206,10 @@ const Select = <T extends unknown>({
         [multiple, value]
     );
     const changeValue = useCallback(
-        (mutateValue: T) => {
+        ({value: mutateValue, disabled}: SelectListItem<T>) => {
+            if (disabled) {
+                return;
+            }
             setValue(mutateValue);
             (onChange as OnSingleChange<T>)?.(mutateValue);
             closeDropdown();
@@ -214,7 +217,10 @@ const Select = <T extends unknown>({
         [closeDropdown, onChange]
     );
     const changeMultipleValue = useCallback(
-        (mutateValue: T, checked: boolean) => {
+        ({value: mutateValue, disabled}: SelectListItem<T>, checked: boolean) => {
+            if (disabled) {
+                return;
+            }
             let newValue = value as T[];
             if (checked) {
                 if (!newValue.includes(mutateValue)) {
@@ -273,7 +279,7 @@ const Select = <T extends unknown>({
                                       title={item.label}
                                       disabled={item.disabled}
                                       size="small"
-                                      onChange={checked => changeMultipleValue(item.value, checked)}
+                                      onChange={checked => changeMultipleValue(item, checked)}
                                   >
                                       {item.label}
                                   </MultipleListItem>
@@ -285,7 +291,7 @@ const Select = <T extends unknown>({
                                   key={index}
                                   title={item.label}
                                   disabled={item.disabled}
-                                  onClick={() => changeValue(item.value)}
+                                  onClick={() => changeValue(item)}
                               >
                                   {item.label}
                               </ListItem>
