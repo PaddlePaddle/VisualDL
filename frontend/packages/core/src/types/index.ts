@@ -39,3 +39,26 @@ export enum TimeMode {
     Relative = 'relative',
     WallTime = 'wall'
 }
+
+export type Point2D = [number, number];
+export type Point3D = [number, number, number];
+
+export enum HighDimensionalColorType {
+    Null,
+    Value,
+    Category
+}
+
+export type HighDimensionalColorMap =
+    | {
+          type: HighDimensionalColorType.Null;
+      }
+    | {
+          type: HighDimensionalColorType.Value;
+          minValue: number;
+          maxValue: number;
+      }
+    | {
+          type: HighDimensionalColorType.Category;
+          categories: string[];
+      };

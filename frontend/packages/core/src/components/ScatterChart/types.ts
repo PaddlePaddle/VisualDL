@@ -14,5 +14,10 @@
  * limitations under the License.
  */
 
-export type Point2D = [number, number];
-export type Point3D = [number, number, number];
+import type {HighDimensionalColorMap} from '~/types';
+
+export type {Point2D, Point3D} from '~/types';
+
+export {HighDimensionalColorType as ColorType} from '~/types';
+
+export type ColorMap = HighDimensionalColorMap & {labels: string[]};

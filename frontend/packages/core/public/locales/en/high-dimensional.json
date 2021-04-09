@@ -1,5 +1,5 @@
 {
-    "3d-label": "Enable/disable 3D labels mode",
+    "3d-label": "Show/Hide data detail",
     "component": "Component #{{index}}",
     "continue": "Resume",
     "data": "Data",
@@ -22,6 +22,7 @@
     },
     "matched-result-count": "{{count}} matched.",
     "neighbors": "Neighbors",
+    "no-color-map": "No color map",
     "pause": "Pause",
     "perplexity": "Perplexity",
     "points": "Points",

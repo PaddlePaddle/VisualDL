@@ -17,5 +17,7 @@
 import ScatterChart from './Component';
 
 export type {ScatterChartProps, ScatterChartRef} from './Component';
+export type {ColorMap} from './types';
+export {ColorType} from './types';
 
 export default ScatterChart;

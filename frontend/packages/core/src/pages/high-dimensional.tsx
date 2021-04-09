@@ -17,6 +17,7 @@
 import Aside, {AsideSection} from '~/components/Aside';
 import type {
     Dimension,
+    LabelMetadata,
     PCAResult,
     ParseParams,
     ParseResult,
@@ -28,7 +29,7 @@ import type {
 import HighDimensionalChart, {HighDimensionalChartRef} from '~/components/HighDimensionalPage/HighDimensionalChart';
 import LabelSearchInput, {LabelSearchInputProps} from '~/components/HighDimensionalPage/LabelSearchInput';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import Select, {SelectProps} from '~/components/Select';
+import type {SelectListItem, SelectProps} from '~/components/Select';
 
 import type {BlobResponse} from '~/utils/fetch';
 import BodyLoading from '~/components/BodyLoading';
@@ -38,8 +39,11 @@ import DimensionSwitch from '~/components/HighDimensionalPage/DimensionSwitch';
 import Error from '~/components/Error';
 import Field from '~/components/Field';
 import LabelSearchResult from '~/components/HighDimensionalPage/LabelSearchResult';
+import {LabelType} from '~/resource/high-dimensional';
 import PCADetail from '~/components/HighDimensionalPage/PCADetail';
 import ReductionTab from '~/components/HighDimensionalPage/ReductionTab';
+import ScatterChart from '~/components/ScatterChart/ScatterChart';
+import Select from '~/components/Select';
 import TSNEDetail from '~/components/HighDimensionalPage/TSNEDetail';
 import Title from '~/components/Title';
 import UMAPDetail from '~/components/HighDimensionalPage/UMAPDetail';
@@ -73,7 +77,10 @@ const AsideTitle = styled.div`
     margin-bottom: ${rem(20)};
 `;
 
-const FullWidthSelect = styled<React.FunctionComponent<SelectProps<string>>>(Select)`
+// styled-components cannot infer type of a component...
+// And I don't want to write a type guard
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
     width: 100%;
 `;
 
@@ -176,25 +183,45 @@ const HighDimensional: FunctionComponent = () => {
     const [vectorContent, setVectorContent] = useState('');
     const [metadataContent, setMetadataContent] = useState('');
     const [vectors, setVectors] = useState<Float32Array>(new Float32Array());
-    const [labels, setLabels] = useState<string[]>([]);
-    const [labelBy, setLabelBy] = useState<string>();
+    const [labelList, setLabelList] = useState<LabelMetadata[]>([]);
+    const labelByList = useMemo<SelectListItem<number>[]>(
+        () => labelList.map(({label}, index) => ({label, value: index})),
+        [labelList]
+    );
+    const [labelByIndex, setLabelByIndex] = useState<number>(0);
+    const colorByList = useMemo<SelectListItem<number>[]>(
+        () => [
+            {
+                label: t('high-dimensional:no-color-map'),
+                value: -1
+            },
+            ...labelList.map((item, index) => ({
+                label: item.label,
+                value: index,
+                disabled:
+                    item.type === LabelType.Null ||
+                    (item.type === LabelType.Category &&
+                        item.categories.length > ScatterChart.CATEGORY_COLOR_MAP.length)
+            }))
+        ],
+        [labelList, t]
+    );
+    const [colorByIndex, setColorByIndex] = useState<number>(-1);
     const [metadata, setMetadata] = useState<string[][]>([]);
     // dimension of data
     const [dim, setDim] = useState<number>(0);
     const [rawShape, setRawShape] = useState<Shape>([0, 0]);
-    const getLabelByLabels = useCallback(
-        (value: string | undefined) => {
-            if (value != null) {
-                const labelIndex = labels.indexOf(value);
-                if (labelIndex !== -1) {
-                    return metadata.map(row => row[labelIndex]);
-                }
-            }
-            return [];
-        },
-        [labels, metadata]
+    const selectedMetadata = useMemo(() => metadata[labelByIndex], [labelByIndex, metadata]);
+    const selectedColor = useMemo(
+        () =>
+            colorByIndex === -1
+                ? null
+                : {
+                      ...labelList[colorByIndex],
+                      labels: metadata[colorByIndex]
+                  },
+        [colorByIndex, labelList, metadata]
     );
-    const labelByLabels = useMemo(() => getLabelByLabels(labelBy), [getLabelByLabels, labelBy]);
 
     // dimension of display
     const [dimension, setDimension] = useState<Dimension>('3d');
@@ -277,8 +304,9 @@ const HighDimensional: FunctionComponent = () => {
             setRawShape(data.rawShape);
             setDim(data.dimension);
             setVectors(data.vectors);
-            setLabels(data.labels);
-            setLabelBy(data.labels[0]);
+            setLabelList(data.labels);
+            setLabelByIndex(0);
+            setColorByIndex(-1);
             setMetadata(data.metadata);
         } else if (data !== null) {
             setLoadingPhase('parsing');
@@ -312,23 +340,23 @@ const HighDimensional: FunctionComponent = () => {
     }, []);
 
     const [searchResult, setSearchResult] = useState<Parameters<NonNullable<LabelSearchInputProps['onChange']>>['0']>({
-        labelBy: undefined,
+        labelIndex: undefined,
         value: ''
     });
 
     const searchedResult = useMemo(() => {
-        if (searchResult.labelBy == null || searchResult.value === '') {
+        if (searchResult.labelIndex == null || searchResult.value === '') {
             return {
                 indices: [],
                 metadata: []
             };
         }
-        const labelByLabels = getLabelByLabels(searchResult.labelBy);
+        const metadataList = metadata[searchResult.labelIndex];
         const metadataResult: string[] = [];
         const vectorsIndices: number[] = [];
-        for (let i = 0; i < labelByLabels.length; i++) {
-            if (labelByLabels[i].includes(searchResult.value)) {
-                metadataResult.push(labelByLabels[i]);
+        for (let i = 0; i < metadataList.length; i++) {
+            if (metadataList[i].includes(searchResult.value)) {
+                metadataResult.push(metadataList[i]);
                 vectorsIndices.push(i);
             }
         }
@@ -340,7 +368,7 @@ const HighDimensional: FunctionComponent = () => {
             indices: vectorsIndices,
             metadata: metadataResult
         };
-    }, [getLabelByLabels, searchResult.labelBy, searchResult.value]);
+    }, [metadata, searchResult.labelIndex, searchResult.value]);
 
     const [hoveredIndices, setHoveredIndices] = useState<number[]>([]);
     const hoverSearchResult = useCallback(
@@ -393,11 +421,11 @@ const HighDimensional: FunctionComponent = () => {
                         />
                     </Field>
                     <Field label={t('high-dimensional:select-label')}>
-                        <FullWidthSelect list={labels} value={labelBy} onChange={setLabelBy} />
+                        <FullWidthSelect list={labelByList} value={labelByIndex} onChange={setLabelByIndex} />
                     </Field>
-                    {/* <Field label={t('high-dimensional:select-color')}>
-                        <FullWidthSelect />
-                    </Field> */}
+                    <Field label={t('high-dimensional:select-color')}>
+                        <FullWidthSelect list={colorByList} value={colorByIndex} onChange={setColorByIndex} />
+                    </Field>
                     <Field>
                         <FullWidthButton rounded outline type="primary" onClick={() => setUploadModal(true)}>
                             {t('high-dimensional:upload-data')}
@@ -424,7 +452,19 @@ const HighDimensional: FunctionComponent = () => {
                 </AsideSection>
             </RightAside>
         ),
-        [t, dataPath, reduction, dimension, labels, labelBy, embeddingList, selectedEmbeddingName, detail]
+        [
+            t,
+            embeddingList,
+            selectedEmbeddingName,
+            labelByList,
+            labelByIndex,
+            colorByList,
+            colorByIndex,
+            dataPath,
+            reduction,
+            dimension,
+            detail
+        ]
     );
 
     const leftAside = useMemo(
@@ -432,7 +472,7 @@ const HighDimensional: FunctionComponent = () => {
             <LeftAside>
                 <AsideSection>
                     <Field>
-                        <LabelSearchInput labels={labels} onChange={setSearchResult} />
+                        <LabelSearchInput labels={labelByList} onChange={setSearchResult} />
                     </Field>
                     {searchResult.value !== '' && (
                         <Field className="secondary">
@@ -451,7 +491,7 @@ const HighDimensional: FunctionComponent = () => {
                 </AsideSection>
             </LeftAside>
         ),
-        [hoverSearchResult, labels, searchResult.value, searchedResult.metadata, t]
+        [hoverSearchResult, labelByList, searchResult.value, searchedResult.metadata, t]
     );
 
     return (
@@ -463,7 +503,8 @@ const HighDimensional: FunctionComponent = () => {
                     <HighDimensionalChart
                         ref={chart}
                         vectors={vectors}
-                        labels={labelByLabels}
+                        labels={selectedMetadata}
+                        colorMap={selectedColor}
                         shape={rawShape}
                         dim={dim}
                         is3D={is3D}

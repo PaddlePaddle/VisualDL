@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type {ColorMap, Point3D} from './types';
 import React, {useEffect, useImperativeHandle, useRef} from 'react';
 
 import type Chart from './ScatterChart';
 import type {ScatterChartOptions as ChartOptions} from './ScatterChart';
 import LabelChart from './Labels';
-import type {Point3D} from './types';
 import PointChart from './Points';
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
@@ -37,6 +37,7 @@ export type ScatterChartProps = {
     height: number;
     data: Point3D[];
     labels: string[];
+    colorMap?: ColorMap | null;
     is3D: boolean;
     rotate?: boolean;
     focusedIndices?: number[];
@@ -49,7 +50,7 @@ export type ScatterChartRef = {
 };
 
 const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithStyled>(
-    ({width, height, data, labels, is3D, rotate, focusedIndices, highlightIndices, type, className}, ref) => {
+    ({width, height, data, labels, colorMap, is3D, rotate, focusedIndices, highlightIndices, type, className}, ref) => {
         const theme = useTheme();
 
         const element = useRef<HTMLDivElement>(null);
@@ -84,8 +85,8 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
         }, [is3D, rotate]);
 
         useEffect(() => {
-            chart.current?.setData(data, labels);
-        }, [data, labels, type]);
+            chart.current?.setData(data, labels, colorMap);
+        }, [data, labels, colorMap, type]);
 
         useEffect(() => {
             chart.current?.setFocusedPointIndices(focusedIndices ?? []);

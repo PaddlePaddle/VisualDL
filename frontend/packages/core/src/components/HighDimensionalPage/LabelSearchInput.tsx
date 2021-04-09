@@ -15,9 +15,10 @@
  */
 
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import Select, {SelectProps} from '~/components/Select';
+import type {SelectListItem, SelectProps} from '~/components/Select';
 
 import SearchInput from '~/components/SearchInput';
+import Select from '~/components/Select';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import useSearchValue from '~/hooks/useSearchValue';
@@ -27,7 +28,7 @@ const Wrapper = styled.div`
     display: flex;
 `;
 
-const LabelSelect = styled<React.FunctionComponent<SelectProps<string>>>(Select)`
+const LabelSelect = styled<React.FunctionComponent<SelectProps<number>>>(Select)`
     width: 45%;
     min-width: ${rem(80)};
     max-width: ${rem(200)};
@@ -44,43 +45,34 @@ const LabelInput = styled(SearchInput)`
 `;
 
 type LabelSearchResult = {
-    labelBy: string | undefined;
+    labelIndex: number | undefined;
     value: string;
 };
 
 export type LabelSearchInputProps = {
-    labels: string[];
+    labels: SelectListItem<number>[];
     onChange?: (result: LabelSearchResult) => unknown;
 };
 
 const LabelSearchInput: FunctionComponent<LabelSearchInputProps> = ({labels, onChange}) => {
-    const [labelBy, setLabelBy] = useState<string | undefined>(labels[0] ?? undefined);
+    const [labelIndex, setLabelIndex] = useState<number>(0);
     const [value, setValue] = useState('');
     useEffect(() => {
-        if (labels.length) {
-            setLabelBy(label => {
-                if (label && labels.includes(label)) {
-                    return label;
-                }
-                return labels[0];
-            });
-        } else {
-            setLabelBy(undefined);
-        }
+        setLabelIndex(0);
     }, [labels]);
 
     const debouncedValue = useSearchValue(value);
 
     useEffect(() => {
         onChange?.({
-            labelBy,
+            labelIndex,
             value: debouncedValue
         });
-    }, [labelBy, onChange, debouncedValue]);
+    }, [labelIndex, onChange, debouncedValue]);
 
     return (
         <Wrapper>
-            <LabelSelect list={labels} value={labelBy} onChange={setLabelBy} />
+            <LabelSelect list={labels} value={labelIndex} onChange={setLabelIndex} />
             <LabelInput value={value} onChange={setValue} />
         </Wrapper>
     );

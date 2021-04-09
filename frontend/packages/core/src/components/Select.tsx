@@ -115,31 +115,55 @@ const listItem = css`
     ${size(height, '100%')}
     line-height: ${height};
     ${transitionProps(['color', 'background-color'])}
+`;
 
+const hoverListItem = css`
     &:hover {
         background-color: var(--background-focused-color);
     }
 `;
 
-const ListItem = styled.div<{selected?: boolean}>`
+const ListItem = styled.div<{selected?: boolean; disabled?: boolean}>`
     ${ellipsis()}
     ${listItem}
-    ${props => (props.selected ? `color: var(--select-selected-text-color);` : '')}
+    ${props => {
+        if (props.disabled) {
+            return css`
+                cursor: not-allowed;
+            `;
+        } else {
+            return hoverListItem;
+        }
+    }}
+    ${props => {
+        if (props.selected) {
+            return css`
+                color: var(--select-selected-text-color);
+            `;
+        }
+        if (props.disabled) {
+            return css`
+                color: var(--text-light-color);
+            `;
+        }
+    }}
 `;
 
-const MultipleListItem = styled(Checkbox)<{selected?: boolean}>`
+const MultipleListItem = styled(Checkbox)<{selected?: boolean; disabled?: boolean}>`
     ${listItem}
     display: flex;
     align-items: center;
+    ${props => (props.disabled ? '' : hoverListItem)}
 `;
-
-type SelectListItem<T> = {
-    value: T;
-    label: string;
-};
 
 type OnSingleChange<T> = (value: T) => unknown;
 type OnMultipleChange<T> = (value: T[]) => unknown;
+
+export type SelectListItem<T> = {
+    value: T;
+    label: string;
+    disabled?: boolean;
+};
 
 export type SelectProps<T> = {
     list?: (SelectListItem<T> | T)[];
@@ -177,12 +201,15 @@ const Select = <T extends unknown>({
         propValue
     ]);
 
-    const isSelected = useMemo(() => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : (value as T)), [
-        multiple,
-        value
-    ]);
+    const isSelected = useMemo(
+        () => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : value != (null as T)),
+        [multiple, value]
+    );
     const changeValue = useCallback(
-        (mutateValue: T) => {
+        ({value: mutateValue, disabled}: SelectListItem<T>) => {
+            if (disabled) {
+                return;
+            }
             setValue(mutateValue);
             (onChange as OnSingleChange<T>)?.(mutateValue);
             closeDropdown();
@@ -190,7 +217,10 @@ const Select = <T extends unknown>({
         [closeDropdown, onChange]
     );
     const changeMultipleValue = useCallback(
-        (mutateValue: T, checked: boolean) => {
+        ({value: mutateValue, disabled}: SelectListItem<T>, checked: boolean) => {
+            if (disabled) {
+                return;
+            }
             let newValue = value as T[];
             if (checked) {
                 if (!newValue.includes(mutateValue)) {
@@ -247,8 +277,9 @@ const Select = <T extends unknown>({
                                       value={(value as T[]).includes(item.value)}
                                       key={index}
                                       title={item.label}
+                                      disabled={item.disabled}
                                       size="small"
-                                      onChange={checked => changeMultipleValue(item.value, checked)}
+                                      onChange={checked => changeMultipleValue(item, checked)}
                                   >
                                       {item.label}
                                   </MultipleListItem>
@@ -259,7 +290,8 @@ const Select = <T extends unknown>({
                                   selected={item.value === value}
                                   key={index}
                                   title={item.label}
-                                  onClick={() => changeValue(item.value)}
+                                  disabled={item.disabled}
+                                  onClick={() => changeValue(item)}
                               >
                                   {item.label}
                               </ListItem>
