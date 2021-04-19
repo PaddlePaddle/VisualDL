@@ -39,7 +39,6 @@ def s2ms(timestamp):
 
 def get_components(log_reader):
     components = log_reader.components(update=True)
-    components.add('graph')
     return list(components)
 
 
