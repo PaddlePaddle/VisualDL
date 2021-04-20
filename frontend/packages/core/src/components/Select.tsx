@@ -274,7 +274,7 @@ const Select = <T extends unknown>({
                           if (multiple) {
                               return (
                                   <MultipleListItem
-                                      value={(value as T[]).includes(item.value)}
+                                      checked={(value as T[]).includes(item.value)}
                                       key={index}
                                       title={item.label}
                                       disabled={item.disabled}

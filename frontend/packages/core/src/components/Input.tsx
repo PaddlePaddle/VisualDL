@@ -34,14 +34,19 @@ const StyledInput = styled.input<{rounded?: boolean}>`
     caret-color: var(--text-color);
     ${transitionProps(['border-color', 'background-color', 'caret-color', 'color'])}
 
-    &:hover,
-    &:focus {
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
         border-color: var(--border-focused-color);
     }
 
     &::placeholder {
         color: var(--text-lighter-color);
         ${transitionProps('color')}
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        color: var(--text-lighter-color);
     }
 `;
 

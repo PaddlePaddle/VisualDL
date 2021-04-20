@@ -28,6 +28,11 @@ export const AsideSection = styled.section`
         margin-bottom: 0;
         ${transitionProps('border-color')}
     }
+
+    & > & {
+        margin-left: 0;
+        margin-right: 0;
+    }
 `;
 
 const Wrapper = styled.div.attrs<{width: string | number}>(({width}) => ({
@@ -68,7 +73,7 @@ const Wrapper = styled.div.attrs<{width: string | number}>(({width}) => ({
         height: 100%;
         top: 0;
         cursor: col-resize;
-        user-select: none;
+        touch-action: none;
 
         &.aside-resize-bar-left {
             left: 0;

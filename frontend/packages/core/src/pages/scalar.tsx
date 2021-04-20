@@ -89,12 +89,12 @@ const Scalar: FunctionComponent = () => {
             >
                 <AsideSection>
                     <Field>
-                        <Checkbox value={ignoreOutliers} onChange={setIgnoreOutliers}>
+                        <Checkbox checked={ignoreOutliers} onChange={setIgnoreOutliers}>
                             {t('scalar:ignore-outliers')}
                         </Checkbox>
                     </Field>
                     <Field>
-                        <Checkbox value={showMostValue} onChange={setShowMostValue}>
+                        <Checkbox checked={showMostValue} onChange={setShowMostValue}>
                             {t('scalar:show-most-value')}
                         </Checkbox>
                     </Field>
@@ -115,7 +115,7 @@ const Scalar: FunctionComponent = () => {
                         <Slider min={0} max={0.99} step={0.01} value={smoothing} onChangeComplete={setSmoothing} />
                     </Field>
                     <Field>
-                        <Checkbox value={smoothedDataOnly} onChange={setSmoothedDataOnly}>
+                        <Checkbox checked={smoothedDataOnly} onChange={setSmoothedDataOnly}>
                             {t('scalar:smoothed-data-only')}
                         </Checkbox>
                     </Field>

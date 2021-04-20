@@ -225,17 +225,17 @@ const Graph: FunctionComponent = () => {
                         <AsideSection>
                             <Field label={t('graph:display-data')}>
                                 <div>
-                                    <Checkbox value={showAttributes} onChange={setShowAttributes}>
+                                    <Checkbox checked={showAttributes} onChange={setShowAttributes}>
                                         {t('graph:show-attributes')}
                                     </Checkbox>
                                 </div>
                                 <div>
-                                    <Checkbox value={showInitializers} onChange={setShowInitializers}>
+                                    <Checkbox checked={showInitializers} onChange={setShowInitializers}>
                                         {t('graph:show-initializers')}
                                     </Checkbox>
                                 </div>
                                 <div>
-                                    <Checkbox value={showNames} onChange={setShowNames}>
+                                    <Checkbox checked={showNames} onChange={setShowNames}>
                                         {t('graph:show-node-names')}
                                     </Checkbox>
                                 </div>

@@ -16,29 +16,18 @@
 
 import React, {FunctionComponent} from 'react';
 
-import type {Reduction} from '~/resource/high-dimensional';
-import Tab from '~/components/Tab';
+import Header from './Header';
+import type {HeaderProps} from 'react-table';
+import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
-const reductions: Reduction[] = ['tsne', 'pca', 'umap'];
+const StyledHeader = styled(Header)`
+    padding-left: 2em;
+`;
 
-type ReductionTabProps = {
-    value: Reduction;
-    onChange?: (value: Reduction) => unknown;
+const NameHeader: FunctionComponent<HeaderProps<Record<string, unknown>>> = props => {
+    const {t} = useTranslation('hyper-parameter');
+    return <StyledHeader {...props}>{t('hyper-parameter:trial-id')}</StyledHeader>;
 };
 
-const ReductionTab: FunctionComponent<ReductionTabProps> = ({value, onChange}) => {
-    const {t} = useTranslation('high-dimensional');
-
-    return (
-        <Tab
-            list={reductions.map(value => ({value, label: t(`high-dimensional:reduction-value.${value}`)}))}
-            value={value}
-            variant="fullWidth"
-            appearance="underscore"
-            onChange={onChange}
-        />
-    );
-};
-
-export default ReductionTab;
+export default NameHeader;
