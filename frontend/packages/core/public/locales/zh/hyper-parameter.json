@@ -1,0 +1,25 @@
+{
+    "data-type-value": {
+        "hparams": "超参数",
+        "metrics": "度量指标"
+    },
+    "hyper-parameter": {
+        "order-default": "默认"
+    },
+    "max": "最大值",
+    "min": "最小值",
+    "negative-infinity": "负无穷",
+    "order-by": "排序方式",
+    "order-direction": "排序方向",
+    "order-direction-value": {
+        "asc": "升序",
+        "desc": "降序"
+    },
+    "positive-infinity": "正无穷",
+    "trial-id": "Trial ID",
+    "views": {
+        "parallel-coordinates": "平行坐标图",
+        "scatter-plot-matrix": "散点图",
+        "table": "表格视图"
+    }
+}

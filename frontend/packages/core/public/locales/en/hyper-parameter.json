@@ -1,0 +1,25 @@
+{
+    "data-type-value": {
+        "hparams": "Hyper Parameters",
+        "metrics": "Metrics"
+    },
+    "hyper-parameter": {
+        "order-default": "Default"
+    },
+    "max": "Max",
+    "min": "Min",
+    "negative-infinity": "-Infinity",
+    "order-by": "Sort by",
+    "order-direction": "Direction",
+    "order-direction-value": {
+        "asc": "Ascending",
+        "desc": "Descending"
+    },
+    "positive-infinity": "+Infinity",
+    "trial-id": "Trial ID",
+    "views": {
+        "parallel-coordinates": "Parallel Coordinates View",
+        "scatter-plot-matrix": "Scatter Plot Matrix View",
+        "table": "Table View"
+    }
+}
