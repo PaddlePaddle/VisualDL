@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import IndicatorFilter from './IndicatorFilter';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-export default IndicatorFilter;
+import classNames from 'classnames';
+import {useMemo} from 'react';
 
-export type {IndicatorFilterProps} from './IndicatorFilter';
+export default function useClassNames(...args: [...Parameters<typeof classNames>, any[]]) {
+    const deps = args.pop() as any[];
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return useMemo(() => classNames(...args), deps);
+}

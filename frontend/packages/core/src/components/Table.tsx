@@ -16,6 +16,7 @@
 
 import {css, em, rem, sameBorder} from '~/utils/style';
 
+import classNames from 'classnames';
 import styled from 'styled-components';
 
 const Dragger = styled.span<{dragging?: boolean}>`
@@ -158,7 +159,7 @@ const tbody = css`
 
 const createStyledTableComponent = (name: string) =>
     styled.div.attrs(({className}) => ({
-        className: className ? [className, name].join(' ') : name
+        className: classNames([className, name])
     }));
 
 // keep next line to fix coding highlight
@@ -267,9 +268,15 @@ const Expander = styled.span<{isExpanded: boolean}>`
 const ExpandContainer = styled.div`
     ${cell}
     background-color: var(--table-header-background-color);
+    border-right: none;
 
     &:last-child {
         border-bottom: none;
+    }
+
+    .sticky > .tbody > & {
+        position: sticky;
+        left: 0;
     }
 `;
 

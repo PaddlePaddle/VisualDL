@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type {IndicatorData, ListItem} from '~/resource/hyper-parameter';
+import type {Indicator, IndicatorData, ListItem} from '~/resource/hyper-parameter';
 import React, {FunctionComponent, useMemo, useState} from 'react';
 import {borderRadius, rem} from '~/utils/style';
+import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
 
 import Aside from '~/components/Aside';
 import BodyLoading from '~/components/BodyLoading';
@@ -25,7 +26,6 @@ import IndicatorFilter from '~/components/HyperParameterPage/IndicatorFilter/Ind
 import Tab from '~/components/Tab';
 import TableView from '~/components/HyperParameterPage/TableView';
 import Title from '~/components/Title';
-import {format} from '~/resource/hyper-parameter';
 import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
@@ -51,18 +51,21 @@ const HyperParameter: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
 
     const {data: indicatorsData, loading: loadingIndicators} = useRequest<IndicatorData>('/hparams/indicators');
-    const indicators = useMemo(() => Object.assign({hparams: [], metrics: []}, indicatorsData), [indicatorsData]);
+    const indicators = useMemo(
+        () => [
+            ...formatIndicators(indicatorsData?.hparams ?? [], 'hparams'),
+            ...formatIndicators(indicatorsData?.metrics ?? [], 'metrics')
+        ],
+        [indicatorsData]
+    );
 
     const {data: list, loading: loadingList} = useRequest<ListItem[]>('/hparams/list');
-    const formattedList = useMemo(
-        () =>
-            list?.map(row => ({
-                ...row,
-                hparams: format(row.hparams, indicators.hparams),
-                metrics: format(row.metrics, indicators.metrics)
-            })) ?? [],
-        [indicators.hparams, indicators.metrics, list]
-    );
+
+    const [filteredIndicators, setFilteredIndicators] = useState<Indicator[]>(indicators);
+
+    const filteredList = useMemo(() => filter(list ?? [], filteredIndicators), [filteredIndicators, list]);
+
+    const formattedList = useMemo(() => format(filteredList, indicators), [filteredList, indicators]);
 
     const loading = useMemo(() => loadingIndicators || loadingList, [loadingIndicators, loadingList]);
 
@@ -78,19 +81,19 @@ const HyperParameter: FunctionComponent = () => {
     const view = useMemo(() => {
         switch (tabView) {
             case 'table':
-                return <TableView indicators={indicators} list={formattedList} />;
+                return <TableView indicators={filteredIndicators} list={formattedList} />;
             default:
                 return null;
         }
-    }, [formattedList, indicators, tabView]);
+    }, [filteredIndicators, formattedList, tabView]);
 
     const aside = useMemo(
         () => (
             <Aside>
-                <IndicatorFilter hparams={indicators.hparams} metrics={indicators.metrics} />
+                <IndicatorFilter indicators={indicators} onChange={setFilteredIndicators} />
             </Aside>
         ),
-        [indicators.hparams, indicators.metrics]
+        [indicators]
     );
 
     return (

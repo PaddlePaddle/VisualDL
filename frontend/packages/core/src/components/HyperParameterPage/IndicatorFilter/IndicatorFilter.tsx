@@ -14,57 +14,77 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import type {Indicator, IndicatorGroup, Range} from '~/resource/hyper-parameter';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 
 import {AsideSection} from '~/components/Aside';
 import Field from '~/components/Field';
-import type {Indicator} from '~/resource/hyper-parameter';
 import IndicatorItem from './Indicator';
 import Tab from '~/components/Tab';
 import type {TabProps} from '~/components/Tab';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
-const DataTypeTab = styled<React.FunctionComponent<TabProps<string>>>(Tab)`
+const DataTypeTab = styled<React.FunctionComponent<TabProps<IndicatorGroup>>>(Tab)`
     font-weight: 700;
 `;
 
-interface IndicatorFilterProps {
-    hparams: Indicator[];
-    metrics: Indicator[];
+export interface IndicatorFilterProps {
+    indicators: Indicator[];
+    onChange?: (indicators: Indicator[]) => unknown;
 }
 
-const IndicatorFilter: FunctionComponent<IndicatorFilterProps> = ({hparams, metrics}) => {
+const IndicatorFilter: FunctionComponent<IndicatorFilterProps> = ({indicators, onChange}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
 
     const dataTypeList = useMemo(
-        () => ['hparams', 'metrics'].map(value => ({value, label: t(`hyper-parameter:data-type-value.${value}`)})),
+        () =>
+            (['hparams', 'metrics'] as IndicatorGroup[]).map(value => ({
+                value,
+                label: t(`hyper-parameter:data-type-value.${value}`)
+            })),
         [t]
     );
-    const [dataType, setDataType] = useState('hparams');
+    const [dataType, setDataType] = useState<IndicatorGroup>('hparams');
 
-    const indicator = useCallback(
-        // eslint-disable-next-line react/display-name
-        (key: string) => (i: Indicator, index: number) => {
-            const props = {
-                ...i,
-                values: i.type === 'continuous' ? undefined : i.values,
-                key: key + index
-            };
-            return <IndicatorItem {...props} />;
-        },
-        []
+    const indicatorsInGroup = useMemo(() => indicators.filter(indicator => indicator.group === dataType), [
+        dataType,
+        indicators
+    ]);
+
+    const [result, setResult] = useState(indicators);
+    useEffect(() => setResult(indicators), [indicators]);
+    const updateResult = useCallback((indicator: Indicator, data: Partial<Indicator>) => {
+        setResult(old => {
+            const index = old.findIndex(i => i.name === indicator.name && i.group === indicator.group);
+            const n = [...old];
+            if (index >= 0) {
+                Object.assign(n[index], data);
+            }
+            return n;
+        });
+    }, []);
+
+    const toggle = useCallback(
+        (indicator: Indicator, visible: boolean) => updateResult(indicator, {selected: visible}),
+        [updateResult]
     );
-    const indicators = useMemo(() => {
-        switch (dataType) {
-            case 'hparams':
-                return hparams.map(indicator('hparams'));
-            case 'metrics':
-                return metrics.map(indicator('metrics'));
-            default:
-                return [];
-        }
-    }, [dataType, hparams, indicator, metrics]);
+    const change = useCallback(
+        (indicator: Indicator, data: Range | string[] | number[]) => {
+            switch (indicator.type) {
+                case 'numeric':
+                case 'string':
+                    return updateResult(indicator, {selectedValues: data as string[] | number[]});
+                case 'continuous':
+                    return updateResult(indicator, data as Range);
+            }
+        },
+        [updateResult]
+    );
+
+    useEffect(() => {
+        onChange?.(result);
+    }, [result, onChange]);
 
     return (
         <div>
@@ -72,9 +92,21 @@ const IndicatorFilter: FunctionComponent<IndicatorFilterProps> = ({hparams, metr
                 <Field>
                     <DataTypeTab list={dataTypeList} value={dataType} onChange={setDataType} appearance="underscore" />
                 </Field>
-                {indicators.map((indicator, index) => (
-                    <AsideSection key={index}>
-                        <Field>{indicator}</Field>
+                {indicatorsInGroup.map(indicator => (
+                    <AsideSection key={indicator.group + indicator.name}>
+                        <Field>
+                            <IndicatorItem
+                                name={indicator.name}
+                                type={indicator.type}
+                                selected={indicator.selected}
+                                values={indicator.type === 'continuous' ? undefined : indicator.values}
+                                selectedValues={indicator.type === 'continuous' ? undefined : indicator.selectedValues}
+                                min={indicator.type === 'continuous' ? indicator.min : undefined}
+                                max={indicator.type === 'continuous' ? indicator.max : undefined}
+                                onToggle={visible => toggle(indicator, visible)}
+                                onChange={(data: Range | string[] | number[]) => change(indicator, data)}
+                            />
+                        </Field>
                     </AsideSection>
                 ))}
             </AsideSection>

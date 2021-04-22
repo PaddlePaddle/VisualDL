@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type {IndicatorType, Range} from '~/resource/hyper-parameter';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 
 import Checkbox from '~/components/Checkbox';
 import ContinuousIndicatorDetails from './ContinuousIndicatorDetails';
 import DiscreteIndicatorDetails from './DiscreteIndicatorDetails';
 import Icon from '~/components/Icon';
-import type {Range} from '~/resource/hyper-parameter';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
 
@@ -59,81 +59,78 @@ const Details = styled.div`
     }
 `;
 
-type ValuesType<T> = T extends 'continuous'
-    ? undefined
-    : T extends 'string'
-    ? string[]
-    : T extends 'numeric'
-    ? number[]
-    : never;
-interface IndicatorProps<T extends 'string' | 'numeric' | 'continuous'> {
+interface IndicatorProps {
     name: string;
-    type: T;
-    values: ValuesType<T>;
-    onChange?: T extends 'continuous'
-        ? (range: {min: number; max: number}) => unknown
-        : T extends 'string' | 'numeric'
-        ? (values: ValuesType<T>) => unknown
-        : never;
+    type: IndicatorType;
+    selected?: boolean;
+    values?: string[] | number[];
+    selectedValues?: string[] | number[];
+    min?: number;
+    max?: number;
     onToggle?: (value: boolean) => unknown;
+    onChange?: (data: Range | string[] | number[]) => unknown;
 }
 
-const Indicator = <T extends 'string' | 'numeric' | 'continuous'>({
+const Indicator: FunctionComponent<IndicatorProps> = ({
     name,
     type,
+    selected: propsSelected,
     values,
-    onToggle
-}: IndicatorProps<T>): ReturnType<FunctionComponent> => {
+    selectedValues: propsSelectedValues,
+    min,
+    max,
+    onToggle,
+    onChange
+}) => {
     const [expand, setExpand] = useState(true);
 
-    const [selected, setSelected] = useState(true);
+    const [selected, setSelected] = useState(propsSelected ?? true);
+    useEffect(() => setSelected(propsSelected ?? true), [propsSelected]);
+
+    const [selectedValues, setSelectedValues] = useState(propsSelectedValues ?? []);
+    useEffect(() => setSelectedValues(propsSelectedValues ?? []), [propsSelectedValues]);
+
+    const [range, setRange] = useState<Range>({
+        min: min ?? Number.NEGATIVE_INFINITY,
+        max: max ?? Number.POSITIVE_INFINITY
+    });
+    useEffect(
+        () =>
+            setRange({
+                min: min ?? Number.NEGATIVE_INFINITY,
+                max: max ?? Number.POSITIVE_INFINITY
+            }),
+        [min, max]
+    );
+
     const toggle = useCallback(() => {
-        setSelected(value => {
-            onToggle?.(!value);
-            return !value;
-        });
-    }, [onToggle]);
+        onToggle?.(!selected);
+        setSelected(value => !value);
+    }, [onToggle, selected]);
 
-    const [selectedValues, setSelectedValues] = useState(values);
-    const [range, setRange] = useState<Range>({min: Number.NEGATIVE_INFINITY, max: Number.POSITIVE_INFINITY});
-
-    useEffect(() => {
-        setExpand(true);
-        setSelected(true);
-        setRange({min: Number.NEGATIVE_INFINITY, max: Number.POSITIVE_INFINITY});
-    }, [name]);
-    useEffect(() => {
-        setSelectedValues(values);
-    }, [name, values]);
+    const change = useCallback(
+        (data: Range | string[] | number[]) => {
+            if (type === 'continuous') {
+                setSelectedValues(data as string[] | number[]);
+            } else {
+                setRange(data as Range);
+            }
+            onChange?.(data);
+        },
+        [onChange, type]
+    );
 
     const details = useMemo(() => {
         switch (type) {
             case 'string':
             case 'numeric':
-                return (
-                    // FIXME
-                    /* eslint-disable @typescript-eslint/no-explicit-any */
-                    <DiscreteIndicatorDetails
-                        list={values as any}
-                        values={selectedValues as any}
-                        disabled={!selected}
-                        onChange={setSelectedValues as any}
-                    />
-                    /* eslint-enable @typescript-eslint/no-explicit-any */
-                );
+                return <DiscreteIndicatorDetails list={values ?? []} values={selectedValues} onChange={change} />;
             case 'continuous':
-                return (
-                    <ContinuousIndicatorDetails
-                        min={range.min}
-                        max={range.max}
-                        disabled={!selected}
-                        onChange={setRange}
-                    />
-                );
+                return <ContinuousIndicatorDetails min={range.min} max={range.max} onChange={change} />;
             default:
                 return null as never;
         }
-    }, [range.max, range.min, selected, selectedValues, type, values]);
+    }, [change, range.max, range.min, selectedValues, type, values]);
 
     return (
         <>

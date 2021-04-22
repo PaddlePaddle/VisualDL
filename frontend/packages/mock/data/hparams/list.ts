@@ -20,17 +20,21 @@
  * request
  * {}
  */
+
+const a = ['a', 'b', 'c', 'd'];
+const b = [1, 2, 3, 4, 5];
+
 export default () =>
     Array(50)
         .fill(undefined)
         .map((_, index) => ({
             name: `run${index}`,
             hparams: {
-                lr: `${index}.0`,
+                lr: a[index % a.length],
                 bsize: index * 0.5 + 0.5
             },
             metrics: {
-                accuracy: index * 0.1,
+                accuracy: b[index % b.length],
                 loss: index * 0.2
             }
         }));

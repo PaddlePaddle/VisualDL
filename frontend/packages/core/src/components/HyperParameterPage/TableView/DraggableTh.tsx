@@ -104,7 +104,7 @@ const DraggableHeader: FunctionComponent<DraggableHeaderProps & WithStyled> = ({
             if (!monitor.canDrop()) {
                 return;
             }
-            const rect = ref.current?.getBoundingClientRect();
+            const rect = ref.current.getBoundingClientRect();
             if (rect) {
                 const middle = (rect.right - rect.left) / 2;
                 const clientOffset = monitor.getClientOffset();

@@ -15,20 +15,20 @@
  */
 
 export type {
-    ContinuousIndicator,
-    Data,
-    DiscreteIndicator,
-    DiscreteNumericIndicator,
-    DiscreteStringIndicator,
+    IndicatorRaw,
     Indicator,
+    IndicatorGroup,
     IndicatorData,
+    IndicatorType,
+    DataListItem,
     ListItem,
     Range,
     ViewData
 } from './types';
 
 export {OrderDirection} from './types';
-export {format} from './format';
+export {format, formatIndicators} from './format';
+export {filter} from './filter';
 
 export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
 export const DND_TYPE = Symbol('DND_TYPE');

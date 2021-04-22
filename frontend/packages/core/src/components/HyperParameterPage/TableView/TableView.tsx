@@ -17,7 +17,8 @@
 import type {Column, TableKeyedProps} from 'react-table';
 import {DEFAULT_ORDER_INDICATOR, OrderDirection} from '~/resource/hyper-parameter';
 import {ExpandContainer, TBody, THead, Table, Td, Tr} from '~/components/Table';
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import type {IndicatorGroup, ViewData} from '~/resource/hyper-parameter';
+import React, {FunctionComponent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {useColumnOrder, useExpanded, useFlexLayout, useResizeColumns, useSortBy, useTable} from 'react-table';
 
 import {DndProvider} from 'react-dnd';
@@ -28,10 +29,10 @@ import MetricsHeader from './MetricsHeader';
 import NameCell from './NameCell';
 import NameHeader from './NameHeader';
 import Select from '~/components/Select';
-import type {ViewData} from '~/resource/hyper-parameter';
 import classNames from 'classnames';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
+import useClassNames from '~/hooks/useClassNames';
 import {useSticky} from 'react-table-sticky';
 import {useTranslation} from 'react-i18next';
 
@@ -67,7 +68,7 @@ const TableSection = styled.div`
     width: 100%;
 `;
 
-type TableViewProps = ViewData<string>;
+type TableViewProps = ViewData;
 type Data = TableViewProps['list'][number];
 
 const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) => {
@@ -75,19 +76,16 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
 
     const table = useRef<HTMLDivElement>(null);
 
-    const indicatorList = useMemo(
-        () => [...indicators.hparams.map(({name}) => name), ...indicators.metrics.map(({name}) => name)],
-        [indicators.hparams, indicators.metrics]
-    );
+    const indicatorNameList = useMemo(() => indicators.map(({name}) => name), [indicators]);
 
-    const orderIndicatorList = useMemo(
+    const indicatorOrderList = useMemo(
         () => [
             {value: DEFAULT_ORDER_INDICATOR, label: t('hyper-parameter.order-default')},
-            ...indicatorList.map(value => ({value, label: value}))
+            ...indicatorNameList.map(value => ({value, label: value}))
         ],
-        [indicatorList, t]
+        [indicatorNameList, t]
     );
-    const [orderIndicator, setOrderIndicator] = useState<string | symbol>(DEFAULT_ORDER_INDICATOR);
+    const [indicatorOrder, setIndicatorOrder] = useState<string | symbol>(DEFAULT_ORDER_INDICATOR);
 
     const orderDirectionList = useMemo(
         () =>
@@ -101,10 +99,10 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
 
     const sortBy = useMemo(
         () =>
-            orderIndicator === DEFAULT_ORDER_INDICATOR
+            indicatorOrder === DEFAULT_ORDER_INDICATOR
                 ? []
-                : [{id: orderIndicator as string, desc: orderDirection === OrderDirection.DESCENDING}],
-        [orderDirection, orderIndicator]
+                : [{id: indicatorOrder as string, desc: orderDirection === OrderDirection.DESCENDING}],
+        [orderDirection, indicatorOrder]
     );
 
     const defaultColumn = useMemo(
@@ -125,20 +123,14 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                 sticky: 'left',
                 draggable: false
             },
-            ...indicators.hparams.map(({name}) => ({
-                accessor: `hparams.${name}` as 'hparams',
+            ...indicators.map(({name, group}) => ({
+                accessor: `${group}.${name}` as IndicatorGroup, // fix react-table's type error
                 id: name,
-                Header: Header,
-                minWidth: 200
-            })),
-            ...indicators.metrics.map(({name}) => ({
-                accessor: `metrics.${name}` as 'metrics',
-                id: name,
-                Header: MetricsHeader,
+                Header: group === 'metrics' ? MetricsHeader : Header,
                 minWidth: 200
             }))
         ],
-        [indicators.hparams, indicators.metrics]
+        [indicators]
     );
 
     const {
@@ -150,7 +142,8 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
         setColumnOrder,
         state,
         totalColumnsWidth,
-        columns: tableColumns
+        columns: tableColumns,
+        allColumns
     } = useTable(
         {
             columns,
@@ -168,6 +161,14 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
         useExpanded
     );
 
+    useEffect(() => {
+        allColumns.forEach(column => {
+            const indicator = indicators.find(i => i.name === column.id);
+            if (indicator && column.isVisible !== indicator.selected) {
+                column.toggleHidden(!indicator.selected);
+            }
+        });
+    }, [allColumns, indicators]);
     useEffect(() => setSortBy(sortBy), [setSortBy, sortBy]);
 
     const [draggingColumnId, setDraggingColumnId] = useState<string | null>(null);
@@ -213,7 +214,7 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                 return;
             }
             const ids = orderedColumnIds.filter(id => id !== draggingColumnId);
-            const originalIndex = tableColumns.findIndex(c => c.id === draggingColumnId);
+            const originalIndex = orderedColumnIds.findIndex(id => id === draggingColumnId);
             const index = ids.findIndex(c => c === id);
             let insert: number | null = null;
             if (index === -1) {
@@ -228,17 +229,27 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                 setColumnOrder(ids);
             }
         },
-        [draggingColumnId, orderedColumnIds, setColumnOrder, tableColumns]
+        [draggingColumnId, orderedColumnIds, setColumnOrder]
     );
 
-    const tableProps = useMemo(
-        () => ({
-            className: classNames({
-                sticky: true,
-                'is-droppable-left': isTableDroppableLeft,
-                'is-droppable-right': isTableDroppableRight
-            })
-        }),
+    const [tableWidth, setTableWidth] = useState(0);
+    useLayoutEffect(() => {
+        const t = table.current;
+        if (t) {
+            const observer = new ResizeObserver(() => {
+                const rect = t.getBoundingClientRect();
+                setTableWidth(rect.width);
+            });
+            observer.observe(t);
+            return () => observer.unobserve(t);
+        }
+    }, []);
+    const tableClassNames = useClassNames(
+        'sticky',
+        {
+            'is-droppable-left': isTableDroppableLeft,
+            'is-droppable-right': isTableDroppableRight
+        },
         [isTableDroppableLeft, isTableDroppableRight]
     );
     const getColumnProps = useCallback<(column: Column<Data>) => Partial<TableKeyedProps>>(
@@ -248,27 +259,41 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                 'is-resizing': state.columnResizing.isResizingColumn === column.id,
                 'is-dragging': draggingColumnId === column.id,
                 'is-droppable': droppableColumnId === column.id
-            })
+            }),
+            style: {
+                position: column.sticky ? 'sticky' : 'relative'
+            }
         }),
         [draggingColumnId, droppableColumnId, state.columnResizing.isResizingColumn]
     );
     const getGroupWidthProps = useCallback(() => {
-        if (table.current) {
-            const rect = table.current.getBoundingClientRect();
-            if (totalColumnsWidth > rect.width) {
-                return {
-                    style: {
-                        width: 'fit-content'
-                    }
-                };
-            }
+        if (totalColumnsWidth > tableWidth) {
+            return {
+                style: {
+                    width: 'fit-content'
+                }
+            };
         }
         return {
             style: {
                 width: 'auto'
             }
         };
-    }, [totalColumnsWidth]);
+    }, [tableWidth, totalColumnsWidth]);
+    const getExpanderWidthProps = useCallback(() => {
+        if (totalColumnsWidth > tableWidth) {
+            return {
+                style: {
+                    width: tableWidth - 2
+                }
+            };
+        }
+        return {
+            style: {
+                width: 'auto'
+            }
+        };
+    }, [tableWidth, totalColumnsWidth]);
 
     return (
         <Wrapper>
@@ -276,11 +301,11 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                 <span>{t('hyper-parameter:order-by')}</span>
                 <Select
                     className="order-select"
-                    list={orderIndicatorList}
-                    value={orderIndicator}
-                    onChange={setOrderIndicator}
+                    list={indicatorOrderList}
+                    value={indicatorOrder}
+                    onChange={setIndicatorOrder}
                 />
-                {orderIndicator !== DEFAULT_ORDER_INDICATOR ? (
+                {indicatorOrder !== DEFAULT_ORDER_INDICATOR ? (
                     <>
                         <span>{t('hyper-parameter:order-direction')}</span>
                         <Select
@@ -294,7 +319,12 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
             </OrderSection>
             <TableSection>
                 <DndProvider backend={HTML5Backend}>
-                    <Table {...getTableProps()} {...tableProps} ref={table}>
+                    <Table
+                        {...getTableProps({
+                            className: tableClassNames
+                        })}
+                        ref={table}
+                    >
                         <THead {...getGroupWidthProps()}>
                             {headerGroups.map(headerGroup => (
                                 // eslint-disable-next-line react/jsx-key
@@ -344,7 +374,9 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                                                 </Td>
                                             ))}
                                         </Tr>
-                                        {row.isExpanded ? <ExpandContainer>aaaa</ExpandContainer> : null}
+                                        {row.isExpanded ? (
+                                            <ExpandContainer {...getExpanderWidthProps()}>aaaa</ExpandContainer>
+                                        ) : null}
                                     </React.Fragment>
                                 );
                             })}

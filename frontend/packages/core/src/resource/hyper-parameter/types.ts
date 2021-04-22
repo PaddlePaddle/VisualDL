@@ -14,34 +14,52 @@
  * limitations under the License.
  */
 
-export type Data = {
-    id: string;
-    value: string;
-};
-
 export enum OrderDirection {
     ASCENDING = 'asc',
     DESCENDING = 'desc'
 }
 
-interface IndicatorBase<T extends 'string' | 'numeric' | 'continuous'> {
+export type IndicatorType = 'string' | 'numeric' | 'continuous';
+export type IndicatorGroup = 'hparams' | 'metrics';
+
+interface IndicatorBase<T extends IndicatorType> {
     name: string;
     type: T;
 }
 
-export interface DiscreteIndicator<T extends 'string' | 'numeric'> extends IndicatorBase<T> {
+interface DiscreteIndicator<T extends 'string' | 'numeric'> extends IndicatorBase<T> {
     values: T extends 'string' ? string[] : T extends 'numeric' ? number[] : never[];
 }
 
-export type DiscreteStringIndicator = DiscreteIndicator<'string'>;
-export type DiscreteNumericIndicator = DiscreteIndicator<'numeric'>;
-export type ContinuousIndicator = IndicatorBase<'continuous'>;
+type DiscreteStringIndicator = DiscreteIndicator<'string'>;
+type DiscreteNumericIndicator = DiscreteIndicator<'numeric'>;
+type ContinuousIndicator = IndicatorBase<'continuous'>;
 
-export type Indicator = DiscreteStringIndicator | DiscreteNumericIndicator | ContinuousIndicator;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type IndicatorRaw<T extends {} = {}> = (
+    | DiscreteStringIndicator
+    | DiscreteNumericIndicator
+    | ContinuousIndicator
+) &
+    T;
 
-export interface IndicatorData {
-    hparams: Indicator[];
-    metrics: Indicator[];
+type IndicatorWithGroup = IndicatorRaw & {
+    group: IndicatorGroup;
+};
+
+interface FilterData {
+    selected: boolean;
+    min?: number;
+    max?: number;
+    selectedValues?: number[] | string[];
+}
+
+export type Indicator = IndicatorWithGroup & FilterData;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export interface IndicatorData<T extends {} = {}> {
+    hparams: IndicatorRaw<T>[];
+    metrics: IndicatorRaw<T>[];
 }
 
 export interface Range {
@@ -49,13 +67,15 @@ export interface Range {
     max: number;
 }
 
-export interface ListItem<T extends string | number = string | number> {
+export interface DataListItem<T extends string | number = string | number> {
     name: string;
     hparams: Record<string, T>;
     metrics: Record<string, T>;
 }
 
-export interface ViewData<T extends string | number = string | number> {
-    indicators: IndicatorData;
-    list: ListItem<T>[];
+export type ListItem = DataListItem<string>;
+
+export interface ViewData {
+    indicators: Indicator[];
+    list: ListItem[];
 }

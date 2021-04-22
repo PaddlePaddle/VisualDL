@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 
 import Input from '~/components/Input';
+import type {WithStyled} from '~/utils/style';
 
 interface NumberInputProps {
     value?: number;
@@ -26,40 +27,44 @@ interface NumberInputProps {
     onChange?: (value: number) => unknown;
 }
 
-const NumberInput: FunctionComponent<NumberInputProps> = ({value, defaultValue, placeholder, disabled, onChange}) => {
+const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
+    value,
+    defaultValue,
+    placeholder,
+    className,
+    disabled,
+    onChange
+}) => {
     const [inputValue, setInputValue] = useState(Number.isFinite(value) ? value + '' : '');
     useEffect(() => setInputValue(Number.isFinite(value) ? value + '' : ''), [value]);
 
-    const inputChanged = useCallback(() => {
+    useEffect(() => {
         if (inputValue === '') {
             onChange?.(defaultValue);
             return;
         }
         const v = Number.parseFloat(inputValue);
-        if (Number.isNaN(v)) {
-            setInputValue(Number.isFinite(value) ? value + '' : '');
-        } else {
+        if (!Number.isNaN(v)) {
             onChange?.(v);
-            setInputValue(v + '');
         }
     }, [defaultValue, inputValue, onChange, value]);
 
-    const keyDown = useCallback(
-        (event: React.KeyboardEvent) => {
-            if (event.key === 'Enter') {
-                inputChanged();
-            }
-        },
-        [inputChanged]
-    );
+    const check = useCallback(() => {
+        const v = Number.parseFloat(inputValue);
+        if (Number.isNaN(v)) {
+            setInputValue(Number.isFinite(value) ? value + '' : '');
+        } else {
+            setInputValue(v + '');
+        }
+    }, [inputValue, value]);
 
     return (
         <Input
             value={inputValue}
             placeholder={placeholder}
             disabled={disabled}
-            onBlur={inputChanged}
-            onKeyDown={keyDown}
+            className={className}
+            onBlur={check}
             onChange={setInputValue}
         />
     );

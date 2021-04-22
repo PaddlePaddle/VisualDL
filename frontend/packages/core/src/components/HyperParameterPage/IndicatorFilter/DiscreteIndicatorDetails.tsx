@@ -19,33 +19,31 @@ import React, {FunctionComponent, useCallback, useEffect, useState} from 'react'
 import Checkbox from '~/components/Checkbox';
 import without from 'lodash/without';
 
-interface DiscreteIndicatorDetailsProps<T extends string | number> {
-    list: T[];
-    values?: T[];
-    disabled?: boolean;
-    onChange?: (values: T[]) => unknown;
+interface DiscreteIndicatorDetailsProps<T extends string[] | number[]> {
+    list: T;
+    values?: T;
+    onChange?: (values: T) => unknown;
 }
 
-const DiscreteIndicatorDetails = <T extends string | number>({
+const DiscreteIndicatorDetails = <T extends string[] | number[]>({
     list,
     values,
-    disabled,
     onChange
 }: DiscreteIndicatorDetailsProps<T>): ReturnType<FunctionComponent> => {
-    const [selected, setSelected] = useState(values ?? list);
+    const [selected, setSelected] = useState<(string | number)[]>(values ?? list);
     useEffect(() => setSelected(values ?? list), [list, values]);
 
     const changeValue = useCallback(
-        (value: T, checked: boolean) => {
+        (value: T[number], checked: boolean) => {
             setSelected(v => {
                 if (checked && !v.includes(value)) {
                     const nv = [...v, value];
-                    onChange?.(nv);
+                    onChange?.(nv as T);
                     return nv;
                 }
                 if (!checked && v.includes(value)) {
                     const nv = without(v, value);
-                    onChange?.(nv);
+                    onChange?.(nv as T);
                     return nv;
                 }
                 return v;
@@ -56,10 +54,9 @@ const DiscreteIndicatorDetails = <T extends string | number>({
 
     return (
         <>
-            {list.map((value, index) => (
+            {(list as (string | number)[]).map((value, index) => (
                 <Checkbox
                     checked={selected.includes(value)}
-                    disabled={disabled}
                     onChange={checked => changeValue(value, checked)}
                     key={index}
                 >

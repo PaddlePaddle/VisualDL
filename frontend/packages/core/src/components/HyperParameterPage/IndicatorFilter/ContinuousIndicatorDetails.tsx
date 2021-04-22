@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useRef, useState} from 'react';
 
 import NumberInput from './NumberInput';
 import type {Range} from '~/resource/hyper-parameter';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
+
+const Input = styled(NumberInput)`
+    width: 100%;
+`;
 
 const Row = styled.div`
     display: flex;
@@ -31,6 +35,7 @@ const Row = styled.div`
 
     > .label {
         flex-grow: 0;
+        flex-shrink: 0;
         margin-right: 1em;
     }
 `;
@@ -38,16 +43,10 @@ const Row = styled.div`
 interface ContinuousIndicatorDetailsProps {
     min?: number;
     max?: number;
-    disabled?: boolean;
     onChange?: (range: Range) => unknown;
 }
 
-const DiscreteIndicatorDetails: FunctionComponent<ContinuousIndicatorDetailsProps> = ({
-    min,
-    max,
-    disabled,
-    onChange
-}) => {
+const DiscreteIndicatorDetails: FunctionComponent<ContinuousIndicatorDetailsProps> = ({min, max, onChange}) => {
     const {t} = useTranslation('hyper-parameter');
 
     const [range, setRange] = useState<Range>({
@@ -55,34 +54,32 @@ const DiscreteIndicatorDetails: FunctionComponent<ContinuousIndicatorDetailsProp
         max: max ?? Number.POSITIVE_INFINITY
     });
 
-    const changeMin = useCallback(
-        (v: number) => {
-            setRange(r => ({
-                ...r,
-                min: v
-            }));
-            onChange?.(range);
-        },
-        [onChange, range]
-    );
-    const changeMax = useCallback(
-        (v: number) => {
-            setRange(r => ({
-                ...r,
-                max: v
-            }));
-            onChange?.(range);
-        },
-        [onChange, range]
-    );
+    const changeMin = useCallback((v: number) => {
+        setRange(r => ({
+            ...r,
+            min: v
+        }));
+    }, []);
+    const changeMax = useCallback((v: number) => {
+        setRange(r => ({
+            ...r,
+            max: v
+        }));
+    }, []);
+    const change = useRef(onChange);
+    useEffect(() => {
+        change.current = onChange;
+    }, [onChange]);
+    useEffect(() => {
+        change.current?.(range);
+    }, [range]);
 
     return (
         <>
             <Row>
                 <span className="label">{t('hyper-parameter:min')}</span>
-                <NumberInput
+                <Input
                     value={range.min}
-                    disabled={disabled}
                     defaultValue={Number.NEGATIVE_INFINITY}
                     placeholder={t('hyper-parameter:negative-infinity')}
                     onChange={changeMin}
@@ -90,9 +87,8 @@ const DiscreteIndicatorDetails: FunctionComponent<ContinuousIndicatorDetailsProp
             </Row>
             <Row>
                 <span className="label">{t('hyper-parameter:max')}</span>
-                <NumberInput
+                <Input
                     value={range.max}
-                    disabled={disabled}
                     defaultValue={Number.POSITIVE_INFINITY}
                     placeholder={t('hyper-parameter:positive-infinity')}
                     onChange={changeMax}

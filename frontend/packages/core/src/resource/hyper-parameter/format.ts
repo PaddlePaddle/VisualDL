@@ -14,15 +14,49 @@
  * limitations under the License.
  */
 
-import type {Indicator} from './types';
+import type {DataListItem, Indicator, IndicatorGroup, IndicatorRaw, ListItem} from './types';
 
-export function format(obj: Record<string, string | number>, idi: Indicator[]): Record<string, string> {
-    return idi.reduce<Record<string, string>>((m, {name, type}) => {
-        if (type === 'string') {
-            m[name] = obj[name] + '';
-        } else {
-            m[name] = Number.parseFloat(obj[name] + '') + '';
+export function format(list: DataListItem[], indicators: Indicator[]): ListItem[] {
+    return list.map(row =>
+        indicators.reduce<ListItem>(
+            (m, {name, group, type}) => {
+                switch (type) {
+                    case 'string':
+                        m[group][name] = row[group][name] + '';
+                        break;
+                    case 'numeric':
+                    case 'continuous':
+                        m[group][name] = Number.parseFloat(row[group][name] + '') + '';
+                        break;
+                }
+                return m;
+            },
+            {name: row.name, hparams: {}, metrics: {}}
+        )
+    );
+}
+
+export function formatIndicators(indicators: IndicatorRaw[], group: IndicatorGroup): Indicator[] {
+    return indicators.map(indicator => {
+        switch (indicator.type) {
+            case 'numeric':
+            case 'string':
+                return {
+                    ...indicator,
+                    group,
+                    selected: true,
+                    selectedValues: [...indicator.values] as string[] | number[]
+                };
+            case 'continuous':
+                return {
+                    ...indicator,
+                    group,
+                    selected: true,
+                    min: Number.NEGATIVE_INFINITY,
+                    max: Number.POSITIVE_INFINITY
+                };
+            default:
+                return null as never;
         }
-        return m;
-    }, {});
+    });
 }

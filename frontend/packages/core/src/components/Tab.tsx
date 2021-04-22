@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import {WithStyled, borderRadius, rem, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
+import useClassNames from '~/hooks/useClassNames';
 
 const Wrapper = styled.div`
     display: flex;
@@ -128,11 +129,7 @@ const Tab = <T extends unknown>({
         [selected, onChange]
     );
 
-    const classNames = useMemo(() => [className, variant, appearance].filter(i => i != null).join(' '), [
-        appearance,
-        className,
-        variant
-    ]);
+    const classNames = useClassNames(className, variant, appearance, [appearance, className, variant]);
 
     return (
         <Wrapper className={classNames}>
