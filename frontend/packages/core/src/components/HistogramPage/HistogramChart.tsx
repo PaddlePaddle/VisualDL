@@ -29,7 +29,6 @@ import {Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import ChartToolbox from '~/components/ChartToolbox';
 import type {Run} from '~/types';
 import {distance} from '~/utils';
-import {fetcher} from '~/utils/fetch';
 import {format} from 'd3-format';
 import minBy from 'lodash/minBy';
 import queryString from 'query-string';
@@ -95,7 +94,6 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
     const {data: dataset, error, loading} = useRunningRequest<HistogramData>(
         `/histogram/list?${queryString.stringify({run: run.label, tag})}`,
         !!running,
-        fetcher,
         {
             refreshInterval: 60 * 1000
         }

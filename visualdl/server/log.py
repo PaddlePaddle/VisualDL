@@ -16,7 +16,7 @@
 import logging
 
 
-logger = logging.getLogger()
+logger = logging.getLogger('vdl_logger')
 handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter('[%(levelname)s %(asctime)s %(filename)s:%(lineno)s] %(message)s'))
 logger.addHandler(handler)

@@ -14,75 +14,15 @@
  * limitations under the License.
  */
 
-// cSpell:words persp coord roboto
+// cSpell:words persp roboto
 
 import * as THREE from 'three';
 import * as d3 from 'd3';
 
-import type {Point2D, Point3D} from './types';
+import type {ColorMap, Point2D, Point3D} from './types';
 
+import {ColorType} from './types';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import ScatterChartLabel from './ScatterChartLabel';
-
-function createShaders() {
-    const MIN_POINT_SIZE = 5;
-
-    return {
-        vertexShader: `
-            attribute vec3 color;
-            attribute float scaleFactor;
-
-            uniform bool sizeAttenuation;
-            uniform float pointSize;
-
-            varying vec3 vColor;
-
-            ${THREE.ShaderChunk['fog_pars_vertex']}
-
-            void main() {
-                vColor = color;
-
-                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                gl_Position = projectionMatrix * mvPosition;
-
-                float outputPointSize = pointSize;
-                if (sizeAttenuation) {
-                    outputPointSize = -pointSize / mvPosition.z;
-                } else {
-                    const float PI = 3.1415926535897932384626433832795;
-                    const float minScale = 0.1;  // minimum scaling factor
-                    const float outSpeed = 2.0;  // shrink speed when zooming out
-                    const float outNorm = (1. - minScale) / atan(outSpeed);
-                    const float maxScale = 15.0;  // maximum scaling factor
-                    const float inSpeed = 0.02;  // enlarge speed when zooming in
-                    const float zoomOffset = 0.3;  // offset zoom pivot
-                    float zoom = projectionMatrix[0][0] + zoomOffset;  // zoom pivot
-                    float scale = zoom < 1. ? 1. + outNorm * atan(outSpeed * (zoom - 1.)) :
-                                    1. + 2. / PI * (maxScale - 1.) * atan(inSpeed * (zoom - 1.));
-                    outputPointSize = pointSize * scale;
-                }
-                gl_PointSize = max(outputPointSize * scaleFactor, ${MIN_POINT_SIZE.toFixed(1)});
-                ${THREE.ShaderChunk['fog_vertex']}
-            }
-        `,
-        fragmentShader: `
-            varying vec3 vColor;
-
-            ${THREE.ShaderChunk['common']}
-            ${THREE.ShaderChunk['fog_pars_fragment']}
-
-            void main() {
-                float r = distance(gl_PointCoord, vec2(0.5, 0.5));
-                if (r < 0.5) {
-                    gl_FragColor = vec4(vColor, 1);
-                } else {
-                    discard;
-                }
-                ${THREE.ShaderChunk['fog_fragment']}
-            }
-        `
-    };
-}
 
 export type ScatterChartOptions = {
     width: number;
@@ -91,30 +31,41 @@ export type ScatterChartOptions = {
     background?: string | number | THREE.Color;
 };
 
-export default class ScatterChart {
-    static CUBE_LENGTH = 2;
-    static MAX_ZOOM = 5 * ScatterChart.CUBE_LENGTH;
-    static MIN_ZOOM = 0.025 * ScatterChart.CUBE_LENGTH;
-    static PERSP_CAMERA_FOV_VERTICAL = 70;
-    static PERSP_CAMERA_NEAR_CLIP_PLANE = 0.01;
-    static PERSP_CAMERA_FAR_CLIP_PLANE = 100;
-    static ORTHO_CAMERA_FRUSTUM_HALF_EXTENT = 1.2;
-    static ORBIT_MOUSE_ROTATION_SPEED = 1;
-    static ORBIT_ANIMATION_ROTATION_CYCLE_IN_SECONDS = 2;
-    static NUM_POINTS_FOG_THRESHOLD = 5000;
+export default abstract class ScatterChart {
+    static readonly CUBE_LENGTH = 2;
+    static readonly MAX_ZOOM = 5 * ScatterChart.CUBE_LENGTH;
+    static readonly MIN_ZOOM = 0.025 * ScatterChart.CUBE_LENGTH;
+    static readonly PERSP_CAMERA_FOV_VERTICAL = 70;
+    static readonly PERSP_CAMERA_NEAR_CLIP_PLANE = 0.01;
+    static readonly PERSP_CAMERA_FAR_CLIP_PLANE = 100;
+    static readonly ORTHO_CAMERA_FRUSTUM_HALF_EXTENT = 1.2;
+    static readonly ORBIT_MOUSE_ROTATION_SPEED = 1;
+    static readonly ORBIT_ANIMATION_ROTATION_CYCLE_IN_SECONDS = 2;
 
-    static POINT_COLOR_DEFAULT = new THREE.Color(0x7e7e7e);
-    static POINT_COLOR_HOVER = new THREE.Color(0x2932e1);
-    static POINT_COLOR_HIGHLIGHT = new THREE.Color(0x2932e1);
-    static POINT_COLOR_FOCUS = new THREE.Color(0x2932e1);
+    static readonly PERSP_CAMERA_INIT_POSITION: Point3D = [0.45, 0.9, 1.6];
+    static readonly ORTHO_CAMERA_INIT_POSITION: Point3D = [0, 0, 4];
 
-    static POINT_SCALE_DEFAULT = 1.0;
-    static POINT_SCALE_HOVER = 1.2;
-    static POINT_SCALE_HIGHLIGHT = 1.0;
-    static POINT_SCALE_FOCUS = 1.2;
-
-    static PERSP_CAMERA_INIT_POSITION: Point3D = [0.45, 0.9, 1.6];
-    static ORTHO_CAMERA_INIT_POSITION: Point3D = [0, 0, 4];
+    static readonly VALUE_COLOR_MAP_RANGE = ['#ffffdd', '#1f2d86'] as const;
+    static readonly CATEGORY_COLOR_MAP = [
+        '#9BB9E8',
+        '#8BB8FF',
+        '#B4CCB7',
+        '#A8E9B8',
+        '#DB989A',
+        '#6DCDE4',
+        '#93C2CA',
+        '#DE7CCE',
+        '#DA96BC',
+        '#309E51',
+        '#D6C482',
+        '#6D7CE4',
+        '#CDCB74',
+        '#2576AD',
+        '#E46D6D',
+        '#CA5353',
+        '#E49D6D',
+        '#E4E06D'
+    ].map(color => new THREE.Color(color));
 
     width: number;
     height: number;
@@ -122,33 +73,62 @@ export default class ScatterChart {
     is3D = true;
     data: Point3D[] = [];
     labels: string[] = [];
-    private readonly container: HTMLElement;
-    private canvas: HTMLCanvasElement | null;
-    private scene: THREE.Scene;
-    private renderer: THREE.WebGLRenderer;
-    private camera: THREE.OrthographicCamera | THREE.PerspectiveCamera;
-    private controls: OrbitControls;
-    private fog: THREE.Fog;
-    private pickingTexture: THREE.WebGLRenderTarget;
-    private geometry: THREE.BufferGeometry;
-    private renderMaterial: THREE.ShaderMaterial | null = null;
-    private pickingMaterial: THREE.ShaderMaterial | null = null;
-    private positions: Float32Array | null = null;
-    private renderColors: Float32Array | null = null;
-    private pickingColors: Float32Array | null = null;
-    private scaleFactors: Float32Array | null = null;
-    private axes: THREE.AxesHelper | null = null;
-    private points: THREE.Points | null = null;
-    private focusedPointIndices: number[] = [];
-    private hoveredPointIndices: number[] = [];
-    private label: ScatterChartLabel;
-    private highLightPointIndices: number[] = [];
-    private mouseCoordinates: Point2D | null = null;
 
+    protected abstract readonly vertexShader: string;
+    protected abstract readonly fragmentShader: string;
+
+    // canvas container
+    protected readonly container: HTMLElement;
+
+    protected canvas: HTMLCanvasElement | null;
+    protected scene: THREE.Scene;
+    protected renderer: THREE.WebGLRenderer;
+    protected camera: THREE.OrthographicCamera | THREE.PerspectiveCamera;
+    protected controls: OrbitControls;
+    private axes: THREE.AxesHelper | null = null;
+
+    protected geometry: THREE.BufferGeometry;
+    protected material: THREE.ShaderMaterial | null = null;
+    protected positions: Float32Array = new Float32Array();
+    protected colors: Float32Array = new Float32Array();
+
+    // render target which picking colors will render to
+    protected pickingRenderTarget: THREE.WebGLRenderTarget;
+    protected pickingMaterial: THREE.ShaderMaterial | null = null;
+    protected pickingColors: Float32Array | null = null;
+
+    protected fog: THREE.Fog | null = null;
+    protected blending: THREE.Blending = THREE.NormalBlending;
+    protected depth = true;
+
+    protected colorMap: ColorMap = {type: ColorType.Null, labels: []};
+    protected colorGenerator: ((value: string) => THREE.Color) | null = null;
+
+    private mouseCoordinates: Point2D | null = null;
     private onMouseMoveBindThis: (e: MouseEvent) => void;
+
+    protected focusedDataIndices: number[] = [];
+    protected hoveredDataIndices: number[] = [];
+    protected highLightDataIndices: number[] = [];
 
     private rotate = false;
     private animationId: number | null = null;
+
+    protected abstract get object(): (THREE.Object3D & {material: THREE.Material | THREE.Material[]}) | null;
+    protected abstract get defaultColor(): THREE.Color;
+    protected abstract get hoveredColor(): THREE.Color;
+    protected abstract get focusedColor(): THREE.Color;
+    protected abstract get highLightColor(): THREE.Color;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected abstract createShaderUniforms(picking: boolean): Record<string, THREE.IUniform<any>>;
+    protected abstract onRender(): void;
+    protected abstract onSetSize(width: number, height: number): void;
+    protected abstract onDataSet(): void;
+    protected abstract onDispose(): void;
+
+    get dataCount() {
+        return this.data.length;
+    }
 
     constructor(container: HTMLElement, options: ScatterChartOptions) {
         this.container = container;
@@ -160,17 +140,11 @@ export default class ScatterChart {
         this.canvas = this.initCanvas();
         this.container.appendChild(this.canvas);
 
-        this.label = new ScatterChartLabel(this.container, {
-            width: this.width,
-            height: this.height
-        });
-
         this.scene = this.initScene();
         this.camera = this.initCamera();
         this.renderer = this.initRenderer();
         this.controls = this.initControls();
-        this.fog = this.initFog();
-        this.pickingTexture = this.initRenderTarget();
+        this.pickingRenderTarget = this.initRenderTarget();
         this.geometry = this.createGeometry();
 
         this.onMouseMoveBindThis = this.onMouseMove.bind(this);
@@ -261,10 +235,6 @@ export default class ScatterChart {
         return controls;
     }
 
-    private initFog() {
-        return new THREE.Fog(this.background);
-    }
-
     private initRenderTarget() {
         const renderCanvasSize = new THREE.Vector2();
         this.renderer.getSize(renderCanvasSize);
@@ -277,62 +247,105 @@ export default class ScatterChart {
         return renderTarget;
     }
 
-    private createShaderUniforms() {
-        const fog = this.scene.fog as THREE.Fog | null;
-        return {
-            pointSize: {value: 200 / Math.log(this.data.length) / Math.log(8) / (this.is3D ? 1 : 1.5)},
-            sizeAttenuation: {value: this.is3D},
-            fogColor: {value: fog?.color},
-            fogNear: {value: fog?.near},
-            fogFar: {value: fog?.far}
-        };
-    }
-
     private createGeometry() {
         const geometry = new THREE.BufferGeometry();
         geometry.computeBoundingSphere();
         return geometry;
     }
 
-    private setPointsPosition(positions: Float32Array) {
-        this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    }
-
-    private setPointsColor(colors: Float32Array) {
-        this.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    }
-
-    private setPointsScaleFactor(scaleFactors: Float32Array) {
-        this.geometry.setAttribute('scaleFactor', new THREE.BufferAttribute(scaleFactors, 1));
-    }
-
     private createRenderMaterial() {
-        const uniforms = this.createShaderUniforms();
+        const uniforms = this.createShaderUniforms(false);
         return new THREE.ShaderMaterial({
             transparent: true,
-            depthTest: false,
-            depthWrite: false,
-            fog: true,
-            blending: THREE.MultiplyBlending,
+            depthTest: this.depth,
+            depthWrite: this.depth,
+            fog: this.fog != null,
+            blending: this.blending,
             uniforms,
-            ...createShaders()
+            vertexShader: this.vertexShader,
+            fragmentShader: this.fragmentShader
         });
     }
 
     private createPickingMaterial() {
-        const uniforms = this.createShaderUniforms();
+        const uniforms = this.createShaderUniforms(true);
         return new THREE.ShaderMaterial({
             transparent: true,
             depthTest: true,
             depthWrite: true,
             fog: false,
             blending: THREE.NormalBlending,
-            uniforms: uniforms,
-            ...createShaders()
+            uniforms,
+            vertexShader: this.vertexShader,
+            fragmentShader: this.fragmentShader
         });
     }
 
-    private convertPointsPosition() {
+    private convertColorMap() {
+        switch (this.colorMap.type) {
+            case ColorType.Value: {
+                const {minValue, maxValue} = this.colorMap;
+                return (label: string) => {
+                    const value = Number.parseFloat(label);
+                    if (!Number.isFinite(value)) {
+                        return this.defaultColor;
+                    }
+                    const ranger = d3
+                        .scaleLinear<string, string>()
+                        .domain([minValue, maxValue])
+                        .range(ScatterChart.VALUE_COLOR_MAP_RANGE);
+                    return new THREE.Color(ranger(value));
+                };
+            }
+            case ColorType.Category: {
+                const categories = this.colorMap.categories;
+                return (label: string) => {
+                    const index = categories.indexOf(label);
+                    if (index === -1) {
+                        return this.defaultColor;
+                    }
+                    return ScatterChart.CATEGORY_COLOR_MAP[index % ScatterChart.CATEGORY_COLOR_MAP.length];
+                };
+            }
+            default:
+                return null;
+        }
+    }
+
+    protected getColorByIndex(index: number): THREE.Color {
+        if (this.hoveredDataIndices.includes(index)) {
+            return this.hoveredColor;
+        }
+        if (this.focusedDataIndices.includes(index)) {
+            return this.focusedColor;
+        }
+        if (this.highLightDataIndices.includes(index)) {
+            return this.highLightColor;
+        }
+        if (this.colorGenerator) {
+            return this.colorGenerator(this.colorMap.labels[index]);
+        }
+        return this.defaultColor;
+    }
+
+    protected createMaterial() {
+        this.material = this.createRenderMaterial();
+        this.pickingMaterial = this.createPickingMaterial();
+    }
+
+    protected setGeometryAttribute(name: string, data: Float32Array, dim: number) {
+        this.geometry.setAttribute(name, new THREE.BufferAttribute(data, dim));
+    }
+
+    protected setPosition(positions: Float32Array) {
+        this.setGeometryAttribute('position', positions, 3);
+    }
+
+    protected setColor(colors: Float32Array) {
+        this.setGeometryAttribute('color', colors, 3);
+    }
+
+    private convertDataToPosition() {
         const data = this.data;
 
         const xScaler = d3.scaleLinear();
@@ -361,51 +374,8 @@ export default class ScatterChart {
         return positions;
     }
 
-    private convertPointsColor() {
-        const count = this.data.length;
-        const colors = new Float32Array(count * 3);
-        let dst = 0;
-        for (let i = 0; i < count; i++) {
-            if (this.hoveredPointIndices.includes(i)) {
-                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.r;
-                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.g;
-                colors[dst++] = ScatterChart.POINT_COLOR_HOVER.b;
-            } else if (this.focusedPointIndices.includes(i)) {
-                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.r;
-                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.g;
-                colors[dst++] = ScatterChart.POINT_COLOR_FOCUS.b;
-            } else if (this.highLightPointIndices.includes(i)) {
-                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.r;
-                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.g;
-                colors[dst++] = ScatterChart.POINT_COLOR_HIGHLIGHT.b;
-            } else {
-                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.r;
-                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.g;
-                colors[dst++] = ScatterChart.POINT_COLOR_DEFAULT.b;
-            }
-        }
-        return colors;
-    }
-
-    private convertPointsScaleFactor() {
-        const count = this.data.length;
-        const scaleFactor = new Float32Array(count);
-        for (let i = 0; i < count; i++) {
-            if (this.hoveredPointIndices.includes(i)) {
-                scaleFactor[i] = ScatterChart.POINT_SCALE_HOVER;
-            } else if (this.focusedPointIndices.includes(i)) {
-                scaleFactor[i] = ScatterChart.POINT_SCALE_FOCUS;
-            } else if (this.highLightPointIndices.includes(i)) {
-                scaleFactor[i] = ScatterChart.POINT_SCALE_HIGHLIGHT;
-            } else {
-                scaleFactor[i] = ScatterChart.POINT_SCALE_DEFAULT;
-            }
-        }
-        return scaleFactor;
-    }
-
-    private convertPointsPickingColor() {
-        const count = this.data.length;
+    private convertDataPickingColor() {
+        const count = this.dataCount;
         const colors = new Float32Array(count * 3);
         let dst = 0;
         for (let i = 0; i < count; i++) {
@@ -417,13 +387,6 @@ export default class ScatterChart {
         return colors;
     }
 
-    private updatePointsAttribute() {
-        this.renderColors = this.convertPointsColor();
-        this.setPointsColor(this.renderColors);
-        this.scaleFactors = this.convertPointsScaleFactor();
-        this.setPointsScaleFactor(this.scaleFactors);
-    }
-
     private updateHoveredPoints() {
         if (!this.mouseCoordinates) {
             return;
@@ -431,14 +394,14 @@ export default class ScatterChart {
         const dpr = window.devicePixelRatio || 1;
         const x = Math.floor(this.mouseCoordinates[0] * dpr);
         const y = Math.floor(this.mouseCoordinates[1] * dpr);
-        const pointCount = this.data.length;
+        const pointCount = this.dataCount;
         const width = Math.floor(dpr);
         const height = Math.floor(dpr);
         const pixelBuffer = new Uint8Array(width * height * 4);
         this.renderer.readRenderTargetPixels(
-            this.pickingTexture,
+            this.pickingRenderTarget,
             x,
-            this.pickingTexture.height - y,
+            this.pickingRenderTarget.height - y,
             width,
             height,
             pixelBuffer
@@ -457,41 +420,7 @@ export default class ScatterChart {
                 pointIndices.push(i);
             }
         }
-        this.hoveredPointIndices = pointIndices;
-    }
-
-    private updateHoveredLabels() {
-        if (!this.camera || !this.positions) {
-            return;
-        }
-
-        const indices = this.focusedPointIndices.length ? this.focusedPointIndices : this.hoveredPointIndices;
-        if (!indices.length) {
-            this.label.clear();
-            return;
-        }
-
-        const dpr = window.devicePixelRatio || 1;
-        const w = this.width;
-        const h = this.height;
-        const labels = indices.map(index => {
-            const pi = index * 3;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const point = new THREE.Vector3(this.positions![pi], this.positions![pi + 1], this.positions![pi + 2]);
-            const pv = new THREE.Vector3().copy(point).project(this.camera);
-            const coord: Point2D = [((pv.x + 1) / 2) * w * dpr, -(((pv.y - 1) / 2) * h) * dpr];
-            return {
-                text: this.labels[index] ?? '',
-                fontSize: 40,
-                fillColor: '#000',
-                strokeColor: '#fff',
-                opacity: 1,
-                x: coord[0] + 4,
-                y: coord[1]
-            };
-        });
-
-        this.label.render(labels);
+        this.hoveredDataIndices = pointIndices;
     }
 
     private updateLight() {
@@ -501,60 +430,6 @@ export default class ScatterChart {
         lightPos.x += 1;
         lightPos.y += 1;
         light.position.set(lightPos.x, lightPos.y, lightPos.z);
-    }
-
-    private updateFog() {
-        const fog = this.fog;
-
-        fog.color = new THREE.Color(this.background);
-
-        if (this.is3D && this.positions) {
-            const cameraPos = this.camera.position;
-            const cameraTarget = this.controls.target;
-
-            let shortestDist = Number.POSITIVE_INFINITY;
-            let furthestDist = 0;
-
-            const camToTarget = new THREE.Vector3().copy(cameraTarget).sub(cameraPos);
-            const camPlaneNormal = new THREE.Vector3().copy(camToTarget).normalize();
-
-            const n = this.positions.length / 3;
-            let src = 0;
-            const p = new THREE.Vector3();
-            const camToPoint = new THREE.Vector3();
-            for (let i = 0; i < n; i++) {
-                p.x = this.positions[src++];
-                p.y = this.positions[src++];
-                p.z = this.positions[src++];
-
-                camToPoint.copy(p).sub(cameraPos);
-                const dist = camPlaneNormal.dot(camToPoint);
-                if (dist < 0) {
-                    continue;
-                }
-
-                furthestDist = dist > furthestDist ? dist : furthestDist;
-                shortestDist = dist < shortestDist ? dist : shortestDist;
-            }
-
-            const multiplier =
-                2 - Math.min(n, ScatterChart.NUM_POINTS_FOG_THRESHOLD) / ScatterChart.NUM_POINTS_FOG_THRESHOLD;
-
-            fog.near = shortestDist;
-            fog.far = furthestDist * multiplier;
-        } else {
-            fog.near = Number.POSITIVE_INFINITY;
-            fog.far = Number.POSITIVE_INFINITY;
-        }
-
-        if (this.points) {
-            const material = this.points.material as THREE.ShaderMaterial;
-            material.uniforms.fogColor.value = fog.color;
-            material.uniforms.fogNear.value = fog.near;
-            material.uniforms.fogFar.value = fog.far;
-        }
-
-        this.scene.fog = fog;
     }
 
     private bindEventListeners() {
@@ -585,35 +460,32 @@ export default class ScatterChart {
         }
     }
 
-    private render() {
+    protected render() {
         this.updateLight();
-        this.updateFog();
-
         this.updateHoveredPoints();
-        this.updateHoveredLabels();
-        this.updatePointsAttribute();
+        this.onRender();
 
         if (this.pickingMaterial) {
             if (this.axes) {
                 this.scene.remove(this.axes);
             }
-            if (this.points) {
-                this.points.material = this.pickingMaterial;
+            if (this.object && this.pickingMaterial) {
+                this.object.material = this.pickingMaterial;
             }
             if (this.pickingColors) {
-                this.setPointsColor(this.pickingColors);
+                this.setColor(this.pickingColors);
             }
-            this.renderer.setRenderTarget(this.pickingTexture);
+            this.renderer.setRenderTarget(this.pickingRenderTarget);
             this.renderer.render(this.scene, this.camera);
             if (this.axes) {
                 this.scene.add(this.axes);
             }
-            if (this.points && this.renderMaterial) {
-                this.points.material = this.renderMaterial;
+            if (this.object && this.material) {
+                this.object.material = this.material;
             }
-            if (this.renderColors) {
-                this.setPointsColor(this.renderColors);
-            }
+        }
+        if (this.colors.length) {
+            this.setColor(this.colors);
         }
         this.renderer.setRenderTarget(null);
         this.renderer.render(this.scene, this.camera);
@@ -655,14 +527,14 @@ export default class ScatterChart {
     setSize(width: number, height: number) {
         this.width = width;
         this.height = height;
+        this.onSetSize(width, height);
         if (this.is3D) {
             const camera = this.camera as THREE.PerspectiveCamera;
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
         }
         this.renderer.setSize(width, height);
-        this.label.setSize(width, height);
-        this.pickingTexture = this.initRenderTarget();
+        this.pickingRenderTarget = this.initRenderTarget();
         this.controls.update();
     }
 
@@ -681,55 +553,48 @@ export default class ScatterChart {
         } else {
             this.removeAxes();
         }
-        this.setData(this.data);
+        this.setData(this.data, this.labels, this.colorMap);
     }
 
-    setData(data: Point3D[]) {
-        this.data = data;
-
-        if (this.points) {
-            this.scene.remove(this.points);
+    setData(data: Point3D[], labels: string[], colorMap?: ColorMap | null) {
+        if (this.object) {
+            this.scene.remove(this.object);
         }
-
-        this.positions = this.convertPointsPosition();
-        this.setPointsPosition(this.positions);
-        this.pickingColors = this.convertPointsPickingColor();
-
-        this.renderMaterial = this.createRenderMaterial();
-        this.pickingMaterial = this.createPickingMaterial();
-        this.points = new THREE.Points(this.geometry, this.renderMaterial);
-        this.points.frustumCulled = false;
-        this.scene.add(this.points);
-        this.render();
-    }
-
-    setLabels(labels: string[]) {
         this.labels = labels;
+        this.colorMap = colorMap ?? {type: ColorType.Null, labels: []};
+        this.data = data;
+        this.colorGenerator = this.convertColorMap();
+        this.positions = this.convertDataToPosition();
+        this.pickingColors = this.convertDataPickingColor();
+        this.onDataSet();
+        if (this.object) {
+            this.scene.add(this.object);
+        }
         this.render();
     }
 
     setHighLightIndices(highLightIndices: number[]) {
-        this.highLightPointIndices = highLightIndices;
+        this.highLightDataIndices = highLightIndices;
         this.render();
     }
 
     setFocusedPointIndices(focusedPointIndices: number[]) {
-        this.focusedPointIndices = focusedPointIndices;
+        this.focusedDataIndices = focusedPointIndices;
         this.render();
     }
 
     dispose() {
         this.removeEventListeners();
-        this.label.dispose();
+        this.onDispose();
         if (this.canvas) {
             this.container.removeChild(this.canvas);
             this.canvas = null;
         }
         this.renderer.dispose();
         this.controls.dispose();
-        this.pickingTexture.dispose();
+        this.pickingRenderTarget.dispose();
         this.geometry.dispose();
-        this.renderMaterial?.dispose();
+        this.material?.dispose();
         this.pickingMaterial?.dispose();
     }
 }

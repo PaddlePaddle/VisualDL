@@ -21,6 +21,7 @@ import Field from '~/components/Field';
 import RangeSlider from '~/components/RangeSlider';
 import type {Run} from '~/resource/curves';
 import {TimeType} from '~/resource/curves';
+import type {UseTranslationResponse} from 'react-i18next';
 import {format} from 'd3-format';
 import {formatTime} from '~/utils';
 import styled from 'styled-components';
@@ -65,11 +66,12 @@ const typeMap = {
     [TimeType.Step]: 'steps'
 } as const;
 
+// TODO: react-i18next add a workaround to suppress an error in ts4.1, but it causes our types broken...
 const formatter = {
-    [TimeType.WallTime]: (wallTime: number, {i18n}: ReturnType<typeof useTranslation>) =>
+    [TimeType.WallTime]: (wallTime: number, {i18n}: UseTranslationResponse<'common'>) =>
         formatTime(wallTime, i18n.language),
     [TimeType.Relative]: (relative: number) => `${relativeFormatter(relative)} ms`,
-    [TimeType.Step]: (step: number, {t}: ReturnType<typeof useTranslation>) => `${t('common:time-mode.step')} ${step}`
+    [TimeType.Step]: (step: number, {t}: UseTranslationResponse<'common'>) => `${t('common:time-mode.step')} ${step}`
 } as const;
 
 type StepSliderProps = {

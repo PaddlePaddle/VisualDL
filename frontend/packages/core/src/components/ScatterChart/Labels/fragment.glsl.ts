@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export default ['embeddings', 'scalar', 'image', 'text', 'graph', 'pr_curve', 'roc_curve'];
-// export default ['embeddings', 'scalar', 'image', 'audio', 'text', 'graph', 'histogram', 'pr_curve', 'roc_curve'];
+export default /* glsl */ `
+    uniform sampler2D glyphTexture;
+    uniform bool picking;
+    varying vec2 vUv;
+    varying vec3 vColor;
+
+    void main() {
+        if (picking) {
+            gl_FragColor = vec4(vColor, 1.0);
+        } else {
+            vec4 fromTexture = texture(glyphTexture, vUv);
+            gl_FragColor = vec4(vColor, 1.0) * fromTexture;
+        }
+    }
+`;

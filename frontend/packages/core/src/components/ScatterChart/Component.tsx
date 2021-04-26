@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import Chart, {ScatterChartOptions as ChartOptions} from './ScatterChart';
+import type {ColorMap, Point3D} from './types';
 import React, {useEffect, useImperativeHandle, useRef} from 'react';
 
-import type {Point3D} from './types';
+import type Chart from './ScatterChart';
+import type {ScatterChartOptions as ChartOptions} from './ScatterChart';
+import LabelChart from './Labels';
+import PointChart from './Points';
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
@@ -34,10 +37,12 @@ export type ScatterChartProps = {
     height: number;
     data: Point3D[];
     labels: string[];
+    colorMap?: ColorMap | null;
     is3D: boolean;
     rotate?: boolean;
     focusedIndices?: number[];
     highlightIndices?: number[];
+    type: 'points' | 'labels';
 };
 
 export type ScatterChartRef = {
@@ -45,7 +50,7 @@ export type ScatterChartRef = {
 };
 
 const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithStyled>(
-    ({width, height, data, labels, is3D, rotate, focusedIndices, highlightIndices, className}, ref) => {
+    ({width, height, data, labels, colorMap, is3D, rotate, focusedIndices, highlightIndices, type, className}, ref) => {
         const theme = useTheme();
 
         const element = useRef<HTMLDivElement>(null);
@@ -54,14 +59,21 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
 
         useEffect(() => {
             if (element.current) {
-                chart.current = new Chart(element.current, options.current);
+                if (type === 'points') {
+                    chart.current = new PointChart(element.current, options.current);
+                } else if (type === 'labels') {
+                    chart.current = new LabelChart(element.current, options.current);
+                } else {
+                    chart.current = null;
+                }
                 return () => {
                     chart.current?.dispose();
                 };
             }
-        }, []);
+        }, [type]);
 
         useEffect(() => {
+            options.current.is3D = is3D;
             chart.current?.setDimension(is3D);
             if (is3D) {
                 if (rotate) {
@@ -73,21 +85,22 @@ const ScatterChart = React.forwardRef<ScatterChartRef, ScatterChartProps & WithS
         }, [is3D, rotate]);
 
         useEffect(() => {
-            chart.current?.setData(data);
-            chart.current?.setLabels(labels);
-        }, [data, labels]);
+            chart.current?.setData(data, labels, colorMap);
+        }, [data, labels, colorMap, type]);
 
         useEffect(() => {
             chart.current?.setFocusedPointIndices(focusedIndices ?? []);
-        }, [focusedIndices]);
+        }, [focusedIndices, type]);
 
         useEffect(() => {
             chart.current?.setHighLightIndices(highlightIndices ?? []);
-        }, [highlightIndices]);
+        }, [highlightIndices, type]);
 
         useEffect(() => {
+            options.current.width = width;
+            options.current.height = height;
             chart.current?.setSize(width, height);
-        }, [width, height]);
+        }, [width, height, type]);
 
         useImperativeHandle(ref, () => ({
             reset: () => {

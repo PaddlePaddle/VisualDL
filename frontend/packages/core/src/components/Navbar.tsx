@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+// cspell:words cimode
+
 import {Link, LinkProps, useLocation} from 'react-router-dom';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
-import {border, borderRadius, rem, size, transitionProps} from '~/utils/style';
+import {border, borderRadius, rem, size, transitionProps, triangle} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import Language from '~/components/Language';
@@ -28,17 +30,40 @@ import {getApiToken} from '~/utils/fetch';
 import logo from '~/assets/images/logo.svg';
 import queryString from 'query-string';
 import styled from 'styled-components';
-import useNavItems from '~/hooks/useNavItems';
+import useAvailableComponents from '~/hooks/useAvailableComponents';
 import {useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 
-interface NavbarItemProps extends Route {
-    cid?: string;
+const MAX_ITEM_COUNT_IN_NAVBAR = 5;
+
+const flatten = <T extends {children?: T[]}>(routes: T[]) => {
+    const result: Omit<T, 'children'>[] = [];
+    routes.forEach(route => {
+        if (route.children) {
+            result.push(...flatten(route.children));
+        } else {
+            result.push(route);
+        }
+    });
+    return result;
+};
+
+interface NavbarItemProps {
     active: boolean;
-    children?: ({active: boolean} & NonNullable<Route['children']>[number])[];
+    path?: Route['path'];
+    showDropdownIcon?: boolean;
+}
+
+interface NavbarItemType {
+    id: string;
+    cid?: string;
+    name: string;
+    active: boolean;
+    path?: Route['path'];
+    children?: NavbarItemType[];
 }
 
 function appendApiToken(url: string) {
@@ -129,10 +154,27 @@ const NavItem = styled.div<{active?: boolean}>`
         ${props => border('bottom', rem(3), 'solid', props.active ? 'var(--navbar-highlight-color)' : 'transparent')}
         ${transitionProps('border-bottom')}
         text-transform: uppercase;
+
+        &.dropdown-icon {
+            &::after {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 0;
+                margin-left: 0.5rem;
+                vertical-align: middle;
+                ${triangle({
+                    pointingDirection: 'bottom',
+                    width: rem(8),
+                    height: rem(5),
+                    foregroundColor: 'currentColor'
+                })}
+            }
+        }
     }
 `;
 
-const SubNav = styled.div`
+const SubNavWrapper = styled.div`
     overflow: hidden;
     border-radius: ${borderRadius};
 `;
@@ -156,37 +198,64 @@ const NavItemChild = styled.div<{active?: boolean}>`
     }
 `;
 
-const NavbarLink: FunctionComponent<{to?: string} & Omit<LinkProps, 'to'>> = ({to, children, ...props}) => {
-    return (
-        <Link to={to ? appendApiToken(to) : ''} {...props}>
-            {children}
-        </Link>
-    );
-};
+const NavbarLink: FunctionComponent<{to?: string} & Omit<LinkProps, 'to'>> = ({to, children, ...props}) => (
+    <Link to={to ? appendApiToken(to) : ''} {...props}>
+        {children}
+    </Link>
+);
 
-const NavbarItem = React.forwardRef<HTMLDivElement, NavbarItemProps>(({id, cid, path, active}, ref) => {
-    const {t} = useTranslation('common');
+// FIXME: why we need to add children type here... that's weird...
+const NavbarItem = React.forwardRef<HTMLDivElement, NavbarItemProps & {children?: React.ReactNode}>(
+    ({path, active, showDropdownIcon, children}, ref) => {
+        if (path) {
+            return (
+                <NavItem active={active} ref={ref}>
+                    <NavbarLink to={path} className="nav-link">
+                        <span className={`nav-text ${showDropdownIcon ? 'dropdown-icon' : ''}`}>{children}</span>
+                    </NavbarLink>
+                </NavItem>
+            );
+        }
 
-    const name = useMemo(() => (cid ? `${t(id)} - ${t(cid)}` : t(id)), [t, id, cid]);
-
-    if (path) {
         return (
             <NavItem active={active} ref={ref}>
-                <NavbarLink to={path} className="nav-link">
-                    <span className="nav-text">{name}</span>
-                </NavbarLink>
+                <span className={`nav-text ${showDropdownIcon ? 'dropdown-icon' : ''}`}>{children}</span>
             </NavItem>
         );
     }
-
-    return (
-        <NavItem active={active} ref={ref}>
-            <span className="nav-text">{name}</span>
-        </NavItem>
-    );
-});
+);
 
 NavbarItem.displayName = 'NavbarItem';
+
+const SubNav: FunctionComponent<{
+    menu: Omit<NavbarItemType, 'children' | 'cid'>[];
+    active?: boolean;
+    path?: string;
+    showDropdownIcon?: boolean;
+}> = ({menu, active, path, showDropdownIcon, children}) => (
+    <Tippy
+        placement="bottom-start"
+        animation="shift-away-subtle"
+        interactive
+        arrow={false}
+        offset={[0, 0]}
+        hideOnClick={false}
+        role="menu"
+        content={
+            <SubNavWrapper>
+                {menu.map(item => (
+                    <NavItemChild active={item.active} key={item.id}>
+                        <NavbarLink to={item.path}>{item.name}</NavbarLink>
+                    </NavItemChild>
+                ))}
+            </SubNavWrapper>
+        }
+    >
+        <NavbarItem active={active || false} path={path} showDropdownIcon={showDropdownIcon}>
+            {children}
+        </NavbarItem>
+    </Tippy>
+);
 
 const Navbar: FunctionComponent = () => {
     const {t, i18n} = useTranslation('common');
@@ -202,11 +271,32 @@ const Navbar: FunctionComponent = () => {
 
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
-    const [navItems] = useNavItems();
-    const [items, setItems] = useState<NavbarItemProps[]>([]);
+    const [components, inactiveComponents] = useAvailableComponents();
+
+    const componentsInNavbar = useMemo(() => components.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [components]);
+    const flattenMoreComponents = useMemo(() => flatten(components.slice(MAX_ITEM_COUNT_IN_NAVBAR)), [components]);
+    const flattenInactiveComponents = useMemo(() => flatten(inactiveComponents), [inactiveComponents]);
+    const componentsInMoreMenu = useMemo(
+        () =>
+            flattenMoreComponents.map(item => ({
+                ...item,
+                active: currentPath === item.path
+            })),
+        [currentPath, flattenMoreComponents]
+    );
+    const componentsInInactiveMenu = useMemo(
+        () =>
+            flattenInactiveComponents.map(item => ({
+                ...item,
+                active: currentPath === item.path
+            })),
+        [currentPath, flattenInactiveComponents]
+    );
+
+    const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
     useEffect(() => {
-        setItems(oldItems =>
-            navItems.map(item => {
+        setNavItemsInNavbar(oldItems =>
+            componentsInNavbar.map(item => {
                 const children = item.children?.map(child => ({
                     ...child,
                     active: child.path === currentPath
@@ -217,6 +307,7 @@ const Navbar: FunctionComponent = () => {
                         return {
                             ...item,
                             cid: child.id,
+                            name: child.name,
                             path: currentPath,
                             active: true,
                             children
@@ -227,6 +318,7 @@ const Navbar: FunctionComponent = () => {
                             return {
                                 ...item,
                                 ...oldItem,
+                                name: item.children?.find(c => c.id === oldItem.cid)?.name ?? item.name,
                                 active: false,
                                 children
                             };
@@ -240,7 +332,7 @@ const Navbar: FunctionComponent = () => {
                 };
             })
         );
-    }, [navItems, currentPath]);
+    }, [componentsInNavbar, currentPath]);
 
     return (
         <Nav>
@@ -249,36 +341,35 @@ const Navbar: FunctionComponent = () => {
                     <img alt="PaddlePaddle" src={PUBLIC_PATH + logo} />
                     <span>VisualDL</span>
                 </Logo>
-                {items.map(item => {
+                {navItemsInNavbar.map(item => {
                     if (item.children) {
                         return (
-                            <Tippy
-                                placement="bottom-start"
-                                animation="shift-away-subtle"
-                                interactive
-                                arrow={false}
-                                offset={[0, 0]}
-                                hideOnClick={false}
-                                role="menu"
-                                content={
-                                    <SubNav>
-                                        {item.children.map(child => (
-                                            <NavItemChild active={child.active} key={child.id}>
-                                                <NavbarLink to={child.path}>
-                                                    {t(item.id)} - {t(child.id)}
-                                                </NavbarLink>
-                                            </NavItemChild>
-                                        ))}
-                                    </SubNav>
-                                }
+                            <SubNav
+                                menu={item.children}
+                                active={item.active}
+                                path={item.path}
                                 key={item.active ? `${item.id}-activated` : item.id}
                             >
-                                <NavbarItem {...item} />
-                            </Tippy>
+                                {item.name}
+                            </SubNav>
                         );
                     }
-                    return <NavbarItem {...item} key={item.id} />;
+                    return (
+                        <NavbarItem active={item.active} path={item.path} key={item.id}>
+                            {item.name}
+                        </NavbarItem>
+                    );
                 })}
+                {componentsInMoreMenu.length ? (
+                    <SubNav menu={componentsInMoreMenu} showDropdownIcon>
+                        {t('common:more')}
+                    </SubNav>
+                ) : null}
+                {componentsInInactiveMenu.length ? (
+                    <SubNav menu={componentsInInactiveMenu} showDropdownIcon>
+                        {t('common:inactive')}
+                    </SubNav>
+                ) : null}
             </div>
             <div className="right">
                 <Tippy
@@ -290,9 +381,9 @@ const Navbar: FunctionComponent = () => {
                     hideOnClick={false}
                     role="menu"
                     content={
-                        <SubNav>
+                        <SubNavWrapper>
                             <ThemeToggle />
-                        </SubNav>
+                        </SubNavWrapper>
                     }
                 >
                     <NavItem className="nav-item">

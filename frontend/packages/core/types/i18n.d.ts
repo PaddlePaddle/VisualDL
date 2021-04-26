@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export default ['embeddings', 'scalar', 'image', 'text', 'graph', 'pr_curve', 'roc_curve'];
-// export default ['embeddings', 'scalar', 'image', 'audio', 'text', 'graph', 'histogram', 'pr_curve', 'roc_curve'];
+import 'react-i18next';
+
+// refer to `react-i18next/ts4.1/index.d.ts`
+// https://github.com/i18next/react-i18next/blob/master/example/react-typescript4.1/namespaces/%40types/react-i18next/index.d.ts
+declare module 'react-i18next' {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    type DefaultResources = {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface Resources extends DefaultResources {}
+}

@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export default ['embeddings', 'scalar', 'image', 'text', 'graph', 'pr_curve', 'roc_curve'];
-// export default ['embeddings', 'scalar', 'image', 'audio', 'text', 'graph', 'histogram', 'pr_curve', 'roc_curve'];
+// cSpell:words coord
+
+import {ShaderChunk} from 'three';
+
+export default /* glsl */ `
+    varying vec3 vColor;
+
+    ${ShaderChunk['common']}
+    ${ShaderChunk['fog_pars_fragment']}
+
+    void main() {
+        float r = distance(gl_PointCoord, vec2(0.5, 0.5));
+        if (r < 0.5) {
+            gl_FragColor = vec4(vColor, 1.0);
+        } else {
+            discard;
+        }
+        ${ShaderChunk['fog_fragment']}
+    }
+`;

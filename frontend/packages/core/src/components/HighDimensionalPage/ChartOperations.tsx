@@ -54,11 +54,8 @@ const Operations = styled.div`
             }
         }
 
-        &.three-d {
-            font-size: ${rem(20)};
-        }
-
-        &:hover {
+        &:hover,
+        &.active {
             color: var(--primary-focused-color);
         }
 
@@ -69,10 +66,12 @@ const Operations = styled.div`
 `;
 
 type ChartOperationsProps = {
+    labelCloud: boolean;
+    onToggleLabelCloud?: () => unknown;
     onReset?: () => unknown;
 };
 
-const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onReset}) => {
+const ChartOperations: FunctionComponent<ChartOperationsProps> = ({labelCloud, onToggleLabelCloud, onReset}) => {
     const {t} = useTranslation('high-dimensional');
 
     return (
@@ -83,14 +82,14 @@ const ChartOperations: FunctionComponent<ChartOperationsProps> = ({onReset}) => 
                         <Icon type="selection" />
                     </span>
                 </a>
-            </Tippy>
+            </Tippy> */}
             <Tippy content={t('high-dimensional:3d-label')} placement="bottom" theme="tooltip">
-                <a className="three-d">
+                <a onClick={() => onToggleLabelCloud?.()} className={labelCloud ? 'active' : ''}>
                     <span>
-                        <Icon type="three-d" />
+                        <Icon type="a" />
                     </span>
                 </a>
-            </Tippy> */}
+            </Tippy>
             <Tippy content={t('high-dimensional:reset-zoom')} placement="bottom" theme="tooltip">
                 <a onClick={() => onReset?.()}>
                     <span>

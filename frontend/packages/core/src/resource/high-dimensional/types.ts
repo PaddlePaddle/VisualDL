@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+import type {HighDimensionalColorMap as LabelColor} from '~/types';
+import {HighDimensionalColorType as LabelType} from '~/types';
+
+export {LabelType};
+export type {LabelColor};
+
 export type Dimension = '2d' | '3d';
 export type Reduction = 'pca' | 'tsne' | 'umap';
 
 export type Vectors = [number, number, number][];
 
 export type Shape = [number, number];
+
+export type LabelMetadata = {label: string} & LabelColor;
 
 export type VectorResult = {
     rawShape: Shape;
@@ -30,7 +38,7 @@ export type VectorResult = {
 
 export type MetadataResult = {
     dimension: number;
-    labels: string[];
+    labels: LabelMetadata[];
     metadata: string[][];
 };
 
@@ -60,13 +68,10 @@ export type ParseParams =
       }
     | null;
 
-export type ParseResult = {
+export type ParseResult = MetadataResult & {
     rawShape: Shape;
     count: number;
-    dimension: number;
     vectors: Float32Array;
-    labels: string[];
-    metadata: string[][];
 };
 
 export type PCAParams = {
