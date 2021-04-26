@@ -18,6 +18,32 @@ import numpy as np
 from PIL import Image
 
 
+def scalars(main_tag, sub_tag, value, step, walltime=None):
+    """Package data to scalars
+
+    Args:
+        main_tag (string): Data identifier
+        sub_tag (string): Sub plot identifier
+        value (float): Value of scalar
+        step (int): Step of scalar
+        walltime (int): Wall time of scalar
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+    value = float(value)
+    return Record(
+        values=[
+            Record.Value(
+                id=step,
+                tag=main_tag,
+                timestamp=walltime,
+                tag_value=Record.TagValue(tag=sub_tag, value=value)
+            )
+        ]
+    )
+
+
 def scalar(tag, value, step, walltime=None):
     """Package data to one scalar.
 

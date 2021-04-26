@@ -21,7 +21,7 @@ from visualdl.server.log import logger
 from visualdl.utils.img_util import merge_images
 from visualdl.utils.figure_util import figure_to_image
 from visualdl.component.base_component import scalar, image, embedding, audio, \
-    histogram, pr_curve, roc_curve, meta_data, text
+    histogram, pr_curve, roc_curve, meta_data, text, scalars
 
 
 class DummyFileWriter(object):
@@ -167,6 +167,31 @@ class LogWriter(object):
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
+
+    def add_scalars(self, tag, tag_value, step, walltime=None):
+        """Add a group of scalars to vdl record file.
+
+        Args:
+            tag (string): Data identifier
+            tag_value (float): A dict to provide multi-values with tags
+            step (int): Step of scalar
+            walltime (int): Wall time of scalar
+
+        Example:
+            import math
+            for index in range(1, 101):
+                alpha = index*2*math.pi/100
+                tval = {'sin':math.sin(alpha), 'cos':math.cos(alpha)}
+                writer.add_scalars(tag="sin_and_cos", tag_value=tval, step=index)
+        """
+        if '%' in tag:
+            raise RuntimeError("% can't appear in tag!")
+        if not isinstance(tag_value, dict):
+            raise RuntimeError("tag_value must be a dict!")
+        walltime = round(time.time() * 1000) if walltime is None else walltime
+        for sub_tag, value in tag_value.items():
+            self._get_file_writer().add_record(
+                scalars(tag, sub_tag, value, step, walltime))
 
     def add_image(self, tag, img, step, walltime=None, dataformats="HWC"):
         """Add an image to vdl record file.

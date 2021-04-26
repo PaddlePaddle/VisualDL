@@ -19,6 +19,7 @@ import collections
 
 DEFAULT_PLUGIN_MAXSIZE = {
     "scalar": 1000,
+    "scalars": 1000,
     "image": 10,
     "histogram": 100,
     "embeddings": 50000000,
@@ -28,6 +29,10 @@ DEFAULT_PLUGIN_MAXSIZE = {
     "meta_data": 100,
     "text": 10
 }
+
+
+def add_sub_tag(tag, sub_tag):
+    return tag + '/' + sub_tag
 
 
 class Reservoir(object):
@@ -196,7 +201,12 @@ class Reservoir(object):
             tag: Identity of one record in tablet.
             item: New item to add to bucket.
         """
-        key = run + "/" + tag
+        if item.WhichOneof("one_value") == "value":
+            key = run + "/" + tag
+        elif item.WhichOneof("one_value") == "tag_value":
+            key = run + "/" + add_sub_tag(tag, item.tag_value.tag)
+        else:
+            raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
         self._add_scalar_item(key, item)
 
     def _cut_tail(self, key):
@@ -246,6 +256,9 @@ class _ReservoirBucket(object):
         self.max_scalar = None
         self.min_scalar = None
 
+        # improve performance when data is monotonous
+        self._last_special = False
+
     def add_item(self, item):
         """ Add an item to bucket, replacing an old item with probability.
 
@@ -275,18 +288,37 @@ class _ReservoirBucket(object):
             item: The item to add to reservoir bucket.
         """
         with self._mutex:
-            if not self.max_scalar or self.max_scalar.value < item.value:
+            def get_value(item):
+                if item.WhichOneof("one_value") == "value":
+                    return item.value
+                elif item.WhichOneof("one_value") == "tag_value":
+                    return item.tag_value.value
+                else:
+                    raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
+            if not self.max_scalar or get_value(self.max_scalar) < get_value(item):
                 self.max_scalar = item
-            if not self.min_scalar or self.min_scalar.value > item.value:
+            if not self.min_scalar or get_value(self.min_scalar) > get_value(item):
                 self.min_scalar = item
 
             if len(self._items) < self._max_size or self._max_size == 0:
                 self._items.append(item)
             else:
+                if self._last_special:
+                    if self._items[-1].id == self.min_scalar.id or self._items[-1].id == self.max_scalar.id:
+                        self._last_special = False
+                    else:
+                        r = self._random.randint(1, self._num_items_index)
+                        if r >= self._max_size:
+                            self._items.pop(-1)
+                            self._items.append(item)
+                            self._num_items_index += 1
+                            return
                 if item.id == self.min_scalar.id or item.id == self.max_scalar.id:
                     r = self._random.randint(1, self._max_size - 1)
+                    self._last_special = True
                 else:
                     r = self._random.randint(1, self._num_items_index)
+                    self._last_special = False
                 if r < self._max_size:
                     if self._items[r].id == self.min_scalar.id or self._items[r].id == self.max_scalar.id:
                         if r - 1 > 0:
@@ -338,6 +370,8 @@ class DataManager(object):
         self._reservoirs = {
             "scalar":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["scalar"]),
+            "scalars":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["scalars"]),
             "histogram":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["histogram"]),
             "image":
@@ -398,7 +432,7 @@ class DataManager(object):
             item: The item to add to reservoir bucket.
         """
         with self._mutex:
-            if 'scalar' == plugin:
+            if 'scalar' == plugin or 'scalars' == plugin:
                 self._reservoirs[plugin].add_scalar_item(run, tag, item)
             else:
                 self._reservoirs[plugin].add_item(run, tag, item)

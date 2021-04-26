@@ -17,6 +17,9 @@ components = {
     "scalar": {
         "enabled": False
     },
+    "scalars": {
+        "enabled": False
+    },
     "image": {
         "enabled": False
     },

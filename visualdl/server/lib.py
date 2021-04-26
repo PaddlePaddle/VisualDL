@@ -25,6 +25,7 @@ from visualdl.server.log import logger
 from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
 from visualdl.component import components
+from visualdl.server.data_manager import add_sub_tag
 
 
 MODIFY_PREFIX = {}
@@ -55,6 +56,70 @@ def get_runs(log_reader):
 
 def get_tags(log_reader):
     return log_reader.tags()
+
+
+def get_scalars_logs(log_reader):
+    component = "scalars"
+    all_tag = log_reader.data_manager.get_reservoir(component).keys
+    tags = {}
+    for item in all_tag:
+        # remove sub tags
+        index = item.rfind('/')
+        sub_tag = encode_tag(item[index+1:])
+        item = item[0:index]
+        index = item.rfind('/')
+        run = item[0:index]
+        tag = encode_tag(item[index + 1:])
+        if run in tags.keys():
+            if tag in tags[run]:
+                tags[run][tag].append(sub_tag)
+            else:
+                tags[run][tag] = [sub_tag]
+        else:
+            tags[run] = {tag: [sub_tag]}
+        if run not in log_reader.tags2name.keys():
+            log_reader.tags2name[run] = run
+            log_reader.name2tags[run] = run
+    return tags
+    fake_tags = {}
+    for key, value in tags.items():
+        if key in log_reader.tags2name:
+            fake_tags[log_reader.tags2name[key]] = value
+        else:
+            fake_tags[key] = value
+
+    run2tag = {'runs': [], 'tags': []}
+    for run, tags in fake_tags.items():
+        run2tag['runs'].append(run)
+        run2tag['tags'].append(tags)
+
+    run_prefix = os.getenv('VISUALDL_RUN_PREFIX')
+    global MODIFY_PREFIX, MODIFIED_RUNS
+    if component not in MODIFY_PREFIX:
+        MODIFY_PREFIX.update({component: False})
+    if run_prefix and not MODIFY_PREFIX[component]:
+        MODIFY_PREFIX[component] = True
+        temp_name2tags = log_reader.name2tags.copy()
+        for key, value in temp_name2tags.items():
+            if key in MODIFIED_RUNS:
+                continue
+            index = key.find(run_prefix)
+            if index != -1:
+                temp_key = key[index+len(run_prefix):]
+
+                log_reader.name2tags.pop(key)
+                log_reader.name2tags.update({temp_key: value})
+
+                log_reader.tags2name.pop(value)
+                log_reader.tags2name.update({value: temp_key})
+
+                run2tag['runs'][run2tag['runs'].index(key)] = temp_key
+            else:
+                temp_key = key
+
+            MODIFIED_RUNS.append(temp_key)
+
+    return run2tag
 
 
 def get_logs(log_reader, component):
@@ -113,7 +178,8 @@ def get_logs(log_reader, component):
 
 
 for name in components.keys():
-    exec("get_%s_tags=partial(get_logs, component='%s')" % (name, name))
+    if name != "scalars":
+        exec("get_%s_tags=partial(get_logs, component='%s')" % (name, name))
 
 
 def get_scalar(log_reader, run, tag):
@@ -125,6 +191,15 @@ def get_scalar(log_reader, run, tag):
     return results
 
 
+def get_scalars(log_reader, run, tag, sub_tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("scalars").get_items(
+        run, add_sub_tag(decode_tag(tag), decode_tag(sub_tag)))
+    results = [[s2ms(item.timestamp), item.id, item.tag_value.value] for item in records]
+    return results
+
+
 def get_scalar_data(log_reader, run, tag, type='tsv'):
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
@@ -133,6 +208,20 @@ def get_scalar_data(log_reader, run, tag, type='tsv'):
     with io.StringIO() as fp:
         csv_writer = csv.writer(fp, delimiter=delimeter)
         csv_writer.writerow(['id', 'tag', 'timestamp', 'value'])
+        csv_writer.writerows(result)
+        result = fp.getvalue()
+        return result
+
+
+def get_scalars_data(log_reader, run, tag, sub_tag, type='tsv'):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    result = log_reader.get_log_data('scalars', run, decode_tag(tag))
+    result = [row for row in result if row[2] == sub_tag]
+    delimeter = '\t' if 'tsv' == type else ','
+    with io.StringIO() as fp:
+        csv_writer = csv.writer(fp, delimiter=delimeter)
+        csv_writer.writerow(['id', 'tag', 'sub_tag', 'timestamp', 'value'])
         csv_writer.writerows(result)
         result = fp.getvalue()
         return result

@@ -117,6 +117,10 @@ class LogReader(object):
             for item in proto_datas:
                 data.append([item.id, item.tag, item.timestamp, item.value])
             return data
+        elif 'scalars' == component:
+            for item in proto_datas:
+                data.append([item.id, item.tag, item.tag_value.tag, item.timestamp, item.tag_value.value])
+            return data
         return proto_datas
 
     def _get_log_tags(self):
@@ -182,6 +186,8 @@ class LogReader(object):
                 component = "meta_data"
             elif "text" == value_type:
                 component = "text"
+            elif "tag_value" == value_type:
+                component = "scalars"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component
