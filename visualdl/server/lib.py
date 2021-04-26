@@ -57,7 +57,7 @@ def get_tags(log_reader):
     return log_reader.tags()
 
 
-def get_scalars_logs(log_reader):
+def get_scalars_tags(log_reader):
     component = "scalars"
     all_tag = log_reader.data_manager.get_reservoir(component).keys
     tags = {}
