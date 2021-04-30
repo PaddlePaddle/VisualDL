@@ -45,6 +45,8 @@ class DefaultArgs(object):
         self.theme = args.get('theme', None)
         self.dest = args.get('dest', '')
         self.behavior = args.get('behavior', '')
+        '''#####################################################'''
+        self.merge = args.get('merge')
 
 
 def get_host(host=default_host, port=default_port):
@@ -112,6 +114,8 @@ class ParseArgs(object):
         self.theme = args.theme
         self.dest = args.dest
         self.behavior = args.behavior
+        '''#####################################################'''
+        self.merge = args.merge
 
 
 def parse_args():
@@ -129,6 +133,14 @@ def parse_args():
         action="store",
         nargs="+",
         help="log file directory")
+    '''#####################################################'''
+    parser.add_argument(
+        "--merge",
+        "-m",
+        default=False,
+        action="store",
+        help='Whether the log files need to be merged'
+    )
     parser.add_argument(
         "-p",
         "--port",

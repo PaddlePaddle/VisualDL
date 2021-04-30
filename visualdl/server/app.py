@@ -62,7 +62,8 @@ def create_app(args):
 
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
     babel = Babel(app)
-    api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
+    '''######################################################################################'''
+    api_call = create_api_call(args.logdir, args.model, args.cache_timeout, args.merge)
 
     if args.telemetry:
         update_util.PbUpdater(args.product).start()

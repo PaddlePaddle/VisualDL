@@ -39,6 +39,7 @@ def s2ms(timestamp):
 
 def get_components(log_reader):
     components = log_reader.components(update=True)
+    components.add('graph')
     return list(components)
 
 
@@ -270,7 +271,6 @@ def get_embeddings_list(log_reader):
     run2tag = get_logs(log_reader, 'embeddings')
 
     for run, _tags in zip(run2tag['runs'], run2tag['tags']):
-        run = log_reader.name2tags[run] if run in log_reader.name2tags else run
         for tag in _tags:
             name = path = os.path.join(run, tag)
             if name in EMBEDDING_NAME:

@@ -14,6 +14,8 @@
 # =======================================================================
 
 import collections
+import os
+import time
 from functools import partial  # noqa: F401
 from visualdl.io import bfile
 from visualdl.component import components
@@ -52,7 +54,7 @@ class LogReader(object):
 
     """
 
-    def __init__(self, logdir='', file_path=''):
+    def __init__(self, logdir='', file_path='',merge=False):
         """Instance of LogReader
 
         Args:
@@ -62,7 +64,10 @@ class LogReader(object):
             self.dir = [logdir]
         else:
             self.dir = logdir
-
+        '''######################################################################################'''
+        self.merge_dir = sorted(self.dir,key= lambda dir_:len(dir_))[0] + r"\Mergelog"
+        self.merge_filepath = self.merge_dir + r"\vdlrecords.%010d.log" % (time.time())
+        self.merge = merge
         self.reader = None
         self.readers = {}
         self.walks = None
@@ -279,6 +284,23 @@ class LogReader(object):
         self.logs(update)
         for dir, path in self.walks.items():
             filepath = bfile.join(dir, path)
+            '''########################################################################'''
+            if self.merge:
+                if "Mergelog" in dir:
+                    continue
+                else:
+                    if not os.path.exists(self.merge_dir):
+                        os.mkdir(self.merge_dir)
+                    with open(self.merge_filepath, 'ab+') as mf:
+                        with open(filepath, 'rb') as ff:
+                            while True:
+                                log_data =ff.readline()
+                                if not log_data:
+                                    break
+                                mf.write(log_data)
+                                if os.path.getsize(self.merge_filepath)>104857600:
+                                    mf.close()
+            '''########################################################################'''
             self.register_reader(filepath, dir)
 
     def add_remain(self):
@@ -338,6 +360,7 @@ class LogReader(object):
         if update is True:
             self.load_new_data(update=update)
         components_set = set(self._tags.values())
+        components_set.add('scalar')
 
         return components_set
 
