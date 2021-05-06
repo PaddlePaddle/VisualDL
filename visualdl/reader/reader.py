@@ -54,7 +54,7 @@ class LogReader(object):
 
     """
 
-    def __init__(self, logdir='', file_path='',merge=False):
+    def __init__(self, logdir='', file_path='', merge=False, outdir=''):
         """Instance of LogReader
 
         Args:
@@ -64,10 +64,8 @@ class LogReader(object):
             self.dir = [logdir]
         else:
             self.dir = logdir
-        '''######################################################################################'''
-        self.merge_dir = sorted(self.dir,key= lambda dir_:len(dir_))[0] + r"\Mergelog"
-        self.merge_filepath = self.merge_dir + r"\vdlrecords.%010d.log" % (time.time())
         self.merge = merge
+        self.outdir = outdir
         self.reader = None
         self.readers = {}
         self.walks = None
@@ -95,7 +93,53 @@ class LogReader(object):
             self._a_tags = {}
 
             self._model = ""
-
+        #是否合并指定日志
+        if self.merge:
+            # 存所有需要合并的文件
+            allFile = []
+            # 标志是否传入了文件夹，默认False
+            existdir = False
+            defaultdir = []
+            # 分割多个路径参数的情况
+            # list_dir = self.dir[0].split(' ')
+            # 遍历所传入需要合并的文件路径，若为文件夹则对下面所有文件(包括子文件夹中的文件)进行合并
+            for item in self.dir:
+                # 若为文件夹，取出文件夹下所有文件(包括子文件夹下的文件)
+                if os.path.isdir(item):
+                    # 标志传入参数存在文件夹，存入defaultdir中
+                    existdir = True
+                    defaultdir.append(item)
+                    for root, dirs, files in os.walk(item):
+                        # 若为log文件则添加到allFile列表中
+                        for file in files:
+                            if 'vdlrecords' in file:
+                                allFile.append(os.path.join(root, file))
+                # 若为log文件，直接存到allFile
+                elif 'vdlrecords' in item:
+                    allFile.append(item)
+            # 若传入指定路径，使用指定路径
+            if self.outdir:
+                pass
+            else:
+                # 路径参数中有文件夹，使用路径长度最短参数，在其同级目录下输出MergeOut文件夹
+                if existdir:
+                    self.outdir =os.path.join(sorted(defaultdir,key=lambda _: len(_))[0], 'MergeOut')
+                # 没有文件夹路径参数则在任意一log文件上一级目录下输出MergOut文件夹
+                elif len(allFile) >= 2:  # 处理allFile[0]越界错误
+                    self.outdir = os.path.join(os.path.dirname(allFile[0]), 'MergeOut')
+            # 拼接所需要的log文件输出路径
+            try:
+                if not os.path.exists(self.outdir):
+                    os.mkdir(self.outdir)
+                outPath = os.path.join(self.outdir, "Merge.%010d.log" % (time.time()))
+                # 合并文件
+                with open(outPath, 'ab+') as mf:
+                    for file in allFile:
+                        with open(file, 'rb') as ff:
+                            log_data = ff.read()
+                            mf.write(log_data)
+            except IOError:
+                print('请检查路径参数')
     @property
     def model(self):
         return self._model
@@ -284,23 +328,6 @@ class LogReader(object):
         self.logs(update)
         for dir, path in self.walks.items():
             filepath = bfile.join(dir, path)
-            '''########################################################################'''
-            if self.merge:
-                if "Mergelog" in dir:
-                    continue
-                else:
-                    if not os.path.exists(self.merge_dir):
-                        os.mkdir(self.merge_dir)
-                    with open(self.merge_filepath, 'ab+') as mf:
-                        with open(filepath, 'rb') as ff:
-                            while True:
-                                log_data =ff.readline()
-                                if not log_data:
-                                    break
-                                mf.write(log_data)
-                                if os.path.getsize(self.merge_filepath)>104857600:
-                                    mf.close()
-            '''########################################################################'''
             self.register_reader(filepath, dir)
 
     def add_remain(self):

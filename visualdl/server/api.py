@@ -61,9 +61,8 @@ def try_call(function, *args, **kwargs):
 
 
 class Api(object):
-    def __init__(self, logdir, model, cache_timeout, merge):
-        '''######################################################################################'''
-        self._reader = LogReader(logdir,merge=merge)
+    def __init__(self, logdir, model, cache_timeout, merge, outdir):
+        self._reader = LogReader(logdir, merge=merge, outdir=outdir)
         if model:
             self._reader.model = model
         self.model_name = os.path.basename(model)
@@ -223,9 +222,8 @@ class Api(object):
         return self._get_with_retry(key, lib.get_graph)
 
 
-def create_api_call(logdir, model, cache_timeout,merge):
-    '''######################################################################################'''
-    api = Api(logdir, model, cache_timeout,merge)
+def create_api_call(logdir, model, cache_timeout,merge,outdir):
+    api = Api(logdir, model, cache_timeout, merge=merge, outdir=outdir)
     routes = {
         'components': (api.components, []),
         'runs': (api.runs, []),
