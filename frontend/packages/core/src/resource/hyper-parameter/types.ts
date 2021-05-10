@@ -79,3 +79,8 @@ export interface ViewData {
     indicators: Indicator[];
     list: ListItem[];
 }
+
+export interface ImportanceData {
+    name: string;
+    value: number;
+}

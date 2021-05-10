@@ -23,41 +23,25 @@ import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {formatTime} from '~/utils';
-import {useTranslation} from 'react-i18next';
 
-type LineChartProps = {
+type BarChartProps = {
     options?: EChartOption;
     title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
+    direction?: 'vertical' | 'horizontal';
+    categories?: string[];
+    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesBar>['series']>>;
     loading?: boolean;
-    zoom?: boolean;
     onInit?: Options['onInit'];
 };
 
-export enum XAxisType {
-    value = 'value',
-    log = 'log',
-    time = 'time'
-}
-
-export enum YAxisType {
-    value = 'value',
-    log = 'log'
-}
-
-export type LineChartRef = {
-    restore(): void;
+export type BarChartRef = {
     saveAsImage(): void;
 };
 
-const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
-    ({options, data, title, loading, zoom, className, onInit}, ref) => {
-        const {i18n} = useTranslation();
-
+const BarChart = React.forwardRef<BarChartRef, BarChartProps & WithStyled>(
+    ({options, categories, direction, data, title, loading, className, onInit}, ref) => {
         const {ref: echartRef, echart, wrapper, saveAsImage} = useECharts<HTMLDivElement>({
             loading: !!loading,
-            zoom,
             autoFit: true,
             onInit
         });
@@ -65,11 +49,6 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
         const theme = useChartTheme();
 
         useImperativeHandle(ref, () => ({
-            restore: () => {
-                echart?.dispatchAction({
-                    type: 'restore'
-                });
-            },
             saveAsImage: () => {
                 saveAsImage(title);
             }
@@ -79,32 +58,31 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, series, ...defaults} = chart;
 
-            let chartOptions: EChartOption = defaultsDeep(
+            const isHorizontal = direction === 'horizontal';
+            const valueAxis = {
+                type: 'value'
+            };
+            const categoryAxis = {
+                type: 'category',
+                data: categories,
+                axisLabel: {
+                    formatter: null
+                }
+            };
+
+            const chartOptions: EChartOption = defaultsDeep(
                 {
                     title: {
                         text: title ?? ''
                     },
-                    xAxis: {
-                        splitLine: {
-                            show: false
-                        },
-                        splitNumber: 5
-                    },
-                    yAxis: {
-                        splitNumber: 4
-                    },
+                    xAxis: isHorizontal ? valueAxis : categoryAxis,
+                    yAxis: isHorizontal ? categoryAxis : valueAxis,
                     series: data?.map((item, index) =>
                         defaultsDeep(
-                            {
-                                // show symbol if there is only one point
-                                showSymbol: (item?.data?.length ?? 0) <= 1,
-                                type: 'line'
-                            },
                             item,
                             {
-                                lineStyle: {
-                                    color: color[index % color.length],
-                                    width: 1.5
+                                itemStyle: {
+                                    color: color[index % color.length]
                                 }
                             },
                             series
@@ -115,32 +93,8 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 theme,
                 defaults
             );
-            if ((chartOptions?.xAxis as EChartOption.XAxis).type === 'time') {
-                chartOptions = defaultsDeep(
-                    {
-                        xAxis: {
-                            axisLabel: {
-                                formatter: (value: number) => formatTime(value, i18n.language, 'LTS')
-                            }
-                        }
-                    },
-                    chartOptions
-                );
-            }
-            if ((chartOptions?.yAxis as EChartOption.YAxis).type === 'time') {
-                chartOptions = defaultsDeep(
-                    {
-                        yAxis: {
-                            axisLabel: {
-                                formatter: (value: number) => formatTime(value, i18n.language, 'LTS')
-                            }
-                        }
-                    },
-                    chartOptions
-                );
-            }
             echart?.setOption(chartOptions, {notMerge: true});
-        }, [options, data, title, theme, i18n.language, echart]);
+        }, [options, data, title, theme, echart, direction, categories]);
 
         return (
             <Wrapper ref={wrapper} className={className}>
@@ -155,4 +109,4 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     }
 );
 
-export default LineChart;
+export default BarChart;

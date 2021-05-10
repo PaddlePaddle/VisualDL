@@ -64,6 +64,19 @@ const Wrapper = styled.div.attrs<{width: string | number}>(({width}) => ({
         flex: none;
         box-shadow: 0 -${rem(5)} ${rem(16)} 0 rgba(0, 0, 0, 0.03);
         padding: ${rem(20)};
+
+        > ${AsideSection} {
+            margin-left: 0;
+            margin-right: 0;
+
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
     }
 
     > .aside-resize-bar-left,

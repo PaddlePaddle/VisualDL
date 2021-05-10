@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-export type {
-    ImportanceData,
-    IndicatorRaw,
-    Indicator,
-    IndicatorGroup,
-    IndicatorData,
-    IndicatorType,
-    DataListItem,
-    ListItem,
-    Range,
-    ViewData
-} from './types';
+import {Request, Response} from 'express';
 
-export {OrderDirection} from './types';
-export {format, formatIndicators} from './format';
-export {filter} from './filter';
-
-export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
-export const DND_TYPE = Symbol('DND_TYPE');
+export default (req: Request, res: Response) => {
+    const {type} = req.query;
+    switch (type) {
+        case 'tsv':
+            res.setHeader('Content-Type', 'text/tab-separated-values');
+            break;
+        case 'csv':
+            res.setHeader('Content-Type', 'text/comma-separated-values');
+            break;
+    }
+    return `hparams\n${type}`;
+};

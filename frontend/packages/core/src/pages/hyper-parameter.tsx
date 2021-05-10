@@ -14,21 +14,50 @@
  * limitations under the License.
  */
 
+import Aside, {AsideSection} from '~/components/Aside';
 import type {Indicator, IndicatorData, ListItem} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useMemo, useState} from 'react';
-import {borderRadius, rem} from '~/utils/style';
+import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import {asideWidth, borderRadius, rem} from '~/utils/style';
 import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
 
-import Aside from '~/components/Aside';
 import BodyLoading from '~/components/BodyLoading';
+import Button from '~/components/Button';
 import Content from '~/components/Content';
+import Field from '~/components/Field';
+import ImportanceDialog from '~/components/HyperParameterPage/ImportanceDialog';
 import IndicatorFilter from '~/components/HyperParameterPage/IndicatorFilter/IndicatorFilter';
 import Tab from '~/components/Tab';
 import TableView from '~/components/HyperParameterPage/TableView';
 import Title from '~/components/Title';
+import queryString from 'query-string';
+import saveFile from '~/utils/saveFile';
 import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
+
+const ImportanceButton = styled(Button)`
+    width: 100%;
+`;
+
+const HParamsImportanceDialog = styled(ImportanceDialog)`
+    position: fixed;
+    right: calc(${asideWidth} + ${rem(20)});
+    bottom: ${rem(20)};
+`;
+
+const DownloadButtons = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    > * {
+        flex-grow: 1;
+
+        &:not(:last-child) {
+            margin-right: ${rem(16)};
+        }
+    }
+`;
 
 const HPWrapper = styled.div`
     width: 100%;
@@ -45,6 +74,7 @@ const ViewWrapper = styled.div`
     border-radius: ${borderRadius};
     border-top-left-radius: 0;
     padding: ${rem(20)};
+    position: relative;
 `;
 
 const HyperParameter: FunctionComponent = () => {
@@ -87,13 +117,56 @@ const HyperParameter: FunctionComponent = () => {
         }
     }, [filteredIndicators, formattedList, tabView]);
 
+    const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
+
+    const downloadData = useCallback(
+        (type: 'tsv' | 'csv') =>
+            saveFile(
+                queryString.stringifyUrl({
+                    url: '/hparams/data',
+                    query: {
+                        type
+                    }
+                }),
+                `visualdl-hyper-parameters.${type}`
+            ),
+        []
+    );
+
     const aside = useMemo(
         () => (
-            <Aside>
+            <Aside
+                bottom={
+                    <>
+                        <AsideSection>
+                            <ImportanceButton
+                                rounded
+                                outline
+                                type="primary"
+                                onClick={() => setImportanceDialogVisible(v => !v)}
+                            >
+                                {t('hyper-parameter:show-parameter-importance')}
+                            </ImportanceButton>
+                        </AsideSection>
+                        <AsideSection>
+                            <Field label={t('hyper-parameter:download-data')}>
+                                <DownloadButtons>
+                                    <Button rounded outline onClick={() => downloadData('csv')}>
+                                        {t('hyper-parameter:download-csv')}
+                                    </Button>
+                                    <Button rounded outline onClick={() => downloadData('tsv')}>
+                                        {t('hyper-parameter:download-tsv')}
+                                    </Button>
+                                </DownloadButtons>
+                            </Field>
+                        </AsideSection>
+                    </>
+                }
+            >
                 <IndicatorFilter indicators={indicators} onChange={setFilteredIndicators} />
             </Aside>
         ),
-        [indicators]
+        [downloadData, indicators, t]
     );
 
     return (
@@ -103,7 +176,13 @@ const HyperParameter: FunctionComponent = () => {
                 {loading ? <BodyLoading /> : null}
                 <HPWrapper>
                     <Tab list={tabs} value={tabView} onChange={setTabView} />
-                    <ViewWrapper>{view}</ViewWrapper>
+                    <ViewWrapper>
+                        {view}
+                        <HParamsImportanceDialog
+                            visible={importanceDialogVisible}
+                            onClickClose={() => setImportanceDialogVisible(false)}
+                        />
+                    </ViewWrapper>
                 </HPWrapper>
             </Content>
         </>

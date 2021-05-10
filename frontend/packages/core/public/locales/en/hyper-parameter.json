@@ -3,6 +3,9 @@
         "hparams": "Hyper Parameters",
         "metrics": "Metrics"
     },
+    "download-csv": "In CSV",
+    "download-data": "Download Data",
+    "download-tsv": "In TSV",
     "hyper-parameter": {
         "order-default": "Default"
     },
@@ -15,7 +18,9 @@
         "asc": "Ascending",
         "desc": "Descending"
     },
+    "parameter-importance": "Hyper Parameters Importance",
     "positive-infinity": "+Infinity",
+    "show-parameter-importance": "Show HParams Importance",
     "trial-id": "Trial ID",
     "views": {
         "parallel-coordinates": "Parallel Coordinates View",

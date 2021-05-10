@@ -3,6 +3,9 @@
         "hparams": "超参数",
         "metrics": "度量指标"
     },
+    "download-csv": "下载 CSV",
+    "download-data": "下载数据",
+    "download-tsv": "下载 TSV",
     "hyper-parameter": {
         "order-default": "默认"
     },
@@ -15,7 +18,9 @@
         "asc": "升序",
         "desc": "降序"
     },
+    "parameter-importance": "超参重要性排序",
     "positive-infinity": "正无穷",
+    "show-parameter-importance": "查看超参重要性排序",
     "trial-id": "Trial ID",
     "views": {
         "parallel-coordinates": "平行坐标图",

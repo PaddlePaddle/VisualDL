@@ -113,8 +113,8 @@ export const themes = {
     },
     dark: {
         textColor: '#cfcfd1',
-        textLightColor: '#575757',
-        textLighterColor: '#757575',
+        textLightColor: '#757575',
+        textLighterColor: '#575757',
         textInvertColor: '#000',
 
         backgroundColor: '#1d1d1f',

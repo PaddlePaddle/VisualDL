@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-export type {
-    ImportanceData,
-    IndicatorRaw,
-    Indicator,
-    IndicatorGroup,
-    IndicatorData,
-    IndicatorType,
-    DataListItem,
-    ListItem,
-    Range,
-    ViewData
-} from './types';
-
-export {OrderDirection} from './types';
-export {format, formatIndicators} from './format';
-export {filter} from './filter';
-
-export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
-export const DND_TYPE = Symbol('DND_TYPE');
+/**
+ * GET hparams/importance
+ *
+ * request
+ * {}
+ */
+export default [
+    {
+        name: 'param1',
+        value: 0.4
+    },
+    {
+        name: 'param2',
+        value: 0.3
+    },
+    {
+        name: 'param3',
+        value: 0.2
+    },
+    {
+        name: 'param4',
+        value: 0.1
+    }
+];

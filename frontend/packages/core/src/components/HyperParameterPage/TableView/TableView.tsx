@@ -164,7 +164,7 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
     useEffect(() => {
         allColumns.forEach(column => {
             const indicator = indicators.find(i => i.name === column.id);
-            if (indicator && column.isVisible !== indicator.selected) {
+            if (indicator) {
                 column.toggleHidden(!indicator.selected);
             }
         });
