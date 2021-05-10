@@ -338,7 +338,6 @@ class LogReader(object):
         if update is True:
             self.load_new_data(update=update)
         components_set = set(self._tags.values())
-        components_set.add('scalar')
 
         return components_set
 
