@@ -17,7 +17,7 @@
 import * as d3 from 'd3';
 
 import React, {FunctionComponent, useEffect, useMemo} from 'react';
-import {WithStyled, borderRadius, rem, tint} from '~/utils/style';
+import {WithStyled, borderRadius, rem, tint, transitionProps} from '~/utils/style';
 
 import BarChart from '~/components/BarChart';
 import Icon from '~/components/Icon';
@@ -46,6 +46,7 @@ const Dialog = styled.div<{visible: boolean}>`
         font-size: ${rem(12)};
         cursor: pointer;
         color: var(--text-lighter-color);
+        ${transitionProps('color')}
 
         &:hover {
             color: var(--text-light-color);
@@ -131,7 +132,9 @@ const ImportanceDialog: FunctionComponent<ImportanceDialogProps & WithStyled> = 
                 data={series}
                 loading={isValidating}
             />
-            <Icon className="close" type="close" onClick={() => onClickClose?.()} />
+            <a className="close" onClick={() => onClickClose?.()}>
+                <Icon type="close" />
+            </a>
         </Dialog>
     );
 };
