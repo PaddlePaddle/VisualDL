@@ -178,6 +178,25 @@ class Reservoir(object):
         with self._mutex:
             self._buckets[key].add_scalar_item(item)
 
+    def _add_scalars_item(self, key, item):
+        """Add a new scalar item to reservoir buckets with given tag as key.
+
+        If bucket with key has not yet reached full size, each item will be
+        added.
+
+        If bucket with key is full, each item will be added with same
+        probability.
+
+        Add new item to buckets will always valid because self._buckets is a
+        collection.defaultdict.
+
+        Args:
+            key: Tag of one bucket to add new item.
+            item: New item to add to bucket.
+        """
+        with self._mutex:
+            self._buckets[key].add_scalars_item(item)
+
     def add_item(self, run, tag, item):
         """Add a new item to reservoir buckets with given tag as key.
 
@@ -203,11 +222,25 @@ class Reservoir(object):
         """
         if item.WhichOneof("one_value") == "value":
             key = run + "/" + tag
-        elif item.WhichOneof("one_value") == "tag_value":
-            key = run + "/" + add_sub_tag(tag, item.tag_value.tag)
         else:
             raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
         self._add_scalar_item(key, item)
+
+    def add_scalars_item(self, run, tag, item):
+        """Add a new scalar item to reservoir buckets with given tag as key.
+
+        For usage habits of VisualDL, actually call self._add_items()
+
+        Args:
+            run: Identity of one tablet.
+            tag: Identity of one record in tablet.
+            item: New item to add to bucket.
+        """
+        if item.WhichOneof("one_value") == "tag_value":
+            key = run + "/" + add_sub_tag(tag, item.tag_value.tag)
+        else:
+            raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
+        self._add_scalars_item(key, item)
 
     def _cut_tail(self, key):
         with self._mutex:
@@ -284,29 +317,28 @@ class _ReservoirBucket(object):
         Use reservoir sampling to add a new item to sampling bucket,
         each item in a steam has same probability stay in the bucket.
 
+        use _last_special mark to improve performance when data is monotonous
+
         Args:
             item: The item to add to reservoir bucket.
         """
         with self._mutex:
-            def get_value(item):
-                if item.WhichOneof("one_value") == "value":
-                    return item.value
-                elif item.WhichOneof("one_value") == "tag_value":
-                    return item.tag_value.value
-                else:
-                    raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
-            if not self.max_scalar or get_value(self.max_scalar) < get_value(item):
+            # save max and min value
+            if not self.max_scalar or self.max_scalar.value < item.value:
                 self.max_scalar = item
-            if not self.min_scalar or get_value(self.min_scalar) > get_value(item):
+            if not self.min_scalar or self.min_scalar.value > item.value:
                 self.min_scalar = item
 
             if len(self._items) < self._max_size or self._max_size == 0:
+                # capacity is valid, append directly
                 self._items.append(item)
             else:
                 if self._last_special:
                     if self._items[-1].id == self.min_scalar.id or self._items[-1].id == self.max_scalar.id:
+                        # data is not monotonous, set special to False
                         self._last_special = False
                     else:
+                        # data is monotonous, drop last item by reservoir algorithm
                         r = self._random.randint(1, self._num_items_index)
                         if r >= self._max_size:
                             self._items.pop(-1)
@@ -314,13 +346,68 @@ class _ReservoirBucket(object):
                             self._num_items_index += 1
                             return
                 if item.id == self.min_scalar.id or item.id == self.max_scalar.id:
+                    # this item is max or min, should be reserved
                     r = self._random.randint(1, self._max_size - 1)
                     self._last_special = True
                 else:
+                    # drop by reservoir algorithm
                     r = self._random.randint(1, self._num_items_index)
                     self._last_special = False
                 if r < self._max_size:
                     if self._items[r].id == self.min_scalar.id or self._items[r].id == self.max_scalar.id:
+                        # reserve max and min point
+                        if r - 1 > 0:
+                            r = r - 1
+                        elif r + 1 < self._max_size:
+                            r = r + 1
+                    self._items.pop(r)
+                    self._items.append(item)
+
+            self._num_items_index += 1
+
+    def add_scalars_item(self, item):
+        """ Add an scalar item to bucket, replacing an old item with probability.
+
+        Use reservoir sampling to add a new item to sampling bucket,
+        each item in a steam has same probability stay in the bucket.
+
+        Args:
+            item: The item to add to reservoir bucket.
+        """
+        with self._mutex:
+            # save max and min value
+            if not self.max_scalar or self.max_scalar.tag_value.value < item.tag_value.value:
+                self.max_scalar = item
+            if not self.min_scalar or self.min_scalar.tag_value.value > item.tag_value.value:
+                self.min_scalar = item
+
+            if len(self._items) < self._max_size or self._max_size == 0:
+                # capacity is valid, append directly
+                self._items.append(item)
+            else:
+                if self._last_special:
+                    if self._items[-1].id == self.min_scalar.id or self._items[-1].id == self.max_scalar.id:
+                        # data is not monotic, set special to False
+                        self._last_special = False
+                    else:
+                        # data is monotic, drop last item by reservoir algorithm
+                        r = self._random.randint(1, self._num_items_index)
+                        if r >= self._max_size:
+                            self._items.pop(-1)
+                            self._items.append(item)
+                            self._num_items_index += 1
+                            return
+                if item.id == self.min_scalar.id or item.id == self.max_scalar.id:
+                    # this item is max or min, should be reserved
+                    r = self._random.randint(1, self._max_size - 1)
+                    self._last_special = True
+                else:
+                    # drop by reservoir algorithm
+                    r = self._random.randint(1, self._num_items_index)
+                    self._last_special = False
+                if r < self._max_size:
+                    if self._items[r].id == self.min_scalar.id or self._items[r].id == self.max_scalar.id:
+                        # reserve max and min point
                         if r - 1 > 0:
                             r = r - 1
                         elif r + 1 < self._max_size:
@@ -432,8 +519,10 @@ class DataManager(object):
             item: The item to add to reservoir bucket.
         """
         with self._mutex:
-            if 'scalar' == plugin or 'scalars' == plugin:
+            if 'scalar' == plugin:
                 self._reservoirs[plugin].add_scalar_item(run, tag, item)
+            elif 'scalars' == plugin:
+                self._reservoirs[plugin].add_scalars_item(run, tag, item)
             else:
                 self._reservoirs[plugin].add_item(run, tag, item)
 

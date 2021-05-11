@@ -168,12 +168,12 @@ class LogWriter(object):
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
 
-    def add_scalars(self, tag, tag_value, step, walltime=None):
+    def add_scalars(self, main_tag, tag_scalar_dict, step, walltime=None):
         """Add a group of scalars to vdl record file.
 
         Args:
-            tag (string): Data identifier
-            tag_value (float): A dict to provide multi-values with tags
+            main_tag (string): Data identifier
+            tag_scalar_dict (float): A dict to provide multi-values with tags
             step (int): Step of scalar
             walltime (int): Wall time of scalar
 
@@ -184,14 +184,13 @@ class LogWriter(object):
                 tval = {'sin':math.sin(alpha), 'cos':math.cos(alpha)}
                 writer.add_scalars(tag="sin_and_cos", tag_value=tval, step=index)
         """
-        if '%' in tag:
+        if '%' in main_tag:
             raise RuntimeError("% can't appear in tag!")
-        if not isinstance(tag_value, dict):
+        if not isinstance(tag_scalar_dict, dict):
             raise RuntimeError("tag_value must be a dict!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
-        for sub_tag, value in tag_value.items():
-            self._get_file_writer().add_record(
-                scalars(tag, sub_tag, value, step, walltime))
+        for record in scalars(main_tag, tag_scalar_dict, step, walltime):
+            self._get_file_writer().add_record(record)
 
     def add_image(self, tag, img, step, walltime=None, dataformats="HWC"):
         """Add an image to vdl record file.
