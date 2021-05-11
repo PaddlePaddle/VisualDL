@@ -3,13 +3,11 @@
         "hparams": "超参数",
         "metrics": "度量指标"
     },
-    "download-csv": "下载 CSV",
-    "download-data": "下载数据",
-    "download-tsv": "下载 TSV",
     "hyper-parameter": {
         "order-default": "默认"
     },
     "max": "最大值",
+    "metric-graphs-empty": "<0>无度量指标启用</0><1>请启用一些指标以在此处查看内容</1>",
     "min": "最小值",
     "negative-infinity": "负无穷",
     "order-by": "排序方式",

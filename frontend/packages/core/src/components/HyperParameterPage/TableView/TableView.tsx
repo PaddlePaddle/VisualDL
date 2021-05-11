@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import type {Column, TableKeyedProps} from 'react-table';
+import type {Column, Row, TableKeyedProps} from 'react-table';
 import {DEFAULT_ORDER_INDICATOR, OrderDirection} from '~/resource/hyper-parameter';
 import {ExpandContainer, TBody, THead, Table, Td, Tr} from '~/components/Table';
 import type {IndicatorGroup, ViewData} from '~/resource/hyper-parameter';
 import React, {FunctionComponent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import {color, colorAlt} from '~/utils/chart';
 import {useColumnOrder, useExpanded, useFlexLayout, useResizeColumns, useSortBy, useTable} from 'react-table';
 
 import {DndProvider} from 'react-dnd';
 import DraggableTh from './DraggableTh';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import Header from './Header';
+import MetricGraphs from '~/components/HyperParameterPage/MetricGraphs';
+import type {MetricGraphsProps} from '~/components/HyperParameterPage/MetricGraphs';
 import MetricsHeader from './MetricsHeader';
 import NameCell from './NameCell';
 import NameHeader from './NameHeader';
@@ -151,7 +154,8 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
             defaultColumn,
             initialState: {
                 sortBy
-            }
+            },
+            autoResetExpanded: false
         },
         useFlexLayout,
         useSticky,
@@ -295,6 +299,19 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
         };
     }, [tableWidth, totalColumnsWidth]);
 
+    const getRowMetricGraphsProps = useCallback<(row: Row<ViewData['list'][number]>) => MetricGraphsProps>(
+        ({index, values}) => {
+            return {
+                metrics: indicators.filter(i => i.group === 'metrics' && i.selected).map(i => i.name),
+                run: {
+                    label: values.name,
+                    colors: [color[index % color.length], colorAlt[index % colorAlt.length]]
+                }
+            };
+        },
+        [indicators]
+    );
+
     return (
         <Wrapper>
             <OrderSection>
@@ -375,7 +392,9 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list: data}) 
                                             ))}
                                         </Tr>
                                         {row.isExpanded ? (
-                                            <ExpandContainer {...getExpanderWidthProps()}>aaaa</ExpandContainer>
+                                            <ExpandContainer {...getExpanderWidthProps()}>
+                                                <MetricGraphs {...getRowMetricGraphsProps(row)} />
+                                            </ExpandContainer>
                                         ) : null}
                                     </React.Fragment>
                                 );

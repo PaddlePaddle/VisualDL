@@ -170,7 +170,7 @@ const Text: FunctionComponent<TextProps> = ({run, tag, step, wallTime, index}) =
         <>
             <span className="step">
                 <span>
-                    {t('sample:step')} {step}
+                    {t('common:time-mode.step')} {step}
                 </span>
             </span>
             <span className="text" title={text ?? ''}>

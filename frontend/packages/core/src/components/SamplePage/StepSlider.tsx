@@ -110,7 +110,7 @@ const StepSlider: FunctionComponent<StepSliderProps> = ({onChange, onChangeCompl
         <>
             <Label>
                 <div className="step-indicator">
-                    <div>{`${t('sample:step')}: ${steps[step] ?? '...'}`}</div>
+                    <div>{`${t('common:time-mode.step')}: ${steps[step] ?? '...'}`}</div>
                     <Tippy placement="right" theme="tooltip" content={t('sample:step-tip')}>
                         <div className="step-buttons">
                             <a onClick={prevStep}>

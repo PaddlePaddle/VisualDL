@@ -15,14 +15,15 @@
  */
 
 export type {
-    ImportanceData,
-    IndicatorRaw,
-    Indicator,
-    IndicatorGroup,
-    IndicatorData,
-    IndicatorType,
     DataListItem,
+    ImportanceData,
+    Indicator,
+    IndicatorData,
+    IndicatorGroup,
+    IndicatorRaw,
+    IndicatorType,
     ListItem,
+    MetricData,
     Range,
     ViewData
 } from './types';
@@ -30,6 +31,7 @@ export type {
 export {OrderDirection} from './types';
 export {format, formatIndicators} from './format';
 export {filter} from './filter';
+export {calculateRelativeTime, chartData} from './metric';
 
 export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
 export const DND_TYPE = Symbol('DND_TYPE');

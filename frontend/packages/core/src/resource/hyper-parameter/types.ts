@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export type {Range} from '~/types';
+
 export enum OrderDirection {
     ASCENDING = 'asc',
     DESCENDING = 'desc'
@@ -62,11 +64,6 @@ export interface IndicatorData<T extends {} = {}> {
     metrics: IndicatorRaw<T>[];
 }
 
-export interface Range {
-    min: number;
-    max: number;
-}
-
 export interface DataListItem<T extends string | number = string | number> {
     name: string;
     hparams: Record<string, T>;
@@ -84,3 +81,9 @@ export interface ImportanceData {
     name: string;
     value: number;
 }
+
+type Value = number;
+type WallTime = number;
+type Step = number;
+
+export type MetricData = [WallTime, Step, Value];

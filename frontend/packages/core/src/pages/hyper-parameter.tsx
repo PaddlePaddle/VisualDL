@@ -149,13 +149,13 @@ const HyperParameter: FunctionComponent = () => {
                             </ImportanceButton>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={t('hyper-parameter:download-data')}>
+                            <Field label={t('common:download-data')}>
                                 <DownloadButtons>
                                     <Button rounded outline onClick={() => downloadData('csv')}>
-                                        {t('hyper-parameter:download-csv')}
+                                        {t('common:download-data-format', {format: 'CSV'})}
                                     </Button>
                                     <Button rounded outline onClick={() => downloadData('tsv')}>
-                                        {t('hyper-parameter:download-tsv')}
+                                        {t('common:download-data-format', {format: 'TSV'})}
                                     </Button>
                                 </DownloadButtons>
                             </Field>

@@ -34,6 +34,7 @@ const Wrapper = styled.div`
         th,
         td {
             margin: 0;
+            line-height: 1;
 
             > span {
                 display: inline-block;
@@ -46,11 +47,11 @@ const Wrapper = styled.div`
         th {
             font-size: 1.166666667em;
             font-weight: bold;
-            padding: 0 0.285714286em;
+            padding: 0.15em 0.285714286em;
         }
 
         td {
-            padding: 0 0.333333333em;
+            padding: 0.15em 0.333333333em;
 
             &.run-indicator > span {
                 ${size(12, 12)}

@@ -3,13 +3,11 @@
         "hparams": "Hyper Parameters",
         "metrics": "Metrics"
     },
-    "download-csv": "In CSV",
-    "download-data": "Download Data",
-    "download-tsv": "In TSV",
     "hyper-parameter": {
         "order-default": "Default"
     },
     "max": "Max",
+    "metric-graphs-empty": "<0>No metrics selected</0><1>Please select some metrics to view graphs here.</1>",
     "min": "Min",
     "negative-infinity": "-Infinity",
     "order-by": "Sort by",
