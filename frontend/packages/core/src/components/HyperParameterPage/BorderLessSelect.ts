@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-/**
- * GET hparams/list
- *
- * request
- * {}
- */
+import Select from '~/components/Select';
+import type {SelectProps} from '~/components/Select';
+import {borderRadius} from '~/utils/style';
+import styled from 'styled-components';
 
-const a = ['a', 'b', 'c', 'd'];
-const b = [3, 2, 1, 4, 5];
+// forgive me, I don't want to write a type guard
+const BorderLessSelect = styled<React.FunctionComponent<SelectProps<string>>>(Select)`
+    border: none;
+    line-height: 1.1;
+    min-width: 4em;
+    --height: 1em;
+    --padding: 0;
 
-export default () =>
-    Array(5)
-        .fill(undefined)
-        .map((_, index) => ({
-            name: `run${index}`,
-            hparams: {
-                lr: a[index % a.length],
-                bsize: index * 0.5 + 0.5
-            },
-            metrics: {
-                accuracy: b[index % b.length],
-                loss: 100 - index * 0.2
-            }
-        }));
+    .list {
+        border-radius: ${borderRadius};
+    }
+`;
+
+export default BorderLessSelect;

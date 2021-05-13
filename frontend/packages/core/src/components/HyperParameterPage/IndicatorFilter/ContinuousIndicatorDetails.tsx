@@ -71,8 +71,11 @@ const DiscreteIndicatorDetails: FunctionComponent<ContinuousIndicatorDetailsProp
         change.current = onChange;
     }, [onChange]);
     useEffect(() => {
+        if (range.min === min && range.max === max) {
+            return;
+        }
         change.current?.(range);
-    }, [range]);
+    }, [max, min, range]);
 
     return (
         <>

@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * GET hparams/list
- *
- * request
- * {}
- */
+import React, {FunctionComponent} from 'react';
 
-const a = ['a', 'b', 'c', 'd'];
-const b = [3, 2, 1, 4, 5];
+import type {CellProps} from 'react-table';
 
-export default () =>
-    Array(5)
-        .fill(undefined)
-        .map((_, index) => ({
-            name: `run${index}`,
-            hparams: {
-                lr: a[index % a.length],
-                bsize: index * 0.5 + 0.5
-            },
-            metrics: {
-                accuracy: b[index % b.length],
-                loss: 100 - index * 0.2
-            }
-        }));
+const Cell = <D extends Record<string, unknown>>({cell}: CellProps<D>): ReturnType<FunctionComponent> => {
+    return <span>{cell.value}</span>;
+};
+
+export default Cell;

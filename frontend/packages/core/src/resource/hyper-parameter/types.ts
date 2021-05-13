@@ -21,6 +21,12 @@ export enum OrderDirection {
     DESCENDING = 'desc'
 }
 
+export enum ScaleMethod {
+    LINEAR = 'linear',
+    LOGARITHMIC = 'logarithmic',
+    QUANTILE = 'quantile'
+}
+
 export type IndicatorType = 'string' | 'numeric' | 'continuous';
 export type IndicatorGroup = 'hparams' | 'metrics';
 
@@ -75,6 +81,7 @@ export type ListItem = DataListItem<string>;
 export interface ViewData {
     indicators: Indicator[];
     list: ListItem[];
+    data: DataListItem[];
 }
 
 export interface ImportanceData {

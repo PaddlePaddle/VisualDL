@@ -15,9 +15,9 @@
  */
 
 import Aside, {AsideSection} from '~/components/Aside';
-import type {Indicator, IndicatorData, ListItem} from '~/resource/hyper-parameter';
+import type {Indicator, IndicatorData, ListItem, ViewData} from '~/resource/hyper-parameter';
 import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
-import {asideWidth, borderRadius, rem} from '~/utils/style';
+import {asideWidth, rem} from '~/utils/style';
 import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
 
 import BodyLoading from '~/components/BodyLoading';
@@ -26,6 +26,8 @@ import Content from '~/components/Content';
 import Field from '~/components/Field';
 import ImportanceDialog from '~/components/HyperParameterPage/ImportanceDialog';
 import IndicatorFilter from '~/components/HyperParameterPage/IndicatorFilter/IndicatorFilter';
+import ParallelCoordinatesView from '~/components/HyperParameterPage/ParallelCoordinatesView';
+import ScatterPlotMatrixView from '~/components/HyperParameterPage/ScatterPlotMatrixView';
 import Tab from '~/components/Tab';
 import TableView from '~/components/HyperParameterPage/TableView';
 import Title from '~/components/Title';
@@ -70,10 +72,6 @@ const HPWrapper = styled.div`
 const ViewWrapper = styled.div`
     width: 100%;
     flex-grow: 1;
-    background-color: var(--background-color);
-    border-radius: ${borderRadius};
-    border-top-left-radius: 0;
-    padding: ${rem(20)};
     position: relative;
 `;
 
@@ -108,14 +106,27 @@ const HyperParameter: FunctionComponent = () => {
         [t]
     );
     const [tabView, setTabView] = useState(tabs[0].value);
+
+    const viewData = useMemo<ViewData>(
+        () => ({
+            indicators: filteredIndicators,
+            list: formattedList,
+            data: filteredList
+        }),
+        [filteredIndicators, filteredList, formattedList]
+    );
     const view = useMemo(() => {
         switch (tabView) {
             case 'table':
-                return <TableView indicators={filteredIndicators} list={formattedList} />;
+                return <TableView {...viewData} />;
+            case 'parallel-coordinates':
+                return <ParallelCoordinatesView {...viewData} />;
+            case 'scatter-plot-matrix':
+                return <ScatterPlotMatrixView {...viewData} />;
             default:
                 return null;
         }
-    }, [filteredIndicators, formattedList, tabView]);
+    }, [tabView, viewData]);
 
     const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
 

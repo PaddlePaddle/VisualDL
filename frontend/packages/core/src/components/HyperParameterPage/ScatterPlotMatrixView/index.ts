@@ -14,27 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * GET hparams/list
- *
- * request
- * {}
- */
+import ScatterPlotMatrixView from './ScatterPlotMatrixView';
 
-const a = ['a', 'b', 'c', 'd'];
-const b = [3, 2, 1, 4, 5];
-
-export default () =>
-    Array(5)
-        .fill(undefined)
-        .map((_, index) => ({
-            name: `run${index}`,
-            hparams: {
-                lr: a[index % a.length],
-                bsize: index * 0.5 + 0.5
-            },
-            metrics: {
-                accuracy: b[index % b.length],
-                loss: 100 - index * 0.2
-            }
-        }));
+export default ScatterPlotMatrixView;

@@ -40,8 +40,10 @@ export const padding = em(10);
 export const height = em(36);
 
 const Wrapper = styled.div<{opened?: boolean}>`
-    height: ${height};
-    line-height: calc(${height} - 2px);
+    --height: ${height};
+    --padding: ${padding};
+    height: var(--height);
+    line-height: calc(var(--height) - 2px);
     max-width: 100%;
     display: inline-block;
     position: relative;
@@ -56,7 +58,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
 `;
 
 const Trigger = styled.div<{selected?: boolean}>`
-    padding: ${padding};
+    padding: var(--padding);
     display: inline-flex;
     ${size('100%')}
     justify-content: space-between;
@@ -78,6 +80,7 @@ const TriggerIcon = styled(Icon)<{opened?: boolean}>`
 const Label = styled.span`
     flex-grow: 1;
     padding-right: ${em(10)};
+    line-height: 1;
     ${ellipsis()}
 `;
 
@@ -267,7 +270,7 @@ const Select = <T extends unknown>({
                 <Label>{label}</Label>
                 <TriggerIcon opened={isOpened} type="chevron-down" />
             </Trigger>
-            <List opened={isOpened} empty={isListEmpty}>
+            <List className="list" opened={isOpened} empty={isListEmpty}>
                 {isListEmpty
                     ? t('common:empty')
                     : list.map((item, index) => {

@@ -156,11 +156,11 @@ const ToggleChartToolbox: FunctionComponent<ToggleChartToolboxItem> = ({
 }) => {
     const [active, setActive] = useState(false);
     const click = useCallback(() => {
+        onClick?.(!active);
         setActive(a => {
-            onClick?.(!a);
             return !a;
         });
-    }, [onClick]);
+    }, [active, onClick]);
     const toolboxIcon = useMemo(
         () => <ChartToolboxIcon icon={icon} activeIcon={activeIcon} activeStatus={active} toggle onClick={click} />,
         [icon, activeIcon, active, click]

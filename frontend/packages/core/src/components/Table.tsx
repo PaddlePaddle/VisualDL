@@ -14,37 +14,13 @@
  * limitations under the License.
  */
 
-import {css, em, rem, sameBorder} from '~/utils/style';
+import {css, dragger, em, rem, sameBorder} from '~/utils/style';
 
 import classNames from 'classnames';
 import styled from 'styled-components';
 
-const Dragger = styled.span<{dragging?: boolean}>`
-    --padding-v: ${em(8, 14)};
-    --padding-h: ${em(6, 14)};
-
-    width: ${em(6, 14)};
-    height: ${em(10, 14)};
-    box-sizing: content-box;
-    padding: var(--padding-v) var(--padding-h);
-    cursor: ${props => (props.dragging ? 'grabbing' : 'grab')};
-    display: inline-block;
-    position: relative;
-
-    &::before {
-        --dot-size: ${em(2, 14)};
-        content: '';
-        display: block;
-        position: absolute;
-        width: var(--dot-size);
-        height: var(--dot-size);
-        background-color: currentColor;
-        top: var(--padding-v);
-        left: var(--padding-h);
-        box-shadow: 0 0, calc(var(--dot-size) * 2) 0, 0 calc(var(--dot-size) * 2),
-            calc(var(--dot-size) * 2) calc(var(--dot-size) * 2), 0 calc(var(--dot-size) * 4),
-            calc(var(--dot-size) * 2) calc(var(--dot-size) * 4);
-    }
+const Dragger = styled.span`
+    ${dragger}
 `;
 
 const table = css`

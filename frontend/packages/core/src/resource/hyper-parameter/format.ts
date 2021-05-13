@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as d3 from 'd3';
+
 import type {DataListItem, Indicator, IndicatorGroup, IndicatorRaw, ListItem} from './types';
 
 export function format(list: DataListItem[], indicators: Indicator[]): ListItem[] {
@@ -59,4 +61,39 @@ export function formatIndicators(indicators: IndicatorRaw[], group: IndicatorGro
                 return null as never;
         }
     });
+}
+
+export function getColorScale(
+    indicators: Indicator[],
+    data: DataListItem[],
+    colorMap: string[],
+    colorBy: string | null
+): d3.ScaleLinear<string, string> {
+    const indicator = indicators.find(i => i.name === colorBy);
+    let domain: number[];
+    if (colorBy == null || indicator == null) {
+        domain = [0, data.length - 1];
+    } else if (indicator.type !== 'continuous') {
+        throw new Error('cannot color lines by `' + colorBy + '`');
+    } else {
+        const values = data.map(row => +row[indicator.group][indicator.name]);
+        domain = d3.extent(values) as [number, number];
+    }
+    if (colorMap.length > 2) {
+        const min = domain[0];
+        const max = domain.pop() as number;
+        for (let i = 1; i < colorMap.length - 1; i++) {
+            domain.push(min + ((max - min) / (colorMap.length - 1)) * i);
+        }
+        domain.push(max);
+    }
+    return (
+        d3
+            .scaleLinear<string, string>()
+            .domain(domain)
+            .range(colorMap)
+            // d3 types sucks
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .interpolate(d3.interpolateRgb as any)
+    );
 }

@@ -18,6 +18,12 @@
     },
     "parameter-importance": "Hyper Parameters Importance",
     "positive-infinity": "+Infinity",
+    "scale-method": {
+        "linear": "Linear",
+        "logarithmic": "Logarithmic",
+        "quantile": "Quantile"
+    },
+    "session-table-empty": "<0>Click or hover over a line to display its values here</0><1><0>Hover to display values;</0><0>Click to display metrics graph.</0><1>",
     "show-parameter-importance": "Show HParams Importance",
     "trial-id": "Trial ID",
     "views": {

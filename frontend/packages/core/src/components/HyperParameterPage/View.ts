@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * GET hparams/list
- *
- * request
- * {}
- */
+import {borderRadius, rem} from '~/utils/style';
 
-const a = ['a', 'b', 'c', 'd'];
-const b = [3, 2, 1, 4, 5];
+import styled from 'styled-components';
 
-export default () =>
-    Array(5)
-        .fill(undefined)
-        .map((_, index) => ({
-            name: `run${index}`,
-            hparams: {
-                lr: a[index % a.length],
-                bsize: index * 0.5 + 0.5
-            },
-            metrics: {
-                accuracy: b[index % b.length],
-                loss: 100 - index * 0.2
-            }
-        }));
+const View = styled.div`
+    width: 100%;
+    background-color: var(--background-color);
+    border-radius: ${borderRadius};
+    border-top-left-radius: 0;
+    padding: ${rem(20)};
+`;
+
+export default View;

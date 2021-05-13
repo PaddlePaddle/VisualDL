@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {ScaleMethod} from './types';
+
 export type {
     DataListItem,
     ImportanceData,
@@ -28,10 +30,13 @@ export type {
     ViewData
 } from './types';
 
-export {OrderDirection} from './types';
-export {format, formatIndicators} from './format';
+export {OrderDirection, ScaleMethod} from './types';
+export {format, formatIndicators, getColorScale} from './format';
 export {filter} from './filter';
 export {calculateRelativeTime, chartData} from './metric';
 
 export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
 export const DND_TYPE = Symbol('DND_TYPE');
+
+export const SCALE_METHODS = [ScaleMethod.LINEAR, ScaleMethod.LOGARITHMIC, ScaleMethod.QUANTILE];
+export const COLOR_MAP = ['#2932E1', '#FE4A3B', '#FFAA00'];

@@ -39,7 +39,7 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
     useEffect(() => setInputValue(Number.isFinite(value) ? value + '' : ''), [value]);
 
     useEffect(() => {
-        if (inputValue === '') {
+        if (inputValue === '' && value !== defaultValue) {
             onChange?.(defaultValue);
             return;
         }
