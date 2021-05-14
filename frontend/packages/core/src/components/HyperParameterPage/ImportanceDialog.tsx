@@ -38,6 +38,7 @@ const Dialog = styled.div<{visible: boolean}>`
     display: ${props => (props.visible ? 'inline-block' : 'none')};
     position: relative;
     padding: ${rem(20)};
+    z-index: 1;
 
     > .close {
         position: absolute;

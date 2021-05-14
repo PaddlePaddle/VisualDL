@@ -41,8 +41,16 @@ const Container = styled.div`
         .hover-trigger {
             cursor: pointer;
         }
+        .select-indicator {
+            fill: var(--background-color);
+            stroke-width: 2px;
+        }
         .disabled {
             .line {
+                stroke: var(--parallel-coordinates-graph-disabled-line-color);
+            }
+
+            .stroke-width {
                 stroke: var(--parallel-coordinates-graph-disabled-line-color);
             }
 
@@ -62,7 +70,6 @@ const Container = styled.div`
                 .dragger {
                     opacity: 0;
                     cursor: grab;
-                    filter: invert(16%) sepia(99%) saturate(5980%) hue-rotate(243deg) brightness(89%) contrast(98%);
                 }
 
                 &:hover .dragger {
@@ -81,6 +88,18 @@ const Container = styled.div`
                 .grid-brush .selection {
                     fill: var(--parallel-coordinates-graph-brush-color);
                     fill-opacity: 0.4;
+                }
+            }
+
+            &.dragging {
+                .indicator {
+                    fill: var(--primary-color);
+                }
+
+                .dragger {
+                    opacity: 1;
+                    cursor: grabbing;
+                    filter: invert(16%) sepia(99%) saturate(5980%) hue-rotate(243deg) brightness(89%) contrast(98%);
                 }
             }
         }
@@ -173,6 +192,21 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
             setIndicatorsOrder(order);
         });
         return () => graph.current?.dispose();
+    }, []);
+
+    useEffect(() => {
+        const c = container.current;
+        if (c) {
+            const observer = new ResizeObserver(() => {
+                const rect = c.getBoundingClientRect();
+                graph.current?.resize(rect.width);
+                setColumnWidth(graph.current?.columnWidth ?? 0);
+            });
+            observer.observe(c);
+            return () => {
+                observer.unobserve(c);
+            };
+        }
     }, []);
 
     useEffect(() => {

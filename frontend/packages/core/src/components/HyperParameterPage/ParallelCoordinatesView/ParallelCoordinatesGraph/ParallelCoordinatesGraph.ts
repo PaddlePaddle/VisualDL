@@ -70,7 +70,6 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     private options: ParallelCoordinatesGraphOptions;
     private svg;
 
-    private containerObserver;
     private containerWidth;
 
     private data: DataListItem[] = [];
@@ -126,16 +125,6 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
             .on('click', () => {
                 this.unselectLine();
             });
-        this.containerObserver = this.createContainerObserver();
-    }
-
-    private createContainerObserver() {
-        const observer = new ResizeObserver(() => {
-            const rect = this.container.getBoundingClientRect();
-            this.containerWidth = rect.width;
-        });
-        observer.observe(this.container);
-        return observer;
     }
 
     private getDataByIndicator(indicator: Indicator) {
@@ -228,7 +217,7 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     private drawLines() {
         this.lines.forEach((row, rowIndex) => {
             const g = this.svg.append('g').attr('transform', `translate(0, ${INDICATORS_HEIGHT})`);
-            g.append('path').classed('line', true).attr('fill', 'none');
+            g.append('path').classed('line', true).attr('fill', 'none').attr('stroke-width', 1);
             g.append('path')
                 .classed('hover-trigger', true)
                 .attr('stroke', 'transparent')
@@ -263,11 +252,15 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     private updateLineColors() {
         this.lines.forEach((row, i) => {
             const disabled = this.brushedLineIndexes != null && !this.brushedLineIndexes.includes(i);
-            const line = row.line?.classed('disabled', disabled).select('.line');
+            const group = row.line?.classed('disabled', disabled);
+            const line = group?.select('.line');
+            const circles = group?.selectAll('.select-indicator');
             if (disabled) {
                 line?.attr('stroke', null);
+                circles?.attr('stroke', null);
             } else {
-                line?.transition().duration(75).attr('stroke', row.color);
+                this.select(line, true)?.attr('stroke', row.color);
+                this.select(circles, true)?.attr('stroke', row.color);
             }
         });
     }
@@ -278,7 +271,7 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
             if (i === this.hoveredLineIndex || i === this.selectedLineIndex) {
                 width = 3;
             }
-            g.line?.select('.line').transition().duration(75).attr('stroke-width', width);
+            this.select(g.line?.select('.line'), true)?.attr('stroke-width', width);
         });
     }
 
@@ -299,11 +292,23 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     private selectLine(index: number) {
         this.emit('select', index);
         this.selectedLineIndex = index;
+        const line = this.lines[index];
+        this.lines.forEach(line => line.line?.selectAll('.select-indicator').remove());
+        this.sequenceGrids.forEach(g => {
+            line.line
+                ?.append('circle')
+                .classed('select-indicator', true)
+                .attr('cx', g.x)
+                .attr('cy', g.yScale(line.data[g.group][g.name] as number) ?? 0)
+                .attr('r', 4)
+                .attr('stroke', line.color);
+        });
         this.updateLineWidths();
     }
 
     private unselectLine() {
         if (this.selectedLineIndex != null) {
+            this.lines[this.selectedLineIndex].line?.selectAll('.select-indicator').remove();
             this.selectedLineIndex = null;
             this.emit('select', null);
         }
@@ -435,6 +440,7 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     private dragstart(indicator: GridIndicator, x: number) {
         this.draggingIndicator = {...indicator};
         this.dragStartX = x;
+        indicator.grid?.classed('dragging', true);
     }
 
     private dragging(indicator: GridIndicator, x: number) {
@@ -460,10 +466,9 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     }
 
     private dragend() {
+        this.draggingIndicator?.grid?.classed('dragging', false);
         this.draggingIndicator = null;
-        this.sequenceGrids.forEach(({grid, x}) =>
-            grid?.transition().duration(75).attr('transform', `translate(${x}, 0)`)
-        );
+        this.updateGrids();
         this.updateLines();
         this.emit(
             'dragged',
@@ -471,33 +476,54 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
         );
     }
 
+    private updateGrids(animation = true) {
+        this.sequenceGrids.forEach(({grid, x}) =>
+            this.select(grid, animation)?.attr('transform', `translate(${x}, 0)`)
+        );
+    }
+
     private updateLines(animation = true, extra?: {indicator: string; x: number}) {
         this.lines.forEach(g => {
+            const circles = g.line?.selectAll('.select-indicator').nodes() ?? [];
             const line = d3.line()(
-                this.sequenceGrids.map(({group, name, x, yScale}) => {
+                this.sequenceGrids.map(({group, name, x: gx, yScale}, i) => {
+                    let x = gx;
                     const y = yScale(g.data[group][name] as number) ?? 0;
                     if (extra && extra.indicator === name) {
-                        return [extra.x, y];
+                        x = extra.x;
+                    }
+                    if (circles[i]) {
+                        this.select(d3.select(circles[i]), animation)?.attr('cx', x).attr('cy', y);
                     }
                     return [x, y];
                 })
             );
-            const paths = g.line?.selectAll('path');
-            if (animation) {
-                paths
-                    ?.transition()
-                    .duration(75)
-                    .attr('d', line ?? '');
-            } else {
-                paths?.attr('d', line ?? '');
-            }
+            this.select(g.line?.selectAll('path'), animation)?.attr('d', line ?? '');
         });
     }
 
-    private resize() {
+    private select<T extends d3.BaseType, G extends d3.BaseType>(
+        selection: d3.Selection<T, unknown, G, unknown> | null | undefined,
+        animation = false
+    ) {
+        if (animation) {
+            return selection?.transition().duration(75);
+        }
+        return selection;
+    }
+
+    private setSvgSize() {
         const width = this.svgWidth;
         const height = ParallelCoordinatesGraph.GRAPH_HEIGHT + INDICATORS_HEIGHT;
         this.svg.attr('width', width).attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
+    }
+
+    resize(containerWidth: number) {
+        this.containerWidth = containerWidth;
+        this.setSvgSize();
+        this.calculateXScale();
+        this.updateGrids(false);
+        this.updateLines(false);
     }
 
     setColorBy(colorBy: string | null) {
@@ -541,7 +567,7 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
             grid: null
         }));
         this.data = data;
-        this.resize();
+        this.setSvgSize();
         this.calculateXScale();
         this.calculateYScales();
 
@@ -558,7 +584,6 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     }
 
     dispose() {
-        this.containerObserver.unobserve(this.container);
         this.removeLines();
         this.removeGrids();
         this.svg.remove();
