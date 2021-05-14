@@ -19,7 +19,6 @@ import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useSt
 import {SCALE_METHODS, ScaleMethod} from '~/resource/hyper-parameter';
 
 import Graph from './ParallelCoordinatesGraph';
-import type {Options as GraphOptions} from './ParallelCoordinatesGraph';
 import Select from '~/components/HyperParameterPage/BorderLessSelect';
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
@@ -47,11 +46,11 @@ const Container = styled.div`
         }
         .disabled {
             .line {
-                stroke: var(--parallel-coordinates-graph-disabled-line-color);
+                stroke: var(--hyper-parameter-graph-disabled-line-color);
             }
 
             .stroke-width {
-                stroke: var(--parallel-coordinates-graph-disabled-line-color);
+                stroke: var(--hyper-parameter-graph-disabled-line-color);
             }
 
             .hover-trigger {
@@ -78,7 +77,7 @@ const Container = styled.div`
             }
 
             .axis {
-                color: var(--parallel-coordinates-graph-grid-color);
+                color: var(--hyper-parameter-graph-axis-color);
 
                 text {
                     color: var(--text-light-color);
@@ -86,7 +85,7 @@ const Container = styled.div`
                 }
 
                 .grid-brush .selection {
-                    fill: var(--parallel-coordinates-graph-brush-color);
+                    fill: var(--hyper-parameter-graph-brush-color);
                     fill-opacity: 0.4;
                 }
             }
@@ -111,17 +110,16 @@ const ScaleMethodSelect = styled(Select)`
     min-width: 7em;
 `;
 
-type ParallelCoordinatesProps = ViewData &
-    GraphOptions & {
-        onHover?: (index: number | null) => unknown;
-        onSelect?: (index: number | null) => unknown;
-    };
+type ParallelCoordinatesProps = ViewData & {
+    colors: string[];
+    onHover?: (index: number | null) => unknown;
+    onSelect?: (index: number | null) => unknown;
+};
 
 const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyled> = ({
     indicators,
     data,
-    colorBy,
-    colorMap,
+    colors,
     onHover,
     onSelect,
     className
@@ -129,26 +127,23 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
     const {t} = useTranslation('hyper-parameter');
     const container = useRef<HTMLDivElement>(null);
     const graph = useRef<Graph>();
-    const options = useRef<GraphOptions>({colorBy, colorMap});
     const [columnWidth, setColumnWidth] = useState(0);
 
-    const selectedIndicators = useMemo(() => indicators.filter(i => i.selected), [indicators]);
-
-    const [indicatorsOrder, setIndicatorsOrder] = useState(selectedIndicators.map(({name}) => name));
+    const [indicatorsOrder, setIndicatorsOrder] = useState(indicators.map(({name}) => name));
     useEffect(() => {
-        setIndicatorsOrder(selectedIndicators.map(({name}) => name));
-    }, [selectedIndicators]);
+        setIndicatorsOrder(indicators.map(({name}) => name));
+    }, [indicators]);
 
     const orderedIndicators = useMemo(
         () =>
             indicatorsOrder
-                .filter(o => selectedIndicators.findIndex(i => i.name === o) >= 0)
-                .map(name => selectedIndicators.find(i => i.name === name) as Indicator),
-        [indicatorsOrder, selectedIndicators]
+                .filter(o => indicators.findIndex(i => i.name === o) >= 0)
+                .map(name => indicators.find(i => i.name === name) as Indicator),
+        [indicatorsOrder, indicators]
     );
 
     const [indicatorScaleMethod, setIndicatorScaleMethod] = useState(
-        selectedIndicators.reduce<Record<string, ScaleMethod>>((result, indicator) => {
+        indicators.reduce<Record<string, ScaleMethod>>((result, indicator) => {
             if (indicator.type === 'continuous') {
                 result[indicator.name] = ScaleMethod.LINEAR;
             }
@@ -180,7 +175,7 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
         if (!container.current) {
             return;
         }
-        graph.current = new Graph(container.current, options.current);
+        graph.current = new Graph(container.current);
         graph.current.on('dragging', (name, offset, order) => {
             setDraggingIndicator(name);
             setDraggingIndicatorOffset(offset);
@@ -227,13 +222,13 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
     }, [onSelect]);
 
     useEffect(() => {
-        graph.current?.setColorBy(colorBy ?? null);
-    }, [colorBy]);
+        graph.current?.setColors(colors);
+    }, [colors]);
 
     useEffect(() => {
-        graph.current?.render(selectedIndicators, data);
+        graph.current?.render(indicators, data);
         setColumnWidth(graph.current?.columnWidth ?? 0);
-    }, [selectedIndicators, data]);
+    }, [indicators, data]);
 
     return (
         <Container className={className}>

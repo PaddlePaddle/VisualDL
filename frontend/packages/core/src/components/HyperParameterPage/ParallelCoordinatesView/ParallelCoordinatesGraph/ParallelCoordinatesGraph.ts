@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+// cspell:words quantile quantiles unhover
+
 import * as d3 from 'd3';
 
 import type {DataListItem, Indicator} from '~/resource/hyper-parameter';
-import {ScaleMethod, getColorScale} from '~/resource/hyper-parameter';
 
 import EventEmitter from 'eventemitter3';
-import defaults from 'lodash/defaults';
+import {ScaleMethod} from '~/resource/hyper-parameter';
 import intersection from 'lodash/intersection';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -48,13 +49,6 @@ const INDICATORS_HEIGHT = 25;
 const MIN_COLUMN_WIDTH = 60;
 const GRID_PADDING = 5;
 
-interface ParallelCoordinatesGraphOptions {
-    colorMap: string[];
-    colorBy: string | null;
-}
-
-export type Options = Partial<ParallelCoordinatesGraphOptions>;
-
 interface EventTypes {
     hover: [number | null];
     select: [number | null];
@@ -66,12 +60,11 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     static GRAPH_HEIGHT = 300;
     static GRID_BRUSH_WIDTH = 20;
 
-    private container;
-    private options: ParallelCoordinatesGraphOptions;
     private svg;
 
     private containerWidth;
 
+    private colors: string[] = [];
     private data: DataListItem[] = [];
     private grids: GridIndicator[] = [];
     private lines: LineData[] = [];
@@ -107,13 +100,8 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
         return [...this.grids].sort((a, b) => a.x - b.x);
     }
 
-    constructor(container: HTMLElement, options?: Options) {
+    constructor(container: HTMLElement) {
         super();
-        this.container = container;
-        this.options = defaults({}, options, {
-            colorMap: ['#2932E1', '#FE4A3B'],
-            colorBy: null
-        });
         this.containerWidth = container.getBoundingClientRect().width;
         const [width, height] = [this.containerWidth, ParallelCoordinatesGraph.GRAPH_HEIGHT + INDICATORS_HEIGHT];
         this.svg = d3
@@ -316,16 +304,8 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
     }
 
     private calculateLineColors() {
-        const colorScale = this.calculateColorScale();
         this.lines.forEach((line, i) => {
-            let color: string;
-            const colorByIndicator = this.grids.find(g => g.name === this.options.colorBy);
-            if (colorByIndicator) {
-                color = colorScale(line.data[colorByIndicator.group][colorByIndicator.name] as number);
-            } else {
-                color = colorScale(i);
-            }
-            line.color = color;
+            line.color = this.colors[i] ?? '#000';
         });
     }
 
@@ -368,10 +348,6 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
         this.grids.forEach((grid, i) => {
             grid.yScale = yScales[i];
         });
-    }
-
-    private calculateColorScale() {
-        return getColorScale(this.grids, this.data, this.options.colorMap, this.options.colorBy);
     }
 
     private getDiscreteLineBySelection(index: number, [y1, y2]: [number, number]) {
@@ -526,8 +502,8 @@ export default class ParallelCoordinatesGraph extends EventEmitter<EventTypes> {
         this.updateLines(false);
     }
 
-    setColorBy(colorBy: string | null) {
-        this.options.colorBy = colorBy;
+    setColors(colors: string[]) {
+        this.colors = colors;
         this.calculateLineColors();
         this.updateLineColors();
     }

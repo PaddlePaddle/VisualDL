@@ -112,9 +112,10 @@ export const themes = {
         textChartTagBackgroundColor: '#f6f6f6',
 
         // hyper-parameter page
-        parallelCoordinatesGraphGridColor: '#ccc',
-        parallelCoordinatesGraphDisabledLineColor: '#ccc',
-        parallelCoordinatesGraphBrushColor: '#787878'
+        hyperParameterGraphAxisColor: '#ccc',
+        hyperParameterGraphGridColor: '#ebebeb',
+        hyperParameterGraphDisabledLineColor: '#ccc',
+        hyperParameterGraphBrushColor: '#787878'
     },
     dark: {
         textColor: '#cfcfd1',
@@ -175,9 +176,10 @@ export const themes = {
         textChartTitleIndicatorColor: '#fff',
         textChartTagBackgroundColor: '#222',
 
-        parallelCoordinatesGraphGridColor: '#999',
-        parallelCoordinatesGraphDisabledLineColor: '#999',
-        parallelCoordinatesGraphBrushColor: '#787878'
+        hyperParameterGraphAxisColor: '#999',
+        hyperParameterGraphGridColor: '#262629',
+        hyperParameterGraphDisabledLineColor: '#999',
+        hyperParameterGraphBrushColor: '#787878'
     }
 } as const;
 

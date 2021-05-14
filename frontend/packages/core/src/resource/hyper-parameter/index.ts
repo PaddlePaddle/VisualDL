@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cspell:words quantile
+
 import {ScaleMethod} from './types';
 
 export type {
@@ -31,12 +33,13 @@ export type {
 } from './types';
 
 export {OrderDirection, ScaleMethod} from './types';
-export {format, formatIndicators, getColorScale} from './format';
+export {format, formatIndicators, getColorScale, COLOR_MAP} from './format';
 export {filter} from './filter';
 export {calculateRelativeTime, chartData} from './metric';
+export {default as useColorMap} from './hooks/useColorMap';
+export {default as useGraph} from './hooks/useGraph';
 
 export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
 export const DND_TYPE = Symbol('DND_TYPE');
 
 export const SCALE_METHODS = [ScaleMethod.LINEAR, ScaleMethod.LOGARITHMIC, ScaleMethod.QUANTILE];
-export const COLOR_MAP = ['#2932E1', '#FE4A3B', '#FFAA00'];

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cspell:words quantile
+
 export type {Range} from '~/types';
 
 export enum OrderDirection {

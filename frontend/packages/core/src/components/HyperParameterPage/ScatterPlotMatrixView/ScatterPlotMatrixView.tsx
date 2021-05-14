@@ -14,55 +14,32 @@
  * limitations under the License.
  */
 
-import * as d3 from 'd3';
+import React, {FunctionComponent} from 'react';
+import {useColorMap, useGraph} from '~/resource/hyper-parameter';
 
-import type {ListItem, ViewData} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
-
+import ScatterPlotMatrix from './ScatterPlotMatrix';
 import SessionTable from '~/components/HyperParameterPage/SessionTable';
 import View from '~/components/HyperParameterPage/View';
+import type {ViewData} from '~/resource/hyper-parameter';
 
 type ScatterPlotMatrixViewProps = ViewData;
 
 const ScatterPlotMatrixView: FunctionComponent<ScatterPlotMatrixViewProps> = ({indicators, list, data}) => {
-    const colorByList = useMemo(() => indicators.filter(i => i.type === 'continuous').map(i => i.name), [indicators]);
-    const [colorBy, setColorBy] = useState(colorByList[0] ?? null);
-
-    const colorByIndicator = useMemo(() => indicators.find(i => i.name === colorBy), [colorBy, indicators]);
-
-    const colorByExtent = useMemo(
-        () =>
-            colorByIndicator
-                ? d3.extent(data.map(row => +row[colorByIndicator.group][colorByIndicator.name]))
-                : (['', ''] as const),
-        [colorByIndicator, data]
-    );
-
-    const [sessionData, setSessionData] = useState<ListItem | null>(null);
-    const [showMetricsGraph, setShowMetricsGraph] = useState(false);
-
-    const onHover = useCallback(
-        (index: number | null) => {
-            if (!showMetricsGraph) {
-                setSessionData(index == null ? null : list[index]);
-            }
-        },
-        [list, showMetricsGraph]
-    );
-
-    const onSelect = useCallback(
-        (index: number | null) => {
-            setSessionData(index == null ? null : list[index]);
-            setShowMetricsGraph(index != null);
-        },
-        [list]
-    );
-
-    [setColorBy, colorByExtent, onHover, onSelect];
+    const {colorByList, colorByExtent, colorBy, setColorBy, colors} = useColorMap(indicators, data);
+    const {selectedIndicators, sessionData, onHover, onSelect, showMetricsGraph} = useGraph(indicators, list);
 
     return (
         <>
-            <View></View>
+            <View>
+                <ScatterPlotMatrix
+                    indicators={selectedIndicators}
+                    data={data}
+                    list={list}
+                    colors={colors}
+                    onHover={onHover}
+                    onSelect={onSelect}
+                />
+            </View>
             <SessionTable indicators={indicators} data={sessionData} showMetricsGraph={showMetricsGraph} />
         </>
     );
