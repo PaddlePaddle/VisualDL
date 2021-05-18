@@ -114,7 +114,7 @@ export const themes = {
         // hyper-parameter page
         hyperParameterGraphAxisColor: '#ccc',
         hyperParameterGraphGridColor: '#ebebeb',
-        hyperParameterGraphDisabledLineColor: '#ccc',
+        hyperParameterGraphDisabledDataColor: '#ccc',
         hyperParameterGraphBrushColor: '#787878'
     },
     dark: {
@@ -178,7 +178,7 @@ export const themes = {
 
         hyperParameterGraphAxisColor: '#999',
         hyperParameterGraphGridColor: '#262629',
-        hyperParameterGraphDisabledLineColor: '#999',
+        hyperParameterGraphDisabledDataColor: '#999',
         hyperParameterGraphBrushColor: '#787878'
     }
 } as const;

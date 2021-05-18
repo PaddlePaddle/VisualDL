@@ -16,16 +16,16 @@
 
 import type {Indicator, ViewData} from '~/resource/hyper-parameter';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {SCALE_METHODS, ScaleMethod} from '~/resource/hyper-parameter';
 
 import Graph from './ParallelCoordinatesGraph';
-import Select from '~/components/HyperParameterPage/BorderLessSelect';
+import {ScaleMethod} from '~/resource/hyper-parameter';
+import ScaleMethodSelect from '~/components/HyperParameterPage/ScaleMethodSelect';
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
-import {useTranslation} from 'react-i18next';
 
 const Container = styled.div`
     width: 100%;
+    overflow: auto;
 
     .interpolates {
         display: flex;
@@ -46,11 +46,11 @@ const Container = styled.div`
         }
         .disabled {
             .line {
-                stroke: var(--hyper-parameter-graph-disabled-line-color);
+                stroke: var(--hyper-parameter-graph-disabled-data-color);
             }
 
             .stroke-width {
-                stroke: var(--hyper-parameter-graph-disabled-line-color);
+                stroke: var(--hyper-parameter-graph-disabled-data-color);
             }
 
             .hover-trigger {
@@ -105,9 +105,8 @@ const Container = styled.div`
     }
 `;
 
-const ScaleMethodSelect = styled(Select)`
+const StyledScaleMethodSelect = styled(ScaleMethodSelect)`
     position: relative;
-    min-width: 7em;
 `;
 
 type ParallelCoordinatesProps = ViewData & {
@@ -124,7 +123,6 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
     onSelect,
     className
 }) => {
-    const {t} = useTranslation('hyper-parameter');
     const container = useRef<HTMLDivElement>(null);
     const graph = useRef<Graph>();
     const [columnWidth, setColumnWidth] = useState(0);
@@ -161,15 +159,6 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
         }));
         graph.current?.setScaleMethod(indicator.name, scale);
     }, []);
-
-    const scaleMethods = useMemo(
-        () =>
-            SCALE_METHODS.map(method => ({
-                value: method,
-                label: t(`hyper-parameter:scale-method.${method}`)
-            })),
-        [t]
-    );
 
     useEffect(() => {
         if (!container.current) {
@@ -244,12 +233,10 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
                         }}
                     >
                         {indicatorScaleMethod[indicator.name] != null ? (
-                            <ScaleMethodSelect
-                                list={scaleMethods}
-                                value={indicatorScaleMethod[indicator.name]}
-                                onChange={(scale: string) =>
-                                    changeIndicatorScaleMethod(indicator, scale as ScaleMethod)
-                                }
+                            <StyledScaleMethodSelect
+                                direction="top"
+                                scaleMethod={indicatorScaleMethod[indicator.name]}
+                                onChange={scale => changeIndicatorScaleMethod(indicator, scale)}
                             />
                         ) : null}
                     </div>

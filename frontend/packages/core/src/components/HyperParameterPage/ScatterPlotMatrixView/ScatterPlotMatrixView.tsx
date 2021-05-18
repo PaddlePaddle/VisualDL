@@ -14,31 +14,56 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent} from 'react';
-import {useColorMap, useGraph} from '~/resource/hyper-parameter';
+import React, {FunctionComponent, useState} from 'react';
 
+import ColorMap from '~/components/HyperParameterPage/ColorMap';
 import ScatterPlotMatrix from './ScatterPlotMatrix';
 import SessionTable from '~/components/HyperParameterPage/SessionTable';
 import View from '~/components/HyperParameterPage/View';
 import type {ViewData} from '~/resource/hyper-parameter';
+import {rem} from '~/utils/style';
+import styled from 'styled-components';
+import {useGraph} from '~/resource/hyper-parameter';
+
+const Wrapper = styled.div`
+    width: 100%;
+    display: flex;
+    font-size: ${rem(12)};
+    align-items: flex-start;
+    justify-content: space-between;
+
+    > .graph {
+        flex: auto;
+    }
+
+    > .color-map {
+        flex: none;
+        height: ${rem(180)};
+    }
+`;
 
 type ScatterPlotMatrixViewProps = ViewData;
 
 const ScatterPlotMatrixView: FunctionComponent<ScatterPlotMatrixViewProps> = ({indicators, list, data}) => {
-    const {colorByList, colorByExtent, colorBy, setColorBy, colors} = useColorMap(indicators, data);
     const {selectedIndicators, sessionData, onHover, onSelect, showMetricsGraph} = useGraph(indicators, list);
+
+    const [colors, setColors] = useState<string[]>([]);
 
     return (
         <>
             <View>
-                <ScatterPlotMatrix
-                    indicators={selectedIndicators}
-                    data={data}
-                    list={list}
-                    colors={colors}
-                    onHover={onHover}
-                    onSelect={onSelect}
-                />
+                <Wrapper>
+                    <ScatterPlotMatrix
+                        className="graph"
+                        indicators={selectedIndicators}
+                        data={data}
+                        list={list}
+                        colors={colors}
+                        onHover={onHover}
+                        onSelect={onSelect}
+                    />
+                    <ColorMap className="color-map" indicators={indicators} data={data} onChange={setColors} />
+                </Wrapper>
             </View>
             <SessionTable indicators={indicators} data={sessionData} showMetricsGraph={showMetricsGraph} />
         </>

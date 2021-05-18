@@ -16,11 +16,14 @@
 
 // cspell:words onhover
 
-import type {IndicatorType, ViewData} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import type {Indicator, IndicatorType, ViewData} from '~/resource/hyper-parameter';
+import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
 
 import ChartClass from './ScatterChart/ScatterChart';
+import {ScaleMethod} from '~/resource/hyper-parameter';
+import ScaleMethodSelect from '~/components/HyperParameterPage/ScaleMethodSelect';
 import ScatterChart from './ScatterChart';
+import type {WithStyled} from '~/utils/style';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
 
@@ -31,17 +34,19 @@ type ScatterPlotMatrixProps = ViewData & {
 };
 
 const Container = styled.div`
+    overflow-x: auto;
+    /* this is not allowed, so we change our dropdown list popup direction to top */
+    /* overflow-y: visible; */
     display: flex;
     flex-direction: column;
 
     .row {
         display: flex;
         flex-direction: row;
-        font-size: ${rem(12)};
     }
 
     .metrics {
-        display: inline-block;
+        display: block;
         writing-mode: vertical-rl;
         text-align: center;
         font-weight: 700;
@@ -50,32 +55,41 @@ const Container = styled.div`
     }
 
     .hparams {
-        display: inline-block;
+        display: block;
         width: ${150 + ChartClass.MARGIN_WITHOUT_LABEL * 2}px;
         text-align: center;
+        flex: none;
     }
 
     .metrics.hparams {
         width: calc(${rem(14)} + ${ChartClass.MARGIN_LEFT_WITH_LABEL - ChartClass.MARGIN_WITHOUT_LABEL}px);
     }
 
-    .hover-dots circle {
-        cursor: pointer;
+    .row-scale-method-selector {
+        margin: ${rem(10)} 0 ${rem(10)} ${rem(24)};
+        height: 1em;
+    }
+
+    .column-scale-method-selector {
+        margin-top: ${rem(10)};
     }
 `;
 
-const ScatterPlotMatrix: FunctionComponent<ScatterPlotMatrixProps> = ({
+const ScatterPlotMatrix: FunctionComponent<ScatterPlotMatrixProps & WithStyled> = ({
     indicators,
     data,
     colors,
     onHover,
     onSelect
 }) => {
+    const options = useRef({colors});
     const metricsIndicators = useMemo(() => indicators.filter(i => i.group === 'metrics'), [indicators]);
     const hparamsIndicators = useMemo(() => indicators.filter(i => i.group === 'hparams'), [indicators]);
 
     const [hover, setHover] = useState<number | null>(null);
     const [select, setSelect] = useState<number | null>(null);
+    const [brush, setBrush] = useState<number[] | null>(null);
+    const [brushedChart, setBrushedChart] = useState<[number, number] | null>(null);
 
     const onhover = useCallback(
         (index: number | null) => {
@@ -91,54 +105,125 @@ const ScatterPlotMatrix: FunctionComponent<ScatterPlotMatrixProps> = ({
         },
         [onSelect]
     );
+    const onBrush = useCallback((row: number, column: number, indexes: number[] | null) => {
+        setBrush(indexes);
+        setBrushedChart(indexes != null ? [row, column] : null);
+    }, []);
+    const getBrushValue = useCallback(
+        (row: number, column: number) =>
+            brushedChart && brushedChart[0] === row && brushedChart[1] === column ? undefined : brush,
+        [brush, brushedChart]
+    );
+
+    const [scaleMethods, setScaleMethods] = useState<WeakMap<Indicator, ScaleMethod>>(new WeakMap());
+    const metricsScaleMethods = useMemo(
+        () =>
+            metricsIndicators.map(indicator =>
+                indicator.type === 'continuous' ? scaleMethods.get(indicator) ?? ScaleMethod.LINEAR : null
+            ),
+        [metricsIndicators, scaleMethods]
+    );
+    const hparamsScaleMethods = useMemo(
+        () =>
+            hparamsIndicators.map(indicator =>
+                indicator.type === 'continuous' ? scaleMethods.get(indicator) ?? ScaleMethod.LINEAR : null
+            ),
+        [hparamsIndicators, scaleMethods]
+    );
+
+    const changeScaleMethod = useCallback(
+        (indicator: Indicator, scaleMethod: ScaleMethod) => {
+            setScaleMethods(m => {
+                const n = new WeakMap();
+                indicators.forEach(idi => {
+                    if (m.has(idi)) {
+                        n.set(idi, m.get(idi));
+                    }
+                });
+                n.set(indicator, scaleMethod);
+                return n;
+            });
+        },
+        [indicators]
+    );
 
     const chartData = useMemo(
         () =>
-            metricsIndicators.map((mi, mii) =>
-                hparamsIndicators.map((hi, hii) => ({
-                    data: {
-                        data: data.map((row, i) => ({
-                            data: [row[hi.group][hi.name], row[mi.group][mi.name]] as [
-                                string | number,
-                                string | number
-                            ],
-                            color: colors[i] ?? '#000'
-                        })),
-                        type: [hi.type, mi.type] as [IndicatorType, IndicatorType]
-                    },
-                    options: {
-                        xLabelVisible: mii === metricsIndicators.length - 1,
-                        yLabelVisible: hii === 0
-                    }
+            metricsIndicators.map(mi =>
+                hparamsIndicators.map(hi => ({
+                    data: data.map(
+                        row => [row[hi.group][hi.name], row[mi.group][mi.name]] as [string | number, string | number]
+                    ),
+                    type: [hi.type, mi.type] as [IndicatorType, IndicatorType]
                 }))
             ),
-        [colors, data, hparamsIndicators, metricsIndicators]
+        [data, hparamsIndicators, metricsIndicators]
+    );
+
+    const matrixData = useMemo(
+        () =>
+            chartData.map((row, ri) =>
+                row.map((column, ci) => ({
+                    data: column,
+                    options: {
+                        ...options.current,
+                        labelVisible: [ri === chartData.length - 1, ci === 0] as [boolean, boolean]
+                    },
+                    scaleMethods: [hparamsScaleMethods[ci], metricsScaleMethods[ri]] as [
+                        ScaleMethod | null,
+                        ScaleMethod | null
+                    ]
+                }))
+            ),
+        [chartData, hparamsScaleMethods, metricsScaleMethods]
     );
 
     return (
         <Container>
-            {chartData.map((row, ri) => (
-                <div className="row" key={ri}>
-                    <span className="metrics">{metricsIndicators[ri].name}</span>
-                    {row.map((cell, ci) => (
-                        <div className="cell" key={ci}>
-                            <ScatterChart
-                                {...cell}
-                                hover={hover}
-                                select={select}
-                                onHover={onhover}
-                                onSelect={onselect}
+            {matrixData.map((row, ri) => (
+                <React.Fragment key={ri}>
+                    <div className="row-scale-method-selector">
+                        {metricsScaleMethods[ri] != null ? (
+                            <ScaleMethodSelect
+                                scaleMethod={metricsScaleMethods[ri] as ScaleMethod}
+                                onChange={scaleMethod => changeScaleMethod(metricsIndicators[ri], scaleMethod)}
                             />
-                        </div>
-                    ))}
-                </div>
+                        ) : null}
+                    </div>
+                    <div className="row">
+                        <span className="metrics">{metricsIndicators[ri].name}</span>
+                        {row.map((cell, ci) => (
+                            <div className="cell" key={ci}>
+                                <ScatterChart
+                                    {...cell}
+                                    colors={colors}
+                                    hover={hover}
+                                    select={select}
+                                    brush={getBrushValue(ri, ci)}
+                                    onHover={onhover}
+                                    onSelect={onselect}
+                                    onBrush={indexes => onBrush(ri, ci, indexes)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </React.Fragment>
             ))}
             <div className="row">
                 <span className="metrics hparams"></span>
                 {hparamsIndicators.map((hi, hii) => (
-                    <span className="hparams" key={hii}>
-                        {hi.name}
-                    </span>
+                    <div className="hparams" key={hii}>
+                        <span>{hi.name}</span>
+                        <div className="column-scale-method-selector">
+                            {hparamsScaleMethods[hii] != null ? (
+                                <ScaleMethodSelect
+                                    direction="top"
+                                    scaleMethod={hparamsScaleMethods[hii] as ScaleMethod}
+                                    onChange={scaleMethod => changeScaleMethod(hparamsIndicators[hii], scaleMethod)}
+                                />
+                            ) : null}
+                        </div>
+                    </div>
                 ))}
             </div>
         </Container>

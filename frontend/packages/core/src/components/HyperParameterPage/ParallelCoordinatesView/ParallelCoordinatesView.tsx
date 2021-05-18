@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import {COLOR_MAP, useColorMap, useGraph} from '~/resource/hyper-parameter';
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useState} from 'react';
 
+import ColorMap from '~/components/HyperParameterPage/ColorMap';
 import ParallelCoordinatesGraph from './ParallelCoordinatesGraph';
-import Select from '~/components/HyperParameterPage/BorderLessSelect';
 import SessionTable from '~/components/HyperParameterPage/SessionTable';
 import View from '~/components/HyperParameterPage/View';
 import type {ViewData} from '~/resource/hyper-parameter';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
+import {useGraph} from '~/resource/hyper-parameter';
 
 const ParallelCoordinatesContainer = styled.div`
     width: 100%;
     display: flex;
     font-size: ${rem(12)};
+    align-items: stretch;
+    justify-content: space-between;
 
     > .graph {
         flex: auto;
@@ -36,44 +38,15 @@ const ParallelCoordinatesContainer = styled.div`
 
     > .color-map {
         flex: none;
-        width: ${rem(88)};
-        margin-left: ${rem(20)};
-        display: flex;
-        flex-direction: column;
-
-        .color-by {
-            flex: none;
-            margin-bottom: 1em;
-        }
-
-        .color-indicator {
-            flex: auto;
-            display: flex;
-            color: var(--text-light-color);
-
-            .indicator-image {
-                flex: none;
-                width: 1em;
-                background-image: linear-gradient(0deg, ${COLOR_MAP[0]} 0%, ${COLOR_MAP[1]} 50%, ${COLOR_MAP[2]} 100%);
-                margin: 0.5em 0;
-            }
-
-            .indicator-text {
-                flex: auto;
-                display: flex;
-                flex-direction: column-reverse;
-                justify-content: space-between;
-                margin-left: 0.5em;
-            }
-        }
     }
 `;
 
 type ParallelCoordinatesViewProps = ViewData;
 
 const ParallelCoordinatesView: FunctionComponent<ParallelCoordinatesViewProps> = ({indicators, list, data}) => {
-    const {colorByList, colorByExtent, colorBy, setColorBy, colors} = useColorMap(indicators, data);
     const {selectedIndicators, sessionData, onHover, onSelect, showMetricsGraph} = useGraph(indicators, list);
+
+    const [colors, setColors] = useState<string[]>([]);
 
     return (
         <>
@@ -88,19 +61,7 @@ const ParallelCoordinatesView: FunctionComponent<ParallelCoordinatesViewProps> =
                         onHover={onHover}
                         onSelect={onSelect}
                     />
-                    <div className="color-map">
-                        <div className="color-by">
-                            <Select list={colorByList} value={colorBy} onChange={setColorBy} />
-                        </div>
-                        <div className="color-indicator">
-                            <div className="indicator-image"></div>
-                            <div className="indicator-text">
-                                {colorByExtent.map((c: string | number | undefined, i: number) => (
-                                    <span key={i}>{c ?? ''}</span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                    <ColorMap className="color-map" indicators={indicators} data={data} onChange={setColors} />
                 </ParallelCoordinatesContainer>
             </View>
             <SessionTable indicators={indicators} data={sessionData} showMetricsGraph={showMetricsGraph} />

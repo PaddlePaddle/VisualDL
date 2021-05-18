@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import type {IndicatorType, ScaleMethod} from '~/resource/hyper-parameter';
 import type {Options, Point} from './ScatterChart';
 import React, {FunctionComponent, useEffect, useRef} from 'react';
 
 import Chart from './ScatterChart';
-import type {IndicatorType} from '~/resource/hyper-parameter';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -37,6 +37,28 @@ const Container = styled.div`
         .y-label {
             color: var(--text-lighter-color);
         }
+
+        .dots {
+            pointer-events: none;
+
+            .disabled {
+                fill: var(--hyper-parameter-graph-disabled-data-color);
+            }
+        }
+
+        .hover-dots circle {
+            cursor: pointer;
+
+            &.disabled {
+                cursor: default;
+                pointer-events: none;
+            }
+        }
+
+        .grid-brush .selection {
+            fill: var(--hyper-parameter-graph-brush-color);
+            fill-opacity: 0.4;
+        }
     }
 `;
 
@@ -47,14 +69,29 @@ export interface Data {
 
 interface ScatterChartProps {
     data: Data;
+    colors?: string[];
+    scaleMethods?: [ScaleMethod | null, ScaleMethod | null];
     options?: Options;
     hover?: number | null;
     select?: number | null;
+    brush?: number[] | null;
     onHover?: (index: number | null) => unknown;
     onSelect?: (index: number | null) => unknown;
+    onBrush?: (indexes: number[] | null) => unknown;
 }
 
-const ScatterChart: FunctionComponent<ScatterChartProps> = ({data, options, hover, select, onHover, onSelect}) => {
+const ScatterChart: FunctionComponent<ScatterChartProps> = ({
+    data,
+    colors,
+    scaleMethods,
+    options,
+    hover,
+    select,
+    brush,
+    onHover,
+    onSelect,
+    onBrush
+}) => {
     const optionsRef = useRef(options);
     const chart = useRef<Chart>();
     const container = useRef<HTMLDivElement>(null);
@@ -70,14 +107,33 @@ const ScatterChart: FunctionComponent<ScatterChartProps> = ({data, options, hove
 
     useEffect(() => {
         chart.current?.render(data.data, data.type);
-    }, [data.data, data.type]);
+    }, [data]);
 
     useEffect(() => {
-        chart.current?.hover(hover ?? null);
+        chart.current?.setColors(colors ?? []);
+    }, [colors]);
+
+    useEffect(() => {
+        if (scaleMethods) {
+            chart.current?.setScaleMethod(scaleMethods);
+        }
+    }, [scaleMethods]);
+
+    useEffect(() => {
+        if (hover !== undefined) {
+            chart.current?.hover(hover);
+        }
     }, [hover]);
     useEffect(() => {
-        chart.current?.select(select ?? null);
+        if (select !== undefined) {
+            chart.current?.select(select);
+        }
     }, [select]);
+    useEffect(() => {
+        if (brush !== undefined) {
+            chart.current?.focus(brush);
+        }
+    }, [brush]);
 
     useEffect(() => {
         if (onHover) {
@@ -95,6 +151,14 @@ const ScatterChart: FunctionComponent<ScatterChartProps> = ({data, options, hove
             };
         }
     }, [onSelect]);
+    useEffect(() => {
+        if (onBrush) {
+            chart.current?.on('brush', onBrush);
+            return () => {
+                chart.current?.off('brush', onBrush);
+            };
+        }
+    }, [onBrush]);
 
     return <Container ref={container}></Container>;
 };

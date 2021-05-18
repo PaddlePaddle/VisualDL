@@ -84,9 +84,22 @@ const Label = styled.span`
     ${ellipsis()}
 `;
 
-const List = styled.div<{opened?: boolean; empty?: boolean}>`
+const List = styled.div<{opened?: boolean; empty?: boolean; direction?: 'bottom' | 'top'}>`
     position: absolute;
-    top: 100%;
+    ${props =>
+        props.direction === 'top'
+            ? {
+                  bottom: '100%',
+                  borderBottomColor: 'var(--border-color)',
+                  boxShadow: '0 -5px 6px 0 rgba(0, 0, 0, 0.05)',
+                  ...borderRadiusShortHand('top', borderRadius)
+              }
+            : {
+                  top: '100%',
+                  borderTopColor: 'var(--border-color)',
+                  boxShadow: '0 5px 6px 0 rgba(0, 0, 0, 0.05)',
+                  ...borderRadiusShortHand('bottom', borderRadius)
+              }}
     width: calc(100% + 2px);
     max-height: ${math(`4.35 * ${height} + 2 * ${padding}`)};
     overflow-x: hidden;
@@ -94,13 +107,10 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     left: -1px;
     padding: ${padding} 0;
     border: inherit;
-    border-top-color: var(--border-color);
-    ${borderRadiusShortHand('bottom', borderRadius)}
     display: ${props => (props.opened ? 'block' : 'none')};
     z-index: ${zIndexes.component};
     line-height: 1;
     background-color: inherit;
-    box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
     ${transitionProps(['border-color', 'color'])}
     ${props =>
         props.empty
@@ -171,6 +181,7 @@ export type SelectListItem<T> = {
 export type SelectProps<T> = {
     list?: (SelectListItem<T> | T)[];
     placeholder?: string;
+    direction?: 'bottom' | 'top';
 } & (
     | {
           value?: T;
@@ -188,6 +199,7 @@ const Select = <T extends unknown>({
     list: propList,
     value: propValue,
     placeholder,
+    direction,
     multiple,
     className,
     onChange
@@ -270,7 +282,7 @@ const Select = <T extends unknown>({
                 <Label>{label}</Label>
                 <TriggerIcon opened={isOpened} type="chevron-down" />
             </Trigger>
-            <List className="list" opened={isOpened} empty={isListEmpty}>
+            <List className="list" opened={isOpened} empty={isListEmpty} direction={direction}>
                 {isListEmpty
                     ? t('common:empty')
                     : list.map((item, index) => {
