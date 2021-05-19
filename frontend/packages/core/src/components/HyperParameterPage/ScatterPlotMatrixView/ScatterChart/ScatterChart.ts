@@ -455,17 +455,16 @@ export default class ScatterChart extends EventEmitter<EventTypes> {
 
     setScaleMethod(scaleMethod: [ScaleMethod | null, ScaleMethod | null]) {
         this.scaleMethod = scaleMethod;
+        this.brushedIndexes = null;
+        this.brush.clear(this.svg.select('.brush'));
         this.draw();
         this.colorizeDots();
         this.scaleDots();
-        this.drawSelectedDot();
     }
 
     render(data: Point[], type: [IndicatorType, IndicatorType]) {
         this.hoveredIndex = null;
         this.selectedIndex = null;
-        this.brushedIndexes = [];
-        this.brush.clear(this.svg.select('.brush'));
 
         this.data = data;
         this.type = type;

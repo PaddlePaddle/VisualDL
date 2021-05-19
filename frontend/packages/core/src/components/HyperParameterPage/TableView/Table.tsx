@@ -259,7 +259,11 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
         <DndProvider backend={HTML5Backend}>
             <Table
                 {...getTableProps({
-                    className: tableClassNames
+                    className: tableClassNames,
+                    style: {
+                        // sticky table doesn't need min-width in table style
+                        minWidth: 'unset'
+                    }
                 })}
                 ref={table}
             >
