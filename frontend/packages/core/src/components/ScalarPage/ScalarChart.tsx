@@ -15,78 +15,38 @@
  */
 
 import type {Dataset, Range, ScalarDataset} from '~/resource/scalar';
-import LineChart, {LineChartRef, XAxisType, YAxisType} from '~/components/LineChart';
-import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
+import React, {FunctionComponent, useCallback, useMemo} from 'react';
+import SChart, {DownloadDataTypes, chartSize, chartSizeInRem} from '~/components/ScalarChart';
 import {
     SortingMethod,
     XAxis,
     chartData,
-    options as chartOptions,
     nearestPoint,
     singlePointRange,
     sortingMethodMap,
     tooltip,
     xAxisMap
 } from '~/resource/scalar';
-import {rem, size} from '~/utils/style';
 
 import Chart from '~/components/Chart';
 import {Chart as ChartLoader} from '~/components/Loader/ChartPage';
-import ChartToolbox from '~/components/ChartToolbox';
-import type {EChartOption} from 'echarts';
 import type {Run} from '~/types';
-import TooltipTable from '~/components/TooltipTable';
+import {XAxisType} from '~/components/LineChart';
 import {cycleFetcher} from '~/utils/fetch';
-import {format} from 'd3-format';
 import queryString from 'query-string';
-import {renderToStaticMarkup} from 'react-dom/server';
 import saveFile from '~/utils/saveFile';
 import styled from 'styled-components';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 import useWebAssembly from '~/hooks/useWebAssembly';
 
-const DownloadDataTypes = {
-    csv: 'csv',
-    tsv: 'tsv'
-    // excel: 'xlsx'
-} as const;
-
-const labelFormatter = format('.8');
-
-const Wrapper = styled.div`
-    ${size('100%', '100%')}
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: space-between;
-`;
-
-const StyledLineChart = styled(LineChart)`
-    flex-grow: 1;
-`;
-
-const Toolbox = styled(ChartToolbox)`
-    margin-left: ${rem(20)};
-    margin-right: ${rem(20)};
-    margin-bottom: ${rem(18)};
-`;
-
 const Error = styled.div`
-    ${size('100%', '100%')}
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 `;
-
-const chartSize = {
-    width: 430,
-    height: 337
-};
-const chartSizeInRem = {
-    width: rem(chartSize.width),
-    height: rem(chartSize.height)
-};
 
 type ScalarChartProps = {
     runs: Run[];
@@ -113,22 +73,13 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 }) => {
     const {t, i18n} = useTranslation(['scalar', 'common']);
 
-    const echart = useRef<LineChartRef>(null);
-
     const {data: datasets, error, loading} = useRunningRequest<(ScalarDataset | null)[]>(
         runs.map(run => `/scalar/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
 
-    const [maximized, setMaximized] = useState<boolean>(false);
-
     const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
-
-    const [yAxisType, setYAxisType] = useState<YAxisType>(YAxisType.value);
-    const toggleYAxisType = useCallback(() => {
-        setYAxisType(t => (t === YAxisType.log ? YAxisType.value : YAxisType.log));
-    }, [setYAxisType]);
 
     const transformParams = useMemo(() => [datasets?.map(data => data ?? []) ?? [], smoothing], [datasets, smoothing]);
     const {data: smoothedDatasetsOrUndefined} = useWebAssembly<Dataset[]>('scalar_transform', transformParams);
@@ -173,10 +124,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         () => String(Math.max(...smoothedDatasets.map(i => Math.max(...i.map(j => j[1]))))).length,
         [smoothedDatasets]
     );
-
-    const formatter = useCallback(
-        (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
-            const series: Dataset[number] = Array.isArray(params) ? params[0].data : params.data;
+    const getTooltipTableData = useCallback(
+        (series: number[]) => {
             const idx = xAxisMap[xAxis];
             const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map((point, index) => ({
                 ...point,
@@ -185,40 +134,13 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             const sort = sortingMethodMap[sortingMethod];
             const sorted = sort(points, series);
             const {columns, data} = tooltip(sorted, maxStepLength, i18n);
-            return renderToStaticMarkup(
-                <TooltipTable run={t('common:runs')} runs={sorted.map(i => i.run)} columns={columns} data={data} />
-            );
+            return {
+                runs: sorted.map(i => i.run),
+                columns,
+                data
+            };
         },
-        [smoothedDatasets, datasetRanges, runs, sortingMethod, xAxis, maxStepLength, t, i18n]
-    );
-
-    const options = useMemo(
-        () => ({
-            ...chartOptions,
-            tooltip: {
-                ...chartOptions.tooltip,
-                formatter,
-                hideDelay: 300,
-                enterable: true
-            },
-            xAxis: {
-                type: xAxisType,
-                ...ranges.x,
-                axisPointer: {
-                    label: {
-                        formatter:
-                            xAxisType === XAxisType.time
-                                ? undefined
-                                : ({value}: {value: number}) => labelFormatter(value)
-                    }
-                }
-            },
-            yAxis: {
-                type: yAxisType,
-                ...ranges.y
-            }
-        }),
-        [formatter, ranges, xAxisType, yAxisType]
+        [smoothedDatasets, datasetRanges, runs, sortingMethod, xAxis, maxStepLength, i18n]
     );
 
     const downloadData = useCallback(
@@ -239,61 +161,22 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [runs, tag]
     );
 
-    const toolbox = useMemo(
-        () => [
-            {
-                icon: 'maximize',
-                activeIcon: 'minimize',
-                tooltip: t('scalar:maximize'),
-                activeTooltip: t('scalar:minimize'),
-                toggle: true,
-                onClick: () => setMaximized(m => !m)
-            },
-            {
-                icon: 'restore-size',
-                tooltip: t('scalar:restore'),
-                onClick: () => echart.current?.restore()
-            },
-            {
-                icon: 'log-axis',
-                tooltip: t('scalar:toggle-log-axis'),
-                toggle: true,
-                onClick: toggleYAxisType
-            },
-            {
-                icon: 'download',
-                menuList: [
-                    {
-                        label: t('scalar:download-image'),
-                        onClick: () => echart.current?.saveAsImage()
-                    },
-                    {
-                        label: t('scalar:download-data'),
-                        children: Object.keys(DownloadDataTypes)
-                            .sort((a, b) => a.localeCompare(b))
-                            .map(format => ({
-                                label: t('scalar:download-data-format', {format}),
-                                onClick: () => downloadData(format as keyof typeof DownloadDataTypes)
-                            }))
-                    }
-                ]
-            }
-        ],
-        [downloadData, t, toggleYAxisType]
-    );
-
     // display error only on first fetch
     if (!data && error) {
         return <Error>{t('common:error')}</Error>;
     }
 
     return (
-        <Chart maximized={maximized} {...chartSizeInRem}>
-            <Wrapper>
-                <StyledLineChart ref={echart} title={tag} options={options} data={data} loading={loading} zoom />
-                <Toolbox items={toolbox} />
-            </Wrapper>
-        </Chart>
+        <SChart
+            title={tag}
+            data={data}
+            loading={loading}
+            xAxisType={xAxisType}
+            xRange={ranges.x}
+            yRange={ranges.y}
+            getTooltipTableData={getTooltipTableData}
+            downloadData={downloadData}
+        />
     );
 };
 

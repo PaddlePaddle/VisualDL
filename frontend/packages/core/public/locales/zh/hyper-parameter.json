@@ -1,0 +1,34 @@
+{
+    "data-type-value": {
+        "hparams": "超参数",
+        "metrics": "度量指标"
+    },
+    "hyper-parameter": {
+        "order-default": "默认"
+    },
+    "max": "最大值",
+    "metric-graphs-empty": "<0>无度量指标启用</0><1>请启用一些指标以在此处查看内容</1>",
+    "min": "最小值",
+    "negative-infinity": "负无穷",
+    "order-by": "排序方式",
+    "order-direction": "排序方向",
+    "order-direction-value": {
+        "asc": "升序",
+        "desc": "降序"
+    },
+    "parameter-importance": "超参重要性排序",
+    "positive-infinity": "正无穷",
+    "scale-method": {
+        "linear": "Linear",
+        "logarithmic": "Logarithmic",
+        "quantile": "Quantile"
+    },
+    "session-table-empty": "<0>请悬停或点击某条折线查看数据</0><1><0>悬停查看该训练轮次的具体数据；</0><0>点击查看选中的训练轮次模型指标图。</0><1>",
+    "show-parameter-importance": "查看超参重要性排序",
+    "trial-id": "Trial ID",
+    "views": {
+        "parallel-coordinates": "平行坐标图",
+        "scatter-plot-matrix": "散点图",
+        "table": "表格视图"
+    }
+}

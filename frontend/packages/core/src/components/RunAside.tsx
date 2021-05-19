@@ -160,7 +160,7 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
                         placeholder={t('common:search-runs')}
                         rounded
                     />
-                    <Checkbox value={selectAll} onChange={toggleSelectAll}>
+                    <Checkbox checked={selectAll} onChange={toggleSelectAll}>
                         {t('common:select-all')}
                     </Checkbox>
                     <div className="run-list">
@@ -170,7 +170,7 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
                             filteredRuns.map((run, index) => (
                                 <div key={index}>
                                     <Checkbox
-                                        value={selectedRuns?.map(r => r.label)?.includes(run.label)}
+                                        checked={selectedRuns?.map(r => r.label)?.includes(run.label)}
                                         title={run.label}
                                         onChange={value => setSelectedRuns(run, value)}
                                     >

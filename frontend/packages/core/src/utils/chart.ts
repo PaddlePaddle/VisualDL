@@ -151,15 +151,15 @@ export const xAxis = {
         formatter: format('.4')
     },
     splitLine: {
-        show: false
-    },
-    splitNumber: 5
+        lineStyle: {
+            color: '#EEE'
+        }
+    }
 };
 
 export const yAxis = {
     type: 'value',
     name: '',
-    splitNumber: 4,
     nameTextStyle: {
         fontSize: 12,
         color: '#666'
@@ -186,9 +186,5 @@ export const yAxis = {
 
 export const series = {
     hoverAnimation: false,
-    animationDuration: 100,
-    lineStyle: {
-        color: colors.primary.default,
-        width: 1.5
-    }
+    animationDuration: 100
 };

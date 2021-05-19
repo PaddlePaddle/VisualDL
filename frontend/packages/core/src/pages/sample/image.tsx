@@ -53,7 +53,7 @@ const ImageSample: FunctionComponent = () => {
                 loading={loading}
             >
                 <AsideSection>
-                    <Checkbox value={showActualSize} onChange={setShowActualSize}>
+                    <Checkbox checked={showActualSize} onChange={setShowActualSize}>
                         {t('sample:show-actual-size')}
                     </Checkbox>
                 </AsideSection>

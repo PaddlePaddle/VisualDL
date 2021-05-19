@@ -49,6 +49,9 @@ function useRequest<D = unknown, E extends Error = Error>(
     const key = args[0];
     const {data, error, ...other} = useSWR<D, E>(...args);
 
+    // loading referrers to first loading
+    // if you want to check if there is an active request
+    // please use `isValidating` instead
     const loading = useMemo(() => !!key && data === void 0 && !error, [key, data, error]);
 
     useEffect(() => {

@@ -84,7 +84,16 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     title: {
                         text: title ?? ''
                     },
-                    series: data?.map(item =>
+                    xAxis: {
+                        splitLine: {
+                            show: false
+                        },
+                        splitNumber: 5
+                    },
+                    yAxis: {
+                        splitNumber: 4
+                    },
+                    series: data?.map((item, index) =>
                         defaultsDeep(
                             {
                                 // show symbol if there is only one point
@@ -92,6 +101,12 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                                 type: 'line'
                             },
                             item,
+                            {
+                                lineStyle: {
+                                    color: color[index % color.length],
+                                    width: 1.5
+                                }
+                            },
                             series
                         )
                     )

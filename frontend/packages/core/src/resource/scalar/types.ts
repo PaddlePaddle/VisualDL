@@ -16,6 +16,8 @@
 
 import {Run, TimeMode} from '~/types';
 
+export type {Range} from '~/types';
+
 type Value = number;
 type WallTime = number;
 type Step = number;
@@ -32,11 +34,6 @@ export enum SortingMethod {
     Ascending = 'ascending',
     Nearest = 'nearest'
 }
-
-export type Range = {
-    min: number;
-    max: number;
-};
 
 export type TooltipData = {
     run: Run;
