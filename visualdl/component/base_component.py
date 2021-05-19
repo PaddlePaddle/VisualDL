@@ -293,6 +293,64 @@ def histogram(tag, hist, bin_edges, step, walltime):
     ])
 
 
+def hparam(name, hparam_dict, metric_dict, walltime):
+    """Package data to one histogram.
+
+    Args:
+        name (str): Name of hparam.
+        hparam_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the hyper parameter and it's corresponding value. The type of the value
+              can be one of `bool`, `string`, `float`, `int`, or `None`.
+        metric_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the metric and it's corresponding value.
+        walltime (int): Wall time of hparam.
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+
+    hm = Record.HParam()
+    hm.name = name
+    for k, v in hparam_dict.items():
+        if v is None:
+            continue
+        hparamInfo = Record.HParam.HparamInfo()
+        hparamInfo.name = k
+        if isinstance(v, int):
+            hparamInfo.int_value = v
+            hm.hparamInfos.append(hparamInfo)
+        elif isinstance(v, float):
+            hparamInfo.float_value = v
+            hm.hparamInfos.append(hparamInfo)
+        elif isinstance(v, str):
+            hparamInfo.string_value = v
+            hm.hparamInfos.append(hparamInfo)
+        else:
+            print("The value of %s must be int, float or str, not %s" % (k, str(type(v))))
+
+    for k, v in metric_dict.items():
+        if v is None:
+            continue
+        metricInfo = Record.HParam.HparamInfo()
+        metricInfo.name = k
+        if isinstance(v, int):
+            metricInfo.int_value = v
+            hm.metricInfos.append(metricInfo)
+        elif isinstance(v, float):
+            metricInfo.float_value = v
+            hm.metricInfos.append(metricInfo)
+        elif isinstance(v, str):
+            metricInfo.string_value = v
+            hm.metricInfos.append(metricInfo)
+        else:
+            print("The value of %s must be int, float or str, not %s" % (k, str(type(v))))
+
+    return Record(values=[
+        Record.Value(
+            id=1, tag="hparam", timestamp=walltime, hparam=hm)
+    ])
+
+
 def compute_curve(labels, predictions, num_thresholds=None, weights=None):
     """ Compute precision-recall curve data by labels and predictions.
 

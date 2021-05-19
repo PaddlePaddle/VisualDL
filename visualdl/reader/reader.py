@@ -182,6 +182,8 @@ class LogReader(object):
                 component = "meta_data"
             elif "text" == value_type:
                 component = "text"
+            elif "hparam" == value_type:
+                component = "hyper_parameters"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component
