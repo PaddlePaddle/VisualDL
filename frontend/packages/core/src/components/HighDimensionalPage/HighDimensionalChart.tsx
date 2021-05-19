@@ -120,9 +120,10 @@ const HighDimensionalChart = React.forwardRef<HighDimensionalChartRef, HighDimen
         const [width, setWidth] = useState(0);
         const [height, setHeight] = useState(0);
         const [showLabelCloud, setShowLabelCloud] = useState(false);
-        const chartType = useMemo<ScatterChartProps['type']>(() => (showLabelCloud ? 'labels' : 'points'), [
-            showLabelCloud
-        ]);
+        const chartType = useMemo<ScatterChartProps['type']>(
+            () => (showLabelCloud ? 'labels' : 'points'),
+            [showLabelCloud]
+        );
 
         useLayoutEffect(() => {
             const c = chartElement.current;

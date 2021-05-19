@@ -91,13 +91,13 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
 
     const echart = useRef<LineChartRef | StackChartRef>(null);
 
-    const {data: dataset, error, loading} = useRunningRequest<HistogramData>(
-        `/histogram/list?${queryString.stringify({run: run.label, tag})}`,
-        !!running,
-        {
-            refreshInterval: 60 * 1000
-        }
-    );
+    const {
+        data: dataset,
+        error,
+        loading
+    } = useRunningRequest<HistogramData>(`/histogram/list?${queryString.stringify({run: run.label, tag})}`, !!running, {
+        refreshInterval: 60 * 1000
+    });
 
     const [maximized, setMaximized] = useState<boolean>(false);
 

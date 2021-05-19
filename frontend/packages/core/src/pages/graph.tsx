@@ -286,10 +286,10 @@ const Graph: FunctionComponent = () => {
         nodeDocumentation
     ]);
 
-    const uploader = useMemo(() => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />, [
-        onClickFile,
-        setModelFile
-    ]);
+    const uploader = useMemo(
+        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,
+        [onClickFile, setModelFile]
+    );
 
     return (
         <>

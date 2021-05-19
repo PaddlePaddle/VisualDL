@@ -83,7 +83,11 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, ru
 
     const echart = useRef<LineChartRef>(null);
 
-    const {data: dataset, error, loading} = useRunningRequest<PRCurveData[]>(
+    const {
+        data: dataset,
+        error,
+        loading
+    } = useRunningRequest<PRCurveData[]>(
         runs.map(run => `/${type}-curve/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)

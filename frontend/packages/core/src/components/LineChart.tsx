@@ -55,7 +55,12 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
 
-        const {ref: echartRef, echart, wrapper, saveAsImage} = useECharts<HTMLDivElement>({
+        const {
+            ref: echartRef,
+            echart,
+            wrapper,
+            saveAsImage
+        } = useECharts<HTMLDivElement>({
             loading: !!loading,
             zoom,
             autoFit: true,
