@@ -34,6 +34,8 @@ const ReductionTab: FunctionComponent<ReductionTabProps> = ({value, onChange}) =
         <Tab
             list={reductions.map(value => ({value, label: t(`high-dimensional:reduction-value.${value}`)}))}
             value={value}
+            variant="fullWidth"
+            appearance="underscore"
             onChange={onChange}
         />
     );

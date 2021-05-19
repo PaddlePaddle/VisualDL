@@ -17,35 +17,15 @@
 // cSpell:words maxs coord
 
 import type {Dataset, Range, TooltipData, XAxis} from './types';
+import {formatTime, humanizeDuration} from '~/utils';
 
+import type {EChartOption} from 'echarts';
 import type I18n from 'i18next';
 import type {Run} from '~/types';
 import {format} from 'd3-format';
-import {formatTime} from '~/utils';
-import moment from 'moment';
 import {xAxisMap} from './index';
 
 const valueFormatter = format('.5');
-
-const humanizeDuration = (ms: number) => {
-    const time = moment.duration(ms);
-    const hour = time.hours();
-    if (hour) {
-        time.subtract(hour, 'hour');
-    }
-    const minute = time.minutes();
-    if (minute) {
-        time.subtract(minute, 'minute');
-    }
-    const second = time.asSeconds();
-    let str = Math.floor(second) + 's';
-    if (hour) {
-        str = `${hour}h${minute}m${str}`;
-    } else if (minute) {
-        str = `${minute}m${str}`;
-    }
-    return str;
-};
 
 export const options = {
     legend: {
@@ -68,7 +48,7 @@ export const chartData = ({
     runs: Run[];
     xAxis: XAxis;
     smoothedOnly?: boolean;
-}) =>
+}): EChartOption.SeriesLine[] =>
     data
         .map((dataset, i) => {
             // smoothed data:
@@ -152,7 +132,7 @@ export const tooltip = (data: TooltipData[], stepLength: number, i18n: typeof I1
                 width: '5em'
             },
             {
-                label: i18n.t('scalar:value'),
+                label: i18n.t('common:scalar-value'),
                 width: '4.285714286em'
             },
             {

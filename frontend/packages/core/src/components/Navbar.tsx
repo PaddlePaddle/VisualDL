@@ -31,6 +31,7 @@ import logo from '~/assets/images/logo.svg';
 import queryString from 'query-string';
 import styled from 'styled-components';
 import useAvailableComponents from '~/hooks/useAvailableComponents';
+import useClassNames from '~/hooks/useClassNames';
 import {useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
@@ -207,11 +208,13 @@ const NavbarLink: FunctionComponent<{to?: string} & Omit<LinkProps, 'to'>> = ({t
 // FIXME: why we need to add children type here... that's weird...
 const NavbarItem = React.forwardRef<HTMLDivElement, NavbarItemProps & {children?: React.ReactNode}>(
     ({path, active, showDropdownIcon, children}, ref) => {
+        const classNames = useClassNames('nav-text', {'dropdown-icon': showDropdownIcon}, [showDropdownIcon]);
+
         if (path) {
             return (
                 <NavItem active={active} ref={ref}>
                     <NavbarLink to={path} className="nav-link">
-                        <span className={`nav-text ${showDropdownIcon ? 'dropdown-icon' : ''}`}>{children}</span>
+                        <span className={classNames}>{children}</span>
                     </NavbarLink>
                 </NavItem>
             );
@@ -219,7 +222,7 @@ const NavbarItem = React.forwardRef<HTMLDivElement, NavbarItemProps & {children?
 
         return (
             <NavItem active={active} ref={ref}>
-                <span className={`nav-text ${showDropdownIcon ? 'dropdown-icon' : ''}`}>{children}</span>
+                <span className={classNames}>{children}</span>
             </NavItem>
         );
     }

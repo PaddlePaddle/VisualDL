@@ -289,14 +289,14 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
                         {
                             icon: 'maximize',
                             activeIcon: 'minimize',
-                            tooltip: t('histogram:maximize'),
-                            activeTooltip: t('histogram:minimize'),
+                            tooltip: t('common:maximize'),
+                            activeTooltip: t('common:minimize'),
                             toggle: true,
                             onClick: () => setMaximized(m => !m)
                         },
                         {
                             icon: 'download',
-                            tooltip: t('histogram:download-image'),
+                            tooltip: t('common:download-image'),
                             onClick: () => echart.current?.saveAsImage()
                         }
                     ]}

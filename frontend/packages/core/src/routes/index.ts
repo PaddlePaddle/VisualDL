@@ -97,6 +97,11 @@ const routes: Route[] = [
         id: Pages.ROCCurve,
         path: '/roc-curve',
         component: React.lazy(() => import('~/pages/curves/roc'))
+    },
+    {
+        id: Pages.HyperParameter,
+        path: '/hyper-parameter',
+        component: React.lazy(() => import('~/pages/hyper-parameter'))
     }
 ];
 

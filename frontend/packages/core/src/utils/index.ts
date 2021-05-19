@@ -22,6 +22,26 @@ import moment from 'moment';
 export const formatTime = (value: number, language: string, formatter = 'L LTS') =>
     moment(Math.floor(value), 'x').locale(language).format(formatter);
 
+export const humanizeDuration = (ms: number) => {
+    const time = moment.duration(ms);
+    const hour = time.hours();
+    if (hour) {
+        time.subtract(hour, 'hour');
+    }
+    const minute = time.minutes();
+    if (minute) {
+        time.subtract(minute, 'minute');
+    }
+    const second = time.asSeconds();
+    let str = Math.floor(second) + 's';
+    if (hour) {
+        str = `${hour}h${minute}m${str}`;
+    } else if (minute) {
+        str = `${minute}m${str}`;
+    }
+    return str;
+};
+
 export const quantile = (values: number[], p: number) => {
     const n = values.length;
     if (!n) {

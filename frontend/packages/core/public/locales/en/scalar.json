@@ -1,18 +1,11 @@
 {
-    "download-data": "Download data",
-    "download-data-format": "In {{format}}",
-    "download-image": "Download image",
     "ignore-outliers": "Ignore outliers in chart scaling",
     "max": "Max.",
-    "maximize": "Maximize",
     "min": "Min.",
-    "minimize": "Minimize",
-    "restore": "Selection restore",
     "show-most-value": "Show global extrema",
     "smoothed": "Smoothed",
     "smoothed-data-only": "Smoothed Data Only",
     "smoothing": "Smoothing",
-    "toggle-log-axis": "Logarithmic axis",
     "tooltip-sorting": "Tooltip Sorting",
     "tooltip-sorting-value": {
         "ascending": "Ascending",
@@ -20,6 +13,5 @@
         "descending": "Descending",
         "nearest": "Nearest"
     },
-    "value": "Value",
     "x-axis": "X-Axis"
 }
