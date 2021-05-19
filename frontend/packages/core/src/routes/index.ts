@@ -54,11 +54,6 @@ const routes: Route[] = [
         component: React.lazy(() => import('~/pages/scalar'))
     },
     {
-        id: Pages.Histogram,
-        path: '/histogram',
-        component: React.lazy(() => import('~/pages/histogram'))
-    },
-    {
         id: 'sample',
         children: [
             {
@@ -84,6 +79,16 @@ const routes: Route[] = [
         component: React.lazy(() => import('~/pages/graph'))
     },
     {
+        id: Pages.Histogram,
+        path: '/histogram',
+        component: React.lazy(() => import('~/pages/histogram'))
+    },
+    {
+        id: Pages.HyperParameter,
+        path: '/hyper-parameter',
+        component: React.lazy(() => import('~/pages/hyper-parameter'))
+    },
+    {
         id: Pages.HighDimensional,
         path: '/high-dimensional',
         component: React.lazy(() => import('~/pages/high-dimensional'))
@@ -97,11 +102,6 @@ const routes: Route[] = [
         id: Pages.ROCCurve,
         path: '/roc-curve',
         component: React.lazy(() => import('~/pages/curves/roc'))
-    },
-    {
-        id: Pages.HyperParameter,
-        path: '/hyper-parameter',
-        component: React.lazy(() => import('~/pages/hyper-parameter'))
     }
 ];
 
