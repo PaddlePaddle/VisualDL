@@ -25,6 +25,7 @@ from visualdl.server.log import logger
 from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
 from visualdl.utils.importance import calc_all_hyper_param_importance
+from visualdl.utils.list_util import duplicate_removal
 from visualdl.component import components
 
 
@@ -190,21 +191,21 @@ def get_hparam_indicator(log_reader):
                     hparams[hparamInfo.name] = {'name': hparamInfo.name,
                                                 'type': 'continuous',
                                                 'values': [hparamInfo.float_value]}
-                else:
+                elif hparamInfo.float_value not in hparams[hparamInfo.name]['values']:
                     hparams[hparamInfo.name]['values'].append(hparamInfo.float_value)
             elif "string_value" == type:
                 if hparamInfo.name not in hparams.keys():
                     hparams[hparamInfo.name] = {'name': hparamInfo.name,
                                                 'type': 'string',
                                                 'values': [hparamInfo.string_value]}
-                else:
+                elif hparamInfo.string_value not in hparams[hparamInfo.name]['values']:
                     hparams[hparamInfo.name]['values'].append(hparamInfo.string_value)
             elif "int_value" == type:
                 if hparamInfo.name not in hparams.keys():
                     hparams[hparamInfo.name] = {'name': hparamInfo.name,
                                                 'type': 'numeric',
                                                 'values': [hparamInfo.int_value]}
-                else:
+                elif hparamInfo.int_value not in hparams[hparamInfo.name]['values']:
                     hparams[hparamInfo.name]['values'].append(hparamInfo.int_value)
             else:
                 raise TypeError("Invalid hparams param value type `%s`." % type)
@@ -216,21 +217,21 @@ def get_hparam_indicator(log_reader):
                     metrics[metricInfo.name] = {'name': metricInfo.name,
                                                 'type': 'continuous',
                                                 'values': [metricInfo.float_value]}
-                else:
+                elif metricInfo.float_value not in metrics[metricInfo.name]['values']:
                     metrics[metricInfo.name]['values'].append(metricInfo.float_value)
             elif "string_value" == type:
                 if metricInfo.name not in metrics.keys():
                     metrics[metricInfo.name] = {'name': metricInfo.name,
                                                 'type': 'string',
                                                 'values': [metricInfo.string_value]}
-                else:
+                elif metricInfo.string_value not in metrics[metricInfo.name]['values']:
                     metrics[metricInfo.name]['values'].append(metricInfo.string_value)
             elif "int_value" == type:
                 if metricInfo.name not in metrics.keys():
                     metrics[metricInfo.name] = {'name': metricInfo.name,
                                                 'type': 'numeric',
                                                 'values': [metricInfo.int_value]}
-                else:
+                elif metricInfo.int_value not in metrics[metricInfo.name]['values']:
                     metrics[metricInfo.name]['values'].append(metricInfo.int_value)
             else:
                 raise TypeError("Invalid hparams param value type `%s`." % type)
