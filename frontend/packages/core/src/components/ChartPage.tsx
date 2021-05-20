@@ -114,10 +114,10 @@ const ChartPage = <T extends Item>({
         }
     }, [items, searchValue]);
 
-    const pageMatchedTags = useMemo(() => matchedTags?.slice((page - 1) * pageSize, page * pageSize) ?? [], [
-        matchedTags,
-        page
-    ]);
+    const pageMatchedTags = useMemo(
+        () => matchedTags?.slice((page - 1) * pageSize, page * pageSize) ?? [],
+        [matchedTags, page]
+    );
 
     useEffect(() => {
         setPage(1);

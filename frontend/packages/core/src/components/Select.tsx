@@ -211,10 +211,10 @@ const Select = <T extends unknown>({
     const closeDropdown = useCallback(() => setIsOpened(false), []);
 
     const [value, setValue] = useState(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue);
-    useEffect(() => setValue(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue), [
-        multiple,
-        propValue
-    ]);
+    useEffect(
+        () => setValue(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue),
+        [multiple, propValue]
+    );
 
     const isSelected = useMemo(
         () => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : value != (null as T)),

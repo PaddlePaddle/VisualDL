@@ -255,7 +255,11 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         }
     }, []);
 
-    const {data: entityData, error: entityError, loading: entityLoading} = useRequest<BlobResponse>(src ?? null, {
+    const {
+        data: entityData,
+        error: entityError,
+        loading: entityLoading
+    } = useRequest<BlobResponse>(src ?? null, {
         dedupingInterval: 5 * 60 * 1000
     });
 

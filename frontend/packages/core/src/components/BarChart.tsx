@@ -40,7 +40,12 @@ export type BarChartRef = {
 
 const BarChart = React.forwardRef<BarChartRef, BarChartProps & WithStyled>(
     ({options, categories, direction, data, title, loading, className, onInit}, ref) => {
-        const {ref: echartRef, echart, wrapper, saveAsImage} = useECharts<HTMLDivElement>({
+        const {
+            ref: echartRef,
+            echart,
+            wrapper,
+            saveAsImage
+        } = useECharts<HTMLDivElement>({
             loading: !!loading,
             autoFit: true,
             onInit

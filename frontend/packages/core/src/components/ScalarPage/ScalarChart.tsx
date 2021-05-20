@@ -73,7 +73,11 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 }) => {
     const {t, i18n} = useTranslation(['scalar', 'common']);
 
-    const {data: datasets, error, loading} = useRunningRequest<(ScalarDataset | null)[]>(
+    const {
+        data: datasets,
+        error,
+        loading
+    } = useRunningRequest<(ScalarDataset | null)[]>(
         runs.map(run => `/scalar/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)

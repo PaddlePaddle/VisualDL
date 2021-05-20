@@ -117,10 +117,10 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
         [onChangeRuns, runs]
     );
 
-    const filteredRuns = useMemo(() => (search ? runs?.filter(run => run.label.indexOf(search) >= 0) : runs) ?? [], [
-        runs,
-        search
-    ]);
+    const filteredRuns = useMemo(
+        () => (search ? runs?.filter(run => run.label.indexOf(search) >= 0) : runs) ?? [],
+        [runs, search]
+    );
 
     const setSelectedRuns = useCallback(
         (run: Run, toggle) => {

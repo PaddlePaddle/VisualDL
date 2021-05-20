@@ -162,7 +162,11 @@ type TextProps = {
 const Text: FunctionComponent<TextProps> = ({run, tag, step, wallTime, index}) => {
     const {t} = useTranslation('sample');
 
-    const {data: text, error, loading} = useRequest<string>(getEntityUrl('text', index, run, tag, wallTime), {
+    const {
+        data: text,
+        error,
+        loading
+    } = useRequest<string>(getEntityUrl('text', index, run, tag, wallTime), {
         dedupingInterval: 5 * 60 * 1000
     });
 

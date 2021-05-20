@@ -47,10 +47,10 @@ const IndicatorFilter: FunctionComponent<IndicatorFilterProps> = ({indicators, o
     );
     const [dataType, setDataType] = useState<IndicatorGroup>('hparams');
 
-    const indicatorsInGroup = useMemo(() => indicators.filter(indicator => indicator.group === dataType), [
-        dataType,
-        indicators
-    ]);
+    const indicatorsInGroup = useMemo(
+        () => indicators.filter(indicator => indicator.group === dataType),
+        [dataType, indicators]
+    );
 
     const [result, setResult] = useState(indicators);
     useEffect(() => setResult(indicators), [indicators]);
