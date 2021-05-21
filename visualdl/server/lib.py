@@ -181,9 +181,10 @@ def get_hparam_indicator(log_reader):
         log_reader.load_new_data()
         records = log_reader.data_manager.get_reservoir("hyper_parameters").get_items(
             run, decode_tag('hparam'))
-        records_list.append(records)
-    records_list.sort(key=lambda x: x[0].timestamp)
-    for records in records_list:
+        records_list.append([records, run])
+    records_list.sort(key=lambda x: x[0][0].timestamp)
+    runs = [run for r, run in records_list]
+    for records, run in records_list:
         for hparamInfo in records[0].hparam.hparamInfos:
             type = hparamInfo.WhichOneof("type")
             if "float_value" == type:
@@ -211,30 +212,21 @@ def get_hparam_indicator(log_reader):
                 raise TypeError("Invalid hparams param value type `%s`." % type)
 
         for metricInfo in records[0].hparam.metricInfos:
-            type = metricInfo.WhichOneof("type")
-            if "float_value" == type:
-                if metricInfo.name not in metrics.keys():
-                    metrics[metricInfo.name] = {'name': metricInfo.name,
-                                                'type': 'continuous',
-                                                'values': [metricInfo.float_value]}
-                elif metricInfo.float_value not in metrics[metricInfo.name]['values']:
-                    metrics[metricInfo.name]['values'].append(metricInfo.float_value)
-            elif "string_value" == type:
-                if metricInfo.name not in metrics.keys():
-                    metrics[metricInfo.name] = {'name': metricInfo.name,
-                                                'type': 'string',
-                                                'values': [metricInfo.string_value]}
-                elif metricInfo.string_value not in metrics[metricInfo.name]['values']:
-                    metrics[metricInfo.name]['values'].append(metricInfo.string_value)
-            elif "int_value" == type:
-                if metricInfo.name not in metrics.keys():
-                    metrics[metricInfo.name] = {'name': metricInfo.name,
-                                                'type': 'numeric',
-                                                'values': [metricInfo.int_value]}
-                elif metricInfo.int_value not in metrics[metricInfo.name]['values']:
-                    metrics[metricInfo.name]['values'].append(metricInfo.int_value)
+            metrics[metricInfo.name] = {'name': metricInfo.name,
+                                        'type': 'continuous',
+                                        'values': []}
+            for run in runs:
+                try:
+                    metrics_data = get_hparam_metric(log_reader, run, metricInfo.name)
+                    metrics[metricInfo.name]['values'].append(metrics_data[-1][-1])
+                    break
+                except:
+                    logger.error('Missing data of metrics! Please make sure use add_scalar to log metrics data.')
+            if len(metrics[metricInfo.name]['values']) == 0:
+                metrics.pop(metricInfo.name)
             else:
-                raise TypeError("Invalid hparams param value type `%s`." % type)
+                metrics[metricInfo.name].pop('values')
+
     results = {'hparams': [value for key, value in hparams.items()],
                'metrics': [value for key, value in metrics.items()]}
 
@@ -266,27 +258,24 @@ def get_hparam_list(log_reader):
     for records, run in records_list:
         hparams = {}
         for hparamInfo in records[0].hparam.hparamInfos:
-            type = hparamInfo.WhichOneof("type")
-            if "float_value" == type:
+            hparam_type = hparamInfo.WhichOneof("type")
+            if "float_value" == hparam_type:
                 hparams[hparamInfo.name] = hparamInfo.float_value
-            elif "string_value" == type:
+            elif "string_value" == hparam_type:
                 hparams[hparamInfo.name] = hparamInfo.string_value
-            elif "int_value" == type:
+            elif "int_value" == hparam_type:
                 hparams[hparamInfo.name] = hparamInfo.int_value
             else:
-                raise TypeError("Invalid hparams param value type `%s`." % type)
+                raise TypeError("Invalid hparams param value type `%s`." % hparam_type)
 
         metrics = {}
         for metricInfo in records[0].hparam.metricInfos:
-            type = metricInfo.WhichOneof("type")
-            if "float_value" == type:
-                metrics[metricInfo.name] = metricInfo.float_value
-            elif "string_value" == type:
-                metrics[metricInfo.name] = metricInfo.string_value
-            elif "int_value" == type:
-                metrics[metricInfo.name] = metricInfo.int_value
-            else:
-                raise TypeError("Invalid hparams metric value type `%s`." % type)
+            try:
+                metrics_data = get_hparam_metric(log_reader, run, metricInfo.name)
+                metrics[metricInfo.name] = metrics_data[-1][-1]
+            except:
+                logger.error('Missing data of metrics! Please make sure use add_scalar to log metrics data.')
+                metrics[metricInfo.name] = None
 
         results.append({'name': run,
                         'hparams': hparams,

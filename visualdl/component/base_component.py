@@ -293,7 +293,7 @@ def histogram(tag, hist, bin_edges, step, walltime):
     ])
 
 
-def hparam(name, hparam_dict, metric_dict, walltime):
+def hparam(name, hparam_dict, metric_list, walltime):
     """Package data to one histogram.
 
     Args:
@@ -301,8 +301,7 @@ def hparam(name, hparam_dict, metric_dict, walltime):
         hparam_dict (dictionary): Each key-value pair in the dictionary is the
               name of the hyper parameter and it's corresponding value. The type of the value
               can be one of `bool`, `string`, `float`, `int`, or `None`.
-        metric_dict (dictionary): Each key-value pair in the dictionary is the
-              name of the metric and it's corresponding value.
+        metric_list (list): Name of all metrics.
         walltime (int): Wall time of hparam.
 
     Return:
@@ -327,23 +326,11 @@ def hparam(name, hparam_dict, metric_dict, walltime):
             hm.hparamInfos.append(hparamInfo)
         else:
             print("The value of %s must be int, float or str, not %s" % (k, str(type(v))))
-
-    for k, v in metric_dict.items():
-        if v is None:
-            continue
+    for metric in metric_list:
         metricInfo = Record.HParam.HparamInfo()
-        metricInfo.name = k
-        if isinstance(v, int):
-            metricInfo.int_value = v
-            hm.metricInfos.append(metricInfo)
-        elif isinstance(v, float):
-            metricInfo.float_value = v
-            hm.metricInfos.append(metricInfo)
-        elif isinstance(v, str):
-            metricInfo.string_value = v
-            hm.metricInfos.append(metricInfo)
-        else:
-            print("The value of %s must be int, float or str, not %s" % (k, str(type(v))))
+        metricInfo.name = metric
+        metricInfo.float_value = 0
+        hm.metricInfos.append(metricInfo)
 
     return Record(values=[
         Record.Value(

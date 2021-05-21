@@ -109,8 +109,6 @@ class LogWriter(object):
         self.loggers = {}
         self.add_meta(display_name=display_name)
 
-        self.hparam_write = False
-
     @property
     def logdir(self):
         return self._logdir
@@ -444,47 +442,43 @@ class LogWriter(object):
                 step=step,
                 walltime=walltime))
 
-    def add_hparams(self, hparam_dict, metric_dict, walltime=None):
+    def add_hparams(self, hparam_dict, metric_list, walltime=None):
         """Add an histogram to vdl record file.
 
         Args:
             hparam_dict (dictionary): Each key-value pair in the dictionary is the
               name of the hyper parameter and it's corresponding value. The type of the value
               can be one of `bool`, `string`, `float`, `int`, or `None`.
-            metric_dict (dictionary): Each key-value pair in the dictionary is the
-              name of the metric and it's corresponding value.
+            metric_list (list): Name of all metrics.
             walltime (int): Wall time of hparams.
 
         Examples::
             from visualdl import LogWriter
 
+            # Remember use add_scalar to log your metrics data!
             with LogWriter('./log/hparams_test/train/run1') as writer:
-                writer.add_hparams({'lr': 0.1, 'bsize':1, 'opt': 'sgd'}, {'hparam/accuracy':10, 'hparam/loss': 2})
-                writer.add_scalar('hparam/accuracy', 10, 0)
-                writer.add_scalar('hparam/loss', 2, 0)
+                writer.add_hparams({'lr': 0.1, 'bsize': 1, 'opt': 'sgd'}, ['hparam/accuracy', 'hparam/loss'])
+                for i in range(10):
+                    writer.add_scalar('hparam/accuracy', i, i)
+                    writer.add_scalar('hparam/loss', 2*i, i)
 
             with LogWriter('./log/hparams_test/train/run2') as writer:
-                writer.add_hparams({'lr': 0.2, 'bsize':2, 'opt': 'relu'}, {'hparam/accuracy':12, 'hparam/loss': 3})
-                writer.add_scalar('hparam/accuracy', 12, 0)
-                writer.add_scalar('hparam/loss', 3, 0)
-
-            with LogWriter('./log/hparams_test/train/run3') as writer:
-                writer.add_hparams({'lr': 0.3, 'bsize':3, 'opt': 'line'}, {'hparam/accuracy':14, 'hparam/loss': -2.3})
-                writer.add_scalar('hparam/accuracy', 14, 0)
-                writer.add_scalar('hparam/loss', -2.3, 0)
+                writer.add_hparams({'lr': 0.2, 'bsize': 2, 'opt': 'relu'}, ['hparam/accuracy', 'hparam/loss'])
+                for i in range(10):
+                    writer.add_scalar('hparam/accuracy', 1.0/(i+1), i)
+                    writer.add_scalar('hparam/loss', 5*i, i)
         """
-        if self.hparam_write:
-            logger.warning('Each log file should have only one hparams info. '
-                           'Only last hparams info will be displayed on board.')
-        if type(hparam_dict) is not dict or type(metric_dict) is not dict:
-            raise TypeError('hparam_dict and metric_dict should be dictionary.')
+        if type(hparam_dict) is not dict:
+            raise TypeError('hparam_dict should be dictionary.')
+        if type(metric_list) is not list:
+            raise TypeError('metric_list should be list.')
         walltime = round(time.time() * 1000) if walltime is None else walltime
 
         self._get_file_writer().add_record(
             hparam(
                 name=md5(self.file_name),
                 hparam_dict=hparam_dict,
-                metric_dict=metric_dict,
+                metric_list=metric_list,
                 walltime=walltime))
 
     def add_pr_curve(self,
