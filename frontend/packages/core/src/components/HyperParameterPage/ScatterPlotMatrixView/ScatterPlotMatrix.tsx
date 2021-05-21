@@ -27,6 +27,8 @@ import type {WithStyled} from '~/utils/style';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
 
+const CHART_SIZE = 150;
+
 type ScatterPlotMatrixProps = ViewData & {
     colors: string[];
     onHover?: (index: number | null) => unknown;
@@ -39,6 +41,8 @@ const Container = styled.div`
     /* overflow-y: visible; */
     display: flex;
     flex-direction: column;
+    --label-size: 1em;
+    --chart-size: ${rem(CHART_SIZE + ChartClass.MARGIN_WITHOUT_LABEL * 2)};
 
     .row {
         display: flex;
@@ -47,26 +51,39 @@ const Container = styled.div`
 
     .metrics {
         display: block;
-        writing-mode: vertical-rl;
         text-align: center;
         font-weight: 700;
-        width: ${rem(14)};
-        line-height: ${rem(14)};
+        width: var(--label-size);
+        height: var(--chart-size);
+        line-height: var(--label-size);
+
+        > span {
+            display: inline-block;
+            width: var(--chart-size);
+            height: var(--label-size);
+            transform: rotate(270deg) translate(calc(-1 * var(--chart-size)), 0);
+            transform-origin: left top;
+        }
     }
 
     .hparams {
         display: block;
-        width: ${150 + ChartClass.MARGIN_WITHOUT_LABEL * 2}px;
+        width: var(--chart-size);
         text-align: center;
         flex: none;
+
+        > span {
+            height: var(--label-size);
+            line-height: var(--label-size);
+        }
     }
 
-    .metrics.hparams {
+    .metrics-hparams {
         width: calc(${rem(14)} + ${ChartClass.MARGIN_LEFT_WITH_LABEL - ChartClass.MARGIN_WITHOUT_LABEL}px);
     }
 
     .row-scale-method-selector {
-        margin: ${rem(10)} 0 ${rem(10)} ${rem(24)};
+        margin: ${rem(10)} 0 ${rem(10)} calc(${rem(10)} + var(--label-size));
         height: 1em;
     }
 
@@ -191,7 +208,9 @@ const ScatterPlotMatrix: FunctionComponent<ScatterPlotMatrixProps & WithStyled> 
                         ) : null}
                     </div>
                     <div className="row">
-                        <span className="metrics">{metricsIndicators[ri].name}</span>
+                        <div className="metrics">
+                            <span>{metricsIndicators[ri].name}</span>
+                        </div>
                         {row.map((cell, ci) => (
                             <div className="cell" key={ci}>
                                 <ScatterChart
@@ -210,7 +229,7 @@ const ScatterPlotMatrix: FunctionComponent<ScatterPlotMatrixProps & WithStyled> 
                 </React.Fragment>
             ))}
             <div className="row">
-                <span className="metrics hparams"></span>
+                <span className="metrics-hparams"></span>
                 {hparamsIndicators.map((hi, hii) => (
                     <div className="hparams" key={hii}>
                         <span>{hi.name}</span>
