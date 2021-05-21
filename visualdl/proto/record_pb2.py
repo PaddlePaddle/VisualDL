@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='visualdl',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x0crecord.proto\x12\x08visualdl\"\xac\t\n\x06Record\x12&\n\x06values\x18\x01 \x03(\x0b\x32\x16.visualdl.Record.Value\x1a%\n\x05Image\x12\x1c\n\x14\x65ncoded_image_string\x18\x04 \x01(\x0c\x1a#\n\x04Text\x12\x1b\n\x13\x65ncoded_text_string\x18\x01 \x01(\t\x1a}\n\x05\x41udio\x12\x13\n\x0bsample_rate\x18\x01 \x01(\x02\x12\x14\n\x0cnum_channels\x18\x02 \x01(\x03\x12\x15\n\rlength_frames\x18\x03 \x01(\x03\x12\x1c\n\x14\x65ncoded_audio_string\x18\x04 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x1a+\n\tEmbedding\x12\r\n\x05label\x18\x01 \x03(\t\x12\x0f\n\x07vectors\x18\x02 \x03(\x02\x1aP\n\nEmbeddings\x12.\n\nembeddings\x18\x01 \x03(\x0b\x32\x1a.visualdl.Record.Embedding\x12\x12\n\nlabel_meta\x18\x02 \x03(\t\x1a\x43\n\x10\x62ytes_embeddings\x12\x16\n\x0e\x65ncoded_labels\x18\x01 \x01(\x0c\x12\x17\n\x0f\x65ncoded_vectors\x18\x02 \x01(\x0c\x1a\x34\n\tHistogram\x12\x10\n\x04hist\x18\x01 \x03(\x01\x42\x02\x10\x01\x12\x15\n\tbin_edges\x18\x02 \x03(\x01\x42\x02\x10\x01\x1al\n\x07PRCurve\x12\x0e\n\x02TP\x18\x01 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46P\x18\x02 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02TN\x18\x03 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46N\x18\x04 \x03(\x03\x42\x02\x10\x01\x12\x11\n\tprecision\x18\x05 \x03(\x01\x12\x0e\n\x06recall\x18\x06 \x03(\x01\x1a\x65\n\tROC_Curve\x12\x0e\n\x02TP\x18\x01 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46P\x18\x02 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02TN\x18\x03 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46N\x18\x04 \x03(\x03\x42\x02\x10\x01\x12\x0b\n\x03tpr\x18\x05 \x03(\x01\x12\x0b\n\x03\x66pr\x18\x06 \x03(\x01\x1a \n\x08MetaData\x12\x14\n\x0c\x64isplay_name\x18\x01 \x01(\t\x1a\xbd\x03\n\x05Value\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0b\n\x03tag\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\x12\x0f\n\x05value\x18\x04 \x01(\x02H\x00\x12\'\n\x05image\x18\x05 \x01(\x0b\x32\x16.visualdl.Record.ImageH\x00\x12\'\n\x05\x61udio\x18\x06 \x01(\x0b\x32\x16.visualdl.Record.AudioH\x00\x12\x31\n\nembeddings\x18\x07 \x01(\x0b\x32\x1b.visualdl.Record.EmbeddingsH\x00\x12/\n\thistogram\x18\x08 \x01(\x0b\x32\x1a.visualdl.Record.HistogramH\x00\x12,\n\x08pr_curve\x18\t \x01(\x0b\x32\x18.visualdl.Record.PRCurveH\x00\x12.\n\tmeta_data\x18\n \x01(\x0b\x32\x19.visualdl.Record.MetaDataH\x00\x12/\n\troc_curve\x18\x0b \x01(\x0b\x32\x1a.visualdl.Record.ROC_CurveH\x00\x12%\n\x04text\x18\x0c \x01(\x0b\x32\x15.visualdl.Record.TextH\x00\x42\x0b\n\tone_valueb\x06proto3'
+  serialized_pb=b'\n\x0crecord.proto\x12\x08visualdl\"\xca\x0b\n\x06Record\x12&\n\x06values\x18\x01 \x03(\x0b\x32\x16.visualdl.Record.Value\x1a%\n\x05Image\x12\x1c\n\x14\x65ncoded_image_string\x18\x04 \x01(\x0c\x1a#\n\x04Text\x12\x1b\n\x13\x65ncoded_text_string\x18\x01 \x01(\t\x1a}\n\x05\x41udio\x12\x13\n\x0bsample_rate\x18\x01 \x01(\x02\x12\x14\n\x0cnum_channels\x18\x02 \x01(\x03\x12\x15\n\rlength_frames\x18\x03 \x01(\x03\x12\x1c\n\x14\x65ncoded_audio_string\x18\x04 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x1a+\n\tEmbedding\x12\r\n\x05label\x18\x01 \x03(\t\x12\x0f\n\x07vectors\x18\x02 \x03(\x02\x1aP\n\nEmbeddings\x12.\n\nembeddings\x18\x01 \x03(\x0b\x32\x1a.visualdl.Record.Embedding\x12\x12\n\nlabel_meta\x18\x02 \x03(\t\x1a\x43\n\x10\x62ytes_embeddings\x12\x16\n\x0e\x65ncoded_labels\x18\x01 \x01(\x0c\x12\x17\n\x0f\x65ncoded_vectors\x18\x02 \x01(\x0c\x1a\x34\n\tHistogram\x12\x10\n\x04hist\x18\x01 \x03(\x01\x42\x02\x10\x01\x12\x15\n\tbin_edges\x18\x02 \x03(\x01\x42\x02\x10\x01\x1al\n\x07PRCurve\x12\x0e\n\x02TP\x18\x01 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46P\x18\x02 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02TN\x18\x03 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46N\x18\x04 \x03(\x03\x42\x02\x10\x01\x12\x11\n\tprecision\x18\x05 \x03(\x01\x12\x0e\n\x06recall\x18\x06 \x03(\x01\x1a\x65\n\tROC_Curve\x12\x0e\n\x02TP\x18\x01 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46P\x18\x02 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02TN\x18\x03 \x03(\x03\x42\x02\x10\x01\x12\x0e\n\x02\x46N\x18\x04 \x03(\x03\x42\x02\x10\x01\x12\x0b\n\x03tpr\x18\x05 \x03(\x01\x12\x0b\n\x03\x66pr\x18\x06 \x03(\x01\x1a\xf0\x01\n\x06HParam\x12\x37\n\x0bhparamInfos\x18\x01 \x03(\x0b\x32\".visualdl.Record.HParam.HparamInfo\x12\x37\n\x0bmetricInfos\x18\x02 \x03(\x0b\x32\".visualdl.Record.HParam.HparamInfo\x12\x0c\n\x04name\x18\x03 \x01(\t\x1a\x66\n\nHparamInfo\x12\x13\n\tint_value\x18\x01 \x01(\x03H\x00\x12\x15\n\x0b\x66loat_value\x18\x02 \x01(\x01H\x00\x12\x16\n\x0cstring_value\x18\x03 \x01(\tH\x00\x12\x0c\n\x04name\x18\x04 \x01(\tB\x06\n\x04type\x1a \n\x08MetaData\x12\x14\n\x0c\x64isplay_name\x18\x01 \x01(\t\x1a\xe8\x03\n\x05Value\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0b\n\x03tag\x18\x02 \x01(\t\x12\x11\n\ttimestamp\x18\x03 \x01(\x03\x12\x0f\n\x05value\x18\x04 \x01(\x02H\x00\x12\'\n\x05image\x18\x05 \x01(\x0b\x32\x16.visualdl.Record.ImageH\x00\x12\'\n\x05\x61udio\x18\x06 \x01(\x0b\x32\x16.visualdl.Record.AudioH\x00\x12\x31\n\nembeddings\x18\x07 \x01(\x0b\x32\x1b.visualdl.Record.EmbeddingsH\x00\x12/\n\thistogram\x18\x08 \x01(\x0b\x32\x1a.visualdl.Record.HistogramH\x00\x12,\n\x08pr_curve\x18\t \x01(\x0b\x32\x18.visualdl.Record.PRCurveH\x00\x12.\n\tmeta_data\x18\n \x01(\x0b\x32\x19.visualdl.Record.MetaDataH\x00\x12/\n\troc_curve\x18\x0b \x01(\x0b\x32\x1a.visualdl.Record.ROC_CurveH\x00\x12%\n\x04text\x18\x0c \x01(\x0b\x32\x15.visualdl.Record.TextH\x00\x12)\n\x06hparam\x18\r \x01(\x0b\x32\x17.visualdl.Record.HParamH\x00\x42\x0b\n\tone_valueb\x06proto3'
 )
 
 
@@ -420,6 +420,104 @@ _RECORD_ROC_CURVE = _descriptor.Descriptor(
   serialized_end=741,
 )
 
+_RECORD_HPARAM_HPARAMINFO = _descriptor.Descriptor(
+  name='HparamInfo',
+  full_name='visualdl.Record.HParam.HparamInfo',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='int_value', full_name='visualdl.Record.HParam.HparamInfo.int_value', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='float_value', full_name='visualdl.Record.HParam.HparamInfo.float_value', index=1,
+      number=2, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='string_value', full_name='visualdl.Record.HParam.HparamInfo.string_value', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='visualdl.Record.HParam.HparamInfo.name', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='type', full_name='visualdl.Record.HParam.HparamInfo.type',
+      index=0, containing_type=None, fields=[]),
+  ],
+  serialized_start=882,
+  serialized_end=984,
+)
+
+_RECORD_HPARAM = _descriptor.Descriptor(
+  name='HParam',
+  full_name='visualdl.Record.HParam',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='hparamInfos', full_name='visualdl.Record.HParam.hparamInfos', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='metricInfos', full_name='visualdl.Record.HParam.metricInfos', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='name', full_name='visualdl.Record.HParam.name', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[_RECORD_HPARAM_HPARAMINFO, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=744,
+  serialized_end=984,
+)
+
 _RECORD_METADATA = _descriptor.Descriptor(
   name='MetaData',
   full_name='visualdl.Record.MetaData',
@@ -446,8 +544,8 @@ _RECORD_METADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=743,
-  serialized_end=775,
+  serialized_start=986,
+  serialized_end=1018,
 )
 
 _RECORD_VALUE = _descriptor.Descriptor(
@@ -541,6 +639,13 @@ _RECORD_VALUE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='hparam', full_name='visualdl.Record.Value.hparam', index=12,
+      number=13, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -556,8 +661,8 @@ _RECORD_VALUE = _descriptor.Descriptor(
       name='one_value', full_name='visualdl.Record.Value.one_value',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=778,
-  serialized_end=1223,
+  serialized_start=1021,
+  serialized_end=1509,
 )
 
 _RECORD = _descriptor.Descriptor(
@@ -577,7 +682,7 @@ _RECORD = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_RECORD_IMAGE, _RECORD_TEXT, _RECORD_AUDIO, _RECORD_EMBEDDING, _RECORD_EMBEDDINGS, _RECORD_BYTES_EMBEDDINGS, _RECORD_HISTOGRAM, _RECORD_PRCURVE, _RECORD_ROC_CURVE, _RECORD_METADATA, _RECORD_VALUE, ],
+  nested_types=[_RECORD_IMAGE, _RECORD_TEXT, _RECORD_AUDIO, _RECORD_EMBEDDING, _RECORD_EMBEDDINGS, _RECORD_BYTES_EMBEDDINGS, _RECORD_HISTOGRAM, _RECORD_PRCURVE, _RECORD_ROC_CURVE, _RECORD_HPARAM, _RECORD_METADATA, _RECORD_VALUE, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -587,7 +692,7 @@ _RECORD = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=27,
-  serialized_end=1223,
+  serialized_end=1509,
 )
 
 _RECORD_IMAGE.containing_type = _RECORD
@@ -600,6 +705,19 @@ _RECORD_BYTES_EMBEDDINGS.containing_type = _RECORD
 _RECORD_HISTOGRAM.containing_type = _RECORD
 _RECORD_PRCURVE.containing_type = _RECORD
 _RECORD_ROC_CURVE.containing_type = _RECORD
+_RECORD_HPARAM_HPARAMINFO.containing_type = _RECORD_HPARAM
+_RECORD_HPARAM_HPARAMINFO.oneofs_by_name['type'].fields.append(
+  _RECORD_HPARAM_HPARAMINFO.fields_by_name['int_value'])
+_RECORD_HPARAM_HPARAMINFO.fields_by_name['int_value'].containing_oneof = _RECORD_HPARAM_HPARAMINFO.oneofs_by_name['type']
+_RECORD_HPARAM_HPARAMINFO.oneofs_by_name['type'].fields.append(
+  _RECORD_HPARAM_HPARAMINFO.fields_by_name['float_value'])
+_RECORD_HPARAM_HPARAMINFO.fields_by_name['float_value'].containing_oneof = _RECORD_HPARAM_HPARAMINFO.oneofs_by_name['type']
+_RECORD_HPARAM_HPARAMINFO.oneofs_by_name['type'].fields.append(
+  _RECORD_HPARAM_HPARAMINFO.fields_by_name['string_value'])
+_RECORD_HPARAM_HPARAMINFO.fields_by_name['string_value'].containing_oneof = _RECORD_HPARAM_HPARAMINFO.oneofs_by_name['type']
+_RECORD_HPARAM.fields_by_name['hparamInfos'].message_type = _RECORD_HPARAM_HPARAMINFO
+_RECORD_HPARAM.fields_by_name['metricInfos'].message_type = _RECORD_HPARAM_HPARAMINFO
+_RECORD_HPARAM.containing_type = _RECORD
 _RECORD_METADATA.containing_type = _RECORD
 _RECORD_VALUE.fields_by_name['image'].message_type = _RECORD_IMAGE
 _RECORD_VALUE.fields_by_name['audio'].message_type = _RECORD_AUDIO
@@ -609,6 +727,7 @@ _RECORD_VALUE.fields_by_name['pr_curve'].message_type = _RECORD_PRCURVE
 _RECORD_VALUE.fields_by_name['meta_data'].message_type = _RECORD_METADATA
 _RECORD_VALUE.fields_by_name['roc_curve'].message_type = _RECORD_ROC_CURVE
 _RECORD_VALUE.fields_by_name['text'].message_type = _RECORD_TEXT
+_RECORD_VALUE.fields_by_name['hparam'].message_type = _RECORD_HPARAM
 _RECORD_VALUE.containing_type = _RECORD
 _RECORD_VALUE.oneofs_by_name['one_value'].fields.append(
   _RECORD_VALUE.fields_by_name['value'])
@@ -637,6 +756,9 @@ _RECORD_VALUE.fields_by_name['roc_curve'].containing_oneof = _RECORD_VALUE.oneof
 _RECORD_VALUE.oneofs_by_name['one_value'].fields.append(
   _RECORD_VALUE.fields_by_name['text'])
 _RECORD_VALUE.fields_by_name['text'].containing_oneof = _RECORD_VALUE.oneofs_by_name['one_value']
+_RECORD_VALUE.oneofs_by_name['one_value'].fields.append(
+  _RECORD_VALUE.fields_by_name['hparam'])
+_RECORD_VALUE.fields_by_name['hparam'].containing_oneof = _RECORD_VALUE.oneofs_by_name['one_value']
 _RECORD.fields_by_name['values'].message_type = _RECORD_VALUE
 DESCRIPTOR.message_types_by_name['Record'] = _RECORD
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -706,6 +828,20 @@ Record = _reflection.GeneratedProtocolMessageType('Record', (_message.Message,),
     })
   ,
 
+  'HParam' : _reflection.GeneratedProtocolMessageType('HParam', (_message.Message,), {
+
+    'HparamInfo' : _reflection.GeneratedProtocolMessageType('HparamInfo', (_message.Message,), {
+      'DESCRIPTOR' : _RECORD_HPARAM_HPARAMINFO,
+      '__module__' : 'record_pb2'
+      # @@protoc_insertion_point(class_scope:visualdl.Record.HParam.HparamInfo)
+      })
+    ,
+    'DESCRIPTOR' : _RECORD_HPARAM,
+    '__module__' : 'record_pb2'
+    # @@protoc_insertion_point(class_scope:visualdl.Record.HParam)
+    })
+  ,
+
   'MetaData' : _reflection.GeneratedProtocolMessageType('MetaData', (_message.Message,), {
     'DESCRIPTOR' : _RECORD_METADATA,
     '__module__' : 'record_pb2'
@@ -733,6 +869,8 @@ _sym_db.RegisterMessage(Record.bytes_embeddings)
 _sym_db.RegisterMessage(Record.Histogram)
 _sym_db.RegisterMessage(Record.PRCurve)
 _sym_db.RegisterMessage(Record.ROC_Curve)
+_sym_db.RegisterMessage(Record.HParam)
+_sym_db.RegisterMessage(Record.HParam.HparamInfo)
 _sym_db.RegisterMessage(Record.MetaData)
 _sym_db.RegisterMessage(Record.Value)
 

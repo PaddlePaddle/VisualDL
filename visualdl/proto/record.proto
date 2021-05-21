@@ -57,6 +57,20 @@ message Record {
     repeated double fpr = 6;
   }
 
+  message HParam {
+    message HparamInfo {
+      oneof type {
+          int64 int_value = 1;
+          double float_value = 2;
+          string string_value = 3;
+      };
+      string name = 4;
+    }
+    repeated HparamInfo hparamInfos = 1;
+    repeated HparamInfo metricInfos = 2;
+    string name = 3;
+  }
+
   message MetaData {
     string display_name = 1;
   }
@@ -75,6 +89,7 @@ message Record {
       MetaData meta_data = 10;
       ROC_Curve roc_curve = 11;
       Text text = 12;
+      HParam hparam = 13;
     }
   }
 

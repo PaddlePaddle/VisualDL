@@ -20,8 +20,9 @@ from visualdl.writer.record_writer import RecordFileWriter
 from visualdl.server.log import logger
 from visualdl.utils.img_util import merge_images
 from visualdl.utils.figure_util import figure_to_image
+from visualdl.utils.md5_util import md5
 from visualdl.component.base_component import scalar, image, embedding, audio, \
-    histogram, pr_curve, roc_curve, meta_data, text
+    histogram, pr_curve, roc_curve, meta_data, text, hparam
 
 
 class DummyFileWriter(object):
@@ -439,6 +440,45 @@ class LogWriter(object):
                 hist=hist,
                 bin_edges=bin_edges,
                 step=step,
+                walltime=walltime))
+
+    def add_hparams(self, hparam_dict, metric_list, walltime=None):
+        """Add an histogram to vdl record file.
+
+        Args:
+            hparam_dict (dictionary): Each key-value pair in the dictionary is the
+              name of the hyper parameter and it's corresponding value. The type of the value
+              can be one of `bool`, `string`, `float`, `int`, or `None`.
+            metric_list (list): Name of all metrics.
+            walltime (int): Wall time of hparams.
+
+        Examples::
+            from visualdl import LogWriter
+
+            # Remember use add_scalar to log your metrics data!
+            with LogWriter('./log/hparams_test/train/run1') as writer:
+                writer.add_hparams({'lr': 0.1, 'bsize': 1, 'opt': 'sgd'}, ['hparam/accuracy', 'hparam/loss'])
+                for i in range(10):
+                    writer.add_scalar('hparam/accuracy', i, i)
+                    writer.add_scalar('hparam/loss', 2*i, i)
+
+            with LogWriter('./log/hparams_test/train/run2') as writer:
+                writer.add_hparams({'lr': 0.2, 'bsize': 2, 'opt': 'relu'}, ['hparam/accuracy', 'hparam/loss'])
+                for i in range(10):
+                    writer.add_scalar('hparam/accuracy', 1.0/(i+1), i)
+                    writer.add_scalar('hparam/loss', 5*i, i)
+        """
+        if type(hparam_dict) is not dict:
+            raise TypeError('hparam_dict should be dictionary.')
+        if type(metric_list) is not list:
+            raise TypeError('metric_list should be list.')
+        walltime = round(time.time() * 1000) if walltime is None else walltime
+
+        self._get_file_writer().add_record(
+            hparam(
+                name=md5(self.file_name),
+                hparam_dict=hparam_dict,
+                metric_list=metric_list,
                 walltime=walltime))
 
     def add_pr_curve(self,
