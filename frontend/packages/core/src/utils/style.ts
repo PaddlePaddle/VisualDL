@@ -183,6 +183,10 @@ export const GlobalStyle = createGlobalStyle`
         ${transitionProps(['background-color', 'color'])}
     }
 
+    body {
+        overflow-anchor: none;
+    }
+
     a {
         text-decoration: none;
         color: inherit;

@@ -19,6 +19,12 @@ import React, {FunctionComponent} from 'react';
 import {Resizer} from '~/components/Table';
 import type {HeaderProps as TableHeaderProps} from 'react-table';
 import type {WithStyled} from '~/utils/style';
+import {ellipsis} from '~/utils/style';
+import styled from 'styled-components';
+
+const Span = styled.span`
+    ${ellipsis()}
+`;
 
 const Header: FunctionComponent<TableHeaderProps<Record<string, unknown>> & WithStyled> = ({
     column,
@@ -27,7 +33,9 @@ const Header: FunctionComponent<TableHeaderProps<Record<string, unknown>> & With
 }) => {
     return (
         <>
-            <span className={className}>{children ?? column.id}</span>
+            <Span className={className} title={children ? ('string' === typeof children ? children : '') : column.id}>
+                {children ?? column.id}
+            </Span>
             {column.canResize ? (
                 <Resizer {...column.getResizerProps()} className={column.isResizing ? 'is-resizing' : ''} />
             ) : null}

@@ -73,6 +73,7 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
                 accessor: `${group}.${name}` as IndicatorGroup, // fix react-table's type error
                 id: name,
                 Header: group === 'metrics' ? MetricsHeader : Header,
+                Cell,
                 minWidth: 200
             }))
         ],

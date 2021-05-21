@@ -17,9 +17,15 @@
 import React, {FunctionComponent} from 'react';
 
 import type {CellProps} from 'react-table';
+import {ellipsis} from '~/utils/style';
+import styled from 'styled-components';
+
+const Span = styled.span`
+    ${ellipsis()}
+`;
 
 const Cell = <D extends Record<string, unknown>>({cell}: CellProps<D>): ReturnType<FunctionComponent> => {
-    return <span>{cell.value}</span>;
+    return <Span title={cell.value}>{cell.value}</Span>;
 };
 
 export default Cell;
