@@ -18,6 +18,7 @@ import React, {FunctionComponent} from 'react';
 import {WithStyled, borderRadius, headerHeight, math, rem, sameBorder, size, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
+import useClassNames from '~/hooks/useClassNames';
 
 const Div = styled.div<{maximized?: boolean; divWidth?: string; divHeight?: string}>`
     ${props =>
@@ -43,13 +44,10 @@ type ChartProps = {
 };
 
 const Chart: FunctionComponent<ChartProps & WithStyled> = ({maximized, width, height, className, children}) => {
+    const classNames = useClassNames({maximized}, className, [maximized, className]);
+
     return (
-        <Div
-            maximized={maximized}
-            divWidth={width}
-            divHeight={height}
-            className={`${maximized ? 'maximized' : ''} ${className ?? ''}`}
-        >
+        <Div maximized={maximized} divWidth={width} divHeight={height} className={classNames}>
             {children}
         </Div>
     );

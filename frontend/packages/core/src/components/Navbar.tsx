@@ -30,14 +30,15 @@ import {getApiToken} from '~/utils/fetch';
 import logo from '~/assets/images/logo.svg';
 import queryString from 'query-string';
 import styled from 'styled-components';
-import useAvailableComponents from '~/hooks/useAvailableComponents';
+import useClassNames from '~/hooks/useClassNames';
+import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 
-const MAX_ITEM_COUNT_IN_NAVBAR = 5;
+const MAX_ITEM_COUNT_IN_NAVBAR = 6;
 
 const flatten = <T extends {children?: T[]}>(routes: T[]) => {
     const result: Omit<T, 'children'>[] = [];
@@ -207,11 +208,13 @@ const NavbarLink: FunctionComponent<{to?: string} & Omit<LinkProps, 'to'>> = ({t
 // FIXME: why we need to add children type here... that's weird...
 const NavbarItem = React.forwardRef<HTMLDivElement, NavbarItemProps & {children?: React.ReactNode}>(
     ({path, active, showDropdownIcon, children}, ref) => {
+        const classNames = useClassNames('nav-text', {'dropdown-icon': showDropdownIcon}, [showDropdownIcon]);
+
         if (path) {
             return (
                 <NavItem active={active} ref={ref}>
                     <NavbarLink to={path} className="nav-link">
-                        <span className={`nav-text ${showDropdownIcon ? 'dropdown-icon' : ''}`}>{children}</span>
+                        <span className={classNames}>{children}</span>
                     </NavbarLink>
                 </NavItem>
             );
@@ -219,7 +222,7 @@ const NavbarItem = React.forwardRef<HTMLDivElement, NavbarItemProps & {children?
 
         return (
             <NavItem active={active} ref={ref}>
-                <span className={`nav-text ${showDropdownIcon ? 'dropdown-icon' : ''}`}>{children}</span>
+                <span className={classNames}>{children}</span>
             </NavItem>
         );
     }
@@ -271,11 +274,10 @@ const Navbar: FunctionComponent = () => {
 
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
-    const [components, inactiveComponents] = useAvailableComponents();
+    const [components] = useComponents();
 
     const componentsInNavbar = useMemo(() => components.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [components]);
     const flattenMoreComponents = useMemo(() => flatten(components.slice(MAX_ITEM_COUNT_IN_NAVBAR)), [components]);
-    const flattenInactiveComponents = useMemo(() => flatten(inactiveComponents), [inactiveComponents]);
     const componentsInMoreMenu = useMemo(
         () =>
             flattenMoreComponents.map(item => ({
@@ -284,15 +286,6 @@ const Navbar: FunctionComponent = () => {
             })),
         [currentPath, flattenMoreComponents]
     );
-    const componentsInInactiveMenu = useMemo(
-        () =>
-            flattenInactiveComponents.map(item => ({
-                ...item,
-                active: currentPath === item.path
-            })),
-        [currentPath, flattenInactiveComponents]
-    );
-
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
     useEffect(() => {
         setNavItemsInNavbar(oldItems =>
@@ -363,11 +356,6 @@ const Navbar: FunctionComponent = () => {
                 {componentsInMoreMenu.length ? (
                     <SubNav menu={componentsInMoreMenu} showDropdownIcon>
                         {t('common:more')}
-                    </SubNav>
-                ) : null}
-                {componentsInInactiveMenu.length ? (
-                    <SubNav menu={componentsInInactiveMenu} showDropdownIcon>
-                        {t('common:inactive')}
                     </SubNav>
                 ) : null}
             </div>

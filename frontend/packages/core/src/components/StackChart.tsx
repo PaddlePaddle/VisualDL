@@ -342,7 +342,12 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
             [onInit, throttled, mouseout]
         );
 
-        const {ref: echartRef, echart, wrapper, saveAsImage} = useECharts<HTMLDivElement>({
+        const {
+            ref: echartRef,
+            echart,
+            wrapper,
+            saveAsImage
+        } = useECharts<HTMLDivElement>({
             loading: !!loading,
             zoom,
             autoFit: true,

@@ -15,7 +15,7 @@
  */
 
 import React, {FunctionComponent} from 'react';
-import {em, size, transitionProps, zIndexes} from '~/utils/style';
+import {em, transitionProps, zIndexes} from '~/utils/style';
 
 import Icon from '~/components/Icon';
 import Properties from '~/components/GraphPage/Properties';
@@ -58,10 +58,18 @@ const Dialog = styled.div`
 
             > .modal-close {
                 flex: none;
-                ${size(em(20, 18), em(20, 18))}
-                font-size: ${em(20, 18)};
-                text-align: center;
+                font-size: ${em(16, 18)};
                 cursor: pointer;
+                color: var(--text-color);
+                ${transitionProps('color')}
+
+                &:hover {
+                    color: var(--text-light-color);
+                }
+
+                &:active {
+                    color: var(--text-lighter-color);
+                }
             }
         }
 

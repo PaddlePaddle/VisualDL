@@ -54,7 +54,7 @@ const Inner = styled.div<{checked?: boolean; size?: string; disabled?: boolean}>
         props.disabled
             ? props.checked
                 ? 'var(--text-lighter-color)'
-                : 'var(--text-lighter-color)'
+                : 'transparent'
             : props.checked
             ? 'var(--primary-color)'
             : 'var(--background-color)'};
@@ -84,15 +84,15 @@ const Content = styled.div<{disabled?: boolean}>`
 `;
 
 type CheckboxProps = {
-    value?: boolean;
-    onChange?: (value: boolean) => unknown;
+    checked?: boolean;
+    onChange?: (checked: boolean) => unknown;
     size?: 'small';
     title?: string;
     disabled?: boolean;
 };
 
 const Checkbox: FunctionComponent<CheckboxProps & WithStyled> = ({
-    value,
+    checked: value,
     children,
     size,
     disabled,
@@ -101,7 +101,7 @@ const Checkbox: FunctionComponent<CheckboxProps & WithStyled> = ({
     onChange
 }) => {
     const [checked, setChecked] = useState(!!value);
-    useEffect(() => setChecked(!!value), [setChecked, value]);
+    useEffect(() => setChecked(!!value), [value]);
     const onChangeInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             if (disabled) {

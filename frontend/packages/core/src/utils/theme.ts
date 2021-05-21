@@ -46,27 +46,33 @@ export const colors = {
 
 export const themes = {
     light: {
+        // text colors
         textColor: '#333',
         textLightColor: '#666',
         textLighterColor: '#999',
         textInvertColor: '#fff',
 
+        // background colors
         backgroundColor: '#fff',
         backgroundFocusedColor: '#f6f6f6',
         bodyBackgroundColor: '#f4f4f4',
 
+        // border colors
         borderColor: '#ddd',
         borderFocusedColor: darken(0.15, '#ddd'),
         borderActiveColor: darken(0.3, '#ddd'),
 
+        // loader colors
         loaderBackgroundColor: '#f5f6f7',
         loaderForegroundColor: '#eee',
 
+        // navbar colors
         navbarTextColor: '#fff',
         navbarBackgroundColor: '#1527c2',
         navbarHoverBackgroundColor: lighten(0.05, '#1527c2'),
         navbarHighlightColor: '#596cd6',
 
+        // components colors
         tagBackgroundColor: '#f4f5fc',
         tagFocusedBackgroundColor: darken(0.03, '#f4f5fc'),
         tagActiveBackgroundColor: darken(0.06, '#f4f5fc'),
@@ -83,20 +89,38 @@ export const themes = {
         progressBarColor: '#fff',
         maskColor: 'rgba(255, 255, 255, 0.8)',
         darkMaskColor: 'rgba(0, 0, 0, 0.5)',
+        tabInactiveBackgroundColor: '#ebebeb',
+        tableBackgroundColor: '#fff',
+        tableHeaderBackgroundColor: '#f9f9f9',
+        tableDraggerColor: '#6f6f6f',
+        tableRowHoverBackgroundColor: '#f6f6f6',
+        tableExpanderColor: '#999',
+        tableExpanderHoverColor: '#666',
+        tableExpanderBorderColor: '#ccc',
+        tableExpanderHoverBorderColor: '#999',
+        tableStickyShadowColor: '#f3f3f3',
 
+        // graph page
         graphUploaderBackgroundColor: '#f9f9f9',
         graphUploaderActiveBackgroundColor: '#f2f6ff',
         graphCopyrightColor: '#ddd',
         graphCopyrightLogoFilter: 'opacity(25%)',
 
+        // text sample page
         textChartTitleBackgroundColor: '#f8f8f8',
         textChartTitleIndicatorColor: '#000',
-        textChartTagBackgroundColor: '#f6f6f6'
+        textChartTagBackgroundColor: '#f6f6f6',
+
+        // hyper-parameter page
+        hyperParameterGraphAxisColor: '#ccc',
+        hyperParameterGraphGridColor: '#ebebeb',
+        hyperParameterGraphDisabledDataColor: '#ccc',
+        hyperParameterGraphBrushColor: '#787878'
     },
     dark: {
         textColor: '#cfcfd1',
-        textLightColor: '#575757',
-        textLighterColor: '#757575',
+        textLightColor: '#757575',
+        textLighterColor: '#575757',
         textInvertColor: '#000',
 
         backgroundColor: '#1d1d1f',
@@ -131,6 +155,16 @@ export const themes = {
         progressBarColor: '#fff',
         maskColor: 'rgba(0, 0, 0, 0.8)',
         darkMaskColor: 'rgba(0, 0, 0, 0.8)',
+        tabInactiveBackgroundColor: '#262629',
+        tableBackgroundColor: '#1d1d1f',
+        tableHeaderBackgroundColor: '#202020',
+        tableDraggerColor: '#6f6f6f',
+        tableRowHoverBackgroundColor: '#232323',
+        tableExpanderColor: '#757575',
+        tableExpanderHoverColor: '#999',
+        tableExpanderBorderColor: '#444',
+        tableExpanderHoverBorderColor: '#757575',
+        tableStickyShadowColor: '#131313',
 
         graphUploaderBackgroundColor: '#262629',
         graphUploaderActiveBackgroundColor: '#303033',
@@ -140,7 +174,12 @@ export const themes = {
 
         textChartTitleBackgroundColor: '#2a2a2a',
         textChartTitleIndicatorColor: '#fff',
-        textChartTagBackgroundColor: '#222'
+        textChartTagBackgroundColor: '#222',
+
+        hyperParameterGraphAxisColor: '#999',
+        hyperParameterGraphGridColor: '#262629',
+        hyperParameterGraphDisabledDataColor: '#999',
+        hyperParameterGraphBrushColor: '#787878'
     }
 } as const;
 

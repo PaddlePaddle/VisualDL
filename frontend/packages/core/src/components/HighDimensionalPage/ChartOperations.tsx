@@ -48,19 +48,30 @@ const Operations = styled.div`
             }
         }
 
-        & + a {
-            > span {
-                border-left: 1px solid var(--border-color);
-            }
+        & + a > span {
+            border-left: 1px solid var(--border-color);
         }
 
-        &:hover,
-        &.active {
+        &:hover {
             color: var(--primary-focused-color);
         }
 
         &:active {
             color: var(--primary-active-color);
+        }
+
+        &.active {
+            background-color: var(--primary-color);
+            color: var(--primary-text-color);
+
+            &:hover,
+            &:active {
+                color: var(--primary-text-color);
+            }
+
+            + a > span {
+                border-left-color: transparent;
+            }
         }
     }
 `;
