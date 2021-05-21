@@ -37,9 +37,9 @@ import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
-const ImportanceButton = styled(Button)`
-    width: 100%;
-`;
+// const ImportanceButton = styled(Button)`
+//     width: 100%;
+// `;
 
 const HParamsImportanceDialog = styled(ImportanceDialog)`
     position: fixed;
@@ -149,7 +149,7 @@ const HyperParameter: FunctionComponent = () => {
             <Aside
                 bottom={
                     <>
-                        <AsideSection>
+                        {/* <AsideSection>
                             <ImportanceButton
                                 rounded
                                 outline
@@ -158,7 +158,7 @@ const HyperParameter: FunctionComponent = () => {
                             >
                                 {t('hyper-parameter:show-parameter-importance')}
                             </ImportanceButton>
-                        </AsideSection>
+                        </AsideSection> */}
                         <AsideSection>
                             <Field label={t('common:download-data')}>
                                 <DownloadButtons>
