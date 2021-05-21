@@ -23,8 +23,9 @@ import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
 import BodyLoading from '~/components/BodyLoading';
 import Button from '~/components/Button';
 import Content from '~/components/Content';
+import Error from '~/components/Error';
 import Field from '~/components/Field';
-import ImportanceDialog from '~/components/HyperParameterPage/ImportanceDialog';
+// import ImportanceDialog from '~/components/HyperParameterPage/ImportanceDialog';
 import IndicatorFilter from '~/components/HyperParameterPage/IndicatorFilter/IndicatorFilter';
 import ParallelCoordinatesView from '~/components/HyperParameterPage/ParallelCoordinatesView';
 import ScatterPlotMatrixView from '~/components/HyperParameterPage/ScatterPlotMatrixView';
@@ -41,11 +42,13 @@ import {useTranslation} from 'react-i18next';
 //     width: 100%;
 // `;
 
-const HParamsImportanceDialog = styled(ImportanceDialog)`
-    position: fixed;
-    right: calc(${asideWidth} + ${rem(20)});
-    bottom: ${rem(20)};
-`;
+// const HParamsImportanceDialog = styled(ImportanceDialog)`
+//     position: fixed;
+//     right: calc(${asideWidth} + ${rem(20)});
+//     bottom: ${rem(20)};
+// `;
+// NOTICE: remove it!!!
+asideWidth;
 
 const DownloadButtons = styled.div`
     display: flex;
@@ -79,6 +82,14 @@ const HyperParameter: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
 
     const {data: indicatorsData, loading: loadingIndicators} = useRequest<IndicatorData>('/hparams/indicators');
+    const isEmpty = useMemo(() => {
+        if (indicatorsData) {
+            const {hparams, metrics} = indicatorsData;
+            return hparams.length === 0 || metrics.length === 0;
+        }
+        return true;
+    }, [indicatorsData]);
+
     const indicators = useMemo(
         () => [
             ...formatIndicators(indicatorsData?.hparams ?? [], 'hparams'),
@@ -128,7 +139,7 @@ const HyperParameter: FunctionComponent = () => {
         }
     }, [tabView, viewData]);
 
-    const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
+    // const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
 
     const downloadData = useCallback(
         (type: 'tsv' | 'csv') =>
@@ -188,11 +199,11 @@ const HyperParameter: FunctionComponent = () => {
                 <HPWrapper>
                     <Tab list={tabs} value={tabView} onChange={setTabView} />
                     <ViewWrapper>
-                        {view}
-                        <HParamsImportanceDialog
+                        {isEmpty ? <Error /> : view}
+                        {/* <HParamsImportanceDialog
                             visible={importanceDialogVisible}
                             onClickClose={() => setImportanceDialogVisible(false)}
-                        />
+                        /> */}
                     </ViewWrapper>
                 </HPWrapper>
             </Content>

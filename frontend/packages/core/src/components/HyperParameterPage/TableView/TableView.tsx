@@ -15,15 +15,18 @@
  */
 
 import {DEFAULT_ORDER_INDICATOR, OrderDirection} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useMemo, useState} from 'react';
+import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
 
 import Select from '~/components/Select';
 import Table from './Table';
 import View from '~/components/HyperParameterPage/View';
 import type {ViewData} from '~/resource/hyper-parameter';
 import {rem} from '~/utils/style';
+import {safeSplit} from '~/utils';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
+
+const TABLE_ORDER_STORAGE_KEY = 'hyper-parameter-table-view-table-order';
 
 const Wrapper = styled(View)`
     display: flex;
@@ -91,6 +94,18 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list, data}) 
         [orderDirection, indicatorOrder]
     );
 
+    const [columnOrder, setColumnOrder] = useState<string[]>(
+        safeSplit(window.sessionStorage.getItem(TABLE_ORDER_STORAGE_KEY) ?? '', ',')
+    );
+    const changeOrder = useCallback(
+        (order: string[]) => {
+            const filterOrder = order.filter(o => indicatorNameList.includes(o));
+            setColumnOrder(filterOrder);
+            window.sessionStorage.setItem(TABLE_ORDER_STORAGE_KEY, filterOrder.join(','));
+        },
+        [indicatorNameList]
+    );
+
     return (
         <Wrapper>
             <OrderSection>
@@ -114,7 +129,15 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list, data}) 
                 ) : null}
             </OrderSection>
             <TableSection>
-                <Table indicators={indicators} list={list} data={data} sortBy={sortBy} expand />
+                <Table
+                    indicators={indicators}
+                    list={list}
+                    data={data}
+                    sortBy={sortBy}
+                    expand
+                    columnOrder={columnOrder}
+                    onOrderChange={changeOrder}
+                />
             </TableSection>
         </Wrapper>
     );

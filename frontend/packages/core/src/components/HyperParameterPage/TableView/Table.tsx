@@ -37,6 +37,8 @@ import {useSticky} from 'react-table-sticky';
 
 type TableViewTableProps = ViewData & {
     sortBy?: SortingRule<string>[];
+    columnOrder?: string[];
+    onOrderChange?: (order: string[]) => unknown;
     expand?: boolean;
     expandAll?: boolean;
 };
@@ -46,6 +48,8 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
     indicators,
     list: data,
     sortBy,
+    columnOrder,
+    onOrderChange,
     expand,
     expandAll
 }) => {
@@ -80,6 +84,8 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
         [expand, indicators]
     );
 
+    const order = useMemo(() => (columnOrder ? ['name', ...columnOrder] : []), [columnOrder]);
+
     const {
         getTableProps,
         headerGroups,
@@ -97,7 +103,8 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
             data,
             defaultColumn,
             initialState: {
-                sortBy: sortBy ?? []
+                sortBy: sortBy ?? [],
+                columnOrder: order
             },
             autoResetExpanded: false
         },
@@ -128,6 +135,9 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
         () => (state.columnOrder.length ? state.columnOrder : tableColumns.map(c => c.id)),
         [state.columnOrder, tableColumns]
     );
+    useEffect(() => {
+        onOrderChange?.(orderedColumnIds.filter(id => id !== 'name'));
+    }, [onOrderChange, orderedColumnIds]);
     const droppableColumnId = useMemo(() => {
         if (draggingColumnId != null && droppableColumn != null) {
             const [id, side] = droppableColumn;
@@ -145,16 +155,16 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
             draggingColumnId != null &&
             droppableColumn &&
             droppableColumn[1] === 'before' &&
-            tableColumns[0]?.id === droppableColumn[0],
-        [draggingColumnId, droppableColumn, tableColumns]
+            orderedColumnIds[0] === droppableColumn[0],
+        [draggingColumnId, droppableColumn, orderedColumnIds]
     );
     const isTableDroppableRight = useMemo(
         () =>
             draggingColumnId != null &&
             droppableColumn &&
             droppableColumn[1] === 'after' &&
-            tableColumns[tableColumns.length - 1]?.id === droppableColumn[0],
-        [draggingColumnId, droppableColumn, tableColumns]
+            orderedColumnIds[orderedColumnIds.length - 1] === droppableColumn[0],
+        [draggingColumnId, droppableColumn, orderedColumnIds]
     );
     const drop = useCallback(
         (id: string, side: 'before' | 'after') => {
