@@ -212,7 +212,7 @@ const Audio: FunctionComponent<AudioProps & WithStyled> = ({
     }, []);
     const startTimer = useCallback(() => {
         tick();
-        timer.current = (window.setInterval(tick, 250) as unknown) as number;
+        timer.current = window.setInterval(tick, 250) as unknown as number;
     }, [tick]);
     const stopTimer = useCallback(() => {
         if (player.current) {

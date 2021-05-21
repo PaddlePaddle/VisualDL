@@ -130,9 +130,10 @@ const HighDimensional: FunctionComponent = () => {
     const chart = useRef<HighDimensionalChartRef>(null);
 
     const {data: list, loading: loadingList} = useRequest<EmbeddingInfo[]>('/embedding/list');
-    const embeddingList = useMemo(() => list?.map(item => ({value: item.name, label: item.name, ...item})) ?? [], [
-        list
-    ]);
+    const embeddingList = useMemo(
+        () => list?.map(item => ({value: item.name, label: item.name, ...item})) ?? [],
+        [list]
+    );
     const [selectedEmbeddingName, setSelectedEmbeddingName] = useState<string>();
     const selectedEmbedding = useMemo(
         () => embeddingList.find(embedding => embedding.value === selectedEmbeddingName),
@@ -314,10 +315,10 @@ const HighDimensional: FunctionComponent = () => {
     }, [result, showError]);
     const hasVector = useMemo(() => dim !== 0, [dim]);
 
-    const dataPath = useMemo(() => (vectorFile ? vectorFile.name : selectedEmbedding?.path ?? ''), [
-        vectorFile,
-        selectedEmbedding
-    ]);
+    const dataPath = useMemo(
+        () => (vectorFile ? vectorFile.name : selectedEmbedding?.path ?? ''),
+        [vectorFile, selectedEmbedding]
+    );
 
     const [perplexity, setPerplexity] = useState(5);
     const [learningRate, setLearningRate] = useState(10);

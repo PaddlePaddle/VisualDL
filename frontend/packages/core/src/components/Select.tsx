@@ -40,8 +40,10 @@ export const padding = em(10);
 export const height = em(36);
 
 const Wrapper = styled.div<{opened?: boolean}>`
-    height: ${height};
-    line-height: calc(${height} - 2px);
+    --height: ${height};
+    --padding: ${padding};
+    height: var(--height);
+    line-height: calc(var(--height) - 2px);
     max-width: 100%;
     display: inline-block;
     position: relative;
@@ -56,7 +58,7 @@ const Wrapper = styled.div<{opened?: boolean}>`
 `;
 
 const Trigger = styled.div<{selected?: boolean}>`
-    padding: ${padding};
+    padding: var(--padding);
     display: inline-flex;
     ${size('100%')}
     justify-content: space-between;
@@ -78,12 +80,26 @@ const TriggerIcon = styled(Icon)<{opened?: boolean}>`
 const Label = styled.span`
     flex-grow: 1;
     padding-right: ${em(10)};
+    line-height: 1;
     ${ellipsis()}
 `;
 
-const List = styled.div<{opened?: boolean; empty?: boolean}>`
+const List = styled.div<{opened?: boolean; empty?: boolean; direction?: 'bottom' | 'top'}>`
     position: absolute;
-    top: 100%;
+    ${props =>
+        props.direction === 'top'
+            ? {
+                  bottom: '100%',
+                  borderBottomColor: 'var(--border-color)',
+                  boxShadow: '0 -5px 6px 0 rgba(0, 0, 0, 0.05)',
+                  ...borderRadiusShortHand('top', borderRadius)
+              }
+            : {
+                  top: '100%',
+                  borderTopColor: 'var(--border-color)',
+                  boxShadow: '0 5px 6px 0 rgba(0, 0, 0, 0.05)',
+                  ...borderRadiusShortHand('bottom', borderRadius)
+              }}
     width: calc(100% + 2px);
     max-height: ${math(`4.35 * ${height} + 2 * ${padding}`)};
     overflow-x: hidden;
@@ -91,13 +107,10 @@ const List = styled.div<{opened?: boolean; empty?: boolean}>`
     left: -1px;
     padding: ${padding} 0;
     border: inherit;
-    border-top-color: var(--border-color);
-    ${borderRadiusShortHand('bottom', borderRadius)}
     display: ${props => (props.opened ? 'block' : 'none')};
     z-index: ${zIndexes.component};
     line-height: 1;
     background-color: inherit;
-    box-shadow: 0 5px 6px 0 rgba(0, 0, 0, 0.05);
     ${transitionProps(['border-color', 'color'])}
     ${props =>
         props.empty
@@ -168,6 +181,7 @@ export type SelectListItem<T> = {
 export type SelectProps<T> = {
     list?: (SelectListItem<T> | T)[];
     placeholder?: string;
+    direction?: 'bottom' | 'top';
 } & (
     | {
           value?: T;
@@ -185,6 +199,7 @@ const Select = <T extends unknown>({
     list: propList,
     value: propValue,
     placeholder,
+    direction,
     multiple,
     className,
     onChange
@@ -196,10 +211,10 @@ const Select = <T extends unknown>({
     const closeDropdown = useCallback(() => setIsOpened(false), []);
 
     const [value, setValue] = useState(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue);
-    useEffect(() => setValue(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue), [
-        multiple,
-        propValue
-    ]);
+    useEffect(
+        () => setValue(multiple ? (Array.isArray(propValue) ? propValue : []) : propValue),
+        [multiple, propValue]
+    );
 
     const isSelected = useMemo(
         () => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : value != (null as T)),
@@ -267,14 +282,14 @@ const Select = <T extends unknown>({
                 <Label>{label}</Label>
                 <TriggerIcon opened={isOpened} type="chevron-down" />
             </Trigger>
-            <List opened={isOpened} empty={isListEmpty}>
+            <List className="list" opened={isOpened} empty={isListEmpty} direction={direction}>
                 {isListEmpty
                     ? t('common:empty')
                     : list.map((item, index) => {
                           if (multiple) {
                               return (
                                   <MultipleListItem
-                                      value={(value as T[]).includes(item.value)}
+                                      checked={(value as T[]).includes(item.value)}
                                       key={index}
                                       title={item.label}
                                       disabled={item.disabled}

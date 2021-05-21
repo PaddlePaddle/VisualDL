@@ -43,6 +43,11 @@ export enum TimeMode {
 export type Point2D = [number, number];
 export type Point3D = [number, number, number];
 
+export interface Range {
+    min: number;
+    max: number;
+}
+
 export enum HighDimensionalColorType {
     Null,
     Value,

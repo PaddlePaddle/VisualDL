@@ -18,6 +18,7 @@ import React, {FunctionComponent, Suspense, useMemo} from 'react';
 
 import type {WithStyled} from '~/utils/style';
 import styled from 'styled-components';
+import useClassNames from '~/hooks/useClassNames';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
@@ -40,8 +41,10 @@ type IconProps = {
 const Icon: FunctionComponent<IconProps & WithStyled> = ({type, onClick, className}) => {
     const Svg = useMemo(() => React.lazy(() => import(`${PUBLIC_PATH}/icons/${type}.js`)), [type]);
 
+    const classNames = useClassNames('vdl-icon', `icon-${type}`, className, [type, className]);
+
     return (
-        <Wrapper className={`vdl-icon icon-${type} ${className ?? ''}`} onClick={() => onClick?.()}>
+        <Wrapper className={classNames} onClick={() => onClick?.()}>
             <Suspense fallback="">
                 <Svg />
             </Suspense>

@@ -71,8 +71,13 @@ const middleware = () => {
     return async (req, res) => {
         const file = path.join(root, req.path.replace(/\.js$/, '.svg'));
         if ((await fs.stat(file)).isFile()) {
-            res.type('js');
-            res.send(await transform(file, false));
+            if (req.path.endsWith('.js')) {
+                res.type('js');
+                res.send(await transform(file, false));
+            } else {
+                res.type(req.path.split('.').pop());
+                res.send(await fs.readFile(file));
+            }
         }
     };
 };
