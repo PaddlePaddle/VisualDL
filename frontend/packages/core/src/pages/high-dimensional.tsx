@@ -311,6 +311,9 @@ const HighDimensional: FunctionComponent = () => {
             setMetadata(data.metadata);
         } else if (data !== null) {
             setLoadingPhase('parsing');
+        } else {
+            setLoading(false);
+            setLoadingPhase('');
         }
     }, [result, showError]);
     const hasVector = useMemo(() => dim !== 0, [dim]);
