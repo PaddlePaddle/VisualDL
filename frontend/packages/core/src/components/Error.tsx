@@ -40,7 +40,7 @@ const Wrapper = styled.div`
     }
 
     > .inner {
-        width: calc(50% - ${rem(280)});
+        width: max(calc(50% - ${rem(280)}), ${rem(280)});
         color: var(--text-light-color);
         ${transitionProps('color')}
         ${link}
