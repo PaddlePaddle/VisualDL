@@ -6,7 +6,7 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, audio，graph, histogram, pr curve, ROC curve, high dimensional 七个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, audio，graph, histogram, pr curve, ROC curve, high dimensional, hyper parameters 八个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
@@ -19,6 +19,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 |              [ROC Curve](#ROC-Curve--ROC曲线组件)               |   折线图   | 展示不同阈值下的模型表现                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
+| [Hyper Parameters](#High-Dimensional--数据降维组件) |  超参数可视化  | 展示超参数与指定损失函数值、准确度等指标间的关系 |
 
 
 同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
@@ -922,6 +923,67 @@ visualdl --logdir ./log --port 8080
 ```
 
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看降维后的可视化数据。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
+</p>
+
+## Hyper Parameters--超参可视化组件
+
+### 介绍
+
+Hyper Parameters 提供了多种工具。展示了超参数和指标的关系，可帮助确定最佳超参数集合。
+
+### 记录接口
+
+Hyper Parameters 组件的记录接口与其他组件稍有不同，需要先通过`add_hparams`接口记录超参数数据并标定要记录的指标名称，再通过稍后调用`add_scalar`记录具体的指标数据，才能记录完整的超参数可视化数据，如下：
+
+```python
+add_hparams(hparam_dict, metric_list, walltime=None):
+```
+接口参数说明如下：
+|    参数      |        格式         |                         含义                         |
+| ----------- | ------------------- | ---------------------------------------------------- |
+| hparam_dict |       dict          | 超参数名称及数据             |
+| metric_list |       list          | 稍后要记录的指标名称，对应`add_scalar`接口中的`tag`参数，VisualDL通过`tag`对应指标数据。 |
+| walltime    |       int           | 记录数据的时间戳，默认为当前时间戳                   |
+
+### Demo
+下面展示了使用 Hyper Parameters 组件记录数据的示例，代码见[Hyper Parameters组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/hparams_test.py)
+```python
+from visualdl import LogWriter
+
+# 此demo演示了两次实验的超参数记录，以第一次实验数据为例，首先在`add_hparams`接口中记录
+# 超参数`hparams`的数据，再标定了稍后要记录的`metrics`名称，最后通过`add_scalar`再具体
+# 记录`metrics`的数据。此处需注意`add_hparams`接口中的`metric_list`参数需要包含`add_scalar`
+# 接口的`tag`参数。
+if __name__ == '__main__':
+    # 记录第一次实验数据
+    with LogWriter('./log/hparams_test/train/run1') as writer:
+        # 记录hparams数值和metrics名称
+        writer.add_hparams(hparam_dict={'lr': 0.1, 'bsize': 1, 'opt': 'sgd'},
+                           metric_list=['hparam/accuracy', 'hparam/loss'])
+        # 通过将add_scalar接口中的tag与metrics名称对应，记录一次实验中不同step的metrics数值
+        for i in range(10):
+            writer.add_scalar(tag='hparam/accuracy', value=i, step=i)
+            writer.add_scalar(tag='hparam/loss', value=2*i, step=i)
+
+    # 记录第二次实验数据
+    with LogWriter('./log/hparams_test/train/run2') as writer:
+        # 记录hparams数值和metrics名称
+        writer.add_hparams(hparam_dict={'lr': 0.2, 'bsize': 2, 'opt': 'relu'},
+                           metric_list=['hparam/accuracy', 'hparam/loss'])
+        # 通过将add_scalar接口中的tag与metrics名称对应，记录一次实验中不同step的metrics数值
+        for i in range(10):
+            writer.add_scalar(tag='hparam/accuracy', value=1.0/(i+1), step=i)
+            writer.add_scalar(tag='hparam/loss', value=5*i, step=i)
+```
+运行上述程序后，在命令行执行
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+接着在浏览器打开`http://127.0.0.1:8080`，即可查看超参数可视化信息。
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
