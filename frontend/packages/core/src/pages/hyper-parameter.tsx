@@ -23,7 +23,7 @@ import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
 import BodyLoading from '~/components/BodyLoading';
 import Button from '~/components/Button';
 import Content from '~/components/Content';
-import Error from '~/components/Error';
+import Empty from '~/components/HyperParameterPage/Empty';
 import Field from '~/components/Field';
 // import ImportanceDialog from '~/components/HyperParameterPage/ImportanceDialog';
 import IndicatorFilter from '~/components/HyperParameterPage/IndicatorFilter/IndicatorFilter';
@@ -199,7 +199,7 @@ const HyperParameter: FunctionComponent = () => {
                 <HPWrapper>
                     <Tab list={tabs} value={tabView} onChange={setTabView} />
                     <ViewWrapper>
-                        {isEmpty ? <Error /> : view}
+                        {isEmpty ? <Empty /> : view}
                         {/* <HParamsImportanceDialog
                             visible={importanceDialogVisible}
                             onClickClose={() => setImportanceDialogVisible(false)}

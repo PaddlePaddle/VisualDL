@@ -18,6 +18,7 @@ import React, {FunctionComponent, useCallback, useEffect, useRef, useState} from
 
 import NumberInput from './NumberInput';
 import type {Range} from '~/resource/hyper-parameter';
+import {rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
@@ -37,6 +38,8 @@ const Row = styled.div`
         flex-grow: 0;
         flex-shrink: 0;
         margin-right: 1em;
+        text-align: right;
+        min-width: ${rem(36)};
     }
 `;
 

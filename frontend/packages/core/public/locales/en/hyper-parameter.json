@@ -3,6 +3,7 @@
         "hparams": "Hyper Parameters",
         "metrics": "Metrics"
     },
+    "empty": "<0>No Hparams Data was Found.</0><1>You can try the following solutions:</1><2><0>make sure that you have used `add_scalar` to record the metrics.</0><0>make sure that the `metrics_list` of `add_hparams` includes the `tag` of `add_scalar`.</0></2><3>For detailed tutorials, please refer to the <1>VisualDL Hparams Instructions</1>.</3>",
     "hyper-parameter": {
         "order-default": "Default"
     },
