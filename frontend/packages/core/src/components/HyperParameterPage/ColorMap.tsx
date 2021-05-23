@@ -68,11 +68,13 @@ const ColorMap: FunctionComponent<ColorMapProps & WithStyled> = ({indicators, da
 
     const colorByIndicator = useMemo(() => indicators.find(i => i.name === colorBy), [colorBy, indicators]);
 
-    const colorByExtent = useMemo(
+    const colorByExtent = useMemo<[number, number]>(
         () =>
             colorByIndicator
-                ? d3.extent(data.map(row => +row[colorByIndicator.group][colorByIndicator.name]))
-                : ([0, 0] as [number, number]),
+                ? (d3
+                      .extent(data.map(row => +row[colorByIndicator.group][colorByIndicator.name]))
+                      .map((v: number | undefined) => Math.round((v ?? 0) * 1000) / 1000) as [number, number])
+                : [0, 0],
         [colorByIndicator, data]
     );
 
