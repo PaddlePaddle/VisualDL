@@ -22,7 +22,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, text, graph
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 |                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
-| [Hyper Parameters](#yper Parameters--HyperParameter-Visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment. |
+| [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment. |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
@@ -881,7 +881,7 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
     <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
   </p>
 
-## HyperParameters-HyperParameter Visualization
+## HyperParameters--HyperParameter Visualization
 
 ### Introduction
 

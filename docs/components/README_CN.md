@@ -19,7 +19,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 |              [ROC Curve](#ROC-Curve--ROC曲线组件)               |   折线图   | 展示不同阈值下的模型表现                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
-| [Hyper Parameters](#yper Parameters--超参可视化组件) |  超参数可视化  | 以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。 |
+| [Hyper Parameters](#HyperParameters--超参可视化组件) |  超参数可视化  | 以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。 |
 
 
 同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
