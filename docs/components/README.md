@@ -16,11 +16,11 @@ Currently, VisualDL provides ten components: scalar, image, audio, text, graph, 
 |                [ Scalar](#Scalar--Line-Chart)                |          Line Chart           | Display scalar data such as loss and accuracy dynamically.   |
 |             [Image](#Image--Image-Visualization)             |      Image Visualization      | Display images, visualizing the input and the output and making it easy to view the changes in the intermediate process. |
 |             [Audio](#Audio--Audio-Play)             |      Audio Play      | Play the audio during the training process, making it easy to monitor the process of speech recognition and text-to-speech. |
-| [Text](#Text) | Text Visualization | Visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model. |
+| [Text](#Text) | Text Visualization | Visualize the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model. |
 |              [Graph](#Graph--Network-Structure)              |       Network Structure       | Visualize network structures, node attributes and data flow, assisting developers to learn and to optimize network structures. |
 |       [Histogram](#Histogram--Distribution-of-Tensors)       |    Distribution of Tensors    | Present the changes of distributions of tensors, such as weights/gradients/bias, during the training process. |
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
-|                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds. |
+|                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Show the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 | [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way. |
 

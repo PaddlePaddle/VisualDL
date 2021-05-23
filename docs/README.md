@@ -267,7 +267,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 **High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis. 
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
 </p>
 
 ### Hyper Parameters
