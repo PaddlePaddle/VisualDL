@@ -231,7 +231,7 @@ Developers can compare with multiple experiments by specifying and uploading the
 </p>
 
 ### Text
-Visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model.
+**Text** visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
@@ -272,7 +272,7 @@ Visualizes the text output of NLP models within any stage, aiding developers to 
 
 ### Hyper Parameters
 
-Visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment.
+**Hyper Parameters** visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way.
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>

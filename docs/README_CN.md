@@ -245,7 +245,7 @@ app.run(logdir="./log")
 展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。
 
 <p align="center">
-<img src="https://https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
 </p>
 
 ### Graph
