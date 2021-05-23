@@ -928,15 +928,15 @@ visualdl --logdir ./log --port 8080
 <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
 </p>
 
-## Hyper Parameters--超参可视化组件
+## HyperParameters--超参可视化组件
 
 ### 介绍
 
-Hyper Parameters 提供了多种工具。展示了超参数和指标的关系，可帮助确定最佳超参数集合。
+HyperParameters 提供了多种工具。展示了超参数和指标的关系，可帮助确定最佳超参数集合。
 
 ### 记录接口
 
-Hyper Parameters 组件的记录接口与其他组件稍有不同，需要先通过`add_hparams`接口记录超参数数据并标定要记录的指标名称，再通过稍后调用`add_scalar`记录具体的指标数据，才能记录完整的超参数可视化数据，如下：
+HyperParameters 组件的记录接口与其他组件稍有不同，需要先通过`add_hparams`接口记录超参数数据并标定要记录的指标名称，再通过稍后调用`add_scalar`记录具体的指标数据，才能记录完整的超参数可视化数据，如下：
 
 ```python
 add_hparams(hparam_dict, metric_list, walltime=None):
@@ -949,20 +949,20 @@ add_hparams(hparam_dict, metric_list, walltime=None):
 | walltime    |       int           | 记录数据的时间戳，默认为当前时间戳                   |
 
 ### Demo
-下面展示了使用 Hyper Parameters 组件记录数据的示例，代码见[Hyper Parameters组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/hparams_test.py)
+下面展示了使用 HyperParameters 组件记录数据的示例，代码见[HyperParameters组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/hparams_test.py)
 ```python
 from visualdl import LogWriter
 
 # 此demo演示了两次实验的超参数记录，以第一次实验数据为例，首先在`add_hparams`接口中记录
 # 超参数`hparams`的数据，再标定了稍后要记录的`metrics`名称，最后通过`add_scalar`再具体
-# 记录`metrics`的数据。此处需注意`add_hparams`接口中的`metric_list`参数需要包含`add_scalar`
+# 记录`metrics`的数据。此处需注意`add_hparams`接口中的`metrics_list`参数需要包含`add_scalar`
 # 接口的`tag`参数。
 if __name__ == '__main__':
     # 记录第一次实验数据
     with LogWriter('./log/hparams_test/train/run1') as writer:
         # 记录hparams数值和metrics名称
-        writer.add_hparams(hparam_dict={'lr': 0.1, 'bsize': 1, 'opt': 'sgd'},
-                           metric_list=['hparam/accuracy', 'hparam/loss'])
+        writer.add_hparams(hparams_dict={'lr': 0.1, 'bsize': 1, 'opt': 'sgd'},
+                           metrics_list=['hparam/accuracy', 'hparam/loss'])
         # 通过将add_scalar接口中的tag与metrics名称对应，记录一次实验中不同step的metrics数值
         for i in range(10):
             writer.add_scalar(tag='hparam/accuracy', value=i, step=i)
@@ -971,8 +971,8 @@ if __name__ == '__main__':
     # 记录第二次实验数据
     with LogWriter('./log/hparams_test/train/run2') as writer:
         # 记录hparams数值和metrics名称
-        writer.add_hparams(hparam_dict={'lr': 0.2, 'bsize': 2, 'opt': 'relu'},
-                           metric_list=['hparam/accuracy', 'hparam/loss'])
+        writer.add_hparams(hparams_dict={'lr': 0.2, 'bsize': 2, 'opt': 'relu'},
+                           metrics_list=['hparam/accuracy', 'hparam/loss'])
         # 通过将add_scalar接口中的tag与metrics名称对应，记录一次实验中不同step的metrics数值
         for i in range(10):
             writer.add_scalar(tag='hparam/accuracy', value=1.0/(i+1), step=i)
@@ -986,34 +986,48 @@ visualdl --logdir ./log --port 8080
 接着在浏览器打开`http://127.0.0.1:8080`，即可查看超参数可视化信息。
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
+<img src="https://user-images.githubusercontent.com/28444161/119219681-59cb3c00-bb19-11eb-8159-b25130c5a216.png" width="85%"/>
 </p>
 
 ### 功能操作说明
 
-* 支持选择特定实验数据进行展示，且支持根据所选择的数据标签进行展示
+* 表格视图
+  表格视图可选择按照某一项排序展示。其中，Trial ID表示某次具体的实验名，其他正常字体展示的列名为超参数名，加粗字体展示的列名为度量指标名。
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/103191809-4e306c00-4911-11eb-853f-e143ef86e182.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119219705-75364700-bb19-11eb-9077-064337ae95be.png" width="30%"/>
   </p>
 
-* 降维方式--TSNE
+* 平行坐标图
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/103192762-cea49c00-4914-11eb-896c-070b0bf0e2ea.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221098-440d4500-bb20-11eb-8b26-d29f95147c04.png" width="27%"/>
   </p>
 
-* 降维方式--PCA
+* 散点图
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/103192341-47a2f400-4913-11eb-9995-fdc0acadbdc9.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221108-54252480-bb20-11eb-9a8f-1d082c36402b.png" width="27%"/>
   </p>
 
-* 降维方式--UMAP
+* 度量指标折线图-表格视图、平行坐标图和散点图下均可查看
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221127-6901b800-bb20-11eb-84f0-407bd7241bc7.png" width="27%"/>
   </p>
+
+* 超参数/度量指标范围选择-通过选择超参数或度量指标的范围以展示部分数据
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221141-78810100-bb20-11eb-9e06-5b345459310a.png" width="27%"/>
+  </p>
+
+* 下载数据
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="27%"/>
+  </p>
+
 
 ## VDL.service
 

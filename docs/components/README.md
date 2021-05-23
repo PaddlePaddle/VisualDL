@@ -880,6 +880,109 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
     <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
   </p>
 
+## HyperParameters-Visualization
+
+### Introduction
+
+HyperParameters provides a variety of tools to show the relationship between hyperparameters and metrics, which can help determine the best set of hyperparameters.
+
+### Record Interface
+
+The interface of the HyperParameters is slightly different from other components. It is necessary to record the hyperparameter data and specify the name of the metrics through the `add_hparams` interface, and then call `add_scalar` to record the specific metrics data. Only in this way you can record the complete data.
+
+```python
+add_hparams(hparam_dict, metric_list, walltime=None):
+```
+The interface parameters are described as follows:
+| parameter   | format              | meaning     |
+| ----------- | ------------------- | ---------------------------------- |
+| hparam_dict |       dict          | name and data of hparams.          |
+| metric_list |       list          | The metrics name to be recorded later corresponds to the `tag` parameter in the `add_scalar` interface, and VisualDL corresponds to the indicator data through the `tag`. |
+| walltime    |       int           | Record the time stamp of the data, the default is the current time stamp.  |
+
+### Demo
+The following shows an example of how to use HyperParameters component, and script can be found in [HyperParameters Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/hparams_test.py)
+```python
+from visualdl import LogWriter
+
+# This demo demonstrates the hyperparameter records of two experiments. Take the first
+# experiment data as an example, First, record the data of the hyperparameter `hparams`
+# in the `add_hparams` interface. Then specify the name of `metrics` to be recorded later.
+# Finally, use `add_scalar` to specifically record the data of `metrics`. Note that the
+# `metrics_list` parameter in the `add_hparams` interface needs to include the `tag`
+# parameter of the `add_scalar` interface.
+if __name__ == '__main__':
+    # Record the data of the first experiment
+    with LogWriter('./log/hparams_test/train/run1') as writer:
+        # Record the value of `hparams` and the name of `metrics`
+        writer.add_hparams(hparams_dict={'lr': 0.1, 'bsize': 1, 'opt': 'sgd'},
+                           metrics_list=['hparam/accuracy', 'hparam/loss'])
+        # Record the metrics values ​​of different steps in an experiment by matching
+        # the `tag` in the `add_scalar` interface with `metrics_list` in `add_hparams` interface.
+        for i in range(10):
+            writer.add_scalar(tag='hparam/accuracy', value=i, step=i)
+            writer.add_scalar(tag='hparam/loss', value=2*i, step=i)
+
+    # Record the data of the second experiment
+    with LogWriter('./log/hparams_test/train/run2') as writer:
+        # Record the value of `hparams` and the name of `metrics`
+        writer.add_hparams(hparams_dict={'lr': 0.2, 'bsize': 2, 'opt': 'relu'},
+                           metrics_list=['hparam/accuracy', 'hparam/loss'])
+        # Record the metrics values ​​of different steps in an experiment by matching
+        # the `tag` in the `add_scalar` interface with `metrics_list` in `add_hparams` interface.
+        for i in range(10):
+            writer.add_scalar(tag='hparam/accuracy', value=1.0/(i+1), step=i)
+            writer.add_scalar(tag='hparam/loss', value=5*i, step=i)
+```
+After running the above program, developers can launch the panel by:
+```shell
+visualdl --logdir ./log --port 8080
+```
+
+Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/119219681-59cb3c00-bb19-11eb-8159-b25130c5a216.png" width="85%"/>
+</p>
+
+### Functional Instrucions
+
+* Table View
+  The table view can be displayed in a sorted order. Trial ID represents a specific experiment name, the column name displayed in other normal fonts is the hyperparameter name, and the column displayed in bold font is the metric name.
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119219705-75364700-bb19-11eb-9077-064337ae95be.png" width="30%"/>
+  </p>
+
+* Parallel Coordinates View
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221098-440d4500-bb20-11eb-8b26-d29f95147c04.png" width="27%"/>
+  </p>
+
+* Scatter Plot Matrix View
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221108-54252480-bb20-11eb-9a8f-1d082c36402b.png" width="27%"/>
+  </p>
+
+* Scalar of Metrics-Can be viewed in table view, parallel coordinates view and scatter plot matrix view
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221127-6901b800-bb20-11eb-84f0-407bd7241bc7.png" width="27%"/>
+  </p>
+
+* Hyperparameter/metric range selection-Display part of the data by selecting the range of hyperparameters or metrics
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221141-78810100-bb20-11eb-9e06-5b345459310a.png" width="27%"/>
+  </p>
+
+* download data
+
+  <p align="center">
+    <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="27%"/>
+  </p>
 
 ## VDL.service
 
