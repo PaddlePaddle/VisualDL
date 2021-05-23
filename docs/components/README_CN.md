@@ -6,7 +6,7 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, audio，graph, histogram, pr curve, ROC curve, high dimensional, hyper parameters 八个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, audio，text, graph, histogram, pr curve, ROC curve, high dimensional, hyper parameters 十个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
@@ -19,7 +19,7 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |              [PR Curve](#PR-Curve--PR曲线组件)               |   折线图   | 权衡精度与召回率之间的平衡关系                               |
 |              [ROC Curve](#ROC-Curve--ROC曲线组件)               |   折线图   | 展示不同阈值下的模型表现                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
-| [Hyper Parameters](#High-Dimensional--数据降维组件) |  超参数可视化  | 展示超参数与指定损失函数值、准确度等指标间的关系 |
+| [Hyper Parameters](#High-Dimensional--数据降维组件) |  超参数可视化  | 以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。 |
 
 
 同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
@@ -932,11 +932,11 @@ visualdl --logdir ./log --port 8080
 
 ### 介绍
 
-HyperParameters 提供了多种工具。展示了超参数和指标的关系，可帮助确定最佳超参数集合。
+HyperParameters 以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。
 
 ### 记录接口
 
-HyperParameters 组件的记录接口与其他组件稍有不同，需要先通过`add_hparams`接口记录超参数数据并标定要记录的指标名称，再通过稍后调用`add_scalar`记录具体的指标数据，才能记录完整的超参数可视化数据，如下：
+HyperParameters 组件的记录接口与其他组件稍有不同，需要先通过add_hparams接口记录超参数（hparam_dict）和所需展示的模型度量指标名称（metric_list）如loss、acc等，再通过调用add_scalar记录具体的模型度量指标的数值，即可记录完整的超参数可视化数据，接口说明如下：
 
 ```python
 add_hparams(hparam_dict, metric_list, walltime=None):
@@ -992,40 +992,52 @@ visualdl --logdir ./log --port 8080
 ### 功能操作说明
 
 * 表格视图
-  表格视图可选择按照某一项排序展示。其中，Trial ID表示某次具体的实验名，其他正常字体展示的列名为超参数名，加粗字体展示的列名为度量指标名。
+  - 表格视图可选择按照某一项排序展示。
+  - Trial ID表示某次具体的实验名，其他正常字体展示的列名为超参数名，加粗字体展示的列名为度量指标名。
+  - 超参数和度量指标的位置可通过拖动的方式自定义。
+  - 表格视图的列宽可拖动调整。
+  - 可通过点击展开查看度量指标的变化趋势折线图。
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119219705-75364700-bb19-11eb-9077-064337ae95be.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119219705-75364700-bb19-11eb-9077-064337ae95be.png" width="85%"/>
   </p>
 
 * 平行坐标图
+  - 可通过悬停展示某组实验中超参数和度量指标的具体值。
+  - 可通过选中某条曲线展示此组实验中度量指标的变化趋势折线图。
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221098-440d4500-bb20-11eb-8b26-d29f95147c04.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221098-440d4500-bb20-11eb-8b26-d29f95147c04.png" width="85%"/>
   </p>
 
 * 散点图
+  - 可通过悬停展示某组实验中超参数和度量指标的具体值。
+  - 可通过选中某个点展示此组实验中度量指标的变化趋势折线图。
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221108-54252480-bb20-11eb-9a8f-1d082c36402b.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221108-54252480-bb20-11eb-9a8f-1d082c36402b.png" width="85%"/>
   </p>
 
-* 度量指标折线图-表格视图、平行坐标图和散点图下均可查看
+* 度量指标变化趋势折线图
+  - 表格视图、平行坐标图和散点图下均可查看
+  - 此处查看的度量指标变化趋势折线图同样可在`SCALARS`面板下查看
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221127-6901b800-bb20-11eb-84f0-407bd7241bc7.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221127-6901b800-bb20-11eb-84f0-407bd7241bc7.png" width="85%"/>
   </p>
 
-* 超参数/度量指标范围选择-通过选择超参数或度量指标的范围以展示部分数据
+* 超参数/度量指标范围选择
+  - 通过选择超参数或度量指标的范围以展示部分数据
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221141-78810100-bb20-11eb-9e06-5b345459310a.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221141-78810100-bb20-11eb-9e06-5b345459310a.png" width="20%"/>
   </p>
 
 * 下载数据
+  - 可选择CSV或TSV两种格式
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="20%"/>
   </p>
 
 
