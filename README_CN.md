@@ -304,6 +304,14 @@ value: 3.1297709941864014
 </p>
 
 
+### Text
+展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
+</p>
+
+
 ### Graph
 
 一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。
@@ -353,6 +361,15 @@ value: 3.1297709941864014
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
+</p>
+
+
+### Hyper Parameters
+
+以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
 
