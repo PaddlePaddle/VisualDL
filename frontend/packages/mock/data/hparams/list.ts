@@ -35,6 +35,6 @@ export default () =>
             },
             metrics: {
                 accuracy: b[index % b.length],
-                loss: 100 - index * 0.2
+                loss: 100 - index * 0.2111111111111
             }
         }));
