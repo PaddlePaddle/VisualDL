@@ -442,14 +442,14 @@ class LogWriter(object):
                 step=step,
                 walltime=walltime))
 
-    def add_hparams(self, hparam_dict, metric_list, walltime=None):
+    def add_hparams(self, hparams_dict, metrics_list, walltime=None):
         """Add an histogram to vdl record file.
 
         Args:
-            hparam_dict (dictionary): Each key-value pair in the dictionary is the
+            hparams_dict (dictionary): Each key-value pair in the dictionary is the
               name of the hyper parameter and it's corresponding value. The type of the value
-              can be one of `bool`, `string`, `float`, `int`, or `None`.
-            metric_list (list): Name of all metrics.
+              can be one of `string`, `float` or `int`.
+            metrics_list (list): Name of all metrics.
             walltime (int): Wall time of hparams.
 
         Examples::
@@ -468,17 +468,17 @@ class LogWriter(object):
                     writer.add_scalar('hparam/accuracy', 1.0/(i+1), i)
                     writer.add_scalar('hparam/loss', 5*i, i)
         """
-        if type(hparam_dict) is not dict:
-            raise TypeError('hparam_dict should be dictionary.')
-        if type(metric_list) is not list:
-            raise TypeError('metric_list should be list.')
+        if type(hparams_dict) is not dict:
+            raise TypeError('hparam_dict should be dictionary!')
+        if type(metrics_list) is not list:
+            raise TypeError('metric_list should be list!')
         walltime = round(time.time() * 1000) if walltime is None else walltime
 
         self._get_file_writer().add_record(
             hparam(
                 name=md5(self.file_name),
-                hparam_dict=hparam_dict,
-                metric_list=metric_list,
+                hparam_dict=hparams_dict,
+                metric_list=metrics_list,
                 walltime=walltime))
 
     def add_pr_curve(self,

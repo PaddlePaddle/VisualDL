@@ -230,6 +230,13 @@ Developers can compare with multiple experiments by specifying and uploading the
 <img src="https://user-images.githubusercontent.com/48054808/90869771-47c23e80-e3cb-11ea-8b2a-a38b6c33d64b.png" width="85%"/>
 </p>
 
+### Text
+**Text** visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
+</p>
+
 ### Graph
 
 **Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows Developers to explore model attributes, node information, node input and output. aiding them analyze model structure quickly and understand the direction of data flow easily.
@@ -260,7 +267,15 @@ Developers can compare with multiple experiments by specifying and uploading the
 **High Dimensional** provides two approaches--T-SNE and PCA--to do the dimensionality reduction, allowing developers to have an in-depth analysis of the relationship between high-dimensional data and to optimize algorithms based on the analysis. 
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/90870677-85739700-e3cc-11ea-8653-18fa5c4106a3.GIF" width="85%"/>
+<img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
+</p>
+
+### Hyper Parameters
+
+**Hyper Parameters** visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
 ### VDL.service
