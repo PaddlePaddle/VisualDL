@@ -109,28 +109,35 @@ const StyledScaleMethodSelect = styled(ScaleMethodSelect)`
     position: relative;
 `;
 
+const sortIndicators = (indicators: Indicator[], order?: string[]) =>
+    order ? indicators.sort(({name: nameA}, {name: nameB}) => order.indexOf(nameA) - order.indexOf(nameB)) : indicators;
+
 type ParallelCoordinatesProps = ViewData & {
     colors: string[];
+    order?: string[];
     onHover?: (index: number | null) => unknown;
     onSelect?: (index: number | null) => unknown;
+    onChangeOrder?: (order: string[]) => unknown;
 };
 
 const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyled> = ({
     indicators,
     data,
     colors,
+    order,
     onHover,
     onSelect,
+    onChangeOrder,
     className
 }) => {
     const container = useRef<HTMLDivElement>(null);
     const graph = useRef<Graph>();
     const [columnWidth, setColumnWidth] = useState(0);
 
-    const [indicatorsOrder, setIndicatorsOrder] = useState(indicators.map(({name}) => name));
+    const [indicatorsOrder, setIndicatorsOrder] = useState(sortIndicators(indicators, order).map(({name}) => name));
     useEffect(() => {
-        setIndicatorsOrder(indicators.map(({name}) => name));
-    }, [indicators]);
+        setIndicatorsOrder(sortIndicators(indicators, order).map(({name}) => name));
+    }, [indicators, order]);
 
     const orderedIndicators = useMemo(
         () =>
@@ -176,7 +183,18 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
             setIndicatorsOrder(order);
         });
         return () => graph.current?.dispose();
-    }, []);
+    }, [onChangeOrder]);
+
+    const changeOrder = useCallback((order: string[]) => onChangeOrder?.(order), [onChangeOrder]);
+    useEffect(() => {
+        const g = graph.current;
+        if (g) {
+            g.on('dragged', changeOrder);
+            return () => {
+                g.off('dragged', changeOrder);
+            };
+        }
+    }, [changeOrder]);
 
     useEffect(() => {
         const c = container.current;
@@ -215,9 +233,10 @@ const ParallelCoordinates: FunctionComponent<ParallelCoordinatesProps & WithStyl
     }, [colors]);
 
     useEffect(() => {
-        graph.current?.render(indicators, data);
+        const orderedIndicators = sortIndicators(indicators, order);
+        graph.current?.render(orderedIndicators, data);
         setColumnWidth(graph.current?.columnWidth ?? 0);
-    }, [indicators, data]);
+    }, [indicators, data, order]);
 
     return (
         <Container className={className}>

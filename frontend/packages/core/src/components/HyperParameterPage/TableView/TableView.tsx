@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import {DEFAULT_ORDER_INDICATOR, OrderDirection} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import {DEFAULT_ORDER_INDICATOR, OrderDirection, useIndicatorOrder} from '~/resource/hyper-parameter';
+import React, {FunctionComponent, useMemo, useState} from 'react';
 
 import Select from '~/components/Select';
 import Table from './Table';
 import View from '~/components/HyperParameterPage/View';
 import type {ViewData} from '~/resource/hyper-parameter';
 import {rem} from '~/utils/style';
-import {safeSplit} from '~/utils';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
-const TABLE_ORDER_STORAGE_KEY = 'hyper-parameter-table-view-table-order';
+const COLUMN_ORDER_STORAGE_KEY = 'hyper-parameter-table-view-column-order';
 
 const Wrapper = styled(View)`
     display: flex;
@@ -67,14 +66,14 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list, data}) 
 
     const indicatorNameList = useMemo(() => indicators.map(({name}) => name), [indicators]);
 
-    const indicatorOrderList = useMemo(
+    const columnOrderList = useMemo(
         () => [
             {value: DEFAULT_ORDER_INDICATOR, label: t('hyper-parameter.order-default')},
             ...indicatorNameList.map(value => ({value, label: value}))
         ],
         [indicatorNameList, t]
     );
-    const [indicatorOrder, setIndicatorOrder] = useState<string | symbol>(DEFAULT_ORDER_INDICATOR);
+    const [columnOrder, setColumnOrder] = useState<string | symbol>(DEFAULT_ORDER_INDICATOR);
 
     const orderDirectionList = useMemo(
         () =>
@@ -88,35 +87,20 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list, data}) 
 
     const sortBy = useMemo(
         () =>
-            indicatorOrder === DEFAULT_ORDER_INDICATOR
+            columnOrder === DEFAULT_ORDER_INDICATOR
                 ? []
-                : [{id: indicatorOrder as string, desc: orderDirection === OrderDirection.DESCENDING}],
-        [orderDirection, indicatorOrder]
+                : [{id: columnOrder as string, desc: orderDirection === OrderDirection.DESCENDING}],
+        [orderDirection, columnOrder]
     );
 
-    const [columnOrder, setColumnOrder] = useState<string[]>(
-        safeSplit(window.sessionStorage.getItem(TABLE_ORDER_STORAGE_KEY) ?? '', ',')
-    );
-    const changeOrder = useCallback(
-        (order: string[]) => {
-            const filterOrder = order.filter(o => indicatorNameList.includes(o));
-            setColumnOrder(filterOrder);
-            window.sessionStorage.setItem(TABLE_ORDER_STORAGE_KEY, filterOrder.join(','));
-        },
-        [indicatorNameList]
-    );
+    const [indicatorOrder, setIndicatorOrder] = useIndicatorOrder(COLUMN_ORDER_STORAGE_KEY, indicators);
 
     return (
         <Wrapper>
             <OrderSection>
                 <span>{t('hyper-parameter:order-by')}</span>
-                <Select
-                    className="order-select"
-                    list={indicatorOrderList}
-                    value={indicatorOrder}
-                    onChange={setIndicatorOrder}
-                />
-                {indicatorOrder !== DEFAULT_ORDER_INDICATOR ? (
+                <Select className="order-select" list={columnOrderList} value={columnOrder} onChange={setColumnOrder} />
+                {columnOrder !== DEFAULT_ORDER_INDICATOR ? (
                     <>
                         <span>{t('hyper-parameter:order-direction')}</span>
                         <Select
@@ -135,8 +119,8 @@ const TableView: FunctionComponent<TableViewProps> = ({indicators, list, data}) 
                     data={data}
                     sortBy={sortBy}
                     expand
-                    columnOrder={columnOrder}
-                    onOrderChange={changeOrder}
+                    columnOrder={indicatorOrder}
+                    onOrderChange={setIndicatorOrder}
                 />
             </TableSection>
         </Wrapper>

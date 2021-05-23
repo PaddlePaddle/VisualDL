@@ -15,6 +15,7 @@
  */
 
 import React, {FunctionComponent, useState} from 'react';
+import {useGraph, useIndicatorOrder} from '~/resource/hyper-parameter';
 
 import ColorMap from '~/components/HyperParameterPage/ColorMap';
 import ParallelCoordinatesGraph from './ParallelCoordinatesGraph';
@@ -23,7 +24,6 @@ import View from '~/components/HyperParameterPage/View';
 import type {ViewData} from '~/resource/hyper-parameter';
 import {rem} from '~/utils/style';
 import styled from 'styled-components';
-import {useGraph} from '~/resource/hyper-parameter';
 
 const ParallelCoordinatesContainer = styled.div`
     width: 100%;
@@ -41,12 +41,16 @@ const ParallelCoordinatesContainer = styled.div`
     }
 `;
 
+const COLUMN_ORDER_STORAGE_KEY = 'hyper-parameter-parallel-coordinates-view-column-order';
+
 type ParallelCoordinatesViewProps = ViewData;
 
 const ParallelCoordinatesView: FunctionComponent<ParallelCoordinatesViewProps> = ({indicators, list, data}) => {
     const {selectedIndicators, sessionData, onHover, onSelect, showMetricsGraph} = useGraph(indicators, list);
 
     const [colors, setColors] = useState<string[]>([]);
+
+    const [order, setOrder] = useIndicatorOrder(COLUMN_ORDER_STORAGE_KEY, indicators);
 
     return (
         <>
@@ -58,8 +62,10 @@ const ParallelCoordinatesView: FunctionComponent<ParallelCoordinatesViewProps> =
                         list={list}
                         data={data}
                         colors={colors}
+                        order={order}
                         onHover={onHover}
                         onSelect={onSelect}
+                        onChangeOrder={setOrder}
                     />
                     <ColorMap className="color-map" indicators={indicators} data={data} onChange={setColors} />
                 </ParallelCoordinatesContainer>

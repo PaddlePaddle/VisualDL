@@ -95,7 +95,7 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
         setColumnOrder,
         state,
         totalColumnsWidth,
-        columns: tableColumns,
+        visibleColumns,
         allColumns
     } = useTable(
         {
@@ -131,10 +131,7 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
     const startDrag = useCallback((id: string) => setDraggingColumnId(id), []);
     const stopDrag = useCallback(() => setDraggingColumnId(null), []);
     const changeDropSide = useCallback((id: string, side: 'before' | 'after') => setDroppableColumn([id, side]), []);
-    const orderedColumnIds = useMemo(
-        () => (state.columnOrder.length ? state.columnOrder : tableColumns.map(c => c.id)),
-        [state.columnOrder, tableColumns]
-    );
+    const orderedColumnIds = useMemo(() => visibleColumns.map(c => c.id), [visibleColumns]);
     useEffect(() => {
         onOrderChange?.(orderedColumnIds.filter(id => id !== 'name'));
     }, [onOrderChange, orderedColumnIds]);
