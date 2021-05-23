@@ -6,7 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides seven components: scalar, image, audio, graph, histogram, pr curve, ROC curve and high dimensional. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides seven components: scalar, image, audio, text, graph, histogram, pr curve, ROC curve, high dimensional and hyper parameters. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
@@ -22,6 +22,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, graph, hist
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 |                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
+| [Hyper Parameters](#yper Parameters--HyperParameter-Visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment. |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
@@ -880,15 +881,15 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
     <img src="https://user-images.githubusercontent.com/48054808/103192766-d2d0b980-4914-11eb-871e-e4b31542c5e9.png" width="27%"/>
   </p>
 
-## HyperParameters-Visualization
+## HyperParameters-HyperParameter Visualization
 
 ### Introduction
 
-HyperParameters provides a variety of tools to show the relationship between hyperparameters and metrics, which can help determine the best set of hyperparameters.
+HyperParameters visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment.
 
 ### Record Interface
 
-The interface of the HyperParameters is slightly different from other components. It is necessary to record the hyperparameter data and specify the name of the metrics through the `add_hparams` interface, and then call `add_scalar` to record the specific metrics data. Only in this way you can record the complete data.
+The interface of the HyperParameters is slightly different from other components. It is necessary to record the hyperparameter data(`hparams_dict`) and specify the name of the metrics(`metrics_list`) through the `add_hparams` interface, and then call `add_scalar` to record the specific metrics data. Only in this way you can record the complete data.
 
 ```python
 add_hparams(hparam_dict, metric_list, walltime=None):
@@ -942,46 +943,58 @@ visualdl --logdir ./log --port 8080
 Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/28444161/119219681-59cb3c00-bb19-11eb-8159-b25130c5a216.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
 ### Functional Instrucions
 
 * Table View
-  The table view can be displayed in a sorted order. Trial ID represents a specific experiment name, the column name displayed in other normal fonts is the hyperparameter name, and the column displayed in bold font is the metric name.
+  - The table view can be displayed in a sorted order.
+  - Trial ID represents a specific experiment name, the column name displayed in other normal fonts is the hyperparameter name, and the column displayed in bold font is the metric name.
+  - The position of hyperparameters and metrics can be customized by dragging.
+  - The column width of the table view can be adjusted by dragging.
+  - You can click to expand to view the scalar of the metrics.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119219705-75364700-bb19-11eb-9077-064337ae95be.png" width="30%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119219705-75364700-bb19-11eb-9077-064337ae95be.png" width="85%"/>
   </p>
 
 * Parallel Coordinates View
+  - The specific values ​​of hyperparameters and metrics in a certain set of experiments can be displayed by hovering.
+  - Scalar of the metrics in this group of experiments can be displayed by selecting a certain curve.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221098-440d4500-bb20-11eb-8b26-d29f95147c04.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221098-440d4500-bb20-11eb-8b26-d29f95147c04.png" width="85%"/>
   </p>
 
 * Scatter Plot Matrix View
+  - The specific values ​​of hyperparameters and metrics in a certain set of experiments can be displayed by hovering.
+  - Scalar of the metrics in this group of experiments can be displayed by selecting a certain point.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221108-54252480-bb20-11eb-9a8f-1d082c36402b.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221108-54252480-bb20-11eb-9a8f-1d082c36402b.png" width="85%"/>
   </p>
 
-* Scalar of Metrics-Can be viewed in table view, parallel coordinates view and scatter plot matrix view
+* Scalar of Metrics
+  - Can be viewed in table view, parallel coordinates view and scatter plot matrix view.
+  - Scalar of the metrics viewed here can also be viewed under the `SCALARS` board.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221127-6901b800-bb20-11eb-84f0-407bd7241bc7.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221127-6901b800-bb20-11eb-84f0-407bd7241bc7.png" width="85%"/>
   </p>
 
-* Hyperparameter/metric range selection-Display part of the data by selecting the range of hyperparameters or metrics
+* Hyperparameter/metric range selection
+  - Display part of the data by selecting the range of hyperparameters or metrics.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221141-78810100-bb20-11eb-9e06-5b345459310a.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221141-78810100-bb20-11eb-9e06-5b345459310a.png" width="20%"/>
   </p>
 
 * download data
+  - Two formats can be selected, CSV or TSV.
 
   <p align="center">
-    <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="27%"/>
+    <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="20%"/>
   </p>
 
 ## VDL.service
