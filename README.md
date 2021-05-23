@@ -293,6 +293,14 @@ Developers can compare multiple experiments by specifying and uploading the path
 </p>
 
 
+### Text
+**Text** visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
+</p>
+
+
 ### Graph
 
 **Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows developers to explore model attributes, node information, node input and output. aiding them analyze model structures quickly and understand the direction of data flow easily.
@@ -343,6 +351,15 @@ Developers can compare multiple experiments by specifying and uploading the path
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
+</p>
+
+
+### Hyper Parameters
+
+**Hyper Parameters** visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
 
