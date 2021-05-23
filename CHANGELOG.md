@@ -4,7 +4,47 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
-## v2.1.1 - 2020-01-28
+## v2.2.0 - 2021-05-23
+
+**ZH**
+
+- 问题修复
+    - **BE**: 修复 `Image` 组件使用 `numpy.pad` 接口版本兼容性问题 (#927)
+    - **BE**: 修复 `add_embedding` 接口 `mat` 参数不支持 `ndarray` 的问题 (#930)
+    - **BE**: 修复 `embedding` 接口 `display_name` 失效问题 (#935)
+    - **BE**: 修复全局 `Logger` 占用问题 (#944)
+    - **FE**: 修复主题在某些情况下不会随着系统设置的改变更新的问题 (#947)
+    - **FE**: 修复数据降维页面中当数据量很大时数据显示错误的问题 (#947)
+
+- 功能新增
+    - **FE**: 数据降维支持三维标签展示 (#947)
+    - **FE**: 数据降维支持色彩映射 (#950)
+    - 新增超参可视化 (#960, #961, #962, #964, #966, #967)
+
+- 其他改进
+    - **FE**: 包含数据流的侧边栏可以拖动调整大小 (#949)
+    - **FE**: 重新设计的导航栏 (#949, #951, #962)
+
+**EN**
+
+- Bug Fixes
+    - **BE**: Fix the compatibility problem of `Image` component using `numpy.pad` interface (#927)
+    - **BE**: Fix fix the problem that `mat` parameter of the `add_embedding` interface does not support `ndarray` (#930)
+    - **BE**: Fix the failure of `display_name` in `embedding` interface (#935)
+    - **BE**: Fix global `Logger` being occupied (#944)
+    - **FE**: Fix theme couldn't be changed in some case when system preference is changed (#947)
+    - **FE**: Fix display error when data size is large in high-dimensional page (#947)
+
+- Features
+    - **FE**: Add 3d label display in high-dimensional page (#947)
+    - **FE**: Add color map in high-dimensional page (#950)
+    - Add Hyper-parameters (#960, #961, #962, #964, #966, #967)
+
+- Enhancement
+    - **FE**: Sidebar with runs is now resizable (#949)
+    - **FE**: re-designed navbar (#949, #951, #962)
+
+## v2.1.1 - 2021-01-28
 
 **ZH**
 
@@ -29,7 +69,7 @@ This is the Changelog for the VisualDL 2.0 project.
 - Features
     - Add Text Sample (#917)
     - **BE**: Add images matrix writing function (#909)
-- 其他改进
+- Enhancement
     - **FE**: Add browser compatibility tip (#903)
     - **FE**: Adjust title order of sample pages (#908)
     - **FE**: Better loading experience (#908)
