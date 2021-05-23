@@ -18,11 +18,22 @@ import React, {FunctionComponent} from 'react';
 
 import type {CellProps} from 'react-table';
 import {Expander} from '~/components/Table';
+import {ellipsis} from '~/utils/style';
 import styled from 'styled-components';
 
 const Cell = styled.span`
     display: inline-flex;
     align-items: center;
+    max-width: 100%;
+
+    > ${Expander} {
+        flex: none;
+    }
+
+    > .cell {
+        flex: auto;
+        ${ellipsis()}
+    }
 `;
 
 const ExpandableCell = <D extends Record<string, unknown>>({
@@ -32,7 +43,9 @@ const ExpandableCell = <D extends Record<string, unknown>>({
     return (
         <Cell>
             <Expander {...row.getToggleRowExpandedProps()} isExpanded={row.isExpanded} />
-            <span>{cell.value}</span>
+            <span className="cell" title={cell.value}>
+                {cell.value}
+            </span>
         </Cell>
     );
 };

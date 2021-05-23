@@ -40,7 +40,7 @@ const Wrapper = styled.div`
     }
 
     > .inner {
-        width: calc(50% - ${rem(280)});
+        width: max(calc(50% - ${rem(280)}), ${rem(280)});
         color: var(--text-light-color);
         ${transitionProps('color')}
         ${link}
@@ -56,7 +56,8 @@ const Wrapper = styled.div`
             margin: 0;
         }
 
-        ol {
+        ol,
+        ul {
             padding-left: 2em;
             line-height: 1.857142857;
         }
@@ -116,7 +117,7 @@ const Error: FunctionComponent<WithStyled> = ({className, children}) => {
                             </li>
                             <li>
                                 <Trans i18nKey="errors:common.3">
-                                    Log files are generated and data is writte. Please try to&nbsp;
+                                    Log files are generated and data is written. Please try to&nbsp;
                                     <a onClick={reload}>Refresh</a>.
                                 </Trans>
                             </li>

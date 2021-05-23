@@ -37,6 +37,8 @@ import {useSticky} from 'react-table-sticky';
 
 type TableViewTableProps = ViewData & {
     sortBy?: SortingRule<string>[];
+    columnOrder?: string[];
+    onOrderChange?: (order: string[]) => unknown;
     expand?: boolean;
     expandAll?: boolean;
 };
@@ -46,6 +48,8 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
     indicators,
     list: data,
     sortBy,
+    columnOrder,
+    onOrderChange,
     expand,
     expandAll
 }) => {
@@ -73,11 +77,14 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
                 accessor: `${group}.${name}` as IndicatorGroup, // fix react-table's type error
                 id: name,
                 Header: group === 'metrics' ? MetricsHeader : Header,
+                Cell,
                 minWidth: 200
             }))
         ],
         [expand, indicators]
     );
+
+    const order = useMemo(() => (columnOrder ? ['name', ...columnOrder] : []), [columnOrder]);
 
     const {
         getTableProps,
@@ -88,7 +95,7 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
         setColumnOrder,
         state,
         totalColumnsWidth,
-        columns: tableColumns,
+        visibleColumns,
         allColumns
     } = useTable(
         {
@@ -96,7 +103,8 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
             data,
             defaultColumn,
             initialState: {
-                sortBy: sortBy ?? []
+                sortBy: sortBy ?? [],
+                columnOrder: order
             },
             autoResetExpanded: false
         },
@@ -123,10 +131,10 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
     const startDrag = useCallback((id: string) => setDraggingColumnId(id), []);
     const stopDrag = useCallback(() => setDraggingColumnId(null), []);
     const changeDropSide = useCallback((id: string, side: 'before' | 'after') => setDroppableColumn([id, side]), []);
-    const orderedColumnIds = useMemo(
-        () => (state.columnOrder.length ? state.columnOrder : tableColumns.map(c => c.id)),
-        [state.columnOrder, tableColumns]
-    );
+    const orderedColumnIds = useMemo(() => visibleColumns.map(c => c.id), [visibleColumns]);
+    useEffect(() => {
+        onOrderChange?.(orderedColumnIds.filter(id => id !== 'name'));
+    }, [onOrderChange, orderedColumnIds]);
     const droppableColumnId = useMemo(() => {
         if (draggingColumnId != null && droppableColumn != null) {
             const [id, side] = droppableColumn;
@@ -144,16 +152,16 @@ const TableViewTable: FunctionComponent<TableViewTableProps> = ({
             draggingColumnId != null &&
             droppableColumn &&
             droppableColumn[1] === 'before' &&
-            tableColumns[0]?.id === droppableColumn[0],
-        [draggingColumnId, droppableColumn, tableColumns]
+            orderedColumnIds[0] === droppableColumn[0],
+        [draggingColumnId, droppableColumn, orderedColumnIds]
     );
     const isTableDroppableRight = useMemo(
         () =>
             draggingColumnId != null &&
             droppableColumn &&
             droppableColumn[1] === 'after' &&
-            tableColumns[tableColumns.length - 1]?.id === droppableColumn[0],
-        [draggingColumnId, droppableColumn, tableColumns]
+            orderedColumnIds[orderedColumnIds.length - 1] === droppableColumn[0],
+        [draggingColumnId, droppableColumn, orderedColumnIds]
     );
     const drop = useCallback(
         (id: string, side: 'before' | 'after') => {

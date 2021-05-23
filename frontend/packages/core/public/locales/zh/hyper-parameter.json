@@ -3,6 +3,7 @@
         "hparams": "超参数",
         "metrics": "度量指标"
     },
+    "empty": "<0>无超参可视化结果展示</0><1>参考以下几种解决方案：</1><2><0>请确保您已使用 `add_scalar` 接口记录所需展示的模型度量指标（metrics）。</0><0>请确保 `add_hparams` 接口的 `metrics_list` 参数中包含 `add_scalar` 接口的 `tag` 参数。</0></2><3>您可以参考<1>Hparams使用文档</1>获取详细教程。</3>",
     "hyper-parameter": {
         "order-default": "默认"
     },

@@ -195,6 +195,9 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
             xAxis: {
                 axisPointer: {
                     snap: mode === Modes.Overlay
+                },
+                splitLine: {
+                    show: false
                 }
             },
             yAxis: {

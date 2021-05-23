@@ -216,10 +216,6 @@ const Select = <T extends unknown>({
         [multiple, propValue]
     );
 
-    const isSelected = useMemo(
-        () => !!(multiple ? (value as T[]) && (value as T[]).length !== 0 : value != (null as T)),
-        [multiple, value]
-    );
     const changeValue = useCallback(
         ({value: mutateValue, disabled}: SelectListItem<T>) => {
             if (disabled) {
@@ -264,6 +260,14 @@ const Select = <T extends unknown>({
         [propList]
     );
     const isListEmpty = useMemo(() => list.length === 0, [list]);
+
+    const isSelected = useMemo(
+        () =>
+            !!(multiple
+                ? (value as T[]) && (value as T[]).length !== 0
+                : !(value == (null as T) || list.findIndex(i => i.value === value) === -1)),
+        [list, multiple, value]
+    );
 
     const findLabelByValue = useCallback((v: T) => list.find(item => item.value === v)?.label ?? '', [list]);
     const label = useMemo(

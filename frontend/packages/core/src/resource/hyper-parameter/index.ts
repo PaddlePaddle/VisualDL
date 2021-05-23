@@ -37,6 +37,7 @@ export {format, formatIndicators, getColorScale, COLOR_MAP} from './format';
 export {filter} from './filter';
 export {calculateRelativeTime, chartData} from './metric';
 export {default as useGraph} from './hooks/useGraph';
+export {default as useIndicatorOrder} from './hooks/useIndicatorOrder';
 
 export const DEFAULT_ORDER_INDICATOR = Symbol('DEFAULT_ORDER_INDICATOR');
 export const DND_TYPE = Symbol('DND_TYPE');
