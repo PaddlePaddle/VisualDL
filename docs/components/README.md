@@ -6,7 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides seven components: scalar, image, audio, text, graph, histogram, pr curve, ROC curve, high dimensional and hyper parameters. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides ten components: scalar, image, audio, text, graph, histogram, pr curve, ROC curve, high dimensional and hyper parameters. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
@@ -22,7 +22,7 @@ Currently, VisualDL provides seven components: scalar, image, audio, text, graph
 |                   [PR Curve](#PR-Curve)                   |   Precision & Recall Curve    | Display precision-recall curves across training steps, clarifying the tradeoff between precision and recall when comparing models. |
 |                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Shows the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
-| [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment. |
+| [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way. |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
@@ -885,11 +885,11 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 ### Introduction
 
-HyperParameters visualize the relationship between hyperparameters and key indicators of the model from multiple angles in a rich view, which is convenient for quickly determining the best hyperparameter combination and realizing efficient parameter adjustment.
+HyperParameters visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way.
 
 ### Record Interface
 
-The interface of the HyperParameters is slightly different from other components. It is necessary to record the hyperparameter data(`hparams_dict`) and specify the name of the metrics(`metrics_list`) through the `add_hparams` interface, and then call `add_scalar` to record the specific metrics data. Only in this way you can record the complete data.
+The interface of the HyperParameters is slightly different from other components'. Firstly, you need to use the `add_hparams` to record the hyperparameter data(`hparams_dict`) and specify the name of the metrics(`metrics_list`). Then, for the metrics you just added, you need to record those metrics values by using `add_scalar`. In this way you can get all data for HpyerParameters Visualization.
 
 ```python
 add_hparams(hparam_dict, metric_list, walltime=None):
