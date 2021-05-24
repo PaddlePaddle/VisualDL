@@ -18,13 +18,12 @@ import type IO from './io';
 
 export type Worker = (io: IO) => Promise<void>;
 
-export type Data = {
+export interface TagData {
     runs: string[];
     tags: string[][];
-};
+}
 
-export type Embedding = {
-    name: string;
-    shape: [number, number];
-    path: string;
-};
+export interface Sample {
+    step: number;
+    wallTime: number;
+}
