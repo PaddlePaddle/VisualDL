@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import type {TagData, Worker} from './types';
-
-const DataTypes = ['csv', 'tsv'];
+import type {Sample, TagData, Worker} from './types';
 
 const worker: Worker = async io => {
-    const {runs, tags} = await io.save<TagData>('/scalar/tags');
-    const q = [];
+    const {runs, tags} = await io.save<TagData>('/text/tags');
     for (const [index, run] of runs.entries()) {
         for (const tag of tags[index]) {
-            q.push(
-                io.save('/scalar/list', {run, tag}),
-                ...DataTypes.map(type => io.saveBinary('/scalar/data', {run, tag, type}))
-            );
+            const list = (await io.save<Sample[]>('/text/list', {run, tag})) ?? [];
+            for (const [index, text] of list.entries()) {
+                await io.saveBinary('/text/text', {run, tag, index, ts: text.wallTime});
+            }
         }
     }
-    await Promise.all(q);
 };
 
 export default worker;

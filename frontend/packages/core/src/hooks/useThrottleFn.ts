@@ -51,7 +51,7 @@ function useThrottleFn<T extends Fn>(fn: T, options?: ThrottleOptions): ReturnVa
     );
 
     return {
-        run: (throttled as any) as T,
+        run: throttled as any as T,
         cancel: throttled.cancel
     };
 }

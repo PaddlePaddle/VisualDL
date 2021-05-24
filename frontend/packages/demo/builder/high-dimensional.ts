@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type {Embedding, Worker} from './types';
+import type {Worker} from './types';
+
+interface Embedding {
+    name: string;
+    shape: [number, number];
+    path: string;
+}
 
 const worker: Worker = async io => {
-    const components = await io.getData<string[]>('/components');
-    if (!components.includes('embeddings')) {
-        return;
-    }
-
     const list = await io.save<Embedding[]>('/embedding/list');
     await Promise.all(
         list.map(({name}) =>

@@ -14,22 +14,36 @@
  * limitations under the License.
  */
 
-import type {TagData, Worker} from './types';
+import type {Worker} from './types';
+
+interface Indicator {
+    name: string;
+    type: string;
+}
+
+interface IndicatorData {
+    hparams: Indicator[];
+    metrics: Indicator[];
+}
+
+interface ListItem {
+    name: string;
+    hparams: Record<string, string | number>;
+    metrics: Record<string, string | number>;
+}
 
 const DataTypes = ['csv', 'tsv'];
 
 const worker: Worker = async io => {
-    const {runs, tags} = await io.save<TagData>('/scalar/tags');
-    const q = [];
-    for (const [index, run] of runs.entries()) {
-        for (const tag of tags[index]) {
-            q.push(
-                io.save('/scalar/list', {run, tag}),
-                ...DataTypes.map(type => io.saveBinary('/scalar/data', {run, tag, type}))
-            );
+    const q = [io.save<IndicatorData>('/hparams/indicators'), io.save<ListItem[]>('/hparams/list')] as const;
+    const [{metrics}, list] = await Promise.all(q);
+    for (const row of list) {
+        for (const metric of metrics) {
+            await io.save('/hparams/metric', {run: row.name, metric: metric.name});
         }
     }
-    await Promise.all(q);
+
+    await Promise.all(DataTypes.map(type => io.saveBinary('/hparams/data', {type})));
 };
 
 export default worker;
