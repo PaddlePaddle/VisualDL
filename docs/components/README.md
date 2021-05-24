@@ -6,8 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides ten components: scalar, image, audio, text, graph, histogram, pr curve, ROC curve, high dimensional and hyper parameters. VisualDL iterates rapidly and new functions will be continuously added.
-
+Currently, VisualDL provides **Ten Components**: scalar, image, audio, text, graph, histogram, pr curve, ROC curve, high dimensional and hyperparameters. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
