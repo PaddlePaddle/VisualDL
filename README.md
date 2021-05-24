@@ -43,7 +43,7 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
   **"VisualDL--Quickly get a perfect model by using the visualization analysis tool "**
 
-  💙**Time: Wednesday (5.26) 19:00 at PaddlePaddle's bilibili Live broadcast**💙
+  💙 **Time: Wednesday (5.26) 19:00 at [PaddlePaddle's bilibili Live broadcast](http://live.bilibili.com/21689802)** 💙
 
   📣**Preview**
 
