@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/core",
-    "version": "2.2.0",
+    "version": "2.2.0-1",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -35,8 +35,8 @@
     ],
     "dependencies": {
         "@tippyjs/react": "4.2.5",
-        "@visualdl/netron": "2.2.0",
-        "@visualdl/wasm": "2.2.0",
+        "@visualdl/netron": "2.2.0-1",
+        "@visualdl/wasm": "2.2.0-1",
         "bignumber.js": "9.0.1",
         "classnames": "2.3.1",
         "d3": "6.7.0",
@@ -113,7 +113,7 @@
         "@types/snowpack-env": "2.3.3",
         "@types/styled-components": "5.1.9",
         "@types/three": "0.128.0",
-        "@visualdl/mock": "2.2.0",
+        "@visualdl/mock": "2.2.0-1",
         "babel-plugin-styled-components": "1.12.0",
         "dotenv": "9.0.2",
         "enhanced-resolve": "5.8.2",
