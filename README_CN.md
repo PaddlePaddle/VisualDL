@@ -24,7 +24,7 @@
 
 VisualDL是飞桨可视化分析工具，以丰富的图表呈现训练参数变化趋势、模型结构、数据样本、高维数据分布等。可帮助用户更清晰直观地理解深度学习模型训练过程及模型结构，进而实现高效的模型优化。
 
-VisualDL提供丰富的可视化功能，支持标量、图结构、数据样本可视化、直方图、PR曲线、ROC曲线及高维数据降维呈现等诸多功能，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README_CN.md)。如欲体验最新特性，欢迎试用我们的[**在线演示系统**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo)。项目正处于高速迭代中，敬请期待新组件的加入。
+VisualDL提供丰富的可视化功能，**支持标量、图结构、数据样本（图像、语音、文本）、超参数可视化、直方图、PR曲线、ROC曲线及高维数据降维呈现等诸多功能**，同时VisualDL提供可视化结果保存服务，通过VDL.service生成链接，保存并分享可视化结果。具体功能使用方式，请参见 [**VisualDL使用指南**](./docs/components/README_CN.md)。如欲体验最新特性，欢迎试用我们的[**在线演示系统**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo)。项目正处于高速迭代中，敬请期待新组件的加入。
 
 VisualDL支持浏览器：
 
@@ -34,6 +34,24 @@ VisualDL支持浏览器：
 - Safari ≥ 11.1
 
 VisualDL原生支持Python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
+
+## 🔥近期活动更新🔥
+
+- 🔔**2021.5.26**
+
+   **《VisualDL 可视化分析工具助力AI算法快速开发》**
+
+  💙 **时间：5月26日（周三）19：00 [飞桨B站直播间](http://live.bilibili.com/21689802)** 💙
+
+  📣**精彩抢先看：**
+
+  * 深度学习算法开发痛点剖析
+  * VisualDL可视化调参Tips大放送
+  * 图像分类模型训练及选型技巧大揭秘
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/119295192-c87ad780-bc88-11eb-86b2-d67765486530.jpg" width="30%"/>
+</p>
 
 ## 目录
 
