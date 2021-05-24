@@ -251,10 +251,10 @@ const useTagFilter = (type: Page, running: boolean) => {
         [state.tags]
     );
 
-    const runsInTags = useMemo(() => state.selectedRuns.filter(run => !!tags?.[run.label]?.length), [
-        state.selectedRuns,
-        tags
-    ]);
+    const runsInTags = useMemo(
+        () => state.selectedRuns.filter(run => !!tags?.[run.label]?.length),
+        [state.selectedRuns, tags]
+    );
 
     return {
         ...state,

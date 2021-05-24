@@ -45,7 +45,7 @@ export const options: Record<Modes, EChartOption> = {
     },
     offset: {
         ...baseOptions,
-        visualMap: ({
+        visualMap: {
             type: 'continuous',
             show: false,
             dimension: 1,
@@ -53,7 +53,7 @@ export const options: Record<Modes, EChartOption> = {
                 colorLightness: [0.5, 0.8],
                 colorSaturation: [0.5, 0.8]
             }
-        } as unknown) as VisualMap.Continuous[], // Fix echarts type bug
+        } as unknown as VisualMap.Continuous[], // Fix echarts type bug
         xAxis: {
             axisLine: {
                 onZero: false
