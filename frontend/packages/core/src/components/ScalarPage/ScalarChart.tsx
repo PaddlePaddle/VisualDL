@@ -133,7 +133,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             const idx = xAxisMap[xAxis];
             const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map((point, index) => ({
                 ...point,
-                ...datasetRanges?.[index]
+                ...datasetRanges?.[runs.findIndex(run => run.label === point.run.label)]
             }));
             const sort = sortingMethodMap[sortingMethod];
             const sorted = sort(points, series);
