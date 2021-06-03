@@ -159,6 +159,16 @@ with LogWriter(logdir="./log/scalar_test/train") as writer:
     writer.add_scalar(tag="acc", step=1, value=0.5678)
     writer.add_scalar(tag="acc", step=2, value=0.6878)
     writer.add_scalar(tag="acc", step=3, value=0.9878)
+# 如果不想使用上下文管理器`with`，可拆解为以下几步完成：
+"""
+writer = LogWriter(logdir="./log/scalar_test/train")
+
+writer.add_scalar(tag="acc", step=1, value=0.5678)
+writer.add_scalar(tag="acc", step=2, value=0.6878)
+writer.add_scalar(tag="acc", step=3, value=0.9878)
+
+writer.close()
+"""
 ```
 
 ### 2. 启动面板
