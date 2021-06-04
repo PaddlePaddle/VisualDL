@@ -1,0 +1,35 @@
+{
+    "data-type-value": {
+        "hparams": "Hyper Parameters",
+        "metrics": "Metrics"
+    },
+    "empty": "<0>No Hparams Data was Found.</0><1>You can try the following solutions:</1><2><0>make sure that you have used `add_scalar` to record the metrics.</0><0>make sure that the `metrics_list` of `add_hparams` includes the `tag` of `add_scalar`.</0></2><3>For detailed tutorials, please refer to the <1>VisualDL Hparams Instructions</1>.</3>",
+    "hyper-parameter": {
+        "order-default": "Default"
+    },
+    "max": "Max",
+    "metric-graphs-empty": "<0>No metrics selected</0><1>Please select some metrics to view graphs here.</1>",
+    "min": "Min",
+    "negative-infinity": "-Infinity",
+    "order-by": "Sort by",
+    "order-direction": "Direction",
+    "order-direction-value": {
+        "asc": "Ascending",
+        "desc": "Descending"
+    },
+    "parameter-importance": "Hyper Parameters Importance",
+    "positive-infinity": "+Infinity",
+    "scale-method": {
+        "linear": "Linear",
+        "logarithmic": "Logarithmic",
+        "quantile": "Quantile"
+    },
+    "session-table-empty": "<0>Click or hover over a line to display its values here</0><1><0>Hover to display values;</0><0>Click to display metrics graph.</0><1>",
+    "show-parameter-importance": "Show HParams Importance",
+    "trial-id": "Trial ID",
+    "views": {
+        "parallel-coordinates": "Parallel Coordinates View",
+        "scatter-plot-matrix": "Scatter Plot Matrix View",
+        "table": "Table View"
+    }
+}

@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useEffect} from 'react';
+import React, {FunctionComponent, useEffect, useMemo} from 'react';
 import {headerHeight, primaryColor, rem, size} from '~/utils/style';
 import {useHistory, useLocation} from 'react-router-dom';
 
 import Error from '~/components/Error';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
-import useAvailableComponents from '~/hooks/useAvailableComponents';
+import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
+
+const flatten = <T extends {children?: T[]}>(routes: T[]) => {
+    const result: Omit<T, 'children'>[] = [];
+    routes.forEach(route => {
+        if (route.children) {
+            result.push(...flatten(route.children));
+        } else {
+            result.push(route);
+        }
+    });
+    return result;
+};
 
 const CenterWrapper = styled.div`
     ${size(`calc(100vh - ${headerHeight})`, '100vw')}
@@ -40,24 +52,22 @@ const Loading = styled.div`
 `;
 
 const IndexPage: FunctionComponent = () => {
-    const [components, , loading] = useAvailableComponents();
+    const [components, loading] = useComponents();
     const history = useHistory();
 
     const {t} = useTranslation('common');
 
     const location = useLocation();
 
+    const activeComponents = useMemo(() => flatten(components).filter(c => c.inactive !== true), [components]);
+
     useEffect(() => {
-        if (components.length) {
-            if (components[0].path) {
-                history.replace(components[0].path + location.search);
-            } else if (components[0].children?.length && components[0].children[0].path) {
-                history.replace(components[0].children[0].path + location.search);
-            }
+        if (activeComponents.length) {
+            history.replace(activeComponents[0].path + location.search);
         } else {
             // TODO: no component available, add a error tip
         }
-    }, [components, history, location.search]);
+    }, [activeComponents, history, location.search]);
 
     return (
         <CenterWrapper>

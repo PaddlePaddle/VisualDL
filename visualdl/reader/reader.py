@@ -186,6 +186,8 @@ class LogReader(object):
                 component = "meta_data"
             elif "text" == value_type:
                 component = "text"
+            elif "hparam" == value_type:
+                component = "hyper_parameters"
             elif "tag_value" == value_type:
                 component = "scalars"
             else:

@@ -208,22 +208,19 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         }, [handler, dispatch]);
 
         useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
-        useEffect(() => (ready && dispatch('toggle-attributes', showAttributes)) || undefined, [
-            dispatch,
-            showAttributes,
-            ready
-        ]);
-        useEffect(() => (ready && dispatch('toggle-initializers', showInitializers)) || undefined, [
-            dispatch,
-            showInitializers,
-            ready
-        ]);
+        useEffect(
+            () => (ready && dispatch('toggle-attributes', showAttributes)) || undefined,
+            [dispatch, showAttributes, ready]
+        );
+        useEffect(
+            () => (ready && dispatch('toggle-initializers', showInitializers)) || undefined,
+            [dispatch, showInitializers, ready]
+        );
         useEffect(() => (ready && dispatch('toggle-names', showNames)) || undefined, [dispatch, showNames, ready]);
-        useEffect(() => (ready && dispatch('toggle-direction', horizontal)) || undefined, [
-            dispatch,
-            horizontal,
-            ready
-        ]);
+        useEffect(
+            () => (ready && dispatch('toggle-direction', horizontal)) || undefined,
+            [dispatch, horizontal, ready]
+        );
 
         useEffect(() => (ready && dispatch('toggle-theme', theme)) || undefined, [dispatch, theme, ready]);
 

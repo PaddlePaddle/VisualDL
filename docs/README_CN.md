@@ -241,6 +241,13 @@ app.run(logdir="./log")
 <img src="https://user-images.githubusercontent.com/48054808/87659138-b4746880-c78f-11ea-965b-c33804e7c296.png" width="85%"/>
 </p>
 
+### Text
+展示文本任务任意阶段的数据输出，对比不同阶段的文本变化，便于深入了解训练过程及效果。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
+</p>
+
 ### Graph
 
 一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。
@@ -278,6 +285,14 @@ app.run(logdir="./log")
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/82396340-3e4dd100-9a80-11ea-911d-798acdbc9c90.gif" width="85%"/>
+</p>
+
+### Hyper Parameters
+
+以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
 ### VDL.service

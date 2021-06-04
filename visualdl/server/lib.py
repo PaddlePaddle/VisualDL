@@ -24,6 +24,8 @@ import numpy as np
 from visualdl.server.log import logger
 from visualdl.io import bfile
 from visualdl.utils.string_util import encode_tag, decode_tag
+from visualdl.utils.importance import calc_all_hyper_param_importance
+from visualdl.utils.list_util import duplicate_removal
 from visualdl.component import components
 from visualdl.server.data_manager import add_sub_tag
 
@@ -179,6 +181,172 @@ def get_logs(log_reader, component):
 for name in components.keys():
     if name != "scalars":
         exec("get_%s_tags=partial(get_logs, component='%s')" % (name, name))
+
+
+def get_hparam_data(log_reader, type='tsv'):
+    result = get_hparam_list(log_reader)
+    delimeter = '\t' if 'tsv' == type else ','
+    header = ['Trial ID']
+    hparams_header = []
+    metrics_header = []
+    for item in result:
+        hparams_header += item['hparams'].keys()
+        metrics_header += item['metrics'].keys()
+    name_set = set()
+    h_header = []
+    for hparam in hparams_header:
+        if hparam in name_set:
+            continue
+        name_set.add(hparam)
+        h_header.append(hparam)
+    name_set = set()
+    m_header = []
+    for metric in metrics_header:
+        if metric in name_set:
+            continue
+        name_set.add(metric)
+        m_header.append(metric)
+    trans_result = []
+    for item in result:
+        temp = {'Trial ID': item.get('name', '')}
+        temp.update(item.get('hparams', {}))
+        temp.update(item.get('metrics', {}))
+        trans_result.append(temp)
+    header = header + h_header + m_header
+    with io.StringIO() as fp:
+        csv_writer = csv.writer(fp, delimiter=delimeter)
+        csv_writer.writerow(header)
+        for item in trans_result:
+            row = []
+            for col_name in header:
+                row.append(item.get(col_name, ''))
+            csv_writer.writerow(row)
+        result = fp.getvalue()
+        return result
+
+
+def get_hparam_importance(log_reader):
+    indicator = get_hparam_indicator(log_reader)
+    hparams = [item for item in indicator['hparams'] if (item['type'] != 'string')]
+    metrics = [item for item in indicator['metrics'] if (item['type'] != 'string')]
+
+    result = calc_all_hyper_param_importance(hparams, metrics)
+
+    return result
+
+
+# flake8: noqa: C901
+def get_hparam_indicator(log_reader):
+    run2tag = get_logs(log_reader, 'hyper_parameters')
+    runs = run2tag['runs']
+    hparams = {}
+    metrics = {}
+    records_list = []
+    for run in runs:
+        run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+        log_reader.load_new_data()
+        records = log_reader.data_manager.get_reservoir("hyper_parameters").get_items(
+            run, decode_tag('hparam'))
+        records_list.append([records, run])
+    records_list.sort(key=lambda x: x[0][0].timestamp)
+    runs = [run for r, run in records_list]
+    for records, run in records_list:
+        for hparamInfo in records[0].hparam.hparamInfos:
+            type = hparamInfo.WhichOneof("type")
+            if "float_value" == type:
+                if hparamInfo.name not in hparams.keys():
+                    hparams[hparamInfo.name] = {'name': hparamInfo.name,
+                                                'type': 'continuous',
+                                                'values': [hparamInfo.float_value]}
+                elif hparamInfo.float_value not in hparams[hparamInfo.name]['values']:
+                    hparams[hparamInfo.name]['values'].append(hparamInfo.float_value)
+            elif "string_value" == type:
+                if hparamInfo.name not in hparams.keys():
+                    hparams[hparamInfo.name] = {'name': hparamInfo.name,
+                                                'type': 'string',
+                                                'values': [hparamInfo.string_value]}
+                elif hparamInfo.string_value not in hparams[hparamInfo.name]['values']:
+                    hparams[hparamInfo.name]['values'].append(hparamInfo.string_value)
+            elif "int_value" == type:
+                if hparamInfo.name not in hparams.keys():
+                    hparams[hparamInfo.name] = {'name': hparamInfo.name,
+                                                'type': 'numeric',
+                                                'values': [hparamInfo.int_value]}
+                elif hparamInfo.int_value not in hparams[hparamInfo.name]['values']:
+                    hparams[hparamInfo.name]['values'].append(hparamInfo.int_value)
+            else:
+                raise TypeError("Invalid hparams param value type `%s`." % type)
+
+        for metricInfo in records[0].hparam.metricInfos:
+            metrics[metricInfo.name] = {'name': metricInfo.name,
+                                        'type': 'continuous',
+                                        'values': []}
+            for run in runs:
+                try:
+                    metrics_data = get_hparam_metric(log_reader, run, metricInfo.name)
+                    metrics[metricInfo.name]['values'].append(metrics_data[-1][-1])
+                    break
+                except:
+                    logger.error('Missing data of metrics! Please make sure use add_scalar to log metrics data.')
+            if len(metrics[metricInfo.name]['values']) == 0:
+                metrics.pop(metricInfo.name)
+            else:
+                metrics[metricInfo.name].pop('values')
+
+    results = {'hparams': [value for key, value in hparams.items()],
+               'metrics': [value for key, value in metrics.items()]}
+
+    return results
+
+
+def get_hparam_metric(log_reader, run, tag):
+    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+    log_reader.load_new_data()
+    records = log_reader.data_manager.get_reservoir("scalar").get_items(
+        run, decode_tag(tag))
+    results = [[s2ms(item.timestamp), item.id, item.value] for item in records]
+    return results
+
+
+def get_hparam_list(log_reader):
+    run2tag = get_logs(log_reader, 'hyper_parameters')
+    runs = run2tag['runs']
+    results = []
+
+    records_list = []
+    for run in runs:
+        run = log_reader.name2tags[run] if run in log_reader.name2tags else run
+        log_reader.load_new_data()
+        records = log_reader.data_manager.get_reservoir("hyper_parameters").get_items(
+            run, decode_tag('hparam'))
+        records_list.append([records, run])
+    records_list.sort(key=lambda x: x[0][0].timestamp)
+    for records, run in records_list:
+        hparams = {}
+        for hparamInfo in records[0].hparam.hparamInfos:
+            hparam_type = hparamInfo.WhichOneof("type")
+            if "float_value" == hparam_type:
+                hparams[hparamInfo.name] = hparamInfo.float_value
+            elif "string_value" == hparam_type:
+                hparams[hparamInfo.name] = hparamInfo.string_value
+            elif "int_value" == hparam_type:
+                hparams[hparamInfo.name] = hparamInfo.int_value
+            else:
+                raise TypeError("Invalid hparams param value type `%s`." % hparam_type)
+
+        metrics = {}
+        for metricInfo in records[0].hparam.metricInfos:
+            try:
+                metrics_data = get_hparam_metric(log_reader, run, metricInfo.name)
+                metrics[metricInfo.name] = metrics_data[-1][-1]
+            except:
+                logger.error('Missing data of metrics! Please make sure use add_scalar to log metrics data.')
+                metrics[metricInfo.name] = None
+
+        results.append({'name': run,
+                        'hparams': hparams,
+                        'metrics': metrics})
+    return results
 
 
 def get_scalar(log_reader, run, tag):

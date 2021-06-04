@@ -91,13 +91,13 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
 
     const echart = useRef<LineChartRef | StackChartRef>(null);
 
-    const {data: dataset, error, loading} = useRunningRequest<HistogramData>(
-        `/histogram/list?${queryString.stringify({run: run.label, tag})}`,
-        !!running,
-        {
-            refreshInterval: 60 * 1000
-        }
-    );
+    const {
+        data: dataset,
+        error,
+        loading
+    } = useRunningRequest<HistogramData>(`/histogram/list?${queryString.stringify({run: run.label, tag})}`, !!running, {
+        refreshInterval: 60 * 1000
+    });
 
     const [maximized, setMaximized] = useState<boolean>(false);
 
@@ -195,6 +195,9 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
             xAxis: {
                 axisPointer: {
                     snap: mode === Modes.Overlay
+                },
+                splitLine: {
+                    show: false
                 }
             },
             yAxis: {
@@ -289,14 +292,14 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
                         {
                             icon: 'maximize',
                             activeIcon: 'minimize',
-                            tooltip: t('histogram:maximize'),
-                            activeTooltip: t('histogram:minimize'),
+                            tooltip: t('common:maximize'),
+                            activeTooltip: t('common:minimize'),
                             toggle: true,
                             onClick: () => setMaximized(m => !m)
                         },
                         {
                             icon: 'download',
-                            tooltip: t('histogram:download-image'),
+                            tooltip: t('common:download-image'),
                             onClick: () => echart.current?.saveAsImage()
                         }
                     ]}

@@ -27,7 +27,8 @@ DEFAULT_PLUGIN_MAXSIZE = {
     "pr_curve": 300,
     "roc_curve": 300,
     "meta_data": 100,
-    "text": 10
+    "text": 10,
+    "hyper_parameters": 10000
 }
 
 
@@ -474,7 +475,9 @@ class DataManager(object):
             "meta_data":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["meta_data"]),
             "text":
-            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["text"])
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["text"]),
+            "hyper_parameters":
+            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["hyper_parameters"])
         }
         self._mutex = threading.Lock()
 

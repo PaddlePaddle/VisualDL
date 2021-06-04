@@ -68,7 +68,7 @@ export type BlobResponse = {
 function getT(): Promise<TFunction> {
     return new Promise(resolve => {
         // Bug of i18next
-        i18next.changeLanguage((undefined as unknown) as string).then(t => resolve(t));
+        i18next.changeLanguage(undefined as unknown as string).then(t => resolve(t));
     });
 }
 

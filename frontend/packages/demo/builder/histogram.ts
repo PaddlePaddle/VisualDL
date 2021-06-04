@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import type {Data, Worker} from './types';
+import type {TagData, Worker} from './types';
 
 const worker: Worker = async io => {
-    const components = await io.getData<string[]>('/components');
-    if (!components.includes('histogram')) {
-        return;
-    }
-
-    const {runs, tags} = await io.save<Data>('/histogram/tags');
+    const {runs, tags} = await io.save<TagData>('/histogram/tags');
     const q = [];
     for (const [index, run] of runs.entries()) {
         for (const tag of tags[index]) {

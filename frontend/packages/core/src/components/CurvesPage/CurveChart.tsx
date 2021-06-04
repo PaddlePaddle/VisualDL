@@ -83,7 +83,11 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, ru
 
     const echart = useRef<LineChartRef>(null);
 
-    const {data: dataset, error, loading} = useRunningRequest<PRCurveData[]>(
+    const {
+        data: dataset,
+        error,
+        loading
+    } = useRunningRequest<PRCurveData[]>(
         runs.map(run => `/${type}-curve/list?${queryString.stringify({run: run.label, tag})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
@@ -215,19 +219,19 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, ru
                         {
                             icon: 'maximize',
                             activeIcon: 'minimize',
-                            tooltip: t('curves:maximize'),
-                            activeTooltip: t('curves:minimize'),
+                            tooltip: t('common:maximize'),
+                            activeTooltip: t('common:minimize'),
                             toggle: true,
                             onClick: () => setMaximized(m => !m)
                         },
                         {
                             icon: 'restore-size',
-                            tooltip: t('curves:restore'),
+                            tooltip: t('common:restore'),
                             onClick: () => echart.current?.restore()
                         },
                         {
                             icon: 'download',
-                            tooltip: t('curves:download-image'),
+                            tooltip: t('common:download-image'),
                             onClick: () => echart.current?.saveAsImage()
                         }
                     ]}

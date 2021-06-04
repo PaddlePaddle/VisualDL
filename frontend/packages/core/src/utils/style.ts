@@ -121,6 +121,34 @@ export const link = css`
     }
 `;
 
+export const dragger = css`
+    --padding-v: ${em(8, 14)};
+    --padding-h: ${em(6, 14)};
+
+    width: ${em(6, 14)};
+    height: ${em(10, 14)};
+    box-sizing: content-box;
+    padding: var(--padding-v) var(--padding-h);
+    cursor: grab;
+    display: inline-block;
+    position: relative;
+
+    &::before {
+        --dot-size: ${em(2, 14)};
+        content: '';
+        display: block;
+        position: absolute;
+        width: var(--dot-size);
+        height: var(--dot-size);
+        background-color: currentColor;
+        top: var(--padding-v);
+        left: var(--padding-h);
+        box-shadow: 0 0, calc(var(--dot-size) * 2) 0, 0 calc(var(--dot-size) * 2),
+            calc(var(--dot-size) * 2) calc(var(--dot-size) * 2), 0 calc(var(--dot-size) * 4),
+            calc(var(--dot-size) * 2) calc(var(--dot-size) * 4);
+    }
+`;
+
 const spinner = keyframes`
     0% {
         transform: rotate(0deg);
@@ -153,6 +181,10 @@ export const GlobalStyle = createGlobalStyle`
         background-color: var(--body-background-color);
         color: var(--text-color);
         ${transitionProps(['background-color', 'color'])}
+    }
+
+    body {
+        overflow-anchor: none;
     }
 
     a {

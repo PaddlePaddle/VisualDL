@@ -317,7 +317,7 @@ const ImagePreviewer: FunctionComponent<ImagePreviewerProps> = ({
         <Wrapper>
             <Header>
                 <div className="step-slider">
-                    <span>{t('sample:step')}</span>
+                    <span>{t('common:time-mode.step')}</span>
                     <RangeSlider
                         className="slider"
                         min={0}

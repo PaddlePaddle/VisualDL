@@ -21,6 +21,7 @@ import type {Icons} from '~/components/Icon';
 import RawIcon from '~/components/Icon';
 import {colors} from '~/utils/theme';
 import styled from 'styled-components';
+import useClassNames from '~/hooks/useClassNames';
 
 const height = em(36);
 
@@ -128,14 +129,16 @@ const Button: FunctionComponent<ButtonProps & WithStyled> = ({
 
     const buttonType = useMemo(() => type || 'default', [type]);
 
+    const classNames = useClassNames(className, {rounded, disabled, outline: buttonType === 'default' || outline}, [
+        className,
+        rounded,
+        disabled,
+        buttonType,
+        outline
+    ]);
+
     return (
-        <Wrapper
-            className={`${className ?? ''} ${rounded ? 'rounded' : ''} ${disabled ? 'disabled' : ''} ${
-                buttonType === 'default' || outline ? 'outline' : ''
-            }`}
-            type={buttonType}
-            onClick={click}
-        >
+        <Wrapper className={classNames} type={buttonType} onClick={click}>
             {icon && <Icon type={icon}></Icon>}
             {children}
         </Wrapper>

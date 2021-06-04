@@ -28,6 +28,11 @@ export const AsideSection = styled.section`
         margin-bottom: 0;
         ${transitionProps('border-color')}
     }
+
+    & > & {
+        margin-left: 0;
+        margin-right: 0;
+    }
 `;
 
 const Wrapper = styled.div.attrs<{width: string | number}>(({width}) => ({
@@ -59,6 +64,19 @@ const Wrapper = styled.div.attrs<{width: string | number}>(({width}) => ({
         flex: none;
         box-shadow: 0 -${rem(5)} ${rem(16)} 0 rgba(0, 0, 0, 0.03);
         padding: ${rem(20)};
+
+        > ${AsideSection} {
+            margin-left: 0;
+            margin-right: 0;
+
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
     }
 
     > .aside-resize-bar-left,
@@ -68,7 +86,7 @@ const Wrapper = styled.div.attrs<{width: string | number}>(({width}) => ({
         height: 100%;
         top: 0;
         cursor: col-resize;
-        user-select: none;
+        touch-action: none;
 
         &.aside-resize-bar-left {
             left: 0;

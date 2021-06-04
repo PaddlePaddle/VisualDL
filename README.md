@@ -24,7 +24,7 @@
 
 VisualDL, a visualization analysis tool of PaddlePaddle, provides a variety of charts to show the trends of parameters, and visualizes model structures, data samples, histograms of tensors, PR curves , ROC curves and high-dimensional data distributions. It enables users to understand the training process and the model structure more clearly and intuitively so as to optimize models efficiently.
 
-VisualDL provides various visualization functions, including tracking metrics in real-time, visualizing the model structure, displaying the data sample, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more. Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). For up-to-date experience, please feel free to try our [**Online Demo**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo). Currently, VisualDL iterates rapidly and new functions will be continuously added.
+VisualDL provides various visualization functions, including **tracking metrics in real-time, visualizing the model structure, displaying the data sample, visualizing the relationship between hyperparameters and model metrics, presenting the changes of distributions of tensors, showing the pr curves, projecting high-dimensional data to a lower dimensional space and more.** Additionally, VisualDL provides VDL.service, which enables developers easily to save, track and share visualization results of experiments. For specific guidelines of each function, please refer to  [**VisualDL User Guide**](./docs/components/README.md). For up-to-date experience, please feel free to try our [**Online Demo**](https://www.paddlepaddle.org.cn/paddle/visualdl/demo). Currently, VisualDL iterates rapidly and new functions will be continuously added.
 
 Browsers supported by VisualDL are:
 
@@ -34,6 +34,26 @@ Browsers supported by VisualDL are:
 - Safari ≥ 11.1
 
 VisualDL natively supports the use of Python. Developers can retrieve plentiful visualization results by simply adding a few lines of Python code into the model before training.
+
+
+
+## Recent Activities
+
+- 🔔**2021.5.26**
+
+  **"VisualDL--Quickly get a perfect model by using the visualization analysis tool "**
+
+  💙 **Time: Wednesday (5.26) 19:00 at [PaddlePaddle's bilibili Live broadcast](http://live.bilibili.com/21689802)** 💙
+
+  📣**Preview**
+
+  - Analysis of Key Problems in Creating Deep Learning models
+  - Tips of Parameter Optimization by VisualDL
+  - Tricks of Training a Classification Model with Good Performance
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/119295192-c87ad780-bc88-11eb-86b2-d67765486530.jpg" width="30%"/>
+</p>
 
 ## Contents
 
@@ -293,6 +313,14 @@ Developers can compare multiple experiments by specifying and uploading the path
 </p>
 
 
+### Text
+**Text** visualizes the text output of NLP models within any stage, aiding developers to compare the changes of outputs so as to deeply understand the training process and simply evaluate the performance of the model.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/106248340-cdd09400-624b-11eb-8ea9-5a07a239c365.png" width="85%"/>
+</p>
+
+
 ### Graph
 
 **Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows developers to explore model attributes, node information, node input and output. aiding them analyze model structures quickly and understand the direction of data flow easily.
@@ -343,6 +371,15 @@ Developers can compare multiple experiments by specifying and uploading the path
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/48054808/103188111-1b32ac00-4902-11eb-914e-c2368bdb8373.gif" width="85%"/>
+</p>
+
+
+### Hyper Parameters
+
+**Hyper Parameters** visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
 

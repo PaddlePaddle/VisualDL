@@ -126,6 +126,28 @@ class Api(object):
         return self._get_with_retry('data/plugin/roc_curves/tags', lib.get_roc_curve_tags)
 
     @result()
+    def hparam_importance(self):
+        return self._get_with_retry('data/plugin/hparams/importance', lib.get_hparam_importance)
+
+    @result()
+    def hparam_indicator(self):
+        return self._get_with_retry('data/plugin/hparams/indicators', lib.get_hparam_indicator)
+
+    @result()
+    def hparam_list(self):
+        return self._get_with_retry('data/plugin/hparams/list', lib.get_hparam_list)
+
+    @result()
+    def hparam_metric(self, run, metric):
+        key = os.path.join('data/plugin/hparams/metric', run, metric)
+        return self._get_with_retry(key, lib.get_hparam_metric, run, metric)
+
+    @result('text/csv')
+    def hparam_data(self, type='tsv'):
+        key = os.path.join('data/plugin/hparams/data', type)
+        return self._get_with_retry(key, lib.get_hparam_data, type)
+
+    @result()
     def scalar_list(self, run, tag):
         key = os.path.join('data/plugin/scalars/scalars', run, tag)
         return self._get_with_retry(key, lib.get_scalar, run, tag)
@@ -271,7 +293,12 @@ def create_api_call(logdir, model, cache_timeout):
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'roc-curve/list': (api.roc_curves_roc_curve, ['run', 'tag']),
         'pr-curve/steps': (api.pr_curves_steps, ['run']),
-        'roc-curve/steps': (api.roc_curves_steps, ['run'])
+        'roc-curve/steps': (api.roc_curves_steps, ['run']),
+        'hparams/importance': (api.hparam_importance, []),
+        'hparams/data': (api.hparam_data, ['type']),
+        'hparams/indicators': (api.hparam_indicator, []),
+        'hparams/list': (api.hparam_list, []),
+        'hparams/metric': (api.hparam_metric, ['run', 'metric'])
     }
 
     def call(path: str, args):

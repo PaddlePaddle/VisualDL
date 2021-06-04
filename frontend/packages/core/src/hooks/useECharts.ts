@@ -63,7 +63,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 await import('echarts-gl');
             }
 
-            const echartInstance = echarts.init((ref.current as unknown) as HTMLDivElement);
+            const echartInstance = echarts.init(ref.current as unknown as HTMLDivElement);
 
             ref.current.addEventListener('mouseleave', hideTip);
 
@@ -188,10 +188,10 @@ export const useChartTheme = (gl?: boolean) => {
                 },
                 xAxis3D: {
                     nameTextStyle: {
-                        color: tt.textLighterColor
+                        color: tt.textLightColor
                     },
                     axisLabel: {
-                        color: tt.textLighterColor
+                        color: tt.textLightColor
                     },
                     axisLine: {
                         lineStyle: {
@@ -206,10 +206,10 @@ export const useChartTheme = (gl?: boolean) => {
                 },
                 yAxis3D: {
                     nameTextStyle: {
-                        color: tt.textLighterColor
+                        color: tt.textLightColor
                     },
                     axisLabel: {
-                        color: tt.textLighterColor
+                        color: tt.textLightColor
                     },
                     axisLine: {
                         lineStyle: {
@@ -224,10 +224,10 @@ export const useChartTheme = (gl?: boolean) => {
                 },
                 zAxis3D: {
                     nameTextStyle: {
-                        color: tt.textLighterColor
+                        color: tt.textLightColor
                     },
                     axisLabel: {
-                        color: tt.textLighterColor
+                        color: tt.textLightColor
                     },
                     axisLine: {
                         lineStyle: {
@@ -257,10 +257,10 @@ export const useChartTheme = (gl?: boolean) => {
             },
             xAxis: {
                 nameTextStyle: {
-                    color: tt.textLighterColor
+                    color: tt.textLightColor
                 },
                 axisLabel: {
-                    color: tt.textLighterColor
+                    color: tt.textLightColor
                 },
                 axisLine: {
                     lineStyle: {
@@ -275,10 +275,10 @@ export const useChartTheme = (gl?: boolean) => {
             },
             yAxis: {
                 nameTextStyle: {
-                    color: tt.textLighterColor
+                    color: tt.textLightColor
                 },
                 axisLabel: {
-                    color: tt.textLighterColor
+                    color: tt.textLightColor
                 },
                 axisLine: {
                     lineStyle: {
