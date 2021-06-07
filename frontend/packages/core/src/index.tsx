@@ -36,20 +36,31 @@ if (import.meta.env.MODE === 'production' && TELEMETRY_ID) {
     })();
 }
 
-ReactDOM.render(
-    <React.StrictMode>
-        <GlobalStyle />
-        <React.Suspense fallback={<BodyLoading />}>
-            <Provider store={store}>
-                <App />
-            </Provider>
-        </React.Suspense>
-    </React.StrictMode>,
-    document.getElementById('root')
-);
+function render() {
+    ReactDOM.render(
+        <React.StrictMode>
+            <GlobalStyle />
+            <React.Suspense fallback={<BodyLoading />}>
+                <Provider store={store}>
+                    <App />
+                </Provider>
+            </React.Suspense>
+        </React.StrictMode>,
+        document.getElementById('root')
+    );
 
-// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
-// Learn more: https://www.snowpack.dev/#hot-module-replacement
-if (import.meta.hot) {
-    import.meta.hot.accept();
+    // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
+    // Learn more: https://www.snowpack.dev/#hot-module-replacement
+    if (import.meta.hot) {
+        import.meta.hot.accept();
+    }
+}
+
+if (import.meta.env.MODE === 'development' && !import.meta.env.DEMO) {
+    import('@visualdl/mock').then(async ({initMock}) => {
+        await initMock();
+        render();
+    });
+} else {
+    render();
 }

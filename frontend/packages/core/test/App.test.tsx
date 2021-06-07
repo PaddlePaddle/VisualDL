@@ -16,11 +16,23 @@
 
 import * as React from 'react';
 
-import App from '../src/App';
+// import App from '../src/App';
+import {expect} from 'chai';
 import {render} from '@testing-library/react';
 
-test('renders learn react link', () => {
-    const {getByText} = render(<App />);
-    const linkElement = getByText(/learn react/i);
-    expect(linkElement).toBeInTheDocument();
+describe('<App>', () => {
+    // it('renders learn react link', () => {
+    //     const {getByText} = render(<App />);
+    //     const linkElement = getByText(/learn react/i);
+    //     expect(document.body.contains(linkElement));
+    // });
+    it('test demo', () => {
+        const {getByText} = render(
+            <div>
+                <a>hello world!</a>
+            </div>
+        );
+        const linkElement = getByText(/hello world!/i);
+        expect(document.body.contains(linkElement));
+    });
 });

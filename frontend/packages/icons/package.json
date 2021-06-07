@@ -1,0 +1,59 @@
+{
+    "name": "@visualdl/icons",
+    "version": "2.2.0-1",
+    "description": "A platform to visualize the deep learning process and result.",
+    "keywords": [
+        "visualdl",
+        "paddlepaddle",
+        "visualization",
+        "deep learning"
+    ],
+    "homepage": "https://github.com/PaddlePaddle/VisualDL",
+    "bugs": {
+        "url": "https://github.com/PaddlePaddle/VisualDL/issues"
+    },
+    "license": "Apache-2.0",
+    "author": "PeterPanZH <littlepanzh@gmail.com> (https://github.com/PeterPanZH)",
+    "contributors": [
+        "Niandalu <littlepanzh@gmail.com> (https://github.com/Niandalu)"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PaddlePaddle/VisualDL.git",
+        "directory": "frontend/packages/icons"
+    },
+    "main": "index.js",
+    "module": "index.js",
+    "type": "module",
+    "types": "index.d.ts",
+    "files": [
+        "index.js",
+        "index.d.ts",
+        "svgs",
+        "components"
+    ],
+    "scripts": {
+        "build": "node build.js",
+        "test": "echo \"Error: no test specified\" && exit 0"
+    },
+    "devDependencies": {
+        "@babel/core": "7.14.3",
+        "@babel/preset-react": "7.13.13",
+        "@svgr/core": "5.5.0",
+        "@svgr/plugin-jsx": "5.5.0",
+        "@svgr/plugin-svgo": "5.5.0",
+        "camelcase": "6.2.0",
+        "fs-extra": "10.0.0",
+        "svgo": "2.3.0"
+    },
+    "peerDependencies": {
+        "react": "^16.0.0 || ^17.0.0"
+    },
+    "engines": {
+        "node": ">=12",
+        "npm": ">=6"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

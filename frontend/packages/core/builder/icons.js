@@ -14,76 +14,48 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-var-requires */
+import Logger from './log.js';
+import {fileURLToPath} from 'url';
+import fs from 'fs/promises';
+import path from 'path';
 
-const path = require('path');
-const fs = require('fs/promises');
-const {default: svgr} = require('@svgr/core');
-const babel = require('@babel/core');
-const {camelCase} = require('lodash');
-const {ensureDir} = require('fs-extra');
+const logger = new Logger('Icons');
 
-const root = path.resolve(__dirname, '../public/icons');
-const pathname = '/icons';
-const dist = path.resolve(__dirname, '../dist');
-const dest = path.join(dist, pathname);
+const cwd = path.dirname(fileURLToPath(import.meta.url));
+const iconsPath = path.resolve(cwd, '../dist/__snowpack__/link/packages/icons/components');
+const reactPath = path.resolve(cwd, '../dist/__snowpack__/pkg/react.js');
+const relativePath = path.relative(iconsPath, reactPath).replace(/\\\\/g, '/');
 
-async function transform(file, minified) {
-    const basename = path.basename(file, '.svg');
-    let jsx = await svgr(
-        await fs.readFile(file, 'utf-8'),
-        {
-            icon: true,
-            svgProps: {
-                fill: 'currentColor',
-                className: 'vdl-icon'
-            }
-        },
-        {componentName: camelCase(basename).replace(/./, w => w.toUpperCase())}
-    );
-    jsx = jsx.replace('import * as React from "react";', 'import React from "../web_modules/react.js";');
-    const result = await babel.transformAsync(jsx, {
-        filename: basename + '.jsx',
-        presets: ['@babel/preset-react'],
-        minified
-    });
-    return result.code;
-}
-
-async function build() {
-    await ensureDir(dest);
-    const files = await fs.readdir(root);
+export default async function build() {
+    logger.start();
+    logger.process('building icons...');
+    const files = await fs.readdir(iconsPath);
+    const q = [];
     for (const file of files) {
-        if (path.extname(file) === '.svg') {
-            const js = await transform(path.join(root, file), false);
-            await fs.writeFile(path.join(dest, path.basename(file, '.svg') + '.js'), js, 'utf-8');
-        }
-    }
-    console.log('Icons copied!');
-}
-
-if (require.main === module) {
-    build();
-}
-
-const middleware = () => {
-    return async (req, res) => {
-        const file = path.join(root, req.path.replace(/\.js$/, '.svg'));
-        if ((await fs.stat(file)).isFile()) {
-            if (req.path.endsWith('.js')) {
-                res.type('js');
-                res.send(await transform(file, false));
-            } else {
-                res.type(req.path.split('.').pop());
-                res.send(await fs.readFile(file));
+        (function (f) {
+            const filename = path.join(iconsPath, f);
+            if (path.extname(filename) === '.js') {
+                q.push(
+                    new Promise(async (resolve, reject) => {
+                        try {
+                            const content = await fs.readFile(filename, 'utf-8');
+                            await fs.writeFile(
+                                filename,
+                                content.replace('import*as React from"react";', `import React from"${relativePath}";`)
+                            );
+                            resolve();
+                        } catch {
+                            reject();
+                        }
+                    })
+                );
             }
-        }
-    };
-};
-
-module.exports = {
-    middleware,
-    root,
-    pathname
-};
+        })(file);
+    }
+    try {
+        await Promise.all(q);
+        logger.end('Icons built.');
+    } catch {
+        logger.error('Some errors occurred when building icons.');
+    }
+}
