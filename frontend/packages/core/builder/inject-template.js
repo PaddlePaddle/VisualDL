@@ -48,7 +48,7 @@ function injectProvider(content, provider) {
 
 function prependPublicPath(content, publicPath) {
     return content.replace(/\b(src|href)=(['"]?)([^'"\s>]*)/gi, (_matched, attr, quote, url) => {
-        if (/^\/(_dist_|__snowpack__|web_modules|favicon.ico)\b/.test(url)) {
+        if (/^\/(_dist_|__snowpack__|web_modules|favicon.ico|imported-styles.css)\b/.test(url)) {
             url = publicPath + url;
         }
         return attr + '=' + quote + url;

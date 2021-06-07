@@ -288,7 +288,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Content>
                         <iframe
                             ref={iframe}
-                            src={netron}
+                            src={PUBLIC_PATH + netron}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}
