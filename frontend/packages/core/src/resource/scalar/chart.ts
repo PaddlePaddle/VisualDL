@@ -158,7 +158,7 @@ export const tooltip = (data: TooltipData[], stepLength: number, i18n: typeof I1
         ],
         data: data.map(({min, max, item}) => [
             valueFormatter(item[3] ?? Number.NaN),
-            valueFormatter(item[2] ?? Number.NaN),
+            valueFormatter(Number.isFinite(item[2]) ? (item[2] as number) : Number.NaN),
             item[1],
             valueFormatter(min ?? Number.NaN),
             valueFormatter(max ?? Number.NaN),

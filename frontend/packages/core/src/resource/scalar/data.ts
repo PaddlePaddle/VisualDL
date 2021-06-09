@@ -16,7 +16,7 @@
 
 // cSpell:words quantile accum debias exponentiated
 
-import type {Dataset, ScalarDataset} from './types';
+import type {Dataset, ScalarDataset, Value} from './types';
 
 import BigNumber from 'bignumber.js';
 import type {Run} from '~/types';
@@ -34,34 +34,38 @@ export const transform = ({datasets, smoothing}: {datasets: ScalarDataset[]; smo
         let startValue = 0;
         const bigSmoothing = new BigNumber(smoothing);
         data.forEach((d, i) => {
-            const nextVal = new BigNumber(d[2]);
             const millisecond = (d[0] = Math.floor(d[0]));
             if (i === 0) {
                 startValue = millisecond;
             }
             // relative time in millisecond.
             d[4] = Math.floor(millisecond - startValue);
-            if (!nextVal.isFinite()) {
-                d[3] = nextVal.toNumber();
+            if (!Number.isFinite(d[2])) {
+                d[3] = null;
             } else {
-                // last = last * smoothing + (1 - smoothing) * nextVal;
-                last = last.multipliedBy(bigSmoothing).plus(bigSmoothing.minus(1).negated().multipliedBy(nextVal));
-                numAccum++;
-                let debiasWeight = new BigNumber(1);
-                if (!bigSmoothing.isEqualTo(1)) {
-                    //debiasWeight = 1.0 - Math.pow(smoothing, numAccum);
-                    debiasWeight = bigSmoothing.exponentiatedBy(numAccum).minus(1).negated();
+                const nextVal = new BigNumber(d[2] as number);
+                if (!nextVal.isFinite()) {
+                    d[3] = nextVal.toNumber();
+                } else {
+                    // last = last * smoothing + (1 - smoothing) * nextVal;
+                    last = last.multipliedBy(bigSmoothing).plus(bigSmoothing.minus(1).negated().multipliedBy(nextVal));
+                    numAccum++;
+                    let debiasWeight = new BigNumber(1);
+                    if (!bigSmoothing.isEqualTo(1)) {
+                        //debiasWeight = 1.0 - Math.pow(smoothing, numAccum);
+                        debiasWeight = bigSmoothing.exponentiatedBy(numAccum).minus(1).negated();
+                    }
+                    // d[3] = last / debiasWeight;
+                    d[3] = last.dividedBy(debiasWeight).toNumber();
                 }
-                // d[3] = last / debiasWeight;
-                d[3] = last.dividedBy(debiasWeight).toNumber();
             }
         });
         return data;
     });
 
-export const singlePointRange = (value: number) => ({
-    min: value ? Math.min(value * 2, 0) : -0.5,
-    max: value ? Math.max(value * 2, 0) : 0.5
+export const singlePointRange = (value: Value) => ({
+    min: Number.isFinite(value) ? Math.min((value as number) * 2, 0) : -0.5,
+    max: Number.isFinite(value) ? Math.max((value as number) * 2, 0) : 0.5
 });
 
 export const range = ({datasets}: {datasets: Dataset[]}) => {
@@ -72,7 +76,7 @@ export const range = ({datasets}: {datasets: Dataset[]}) => {
                 max: Number.NaN
             };
         }
-        const values = dataset.map(v => v[2]);
+        const values = dataset.map(v => v[2]).filter(Number.isFinite) as number[];
         return {
             min: Math.min(...values) ?? Number.NaN,
             max: Math.max(...values) ?? Number.NaN
@@ -86,7 +90,7 @@ export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: bo
             if (dataset.length === 0) {
                 return void 0;
             }
-            const values = dataset.map(v => v[2]);
+            const values = dataset.map(v => v[2]).filter(Number.isFinite) as number[];
             if (!outlier) {
                 // Get the origin data range.
                 return {
@@ -95,7 +99,10 @@ export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: bo
                 };
             } else {
                 // Get the quantile range.
-                const sorted = dataset.map(v => v[2]).sort();
+                const sorted = dataset
+                    .map(v => v[2])
+                    .filter(Number.isFinite)
+                    .sort() as number[];
                 return {
                     min: quantile(sorted, 0.05),
                     max: quantile(values, 0.95)
@@ -122,10 +129,13 @@ export const nearestPoint = (data: Dataset[], runs: Run[], idx: number, value: n
         let d = Number.POSITIVE_INFINITY;
         let dv = value;
         for (let i = 0; i < series.length; i++) {
-            const dd = Math.abs(series[i][idx] - value);
-            if (d > dd) {
-                d = dd;
-                dv = series[i][idx];
+            const v = series[i][idx];
+            if (Number.isFinite(v)) {
+                const dd = Math.abs((v as number) - value);
+                if (d > dd) {
+                    d = dd;
+                    dv = v as number;
+                }
             }
         }
         result.push(...series.filter(s => s[idx] === dv).map(item => ({run, item})));
