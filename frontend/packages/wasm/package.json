@@ -33,6 +33,7 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "wasm-pack build --release --out-dir dist --out-name index --target web .",
+        "dev": "wasm-pack build --dev --out-dir dist --out-name index --target web .",
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {

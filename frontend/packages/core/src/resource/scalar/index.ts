@@ -31,7 +31,8 @@ export const sortingMethodMap: Record<SM, (points: TooltipData[], data: number[]
     [SM.Descending]: (points: TooltipData[]) => sortBy(points, point => point.item[3]).reverse(),
     [SM.Ascending]: (points: TooltipData[]) => sortBy(points, point => point.item[3]),
     // Compare other points width the trigger point, calculate the nearest sort.
-    [SM.Nearest]: (points: TooltipData[], data: number[]) => sortBy(points, point => point.item[3] - data[2])
+    [SM.Nearest]: (points: TooltipData[], data: number[]) =>
+        sortBy(points, point => (point.item[3] ?? Number.NaN) - data[2])
 } as const;
 
 export type {Dataset, ScalarDataset, Range, TooltipData} from './types';
