@@ -21,7 +21,9 @@ import kebabCase from 'lodash/kebabCase';
 
 export type Theme = 'light' | 'dark';
 
-export const THEME: Theme | undefined = import.meta.env.SNOWPACK_PUBLIC_THEME;
+export const parseTheme = (t: string): Theme | undefined => (['light', 'dark'].includes(t) ? (t as Theme) : undefined);
+
+export const THEME = parseTheme(import.meta.env.SNOWPACK_PUBLIC_THEME);
 
 export const matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
 
