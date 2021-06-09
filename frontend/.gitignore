@@ -12,7 +12,6 @@ coverage
 .next
 
 # production
-build
 dist
 
 # misc
@@ -27,4 +26,4 @@ yarn-error.log*
 lerna-debug.log*
 
 # output
-/output
+output

@@ -17,8 +17,11 @@
 import {Request, Response} from 'express';
 
 import IO from './builder/io';
+import {fileURLToPath} from 'url';
 import meta from './data/meta.json';
 import path from 'path';
+
+const cwd = path.dirname(fileURLToPath(import.meta.url));
 
 function notFound(res: Response) {
     res.status(404).send({
@@ -42,7 +45,7 @@ export default async (req: Request, res: Response) => {
         return notFound(res);
     }
 
-    res.sendFile(path.join(__dirname, 'data/data', data.uri, data.filename), {
+    res.sendFile(path.join(cwd, 'data/data', data.uri, data.filename), {
         headers: data.headers
     });
 };

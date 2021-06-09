@@ -7,14 +7,26 @@
     "exclude": [
         "node_modules"
     ],
-    "extends": "@snowpack/app-scripts-react/tsconfig.base.json",
     "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "node",
+        "jsx": "preserve",
         "baseUrl": "./",
         "isolatedModules": true,
+        "noEmit": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "types": [
+            "mocha",
+            "snowpack-env"
+        ],
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "importsNotUsedAsValues": "error",
+        "esModuleInterop": true,
         "paths": {
-            "*": [
-                "web_modules/.types/*"
-            ],
             "~/*": [
                 "./src/*"
             ]

@@ -131,9 +131,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const getTooltipTableData = useCallback(
         (series: number[]) => {
             const idx = xAxisMap[xAxis];
-            const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map((point, index) => ({
+            const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map(point => ({
                 ...point,
-                ...datasetRanges?.[index]
+                ...datasetRanges?.[runs.findIndex(run => run.label === point.run.label)]
             }));
             const sort = sortingMethodMap[sortingMethod];
             const sorted = sort(points, series);

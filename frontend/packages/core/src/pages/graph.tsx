@@ -120,7 +120,7 @@ const Graph: FunctionComponent = () => {
     const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
     useEffect(() => {
-        if (data?.data.size) {
+        if (data?.data?.size) {
             setFiles([new File([data.data], data.filename || 'unknown_model')]);
         }
     }, [data]);
