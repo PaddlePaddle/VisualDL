@@ -18,10 +18,11 @@ import {Run, TimeMode} from '~/types';
 
 export type {Range} from '~/types';
 
-type Value = number;
+type InvalidValue = 'NaN' | 'Inf' | '-Inf';
+export type Value = number | null | InvalidValue;
 type WallTime = number;
 type Step = number;
-type Smoothed = number;
+type Smoothed = number | null;
 type Relative = number;
 
 export type Dataset = [WallTime, Step, Value, Smoothed, Relative][];

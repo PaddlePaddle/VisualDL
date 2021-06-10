@@ -85,7 +85,14 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
 
-    const transformParams = useMemo(() => [datasets?.map(data => data ?? []) ?? [], smoothing], [datasets, smoothing]);
+    const transformParams = useMemo(
+        () => [
+            datasets?.map(data => data?.map(row => [row[0], row[1], Number.isFinite(row[2]) ? row[2] : null]) ?? []) ??
+                [],
+            smoothing
+        ],
+        [datasets, smoothing]
+    );
     const {data: smoothedDatasetsOrUndefined} = useWebAssembly<Dataset[]>('scalar_transform', transformParams);
     const smoothedDatasets = useMemo<NonNullable<typeof smoothedDatasetsOrUndefined>>(
         () => smoothedDatasetsOrUndefined ?? [],
