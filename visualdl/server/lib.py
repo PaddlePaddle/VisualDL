@@ -20,6 +20,7 @@ import time
 import os
 import io
 import csv
+import math
 import numpy as np
 from visualdl.server.log import logger
 from visualdl.io import bfile
@@ -37,6 +38,12 @@ embedding_names = []
 
 def s2ms(timestamp):
     return timestamp * 1000 if timestamp < 2000000000 else timestamp
+
+
+def transfer_abnomal_scalar_value(scalar_value):
+    if math.isnan(scalar_value) or math.isinf(scalar_value):
+        scalar_value = str(scalar_value)
+    return scalar_value
 
 
 def get_components(log_reader):
@@ -238,7 +245,7 @@ def get_hparam_metric(log_reader, run, tag):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("scalar").get_items(
         run, decode_tag(tag))
-    results = [[s2ms(item.timestamp), item.id, item.value] for item in records]
+    results = [[s2ms(item.timestamp), item.id, transfer_abnomal_scalar_value(item.value)] for item in records]
     return results
 
 
@@ -288,7 +295,7 @@ def get_scalar(log_reader, run, tag):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("scalar").get_items(
         run, decode_tag(tag))
-    results = [[s2ms(item.timestamp), item.id, item.value] for item in records]
+    results = [[s2ms(item.timestamp), item.id, transfer_abnomal_scalar_value(item.value)] for item in records]
     return results
 
 
