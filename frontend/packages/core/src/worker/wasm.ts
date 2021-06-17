@@ -22,9 +22,7 @@ import initWasm from '@visualdl/wasm';
 type FuncNames = Exclude<keyof typeof funcs, 'default'>;
 
 const runner: Runner = async worker => {
-    const PUBLIC_PATH = worker.env.SNOWPACK_PUBLIC_PATH;
-
-    await initWasm(`${PUBLIC_PATH}/wasm/visualdl.wasm`);
+    await initWasm();
 
     worker.on<{name: FuncNames; params: unknown[]}>('RUN', ({name, params}) => {
         try {

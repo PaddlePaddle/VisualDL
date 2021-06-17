@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+import {SNOWPACK_PUBLIC_BASE_URI, SNOWPACK_PUBLIC_PATH} from './env.js';
 
-const path = require('path');
-const fs = require('fs/promises');
-const {minify} = require('html-minifier');
+import Logger from './log.js';
+import {fileURLToPath} from 'url';
+import fs from 'fs/promises';
+import {minify} from 'html-minifier';
+import path from 'path';
 
-const dist = path.resolve(__dirname, '../dist');
+const logger = new Logger('Inject template');
+
+const cwd = path.dirname(fileURLToPath(import.meta.url));
+
+const dist = path.resolve(cwd, '../dist');
 const input = path.join(dist, 'index.html');
 const output = path.join(dist, 'index.tpl.html');
 
 function envProviderTemplate(baseUri) {
     return `
         <script type="module">
-            import env from '${baseUri}/__snowpack__/env.local.js'; window.__snowpack_env__ = env;
+            import * as env from '${baseUri}/__snowpack__/env.local.js'; window.__snowpack_env__ = env;
         </script>
     `;
 }
 
-const ENV_PROVIDER = envProviderTemplate(process.env.SNOWPACK_PUBLIC_BASE_URI);
+const ENV_PROVIDER = envProviderTemplate(SNOWPACK_PUBLIC_BASE_URI);
 const ENV_TEMPLATE_PROVIDER = envProviderTemplate('%BASE_URI%');
 
 function injectProvider(content, provider) {
@@ -42,7 +48,7 @@ function injectProvider(content, provider) {
 
 function prependPublicPath(content, publicPath) {
     return content.replace(/\b(src|href)=(['"]?)([^'"\s>]*)/gi, (_matched, attr, quote, url) => {
-        if (/^\/(_dist_|__snowpack__|web_modules|favicon.ico)\b/.test(url)) {
+        if (/^\/(_dist_|__snowpack__|web_modules|favicon.ico|imported-styles.css)\b/.test(url)) {
             url = publicPath + url;
         }
         return attr + '=' + quote + url;
@@ -63,12 +69,18 @@ async function writeMinified(file, content) {
     );
 }
 
-module.exports = async () => {
+export default async () => {
+    logger.start();
+    logger.process('injecting env to index.html...');
     const index = await fs.readFile(input, 'utf-8');
-    const indexWithPublicPath = prependPublicPath(index, process.env.SNOWPACK_PUBLIC_PATH);
+    const indexWithPublicPath = prependPublicPath(index, SNOWPACK_PUBLIC_PATH);
     const injected = injectProvider(indexWithPublicPath, ENV_PROVIDER);
+    logger.process('minifying index.html...');
     await writeMinified(input, injected);
+    logger.process('injecting env to index.tpl.html...');
     const template = prependPublicPath(index, '%PUBLIC_URL%');
     const injectedTemplate = injectProvider(template, ENV_TEMPLATE_PROVIDER);
+    logger.process('minifying index.tpl.html...');
     await writeMinified(output, injectedTemplate);
+    logger.end('Template injected.');
 };

@@ -14,28 +14,41 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+import Logger from './log.js';
+import buildIcons from './icons.js';
+import {config} from 'dotenv';
+import {fileURLToPath} from 'url';
+import injectEnv from './inject-env.js';
+import injectTemplate from './inject-template.js';
+import path from 'path';
+import pushCdn from './cdn.js';
 
-require('dotenv').config();
-require('./environment');
+const logger = new Logger('Post Build');
 
-const path = require('path');
-const pushCdn = require('./cdn');
-const injectTemplate = require('./inject-template');
-const injectEnv = require('./inject-env');
-
-const dist = path.resolve(__dirname, '../dist');
+config();
+const cwd = path.dirname(fileURLToPath(import.meta.url));
+const dist = path.resolve(cwd, '../dist');
 
 async function main() {
+    logger.info('Post-build Start');
+
     await injectTemplate();
 
     await injectEnv();
 
+    await buildIcons();
+
     if (process.env.CDN_VERSION) {
         await pushCdn(dist, {
+            version: process.env.CDN_VERSION,
+            endpoint: process.env.BOS_ENDPOINT,
+            ak: process.env.BOS_AK,
+            sk: process.env.BOS_SK,
             exclude: ['index.html', 'index.tpl.html', '__snowpack__/env.local.js']
         });
     }
+
+    logger.complete('▶ Post-build Complete!');
 }
 
 main();

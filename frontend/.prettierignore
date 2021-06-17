@@ -1,5 +1,5 @@
+node_modules
 dist
-out
-wasm
-output
+packages/icons/components
+packages/wasm/dist
 license-header.js

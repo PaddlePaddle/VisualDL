@@ -85,7 +85,14 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
 
-    const transformParams = useMemo(() => [datasets?.map(data => data ?? []) ?? [], smoothing], [datasets, smoothing]);
+    const transformParams = useMemo(
+        () => [
+            datasets?.map(data => data?.map(row => [row[0], row[1], Number.isFinite(row[2]) ? row[2] : null]) ?? []) ??
+                [],
+            smoothing
+        ],
+        [datasets, smoothing]
+    );
     const {data: smoothedDatasetsOrUndefined} = useWebAssembly<Dataset[]>('scalar_transform', transformParams);
     const smoothedDatasets = useMemo<NonNullable<typeof smoothedDatasetsOrUndefined>>(
         () => smoothedDatasetsOrUndefined ?? [],
@@ -131,9 +138,9 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const getTooltipTableData = useCallback(
         (series: number[]) => {
             const idx = xAxisMap[xAxis];
-            const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map((point, index) => ({
+            const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map(point => ({
                 ...point,
-                ...datasetRanges?.[index]
+                ...datasetRanges?.[runs.findIndex(run => run.label === point.run.label)]
             }));
             const sort = sortingMethodMap[sortingMethod];
             const sorted = sort(points, series);

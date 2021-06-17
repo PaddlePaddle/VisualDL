@@ -1,8 +1,11 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "ES2018",
+        "module": "ESNext",
+        "target": "ESNext",
         "allowJs": true,
+        "allowSyntheticDefaultImports":true,
+        "isolatedModules": true,
+        "moduleResolution": "Node",
         "skipLibCheck": true,
         "esModuleInterop": true,
         "declaration": true,
@@ -10,7 +13,6 @@
         "outDir": "dist"
     },
     "files": [
-        "index.ts",
-        "global.d.ts"
+        "index.ts"
     ]
 }
