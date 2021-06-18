@@ -41,6 +41,7 @@
     },
     "dependencies": {
         "fetch-mock": "9.11.0",
+        "isomorphic-fetch": "3.0.0",
         "mime-types": "2.1.31"
     },
     "devDependencies": {

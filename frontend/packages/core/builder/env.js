@@ -54,4 +54,4 @@ export const SNOWPACK_PUBLIC_DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || 
 // theme
 export const SNOWPACK_PUBLIC_THEME = process.env.THEME || '';
 // demo
-export const DEMO = '';
+export const SERVER = '';

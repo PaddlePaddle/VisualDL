@@ -27,6 +27,7 @@ const cwd = path.dirname(fileURLToPath(import.meta.url));
 
 config();
 
+process.env.SERVER = '1';
 const isDev = process.env.NODE_ENV === 'development';
 const isDemo = !!process.env.DEMO;
 

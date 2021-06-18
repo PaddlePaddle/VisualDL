@@ -38,7 +38,6 @@ function isWorkspace() {
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
-const mockPath = path.dirname(resolve.sync(cwd, '@visualdl/mock'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
 /** @type {import("snowpack").SnowpackUserConfig } */
@@ -101,14 +100,6 @@ export default {
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],
                         destination: path.join(dest, 'wasm/dist')
-                    },
-                    {
-                        source: ['./{data,assets}/**/*'],
-                        destination: path.join(dest, 'mock'),
-                        options: {
-                            cwd: mockPath,
-                            parents: true
-                        }
                     }
                 ]
             }
