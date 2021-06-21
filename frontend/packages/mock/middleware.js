@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'isomorphic-fetch';
+
 import {fileURLToPath} from 'url';
 import path from 'path';
 
