@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/mock",
-    "version": "2.2.0-1",
+    "version": "2.2.1",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
         "visualdl",
@@ -42,7 +42,7 @@
     "dependencies": {
         "fetch-mock": "9.11.0",
         "isomorphic-fetch": "3.0.0",
-        "mime-types": "2.1.31"
+        "mime-types": "2.1.32"
     },
     "devDependencies": {
         "express": "4.17.1"

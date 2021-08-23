@@ -56,7 +56,7 @@ function render() {
     }
 }
 
-if (import.meta.env.MODE === 'development' && !import.meta.env.SERVER) {
+if (import.meta.env.MODE === 'development' && import.meta.env.MOCK) {
     import('@visualdl/mock').then(async ({initMock}) => {
         await initMock();
         render();

@@ -16,7 +16,7 @@
 
 // cSpell:words maxs coord
 
-import type {Dataset, Range, TooltipData, XAxis} from './types';
+import type {Dataset, InvalidValue, Range, ScalarDataset, Step, TooltipData, Value, XAxis} from './types';
 import {formatTime, humanizeDuration} from '~/utils';
 
 import type {EChartOption} from 'echarts';
@@ -26,6 +26,9 @@ import {format} from 'd3-format';
 import {xAxisMap} from './index';
 
 const valueFormatter = format('.5');
+
+const INF_VALUE = 'inf';
+const NAN_VALUE = 'nan';
 
 export const options = {
     legend: {
@@ -38,12 +41,14 @@ export const options = {
 
 export const chartData = ({
     data,
+    rawData,
     ranges,
     runs,
     xAxis,
     smoothedOnly
 }: {
     data: Dataset[];
+    rawData: ScalarDataset[];
     ranges: Range[];
     runs: Run[];
     xAxis: XAxis;
@@ -60,6 +65,17 @@ export const chartData = ({
             const name = runs[i].label;
             const color = runs[i].colors[0];
             const colorAlt = runs[i].colors[1];
+            const xAxisIndex = xAxisMap[xAxis];
+            const singlePointIndices: number[] = [];
+            dataset.forEach((d, index) => {
+                if (d[2] != null) {
+                    const prevV = index === 0 ? null : dataset[index - 1][2];
+                    const nextV = index === dataset.length - 1 ? null : dataset[index + 1][2];
+                    if (prevV == null && nextV == null) {
+                        singlePointIndices.push(index);
+                    }
+                }
+            });
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const result: any[] = [
                 {
@@ -73,15 +89,28 @@ export const chartData = ({
                     },
                     data: dataset,
                     encode: {
-                        x: [xAxisMap[xAxis]],
+                        x: [xAxisIndex],
                         y: [3]
+                    },
+                    markPoint: {
+                        symbol: 'circle',
+                        symbolSize: 4,
+                        itemStyle: {
+                            color: '#fff',
+                            borderColor: color,
+                            borderWidth: 1
+                        },
+                        label: {
+                            show: false
+                        },
+                        data: singlePointIndices.map(index => ({
+                            coord: [dataset[index][xAxisIndex], dataset[index][3]]
+                        }))
                     }
                 }
             ];
             if (!smoothedOnly) {
                 const range = ranges[i];
-                // const mins = dataset.filter(item => item[2] === range?.min);
-                // const maxs = dataset.filter(item => item[2] === range?.max);
                 const min = dataset.find(item => item[2] === range?.min);
                 const max = dataset.find(item => item[2] === range?.max);
                 result.push({
@@ -95,7 +124,7 @@ export const chartData = ({
                     },
                     data: dataset,
                     encode: {
-                        x: [xAxisMap[xAxis]],
+                        x: [xAxisIndex],
                         y: [2]
                     },
                     markPoint: {
@@ -110,13 +139,73 @@ export const chartData = ({
                             show: false
                         },
                         data: [
-                            ...(min ? [{coord: [min[xAxisMap[xAxis]], min[2]]}] : []),
-                            ...(max ? [{coord: [max[xAxisMap[xAxis]], max[2]]}] : [])
+                            ...singlePointIndices.map(index => ({
+                                coord: [dataset[index][xAxisIndex], dataset[index][2]],
+                                symbol: 'circle',
+                                symbolSize: 4
+                            })),
+                            ...(min ? [{coord: [min[xAxisIndex], min[2]]}] : []),
+                            ...(max ? [{coord: [max[xAxisIndex], max[2]]}] : [])
                         ]
-                        // data: [
-                        //     ...mins.map(item => ({coord: [item[xAxisMap[xAxis]], item[2]]})),
-                        //     ...maxs.map(item => ({coord: [item[xAxisMap[xAxis]], item[2]]}))
-                        // ]
+                    }
+                });
+
+                const rawDataset = rawData[i];
+                const infData: [Step, Value][] = [];
+                const nanData: [Step, Value][] = [];
+                let lastValidValue: Value = null;
+                rawDataset.forEach(([, x, y], j) => {
+                    if (j > 0) {
+                        if (dataset[j][2] != null) {
+                            lastValidValue = dataset[j][2];
+                        }
+                    }
+                    if (y === INF_VALUE) {
+                        infData.push([x, lastValidValue]);
+                    } else if (y === NAN_VALUE) {
+                        nanData.push([x, lastValidValue]);
+                    }
+                });
+                result.push({
+                    data: infData,
+                    symbolShow: false,
+                    lineStyle: {
+                        width: 0,
+                        opacity: 0
+                    },
+                    markPoint: {
+                        symbol: 'rect',
+                        symbolSize: 6,
+                        itemStyle: {
+                            color: '#fff',
+                            borderColor: colorAlt,
+                            borderWidth: 1
+                        },
+                        label: {
+                            show: false
+                        },
+                        data: infData.map(d => ({coord: d}))
+                    }
+                });
+                result.push({
+                    data: nanData,
+                    symbolShow: false,
+                    lineStyle: {
+                        width: 0,
+                        opacity: 0
+                    },
+                    markPoint: {
+                        symbol: 'triangle',
+                        symbolSize: 6,
+                        itemStyle: {
+                            color: '#fff',
+                            borderColor: colorAlt,
+                            borderWidth: 1
+                        },
+                        label: {
+                            show: false
+                        },
+                        data: nanData.map(d => ({coord: d}))
                     }
                 });
             }
@@ -125,6 +214,15 @@ export const chartData = ({
         .flat();
 
 export const tooltip = (data: TooltipData[], stepLength: number, i18n: typeof I18n) => {
+    const getValue = (value: Value | InvalidValue): string => {
+        if (value === INF_VALUE) {
+            return 'Inf';
+        }
+        if (value === NAN_VALUE) {
+            return 'NaN';
+        }
+        return value == null ? '--' : valueFormatter(value);
+    };
     return {
         columns: [
             {
@@ -156,9 +254,9 @@ export const tooltip = (data: TooltipData[], stepLength: number, i18n: typeof I1
                 width: '4.285714286em'
             }
         ],
-        data: data.map(({min, max, item}) => [
-            valueFormatter(item[3] ?? Number.NaN),
-            valueFormatter(Number.isFinite(item[2]) ? (item[2] as number) : Number.NaN),
+        data: data.map(({min, max, item, rawItem}) => [
+            item[3] == null ? '--' : valueFormatter(item[3]),
+            getValue(rawItem[2]),
             item[1],
             valueFormatter(min ?? Number.NaN),
             valueFormatter(max ?? Number.NaN),

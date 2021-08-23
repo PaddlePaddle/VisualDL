@@ -26,13 +26,13 @@ export const xAxisMap = {
 } as const;
 
 export const sortingMethod = [SM.Default, SM.Descending, SM.Ascending, SM.Nearest] as const;
-export const sortingMethodMap: Record<SM, (points: TooltipData[], data: number[]) => TooltipData[]> = {
+export const sortingMethodMap: Record<SM, (points: TooltipData[], value: number) => TooltipData[]> = {
     [SM.Default]: (points: TooltipData[]) => points,
     [SM.Descending]: (points: TooltipData[]) => sortBy(points, point => point.item[3]).reverse(),
     [SM.Ascending]: (points: TooltipData[]) => sortBy(points, point => point.item[3]),
-    // Compare other points width the trigger point, calculate the nearest sort.
-    [SM.Nearest]: (points: TooltipData[], data: number[]) =>
-        sortBy(points, point => (point.item[3] ?? Number.NaN) - data[2])
+    // Compare other points with the trigger point, calculate the nearest sort.
+    [SM.Nearest]: (points: TooltipData[], value: number) =>
+        sortBy(points, point => (point.item[1] ?? Number.NaN) - value)
 } as const;
 
 export type {Dataset, ScalarDataset, Range, TooltipData} from './types';

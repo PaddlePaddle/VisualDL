@@ -105,14 +105,14 @@ pub fn axis_range(datasets: &Vec<Vec<Smoothed>>, outlier: bool) -> Range {
             continue;
         }
 
-        let (sorted, values) = sort_values(data);
+        let (sorted, _) = sort_values(data);
 
         if !outlier {
             ranges.push(Range::new(sorted[0], sorted[sorted.len() - 1]));
         } else {
             ranges.push(Range::new(
                 quantile(&sorted, 0.05_f64),
-                quantile(&values, 0.95),
+                quantile(&sorted, 0.95),
             ));
         }
     }

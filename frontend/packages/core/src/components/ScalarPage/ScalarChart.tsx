@@ -74,7 +74,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const {t, i18n} = useTranslation(['scalar', 'common']);
 
     const {
-        data: datasets,
+        data: datasetsWithNull,
         error,
         loading
     } = useRunningRequest<(ScalarDataset | null)[]>(
@@ -83,11 +83,16 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         (...urls) => cycleFetcher(urls)
     );
 
+    const datasets = useMemo(
+        () => (datasetsWithNull?.filter(r => r != null).slice(0, runs.length) ?? []) as ScalarDataset[],
+        [datasetsWithNull, runs.length]
+    );
+
     const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
 
     const transformParams = useMemo(
         () => [
-            datasets?.map(data => data?.map(row => [row[0], row[1], Number.isFinite(row[2]) ? row[2] : null]) ?? []) ??
+            datasets.map(data => data.map(row => [row[0], row[1], Number.isFinite(row[2]) ? row[2] : null]) ?? []) ??
                 [],
             smoothing
         ],
@@ -122,13 +127,14 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const data = useMemo(
         () =>
             chartData({
-                data: smoothedDatasets.slice(0, runs.length),
+                data: smoothedDatasets,
+                rawData: datasets,
                 ranges: showMostValue ? datasetRanges ?? [] : [],
                 runs,
                 xAxis,
                 smoothedOnly
             }),
-        [smoothedDatasets, datasetRanges, runs, xAxis, smoothedOnly, showMostValue]
+        [smoothedDatasets, datasets, showMostValue, datasetRanges, runs, xAxis, smoothedOnly]
     );
 
     const maxStepLength = useMemo(
@@ -136,14 +142,14 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [smoothedDatasets]
     );
     const getTooltipTableData = useCallback(
-        (series: number[]) => {
+        (_, value: number) => {
             const idx = xAxisMap[xAxis];
-            const points = nearestPoint(smoothedDatasets ?? [], runs, idx, series[idx]).map(point => ({
+            const points = nearestPoint(smoothedDatasets, datasets, runs, idx, value).map(point => ({
                 ...point,
                 ...datasetRanges?.[runs.findIndex(run => run.label === point.run.label)]
             }));
             const sort = sortingMethodMap[sortingMethod];
-            const sorted = sort(points, series);
+            const sorted = sort(points, value);
             const {columns, data} = tooltip(sorted, maxStepLength, i18n);
             return {
                 runs: sorted.map(i => i.run),
@@ -151,7 +157,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 data
             };
         },
-        [smoothedDatasets, datasetRanges, runs, sortingMethod, xAxis, maxStepLength, i18n]
+        [xAxis, smoothedDatasets, datasets, runs, sortingMethod, maxStepLength, i18n, datasetRanges]
     );
 
     const downloadData = useCallback(
