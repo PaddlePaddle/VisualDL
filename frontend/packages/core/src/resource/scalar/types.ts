@@ -18,15 +18,15 @@ import {Run, TimeMode} from '~/types';
 
 export type {Range} from '~/types';
 
-type InvalidValue = 'NaN' | 'Inf' | '-Inf';
-export type Value = number | null | InvalidValue;
+export type InvalidValue = 'nan' | 'inf';
+export type Value = number | null;
 type WallTime = number;
-type Step = number;
+export type Step = number;
 type Smoothed = number | null;
 type Relative = number;
 
 export type Dataset = [WallTime, Step, Value, Smoothed, Relative][];
-export type ScalarDataset = [WallTime, Step, Value][];
+export type ScalarDataset = [WallTime, Step, Value | InvalidValue][];
 
 export {TimeMode as XAxis};
 export enum SortingMethod {
@@ -39,6 +39,7 @@ export enum SortingMethod {
 export type TooltipData = {
     run: Run;
     item: Dataset[number];
+    rawItem: ScalarDataset[number];
     min?: number;
     max?: number;
 };

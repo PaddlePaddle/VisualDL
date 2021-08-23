@@ -28,7 +28,13 @@ import {quantile} from '~/utils';
 export const transform = ({datasets, smoothing}: {datasets: ScalarDataset[]; smoothing: number}) =>
     // https://en.wikipedia.org/wiki/Moving_average
     datasets.map(seriesData => {
-        const data = seriesData.map<Dataset[number]>(s => [...s, Number.NaN, Number.NaN]);
+        const data = seriesData.map<Dataset[number]>(s => [
+            s[0],
+            s[1],
+            Number.isFinite(s[2]) ? (s[2] as number) : null,
+            Number.NaN,
+            Number.NaN
+        ]);
         let last = new BigNumber(data.length > 0 ? 0 : Number.NaN);
         let numAccum = 0;
         let startValue = 0;
@@ -122,8 +128,8 @@ export const axisRange = ({datasets, outlier}: {datasets: Dataset[]; outlier: bo
     }
 };
 
-export const nearestPoint = (data: Dataset[], runs: Run[], idx: number, value: number) => {
-    const result: {run: Run; item: Dataset[number]}[] = [];
+export const nearestPoint = (data: Dataset[], rawItem: ScalarDataset[], runs: Run[], idx: number, value: number) => {
+    const result: {run: Run; item: Dataset[number]; rawItem: ScalarDataset[number]}[] = [];
     data.forEach((series, index) => {
         const run = runs[index];
         let d = Number.POSITIVE_INFINITY;
@@ -138,7 +144,18 @@ export const nearestPoint = (data: Dataset[], runs: Run[], idx: number, value: n
                 }
             }
         }
-        result.push(...series.filter(s => s[idx] === dv).map(item => ({run, item})));
+        result.push(
+            ...series.reduce<typeof result>((m, c, i) => {
+                if (c[idx] === dv) {
+                    m.push({
+                        run,
+                        item: c,
+                        rawItem: rawItem[index][i]
+                    });
+                }
+                return m;
+            }, [])
+        );
     });
     return result;
 };

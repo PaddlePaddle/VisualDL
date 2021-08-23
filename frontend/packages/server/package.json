@@ -40,18 +40,18 @@
         "dotenv": "10.0.0",
         "enhanced-resolve": "5.8.2",
         "express": "4.17.1",
-        "http-proxy-middleware": "2.0.0",
-        "pm2": "5.0.4"
+        "http-proxy-middleware": "2.0.1",
+        "pm2": "5.1.1"
     },
     "devDependencies": {
-        "@types/enhanced-resolve": "3.0.6",
-        "@types/express": "4.17.12",
-        "@types/node": "15.12.2",
+        "@types/enhanced-resolve": "3.0.7",
+        "@types/express": "4.17.13",
+        "@types/node": "16.7.1",
         "@visualdl/mock": "2.2.0-1",
         "cross-env": "7.0.3",
-        "nodemon": "2.0.7",
-        "ts-node": "10.0.0",
-        "typescript": "4.3.2"
+        "nodemon": "2.0.12",
+        "ts-node": "10.2.1",
+        "typescript": "4.3.5"
     },
     "optionalDependencies": {
         "@visualdl/demo": "2.2.0-1"

@@ -24,7 +24,7 @@ export const formatTime = (value: number, language: string, formatter = 'L LTS')
 
 export const humanizeDuration = (ms: number) => {
     const time = moment.duration(ms);
-    const hour = time.hours();
+    const hour = Math.floor(time.asHours());
     if (hour) {
         time.subtract(hour, 'hour');
     }
@@ -32,8 +32,8 @@ export const humanizeDuration = (ms: number) => {
     if (minute) {
         time.subtract(minute, 'minute');
     }
-    const second = time.asSeconds();
-    let str = Math.floor(second) + 's';
+    const second = Math.floor(time.seconds());
+    let str = `${second}s`;
     if (hour) {
         str = `${hour}h${minute}m${str}`;
     } else if (minute) {

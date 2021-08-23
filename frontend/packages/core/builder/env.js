@@ -53,5 +53,5 @@ export const SNOWPACK_PUBLIC_LANGUAGES = process.env.LANGUAGES || 'en,zh';
 export const SNOWPACK_PUBLIC_DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || 'en';
 // theme
 export const SNOWPACK_PUBLIC_THEME = process.env.THEME || '';
-// demo
-export const SERVER = '';
+// use mock data
+export const MOCK = process.env.SERVER || process.env.API_URL ? '' : '1';
