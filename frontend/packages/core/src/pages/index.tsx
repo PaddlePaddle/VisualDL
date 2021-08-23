@@ -71,7 +71,7 @@ const IndexPage: FunctionComponent = () => {
 
     return (
         <CenterWrapper>
-            {loading || components.length ? (
+            {loading ? (
                 <Loading>
                     <HashLoader size="60px" color={primaryColor} />
                     <span>{t('common:loading')}</span>
