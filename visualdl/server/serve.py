@@ -64,6 +64,7 @@ def get_vdl_log_file(logdirs):
                             "exp2": "vdlrecords.1587375685.log"}
     """
     walks = {}
+    walks_temp = {}
     for logdir in logdirs:
         for root, dirs, files in bfile.walk(logdir):
             walks.update({root: files})
