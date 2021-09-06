@@ -111,7 +111,7 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client']
+        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
     },
     buildOptions: {
         out: 'dist',

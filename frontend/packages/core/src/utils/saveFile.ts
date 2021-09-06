@@ -77,10 +77,10 @@ export default async function (url: string | string[], filename: string | string
             const zipFile = await zip.generateAsync({type: 'blob'});
             saveFile(zipFile, zipFilename);
         }
-    } catch (e) {
-        toast(e.message, {
-            position: toast.POSITION.TOP_CENTER,
-            type: toast.TYPE.ERROR
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+        toast.error(e.message, {
+            position: toast.POSITION.TOP_CENTER
         });
     }
 }
