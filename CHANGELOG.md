@@ -4,6 +4,35 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.2.1 - 2021-09-02
+
+**ZH**
+
+- 问题修复
+    - **FE**: 修复错误页面跳转链接错误的问题 (#973)
+    - **BE**: 更新 VDL.service 的链接 (#976)
+    - **FE**: 修复标量数据部分情况下极值无法正确显示的问题 (#981)
+    - **FE**: 修复标量数据 WallTime 显示错误的问题 (#998)
+    - **FE**: 修复标量数据坐标轴范围计算错误的问题 (#998)
+
+- 其他改进
+    - 折线图可以显示 `NaN` 和 `Infinity` 了 (#983, #984, #998)
+    - **BE**: 数据采样时永远保留最新值 (#980)
+
+
+**EN**
+
+- Bug Fixes
+    - **FE**: Fix link error in error pages (#973)
+    - **BE**: Update VDL.service 的链接 (#976)
+    - **FE**: Fix extrema cannot display in some cases in scalar page (#981)
+    - **FE**: Fix WallTime display error in scalar page (#998)
+    - **FE**: Fix axis range calculation error in scalar page (#998)
+
+- Enhancement
+    - `NaN` and `Infinity` values can display in scalar charts (#983, #984, #998)
+    - **BE**: Keep the latest values when sampling data (#980)
+
 ## v2.2.0 - 2021-05-23
 
 **ZH**
@@ -42,7 +71,7 @@ This is the Changelog for the VisualDL 2.0 project.
 
 - Enhancement
     - **FE**: Sidebar with runs is now resizable (#949)
-    - **FE**: re-designed navbar (#949, #951, #962)
+    - **FE**: Re-designed navbar (#949, #951, #962)
 
 ## v2.1.1 - 2021-01-28
 
