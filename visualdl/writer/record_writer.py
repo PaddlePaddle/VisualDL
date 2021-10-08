@@ -99,10 +99,10 @@ class RecordFileWriter(object):
             else:
                 fn = "vdlrecords.%010d.log%s" % (time.time(), filename_suffix)
                 self._file_name = bfile.join(logdir, fn)
-                print(
-                    'Since the log filename should contain `vdlrecords`, the filename is invalid and `{}` will replace `{}`'
-                    .format(  # noqa: E501
-                        fn, filename))
+                print('Since the log filename should contain `vdlrecords`, '
+                      'the filename is invalid and `{}` will replace `{}`'.
+                      format(  # noqa: E501
+                          fn, filename))
         else:
             self._file_name = bfile.join(
                 logdir,
