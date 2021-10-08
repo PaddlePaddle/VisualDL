@@ -59,7 +59,8 @@ class FileFactory(object):
             if not HDFS_ENABLED:
                 raise RuntimeError('Please install module named "hdfs".')
             try:
-                default_file_factory.register_filesystem("hdfs", HDFileSystem())
+                default_file_factory.register_filesystem(
+                    "hdfs", HDFileSystem())
             except hdfs.util.HdfsError:
                 raise RuntimeError(
                     "Please initialize `~/.hdfscli.cfg` for HDFS.")
@@ -182,8 +183,9 @@ class HDFileSystem(object):
 
         encoding = None if binary_mode else "utf-8"
         try:
-            with self.cli.read(hdfs_path=filename[7:], offset=offset,
-                               encoding=encoding) as reader:
+            with self.cli.read(
+                    hdfs_path=filename[7:], offset=offset,
+                    encoding=encoding) as reader:
                 data = reader.read()
                 continue_from_token = {"last_offset": offset + len(data)}
                 return data, continue_from_token
@@ -214,7 +216,8 @@ class BosConfigClient(object):
     def __init__(self, bos_ak, bos_sk, bos_sts, bos_host="bj.bcebos.com"):
         self.config = BceClientConfiguration(
             credentials=BceCredentials(bos_ak, bos_sk),
-            endpoint=bos_host, security_token=bos_sts)
+            endpoint=bos_host,
+            security_token=bos_sts)
         self.bos_client = BosClient(self.config)
 
     def exists(self, path):
@@ -234,11 +237,12 @@ class BosConfigClient(object):
         if not object_key.endswith('/'):
             object_key += '/'
         init_data = b''
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=init_data,
-                                      content_md5=content_md5(init_data),
-                                      content_length=len(init_data))
+        self.bos_client.append_object(
+            bucket_name=bucket_name,
+            key=object_key,
+            data=init_data,
+            content_md5=content_md5(init_data),
+            content_length=len(init_data))
 
     @staticmethod
     def join(path, *paths):
@@ -255,9 +259,8 @@ class BosConfigClient(object):
         # if not object_key.endswith('/'):
         #     object_key += '/'
         print('Uploading file `%s`' % filename)
-        self.bos_client.put_object_from_file(bucket=bucket_name,
-                                             key=object_key,
-                                             file_name=filename)
+        self.bos_client.put_object_from_file(
+            bucket=bucket_name, key=object_key, file_name=filename)
 
 
 class BosFileSystem(object):
@@ -288,12 +291,15 @@ class BosFileSystem(object):
         bos_sts = os.getenv("BOS_STS")
         self.config = BceClientConfiguration(
             credentials=BceCredentials(access_key_id, secret_access_key),
-            endpoint=bos_host, security_token=bos_sts)
+            endpoint=bos_host,
+            security_token=bos_sts)
 
-    def set_bos_config(self, bos_ak, bos_sk, bos_sts, bos_host="bj.bcebos.com"):
+    def set_bos_config(self, bos_ak, bos_sk, bos_sts,
+                       bos_host="bj.bcebos.com"):
         self.config = BceClientConfiguration(
             credentials=BceCredentials(bos_ak, bos_sk),
-            endpoint=bos_host, security_token=bos_sts)
+            endpoint=bos_host,
+            security_token=bos_sts)
         self.bos_client = BosClient(self.config)
 
     def isfile(self, filename):
@@ -324,11 +330,12 @@ class BosFileSystem(object):
         if not object_key.endswith('/'):
             object_key += '/'
         init_data = b''
-        self.bos_client.append_object(bucket_name=bucket_name,
-                                      key=object_key,
-                                      data=init_data,
-                                      content_md5=content_md5(init_data),
-                                      content_length=len(init_data))
+        self.bos_client.append_object(
+            bucket_name=bucket_name,
+            key=object_key,
+            data=init_data,
+            content_md5=content_md5(init_data),
+            content_length=len(init_data))
 
     @staticmethod
     def join(path, *paths):
@@ -344,10 +351,10 @@ class BosFileSystem(object):
         length = int(
             self.get_meta(bucket_name, object_key).metadata.content_length)
         if offset < length:
-            data = self.bos_client.get_object_as_string(bucket_name=bucket_name,
-                                                        key=object_key,
-                                                        range=[offset,
-                                                               length - 1])
+            data = self.bos_client.get_object_as_string(
+                bucket_name=bucket_name,
+                key=object_key,
+                range=[offset, length - 1])
         else:
             data = b''
 
@@ -371,29 +378,39 @@ class BosFileSystem(object):
         bucket_name, object_key = get_object_info(filename)
         if not self.exists(filename):
             init_data = b''
-            self.bos_client.append_object(bucket_name=bucket_name,
-                                          key=object_key,
-                                          data=init_data,
-                                          content_md5=content_md5(init_data),
-                                          content_length=len(init_data))
+            try:
+                self.bos_client.append_object(
+                    bucket_name=bucket_name,
+                    key=object_key,
+                    data=init_data,
+                    content_md5=content_md5(init_data),
+                    content_length=len(init_data))
+            except (exception.BceServerError, exception.BceHttpClientError):
+                return
         content_length = len(file_content)
 
         try:
             offset = self.get_meta(bucket_name,
                                    object_key).metadata.content_length
-            self.bos_client.append_object(bucket_name=bucket_name,
-                                          key=object_key,
-                                          data=file_content,
-                                          content_md5=content_md5(file_content),
-                                          content_length=content_length,
-                                          offset=offset)
+            self.bos_client.append_object(
+                bucket_name=bucket_name,
+                key=object_key,
+                data=file_content,
+                content_md5=content_md5(file_content),
+                content_length=content_length,
+                offset=offset)
         except (exception.BceServerError, exception.BceHttpClientError):
             init_data = b''
-            self.bos_client.append_object(bucket_name=bucket_name,
-                                          key=object_key,
-                                          data=init_data,
-                                          content_md5=content_md5(init_data),
-                                          content_length=len(init_data))
+            # something wrong when writing data, abondon existing data
+            try:
+                self.bos_client.append_object(
+                    bucket_name=bucket_name,
+                    key=object_key,
+                    data=init_data,
+                    content_md5=content_md5(init_data),
+                    content_length=len(init_data))
+            except (exception.BceServerError, exception.BceHttpClientError):
+                pass
 
         self._file_contents_to_add = b''
         self._file_contents_count = 0
@@ -435,9 +452,10 @@ class BosFileSystem(object):
                         contents_map[key] = [value]
                 temp_walk = []
                 for key, value in contents_map.items():
-                    temp_walk.append(
-                        [BosFileSystem.join('bos://' + self.bucket, key), [],
-                         value])
+                    temp_walk.append([
+                        BosFileSystem.join('bos://' + self.bucket, key), [],
+                        value
+                    ])
                 self.length = len(temp_walk)
                 self.contents = temp_walk
 
@@ -458,8 +476,7 @@ class BosFileSystem(object):
         else:
             prefix = object_key if object_key.endswith(
                 '/') else object_key + '/'
-        response = self.bos_client.list_objects(bucket_name,
-                                                prefix=prefix)
+        response = self.bos_client.list_objects(bucket_name, prefix=prefix)
         contents = [content.key for content in response.contents]
         return WalkGenerator(bucket_name, contents)
 
@@ -633,7 +650,8 @@ class BFile(object):
     def close(self):
         if isinstance(self.fs, BosFileSystem):
             try:
-                self.fs.append(self._filename, b'', self.binary_mode, force=True)
+                self.fs.append(
+                    self._filename, b'', self.binary_mode, force=True)
             except Exception:
                 pass
         self.flush()
