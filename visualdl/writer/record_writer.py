@@ -196,6 +196,7 @@ class _AsyncWriterThread(threading.Thread):
         self.join()
 
     def run(self):
+        has_unresolved_bug = False
         while True:
             now = time.time()
             queue_wait_duration = self._next_flush_time - now
@@ -215,7 +216,11 @@ class _AsyncWriterThread(threading.Thread):
                 pass
             except Exception as e:
                 # prevent the main thread from deadlock due to writing error.
-                print('Writing data Error, Due to Exception {}'.format(e))
+                if not has_unresolved_bug:
+                    print('Warning: Writing data Error, Due to unresolved Exception {}'.format(e))
+                    print('Warning: Writing data to FileSystem failed since {}.'.format(
+                        time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())))
+                has_unresolved_bug = True
                 pass
             finally:
                 if data:

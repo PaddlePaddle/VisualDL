@@ -302,6 +302,25 @@ class BosFileSystem(object):
             security_token=bos_sts)
         self.bos_client = BosClient(self.config)
 
+    def renew_bos_client_from_server(self):
+        import requests
+        import json
+        from visualdl.utils.dir import CONFIG_PATH
+        with open(CONFIG_PATH, 'r') as fp:
+            server_url = json.load(fp)['server_url']
+        url = server_url + '/sts/'
+        res = requests.post(url=url).json()
+        err_code = res.get('code')
+        msg = res.get('msg')
+        if '000000' == err_code:
+            sts_ak = msg.get('sts_ak')
+            sts_sk = msg.get('sts_sk')
+            sts_token = msg.get('token')
+            self.set_bos_config(sts_ak, sts_sk, sts_token)
+        else:
+            print('Renew bos client error. Error msg: {}'.format(msg))
+            return
+
     def isfile(self, filename):
         return exists(filename)
 
@@ -386,6 +405,7 @@ class BosFileSystem(object):
                     content_md5=content_md5(init_data),
                     content_length=len(init_data))
             except (exception.BceServerError, exception.BceHttpClientError):
+                self.renew_bos_client_from_server()
                 return
         content_length = len(file_content)
 
@@ -400,17 +420,14 @@ class BosFileSystem(object):
                 content_length=content_length,
                 offset=offset)
         except (exception.BceServerError, exception.BceHttpClientError):
+            self.renew_bos_client_from_server()
             init_data = b''
-            # something wrong when writing data, abondon existing data
-            try:
-                self.bos_client.append_object(
-                    bucket_name=bucket_name,
-                    key=object_key,
-                    data=init_data,
-                    content_md5=content_md5(init_data),
-                    content_length=len(init_data))
-            except (exception.BceServerError, exception.BceHttpClientError):
-                pass
+            self.bos_client.append_object(
+                bucket_name=bucket_name,
+                key=object_key,
+                data=init_data,
+                content_md5=content_md5(init_data),
+                content_length=len(init_data))
 
         self._file_contents_to_add = b''
         self._file_contents_count = 0
