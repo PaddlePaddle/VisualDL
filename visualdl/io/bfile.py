@@ -406,6 +406,12 @@ class BosFileSystem(object):
                     content_length=len(init_data))
             except (exception.BceServerError, exception.BceHttpClientError):
                 self.renew_bos_client_from_server()
+                self.bos_client.append_object(
+                    bucket_name=bucket_name,
+                    key=object_key,
+                    data=init_data,
+                    content_md5=content_md5(init_data),
+                    content_length=len(init_data))
                 return
         content_length = len(file_content)
 
@@ -421,13 +427,15 @@ class BosFileSystem(object):
                 offset=offset)
         except (exception.BceServerError, exception.BceHttpClientError):
             self.renew_bos_client_from_server()
-            init_data = b''
+            offset = self.get_meta(bucket_name,
+                                   object_key).metadata.content_length
             self.bos_client.append_object(
                 bucket_name=bucket_name,
                 key=object_key,
-                data=init_data,
-                content_md5=content_md5(init_data),
-                content_length=len(init_data))
+                data=file_content,
+                content_md5=content_md5(file_content),
+                content_length=content_length,
+                offset=offset)
 
         self._file_contents_to_add = b''
         self._file_contents_count = 0
