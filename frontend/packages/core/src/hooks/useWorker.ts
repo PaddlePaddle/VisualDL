@@ -30,6 +30,7 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
     const [result, setResult] = useState<WorkerResult<D, E>>({});
 
     useEffect(() => {
+        setResult({});
         const worker = new WebWorker(`${BASE_URI}/_dist_/worker/${name}.js`);
         worker.on('INITIALIZED', () => {
             setResult({worker});
@@ -41,7 +42,6 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
             worker.terminate();
         };
     }, [name, params]);
-
     return result;
 };
 
