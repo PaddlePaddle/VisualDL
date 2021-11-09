@@ -201,8 +201,8 @@ class DebugModel(object):
     def _data_run(self):
         """
         Multi process thread to get results, by 4 steps:
-            1) download modle debug data
-            2) process modle debug data
+            1) download model debug data
+            2) process model debug data
             3) save data by forward and reverse gradient
             4) save evaluation results
         Args:
@@ -238,11 +238,11 @@ class DebugModel(object):
 
         if 'afs://' in input_file:
             #afs input,eg:afs://test.afs.baidu.com:9902/user/test/visual/random_dump/join/20211015/delta-6
-            download_util.download_modle_data(self._args["hadoop_bin"], self._args.get("ugi"),
+            download_util.download_model_data(self._args["hadoop_bin"], self._args.get("ugi"),
                             input_file, delta_dir, join_pbtxt_para, update_pbtxt_para)
         else:
             #local debug data,eg /home/work/test/random_dump/join(or update)/day/delta-5
-            download_util.get_local_modle_data(input_file, delta_dir, join_pbtxt_para, update_pbtxt_para)
+            download_util.get_local_model_data(input_file, delta_dir, join_pbtxt_para, update_pbtxt_para)
         logger.info("download debug input...")
 
     def _get_delta_num_list(self):
@@ -391,7 +391,7 @@ class DebugModel(object):
 
     def _process_delta_data(self, delta_file, delta_key, stage):
         """
-        Process each delta modle dump data
+        Process each delta model dump data
         Args:
             delta_file: file which record one delta data
             delta_key: delta number

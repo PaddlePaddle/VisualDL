@@ -24,7 +24,7 @@ import multiprocessing
 from multiprocessing import Process
 from multiprocessing import Pool, Queue, Manager
 
-def download_modle_data(hadoop_bin, hadoop_ugi, afs_input, local_dir, join_network, update_network):
+def download_model_data(hadoop_bin, hadoop_ugi, afs_input, local_dir, join_network, update_network):
     """
     Download model debug data from afs
     Args:
@@ -87,7 +87,7 @@ def download_modle_data(hadoop_bin, hadoop_ugi, afs_input, local_dir, join_netwo
                                             input, download_path, file_name_lists))
                 p1.start()
                 p1.join()
-                logger.info("download {stage} modle data done")
+                logger.info("download {stage} model data done")
 
 def multi_thread_download(index, hadoop_bin, hadoop_ugi, stage, input, download_path, file_name_lists):
     """
@@ -103,12 +103,14 @@ def multi_thread_download(index, hadoop_bin, hadoop_ugi, stage, input, download_
     Returns:
         None
     """
-    logger.info(f"{hadoop_bin} fs -D hadoop.job.ugi={hadoop_ugi} -get {input}/{file_name_lists[index]} {download_path}/{file_name_lists[index]}")
-    cmd = [hadoop_bin, "fs", "-D", f"hadoop.job.ugi={hadoop_ugi}", "-get", f"{input}/{file_name_lists[index]}", f"{download_path}/{file_name_lists[index]}"]
+    logger.info(f"{hadoop_bin} fs -D hadoop.job.ugi={hadoop_ugi} \
+                -get {input}/{file_name_lists[index]} {download_path}/{file_name_lists[index]}")
+    cmd = [hadoop_bin, "fs", "-D", f"hadoop.job.ugi={hadoop_ugi}", 
+           "-get", f"{input}/{file_name_lists[index]}", f"{download_path}/{file_name_lists[index]}"]
     shell = Popen(cmd, encoding="utf8", stdout=PIPE, stderr=DEVNULL)
 
 
-def get_local_modle_data(local_input, local_dir, join_network, update_network):
+def get_local_model_data(local_input, local_dir, join_network, update_network):
     """
     Get local dump model data
     Args:
@@ -138,4 +140,4 @@ def get_local_modle_data(local_input, local_dir, join_network, update_network):
         if not os.path.exists(download_path): os.makedirs(download_path)
         cmd = f"cp {input}/* {download_path}"
         os.system(cmd)
-        logger.info(f"download {stage} modle data done")
+        logger.info(f"download {stage} model data done")

@@ -246,15 +246,15 @@ class Api(object):
         return self._get_with_retry(key, lib.get_graph)
 
     @result()
-    def modle_network(self, stage):
+    def model_network(self, stage):
         return self._get_with_retry('data/plugin/model/network', lib.get_network, stage)
 
     @result()
-    def modle_nodebasic(self, stage, node):
+    def model_nodebasic(self, stage, node):
         return self._get_with_retry('data/plugin/model/nodebasic', lib.get_basic_data, stage, node)
 
     @result()
-    def modle_nodedetail(self, stage, node, type):
+    def model_nodedetail(self, stage, node, type):
         return self._get_with_retry('data/plugin/model/nodedetail', lib.get_detail_data, stage, node, type)
 
 
@@ -297,9 +297,9 @@ def create_api_call(logdir, model, cache_timeout):
         'hparams/indicators': (api.hparam_indicator, []),
         'hparams/list': (api.hparam_list, []),
         'hparams/metric': (api.hparam_metric, ['run', 'metric']),
-        'modle/network': (api.modle_network, ['stage']),
-        'modle/nodebasic': (api.modle_nodebasic, ['stage', 'node']),
-        'modle/nodedetail': (api.modle_nodedetail, ['stage', 'node', 'type'])
+        'model/network': (api.model_network, ['stage']),
+        'model/nodebasic': (api.model_nodebasic, ['stage', 'node']),
+        'model/nodedetail': (api.model_nodedetail, ['stage', 'node', 'type'])
     }
 
     def call(path: str, args):
