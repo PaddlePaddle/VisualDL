@@ -30,7 +30,6 @@ if isinstance(QUEUE_TIMEOUT, str):
 class RecordWriter(object):
     """Package data with crc32 or not.
     """
-
     def __init__(self, writer):
         self._writer = writer
 
@@ -78,13 +77,8 @@ class RecordFileWriter(object):
     directory and asynchronously writes `Record` protocol buffers to this
     file.
     """
-
-    def __init__(self,
-                 logdir,
-                 max_queue_size=10,
-                 flush_secs=120,
-                 filename_suffix='',
-                 filename=''):
+    def __init__(self, logdir, max_queue_size=10, flush_secs=120,
+                 filename_suffix='', filename=''):
         self._logdir = logdir
         if not bfile.exists(logdir):
             bfile.makedirs(logdir)
@@ -99,19 +93,16 @@ class RecordFileWriter(object):
             else:
                 fn = "vdlrecords.%010d.log%s" % (time.time(), filename_suffix)
                 self._file_name = bfile.join(logdir, fn)
-                print('Since the log filename should contain `vdlrecords`, '
-                      'the filename is invalid and `{}` will replace `{}`'.
-                      format(  # noqa: E501
-                          fn, filename))
+                print(
+                    'Since the log filename should contain `vdlrecords`, the filename is invalid and `{}` will replace `{}`'.format(  # noqa: E501
+                        fn, filename))
         else:
-            self._file_name = bfile.join(
-                logdir,
-                "vdlrecords.%010d.log%s" % (time.time(), filename_suffix))
+            self._file_name = bfile.join(logdir, "vdlrecords.%010d.log%s" % (
+                time.time(), filename_suffix))
 
         self._general_file_writer = bfile.BFile(self._file_name, "wb")
-        self._async_writer = _AsyncWriter(
-            RecordWriter(self._general_file_writer), max_queue_size,
-            flush_secs)
+        self._async_writer = _AsyncWriter(RecordWriter(
+            self._general_file_writer), max_queue_size, flush_secs)
         # TODO(shenyuhan) Maybe file_version in future.
         # _record = record_pb2.Record()
         # self.add_record(_record)
@@ -149,7 +140,8 @@ class _AsyncWriter(object):
         self._closed = False
         self._bytes_queue = queue.Queue(max_queue_size)
         self._worker = _AsyncWriterThread(self._bytes_queue,
-                                          self._record_writer, flush_secs)
+                                          self._record_writer,
+                                          flush_secs)
         self._lock = threading.Lock()
         self._worker.start()
 
@@ -196,7 +188,6 @@ class _AsyncWriterThread(threading.Thread):
         self.join()
 
     def run(self):
-        has_unresolved_bug = False
         while True:
             now = time.time()
             queue_wait_duration = self._next_flush_time - now
@@ -213,14 +204,6 @@ class _AsyncWriterThread(threading.Thread):
                 self._record_writer.write(data)
                 self._has_pending_data = True
             except queue.Empty:
-                pass
-            except Exception as e:
-                # prevent the main thread from deadlock due to writing error.
-                if not has_unresolved_bug:
-                    print('Warning: Writing data Error, Due to unresolved Exception {}'.format(e))
-                    print('Warning: Writing data to FileSystem failed since {}.'.format(
-                        time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())))
-                has_unresolved_bug = True
                 pass
             finally:
                 if data:

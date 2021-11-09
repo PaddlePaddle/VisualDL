@@ -45,6 +45,15 @@ class DefaultArgs(object):
         self.theme = args.get('theme', None)
         self.dest = args.get('dest', '')
         self.behavior = args.get('behavior', '')
+        self.join_pbtxt = args.get('join_pbtxt', '')
+        self.update_pbtxt = args.get('update_pbtxt', '')
+        self.hadoop_ugi = args.get('hadoop_ugi', '')
+        self.delta_num = args.get('delta_num', '')
+        self.hadoop_bin = args.get('hadoop_bin', '')
+        self.debug_input = args.get('debug_input', '')
+        self.tag = args.get('tag', '')
+        self.is_div = args.get('is_div', '')
+        self.source = args.get('source', '')
 
 
 def get_host(host=default_host, port=default_port):
@@ -112,7 +121,6 @@ class ParseArgs(object):
         self.theme = args.theme
         self.dest = args.dest
         self.behavior = args.behavior
-
 
 def parse_args():
     """
@@ -220,7 +228,6 @@ def parse_args():
         "behavior",
         nargs='?'
     )
-
     args = parser.parse_args()
 
     init_logger(args.verbose)
