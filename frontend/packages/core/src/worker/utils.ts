@@ -68,7 +68,8 @@ export function callListener<T>(this: IWorker, listeners: Listeners, data: Worke
     listeners[data.type]?.forEach(handler => {
         try {
             handler(data.data);
-        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
             const error = e instanceof Error ? e : new Error(e);
             this.emit('ERROR', error);
         }

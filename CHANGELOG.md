@@ -24,7 +24,7 @@ This is the Changelog for the VisualDL 2.0 project.
 
 - Bug Fixes
     - **FE**: Fix link error in error pages (#973)
-    - **BE**: Update VDL.service 的链接 (#976)
+    - **BE**: Update endpoint of VDL.service (#976)
     - **FE**: Fix extrema cannot display in some cases in scalar page (#981)
     - **FE**: Fix WallTime display error in scalar page (#998)
     - **FE**: Fix axis range calculation error in scalar page (#998)
