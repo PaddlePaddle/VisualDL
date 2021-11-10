@@ -21,13 +21,13 @@ import {useCallback, useEffect, useMemo, useReducer} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
 import type {Page} from '~/store/runs/types';
-import {cache} from 'swr';
 import groupBy from 'lodash/groupBy';
 import intersection from 'lodash/intersection';
 import intersectionBy from 'lodash/intersectionBy';
 import uniq from 'lodash/uniq';
 import useQuery from '~/hooks/useQuery';
 import {useRunningRequest} from '~/hooks/useRequest';
+import {useSWRConfig} from 'swr';
 
 type Tags = Record<string, string[]>;
 
@@ -183,7 +183,8 @@ const useTagFilter = (type: Page, running: boolean) => {
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
 
     // clear cache in order to fully reload data when switching page
-    useEffect(() => () => cache.delete(`/${type}/tags`), [type]);
+    const {cache} = useSWRConfig();
+    useEffect(() => () => cache.delete(`/${type}/tags`), [type, cache]);
 
     const storeDispatch = useDispatch();
     const selector = useMemo(() => selectors.runs.getRunsByPage(type), [type]);

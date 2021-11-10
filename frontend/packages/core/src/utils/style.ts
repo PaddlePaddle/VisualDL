@@ -254,19 +254,6 @@ export const GlobalStyle = createGlobalStyle`
 
     .Toastify__toast-container {
         z-index: ${zIndexes.toast};
-
-        .Toastify__toast {
-            border-radius: ${borderRadius};
-        }
-
-        .Toastify__toast--default {
-            color: var(--text-color);
-            ${transitionProps('color')}
-        }
-
-        .Toastify__toast-body {
-            padding: 0 1.428571429em;
-        }
     }
 
     [data-tippy-root] .tippy-box {
