@@ -29,7 +29,8 @@ const runner: Runner = async worker => {
             // eslint-disable-next-line @typescript-eslint/ban-types
             const result = (funcs[name] as Function)(...params);
             worker.emit('RESULT', result);
-        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
             if (e.message !== 'unreachable') {
                 throw e;
             }
