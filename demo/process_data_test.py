@@ -19,8 +19,8 @@ from visualdl.reader.process_data import DebugModel
 if __name__ == "__main__":
     params = {
                 "hadoop_bin": "/home/work/hadoop/bin/hadoop",
-	            "ugi": "test,test",
-                "debug_input": "afs://baihua.afs.baidu.com:9902/user/test/visualdl/random_dump/join/20211015",
+	            "ugi": "**",
+                "debug_input": "afs://***/random_dump/join/20211015",
                 #"debug_input": "/home/work/testuser/visualdl/data/random_dump/join/20211028", #local dump data
                 "delta_num": "8",
                 "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
