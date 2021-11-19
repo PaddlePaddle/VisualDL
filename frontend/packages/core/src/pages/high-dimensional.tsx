@@ -257,9 +257,8 @@ const HighDimensional: FunctionComponent = () => {
     useEffect(() => setVectorFile(null), [selectedEmbeddingName]);
 
     const showError = useCallback((e: Error) => {
-        toast(e.message, {
-            position: toast.POSITION.TOP_CENTER,
-            type: toast.TYPE.ERROR
+        toast.error(e.message, {
+            position: toast.POSITION.TOP_CENTER
         });
         if (MODE !== 'production') {
             // eslint-disable-next-line no-console

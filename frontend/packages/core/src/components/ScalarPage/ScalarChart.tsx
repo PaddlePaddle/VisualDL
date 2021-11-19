@@ -15,7 +15,7 @@
  */
 
 import type {Dataset, Range, ScalarDataset} from '~/resource/scalar';
-import React, {FunctionComponent, useCallback, useMemo} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import SChart, {DownloadDataTypes, chartSize, chartSizeInRem} from '~/components/ScalarChart';
 import {
     SortingMethod,
@@ -124,18 +124,21 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         return {x, y};
     }, [smoothedDatasets, yRange, xAxisType, xAxis]);
 
-    const data = useMemo(
-        () =>
-            chartData({
-                data: smoothedDatasets,
-                rawData: datasets,
-                ranges: showMostValue ? datasetRanges ?? [] : [],
-                runs,
-                xAxis,
-                smoothedOnly
-            }),
-        [smoothedDatasets, datasets, showMostValue, datasetRanges, runs, xAxis, smoothedOnly]
-    );
+    const [data, setData] = useState<ReturnType<typeof chartData>>([]);
+    useEffect(() => {
+        if (smoothedDatasets.length === runs.length && datasets.length === runs.length) {
+            setData(
+                chartData({
+                    data: smoothedDatasets,
+                    rawData: datasets,
+                    ranges: showMostValue ? datasetRanges ?? [] : [],
+                    runs,
+                    xAxis,
+                    smoothedOnly
+                })
+            );
+        }
+    }, [smoothedDatasets, datasets, showMostValue, datasetRanges, runs, xAxis, smoothedOnly]);
 
     const maxStepLength = useMemo(
         () => String(Math.max(...smoothedDatasets.map(i => Math.max(...i.map(j => j[1]))))).length,

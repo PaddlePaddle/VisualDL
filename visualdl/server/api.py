@@ -65,7 +65,9 @@ class Api(object):
         self._reader = LogReader(logdir)
         if model:
             self._reader.model = model
-        self.model_name = os.path.basename(model)
+            self.model_name = os.path.basename(model)
+        else:
+            self.model_name = ''
 
         # use a memory cache to reduce disk reading frequency.
         cache = MemCache(timeout=cache_timeout)
