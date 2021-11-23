@@ -56,10 +56,7 @@ function useRequest<D = unknown, E extends Error = Error>(
 
     useEffect(() => {
         if (error) {
-            toast(error.message, {
-                position: toast.POSITION.TOP_CENTER,
-                type: toast.TYPE.ERROR
-            });
+            toast.error(error.message);
         }
     }, [error]);
 

@@ -177,7 +177,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                         case 'cancel':
                             return setLoading(false);
                         case 'error':
-                            toast(data);
+                            toast.error(data);
                             setLoading(false);
                             return;
                         case 'show-model-properties':
