@@ -557,7 +557,7 @@ def cache_get(cache):
 
 def get_network(log_reader, stage):
     response = {}
-    network_dir = os.getcwd() + "/output/" + stage + "_network.json"
+    network_dir = log_reader.work_dir + "/output/" + stage + "_network.json"
     if not os.path.exists(network_dir):
         logger.error("fail to read network file")
         return response
@@ -573,7 +573,7 @@ def get_network(log_reader, stage):
 def get_basic_data(log_reader, stage, node):
     response = {}
     grad_node = node + "@GRAD"
-    basic_data_dir = os.getcwd() + "/output/static.data"
+    basic_data_dir = log_reader.work_dir + "/output/static.data"
     if not os.path.exists(basic_data_dir):
         logger.error("fail to read data file")
         return response
@@ -604,7 +604,7 @@ def get_basic_data(log_reader, stage, node):
 
 def get_detail_data(log_reader, stage, node, type):
     response = {}
-    detail_data_dir = os.getcwd() + "/output/detail.data"
+    detail_data_dir = log_reader.work_dir + "/output/detail.data"
     if not os.path.exists(detail_data_dir):
         logger.error("fail to read data file")
         return response
@@ -621,9 +621,9 @@ def get_detail_data(log_reader, stage, node, type):
             node_k = column_datas[2]
             if node_k != node:
                 continue
-            length_k = column_datas[3] #神经元长度
-            data_k1 = column_datas[4] #数值分布
-            data_k2 = column_datas[5] #索引分布
+            length_k = column_datas[3]
+            data_k1 = column_datas[4]
+            data_k2 = column_datas[5]
             tmp = {}
             tmp["delta_num"] = delta_k
             if int(type) == 1:
