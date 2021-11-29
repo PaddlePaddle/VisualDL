@@ -121,6 +121,16 @@ class ParseArgs(object):
         self.theme = args.theme
         self.dest = args.dest
         self.behavior = args.behavior
+        self.join_pbtxt = args.join_pbtxt
+        self.update_pbtxt = args.update_pbtxt
+        self.hadoop_ugi = args.hadoop_ugi
+        self.delta_num = args.delta_num
+        self.hadoop_bin = args.hadoop_bin
+        self.debug_input = args.debug_input
+        self.tag = args.tag
+        self.is_div = args.is_div
+        self.source = args.source
+
 
 def parse_args():
     """
@@ -228,6 +238,12 @@ def parse_args():
         "behavior",
         nargs='?'
     )
+    parser.add_argument(
+        "--work_dir",
+        type=str,
+        action="store",
+        default="",
+        help="set model visual network data path")
     args = parser.parse_args()
 
     init_logger(args.verbose)

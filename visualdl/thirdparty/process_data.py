@@ -13,46 +13,44 @@
 # limitations under the License.
 # =======================================================================
 
-import logging
-from posixpath import join
-import time
-import signal
 import argparse
 import os
 import sys
-import json
 import shutil
-import datetime
 import numpy as np
-import subprocess
-from subprocess import Popen, PIPE, DEVNULL
 import multiprocessing
-from multiprocessing import Process
-from multiprocessing import Pool, Queue, Manager
+
 from visualdl.server.log import logger
-from visualdl.reader import create_network
-from visualdl.utils import download_util
+from visualdl.thirdparty import create_network
+from visualdl.thirdparty import download_util
 
-FLOAT_MIN = -3.4e+38
-FLOAT_MAX = 3.4e+38
+FLOAT_MIN = sys.float_info.min
+FLOAT_MAX = sys.float_info.max
 
-class DebugModel(object):
+
+class ModelAnalysis(object):
     """
-    Debug model class
+    Model data analysis:
+    Firstly to download the network data which randomly dropped by the model.
+    Secondly to analyze the network node data according to the training batch,
+    and store the results in the local file for subsequent front-end data rendering and display.
     """
+
     def __init__(self, params):
         """
         Init function
+
         Args:
             params: the class basic args, eg:
             {
                 "hadoop_bin": "/home/work/hadoop/bin/hadoop",
-	            "ugi": "test,test",
-                "debug_input": "afs://baihua.afs.baidu.com:9902/user/test/visualdl/random_dump/join/20211015",
+                "ugi": "**",
+                "debug_input": "afs://**/test/visualdl/random_dump/join/20211015",
                 "delta_num": "8",
                 "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
                 "update_pbtxt": "/home/work/test_download/train/update_main_program.pbtxt"
             }
+
         Returns:
             None
         """
@@ -70,12 +68,15 @@ class DebugModel(object):
     def __del__(self):
         """
         Clean function
+
         Args:
             None
+
         Returns:
             None
         """
-        pass
+        if os.path.exists(self._work_dir):
+            shutil.rmtree(self._work_dir)
 
     def __call__(self):
         """
@@ -85,8 +86,10 @@ class DebugModel(object):
             3.process join or update debug data
             4.calculate the target value
             5.save the result
+
         Args:
             None
+
         Returns:
             None
         """
@@ -95,73 +98,100 @@ class DebugModel(object):
     def _parse_args(self, kwargs):
         """
         Parse args
+
         Args:
             kwargs: the class basic args, like:
             {
                 "hadoop_bin": "/home/work/hadoop/bin/hadoop",
-	        "ugi": "test,test",
-                "debug_input": "afs://baihua.afs.baidu.com:9902/user/test/visualdl/random_dump/join/20211015",
+                     "ugi": "**",
+                "debug_input": "afs://**/test/visualdl/random_dump/join/20211015",
                 "delta_num": "8",
                 "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
                 "update_pbtxt": "/home/work/test_download/train/update_main_program.pbtxt"
             }
+
         Returns:
             None
         """
         parser = argparse.ArgumentParser()
-        if arg := kwargs.get("work_dir"): self._args["work_dir"] = arg
-        else: parser.add_argument("--work_dir", help="work tmp dir", default=os.getcwd())
-        if arg := kwargs.get("hadoop_bin"): self._args["hadoop_bin"] = arg
-        else: parser.add_argument("--hadoop_bin", help="hadoop bin path")
-        if arg := kwargs.get("ugi"): self._args["ugi"] = arg
-        else: parser.add_argument("--ugi", help="hadoop ugi")
-        if arg := kwargs.get("delta_num"): self._args["delta_num"] = arg
-        else: parser.add_argument("--delta_num", help="delta num", required=True)
-        if arg := kwargs.get("debug_input"): self._args["debug_input"] = arg
-        else: parser.add_argument("--debug_input", help="debug data file", required=True)
-        if arg := kwargs.get("join_pbtxt"): self._args["join_pbtxt"] = arg
-        else: parser.add_argument("--join_pbtxt", help="join network.pbtxt")
-        if arg := kwargs.get("update_pbtxt"): self._args["update_pbtxt"] = arg
-        else: parser.add_argument("--update_pbtxt", help="update network.pbtxt")
-        if arg := kwargs.get("tag"): self._args["tag"] = arg
-        else: parser.add_argument("--tag", help="source tag")
-        if arg := kwargs.get("is_div"): self._args["is_div"] = arg
-        else: parser.add_argument("--is_div", help="diff by source type", type=int, default=0)
-        if arg := kwargs.get("source"): self._args["source"] = arg
-        else: parser.add_argument("--source", help="source type")
+        if "work_dir" in kwargs:
+            self._args["work_dir"] = kwargs.get("work_dir")
+        else:
+            parser.add_argument("--work_dir", help="work tmp dir", default=os.getcwd())
+        if "hadoop_bin" in kwargs:
+            self._args["hadoop_bin"] = kwargs.get("hadoop_bin")
+        else:
+            parser.add_argument("--hadoop_bin", help="hadoop bin path")
+        if "ugi" in kwargs:
+            self._args["ugi"] = kwargs.get("ugi")
+        else:
+            parser.add_argument("--ugi", help="hadoop ugi")
+        if "delta_num" in kwargs:
+            self._args["delta_num"] = kwargs.get("delta_num")
+        else:
+            parser.add_argument("--delta_num", help="delta num", required=True)
+        if "debug_input" in kwargs:
+            self._args["debug_input"] = kwargs.get("debug_input")
+        else:
+            parser.add_argument("--debug_input", help="debug data file", required=True)
+        if "join_pbtxt" in kwargs:
+            self._args["join_pbtxt"] = kwargs.get("join_pbtxt")
+        else:
+            parser.add_argument("--join_pbtxt", help="join network.pbtxt")
+        if "update_pbtxt" in kwargs:
+            self._args["update_pbtxt"] = kwargs.get("update_pbtxt")
+        else:
+            parser.add_argument("--update_pbtxt", help="update network.pbtxt")
+        if "tag" in kwargs:
+            self._args["tag"] = kwargs.get("tag")
+        else:
+            parser.add_argument("--tag", help="source tag")
+        if "is_div" in kwargs:
+            self._args["is_div"] = kwargs.get("is_div")
+        else:
+            parser.add_argument("--is_div", help="diff by source type", type=int, default=0)
+        if "source" in kwargs:
+            self._args["source"] = kwargs.get("source")
+        else:
+            parser.add_argument("--source", help="source type")
         self._args.update(parser.parse_args().__dict__)
 
     def _make_tmp_dir(self):
         """
         Create working directory
+
         Args:
             None
+
         Returns:
             None
         """
-        #self._log_dir = f'{self._args["work_dir"]}/log/'
-        self._work_dir = f'{self._args["work_dir"]}/data/'
-        self._train_dir = f'{self._args["work_dir"]}/data/train_env'
-        self._output_dir = f'{self._args["work_dir"]}/output/'
-        logger.info(f"create working directory: {self._work_dir}")
-        logger.info(f"train env dir: {self._train_dir}")
-        logger.info(f"save reslut dir: {self._output_dir}")
-        if os.path.exists(self._work_dir): shutil.rmtree(self._work_dir)
-        #if not os.path.exists(self._log_dir): os.mkdir(self._log_dir)
-        if not os.path.exists(self._work_dir): os.mkdir(self._work_dir)
-        if not os.path.exists(self._train_dir): os.mkdir(self._train_dir)
-        if os.path.exists(self._output_dir): shutil.rmtree(self._output_dir)
+        self._work_dir = os.path.join(self._args["work_dir"], 'data')
+        self._train_dir = os.path.join(self._args["work_dir"], 'data/train_env')
+        self._output_dir = os.path.join(self._args["work_dir"], 'output')
+        logger.info("create working directory: {}".format(self._work_dir))
+        logger.info("train env dir: {}".format(self._train_dir))
+        logger.info("save reslut dir: {}".format(self._output_dir))
+        if os.path.exists(self._work_dir):
+            shutil.rmtree(self._work_dir)
+        if not os.path.exists(self._work_dir):
+            os.mkdir(self._work_dir)
+        if not os.path.exists(self._train_dir):
+            os.mkdir(self._train_dir)
+        if os.path.exists(self._output_dir):
+            shutil.rmtree(self._output_dir)
         os.mkdir(self._output_dir)
 
     def _multi_process(self):
         """
         Multi process to download dumped data
+
         Args:
             None
+
         Returns:
             None
         """
-        lock = multiprocessing.RLock()
         p1 = multiprocessing.Process(target=self._network_run, )
         p2 = multiprocessing.Process(target=self._data_run, )
         p1.start()
@@ -174,29 +204,33 @@ class DebugModel(object):
     def _network_run(self):
         """
         Identify local network topology files
+
         Args:
             None
+
         Returns:
             None
         """
         if self._args.get("join_pbtxt") != "null" and os.path.exists(self._args.get("join_pbtxt")):
-            cmd = ["cp", self._args.get("join_pbtxt"), f"{self._train_dir}/join_main_program.pbtxt"]
-            if Popen(cmd, stdout=DEVNULL, stderr=DEVNULL).wait():
-                logger.error("join network pbtxt file not exsit")
-            network = create_network.getnetwork('join', f"{self._train_dir}/join_main_program.pbtxt")
+            join_main_program = "{}/join_main_program.pbtxt".format(self._train_dir)
+            shutil.copyfile(self._args.get("join_pbtxt"), join_main_program)
+            network = create_network.get_network('join', join_main_program)
             if network:
                 create_network.save_network(network, 'join')
             else:
                 logger.error("join network is empty")
+        else:
+            logger.error("join_pbtxt file is empty")
         if self._args.get("update_pbtxt") != "null" and os.path.exists(self._args.get("update_pbtxt")):
-            cmd = ["cp",  self._args.get("update_pbtxt"),  f"{self._train_dir}/update_main_program.pbtxt"]
-            if Popen(cmd, stdout=DEVNULL, stderr=DEVNULL).wait():
-                logger.error("update network pbtxt file not exsit")
-            network = create_network.getnetwork('update',  f"{self._train_dir}/update_main_program.pbtxt")
+            update_main_program = "{}/update_main_program.pbtxt".format(self._train_dir)
+            shutil.copyfile(self._args.get("update_pbtxt"), update_main_program)
+            network = create_network.get_network('update', update_main_program)
             if network:
                 create_network.save_network(network, 'update')
             else:
                 logger.error("update network is empty")
+        else:
+            logger.error("update_pbtxt file is empty")
 
     def _data_run(self):
         """
@@ -205,8 +239,10 @@ class DebugModel(object):
             2) process model debug data
             3) save data by forward and reverse gradient
             4) save evaluation results
+
         Args:
             None
+
         Returns:
             None
         """
@@ -218,8 +254,10 @@ class DebugModel(object):
     def _multi_download_data(self, num):
         """
         Download delta data by multithread
+
         Args:
             num: which delta to download
+
         Returns:
             None
         """
@@ -237,19 +275,21 @@ class DebugModel(object):
             update_pbtxt_para = "update_invalid"
 
         if 'afs://' in input_file:
-            #afs input,eg:afs://test.afs.baidu.com:9902/user/test/visual/random_dump/join/20211015/delta-6
+            # afs input,eg:afs://**/test/visual/random_dump/join/20211015/delta-6
             download_util.download_model_data(self._args["hadoop_bin"], self._args.get("ugi"),
-                            input_file, delta_dir, join_pbtxt_para, update_pbtxt_para)
+                                              input_file, delta_dir, join_pbtxt_para, update_pbtxt_para)
         else:
-            #local debug data,eg /home/work/test/random_dump/join(or update)/day/delta-5
+            # local debug data,eg /home/work/test/random_dump/join(or update)/20211015/delta-5
             download_util.get_local_model_data(input_file, delta_dir, join_pbtxt_para, update_pbtxt_para)
         logger.info("download debug input...")
 
     def _get_delta_num_list(self):
         """
         Hadle delta_num to delta_num_list
+
         Args:
             None
+
         Returns:
             None
         """
@@ -277,13 +317,14 @@ class DebugModel(object):
     def _download_debug_input(self):
         """
         Download debug input
+
         Args:
             None
+
         Returns:
             None
         """
         logger.info("download debug data")
-        debug_input = self._args.get("debug_input")
         delta_num_list = self._get_delta_num_list()
         p_num = len(delta_num_list)
         lst_p = []
@@ -293,7 +334,7 @@ class DebugModel(object):
             lst_p.append(p)
         for i in lst_p:
             i.join()
-        #filter source
+        # filter source
         div_tag = ''
         tag_value = []
         if self._args["is_div"] == 1:
@@ -310,9 +351,11 @@ class DebugModel(object):
             self._get_debug_data(delta_dir, 'update', div_tag, tag_value)
             join_files = delta_dir + '/join'
             update_files = delta_dir + '/update'
-            if os.path.exists(join_files): shutil.rmtree(join_files)
-            if os.path.exists(update_files): shutil.rmtree(update_files)
-            #init layer
+            if os.path.exists(join_files):
+                shutil.rmtree(join_files)
+            if os.path.exists(update_files):
+                shutil.rmtree(update_files)
+            # init layer
             delta_key = "delta_" + str(num)
             tmp_dict1 = {}
             tmp_dict1["join"] = {}
@@ -322,7 +365,7 @@ class DebugModel(object):
             tmp_dict1["update"]["record"] = {}
             tmp_dict1["update"]["static"] = {}
             self._layer_summary[delta_key] = tmp_dict1
-            #init gradient
+            # init gradient
             tmp_dict2 = {}
             tmp_dict2["join"] = {}
             tmp_dict2["join"]["record"] = {}
@@ -331,7 +374,7 @@ class DebugModel(object):
             tmp_dict2["update"]["record"] = {}
             tmp_dict2["update"]["static"] = {}
             self._grad_summary[delta_key] = tmp_dict2
-            #process data for join or update
+            # process data for join or update
             if self._args.get("join_pbtxt") != "null":
                 self._process_delta_data(dest_join_file, delta_key, "join")
             if self._args.get("update_pbtxt") != "null":
@@ -340,6 +383,7 @@ class DebugModel(object):
     def _get_debug_data(self, delta_dir, stage, div_tag, tag_value):
         """
         According to the file folder, read all debug data part to one file
+
         Args:
             delta_dir: file folder to read.
             stage: join or update stage
@@ -349,14 +393,14 @@ class DebugModel(object):
         Returns:
             None
         """
-        data_path = f"{delta_dir}/{stage}"
+        data_path = os.path.join(delta_dir, stage)
         if not os.path.exists(data_path):
             return
-        output_file = f"{delta_dir}/{stage}_parts"
+        output_file = "{}/{}_parts".format(delta_dir, stage)
         fd = open(output_file, 'w+')
         file_lists = os.listdir(data_path)
         for file in file_lists:
-            file_path = f"{data_path}/{file}"
+            file_path = "{}/{}".format(data_path, file)
             file_open = open(file_path)
             lines = file_open.read().split('\n')
             line_limit = 0
@@ -366,20 +410,22 @@ class DebugModel(object):
                     fd.write(line + '\n')
                 else:
                     for each_source in tag_value:
-                        source_tag = '\"\<' + div_tag + ":" + str(each_source) + '\>\"'
+                        source_tag = '"<' + div_tag + ":" + str(each_source) + '>"'
                         if source_tag not in line:
                             continue
                         line_limit += 1
                         fd.write(line + '\n')
-                if line_limit  > 500:
+                if line_limit > 500:
                     break
         return
 
     def _get_result(self):
         """
         Calculate the mean / variance / inactivation rate / mean of absolute value, etc
+
         Args:
             None
+
         Returns:
             None
         """
@@ -392,14 +438,16 @@ class DebugModel(object):
     def _process_delta_data(self, delta_file, delta_key, stage):
         """
         Process each delta model dump data
+
         Args:
             delta_file: file which record one delta data
             delta_key: delta number
             stage: join or update stage
+
         Returns:
             None
         """
-        logger.info(f"process_delta_data process delta:{delta_key}")
+        logger.info("process_delta_data process delta:{}".format(delta_key))
         if not os.path.exists(delta_file):
             return
         fp = open(delta_file)
@@ -433,12 +481,14 @@ class DebugModel(object):
     def _handle_layer(self, delta, record, static, stage, layer, q):
         """
         Get statistical distribution datas
+
         Args:
             delta: which delta to calculate
             record: dict which save all the layer debug datas
             static: dict to save this layer static calculated datas
             stage: join or update stage
             q: multiprocessing.Queue()
+
         Returns:
             None
         """
@@ -456,14 +506,14 @@ class DebugModel(object):
             return
         tmp_list = []
 
-        #number of layer sample
+        # number of layer sample
         sample_num = len(record[layer])
-        #number of layer neurons
+        # number of layer neurons
         neurons_num = int(record[layer][0][0])
         static[layer]["neurons_num"] = neurons_num
         static[layer]["sample_num"] = sample_num
         if neurons_num == 0:
-            logger.info(f"number of {layer} neurons is 0")
+            logger.info("number of {} neurons is 0".format(layer))
             q.put(static)
             return
         neurons_zero = []
@@ -475,7 +525,7 @@ class DebugModel(object):
             sample_list = self._string_to_float(sample)
             sample_list_real = sample_list[1:]
             if len(sample_list_real) != neurons_num:
-                logger.info(f"the number of {layer} neurons is different")
+                logger.info("the number of {} neurons is different".format(layer))
                 continue
 
             for i in range(len(sample_list_real)):
@@ -487,7 +537,7 @@ class DebugModel(object):
             tmp_list = tmp_list + sample_list_real
 
         if tmp_list == []:
-            logger.info(f"{layer} is empty")
+            logger.info("{} is empty".format(layer))
             q.put(static)
             return
 
@@ -522,22 +572,19 @@ class DebugModel(object):
         static[layer]["var"] = np.var(record_data)
         ab_record = list(map(abs, record_data))
         static[layer]["ab_avg"] = np.mean(ab_record)
-        avg_detail = static[layer]["avg_detail"]
-        avg = static[layer]["avg"]
-        var = static[layer]["var"]
-        ab_avg = static[layer]["ab_avg"]
-        zero = static[layer]["zero"]
         q.put(static)
 
     def _calc_measure_value(self, data):
         """
         Calc measure value
+
         Args:
             data: which data to calculate measure values
+
         Returns:
             None
         """
-        logger.info(f"calc_measure_value")
+        logger.info("calc_measure_value")
         delta_num_list = self._get_delta_num_list()
         for delta in delta_num_list:
             delta_key = "delta_" + str(delta)
@@ -559,12 +606,13 @@ class DebugModel(object):
                 if record:
                     layer_cnt = 1
                     for layer in record.keys():
-                        logger.info("%s %s %s/%s %s" % (delta_key, stage, layer_cnt, len(record.keys()), layer))
+                        logger.info("{} {} {}/{} {}".format(delta_key, stage, layer_cnt, len(record.keys()), layer))
                         layer_cnt += 1
                         if not handle_async:
                             self._handle_layer(delta, record, static, stage, layer, q)
                         else:
-                            p = multiprocessing.Process(target=self._handle_layer, args=(delta, record, static, stage, layer, q))
+                            p = multiprocessing.Process(target=self._handle_layer, args=(
+                                delta, record, static, stage, layer, q))
                             p.start()
                             layer_process_lst.append(p)
                 if handle_async:
@@ -572,27 +620,33 @@ class DebugModel(object):
                     for i in layer_process_lst:
                         layer_cnt += 1
                         static.update(q.get())
-                        logger.info("get from queue %s %s %s/%s" %(delta_key, stage, layer_cnt, len(layer_process_lst)))
+                        logger.info("get from queue {} {} {}/{}".format(delta_key,
+                                    stage, layer_cnt, len(layer_process_lst)))
 
     def _string_to_float(self, list_data):
         """
         Convert string list to floating point number list
+
         Args:
             list_data: string list
+
         Returns:
             float array list
         """
         result = []
         for x in list_data:
-            x = float(x)
-            result.append(x)
+            if x.isdigit():
+                x = float(x)
+                result.append(x)
         return result
 
     def _save_result(self, data):
         """
-        Save result
+        Save result to local file
+
         Args:
             data: all delta datas which has all the calculated datas, to save to tmp file
+
         Returns:
             None
         """
@@ -621,9 +675,12 @@ class DebugModel(object):
                     neuron_num = static_data[node_name]["neurons_num"]
                     bucket_xy = static_data[node_name]["bucket_xy"]
 
-                    if abs(avg) > FLOAT_MAX or abs(var) > FLOAT_MAX or abs(zero) > FLOAT_MAX or abs(ab_avg) > FLOAT_MAX:
-                        logger.info("debug_static_info values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s') are too large！" %\
-                                (self._args["jobid"], num, stage, node_name, avg, var, zero, ab_avg))
+                    if abs(avg) > FLOAT_MAX or abs(var) > FLOAT_MAX \
+                            or abs(zero) > FLOAT_MAX or abs(ab_avg) > FLOAT_MAX:
+                        logger.info("debug_static_info {}, {}, {}, {}, {},\
+                                    {}, {}, {} are too large！".format(
+                                    self._args["jobid"], num, stage, node_name,
+                                    avg, var, zero, ab_avg))
                         avg = FLOAT_MIN if avg < FLOAT_MIN else avg
                         avg = FLOAT_MAX if avg > FLOAT_MAX else avg
                         var = FLOAT_MIN if var < FLOAT_MIN else var
@@ -633,11 +690,12 @@ class DebugModel(object):
                         ab_avg = FLOAT_MIN if ab_avg < FLOAT_MIN else ab_avg
                         ab_avg = FLOAT_MAX if ab_avg > FLOAT_MAX else ab_avg
 
-                    content = f"{num}\t{stage}\t{node_name}\t{avg}\t{zero}\t{var}\t{ab_avg}\n"
+                    content = "{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(num, stage, node_name, avg, zero, var, ab_avg)
                     save_static_dir = "output/" + "static.data"
                     with open(save_static_dir, 'a+') as f:
                         f.write(content)
-                    detail_data = f"{num}\t{stage}\t{node_name}\t{neuron_num}\t{bucket_xy}\t{avg_detail}\n"
+                    detail_data = "{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                                  num, stage, node_name, neuron_num, bucket_xy, avg_detail)
                     save_detail_dir = "output/" + "detail.data"
                     with open(save_detail_dir, 'a+') as f:
                         f.write(detail_data)
@@ -657,19 +715,22 @@ class DebugModel(object):
                     save_assessment_dir = "output/" + "assessment.data"
                     with open(save_assessment_dir, 'a+') as f:
                         if flag_zero or flag_var or flag_ab_avg:
-                            f.write(f"{num}\t{stage}\t{node_name}\t{flag_zero}\t{flag_var}\t{flag_ab_avg}\n")
-
+                            res = "{}\t{}\t{}\t{}\t{}\t{}\n".format(num, stage, node_name,
+                                                                    flag_zero, flag_var,
+                                                                    flag_ab_avg)
+                            f.write(res)
         logger.info("write statistical data done")
+
 
 if __name__ == "__main__":
     params = {
-                "hadoop_bin": "/home/work/hadoop/bin/hadoop",
-	            "ugi": "test,test",
-                "debug_input": "afs://baihua.afs.baidu.com:9902/user/test/visualdl/random_dump/join/20211015",
-                #"debug_input": "/home/work/lutingshu/visualdl/data/random_dump/join/20211028",
-                "delta_num": "8",
-                "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
-                "update_pbtxt": "/home/work/test_download/train/update_main_program.pbtxt"
-            }
-    debugmodel = DebugModel(params)
-    debugmodel()
+        "hadoop_bin": "/home/work/hadoop/bin/hadoop",
+        "ugi": "**",
+        "debug_input": "afs://**/test/visualdl/random_dump/join/20211015",
+        # "debug_input": "/home/work/lutingshu/visualdl/data/random_dump/join/20211028",
+        "delta_num": "8",
+        "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
+        "update_pbtxt": "/home/work/test_download/train/update_main_program.pbtxt"
+    }
+    model_analysis = ModelAnalysis(params)
+    model_analysis()

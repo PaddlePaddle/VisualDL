@@ -13,23 +13,24 @@
 # limitations under the License.
 # =======================================================================
 
-import os
 import json
 import re
-import yaml
 from google.protobuf import text_format
 from visualdl.proto import framework_pb2
 from google.protobuf.json_format import MessageToDict
-from google.protobuf.json_format import MessageToJson
+
 from visualdl.server.log import logger
 
-def is_generate_var(var_list):
+
+def is_generate_var_list(var_list):
     """
-    Determine whether the lists are all generated_var
+    Determine whether the var lists are all generated var
+
     Args:
         var_list: the variable lists which model used
+
     Returns:
-        True if the length of variable lists is equal to the variable we need, otherwise false.
+        True if the length of generated variable lists is equal to the variable we need, otherwise false.
     """
     flag = 0
     if not var_list:
@@ -37,22 +38,66 @@ def is_generate_var(var_list):
     len_list = len(var_list)
     if isinstance(var_list, list):
         for each in var_list:
-            if re.match("_generated_var_[0-9]+", each) or \
-                    re.match("sequence_pool_[0-9]+.tmp_[0-9]+", each) or \
-                    re.match("cast_[0-9]+.tmp_[0-9]", each) or\
-                    re.match("learning_rate_[0-9]+", each) or \
-                    re.match("embedding_[0-9]+.tmp_[0-9]+", each):
+            if is_generate_var(each):
                 flag += 1
     if flag == len_list:
         return True
     else:
         return False
 
+
+def is_generate_var(var):
+    """
+    Determine whether one variable is generated var
+
+    Args:
+        var: the variable which model used
+
+    Returns:
+        True if variable is generated var
+    """
+    if re.match("_generated_var_[0-9]+", var) or \
+       re.match("sequence_pool_[0-9]+.tmp_[0-9]+", var) or \
+       re.match("cast_[0-9]+.tmp_[0-9]", var) or \
+       re.match("learning_rate_[0-9]+", var) or \
+       re.match("embedding_[0-9]+.tmp_[0-9]+", var):
+        return True
+    else:
+        return False
+
+
+def filter_generate_var(vars):
+    """
+    Filter variables which are generated var
+
+    Args:
+        vars: the variables which model used
+
+    Returns:
+        True if variables are generated var to fiter them
+    """
+    if "tail" in vars:
+        if not vars["tail"] or "GRAD" in vars["tail"][0] or \
+                (len(vars["tail"]) == 1 and re.match("cast_[0-9]+.tmp_[0-9]+", vars["tail"][0])):
+            return True
+    if len(vars["tail"]) == 1 and re.match("_generated_var_[0-9]+", vars["tail"][0]) or \
+            len(vars["tail"]) == 1 and re.match("tmp_[0-9]+",  vars["tail"][0]):
+        if len(vars["head"]) == 1:
+            if is_generate_var(vars["head"][0]):
+                return True
+        else:
+            if is_generate_var_list(vars["head"]):
+                return True
+    return False
+
+
 def load_pbtxt_file(path):
     """
     Read network pbtxt
+
     Args:
         path: the model pbtxtfile
+
     Returns:
         None
     """
@@ -65,12 +110,15 @@ def load_pbtxt_file(path):
             pbtxt.ParseFromString(pbtxt_string)
     return pbtxt
 
-def getnetwork(stage, pbtxtfile):
+
+def get_network(stage, pbtxtfile):
     """
     Analysis network
+
     Args:
         stage: join or update stage
         pbtxtfile: the model pbtxtfile
+
     Returns:
         None
     """
@@ -98,12 +146,10 @@ def getnetwork(stage, pbtxtfile):
             outputs = ops["outputs"]
             if ops["type"] in ["sequence_pool", "fused_seqpool_cvm", "elementwise_mul"] or "_grad" in ops["type"]:
                 continue
-
             for input in inputs:
                 if input["parameter"] != "X" and input["parameter"] != "Y" and input["parameter"] != "Input"\
                         or input["parameter"] == "Ids" or "seqpool_cvm" in input["arguments"] \
                         or "feed" in input["arguments"]:
-
                     continue
                 else:
                     tmp["head"] = tmp["head"] + input["arguments"]
@@ -114,39 +160,27 @@ def getnetwork(stage, pbtxtfile):
                     tmp["tail"] = tmp["tail"] + output["arguments"]
             if len(tmp["head"]) >= 10:
                 tmp["head"] = []
-            if not tmp["tail"] or "GRAD" in tmp["tail"][0]\
-               or \
-               (len(tmp["tail"]) == 1 and re.match("cast_[0-9]+.tmp_[0-9]+", tmp["tail"][0])):
-
+            if filter_generate_var(tmp):
                 continue
-            if len(tmp["tail"]) == 1 and re.match("_generated_var_[0-9]+", tmp["tail"][0]) or \
-               len(tmp["tail"]) == 1 and re.match("tmp_[0-9]+",  tmp["tail"][0]):
-                if len(tmp["head"]) == 1:
-                    if re.match("_generated_var_[0-9]+", tmp["head"][0]) or \
-                       re.match("sequence_pool_[0-9]+.tmp_[0-9]+", tmp["head"][0]) or\
-                       re.match("learning_rate_[0-9]+", tmp["head"][0]) or\
-                       re.match("cast_[0-9]+.tmp_[0-9]+", tmp["head"][0]) or\
-                       re.match("embedding_[0-9]+.tmp_[0-9]+", tmp["head"][0]):
-                        continue
-                else:
-                    if is_generate_var(tmp["head"]):
-                        continue
             if len(tmp["tail"]) != 1:
                 logger.info("node tail is not 1")
                 continue
             else:
                 tmp["name"] = tmp["tail"][0]
                 tmp["tail"] = tmp["name"]
-            logger.info(f"connections:{json.dumps(tmp)}")
+            logger.info("connections:{}".format(json.dumps(tmp)))
             ops_network_list.append(tmp)
-
     return ops_network_list
+
+
 def save_network(network, stage):
     """
-    Save network relationship
+    Save network relationship to local file
+
     Args:
         network: the nwt work relations
         stage: join or update stage
+
     Returns:
         None
     """
@@ -156,11 +190,4 @@ def save_network(network, stage):
     save_dir = "output/" + stage + "_" + "network.json"
     with open(save_dir, 'w') as f:
         json.dump(network, f)
-        logger.info(f"save {stage} network relationship")
-
-if __name__ == "__main__":
-    stage = "join"
-    stage = "update"
-    pbtxt = "/home/work/visual/tmp/20211018150221537/train_env/" + stage + "_main_program.pbtxt"
-    pa_network = getnetwork(stage, pbtxt)
-    save_network(pa_network, stage)
+        logger.info("save {} network relationship".format(stage))
