@@ -31,7 +31,7 @@ CONFIG_PATH = os.path.join(CONF_HOME, 'config.json')
 
 def init_vdl_config():
     if not os.path.exists(CONF_HOME):
-        os.makedirs(CONF_HOME)
+        os.makedirs(CONF_HOME, exist_ok=True)
     if not os.path.exists(CONFIG_PATH) or 0 == os.path.getsize(CONFIG_PATH):
         with open(CONFIG_PATH, 'w') as fp:
             fp.write(json.dumps(default_vdl_config))
