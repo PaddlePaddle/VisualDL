@@ -405,7 +405,7 @@ Developers can compare multiple experiments by specifying and uploading the path
 The data distribution and key statistical information of each layer of the model network are visualized from multiple angles with rich views, which is convenient to quickly understand the rationality of the current model network design and realize the rapid positioning of model anomalies. The steps to use this function are as follows:
 
 #### 1、Random sampling of the network node data
-Use the paddle1.8.5 versions which support to random sample of the network node data: http://gitlab.baidu.com/paddle-distributed/wheel/blob/master/release_1.8/paddle_whl_release_1.8.5_20210902.whl
+Use the paddle1.8.5 versions which support to random sample of the network node data: http://gitlab.baidu.com/paddle-distributed/wheel/blob/master/release_1.8/paddle_whl_release_1.8.5_20210902.whl
 
 
 ```python
@@ -469,11 +469,12 @@ Parameter details:
 #### 3、Check the network node data using visualdl
 ##### Use the command line to launch the VisualDL panel：
 ```python
-visualdl --work_dir --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --work_dir <work_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
 ```
 Parameter details:
 | parameter            | meaning                                                         |
 | --------------- | ------------------------------------------------------------ |
+| --logdir      | Set one or more directories of the log. All the logs in the paths or subdirectories will be displayed on the VisualDL Board indepentently. |
 | --work_dir      | The local folder path which is used to store the processed intermediate data，same whith the step2 |
 | --host          | Specify IP address. The default value is 127.0.0.1. Specify it as 0.0.0.0 or public IP address so that other machines can visit VisualDL Board.|
 | --port          | Set the port. The default value is 8040.                                     |

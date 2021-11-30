@@ -490,13 +490,14 @@ model_analysis()
 ##### 命令行启动
 使用命令行启动VisualDL面板，命令格式如下：
 ```python
-visualdl --work_dir --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --work_dir <work_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
 ```
 
 参数详情：
 
 | 参数            | 意义                                                         |
 | --------------- | ------------------------------------------------------------ |
+| --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化 |
 | --work_dir      | 设定用于存储处理后的中间数据所在目录，与步骤2中一致 |
 | --host          | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                                    |
 | --port          | 设定端口，默认为`8040`                                       |
