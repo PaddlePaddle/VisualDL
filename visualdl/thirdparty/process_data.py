@@ -13,12 +13,12 @@
 # limitations under the License.
 # =======================================================================
 
-import argparse
 import os
 import sys
 import shutil
-import numpy as np
+import argparse
 import multiprocessing
+import numpy as np
 
 from visualdl.server.log import logger
 from visualdl.thirdparty import create_network
@@ -30,7 +30,15 @@ FLOAT_MAX = sys.float_info.max
 
 class ModelAnalysis(object):
     """
-    Model data analysis:
+    Model data analysis: support multi-dimensional model
+    analysis capabilities, such as model network analysis
+    and effect evaluation, realize data visualization of
+    each layer of network nodes, and improve model interpretability.
+    For example, through model network visualization, network nodes
+    with high deactivation rate and nodes with high proportion of
+    output zero can be found.
+
+    Only the following steps are required to achieve this function above:
     Firstly to download the network data which randomly dropped by the model.
     Secondly to analyze the network node data according to the training batch,
     and store the results in the local file for subsequent front-end data rendering and display.
@@ -103,7 +111,7 @@ class ModelAnalysis(object):
             kwargs: the class basic args, like:
             {
                 "hadoop_bin": "/home/work/hadoop/bin/hadoop",
-                     "ugi": "**",
+                "ugi": "**",
                 "debug_input": "afs://**/test/visualdl/random_dump/join/20211015",
                 "delta_num": "8",
                 "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
@@ -114,10 +122,10 @@ class ModelAnalysis(object):
             None
         """
         parser = argparse.ArgumentParser()
-        if "work_dir" in kwargs:
-            self._args["work_dir"] = kwargs.get("work_dir")
+        if "data_dir" in kwargs:
+            self._args["work_dir"] = kwargs.get("data_dir")
         else:
-            parser.add_argument("--work_dir", help="work tmp dir", default=os.getcwd())
+            self._args["work_dir"] = os.getcwd()
         if "hadoop_bin" in kwargs:
             self._args["hadoop_bin"] = kwargs.get("hadoop_bin")
         else:
@@ -720,17 +728,3 @@ class ModelAnalysis(object):
                                                                     flag_ab_avg)
                             f.write(res)
         logger.info("write statistical data done")
-
-
-if __name__ == "__main__":
-    params = {
-        "hadoop_bin": "/home/work/hadoop/bin/hadoop",
-        "ugi": "**",
-        "debug_input": "afs://**/test/visualdl/random_dump/join/20211015",
-        # "debug_input": "/home/work/lutingshu/visualdl/data/random_dump/join/20211028",
-        "delta_num": "8",
-        "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
-        "update_pbtxt": "/home/work/test_download/train/update_main_program.pbtxt"
-    }
-    model_analysis = ModelAnalysis(params)
-    model_analysis()

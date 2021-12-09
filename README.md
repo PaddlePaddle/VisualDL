@@ -463,19 +463,19 @@ Parameter details:
 | delta_num       | Number of trained batches |
 | join_pbtxt      | Model trained join network, only local path |
 | update_pbtxt    | Model trained update network, only local path, If not has this stage, you don't have to fill it in |
-| work_dir        | The local folder path which is used to store the processed intermediate data |
+| data_dir        | The local folder path which is used to store the processed intermediate data |
 
 
 #### 3、Check the network node data using visualdl
 ##### Use the command line to launch the VisualDL panel：
 ```python
-visualdl --logdir <dir_1, dir_2, ... , dir_n> --work_dir <work_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --data_dir <data_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
 ```
 Parameter details:
 | parameter            | meaning                                                         |
 | --------------- | ------------------------------------------------------------ |
 | --logdir      | Set one or more directories of the log. All the logs in the paths or subdirectories will be displayed on the VisualDL Board indepentently. |
-| --work_dir      | The local folder path which is used to store the processed intermediate data，same whith the step2 |
+| --data_dir      | The local folder path which is used to store the processed intermediate data，same whith the step2 |
 | --host          | Specify IP address. The default value is 127.0.0.1. Specify it as 0.0.0.0 or public IP address so that other machines can visit VisualDL Board.|
 | --port          | Set the port. The default value is 8040.                                     |
 | --cache-timeout | Cache time of the backend. During the cache time, the front end requests the same URL multiple times, and then the returned data are obtained from the cache. The default cache time is 20 seconds. |
@@ -488,7 +488,7 @@ Developers can start the VisualDL panel in Python script as follows:
 
 ```python
 visualdl.server.app.run(logdir,
-                        work_dir="datapath",
+                        data_dir="datapath",
                         host="127.0.0.1",
                         port=8080,
                         cache_timeout=20,

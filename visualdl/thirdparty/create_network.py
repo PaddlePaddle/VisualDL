@@ -13,13 +13,13 @@
 # limitations under the License.
 # =======================================================================
 
-import json
 import re
+import json
 from google.protobuf import text_format
-from visualdl.proto import framework_pb2
 from google.protobuf.json_format import MessageToDict
 
 from visualdl.server.log import logger
+from visualdl.proto import framework_pb2
 
 
 def is_generate_var_list(var_list):

@@ -484,13 +484,13 @@ model_analysis()
 | delta_num       | 训练的batch数 |
 | join_pbtxt      | 模型训练的join网络，本地路径 |
 | update_pbtxt    | 模型训练的update网络，本地路径，如果没有该阶段，则不填 |
-| work_dir        | 用于存储处理后的中间数据的文件夹路径 |
+| data_dir        | 用于存储处理后的中间数据的文件夹路径 |
 
 #### 3、使用VisualDl查看网络节点数据
 ##### 命令行启动
 使用命令行启动VisualDL面板，命令格式如下：
 ```python
-visualdl --logdir <dir_1, dir_2, ... , dir_n> --work_dir <work_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --data_dir <data_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
 ```
 
 参数详情：
@@ -498,7 +498,7 @@ visualdl --logdir <dir_1, dir_2, ... , dir_n> --work_dir <work_dir> --host <host
 | 参数            | 意义                                                         |
 | --------------- | ------------------------------------------------------------ |
 | --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化 |
-| --work_dir      | 设定用于存储处理后的中间数据所在目录，与步骤2中一致 |
+| --data_dir      | 设定用于存储处理后的中间数据所在目录，与步骤2中一致 |
 | --host          | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                                    |
 | --port          | 设定端口，默认为`8040`                                       |
 | --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
@@ -511,7 +511,7 @@ visualdl --logdir <dir_1, dir_2, ... , dir_n> --work_dir <work_dir> --host <host
 支持在Python脚本中启动Model VisualDL面板，接口如下：
 ```python
 visualdl.server.app.run(logdir,
-                        work_dir="datapath",
+                        data_dir="datapath",
                         host="127.0.0.1",
                         port=8080,
                         cache_timeout=20,

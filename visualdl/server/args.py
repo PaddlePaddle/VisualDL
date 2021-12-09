@@ -45,7 +45,7 @@ class DefaultArgs(object):
         self.theme = args.get('theme', None)
         self.dest = args.get('dest', '')
         self.behavior = args.get('behavior', '')
-        self.work_dir = args.get('work_dir', '')
+        self.data_dir = args.get('data_dir', '')
 
 
 def get_host(host=default_host, port=default_port):
@@ -113,7 +113,7 @@ class ParseArgs(object):
         self.theme = args.theme
         self.dest = args.dest
         self.behavior = args.behavior
-        self.work_dir = args.work_dir
+        self.data_dir = args.data_dir
 
 
 def parse_args():
@@ -223,7 +223,7 @@ def parse_args():
         nargs='?'
     )
     parser.add_argument(
-        "--work_dir",
+        "--data_dir",
         type=str,
         action="store",
         default="",

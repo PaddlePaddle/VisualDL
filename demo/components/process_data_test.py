@@ -17,7 +17,7 @@ from visualdl.thirdparty.process_data import ModelAnalysis
 
 if __name__ == "__main__":
     params = {
-        "work_dir": "/home/work/visualdl_test",
+        "data_dir": "/home/work/visualdl_test",
         "hadoop_bin": "/home/work/hadoop/bin/hadoop",
         "ugi": "**",
         "debug_input": "afs://***/random_dump/join/20211015",

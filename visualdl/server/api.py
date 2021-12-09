@@ -61,7 +61,7 @@ def try_call(function, *args, **kwargs):
 
 
 class Api(object):
-    def __init__(self, logdir, model, cache_timeout, work_dir):
+    def __init__(self, logdir, model, cache_timeout, data_dir):
         self._reader = LogReader(logdir)
         if model:
             self._reader.model = model
@@ -69,11 +69,11 @@ class Api(object):
         else:
             self.model_name = ''
 
-        if work_dir:
-            self.work_dir = work_dir
+        if data_dir:
+            self.data_dir = data_dir
         else:
-            self.work_dir = os.getcwd()
-        self._reader.work_dir = self.work_dir
+            self.data_dir = os.getcwd()
+        self._reader.data_dir = self.data_dir
 
         # use a memory cache to reduce disk reading frequency.
         cache = MemCache(timeout=cache_timeout)
@@ -253,24 +253,23 @@ class Api(object):
 
     @result()
     def model_network(self, stage):
-        return self._get_with_retry('data/plugin/model/network', lib.get_network, self.work_dir, stage)
+        return self._get_with_retry('data/plugin/model/network', lib.get_network, stage)
 
     @result()
     def model_nodebasic(self, stage, node):
-        return self._get_with_retry('data/plugin/model/nodebasic', lib.get_basic_data, self.work_dir, stage, node)
+        return self._get_with_retry('data/plugin/model/nodebasic', lib.get_basic_data, stage, node)
 
     @result()
     def model_nodedetail(self, stage, node, type):
         return self._get_with_retry('data/plugin/model/nodedetail',
                                     lib.get_detail_data,
-                                    self.work_dir,
                                     stage,
                                     node,
                                     type)
 
 
-def create_api_call(logdir, model, cache_timeout, work_dir):
-    api = Api(logdir, model, cache_timeout, work_dir)
+def create_api_call(logdir, model, cache_timeout, data_dir):
+    api = Api(logdir, model, cache_timeout, data_dir)
     routes = {
         'components': (api.components, []),
         'runs': (api.runs, []),
@@ -307,9 +306,9 @@ def create_api_call(logdir, model, cache_timeout, work_dir):
         'hparams/indicators': (api.hparam_indicator, []),
         'hparams/list': (api.hparam_list, []),
         'hparams/metric': (api.hparam_metric, ['run', 'metric']),
-        'model/network': (api.model_network, [api.work_dir, 'stage']),
-        'model/nodebasic': (api.model_nodebasic, [api.work_dir, 'stage', 'node']),
-        'model/nodedetail': (api.model_nodedetail, [api.work_dir, 'stage', 'node', 'type'])
+        'model/network': (api.model_network, ['stage']),
+        'model/nodebasic': (api.model_nodebasic, ['stage', 'node']),
+        'model/nodedetail': (api.model_nodedetail, ['stage', 'node', 'type'])
     }
 
     def call(path: str, args):
