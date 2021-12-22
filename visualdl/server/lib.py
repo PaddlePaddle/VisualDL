@@ -582,8 +582,7 @@ def get_basic_data(log_reader, stage, node):
     response[node] = []
     response[grad_node] = []
     with open(basic_data_dir, 'r') as fp:
-        lines = fp.readlines()
-        for line in lines:
+        for line in fp:
             column_datas = line.strip().split('\t')
             delta_k = column_datas[0]
             stage_k = column_datas[1]
@@ -613,9 +612,8 @@ def get_detail_data(log_reader, stage, node, type):
         return response
     response["data"] = []
     with open(detail_data_dir, 'r') as fp:
-        lines = fp.readlines()
         res = []
-        for line in lines:
+        for line in fp:
             column_datas = line.strip().split('\t')
             delta_k = column_datas[0]
             stage_k = column_datas[1]
