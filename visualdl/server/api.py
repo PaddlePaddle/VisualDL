@@ -253,15 +253,18 @@ class Api(object):
 
     @result()
     def model_network(self, stage):
-        return self._get_with_retry('data/plugin/model/network', lib.get_network, stage)
+        key = os.path.join('data/plugin/model/network', stage)
+        return self._get_with_retry(key, lib.get_network, stage)
 
     @result()
     def model_nodebasic(self, stage, node):
-        return self._get_with_retry('data/plugin/model/nodebasic', lib.get_basic_data, stage, node)
+        key = os.path.join('data/plugin/model/nodebasic', stage, node)
+        return self._get_with_retry(key, lib.get_basic_data, stage, node)
 
     @result()
     def model_nodedetail(self, stage, node, type):
-        return self._get_with_retry('data/plugin/model/nodedetail',
+        key = os.path.join('data/plugin/model/nodedetail', stage, node, type)
+        return self._get_with_retry(key,
                                     lib.get_detail_data,
                                     stage,
                                     node,
