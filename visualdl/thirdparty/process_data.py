@@ -643,9 +643,8 @@ class ModelAnalysis(object):
         """
         result = []
         for x in list_data:
-            if x.isdigit():
-                x = float(x)
-                result.append(x)
+            x = float(x)
+            result.append(x)
         return result
 
     def _save_result(self, data):
