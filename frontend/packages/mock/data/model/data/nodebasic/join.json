@@ -1,0 +1,229 @@
+{
+    "Node_leaf_1": {
+        "Node_leaf_1": [
+            {
+                "delta_num": "9",
+                "avg": "0.48",
+                "var": "1.25",
+                "zero": "0.31",
+                "ab_avg": "0.71"
+            },
+            {
+                "delta_num": "10",
+                "avg": "0.01",
+                "var": "1.37",
+                "zero": "0.04",
+                "ab_avg": "0.71"
+            },
+            {
+                "delta_num": "11",
+                "avg": "0.12",
+                "var": "1.28",
+                "zero": "0.53",
+                "ab_avg": "0.7"
+            },
+            {
+                "delta_num": "12",
+                "avg": "0.39",
+                "var": "1.22",
+                "zero": "0.07",
+                "ab_avg": "0.76"
+            }
+        ],
+        "Node_leaf_1@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "1.85",
+                "var": "3.94",
+                "zero": "0.79",
+                "ab_avg": "0.15"
+            },
+            {
+                "delta_num": "10",
+                "avg": "1.68",
+                "var": "1.55",
+                "zero": "0.90",
+                "ab_avg": "4.22"
+            },
+            {
+                "delta_num": "11",
+                "avg": "3.85",
+                "var": "5.31",
+                "zero": "0.00",
+                "ab_avg": "1.04"
+            },
+            {
+                "delta_num": "12",
+                "avg": "1.18",
+                "var": "1.75",
+                "zero": "0.00",
+                "ab_avg": "2.76"
+            }
+        ]
+    },
+    "Node_leaf_2": {
+        "Node_leaf_2": [
+            {
+                "delta_num": "9",
+                "avg": "-1.31",
+                "var": "2.48",
+                "zero": "0.0",
+                "ab_avg": "7.25"
+            },
+            {
+                "delta_num": "10",
+                "avg": "2.19",
+                "var": "8.46",
+                "zero": "0.0",
+                "ab_avg": "3.76"
+            },
+            {
+                "delta_num": "11",
+                "avg": "-3.06",
+                "var": "2.27",
+                "zero": "0.0",
+                "ab_avg": "8.29"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-2.54",
+                "var": "1.07",
+                "zero": "0.0",
+                "ab_avg": "1.90"
+            }
+        ],
+        "Node_leaf_2@GRAD": []
+    },
+    "Node_leaf_3": {
+        "Node_leaf_3": [
+            {
+                "delta_num": "9",
+                "avg": "3.76",
+                "var": "9.22",
+                "zero": "0.0",
+                "ab_avg": "1.89"
+            },
+            {
+                "delta_num": "10",
+                "avg": "1.27",
+                "var": "2.78",
+                "zero": "0.0",
+                "ab_avg": "9.00"
+            },
+            {
+                "delta_num": "11",
+                "avg": "-7.93",
+                "var": "1.02",
+                "zero": "0.0",
+                "ab_avg": "2.23"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-3.74",
+                "var": "3.36",
+                "zero": "0.0",
+                "ab_avg": "4.54"
+            }
+        ],
+        "Node_leaf_3@GRAD": []
+    },
+    "Node_leaf_4": {
+        "Node_leaf_4": [
+            {
+                "delta_num": "9",
+                "avg": "-9.60",
+                "var": "5.91",
+                "zero": "0.10",
+                "ab_avg": "1.93"
+            },
+            {
+                "delta_num": "10",
+                "avg": "4.36",
+                "var": "1.77",
+                "zero": "0.02",
+                "ab_avg": "8.97"
+            },
+            {
+                "delta_num": "11",
+                "avg": "-2.47",
+                "var": "7.30",
+                "zero": "0.03",
+                "ab_avg": "2.38"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-2.14",
+                "var": "2.50",
+                "zero": "0.03",
+                "ab_avg": "4.82"
+            }
+        ],
+        "Node_leaf_4@GRAD": []
+    },
+    "Node_leaf_5": {
+        "Node_leaf_5": [
+            {
+                "delta_num": "9",
+                "avg": "-6.72",
+                "var": "2.23",
+                "zero": "1.20",
+                "ab_avg": "1.16"
+            },
+            {
+                "delta_num": "10",
+                "avg": "1.61",
+                "var": "6.06",
+                "zero": "0.54",
+                "ab_avg": "5.58"
+            },
+            {
+                "delta_num": "11",
+                "avg": "1.99",
+                "var": "3.36",
+                "zero": "0.09",
+                "ab_avg": "1.37"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-1.72",
+                "var": "5.58",
+                "zero": "0.77",
+                "ab_avg": "2.40"
+            }
+        ],
+        "Node_leaf_5@GRAD": []
+    },
+    "Node_root": {
+        "Node_root": [
+            {
+                "delta_num": "9",
+                "avg": "-6.72",
+                "var": "2.23",
+                "zero": "0.08",
+                "ab_avg": "1.16"
+            },
+            {
+                "delta_num": "10",
+                "avg": "1.61",
+                "var": "6.06",
+                "zero": "0.08",
+                "ab_avg": "5.58"
+            },
+            {
+                "delta_num": "11",
+                "avg": "1.99",
+                "var": "3.36",
+                "zero": "0.08",
+                "ab_avg": "1.37"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-1.72",
+                "var": "5.58",
+                "zero": "0.08",
+                "ab_avg": "2.40"
+            }
+        ],
+        "Node_root@GRAD": []
+    }
+}

@@ -54,6 +54,7 @@ export const zIndexes = {
     progress: 99999,
     toast: 90000,
     tooltip: 80000,
+    drawer: 40000,
     component: 30000,
     dialog: 20000,
     header: 10000

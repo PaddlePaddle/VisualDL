@@ -28,7 +28,8 @@ export enum Pages {
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
-    HyperParameter = 'hyper-parameter'
+    HyperParameter = 'hyper-parameter',
+    ModelVisual = 'model-visual'
 }
 
 export interface Route {
@@ -102,6 +103,11 @@ const routes: Route[] = [
         id: Pages.ROCCurve,
         path: '/roc-curve',
         component: React.lazy(() => import('~/pages/curves/roc'))
+    },
+    {
+        id: Pages.ModelVisual,
+        path: '/model-visual',
+        component: React.lazy(() => import('~/pages/model-visual'))
     }
 ];
 

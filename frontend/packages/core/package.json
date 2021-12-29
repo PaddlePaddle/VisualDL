@@ -38,6 +38,7 @@
         "dist"
     ],
     "dependencies": {
+        "@antv/g6": "^4.5.0",
         "@tippyjs/react": "4.2.5",
         "@visualdl/icons": "2.2.1",
         "@visualdl/netron": "2.2.1",
@@ -120,6 +121,7 @@
         "html-minifier": "4.0.0",
         "snowpack": "3.8.8",
         "snowpack-plugin-copy": "1.0.1",
+        "snowpack-plugin-files-handler": "^1.0.1",
         "typescript": "4.4.2"
     },
     "engines": {

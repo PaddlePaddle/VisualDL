@@ -1,0 +1,35 @@
+{
+    "repaint": "重绘",
+    "auto-repaint": "自动重绘",
+    "node-data": "节点数据",
+    "data-stage": "阶段",
+    "none-data": "无",
+    "node-id": "节点id",
+    "node-pos": "节点坐标",
+    "basic": "默认",
+    "avg": "均值",
+    "var": "方差",
+    "ab_avg": "绝对值均值",
+    "zero": "失活率",
+    "delta_num": "delta值",
+    "from": "从",
+    "to": "到",
+    "neuron": "神经元",
+    "no-match": "无匹配",
+    "tabs": {
+        "basic": "默认",
+        "index": "索引分布(正向)",
+        "indexGrad": "索引分布(梯度)",
+        "num": "数值分布(正向)",
+        "numGrad": "数值分布(梯度)",
+        "empty-data": "数据为空"
+    },
+    "tools": {
+        "behavior-controller": "交互控制",
+        "display-minimap": "显示迷你图",
+        "drag-canvas": "拖拽画布",
+        "zoom-canvas": "缩放画布",
+        "drag-node": "拖拽节点",
+        "activate-relations": "显示节点关系"
+    }
+}

@@ -40,7 +40,8 @@ const pages = [
     'pr-curve',
     'roc-curve',
     'high-dimensional',
-    'hyper-parameter'
+    'hyper-parameter',
+    'model-visual'
 ];
 const dataDir = path.resolve(cwd, '../data');
 

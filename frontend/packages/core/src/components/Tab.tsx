@@ -20,7 +20,11 @@ import {WithStyled, borderRadius, rem, transitionProps} from '~/utils/style';
 import styled from 'styled-components';
 import useClassNames from '~/hooks/useClassNames';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div.attrs<{size: number}>(({size}) => ({
+    style: {
+        fontSize: `${rem(size)}`
+    }
+}))<{size: number}>`
     display: flex;
     align-items: stretch;
     justify-content: flex-start;
@@ -36,7 +40,6 @@ const Wrapper = styled.div`
     > a {
         cursor: pointer;
         display: block;
-        font-size: ${rem(16)};
         background-color: var(--tab-inactive-background-color);
         padding: 0.75em 1.25em;
         position: relative;
@@ -104,6 +107,7 @@ export type TabProps<T> = {
         label: string;
     }[];
     value?: T;
+    size?: number;
     variant?: 'fullWidth' | 'centered';
     appearance?: 'underscore';
     onChange?: (value: T) => unknown;
@@ -112,6 +116,7 @@ export type TabProps<T> = {
 const Tab = <T extends unknown>({
     list,
     value,
+    size,
     variant,
     appearance,
     className,
@@ -132,7 +137,7 @@ const Tab = <T extends unknown>({
     const classNames = useClassNames(className, variant, appearance, [appearance, className, variant]);
 
     return (
-        <Wrapper className={classNames}>
+        <Wrapper className={classNames} size={size ? size : 16}>
             {list?.map((item, index) => (
                 <a
                     key={index}
