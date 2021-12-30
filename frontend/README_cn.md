@@ -115,9 +115,10 @@ VisualDL 支持最新版本的 [Google Chrome](https://www.google.com/chrome/) �
 - [Snowpack](https://www.snowpack.dev/)
 - [wasm-pack](https://rustwasm.github.io/wasm-pack/)
 - [Netron](https://github.com/lutzroeder/netron)
+- [AntV G6](https://github.com/antvis/G6)
 
 ## 作者
-<table><tr><td align="center"><a href="https://github.com/PeterPanZH"><img src="https://avatars0.githubusercontent.com/u/3366499?s=460&v=4" width="120px;" alt="PeterPanZH"/><br /><sub><b>PeterPanZH</b></sub></a></td><td align="center"><a href="https://github.com/Niandalu"><img src="https://avatars1.githubusercontent.com/u/6406875?s=460&v=4" width="120px;" alt="Niandalu"/><br /><sub><b>Niandalu</b></sub></a></td></tr></table>
+<table><tr><td align="center"><a href="https://github.com/PeterPanZH"><img src="https://avatars0.githubusercontent.com/u/3366499?s=460&v=4" width="120px;" alt="PeterPanZH"/><br /><sub><b>PeterPanZH</b></sub></a></td><td align="center"><a href="https://github.com/Niandalu"><img src="https://avatars1.githubusercontent.com/u/6406875?s=460&v=4" width="120px;" alt="Niandalu"/><br /><sub><b>Niandalu</b></sub></a></td></td><td align="center"><a href="https://github.com/AuroraHuiyan"><img src="https://avatars1.githubusercontent.com/u/95737959?s=460&v=4" width="120px;" alt="Niandalu"/><br /><sub><b>AuroraHuiyan</b></sub></a></td></tr></table>
 
 ## 许可证
 

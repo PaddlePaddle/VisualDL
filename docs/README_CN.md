@@ -295,6 +295,126 @@ app.run(logdir="./log")
 <img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
+### Model Visual
+
+以丰富的视图多角度低可视化模型网络各层数据的分布和关键统计信息，便于快速了解当前模型网络设计的合理性，实现快速定位模型异常问题。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/95737959/147730782-5e659c39-26f4-4766-b657-6e530f33cf47.gif" width="85%"/>
+</p>
+
+在使用该功能的步骤如下：
+
+#### 1、随机采样落盘网络节点数据
+
+paddle1.8.5版本支持随机采样落盘网络节点数据：http://gitlab.baidu.com/paddle-distributed/wheel/blob/master/release_1.8/paddle_whl_release_1.8.5_20210902.whl
+
+使用方法：
+
+```python
+join_save_params = []
+for param in join_model._train_program.list_vars():
+    if param.persistable:
+        if "_generat" not in param.name:
+            join_save_params.append(param.name)
+        if "fc_" in param.name or "conv_" in param.name:
+            join_save_params.append(param.name + "@GRAD")
+    elif "RENAME" not in param.name:
+        if "fc_" in param.name or "dropout_4.tmp_0" in param.name or "concat_" in param.name:
+            join_save_params.append(param.name)
+        if "sequence_pool_" in param.name and "tmp_1" not in param.name:
+            join_save_params.append(param.name) 
+ 
+join_program._fleet_opt["dump_prob"] = 0.2
+join_program._fleet_opt["dump_fields"] = ["slot1", "slot2"]
+join_program._fleet_opt["dump_param"] = join_save_params
+join_program._fleet_opt["dump_fields_path"] = config.output_path + "/random_dump/join/" + config.start_day + "/" + "delta-%s" % pass_index
+
+#如果有多个阶段，每个阶段都要dump的话，需要在各自的train_from_dataset前设置不同的dump_fields_path
+update_model._train_program._fleet_opt["dump_fields_path"] = "%s/random_dump/update/%s/%s" % (config.output_path, day.data_day, '_'.join(datas))
+```
+
+完整可运行demo参考：https://github.com/TsLu/PaddleDemo/blob/main/randump/random_dump.py
+
+random dump出来的格式如下：https://github.com/TsLu/PaddleDemo/blob/main/randump/random_dump/join/20211125/delta-1/part-000-00009
+
+截取部分数据说明如下：
+
+```python
+#样本唯一标识\t神经元名称:神经元节点个数:每个神经元的输出值\t神经元名称:神经元节点个数:每个神经元的输出值
+dcefve		concat_0.tmp_0:2:1:1	sequence_pool_6.tmp_0@GRAD:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0	sequence_pool_3.tmp_0@GRAD:12:0:0:0:0:0:0:0:0:0:0:0:0	sequence_pool_1.tmp_0@GRAD:12:0:0:0:0:0:0:0:0:0:0:0:0	concat_0.tmp_0:2:1:1	user_emb:140:0.0983945:-0.402422:-0.304479:0.48722:-0.423722:0.49905:-0.36198:-0.141344:0.164492:0.203659:-0.166241:0.371955:-0.338783:-0.39251:0.158664:-0.133492:0.200509:-0.23503:-0.149515:-0.247849:0.0900903:-0.250218:-0.29327:-0.449013:-0.289186:-0.296609:0.36998:0.309947:0.468418:0.0150231:0.178822:-0.0795117:-0.108979:0.494221:-0.442487:-0.286313:0.391469:-0.39494:-0.162585:-0.158422:-0.182274:0.431848:-0.268552:-0.28416:0.333334:0.360513:0.318403:-0.364475:0.439969:-0.246897:0.0332158:0.358267:-0.0748573:-0.435962:-0.302861:-0.388489:0.271488:0.0127385:-0.0989884:-0.271535:-0.254238:-0.33684:0.389732:-0.222312:-0.20576:-0.253779:-0.166874:-0.19071:0.25096:0.105208:0.487118:-0.334612:-0.0503092:-0.473779:0.193285:0.0745487:-0.45893:-0.024402:0.0913379:-0.0261859:-0.0188701:0.120137:0.116529:-0.0141518:-0.119165:-0.198176:-0.159524:-0.378288:-0.341906:-0.128065:0.166849:-0.0154788:-0.177214:-0.287362:-0.239857:-0.136312:0.107463:0.356079:0.278596:0.117707:-0.162731:-0.198466:-0.175281:-0.00143227:-0.13731:-0.074105:-0.123823:-0.0376647:-0.11276:-0.0496815:-0.172825:-0.429263:0.0284473:0.182517:0.26848:-0.215857:0.349042:-0.373334:-0.218745:-0.0499232:0.155349:-0.123708:0.478668:-0.214383:0.494542:0.0422934:-0.452487:-0.014959:-0.0854984:-0.094967:-0.150888:0.483285:-0.365631:-0.366048:-0.47845:-0.282711:0.25745:0.367952:0.388146:0.188527
+```
+
+#### 2、使用Model Visual处理采样落盘数据
+
+采用数据处理接口进行落盘数据的分析处理：
+
+```python
+from visualdl.thirdparty.process_data import ModelAnalysis
+params = {
+        "hadoop_bin": "/home/work/hadoop/bin/hadoop",
+        "ugi": "**",
+        "debug_input": "afs://***/random_dump/join/20211015",
+        # "debug_input": "/home/work/testuser/visualdl/data/random_dump/join/20211028", #local dump data
+        "delta_num": "8",
+        "join_pbtxt": "/home/work/test_download/train/join_main_program.pbtxt",
+        "update_pbtxt": "/home/work/test_download/train/update_main_program.pbtxt"
+}
+model_analysis = ModelAnalysis(params)
+model_analysis()
+```
+
+参数详情：
+
+| 参数            | 意义                                                         |
+| --------------- | ------------------------------------------------------------ |
+| hadoop_bin      | 如果采样落盘的数据是存在在afs上，需要指定本地hadoop路径，如果是本地路径不需要填 |
+| ugi             | 如果采样落盘的数据是存在在afs上，需要指定具有访问权限的ugi，如果是本地路径不需要填 |
+| debug_input     | 采样落盘的数据存储路径，填写afs路径或者本地路径 |
+| delta_num       | 训练的batch数 |
+| join_pbtxt      | 模型训练的join网络，本地路径 |
+| update_pbtxt    | 模型训练的update网络，本地路径，如果没有该阶段，则不填 |
+| data_dir        | 用于存储处理后的中间数据的文件夹路径 |
+
+#### 3、使用VisualDl查看网络节点数据
+
+##### 命令行启动
+
+使用命令行启动VisualDL面板，命令格式如下：
+
+```python
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --data_dir <data_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+```
+
+参数详情：
+
+| 参数            | 意义                                                         |
+| --------------- | ------------------------------------------------------------ |
+| --logdir        | 设定日志所在目录，可以指定多个目录，VisualDL将遍历并且迭代寻找指定目录的子目录，将所有实验结果进行可视化 |
+| --data_dir      | 设定用于存储处理后的中间数据所在目录，与步骤2中一致 |
+| --host          | 设定IP，默认为`127.0.0.1`，若想使得本机以外的机器访问启动的VisualDL面板，需指定此项为`0.0.0.0`或自己的公网IP地址                                    |
+| --port          | 设定端口，默认为`8040`                                       |
+| --cache-timeout | 后端缓存时间，在缓存时间内前端多次请求同一url，返回的数据从缓存中获取，默认为20秒 |
+| --language      | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言   |
+| --public-path   | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app' |
+| --api-only      | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
+
+##### 在Python脚本中启动
+
+支持在Python脚本中启动Model VisualDL面板，接口如下：
+
+```python
+visualdl.server.app.run(logdir,
+                        data_dir="datapath",
+                        host="127.0.0.1",
+                        port=8080,
+                        cache_timeout=20,
+                        language=None,
+                        public_path=None,
+                        api_only=False,
+                        open_browser=False)
+```
+
 ### VDL.service
 
 VisualDL可视化结果保存服务，以链接形式将可视化结果保存下来，方便用户快速、便捷的进行托管与分享。
