@@ -221,7 +221,7 @@ const ModelVisual: FunctionComponent = () => {
 
     useEffect(
         () => {
-            setNodeGraphData(graphRequestData);
+            Array.isArray(graphRequestData) && graphRequestData.length && setNodeGraphData(graphRequestData);
             setPageLoading(false);
         },
         [graphRequestData]
@@ -552,7 +552,7 @@ const ModelVisual: FunctionComponent = () => {
             <Title>{t('common:model-visual')}</Title>
             <Content aside={aside} loading={pageLoading}>
                 {
-                    !pageLoading && !graphRequestData ? (
+                    !pageLoading && !graphData ? (
                         <Error />
                     ) : (
                         <ModelVisualContainer>

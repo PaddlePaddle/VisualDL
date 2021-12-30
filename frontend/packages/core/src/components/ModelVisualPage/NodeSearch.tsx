@@ -47,9 +47,14 @@ const SearchField = styled(Field)`
 `;
 
 const Empty = styled.div`
+    width: 100%;
     padding: ${rem(100)} 0;
     text-align: center;
+    position: absolute;
+    z-index: ${zIndexes.dialog};
     color: var(--text-light-color);
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
     ${transitionProps('color')}
 `;
 

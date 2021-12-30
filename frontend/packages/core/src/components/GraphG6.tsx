@@ -155,7 +155,7 @@ const GraphG6: FunctionComponent<GraphG6Props> = ({
         () => {
             graphOptions && loadGraph();
         },
-        [graphData, graphOptions]
+        [graph, graphData, graphOptions]
     );
 
     useEffect(
