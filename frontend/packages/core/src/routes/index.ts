@@ -90,6 +90,11 @@ const routes: Route[] = [
         component: React.lazy(() => import('~/pages/hyper-parameter'))
     },
     {
+        id: Pages.ModelVisual,
+        path: '/model-visual',
+        component: React.lazy(() => import('~/pages/model-visual'))
+    },
+    {
         id: Pages.HighDimensional,
         path: '/high-dimensional',
         component: React.lazy(() => import('~/pages/high-dimensional'))
@@ -103,11 +108,6 @@ const routes: Route[] = [
         id: Pages.ROCCurve,
         path: '/roc-curve',
         component: React.lazy(() => import('~/pages/curves/roc'))
-    },
-    {
-        id: Pages.ModelVisual,
-        path: '/model-visual',
-        component: React.lazy(() => import('~/pages/model-visual'))
     }
 ];
 

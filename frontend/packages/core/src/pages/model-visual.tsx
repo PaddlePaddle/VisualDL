@@ -95,9 +95,12 @@ const ModelVisual: FunctionComponent = () => {
         },
         nodeStateStyles: {
             selected: {
-                fill: '#1527c2b3',
+                fill: '#4169e1',
                 stroke: null,
-                shadowColor: ''
+                shadowColor: '',
+                'text-shape': {
+                    fill: '#fff'
+                }
             },
             active: {
                 fill: '#1527c2',
@@ -119,17 +122,17 @@ const ModelVisual: FunctionComponent = () => {
             style: {
                 endArrow: true,
                 radius: 40,
-                stroke: '#1527c2b3',
+                stroke: '#4169e1',
                 fill: null
             }
         },
         edgeStateStyles: {
             selected: {
-                stroke: '#1527c2b3',
+                stroke: '#4169e1',
                 lineWidth: 2
             },
             active: {
-                stroke: '#1527c2b3',
+                stroke: '#4169e1',
                 lineWidth: 2
             },
             inactive: {
