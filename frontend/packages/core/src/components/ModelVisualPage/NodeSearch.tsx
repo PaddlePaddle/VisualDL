@@ -113,6 +113,7 @@ const NodeSearch: FunctionComponent<NodeSearchProps> = ({text, searchList, onCha
         () => {
             setSearch('');
             onChange?.('');
+            onSelect?.('');
             setSearching(false);
         },
         [onChange]
