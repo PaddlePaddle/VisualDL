@@ -222,7 +222,7 @@ const ModelVisual: FunctionComponent = () => {
     useEffect(
         () => {
             Array.isArray(graphRequestData) && graphRequestData.length && setNodeGraphData(graphRequestData);
-            setPageLoading(false);
+            graphRequestData && setPageLoading(false);
         },
         [graphRequestData]
     );
