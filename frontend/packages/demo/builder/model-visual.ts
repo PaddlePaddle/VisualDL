@@ -29,14 +29,14 @@ const worker: Worker = async io => {
         join: [],
         update: []
     };
-    joinGraphData.forEach(item => {
+    Array.isArray(joinGraphData) && joinGraphData.forEach(item => {
         const {head, tail} = item;
         !nodes.join.includes(tail) && nodes.join.push(tail);
         head.forEach(item => {
             !nodes.join.includes(item) && nodes.join.push(item);
         });
     });
-    updateGraphData.forEach(item => {
+    Array.isArray(updateGraphData) && updateGraphData.forEach(item => {
         const {head, tail} = item;
         !nodes.update.includes(tail) && nodes.update.push(tail);
         head.forEach(item => {
