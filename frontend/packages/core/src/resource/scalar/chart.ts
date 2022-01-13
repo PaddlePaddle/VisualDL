@@ -153,19 +153,22 @@ export const chartData = ({
                 const rawDataset = rawData[i];
                 const infData: [Step, Value][] = [];
                 const nanData: [Step, Value][] = [];
-                let lastValidValue: Value = null;
-                rawDataset.forEach(([, x, y], j) => {
-                    if (j > 0) {
-                        if (dataset[j][2] != null) {
-                            lastValidValue = dataset[j][2];
+                // FIXME: react async update...
+                if (rawDataset.length === dataset.length) {
+                    let lastValidValue: Value = null;
+                    rawDataset.forEach(([, x, y], j) => {
+                        if (j > 0) {
+                            if (dataset[j][2] != null) {
+                                lastValidValue = dataset[j][2];
+                            }
                         }
-                    }
-                    if (y === INF_VALUE) {
-                        infData.push([x, lastValidValue]);
-                    } else if (y === NAN_VALUE) {
-                        nanData.push([x, lastValidValue]);
-                    }
-                });
+                        if (y === INF_VALUE) {
+                            infData.push([x, lastValidValue]);
+                        } else if (y === NAN_VALUE) {
+                            nanData.push([x, lastValidValue]);
+                        }
+                    });
+                }
                 result.push({
                     data: infData,
                     symbolShow: false,
