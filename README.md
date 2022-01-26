@@ -401,13 +401,15 @@ Developers can compare multiple experiments by specifying and uploading the path
 <img src=https://user-images.githubusercontent.com/48054808/93731055-fbeafb00-fbfd-11ea-80f4-bbfd08a0fc35.png width="85%"/>
 </p>
 
-### Model Visual
+### Model Analysis
 The data distribution and key statistical information of each layer of the model network are visualized from multiple angles with rich views, which is convenient to quickly understand the rationality of the current model network design and realize the rapid positioning of model anomalies. The steps to use this function are as follows:
 
 #### 1、Random sampling of the network node data
-Use the paddle1.8.5 versions which support to random sample of the network node data: http://gitlab.baidu.com/paddle-distributed/wheel/blob/master/release_1.8/paddle_whl_release_1.8.5_20210902.whl
+Use the paddle1.8.5 versions which support to random sample of the network node data: https://paddle-qa.bj.bcebos.com/WheelPackages/temp/paddlepaddle-0.0.0-cp27-cp27mu-linux_x86_64.whl
 
+Or you can print the network node data by yourself according to the following format.
 
+Here is an example using the paddle version with random dump function:
 ```python
 join_save_params = []
 for param in join_model._train_program.list_vars():
@@ -438,7 +440,7 @@ The format of random dump data is as follows: https://github.com/TsLu/PaddleDemo
 dcefve		concat_0.tmp_0:2:1:1	sequence_pool_6.tmp_0@GRAD:16:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0	sequence_pool_3.tmp_0@GRAD:12:0:0:0:0:0:0:0:0:0:0:0:0	sequence_pool_1.tmp_0@GRAD:12:0:0:0:0:0:0:0:0:0:0:0:0	concat_0.tmp_0:2:1:1	user_emb:140:0.0983945:-0.402422:-0.304479:0.48722:-0.423722:0.49905:-0.36198:-0.141344:0.164492:0.203659:-0.166241:0.371955:-0.338783:-0.39251:0.158664:-0.133492:0.200509:-0.23503:-0.149515:-0.247849:0.0900903:-0.250218:-0.29327:-0.449013:-0.289186:-0.296609:0.36998:0.309947:0.468418:0.0150231:0.178822:-0.0795117:-0.108979:0.494221:-0.442487:-0.286313:0.391469:-0.39494:-0.162585:-0.158422:-0.182274:0.431848:-0.268552:-0.28416:0.333334:0.360513:0.318403:-0.364475:0.439969:-0.246897:0.0332158:0.358267:-0.0748573:-0.435962:-0.302861:-0.388489:0.271488:0.0127385:-0.0989884:-0.271535:-0.254238:-0.33684:0.389732:-0.222312:-0.20576:-0.253779:-0.166874:-0.19071:0.25096:0.105208:0.487118:-0.334612:-0.0503092:-0.473779:0.193285:0.0745487:-0.45893:-0.024402:0.0913379:-0.0261859:-0.0188701:0.120137:0.116529:-0.0141518:-0.119165:-0.198176:-0.159524:-0.378288:-0.341906:-0.128065:0.166849:-0.0154788:-0.177214:-0.287362:-0.239857:-0.136312:0.107463:0.356079:0.278596:0.117707:-0.162731:-0.198466:-0.175281:-0.00143227:-0.13731:-0.074105:-0.123823:-0.0376647:-0.11276:-0.0496815:-0.172825:-0.429263:0.0284473:0.182517:0.26848:-0.215857:0.349042:-0.373334:-0.218745:-0.0499232:0.155349:-0.123708:0.478668:-0.214383:0.494542:0.0422934:-0.452487:-0.014959:-0.0854984:-0.094967:-0.150888:0.483285:-0.365631:-0.366048:-0.47845:-0.282711:0.25745:0.367952:0.388146:0.188527
 ```
 
-#### 2、Using model visual to process sampled neuron datas
+#### 2、Using model analysis to process sampled neuron datas
 The data processing interface is used to process the neuron datas:
 ```python
 from visualdl.thirdparty.process_data import ModelAnalysis
@@ -466,7 +468,7 @@ Parameter details:
 | data_dir        | The local folder path which is used to store the processed intermediate data |
 
 
-#### 3、Check the network node data using visualdl
+#### 3、Check the network node data using model analysis
 ##### Use the command line to launch the VisualDL panel：
 ```python
 visualdl --logdir <dir_1, dir_2, ... , dir_n> --data_dir <data_dir> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
