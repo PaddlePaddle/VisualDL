@@ -155,10 +155,32 @@ from visualdl import LogWriter
 
 # 在`./log/scalar_test/train`路径下建立日志文件
 with LogWriter(logdir="./log/scalar_test/train") as writer:
-    # 使用scalar组件记录一个标量数据
+    # 使用scalar组件记录一个标量数据,将要记录的所有数据都记录在该writer中
     writer.add_scalar(tag="acc", step=1, value=0.5678)
     writer.add_scalar(tag="acc", step=2, value=0.6878)
     writer.add_scalar(tag="acc", step=3, value=0.9878)
+# 如果不想使用上下文管理器`with`，可拆解为以下几步完成：
+"""
+writer = LogWriter(logdir="./log/scalar_test/train")
+
+writer.add_scalar(tag="acc", step=1, value=0.5678)
+writer.add_scalar(tag="acc", step=2, value=0.6878)
+writer.add_scalar(tag="acc", step=3, value=0.9878)
+
+writer.close()
+"""
+```
+注：调用LogWriter(logdir="./log/scalar_test/train")将会在./log/scalar_test/train目录下生成一个日志文件，
+运行一次程序所产生的训练数据应该只记录到一个日志文件中，因此应该只调用一次LogWriter，用返回的LogWriter对象来记录所有数据，
+而不是每记录一个数据就创建一次LogWriter。
+
+<font color=#FF0000>如下是错误示范</font>：
+```python
+from visualdl import LogWriter
+with LogWriter(logdir="./log/scalar_test/train") as writer:  # 将会创建日志文件vdlrecords.xxxx1.log
+    writer.add_scalar(tag="acc", step=1, value=0.5678)  # 数据写入./log/scalar_test/train/vdlrecords.xxxx1.log
+with LogWriter(logdir="./log/scalar_test/train") as writer:  # 将会创建日志文件vdlrecords.xxxx2.log
+    writer.add_scalar(tag="acc", step=2, value=0.6878)  # 数据将会写入./log/scalar_test/train/vdlrecords.xxxx2.log
 ```
 
 ### 2. 启动面板

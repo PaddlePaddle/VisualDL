@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+import Logger from './log.js';
+import {fileURLToPath} from 'url';
+import fs from 'fs/promises';
+import path from 'path';
 
-const path = require('path');
-const fs = require('fs/promises');
+const logger = new Logger('Inject env');
 
-const ENV_INJECT = 'const env = globalThis.__snowpack_env__ || {}; export default env;';
-
-const dest = path.resolve(__dirname, '../dist/__snowpack__');
+const cwd = path.dirname(fileURLToPath(import.meta.url));
+const dest = path.resolve(cwd, '../dist/__snowpack__');
 const envFile = path.join(dest, 'env.js');
 
-module.exports = async () => {
+async function envInjectTemplate(env) {
+    return `const env = globalThis.__snowpack_env__ || {}; export const ${Object.keys(env)
+        .map(key => `${key}=env["${key}"]`)
+        .join(',')};`;
+}
+
+export default async () => {
+    logger.start();
+    const env = await import(envFile);
+    const envInject = await envInjectTemplate(env);
+    logger.process('renaming env.js to env.local.js...');
     await fs.rename(envFile, path.join(dest, 'env.local.js'));
-    await fs.writeFile(envFile, ENV_INJECT, 'utf-8');
+    logger.process('regenerating env.js...');
+    await fs.writeFile(envFile, envInject, 'utf-8');
+    logger.end('Env injected.');
 };

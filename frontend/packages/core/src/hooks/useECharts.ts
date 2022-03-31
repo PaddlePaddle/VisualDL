@@ -63,7 +63,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
                 await import('echarts-gl');
             }
 
-            const echartInstance = echarts.init((ref.current as unknown) as HTMLDivElement);
+            const echartInstance = echarts.init(ref.current as unknown as HTMLDivElement);
 
             ref.current.addEventListener('mouseleave', hideTip);
 

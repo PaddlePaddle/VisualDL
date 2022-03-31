@@ -17,10 +17,9 @@
 import React, {FunctionComponent, Suspense, useMemo} from 'react';
 
 import type {WithStyled} from '~/utils/style';
+import icons from '@visualdl/icons';
 import styled from 'styled-components';
 import useClassNames from '~/hooks/useClassNames';
-
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
 const Wrapper = styled.i`
     speak: none;
@@ -39,7 +38,7 @@ type IconProps = {
 };
 
 const Icon: FunctionComponent<IconProps & WithStyled> = ({type, onClick, className}) => {
-    const Svg = useMemo(() => React.lazy(() => import(`${PUBLIC_PATH}/icons/${type}.js`)), [type]);
+    const Svg = useMemo(() => React.lazy(() => icons(type)), [type]);
 
     const classNames = useClassNames('vdl-icon', `icon-${type}`, className, [type, className]);
 

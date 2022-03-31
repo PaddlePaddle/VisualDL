@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import {THEME, autoTheme} from '~/utils/theme';
+import {THEME, autoTheme, parseTheme} from '~/utils/theme';
 import type {ThemeActionTypes, ThemeState} from './types';
 
 import {ActionTypes} from './types';
-import type {Theme} from '~/utils/theme';
 
 const STORAGE_KEY = 'theme';
 
-const theme = THEME || (window.localStorage.getItem(STORAGE_KEY) as Theme | undefined) || 'auto';
+const theme = THEME || parseTheme(window.localStorage.getItem(STORAGE_KEY) || '') || 'auto';
 
 const initState: ThemeState = {
     theme: theme === 'auto' ? autoTheme : theme,

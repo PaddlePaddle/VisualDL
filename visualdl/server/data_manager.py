@@ -264,6 +264,8 @@ class _ReservoirBucket(object):
                 if r < self._max_size:
                     self._items.pop(r)
                     self._items.append(item)
+                else:
+                    self._items[-1] = item
             self._num_items_index += 1
 
     def add_scalar_item(self, item):
@@ -296,6 +298,8 @@ class _ReservoirBucket(object):
                             r = r + 1
                     self._items.pop(r)
                     self._items.append(item)
+                else:
+                    self._items[-1] = item
 
             self._num_items_index += 1
 

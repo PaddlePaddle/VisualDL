@@ -67,13 +67,13 @@ const Wrapper = styled.div`
 const reload = () => window.location.reload();
 
 const ReadmeMap: Record<string, string> = {
-    zh: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/README.md',
-    en: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/README-en.md'
+    zh: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/README_CN.md',
+    en: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/README.md'
 };
 
 const UserGuideMap: Record<string, string> = {
-    zh: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/README.md',
-    en: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/UserGuide-en.md'
+    zh: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/README_CN.md',
+    en: 'https://github.com/PaddlePaddle/VisualDL/blob/develop/docs/components/README.md'
 };
 
 const I18nLink: FunctionComponent<{map: Record<string, string>}> = ({map, children}) => {

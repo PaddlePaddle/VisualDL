@@ -36,13 +36,14 @@ import {
 import EventEmitter from 'eventemitter3';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
+const env: ImportMeta['env'] = JSON.parse(JSON.stringify(import.meta.env));
 
 export default class WebWorker implements IWorker {
     private listeners: Listeners = {};
     private onceListeners: Listeners = {};
     private worker: Worker | null = null;
     private emitter: EventEmitter | null = null;
-    env = import.meta.env;
+    env = env;
 
     constructor(name: string) {
         const workerPath = `${BASE_URI}/_dist_/worker`;
@@ -50,7 +51,7 @@ export default class WebWorker implements IWorker {
         if (checkWorkerModuleSupport()) {
             this.worker = new Worker(`${workerPath}/worker.js`, {type: 'module'});
             this.worker.addEventListener('message', this.listener.bind(this));
-            this.emit<InitializeData>('INITIALIZE', {name, env: import.meta.env});
+            this.emit<InitializeData>('INITIALIZE', {name, env});
         } else {
             this.emitter = new EventEmitter();
             this.emitter.addListener('message', this.listener.bind(this));

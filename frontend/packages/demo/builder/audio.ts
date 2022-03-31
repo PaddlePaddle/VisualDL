@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {Data, Worker} from './types';
-
-interface Audio {
-    step: number;
-    wallTime: number;
-}
+import type {Sample, TagData, Worker} from './types';
 
 const worker: Worker = async io => {
     const components = await io.getData<string[]>('/components');
@@ -27,10 +22,10 @@ const worker: Worker = async io => {
         return;
     }
 
-    const {runs, tags} = await io.save<Data>('/audio/tags');
+    const {runs, tags} = await io.save<TagData>('/audio/tags');
     for (const [index, run] of runs.entries()) {
         for (const tag of tags[index]) {
-            const list = (await io.save<Audio[]>('/audio/list', {run, tag})) ?? [];
+            const list = (await io.save<Sample[]>('/audio/list', {run, tag})) ?? [];
             for (const [index, audio] of list.entries()) {
                 await io.saveBinary('/audio/audio', {run, tag, index, ts: audio.wallTime});
             }

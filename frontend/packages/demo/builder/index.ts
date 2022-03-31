@@ -18,16 +18,31 @@
 
 import IO from './io';
 import type {Worker} from './types';
+import {fileURLToPath} from 'url';
 import getPort from 'get-port';
 import mkdirp from 'mkdirp';
 import path from 'path';
 import rimraf from 'rimraf';
 import {spawn} from 'child_process';
 
+const cwd = path.dirname(fileURLToPath(import.meta.url));
+
 const host = '127.0.0.1';
 const publicPath = '/visualdl';
-const pages = ['common', 'scalar', 'histogram', 'image', 'audio', 'graph', 'pr-curve', 'roc-curve', 'high-dimensional'];
-const dataDir = path.resolve(__dirname, '../data');
+const pages = [
+    'common',
+    'scalar',
+    'histogram',
+    'image',
+    'audio',
+    'text',
+    'graph',
+    'pr-curve',
+    'roc-curve',
+    'high-dimensional',
+    'hyper-parameter'
+];
+const dataDir = path.resolve(cwd, '../data');
 
 async function start() {
     rimraf.sync(dataDir);
@@ -53,7 +68,7 @@ async function start() {
             publicPath
         ],
         {
-            cwd: path.resolve(__dirname, '../logs'),
+            cwd: path.resolve(cwd, '../logs'),
             stdio: ['ignore', 'pipe', 'pipe']
         }
     );

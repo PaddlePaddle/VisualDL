@@ -157,6 +157,16 @@ with LogWriter(logdir="./log/scalar_test/train") as writer:
     writer.add_scalar(tag="acc", step=1, value=0.5678)
     writer.add_scalar(tag="acc", step=2, value=0.6878)
     writer.add_scalar(tag="acc", step=3, value=0.9878)
+# you can also use the following method without using context manager `with`:
+"""
+writer = LogWriter(logdir="./log/scalar_test/train")
+
+writer.add_scalar(tag="acc", step=1, value=0.5678)
+writer.add_scalar(tag="acc", step=2, value=0.6878)
+writer.add_scalar(tag="acc", step=3, value=0.9878)
+
+writer.close()
+"""
 ```
 
 ### 2. Launch Panel
