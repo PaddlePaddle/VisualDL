@@ -1,0 +1,942 @@
+155,156d154
+<         "batch_norm_0.tmp_0",
+<         "batch_norm_0.tmp_1",
+419,420d416
+<         "batch_norm_1.tmp_0",
+<         "batch_norm_1.tmp_1",
+511a508,509
+>         "relu_1.tmp_0",
+>         "relu_1.tmp_0",
+795,796d792
+<         "batch_norm_2.tmp_0",
+<         "batch_norm_2.tmp_1",
+1077,1078d1072
+<         "batch_norm_3.tmp_0",
+<         "batch_norm_3.tmp_1",
+1175a1170,1171
+>         "relu_3.tmp_0",
+>         "relu_3.tmp_0",
+1465,1466d1460
+<         "batch_norm_4.tmp_0",
+<         "batch_norm_4.tmp_1",
+1747,1748d1740
+<         "batch_norm_5.tmp_0",
+<         "batch_norm_5.tmp_1",
+1845a1838,1839
+>         "relu_5.tmp_0",
+>         "relu_5.tmp_0",
+2135,2136d2128
+<         "batch_norm_6.tmp_0",
+<         "batch_norm_6.tmp_1",
+2417,2418d2408
+<         "batch_norm_7.tmp_0",
+<         "batch_norm_7.tmp_1",
+2515a2506,2507
+>         "relu_7.tmp_0",
+>         "relu_7.tmp_0",
+2805,2806d2796
+<         "batch_norm_8.tmp_0",
+<         "batch_norm_8.tmp_1",
+3087,3088d3076
+<         "batch_norm_9.tmp_0",
+<         "batch_norm_9.tmp_1",
+3647,3648d3634
+<         "batch_norm_10.tmp_0",
+<         "batch_norm_10.tmp_1",
+3941,3942d3926
+<         "batch_norm_11.tmp_0",
+<         "batch_norm_11.tmp_1",
+4509,4510d4492
+<         "batch_norm_12.tmp_0",
+<         "batch_norm_12.tmp_1",
+4803,4804d4784
+<         "batch_norm_13.tmp_0",
+<         "batch_norm_13.tmp_1",
+5371,5372d5350
+<         "batch_norm_14.tmp_0",
+<         "batch_norm_14.tmp_1",
+5665,5666d5642
+<         "batch_norm_15.tmp_0",
+<         "batch_norm_15.tmp_1",
+6233,6234d6208
+<         "batch_norm_16.tmp_0",
+<         "batch_norm_16.tmp_1",
+6527,6528d6500
+<         "batch_norm_17.tmp_0",
+<         "batch_norm_17.tmp_1",
+6848,6850c6820
+<       "output_vars": [
+<         "fetch"
+<       ],
+---
+>       "output_vars": [],
+6893d6862
+<         "/encode",
+6895d6863
+<         "/fetch",
+6896a6865,6866
+>         "/encode",
+>         "/save_infer_model",
+6898c6868
+<         "/save_infer_model"
+---
+>         "/fetch"
+6906c6876
+<         "batch_norm2d_1.b_0",
+---
+>         "conv2d_2.b_0",
+6908,6912c6878,6882
+<         "batch_norm2d_14.b_0",
+<         "conv2d_13.b_0",
+<         "batch_norm2d_11.b_0",
+<         "conv2d_7.b_0",
+<         "conv2d_9.b_0",
+---
+>         "batch_norm2d_3.w_0",
+>         "batch_norm2d_1.b_0",
+>         "batch_norm2d_9.w_0",
+>         "conv2d_0.b_0",
+>         "batch_norm2d_7.w_0",
+6914,6924c6884
+<         "batch_norm2d_14.w_0",
+<         "batch_norm2d_8.w_0",
+<         "batch_norm2d_0.w_0",
+<         "batch_norm2d_17.w_0",
+<         "conv2d_14.b_0",
+<         "batch_norm2d_4.w_0",
+<         "conv2d_17.b_0",
+<         "batch_norm2d_9.b_0",
+<         "batch_norm2d_8.b_0",
+<         "batch_norm2d_10.b_0",
+<         "batch_norm2d_2.b_0",
+---
+>         "feed",
+6925a6886,6891
+>         "batch_norm2d_13.w_0",
+>         "batch_norm2d_2.b_0",
+>         "batch_norm2d_16.w_0",
+>         "conv2d_16.b_0",
+>         "batch_norm2d_11.w_0",
+>         "conv2d_3.b_0",
+6926a6893,6894
+>         "conv2d_1.b_0",
+>         "conv2d_13.b_0",
+6928,6929c6896,6898
+<         "batch_norm2d_10.w_0",
+<         "batch_norm2d_16.b_0",
+---
+>         "conv2d_4.b_0",
+>         "batch_norm2d_17.w_0",
+>         "batch_norm2d_14.w_0",
+6931,6933d6899
+<         "batch_norm2d_2.w_0",
+<         "conv2d_6.b_0",
+<         "batch_norm2d_9.w_0",
+6935,6945d6900
+<         "conv2d_1.b_0",
+<         "batch_norm2d_5.w_0",
+<         "conv2d_12.b_0",
+<         "batch_norm2d_12.b_0",
+<         "batch_norm2d_16.w_0",
+<         "batch_norm2d_12.w_0",
+<         "conv2d_3.b_0",
+<         "batch_norm2d_13.w_0",
+<         "conv2d_2.b_0",
+<         "batch_norm2d_0.b_0",
+<         "conv2d_18.b_0",
+6946a6902,6909
+>         "batch_norm2d_4.b_0",
+>         "batch_norm2d_8.b_0",
+>         "batch_norm2d_12.b_0",
+>         "batch_norm2d_4.w_0",
+>         "batch_norm2d_2.w_0",
+>         "batch_norm2d_6.b_0",
+>         "batch_norm2d_10.b_0",
+>         "batch_norm2d_9.b_0",
+6948,6955d6910
+<         "feed",
+<         "batch_norm2d_7.w_0",
+<         "conv2d_16.b_0",
+<         "batch_norm2d_3.w_0",
+<         "batch_norm2d_11.w_0",
+<         "conv2d_4.b_0",
+<         "conv2d_5.b_0",
+<         "batch_norm2d_15.b_0",
+6957,6959c6912,6922
+<         "batch_norm2d_6.b_0",
+<         "conv2d_0.b_0",
+<         "batch_norm2d_4.b_0",
+---
+>         "batch_norm2d_15.b_0",
+>         "conv2d_5.b_0",
+>         "batch_norm2d_0.w_0",
+>         "conv2d_17.b_0",
+>         "conv2d_12.b_0",
+>         "conv2d_14.b_0",
+>         "batch_norm2d_5.w_0",
+>         "batch_norm2d_8.w_0",
+>         "batch_norm2d_11.b_0",
+>         "batch_norm2d_16.b_0",
+>         "batch_norm2d_7.b_0",
+6961c6924,6931
+<         "batch_norm2d_7.b_0"
+---
+>         "conv2d_9.b_0",
+>         "batch_norm2d_10.w_0",
+>         "conv2d_7.b_0",
+>         "conv2d_6.b_0",
+>         "batch_norm2d_14.b_0",
+>         "conv2d_18.b_0",
+>         "batch_norm2d_0.b_0",
+>         "batch_norm2d_12.w_0"
+7003d6972
+<         "conv2d_0.b_0",
+7005c6974,6975
+<         "batch_norm2d_0.w_0"
+---
+>         "batch_norm2d_0.w_0",
+>         "conv2d_0.b_0"
+7014,7015c6984,6985
+<         "/encode/double_conv/0",
+<         "/encode/double_conv/1"
+---
+>         "/encode/double_conv/1",
+>         "/encode/double_conv/0"
+7023c6993
+<         "/decode/3/concat_3",
+---
+>         "/decode/3/shape_3",
+7025c6995
+<         "/decode/3/shape_3"
+---
+>         "/decode/3/concat_3"
+7033,7034c7003,7004
+<         "batch_norm2d_0.w_0",
+<         "batch_norm2d_0.b_0"
+---
+>         "batch_norm2d_0.b_0",
+>         "batch_norm2d_0.w_0"
+7036a7007,7008
+>         "relu_1.tmp_0",
+>         "relu_1.tmp_0",
+7043d7014
+<         "/encode/3",
+7045c7016
+<         "/encode/2",
+---
+>         "/encode/1",
+7047c7018,7019
+<         "/encode/1"
+---
+>         "/encode/3",
+>         "/encode/2"
+7056,7058c7028
+<         "/decode/3/concat_3",
+<         "/decode/2/concat_2",
+<         "/decode/3/shape_3",
+---
+>         "/decode/1/shape_1",
+7060d7029
+<         "/decode/1/concat_1",
+7062,7063c7031,7035
+<         "/decode/1/shape_1",
+<         "/decode/0/concat_0"
+---
+>         "/decode/0/concat_0",
+>         "/decode/3/shape_3",
+>         "/decode/2/concat_2",
+>         "/decode/3/concat_3",
+>         "/decode/1/concat_1"
+7066a7039,7040
+>         "conv2d_2.b_0",
+>         "batch_norm2d_8.b_0",
+7068,7072c7042,7043
+<         "batch_norm2d_1.b_0",
+<         "conv2d_7.b_0",
+<         "conv2d_9.b_0",
+<         "batch_norm2d_8.w_0",
+<         "batch_norm2d_0.w_0",
+---
+>         "batch_norm2d_2.w_0",
+>         "batch_norm2d_3.w_0",
+7073a7045,7046
+>         "batch_norm2d_6.b_0",
+>         "batch_norm2d_1.b_0",
+7075,7080d7047
+<         "batch_norm2d_8.b_0",
+<         "batch_norm2d_2.b_0",
+<         "batch_norm2d_6.w_0",
+<         "batch_norm2d_5.b_0",
+<         "batch_norm2d_2.w_0",
+<         "conv2d_6.b_0",
+7082,7087d7048
+<         "batch_norm2d_1.w_0",
+<         "conv2d_1.b_0",
+<         "batch_norm2d_5.w_0",
+<         "conv2d_3.b_0",
+<         "conv2d_2.b_0",
+<         "batch_norm2d_0.b_0",
+7089,7091d7049
+<         "batch_norm2d_7.w_0",
+<         "batch_norm2d_3.w_0",
+<         "conv2d_4.b_0",
+7093d7050
+<         "batch_norm2d_6.b_0",
+7094a7052,7066
+>         "batch_norm2d_0.w_0",
+>         "batch_norm2d_7.w_0",
+>         "batch_norm2d_5.w_0",
+>         "batch_norm2d_6.w_0",
+>         "batch_norm2d_8.w_0",
+>         "batch_norm2d_2.b_0",
+>         "batch_norm2d_7.b_0",
+>         "conv2d_3.b_0",
+>         "conv2d_9.b_0",
+>         "batch_norm2d_5.b_0",
+>         "conv2d_1.b_0",
+>         "conv2d_4.b_0",
+>         "conv2d_7.b_0",
+>         "conv2d_6.b_0",
+>         "batch_norm2d_1.w_0",
+7096c7068
+<         "batch_norm2d_7.b_0"
+---
+>         "batch_norm2d_0.b_0"
+7098a7071,7076
+>         "relu_1.tmp_0",
+>         "relu_1.tmp_0",
+>         "relu_7.tmp_0",
+>         "relu_7.tmp_0",
+>         "relu_5.tmp_0",
+>         "relu_5.tmp_0",
+7101,7103c7079
+<         "relu_5.tmp_0",
+<         "relu_1.tmp_0",
+<         "relu_7.tmp_0"
+---
+>         "relu_3.tmp_0"
+7154,7155c7130,7131
+<         "/encode/double_conv/1/relu_1",
+<         "/encode/double_conv/1/_conv"
+---
+>         "/encode/double_conv/1/_conv",
+>         "/encode/double_conv/1/relu_1"
+7169d7144
+<         "conv2d_1.b_0",
+7171c7146,7147
+<         "batch_norm2d_1.b_0"
+---
+>         "batch_norm2d_1.b_0",
+>         "conv2d_1.b_0"
+7173a7150,7151
+>         "relu_1.tmp_0",
+>         "relu_1.tmp_0",
+7193,7194c7171,7172
+<         "batch_norm2d_1.b_0",
+<         "conv2d_20.tmp_1"
+---
+>         "conv2d_20.tmp_1",
+>         "batch_norm2d_1.b_0"
+7223a7202
+>         "/encode/0/1",
+7225,7226c7204
+<         "/encode/0/2",
+<         "/encode/0/1"
+---
+>         "/encode/0/2"
+7235,7236c7213,7214
+<         "/encode/1/0/pool2d_1",
+<         "/decode/2/concat_2"
+---
+>         "/decode/2/concat_2",
+>         "/encode/1/0/pool2d_1"
+7239a7218
+>         "conv2d_2.b_0",
+7243d7221
+<         "relu_1.tmp_0",
+7246c7224
+<         "conv2d_2.b_0"
+---
+>         "relu_1.tmp_0"
+7248a7227,7228
+>         "relu_3.tmp_0",
+>         "relu_3.tmp_0",
+7276d7255
+<         "/encode/0/1/_batch_norm",
+7277a7257
+>         "/encode/0/1/_batch_norm",
+7291,7292c7271,7272
+<         "batch_norm2d_2.w_0",
+<         "batch_norm2d_2.b_0"
+---
+>         "batch_norm2d_2.b_0",
+>         "batch_norm2d_2.w_0"
+7312a7293
+>         "conv2d_21.tmp_1",
+7314,7315c7295
+<         "batch_norm2d_2.b_0",
+<         "conv2d_21.tmp_1"
+---
+>         "batch_norm2d_2.b_0"
+7345d7324
+<         "/encode/0/2/_conv",
+7347c7326,7327
+<         "/encode/0/2/relu_3"
+---
+>         "/encode/0/2/relu_3",
+>         "/encode/0/2/_conv"
+7356,7357c7336,7337
+<         "/encode/1/0/pool2d_1",
+<         "/decode/2/concat_2"
+---
+>         "/decode/2/concat_2",
+>         "/encode/1/0/pool2d_1"
+7361d7340
+<         "conv2d_3.b_0",
+7363c7342,7343
+<         "batch_norm2d_3.w_0"
+---
+>         "batch_norm2d_3.w_0",
+>         "conv2d_3.b_0"
+7365a7346,7347
+>         "relu_3.tmp_0",
+>         "relu_3.tmp_0",
+7384d7365
+<         "conv2d_22.tmp_1",
+7386c7367,7368
+<         "batch_norm2d_3.w_0"
+---
+>         "batch_norm2d_3.w_0",
+>         "conv2d_22.tmp_1"
+7416c7398
+<         "/encode/1/0",
+---
+>         "/encode/1/1",
+7418c7400
+<         "/encode/1/1"
+---
+>         "/encode/1/0"
+7432,7435d7413
+<         "batch_norm2d_5.b_0",
+<         "relu_3.tmp_0",
+<         "batch_norm2d_5.w_0",
+<         "batch_norm2d_4.w_0",
+7436a7415,7418
+>         "batch_norm2d_4.w_0",
+>         "batch_norm2d_5.w_0",
+>         "batch_norm2d_4.b_0",
+>         "batch_norm2d_5.b_0",
+7438c7420
+<         "batch_norm2d_4.b_0"
+---
+>         "relu_3.tmp_0"
+7440a7423,7424
+>         "relu_5.tmp_0",
+>         "relu_5.tmp_0",
+7468d7451
+<         "/encode/1/1/relu_4",
+7470c7453,7454
+<         "/encode/1/1/_conv"
+---
+>         "/encode/1/1/_conv",
+>         "/encode/1/1/relu_4"
+7481a7466
+>         "batch_norm2d_4.b_0",
+7483,7484c7468
+<         "batch_norm2d_4.w_0",
+<         "batch_norm2d_4.b_0"
+---
+>         "batch_norm2d_4.w_0"
+7505c7489
+<         "conv2d_23.tmp_1",
+---
+>         "batch_norm2d_4.b_0",
+7507c7491
+<         "batch_norm2d_4.b_0"
+---
+>         "conv2d_23.tmp_1"
+7537d7520
+<         "/encode/1/2/_batch_norm",
+7539c7522,7523
+<         "/encode/1/2/_conv"
+---
+>         "/encode/1/2/_conv",
+>         "/encode/1/2/_batch_norm"
+7553d7536
+<         "conv2d_5.b_0",
+7554a7538
+>         "conv2d_5.b_0",
+7557a7542,7543
+>         "relu_5.tmp_0",
+>         "relu_5.tmp_0",
+7576d7561
+<         "conv2d_24.tmp_1",
+7577a7563
+>         "conv2d_24.tmp_1",
+7608c7594
+<         "/encode/2/0",
+---
+>         "/encode/2/2",
+7610c7596
+<         "/encode/2/2"
+---
+>         "/encode/2/0"
+7618d7603
+<         "/decode/0/shape_0",
+7620c7605,7606
+<         "/decode/0/concat_0"
+---
+>         "/decode/0/concat_0",
+>         "/decode/0/shape_0"
+7624,7625d7609
+<         "batch_norm2d_6.w_0",
+<         "conv2d_6.b_0",
+7626a7611
+>         "batch_norm2d_6.b_0",
+7627a7613,7614
+>         "conv2d_6.b_0",
+>         "batch_norm2d_6.w_0",
+7629d7615
+<         "batch_norm2d_6.b_0",
+7632a7619,7620
+>         "relu_7.tmp_0",
+>         "relu_7.tmp_0",
+7697d7684
+<         "batch_norm2d_6.w_0",
+7699c7686,7687
+<         "conv2d_25.tmp_1"
+---
+>         "conv2d_25.tmp_1",
+>         "batch_norm2d_6.w_0"
+7729c7717
+<         "/encode/2/2/_batch_norm",
+---
+>         "/encode/2/2/relu_7",
+7731c7719
+<         "/encode/2/2/relu_7"
+---
+>         "/encode/2/2/_batch_norm"
+7739d7726
+<         "/decode/0/shape_0",
+7741c7728,7729
+<         "/decode/0/concat_0"
+---
+>         "/decode/0/concat_0",
+>         "/decode/0/shape_0"
+7746,7747c7734,7735
+<         "conv2d_7.b_0",
+<         "batch_norm2d_7.b_0"
+---
+>         "batch_norm2d_7.b_0",
+>         "conv2d_7.b_0"
+7749a7738,7739
+>         "relu_7.tmp_0",
+>         "relu_7.tmp_0",
+7768d7757
+<         "conv2d_26.tmp_1",
+7770c7759,7760
+<         "batch_norm2d_7.b_0"
+---
+>         "batch_norm2d_7.b_0",
+>         "conv2d_26.tmp_1"
+7801,7802c7791,7792
+<         "/encode/3/2",
+<         "/encode/3/1"
+---
+>         "/encode/3/1",
+>         "/encode/3/2"
+7814,7817d7803
+<         "conv2d_8.b_0",
+<         "batch_norm2d_9.w_0",
+<         "conv2d_9.b_0",
+<         "batch_norm2d_9.b_0",
+7818a7805,7807
+>         "batch_norm2d_9.b_0",
+>         "batch_norm2d_9.w_0",
+>         "relu_7.tmp_0",
+7820c7809,7810
+<         "relu_7.tmp_0"
+---
+>         "conv2d_8.b_0",
+>         "conv2d_9.b_0"
+7850c7840
+<         "/encode/3/1/_batch_norm",
+---
+>         "/encode/3/1/_conv",
+7852c7842
+<         "/encode/3/1/_conv"
+---
+>         "/encode/3/1/_batch_norm"
+7887d7876
+<         "conv2d_27.tmp_1",
+7888a7878
+>         "conv2d_27.tmp_1",
+7934,7935c7924,7925
+<         "batch_norm2d_9.w_0",
+<         "conv2d_9.b_0"
+---
+>         "conv2d_9.b_0",
+>         "batch_norm2d_9.w_0"
+7957,7958c7947,7948
+<         "batch_norm2d_9.w_0",
+<         "conv2d_28.tmp_1"
+---
+>         "conv2d_28.tmp_1",
+>         "batch_norm2d_9.w_0"
+7967d7956
+<         "/decode/0/shape_0",
+7969a7959
+>         "/decode/0/shape_0",
+7975,7976c7965,7966
+<         "/encode/3/2/relu_9",
+<         "/encode/2/2/relu_7"
+---
+>         "/encode/2/2/relu_7",
+>         "/encode/3/2/relu_9"
+7983,7986d7972
+<         "conv2d_10.b_0",
+<         "relu_9.tmp_0",
+<         "batch_norm2d_10.w_0",
+<         "batch_norm2d_11.b_0",
+7990c7976,7980
+<         "relu_7.tmp_0"
+---
+>         "relu_7.tmp_0",
+>         "batch_norm2d_11.b_0",
+>         "relu_9.tmp_0",
+>         "conv2d_10.b_0",
+>         "batch_norm2d_10.w_0"
+7999d7988
+<         "/decode/3",
+8002c7991,7992
+<         "/decode/2"
+---
+>         "/decode/2",
+>         "/decode/3"
+8006a7997
+>         "/encode/double_conv/1/relu_1",
+8007a7999
+>         "/encode/2/2/relu_7",
+8009,8011c8001
+<         "/encode/1/2/relu_5",
+<         "/encode/double_conv/1/relu_1",
+<         "/encode/2/2/relu_7"
+---
+>         "/encode/1/2/relu_5"
+8018,8020c8008,8014
+<         "batch_norm2d_14.b_0",
+<         "conv2d_13.b_0",
+<         "batch_norm2d_11.b_0",
+---
+>         "batch_norm2d_12.b_0",
+>         "batch_norm2d_10.b_0",
+>         "batch_norm2d_13.b_0",
+>         "batch_norm2d_15.b_0",
+>         "relu_1.tmp_0",
+>         "conv2d_17.b_0",
+>         "conv2d_12.b_0",
+8022,8026d8015
+<         "relu_3.tmp_0",
+<         "conv2d_15.b_0",
+<         "batch_norm2d_14.w_0",
+<         "relu_5.tmp_0",
+<         "batch_norm2d_17.w_0",
+8028,8031c8017,8019
+<         "conv2d_17.b_0",
+<         "batch_norm2d_10.b_0",
+<         "conv2d_10.b_0",
+<         "batch_norm2d_10.w_0",
+---
+>         "relu_7.tmp_0",
+>         "batch_norm2d_11.b_0",
+>         "batch_norm2d_13.w_0",
+8033,8034d8020
+<         "conv2d_12.b_0",
+<         "batch_norm2d_12.b_0",
+8036,8040d8021
+<         "batch_norm2d_12.w_0",
+<         "batch_norm2d_13.w_0",
+<         "relu_7.tmp_0",
+<         "batch_norm2d_17.b_0",
+<         "relu_9.tmp_0",
+8043,8046c8024,8036
+<         "batch_norm2d_15.b_0",
+<         "relu_1.tmp_0",
+<         "batch_norm2d_13.b_0",
+<         "batch_norm2d_15.w_0"
+---
+>         "conv2d_15.b_0",
+>         "conv2d_13.b_0",
+>         "conv2d_10.b_0",
+>         "batch_norm2d_10.w_0",
+>         "batch_norm2d_17.w_0",
+>         "batch_norm2d_14.w_0",
+>         "batch_norm2d_14.b_0",
+>         "batch_norm2d_15.w_0",
+>         "relu_5.tmp_0",
+>         "batch_norm2d_17.b_0",
+>         "relu_9.tmp_0",
+>         "batch_norm2d_12.w_0",
+>         "relu_3.tmp_0"
+8077,8078c8067,8068
+<         "/decode/0/double_conv/0/_batch_norm",
+<         "/decode/0/double_conv/0/relu_10"
+---
+>         "/decode/0/double_conv/0/relu_10",
+>         "/decode/0/double_conv/0/_batch_norm"
+8091,8092c8081,8082
+<         "batch_norm2d_10.b_0",
+<         "batch_norm2d_10.w_0"
+---
+>         "batch_norm2d_10.w_0",
+>         "batch_norm2d_10.b_0"
+8101,8102c8091,8092
+<         "/decode/0/double_conv/1",
+<         "/decode/0/double_conv/0"
+---
+>         "/decode/0/double_conv/0",
+>         "/decode/0/double_conv/1"
+8114c8104,8105
+<         "conv2d_10.b_0",
+---
+>         "batch_norm2d_11.w_0",
+>         "conv2d_11.b_0",
+8115a8107
+>         "batch_norm2d_10.b_0",
+8117,8119c8109
+<         "conv2d_11.b_0",
+<         "batch_norm2d_11.w_0",
+<         "batch_norm2d_10.b_0"
+---
+>         "conv2d_10.b_0"
+8186c8176
+<         "batch_norm2d_11.b_0",
+---
+>         "batch_norm2d_11.w_0",
+8188c8178
+<         "batch_norm2d_11.w_0"
+---
+>         "batch_norm2d_11.b_0"
+8209d8198
+<         "batch_norm2d_11.b_0",
+8211c8200,8201
+<         "conv2d_30.tmp_1"
+---
+>         "conv2d_30.tmp_1",
+>         "batch_norm2d_11.b_0"
+8220c8210
+<         "/decode/1/shape_1",
+---
+>         "/decode/1/double_conv",
+8223c8213
+<         "/decode/1/double_conv"
+---
+>         "/decode/1/shape_1"
+8236d8225
+<         "conv2d_13.b_0",
+8239,8240d8227
+<         "batch_norm2d_12.w_0",
+<         "relu_5.tmp_0",
+8241a8229,8230
+>         "relu_5.tmp_0",
+>         "batch_norm2d_13.w_0",
+8243c8232,8233
+<         "batch_norm2d_13.w_0"
+---
+>         "conv2d_13.b_0",
+>         "batch_norm2d_12.w_0"
+8273c8263
+<         "/decode/1/double_conv/0/_conv",
+---
+>         "/decode/1/double_conv/0/relu_12",
+8275c8265
+<         "/decode/1/double_conv/0/relu_12"
+---
+>         "/decode/1/double_conv/0/_conv"
+8287d8276
+<         "batch_norm2d_12.w_0",
+8288a8278
+>         "batch_norm2d_12.w_0",
+8311d8300
+<         "conv2d_13.b_0",
+8314c8303
+<         "batch_norm2d_12.w_0",
+---
+>         "batch_norm2d_13.w_0",
+8316c8305,8306
+<         "batch_norm2d_13.w_0"
+---
+>         "conv2d_13.b_0",
+>         "batch_norm2d_12.w_0"
+8337c8327
+<         "batch_norm2d_12.w_0",
+---
+>         "conv2d_31.tmp_1",
+8339c8329
+<         "conv2d_31.tmp_1"
+---
+>         "batch_norm2d_12.w_0"
+8369d8358
+<         "/decode/1/double_conv/1/relu_13",
+8371c8360,8361
+<         "/decode/1/double_conv/1/_batch_norm"
+---
+>         "/decode/1/double_conv/1/_batch_norm",
+>         "/decode/1/double_conv/1/relu_13"
+8383c8373
+<         "conv2d_13.b_0",
+---
+>         "batch_norm2d_13.w_0",
+8385c8375
+<         "batch_norm2d_13.w_0"
+---
+>         "conv2d_13.b_0"
+8406d8395
+<         "batch_norm2d_13.b_0",
+8408c8397,8398
+<         "conv2d_32.tmp_1"
+---
+>         "conv2d_32.tmp_1",
+>         "batch_norm2d_13.b_0"
+8418c8408
+<         "/decode/2/concat_2",
+---
+>         "/decode/2/bilinear_interp_v2_2",
+8420c8410
+<         "/decode/2/bilinear_interp_v2_2"
+---
+>         "/decode/2/concat_2"
+8433,8434c8423
+<         "relu_13.tmp_0",
+<         "batch_norm2d_14.b_0",
+---
+>         "conv2d_15.b_0",
+8436,8437d8424
+<         "batch_norm2d_15.w_0",
+<         "relu_3.tmp_0",
+8438a8426,8427
+>         "batch_norm2d_14.b_0",
+>         "batch_norm2d_15.w_0",
+8440c8429,8430
+<         "conv2d_15.b_0"
+---
+>         "relu_13.tmp_0",
+>         "relu_3.tmp_0"
+8470c8460
+<         "/decode/2/double_conv/0/_conv",
+---
+>         "/decode/2/double_conv/0/_batch_norm",
+8472c8462
+<         "/decode/2/double_conv/0/_batch_norm"
+---
+>         "/decode/2/double_conv/0/_conv"
+8484d8473
+<         "conv2d_14.b_0",
+8485a8475
+>         "conv2d_14.b_0",
+8495,8496c8485,8486
+<         "/decode/2/double_conv/0",
+<         "/decode/2/double_conv/1"
+---
+>         "/decode/2/double_conv/1",
+>         "/decode/2/double_conv/0"
+8508,8509d8497
+<         "batch_norm2d_14.b_0",
+<         "conv2d_14.b_0",
+8510a8499
+>         "conv2d_14.b_0",
+8512,8513c8501,8503
+<         "batch_norm2d_15.b_0",
+<         "batch_norm2d_15.w_0"
+---
+>         "batch_norm2d_14.b_0",
+>         "batch_norm2d_15.w_0",
+>         "batch_norm2d_15.b_0"
+8535,8536c8525,8526
+<         "batch_norm2d_14.b_0",
+<         "batch_norm2d_14.w_0"
+---
+>         "batch_norm2d_14.w_0",
+>         "batch_norm2d_14.b_0"
+8566d8555
+<         "/decode/2/double_conv/1/relu_15",
+8567a8557
+>         "/decode/2/double_conv/1/relu_15",
+8579a8570
+>         "conv2d_15.b_0",
+8581,8582c8572
+<         "batch_norm2d_15.w_0",
+<         "conv2d_15.b_0"
+---
+>         "batch_norm2d_15.w_0"
+8604,8605c8594,8595
+<         "batch_norm2d_15.w_0",
+<         "conv2d_34.tmp_1"
+---
+>         "conv2d_34.tmp_1",
+>         "batch_norm2d_15.w_0"
+8613a8604
+>         "/decode/3/double_conv",
+8616,8617c8607
+<         "/decode/3/shape_3",
+<         "/decode/3/double_conv"
+---
+>         "/decode/3/shape_3"
+8629a8620,8621
+>         "batch_norm2d_17.w_0",
+>         "conv2d_17.b_0",
+8632c8624
+<         "conv2d_16.b_0",
+---
+>         "relu_15.tmp_0",
+8634d8625
+<         "conv2d_17.b_0",
+8636,8637c8627
+<         "batch_norm2d_17.w_0",
+<         "relu_15.tmp_0"
+---
+>         "conv2d_16.b_0"
+8667d8656
+<         "/decode/3/double_conv/0/_batch_norm",
+8668a8658
+>         "/decode/3/double_conv/0/_batch_norm",
+8681c8671
+<         "conv2d_16.b_0",
+---
+>         "batch_norm2d_16.w_0",
+8683c8673
+<         "batch_norm2d_16.w_0"
+---
+>         "conv2d_16.b_0"
+8704a8695
+>         "batch_norm2d_17.w_0",
+8709,8710c8700
+<         "conv2d_17.b_0",
+<         "batch_norm2d_17.w_0"
+---
+>         "conv2d_17.b_0"
+8731d8720
+<         "batch_norm2d_16.w_0",
+8733c8722,8723
+<         "conv2d_35.tmp_1"
+---
+>         "conv2d_35.tmp_1",
+>         "batch_norm2d_16.w_0"
+8763d8752
+<         "/decode/3/double_conv/1/_conv",
+8765c8754,8755
+<         "/decode/3/double_conv/1/relu_17"
+---
+>         "/decode/3/double_conv/1/relu_17",
+>         "/decode/3/double_conv/1/_conv"
+8777d8766
+<         "batch_norm2d_17.w_0",
+8779c8768,8769
+<         "conv2d_17.b_0"
+---
+>         "conv2d_17.b_0",
+>         "batch_norm2d_17.w_0"
+8800d8789
+<         "batch_norm2d_17.w_0",
+8801a8791
+>         "batch_norm2d_17.w_0",

@@ -1,0 +1,175 @@
+import os.path
+import collections
+import json
+
+_graph_version = '1.0.0'
+
+def analyse_model(model_pb):
+  import paddle
+  from paddle.fluid.core import ProgramDesc
+  from paddle.fluid.unique_name import UniqueNameGenerator
+  name_generator = UniqueNameGenerator()
+  program_desc = ProgramDesc(model_pb)
+  all_ops = {}
+  all_vars = {}
+  op_inputvars_dict = collections.defaultdict(list)
+  op_outputvars_dict = collections.defaultdict(list)
+  for i in range(program_desc.num_blocks()):
+    block_desc = program_desc.block(i)
+    # vars info
+    for i, var_desc in enumerate(block_desc.all_vars()):
+      try:
+        var_name = var_desc.name()
+        all_vars[var_name] = {}
+        all_vars[var_name]['shape'] = var_desc.shape()
+        all_vars[var_name]['type'] = str(var_desc.type())
+        all_vars[var_name]['dtype'] = str(var_desc.dtype())
+        all_vars[var_name]['value'] = []
+        attr_dict = {}
+        for attr_name in var_desc.attr_names():
+          attr_dict[attr_name] = var_desc.attr(attr_name)
+        all_vars[var_name]['attrs'] = attr_dict
+        all_vars[var_name]['from_node'] = ''
+        all_vars[var_name]['to_nodes'] = []
+        
+      except:
+        # feed, fetch var
+        var_name = var_desc.name()
+        all_vars[var_name] = {}
+        all_vars[var_name]['shape'] = ''
+        all_vars[var_name]['type'] = str(var_desc.type())
+        all_vars[var_name]['dtype'] = ''
+        all_vars[var_name]['value'] = []
+        attr_dict = {}
+        for attr_name in var_desc.attr_names():
+          attr_dict[attr_name] = var_desc.attr(attr_name)
+        all_vars[var_name]['attrs'] = attr_dict
+        all_vars[var_name]['from_node'] = ''
+        all_vars[var_name]['to_nodes'] = []
+        
+    
+    # ops info
+    for i in range(block_desc.op_size()):
+      op_desc = block_desc.op(i)
+      op_name = op_desc.attr('op_namescope') + name_generator(str(op_desc.type()))
+      all_ops[op_name] = {}
+      all_ops[op_name]['name'] = op_name
+      all_ops[op_name]['type'] = str(op_desc.type())
+      all_ops[op_name]['input_vars'] = {}
+      for input_name, variable_list in op_desc.inputs().items():
+        all_ops[op_name]['input_vars'][input_name] = variable_list
+        op_inputvars_dict[op_name].extend(variable_list)
+        # fill var 'to_nodes'
+        for variable_name in variable_list:
+          all_vars[variable_name]['to_nodes'].append(op_name)
+      all_ops[op_name]['output_vars'] = {}
+      for output_name, variable_list in op_desc.outputs().items():
+        all_ops[op_name]['output_vars'][output_name] = variable_list
+        op_outputvars_dict[op_name].extend(variable_list)
+        # fill var 'from_node'
+        for variable_name in variable_list:
+          all_vars[variable_name]['from_node'] = op_name
+
+      attr_dict = {}
+      for attr_name in op_desc.attr_names():
+         attr_dict[attr_name] = op_desc.attr(attr_name)
+      all_ops[op_name]['attrs'] = attr_dict
+      all_ops[op_name]['children_node'] = []
+      all_ops[op_name]['input_nodes'] = []
+      all_ops[op_name]['output_nodes'] = []
+    # second pass, create non-leaf nodes, fill 'parent_node', 'children_nodes' of nodes.
+    for variable_name in all_vars:
+      if all_vars[variable_name]['from_node'] == '':
+        continue
+      # some variable's input and output node are the same, we should prevent to show this situation as a cycle
+      from_node_name = all_vars[variable_name]['from_node']
+      for to_node_name in all_vars[variable_name]['to_nodes']:
+        if to_node_name != from_node_name:
+          all_ops[from_node_name]['output_nodes'].append(to_node_name)
+          all_ops[to_node_name]['input_nodes'].append(from_node_name)
+    
+    general_children_dict = collections.defaultdict(set)
+
+    def create_non_leaf_nodes(parent_node_name, child_node_name):
+      if parent_node_name == '/' or parent_node_name == '': # root node
+        parent_node_name = '/'
+      if parent_node_name not in all_ops:
+        all_ops[parent_node_name] = {}
+        all_ops[parent_node_name]['children_node'] = set()
+        all_ops[parent_node_name]['name'] = parent_node_name
+        all_ops[parent_node_name]['attrs'] = {}
+        all_ops[parent_node_name]['input_nodes'] = set()
+        all_ops[parent_node_name]['output_nodes'] = set()
+        all_ops[parent_node_name]['type'] = ''
+        all_ops[parent_node_name]['input_vars'] = set()
+        all_ops[parent_node_name]['output_vars'] = set()
+        all_ops[parent_node_name]['parent_node'] = ''
+
+      all_ops[child_node_name]['parent_node'] = parent_node_name
+      all_ops[parent_node_name]['children_node'].add(child_node_name)
+      general_children_dict[parent_node_name].add(child_node_name)
+      general_children_dict[parent_node_name].update(general_children_dict[child_node_name])
+      if parent_node_name == '/': # root node
+        return
+      else:
+        create_non_leaf_nodes(os.path.dirname(parent_node_name), parent_node_name)
+
+    all_op_names = list(all_ops.keys())
+    for op_name in all_op_names:
+      create_non_leaf_nodes(os.path.dirname(op_name), op_name)
+    
+    # fill all non-leaf node's  'output_nodes' 'input_nodes' 'output_vars' 'input_vars'
+    # post-order traverse tree
+    post_order_results = []
+    def post_order_traverse(root):
+      for child in all_ops[root]['children_node']:
+        post_order_traverse(child)
+      nonlocal post_order_results
+      post_order_results.append(root)
+      return
+    post_order_traverse('/')
+
+    for op_name in post_order_results:
+      op = all_ops[op_name]
+      op['children_node'] = list(op['children_node'])
+
+      if op['children_node']:
+        for child_op in op['children_node']:
+          for input_node in all_ops[child_op]['input_nodes']:
+            if input_node in general_children_dict[op_name]:
+              continue
+            else:
+              op['input_nodes'].add(input_node)
+          for output_node in all_ops[child_op]['output_nodes']:
+            if output_node in general_children_dict[op_name]:
+              continue
+            else:
+              op['output_nodes'].add(output_node)
+          for input_var in op_inputvars_dict[child_op]:
+            if all_vars[input_var]['from_node'] not in general_children_dict[op_name]:
+              op['input_vars'].add(input_var)
+          for output_var in op_outputvars_dict[child_op]:
+            for to_node_name in all_vars[output_var]['to_nodes']:
+              if to_node_name not in general_children_dict[op_name]:
+                op['output_vars'].add(output_var)
+        op['input_nodes'] = list(op['input_nodes'])
+        op['output_nodes'] = list(op['output_nodes'])
+        op_inputvars_dict[op_name] = list(op['input_vars'])
+        op_outputvars_dict[op_name] = list(op['output_vars'])
+        op['input_vars'] = {'X': list(op['input_vars'])}
+        op['output_vars'] = {'Y': list(op['output_vars'])}
+  
+  final_data = {
+    'version': _graph_version,
+    'nodes': list(all_ops.values()),
+    'vars': list(all_vars.values())
+  }  
+  return final_data
+
+
+print(json.dumps(analyse_model(open('../../../test_output/model.pdmodel','rb').read()), indent=2))
+
+
+    
+    
+
