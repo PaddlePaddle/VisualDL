@@ -23,6 +23,7 @@ from visualdl import LogReader
 from visualdl.server import lib
 from visualdl.server.log import logger
 from visualdl.python.cache import MemCache
+from visualdl.reader.graph_reader import GraphReader
 
 
 error_retry_times = 3
@@ -63,8 +64,11 @@ def try_call(function, *args, **kwargs):
 class Api(object):
     def __init__(self, logdir, model, cache_timeout):
         self._reader = LogReader(logdir)
+        self._graph_reader = GraphReader(logdir)
+        self._graph_reader.set_displayname(self._reader)
         if model:
             self._reader.model = model
+            self._graph_reader.walks['manual_input_model'] = model
             self.model_name = os.path.basename(model)
         else:
             self.model_name = ''
@@ -78,6 +82,10 @@ class Api(object):
 
     def _get_with_retry(self, key, func, *args, **kwargs):
         return self._cache(key, try_call, func, self._reader, *args, **kwargs)
+    
+    def _get_with_reader(self, key, func, reader, *args, **kwargs):
+        return self._cache(key, func, reader, *args, **kwargs)
+
 
     @result()
     def components(self):
@@ -86,6 +94,10 @@ class Api(object):
     @result()
     def runs(self):
         return self._get('data/runs', lib.get_runs)
+
+    @result()
+    def graph_runs(self):
+        return self._get_with_reader('data/graph_runs', lib.get_graph_runs, self._graph_reader)
 
     @result()
     def tags(self):
@@ -241,9 +253,9 @@ class Api(object):
         'application/octet-stream',
         lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None
     )
-    def graph_graph(self):
-        key = os.path.join('data/plugin/graphs/graph')
-        return self._get_with_retry(key, lib.get_graph)
+    def graph_graph(self, run):
+        key = os.path.join('data/plugin/graphs/graph', run)
+        return self._get_with_reader(key, lib.get_graph, self._graph_reader, run)
 
 
 def create_api_call(logdir, model, cache_timeout):
@@ -251,6 +263,7 @@ def create_api_call(logdir, model, cache_timeout):
     routes = {
         'components': (api.components, []),
         'runs': (api.runs, []),
+        'graph_runs': (api.graph_runs, []),
         'tags': (api.tags, []),
         'logs': (api.logs, []),
         'scalar/tags': (api.scalar_tags, []),
@@ -274,7 +287,7 @@ def create_api_call(logdir, model, cache_timeout):
         'embedding/tensor': (api.embedding_tensor, ['name']),
         'embedding/metadata': (api.embedding_metadata, ['name']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
-        'graph/graph': (api.graph_graph, []),
+        'graph/graph': (api.graph_graph, ['run']),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'roc-curve/list': (api.roc_curves_roc_curve, ['run', 'tag']),
         'pr-curve/steps': (api.pr_curves_steps, ['run']),

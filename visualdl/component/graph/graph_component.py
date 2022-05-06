@@ -1,3 +1,18 @@
+# Copyright (c) 2022 VisualDL Authors. All Rights Reserve.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =======================================================================
+
 import os.path
 import collections
 import json
@@ -12,6 +27,7 @@ def analyse_model(model_pb):
   program_desc = ProgramDesc(model_pb)
   all_ops = {}
   all_vars = {}
+  all_edges = {}
   op_inputvars_dict = collections.defaultdict(list)
   op_outputvars_dict = collections.defaultdict(list)
   for i in range(program_desc.num_blocks()):
@@ -77,6 +93,8 @@ def analyse_model(model_pb):
       all_ops[op_name]['children_node'] = []
       all_ops[op_name]['input_nodes'] = []
       all_ops[op_name]['output_nodes'] = []
+      all_ops[op_name]['edge_input_nodes'] = []
+      all_ops[op_name]['edge_output_nodes'] = []
     # second pass, create non-leaf nodes, fill 'parent_node', 'children_nodes' of nodes.
     for variable_name in all_vars:
       if all_vars[variable_name]['from_node'] == '':
@@ -104,6 +122,8 @@ def analyse_model(model_pb):
         all_ops[parent_node_name]['input_vars'] = set()
         all_ops[parent_node_name]['output_vars'] = set()
         all_ops[parent_node_name]['parent_node'] = ''
+        all_ops[parent_node_name]['edge_input_nodes'] = []
+        all_ops[parent_node_name]['edge_output_nodes'] = []
 
       all_ops[child_node_name]['parent_node'] = parent_node_name
       all_ops[parent_node_name]['children_node'].add(child_node_name)
@@ -113,6 +133,77 @@ def analyse_model(model_pb):
         return
       else:
         create_non_leaf_nodes(os.path.dirname(parent_node_name), parent_node_name)
+
+    def construct_edges(var_name):
+      '''
+      Construct path edges from var's from_node to to_nodes.
+      Algorithm:
+        1. Judge if src_node and dst_node have the same parent node, if yes, link them directly
+        and fill information in all_edges, return.
+        2. Find the closest common ancestor, repeat link node and its parent until reach the common ancestor.
+        Every time construct a new edge, fill information in all_edges.
+      '''
+      from_node = all_vars[var_name]['from_node']
+      to_nodes = all_vars[var_name]['to_nodes']
+      def _construct_edge(src_node, dst_node):
+        if all_ops[src_node]['parent_node'] == all_ops[dst_node]['parent_node']:
+          if (src_node, dst_node) not in all_edges:
+            all_edges[(src_node, dst_node)] = {
+              'from_node': src_node,
+              'to_node': dst_node,
+              'vars': {var_name},
+              'label': ''
+            }
+          else:
+            all_edges[(src_node, dst_node)]['vars'].add(var_name)
+        else:
+          common_ancestor = os.path.commonpath([src_node, dst_node])
+          src_base_node = src_node
+          while True:
+            parent_node = all_ops[src_base_node]['parent_node']
+            if parent_node == common_ancestor:
+              break
+            if (src_base_node, parent_node) not in all_edges:
+              all_edges[(src_base_node, parent_node)] = {
+              'from_node': src_base_node,
+              'to_node': parent_node,
+              'vars': {var_name},
+              'label': ''
+            }
+            else:
+              all_edges[(src_base_node, parent_node)]['vars'].add(var_name)
+            src_base_node = parent_node
+          dst_base_node = dst_node
+          while True:
+            parent_node = all_ops[dst_base_node]['parent_node']
+            if parent_node == common_ancestor:
+              break
+            if (parent_node, dst_base_node) not in all_edges:
+              all_edges[(parent_node, dst_base_node)] = {
+              'from_node': parent_node,
+              'to_node': dst_base_node,
+              'vars': {var_name},
+              'label': ''
+            }
+            else:
+              all_edges[(parent_node, dst_base_node)]['vars'].add(var_name)
+            dst_base_node = parent_node
+          if (src_base_node, dst_base_node) not in all_edges:
+            all_edges[(src_base_node, dst_base_node)] = {
+              'from_node': src_base_node,
+              'to_node': dst_base_node,
+              'vars': {var_name},
+              'label': ''
+            }
+          else:
+            all_edges[(src_base_node, dst_base_node)]['vars'].add(var_name)
+        return 
+      if from_node and to_nodes:
+        for to_node in to_nodes:
+          if from_node == to_node:
+            continue
+          _construct_edge(from_node, to_node)  
+            
 
     all_op_names = list(all_ops.keys())
     for op_name in all_op_names:
@@ -158,11 +249,25 @@ def analyse_model(model_pb):
         op_outputvars_dict[op_name] = list(op['output_vars'])
         op['input_vars'] = {'X': list(op['input_vars'])}
         op['output_vars'] = {'Y': list(op['output_vars'])}
+
+  # Supplement edges and 'edge_input_nodes', 'edge_output_nodes' in op to help draw in frontend
+  for var_name in all_vars.keys():
+    construct_edges(var_name)
   
+  for src_node, to_node in all_edges.keys():
+    all_ops[src_node]['edge_output_nodes'].append(to_node)
+    all_ops[to_node]['edge_input_nodes'].append(src_node)
+    all_edges[(src_node, to_node)]['vars'] = list(all_edges[(src_node, to_node)]['vars'])
+    if len(all_edges[(src_node, to_node)]['vars']) > 1:
+      all_edges[(src_node, to_node)]['label'] = str(len(all_edges[(src_node, to_node)]['vars'])) + ' tensors'
+    elif len(all_edges[(src_node, to_node)]['vars']) == 1:
+      all_edges[(src_node, to_node)]['label'] = str(all_vars[all_edges[(src_node, to_node)]['vars'][0]]['shape'])
+
   final_data = {
     'version': _graph_version,
     'nodes': list(all_ops.values()),
-    'vars': list(all_vars.values())
+    'vars': list(all_vars.values()),
+    'edges': list(all_edges.values())
   }  
   return final_data
 

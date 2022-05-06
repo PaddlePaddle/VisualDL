@@ -23,6 +23,8 @@ from visualdl.utils.figure_util import figure_to_image
 from visualdl.utils.md5_util import md5
 from visualdl.component.base_component import scalar, image, embedding, audio, \
     histogram, pr_curve, roc_curve, meta_data, text, hparam
+from visualdl.component.graph import translate_graph
+from visualdl.io import bfile
 
 
 class DummyFileWriter(object):
@@ -566,6 +568,33 @@ class LogWriter(object):
                 num_thresholds=num_thresholds,
                 weights=weights
                 ))
+    
+    def add_graph(self, model, input_spec, verbose=False):
+        """
+        Add a model graph to vdl graph file.
+        Args:
+            model (paddle.nn.Layer): Model to draw.
+            input_spec (list[list]): Describes the input shape of the saved model's forward arguments, e.g. [[1, 3, 256, 256]].
+            verbose (bool): Whether to print graph structure in console.
+        Example:
+            with LogWriter(logdir="./log/graph_test/train") as writer:
+                writer.add_graph(model=net,
+                            input_spec=[[1,3,256,256]], 
+                            verbose=True)
+        """
+        try:
+            result = translate_graph(model, input_spec, verbose)
+        except Exception as e:
+            print("Failed to save model graph, error: {}".format(e))
+            return
+        graph_file_name = bfile.join(
+                self.logdir,
+                "vdlgraph.%010d.log%s" % (time.time(), self._filename_suffix))
+        writer = bfile.BFile(graph_file_name, "wb")
+        writer.write(result)
+        writer.close()
+
+
 
     def flush(self):
         """Flush all data in cache to disk.

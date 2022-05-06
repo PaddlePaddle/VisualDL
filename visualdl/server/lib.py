@@ -60,6 +60,15 @@ def get_runs(log_reader):
             runs.append(item)
     return runs
 
+def get_graph_runs(graph_reader):
+    runs = []
+    for item in graph_reader.runs():
+        if item in graph_reader.runs2displayname:
+            runs.append(graph_reader.runs2displayname[item])
+        else:
+            runs.append(item)
+    return runs
+
 
 def get_tags(log_reader):
     return log_reader.tags()
@@ -515,11 +524,10 @@ def get_histogram(log_reader, run, tag):
     return results
 
 
-def get_graph(log_reader):
+def get_graph(graph_reader, run):
     result = b""
-    if log_reader.model:
-        with bfile.BFile(log_reader.model, 'rb') as bfp:
-            result = bfp.read_file(log_reader.model)
+    run = graph_reader.displayname2runs[run] if run in graph_reader.displayname2runs else run
+    result = graph_reader.get_graph(run)
     return result
 
 
