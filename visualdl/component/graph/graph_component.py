@@ -37,6 +37,7 @@ def analyse_model(model_pb):
       try:
         var_name = var_desc.name()
         all_vars[var_name] = {}
+        all_vars[var_name]['name'] = var_name
         all_vars[var_name]['shape'] = var_desc.shape()
         all_vars[var_name]['type'] = str(var_desc.type())
         all_vars[var_name]['dtype'] = str(var_desc.dtype())
@@ -52,6 +53,7 @@ def analyse_model(model_pb):
         # feed, fetch var
         var_name = var_desc.name()
         all_vars[var_name] = {}
+        all_vars[var_name]['name'] = var_name
         all_vars[var_name]['shape'] = ''
         all_vars[var_name]['type'] = str(var_desc.type())
         all_vars[var_name]['dtype'] = ''
