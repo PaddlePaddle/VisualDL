@@ -525,7 +525,7 @@ def get_histogram(log_reader, run, tag):
 
 
 def get_graph(graph_reader, run):
-    result = b""
+    result = ""
     run = graph_reader.displayname2runs[run] if run in graph_reader.displayname2runs else run
     result = graph_reader.get_graph(run)
     return result

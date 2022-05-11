@@ -249,10 +249,7 @@ class Api(object):
         key = os.path.join('data/plugin/roc_curves/steps', run)
         return self._get_with_retry(key, lib.get_roc_curve_step, run)
 
-    @result(
-        'application/octet-stream',
-        lambda s: {"Content-Disposition": 'attachment; filename="%s"' % s.model_name} if len(s.model_name) else None
-    )
+    @result()
     def graph_graph(self, run):
         key = os.path.join('data/plugin/graphs/graph', run)
         return self._get_with_reader(key, lib.get_graph, self._graph_reader, run)

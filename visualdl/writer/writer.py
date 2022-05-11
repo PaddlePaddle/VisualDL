@@ -590,8 +590,8 @@ class LogWriter(object):
         graph_file_name = bfile.join(
                 self.logdir,
                 "vdlgraph.%010d.log%s" % (time.time(), self._filename_suffix))
-        writer = bfile.BFile(graph_file_name, "wb")
-        writer.write(result.encode())
+        writer = bfile.BFile(graph_file_name, "w")
+        writer.write(result)
         writer.close()
 
 

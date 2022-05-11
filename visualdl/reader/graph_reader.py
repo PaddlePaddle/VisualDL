@@ -99,7 +99,8 @@ class GraphReader(object):
                 data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
             if 'pdmodel' in self.walks[run]:
                 data = analyse_model(data)
-                data = json.dumps(data).encode()
+            else:
+                data = json.loads(data.decode())
             return data
     
     def set_displayname(self, log_reader):
