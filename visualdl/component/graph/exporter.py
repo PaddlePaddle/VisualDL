@@ -24,6 +24,8 @@ def translate_graph(model, input_spec, verbose=True):
   import paddle
   with tempfile.TemporaryDirectory() as tmp:
     create_opname_scope(model)
+    input_spec = [paddle.static.InputSpec(
+        shape=shape) for shape in input_spec]
     paddle.jit.save(model, os.path.join(tmp, 'temp'), input_spec)
     model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
     result = analyse_model(model_data)

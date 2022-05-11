@@ -274,7 +274,7 @@ def analyse_model(model_pb):
   return final_data
 
 
-print(json.dumps(analyse_model(open('../../../test_output/model.pdmodel','rb').read()), indent=2))
+# print(json.dumps(analyse_model(open('../../../test_output/model.pdmodel','rb').read()), indent=2))
 
 
     
