@@ -574,7 +574,7 @@ class LogWriter(object):
         Add a model graph to vdl graph file.
         Args:
             model (paddle.nn.Layer): Model to draw.
-            input_spec (list[list]): Describes the input shape of the saved model's forward arguments, e.g. [[1, 3, 256, 256]].
+            input_spec (list[paddle.static.InputSpec]): Describes the input of the saved model's forward arguments.
             verbose (bool): Whether to print graph structure in console.
         Example:
             with LogWriter(logdir="./log/graph_test/train") as writer:
