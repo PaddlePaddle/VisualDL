@@ -45,9 +45,16 @@ def result(mimetype='application/json', headers=None):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
-            data = func(self, *args, **kwargs)
+            data = None
+            status = 0
+            msg = ''
+            try:
+                data = func(self, *args, **kwargs)
+            except Exception as e:
+                msg = '{}'.format(e)
+                status = -1
             if mimetype == 'application/json':
-                data = json.dumps(gen_result(data))
+                data = json.dumps(gen_result(data, status, msg))
             if callable(headers):
                 headers_output = headers(self)
             else:
