@@ -13,9 +13,12 @@
 # limitations under the License.
 # =======================================================================
 import json
+import os
+import tempfile
 
 from visualdl.io import bfile
 from visualdl.component.graph.graph_component import analyse_model
+
 
 def is_VDLGraph_file(path):
     """Determine whether it is a VDL graph file according to the file name.
@@ -46,21 +49,25 @@ class GraphReader(object):
         else:
             self.dir = logdir
 
-        self.readers = {}
-        self.walks = None
+        self.walks = {}
         self.displayname2runs = {}
         self.runs2displayname = {}
         self.graph_buffer = {}
+        self.walks_buffer = {}
+        self.tempfile = None
 
     @property
     def logdir(self):
         return self.dir
 
     def get_all_walk(self):
-        self.walks = {}
+        flush_walks = {}
+        if 'manual_input_model' in self.walks:
+            flush_walks['manual_input_model'] = [self.walks['manual_input_model']]
         for dir in self.dir:
             for root, dirs, files in bfile.walk(dir):
-                self.walks.update({root: files})
+                flush_walks.update({root: files})
+        return flush_walks
 
     def graphs(self, update=False):
         """Get graph files.
@@ -71,11 +78,11 @@ class GraphReader(object):
             walks: A dict like {"exp1": "vdlgraph.1587375595.log",
                                 "exp2": "vdlgraph.1587375685.log"}
         """
-        if self.walks is None or update is True:
-            self.get_all_walk()
+        if not self.walks or update is True:
+            flush_walks = self.get_all_walk()
 
             walks_temp = {}
-            for run, filenames in self.walks.items():
+            for run, filenames in flush_walks.items():
                 tags_temp = [filename for filename in filenames if is_VDLGraph_file(filename)]
                 tags_temp.sort(reverse=True)
                 if len(tags_temp) > 0:
@@ -90,18 +97,22 @@ class GraphReader(object):
     
     def get_graph(self, run):
       if run in self.walks:
-        if run in self.graph_buffer:
-          return self.graph_buffer[run]
+        if run in self.walks_buffer:
+            if self.walks[run] == self.walks_buffer[run]:
+                return self.graph_buffer[run]
+            else:
+                self.walks_buffer[run] = self.walks[run]
+            
+        if run == 'manual_input_model':
+            data = bfile.BFile(self.walks[run], 'rb').read()
         else:
-            if run == 'manual_input_model':
-                data = bfile.BFile(self.walks[run], 'rb').read()
-            else:
-                data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
-            if 'pdmodel' in self.walks[run]:
-                data = analyse_model(data)
-            else:
-                data = json.loads(data.decode())
-            return data
+            data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
+        if 'pdmodel' in self.walks[run]:
+            data = analyse_model(data)
+        else:
+            data = json.loads(data.decode())
+        self.graph_buffer[run] = data
+        return data
     
     def set_displayname(self, log_reader):
       self.displayname2runs = log_reader.name2tags
@@ -112,3 +123,35 @@ class GraphReader(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
+    def __del__(self):
+        if self.tempfile:
+            os.unlink(self.tempfile.name)
+
+    def set_input_graph(self, content, ext='pdmodel'):
+        if isinstance(content, str):
+            self.walks['manual_input_model'] = content
+        else:
+            if ext == 'pdmodel':
+                data = analyse_model(content)
+                self.graph_buffer['manual_input_model'] = data
+                temp = tempfile.NamedTemporaryFile(suffix='.pdmodel', delete=False)
+                temp.write(data.encode())
+                temp.close()
+                
+            elif ext == 'log':
+                self.graph_buffer['manual_input_model'] = json.loads(content.decode())
+                temp = tempfile.NamedTemporaryFile(suffix='.log', prefix='vdlgraph.', delete=False)
+                temp.write(content)
+                temp.close()
+                
+            else:
+                return
+            
+            if self.tempfile:
+                    os.unlink(self.tempfile.name)
+            self.tempfile = temp
+            self.walks['manual_input_model'] = temp.name
+
+
+

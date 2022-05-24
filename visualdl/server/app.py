@@ -117,7 +117,7 @@ def create_app(args):
                 response.set_cookie('vdl_lng', get_locale(), path='/', samesite='Strict', secure=False, httponly=False)
             return response
 
-    @app.route(api_path + '/<path:method>')
+    @app.route(api_path + '/<path:method>', methods=["GET", "POST"])
     def serve_api(method):
         data, mimetype, headers = api_call(method, request.args)
         return make_response(Response(data, mimetype=mimetype, headers=headers))
