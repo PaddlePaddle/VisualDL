@@ -136,7 +136,7 @@ class GraphReader(object):
                 data = analyse_model(content)
                 self.graph_buffer['manual_input_model'] = data
                 temp = tempfile.NamedTemporaryFile(suffix='.pdmodel', delete=False)
-                temp.write(data.encode())
+                temp.write(json.dumps(data).encode())
                 temp.close()
                 
             elif ext == 'log':
