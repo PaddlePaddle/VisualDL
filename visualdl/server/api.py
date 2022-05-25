@@ -271,8 +271,8 @@ class Api(object):
             file_handle = request.files['file']
             if 'pdmodel' in file_handle.filename:
                 self._graph_reader.set_input_graph(file_handle.stream.read(), 'pdmodel')
-            elif 'log' in file_handle.filename:
-                self._graph_reader.set_input_graph(file_handle.stream.read(), 'log')
+            elif 'vdlgraph' in file_handle.filename:
+                self._graph_reader.set_input_graph(file_handle.stream.read(), 'vdlgraph')
 
 
 def create_api_call(logdir, model, cache_timeout):
