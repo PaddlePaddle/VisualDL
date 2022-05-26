@@ -55,6 +55,15 @@ type ImageChartProps = {
 
 const ImageChart: FunctionComponent<ImageChartProps> = ({brightness, contrast, fit, ...props}) => {
     const renderContent = useCallback(
+        // {
+        //     data: Blob {size: 48406, type: ''}
+        //     filename: null
+        //     type: "/__snowpack__/link/packages/mock/assets/image/1.jpeg"
+        //     [[Prototype]]: Object
+        //     error: undefined
+        //     loading: false
+        //     [[Prototype]]: Object
+        // }
         (props: SampleEntityProps) => <StyledImage {...props} brightness={brightness} contrast={contrast} fit={fit} />,
         [brightness, contrast, fit]
     );

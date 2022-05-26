@@ -141,7 +141,7 @@ const Aside: FunctionComponent<AsideProps & WithStyled> = ({
     const mousedown = useCallback(() => {
         resizing.current = true;
     }, []);
-
+    // 此处函数是根据左右两栏，来设置可以移动的极限距离
     const mousemove = useCallback(
         (event: MouseEvent) => {
             if (ref.current && resizing.current) {
@@ -149,10 +149,12 @@ const Aside: FunctionComponent<AsideProps & WithStyled> = ({
                 const {left, right} = ref.current.getBoundingClientRect();
                 let w = 0;
                 if (resizable === 'left') {
+                    // range.current.min 最小距离，right - clientX 最大距离 取两者的最大值
                     w = Math.max(range.current.min ?? 0, right - clientX);
                 } else if (resizable === 'right') {
                     w = Math.max(range.current.min ?? 0, clientX - left);
                 }
+                // 存在已经设置的最大距离 不能超过可视区域的一半
                 w = Math.min(range.current.max ?? document.body.clientWidth / 2, w);
                 setSideWidth(w);
             }
@@ -165,6 +167,7 @@ const Aside: FunctionComponent<AsideProps & WithStyled> = ({
         if (ref.current) {
             onResized?.(ref.current.getBoundingClientRect().width);
         }
+        // 出发传入的的onResizedsh
     }, [onResized]);
 
     useLayoutEffect(() => {

@@ -124,6 +124,7 @@ const ChartPage = <T extends Item>({
     }, [searchValue]);
 
     const groupedItems = useMemo(
+        // ，根据label标签排序，根据label标签重新分组
         () =>
             Object.entries(groupBy<T>(items ?? [], item => item.label.split('/')[0])).sort(([a], [b]) => {
                 const ua = a.toUpperCase();
@@ -138,6 +139,8 @@ const ChartPage = <T extends Item>({
             }),
         [items]
     );
+    console.log(groupedItems);
+    
 
     const total = useMemo(() => Math.ceil(matchedTags.length / pageSize), [matchedTags]);
 
@@ -147,7 +150,9 @@ const ChartPage = <T extends Item>({
                 {loading ? (
                     loader
                 ) : charts.length ? (
+                    // 列表
                     charts.map((item, j) => {
+                        {/*  这一块是E charts 图表区域 */}
                         return <React.Fragment key={item.id || item.label}>{renderChart?.(item, j)}</React.Fragment>;
                     })
                 ) : (
@@ -170,20 +175,28 @@ const ChartPage = <T extends Item>({
 
     const content = useMemo(() => {
         if (loading) {
+            // loading时候展示的charts
             return Array.from({length: 3}).map((_, index) => (
+                //  折叠框
                 <ChartCollapse key={index} title={<ChartCollapseTitleLoader />} opened={!index}>
                     {renderCharts([])}
                 </ChartCollapse>
             ));
+        // return <React.Fragment>
+        //     <div>1</div>
+        // </React.Fragment>
         }
         if (searchValue) {
+            // 搜索之后展示的charts
             return (
                 <ChartCollapse title={t('common:search-result')} total={matchedTags.length}>
                     {renderCharts(pageMatchedTags, true)}
+                    {/* 搜索页签 */}
                     {pageMatchedTags.length ? <StyledPagination page={page} total={total} onChange={setPage} /> : null}
                 </ChartCollapse>
             );
         }
+        // 有数据的时候展示的
         if (groupedItems.length) {
             return groupedItems.map((groupedItem, i) => (
                 <ChartCollapse
@@ -197,6 +210,7 @@ const ChartPage = <T extends Item>({
             ));
         }
         return (
+            // 没有数据之后展示的空页面
             <Empty height={`calc(100vh - ${headerHeight} - ${rem(96)})`}>
                 <Trans i18nKey="common:unselected-empty">
                     Nothing selected.
@@ -208,6 +222,7 @@ const ChartPage = <T extends Item>({
     }, [groupedItems, loading, matchedTags.length, page, pageMatchedTags, searchValue, t, total, renderCharts]);
 
     return (
+        // 搜索框
         <div className={className}>
             <Search>
                 <SearchInput

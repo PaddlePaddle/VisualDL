@@ -53,9 +53,10 @@ const Scalar: FunctionComponent = () => {
     const {t} = useTranslation(['scalar', 'common']);
     const query = useQuery();
 
-    const [running, setRunning] = useState(true);
+    const [running, setRunning] = useState(true); // 是否运行中
 
     const {runs, tags, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
+    // runs 为 运行中的数据
 
     const [smoothingFromLocalStorage, setSmoothingFromLocalStorage] = useLocalStorage('scalar_smoothing');
     const parsedSmoothing = useMemo(() => {
@@ -64,21 +65,22 @@ const Scalar: FunctionComponent = () => {
         }
         return parseSmoothing(smoothingFromLocalStorage);
     }, [query.smoothing, smoothingFromLocalStorage]);
-    const [smoothing, setSmoothing] = useState(parsedSmoothing);
+    const [smoothing, setSmoothing] = useState(parsedSmoothing); // 平滑度
     useEffect(() => setSmoothingFromLocalStorage(String(smoothing)), [smoothing, setSmoothingFromLocalStorage]);
 
-    const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step);
+    const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step); // x轴三个值
 
-    const [tooltipSorting, setTooltipSorting] = useState<SortingMethod>(toolTipSortingValues[0]);
+    const [tooltipSorting, setTooltipSorting] = useState<SortingMethod>(toolTipSortingValues[0]);  // 排序值
 
-    const [ignoreOutliers, setIgnoreOutliers] = useState(false);
+    const [ignoreOutliers, setIgnoreOutliers] = useState(false);  // 是否忽略极端值
 
-    const [smoothedDataOnly, setSmoothedDataOnly] = useState(false);
+    const [smoothedDataOnly, setSmoothedDataOnly] = useState(false); // 是否显示平滑后的数据
 
-    const [showMostValue, setShowMostValue] = useState(false);
+    const [showMostValue, setShowMostValue] = useState(false); // 是否显示最值
 
     const aside = useMemo(
         () => (
+            // 选择数据流 搜索框 和 全选
             <RunAside
                 runs={runs}
                 selectedRuns={selectedRuns}
@@ -88,16 +90,19 @@ const Scalar: FunctionComponent = () => {
                 loading={loading}
             >
                 <AsideSection>
+                    {/* 第一子项 */}
                     <Field>
                         <Checkbox checked={ignoreOutliers} onChange={setIgnoreOutliers}>
                             {t('scalar:ignore-outliers')}
                         </Checkbox>
                     </Field>
+                    {/* 第二子项 */}
                     <Field>
                         <Checkbox checked={showMostValue} onChange={setShowMostValue}>
                             {t('scalar:show-most-value')}
                         </Checkbox>
                     </Field>
+                    {/* 第三子项 */}
                     <TooltipSortingDiv>
                         <span>{t('scalar:tooltip-sorting')}</span>
                         <Select
@@ -122,6 +127,7 @@ const Scalar: FunctionComponent = () => {
                 </AsideSection>
                 <AsideSection>
                     <Field label={t('scalar:x-axis')}>
+                        {/* X轴选择 */}
                         <TimeModeSelect value={xAxis} onChange={setXAxis} />
                     </Field>
                 </AsideSection>
@@ -142,14 +148,14 @@ const Scalar: FunctionComponent = () => {
             xAxis
         ]
     );
-
+    // scalar Chart图形组件
     const renderChart = useCallback<RenderChart<Tag>>(
         ({label, runs}) => (
             <ScalarChart
                 runs={runs}
                 tag={label}
-                smoothing={smoothing}
-                xAxis={xAxis}
+                smoothing={smoothing} 
+                xAxis={xAxis} 
                 sortingMethod={tooltipSorting}
                 outlier={ignoreOutliers}
                 smoothedOnly={smoothedDataOnly}
@@ -162,11 +168,14 @@ const Scalar: FunctionComponent = () => {
 
     return (
         <>
+            {/* 作用未知，删除后页面无明显变化 */}
             <Title>{t('common:scalar')}</Title>
+            {/* content中右侧包含了高级搜索器 */}
             <Content aside={aside}>
                 {!loading && !runs.length ? (
                     <Error />
                 ) : (
+                    // <div>1</div>
                     <ChartPage items={tags} renderChart={renderChart} loader={<ChartLoader />} loading={loading} />
                 )}
             </Content>

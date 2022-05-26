@@ -16,6 +16,8 @@
 
 export const nearestPoint = (data: number[][][], recall: number): number[][][] => {
     return data.map(series => {
+        console.log('nearestPointSeries', series);  
+        // [0.3333333432674408, 1, 75, 150, 0, 0, 0.02]
         let delta = Number.POSITIVE_INFINITY;
         let nearestRecall = 0;
         for (let i = 0; i < series.length; i++) {
@@ -30,5 +32,6 @@ export const nearestPoint = (data: number[][][], recall: number): number[][][] =
             }
         }
         return series.filter(s => s[1] === nearestRecall);
+        // 
     });
 };

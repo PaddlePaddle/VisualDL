@@ -53,6 +53,7 @@ type PropertyProps = NameValues<ArgumentType | PropertyType> & {
 };
 
 const Property: FunctionComponent<PropertyProps> = ({name, values, expand, showNodeDocumentation}) => {
+    // debugger
     return (
         <Wrapper>
             <label className="property-name" title={name}>

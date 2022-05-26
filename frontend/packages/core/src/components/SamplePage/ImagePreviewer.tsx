@@ -162,6 +162,7 @@ const ImagePreviewer: FunctionComponent<ImagePreviewerProps> = ({
     const [url, setUrl] = useState('');
 
     // use useLayoutEffect hook to prevent image render after url revoked
+    // 下载地址的创建
     useLayoutEffect(() => {
         if (data) {
             let objectUrl: string | null = null;
@@ -184,6 +185,7 @@ const ImagePreviewer: FunctionComponent<ImagePreviewerProps> = ({
             img.onload = () => {
                 const rect = container.current?.getBoundingClientRect();
                 if (rect) {
+                    // img.naturalWidth /img.naturalHeight  直接获取图片的原始宽高
                     const r = rect.width / rect.height;
                     const ir = img.naturalWidth / img.naturalHeight;
                     if (r >= ir && img.naturalHeight > rect.height * 0.9) {

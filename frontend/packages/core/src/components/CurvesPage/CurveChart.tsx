@@ -92,7 +92,8 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, ru
         !!running,
         (...urls) => cycleFetcher(urls)
     );
-
+    console.log('dataset', dataset, runs);
+    
     const [maximized, setMaximized] = useState<boolean>(false);
 
     const selectedData = useMemo<[number, number, number[][]][]>(
@@ -110,10 +111,15 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, ru
                     []
                 ];
                 return [wallTime, step, zip(...item) as number[][]];
+                // _.zip(['fred', 'barney'], [30, 40], [true, false]);
+                // => [['fred', 30, true], ['barney', 40, false]]
+                // 直接传入横转列
             }),
         [dataset, runs]
     );
-
+    console.log('selectedData', selectedData);
+    
+    // 处理为 E charts 所需要的数据
     const data = useMemo(
         () =>
             selectedData.map((item, i) => {
@@ -140,6 +146,7 @@ const PRCurveChart: FunctionComponent<PRCurveChartProps> = ({type, runs, tag, ru
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const series = Array.isArray(params) ? params[0].data : params.data;
+            // nearestPoint 处理成hover tooltip的数据
             const points = nearestPoint(
                 selectedData.map(s => s[2]),
                 series[1]

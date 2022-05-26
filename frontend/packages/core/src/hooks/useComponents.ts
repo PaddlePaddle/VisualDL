@@ -64,7 +64,11 @@ const useAvailableComponents = () => {
         };
     }, [mutate]);
 
-    const activeComponentIdArray: string[] = useMemo(() => data?.map(item => navMap[item]) ?? [], [data]);
+    const activeComponentIdArray: string[] = useMemo(() => {
+        console.log('datasss',data);
+        
+       return data?.map(item => navMap[item]) ?? []
+    }, [data]);
 
     const components = useMemo(() => {
         const iterator = (pages: Route[], parent?: Route) => {

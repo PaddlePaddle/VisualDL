@@ -84,6 +84,7 @@ const Argument: FunctionComponent<ArgumentProps> = ({value, expand, showNodeDocu
 
     const expandable = useMemo(() => {
         const argument = value as ArgumentType;
+        // debugger
         return !!(argument.children && argument.children.length);
     }, [value]);
 
@@ -96,7 +97,7 @@ const Argument: FunctionComponent<ArgumentProps> = ({value, expand, showNodeDocu
                             {value.name}: <b>{value.value}</b>
                         </>
                     ) : (
-                        value.value.split('\n').map((line, index) => (
+                        new String(value.value).split('\n').map((line, index) => (
                             <React.Fragment key={index}>
                                 {index !== 0 && <br />}
                                 {line}

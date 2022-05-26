@@ -108,6 +108,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const series: number[] = Array.isArray(params) ? params[0].data : params.data;
             const value: number = (Array.isArray(params) ? params[0].axisValue : params.axisValue) as number;
+            // series data每项的值[1511842190540, 562, 0.9800000190734864, 0.9546147558959003, 44835]0: 15118421905401: 5622: 0.98000001907348643: 0.95461475589590034: 44835]
+            // ， 每项的axisValue
             return renderToStaticMarkup(
                 <TooltipTable run={t('common:runs')} {...getTooltipTableData(series, value)} />
             );
@@ -145,7 +147,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         }),
         [formatter, xAxisType, xRange, yAxisType, yRange]
     );
-
+    // 工具栏
     const toolbox = useMemo(
         () => [
             {
@@ -192,7 +194,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         ],
         [downloadData, t, toggleYAxisType]
     );
-
+    console.log('ScalarChartData', data);
+    
     return (
         <Chart maximized={maximized} {...chartSizeInRem}>
             <Wrapper>
