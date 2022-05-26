@@ -49,8 +49,11 @@ type ContentProps = {
 
 const Content: FunctionComponent<ContentProps & WithStyled> = ({children, aside, leftAside, loading, className}) => (
     <Section className={className}>
+        {/* 暂时未使用到目测是左侧搜索框 */}
         {leftAside && <Aside>{leftAside}</Aside>}
+        {/* 内容存放的地方 */}
         <Article>{children}</Article>
+        {/* 右边高级搜索框 */}
         {aside && <Aside>{aside}</Aside>}
         {loading && <BodyLoading />}
     </Section>

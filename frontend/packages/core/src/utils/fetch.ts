@@ -85,6 +85,8 @@ export function fetcher<T = unknown>(url: string, options?: RequestInit): Promis
 export async function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<BlobResponse | string | T> {
     let res: Response;
     try {
+        console.log('API_URL',API_URL,API_URL + url);
+        
         res = await fetch(API_URL + url, addApiToken(options));
     } catch (e) {
         const t = await logErrorAndReturnT(e);

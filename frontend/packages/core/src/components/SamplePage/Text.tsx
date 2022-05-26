@@ -116,6 +116,7 @@ const TextGrid = styled.div`
 
     > span {
         height: ${rem(40)};
+        max-height: ${rem(40)};
         line-height: 1.857142857;
         padding: ${rem(7)} 0;
     }
@@ -135,20 +136,29 @@ const TextGrid = styled.div`
             background-color: var(--text-chart-tag-background-color);
             padding: 0 ${rem(8)};
             border-radius: ${borderRadius};
+            white-space: nowrap;
             ${transitionProps(['background-color', 'color'])}
         }
     }
-
-    .text {
+    .step-content {
+        height: ${rem(40)};
+        max-height: ${rem(40)};
+        line-height: 1.857142857;
         ${sameBorder()}
         border-left: none;
         border-top-right-radius: ${borderRadius};
         border-bottom-right-radius: ${borderRadius};
-        padding-right: ${rem(20)};
-        ${ellipsis()}
-
-        > * {
-            vertical-align: middle;
+        padding: ${rem(7)} 0;
+        overflow-y: auto;
+        display:flex;
+        .text {
+            height:atuo
+            padding-right: ${rem(20)};
+            white-space: wrap;
+    
+            > * {
+                vertical-align: middle;
+            }
         }
     }
 `;
@@ -177,15 +187,17 @@ const Text: FunctionComponent<TextProps> = ({run, tag, step, wallTime, index}) =
                     {t('common:time-mode.step')} {step}
                 </span>
             </span>
-            <span className="text" title={text ?? ''}>
-                {loading ? (
-                    <ContentLoader viewBox="0 0 640 16" height="16">
-                        <rect x="0" y="0" rx="3" ry="3" width={((index + 1) * 250) % 640} height="16" />
-                    </ContentLoader>
-                ) : (
-                    error ?? text
-                )}
-            </span>
+            <div className = 'step-content'>
+                <span className="text" title={text ?? ''}>
+                    {loading ? (
+                        <ContentLoader viewBox="0 0 640 16" height="16">
+                            <rect x="0" y="0" rx="3" ry="3" width={((index + 1) * 250) % 640} height="16" />
+                        </ContentLoader>
+                    ) : (
+                        error ?? text
+                    )}
+                </span>
+            </div>
         </>
     );
 };

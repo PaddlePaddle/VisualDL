@@ -48,7 +48,6 @@ function useRequest<D = unknown, E extends Error = Error>(
 ): Response<D, E> {
     const key = args[0];
     const {data, error, ...other} = useSWR<D, E>(...args);
-
     // loading referrers to first loading
     // if you want to check if there is an active request
     // please use `isValidating` instead
@@ -59,7 +58,7 @@ function useRequest<D = unknown, E extends Error = Error>(
             toast.error(error.message);
         }
     }, [error]);
-
+    console.log('useRequest请求数据', key,loading,data);
     return {data, error, loading, ...other};
 }
 
@@ -121,7 +120,7 @@ function useRunningRequest<D = unknown, E extends Error = Error>(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const {mutate, ...others} = (useRequest as any)(...requestArgs);
-
+    console.log('mutate处理前', mutate, others);
     // revalidate immediately when running is set to true
     useEffect(() => {
         if (running) {
@@ -135,7 +134,7 @@ function useRunningRequest<D = unknown, E extends Error = Error>(
             ee.off('refresh', mutate);
         };
     }, [mutate]);
-
+    console.log('mutate处理后', mutate, others);
     return {mutate, ...others};
 }
 

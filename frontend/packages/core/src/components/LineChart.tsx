@@ -53,6 +53,7 @@ export type LineChartRef = {
 
 const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
+        console.log('LineChartData', data);
         const {i18n} = useTranslation();
 
         const {
@@ -83,31 +84,35 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, series, ...defaults} = chart;
-
+            // chart chart.ts 文件中默认的一些东西，
+            console.log('series, data', series, data);
+            
             let chartOptions: EChartOption = defaultsDeep(
                 {
                     title: {
                         text: title ?? ''
                     },
                     xAxis: {
+                        // 是否显示分隔线
                         splitLine: {
                             show: false
                         },
                         splitNumber: 5
                     },
                     yAxis: {
+                        // 是否显示分隔线
                         splitNumber: 4
                     },
                     series: data?.map((item, index) =>
                         defaultsDeep(
                             {
-                                // show symbol if there is only one point
+                                // show symbol if there is only one point  showSymbol控制数据点隐藏或者显示
                                 showSymbol: (item?.data?.length ?? 0) <= 1,
                                 type: 'line'
                             },
                             item,
                             {
-                                lineStyle: {
+                                lineStyle: { // 线条样式
                                     color: color[index % color.length],
                                     width: 1.5
                                 }
@@ -120,6 +125,10 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 theme,
                 defaults
             );
+            console.log(
+                'chartOptions', chartOptions
+            );
+            
             if ((chartOptions?.xAxis as EChartOption.XAxis).type === 'time') {
                 chartOptions = defaultsDeep(
                     {

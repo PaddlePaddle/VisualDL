@@ -67,9 +67,11 @@ export const chartData = ({
             const colorAlt = runs[i].colors[1];
             const xAxisIndex = xAxisMap[xAxis];
             const singlePointIndices: number[] = [];
+            // 只有一个值的时候的就储存进去
             dataset.forEach((d, index) => {
                 if (d[2] != null) {
                     const prevV = index === 0 ? null : dataset[index - 1][2];
+                    // 链表链接上一个的值
                     const nextV = index === dataset.length - 1 ? null : dataset[index + 1][2];
                     if (prevV == null && nextV == null) {
                         singlePointIndices.push(index);
@@ -77,6 +79,7 @@ export const chartData = ({
                 }
             });
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // 非仅展示平滑后数据
             const result: any[] = [
                 {
                     name,
@@ -109,6 +112,7 @@ export const chartData = ({
                     }
                 }
             ];
+            // 非仅展示平滑后数据
             if (!smoothedOnly) {
                 const range = ranges[i];
                 const min = dataset.find(item => item[2] === range?.min);
@@ -138,15 +142,15 @@ export const chartData = ({
                         label: {
                             show: false
                         },
-                        data: [
-                            ...singlePointIndices.map(index => ({
-                                coord: [dataset[index][xAxisIndex], dataset[index][2]],
-                                symbol: 'circle',
-                                symbolSize: 4
-                            })),
-                            ...(min ? [{coord: [min[xAxisIndex], min[2]]}] : []),
-                            ...(max ? [{coord: [max[xAxisIndex], max[2]]}] : [])
-                        ]
+                        // data: [
+                        //     ...singlePointIndices.map(index => ({
+                        //         coord: [dataset[index][xAxisIndex], dataset[index][2]],
+                        //         symbol: 'circle',
+                        //         symbolSize: 4
+                        //     })),
+                        //     ...(min ? [{coord: [min[xAxisIndex], min[2]]}] : []),
+                        //     ...(max ? [{coord: [max[xAxisIndex], max[2]]}] : [])
+                        // ]
                     }
                 });
 
@@ -169,6 +173,7 @@ export const chartData = ({
                         }
                     });
                 }
+                // 上下平滑的值
                 result.push({
                     data: infData,
                     symbolShow: false,

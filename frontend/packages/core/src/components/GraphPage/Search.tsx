@@ -23,6 +23,7 @@ import SearchInput from '~/components/SearchInput';
 import styled from 'styled-components';
 import useSearchValue from '~/hooks/useSearchValue';
 import {useTranslation} from 'react-i18next';
+import {log} from 'numeric';
 
 const SearchField = styled(Field)`
     margin-bottom: ${rem(20)};
@@ -142,33 +143,44 @@ const icons = {
 
 type SearchProps = {
     text?: string;
-    data: SearchResult;
+    data: any[];
     onChange?: (value: string) => unknown;
-    onSelect?: (item: SearchItem) => unknown;
+    onSelect?: (item: theObj) => unknown;
     onActive?: () => unknown;
     onDeactive?: () => unknown;
 };
+interface theObj {
+    [key: string]: any; //动态添加属性
+}
 
 const Search: FunctionComponent<SearchProps> = ({text, data, onChange, onSelect, onActive, onDeactive}) => {
     const {t} = useTranslation(['graph', 'common']);
-
+    console.log('searchResult', data);
     const [search, setSearch] = useState(text ?? '');
     const [searching, setSearching] = useState(false);
-    const [searchResult, setSearchResult] = useState<SearchItem[]>(data.result);
+    // <SearchItem[]>
+    const [searchResult, setSearchResult] = useState<any[]>([]);
     const debouncedSearchText = useSearchValue(search);
     useEffect(() => setSearch(text ?? ''), [text]);
     useEffect(() => {
+        // if (searching) {
+        //     onChange?.(debouncedSearchText);
+        // } else {
+        //     setSearchResult([]);
+        // }
         if (searching) {
-            onChange?.(debouncedSearchText);
-        } else {
-            setSearchResult([]);
+                onChange?.(debouncedSearchText);
         }
     }, [debouncedSearchText, searching, onChange]);
     useEffect(() => {
-        if (data.text === search) {
-            setSearchResult(data.result);
+        // if (data.name === search) {
+        //     setSearchResult(data.);
+        // }
+        if (data) {
+            console.log('SearchResult',data)
+            setSearchResult(data);
         }
-    }, [data, search]);
+    }, [data]);
 
     const focus = useCallback(() => {
         setSearching(true);
@@ -183,14 +195,20 @@ const Search: FunctionComponent<SearchProps> = ({text, data, onChange, onSelect,
     }, [onChange, onDeactive]);
 
     const select = useCallback(
-        (item: SearchItem) => {
-            setSearch(item.name);
+        (item: theObj) => {
+            const name = nodeName(item.name)
+            setSearch(name);
             onSelect?.(item);
             setSearching(false);
             onDeactive?.();
         },
         [onSelect, onDeactive]
     );
+    const nodeName = (path: string) => {
+        let name = path.substring(path.lastIndexOf('/') + 1);
+        return name
+    };
+    console.log('searching,searchResult.length', searching, data.length);
 
     return (
         <>
@@ -202,14 +220,27 @@ const Search: FunctionComponent<SearchProps> = ({text, data, onChange, onSelect,
                 (searchResult.length ? (
                     <Wrapper>
                         <List>
-                            {searchResult.map(item => {
-                                const Icon = icons[item.type];
-                                return (
-                                    <Item key={item.id} onClick={() => select(item)} title={item.name}>
-                                        <Icon />
-                                        <span>{item.name}</span>
-                                    </Item>
-                                );
+                            {searchResult.map((item:theObj) => {
+                                const Icon = icons['node'];
+                                console.log('items',item);
+                                if (search) {
+                                    const name = nodeName(item.name)
+                                    if (name.includes(search)) {
+                                        return (
+                                            <Item key={item.name} onClick={() => select(item)} title={item.name}>
+                                                <Icon />
+                                                <span>{nodeName(item.name)}</span>
+                                            </Item>
+                                        );
+                                    }
+                                } else {
+                                    return (
+                                        <Item key={item.name} onClick={() => select(item)} title={item.name}>
+                                            <Icon />
+                                            <span>{nodeName(item.name)}</span>
+                                        </Item>
+                                    );
+                                }
                             })}
                         </List>
                     </Wrapper>
