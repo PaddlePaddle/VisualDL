@@ -199,31 +199,31 @@ const Graph: FunctionComponent = () => {
     useEffect(() => {
         if (selectedRuns) {
             setLoading(true);
-            // fetcher('/graph/graph' +`?run=${selectedRuns}`).then(res => {
-            //     console.log('resss', res);
+            fetcher('/graph/graph' +`?run=${selectedRuns}`).then(res => {
+                console.log('resss', res);
             
-            //     setModelDatas(res);
-            // setTimeout(() => {
-            //     setLoading(false);
-            // }, 1000);
-            // });
-            if (selectedRuns === runs[0]) {
-                fetcher('/graph/graph2').then(res => {
-                    console.log('resss2', res);
-                    setModelDatas(res);
-                    setTimeout(() => {
-                        setLoading(false);
-                    }, 1000);
-                });
-            } else if (selectedRuns === runs[1]) {
-                fetcher('/graph/graph3').then(res => {
-                    console.log('resss3', res);
-                    setModelDatas(res);
-                    setTimeout(() => {
-                        setLoading(false);
-                    }, 1000);
-                });
-            }
+                setModelDatas(res);
+            setTimeout(() => {
+                setLoading(false);
+            }, 1000);
+            });
+            // if (selectedRuns === runs[0]) {
+            //     fetcher('/graph/graph2').then(res => {
+            //         console.log('resss2', res);
+            //         setModelDatas(res);
+            //         setTimeout(() => {
+            //             setLoading(false);
+            //         }, 1000);
+            //     });
+            // } else if (selectedRuns === runs[1]) {
+            //     fetcher('/graph/graph3').then(res => {
+            //         console.log('resss3', res);
+            //         setModelDatas(res);
+            //         setTimeout(() => {
+            //             setLoading(false);
+            //         }, 1000);
+            //     });
+            // }
         }
     }, [selectedRuns]);
     useEffect(() => {
