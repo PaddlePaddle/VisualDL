@@ -17,6 +17,25 @@ import os.path
 import collections
 import json
 
+# from .utils import attr_type_name
+from paddle.fluid.core import AttrType
+
+attr_type_name = {
+    AttrType.INT : "INT",
+    AttrType.INTS :"INTS",
+    AttrType.LONG :"LONG",
+    AttrType.LONGS :"LONGS",
+    AttrType.FLOAT :"FLOAT",
+    AttrType.FLOATS :"FLOATS",
+    AttrType.STRING :"STRING",
+    AttrType.STRINGS :"STRINGS",
+    AttrType.BOOL :"BOOL",
+    AttrType.BOOLS :"BOOLS",
+    AttrType.BLOCK :"BLOCK",
+    AttrType.BLOCKS :"BLOCKS"
+}
+
+
 _graph_version = '1.0.0'
 
 def analyse_model(model_pb):
@@ -42,6 +61,7 @@ def analyse_model(model_pb):
         all_vars[var_name]['type'] = str(var_desc.type())
         all_vars[var_name]['dtype'] = str(var_desc.dtype())
         all_vars[var_name]['value'] = []
+        all_vars[var_name]['persistable'] = var_desc.persistable()
         attr_dict = {}
         for attr_name in var_desc.attr_names():
           attr_dict[attr_name] = var_desc.attr(attr_name)
@@ -58,6 +78,7 @@ def analyse_model(model_pb):
         all_vars[var_name]['type'] = str(var_desc.type())
         all_vars[var_name]['dtype'] = ''
         all_vars[var_name]['value'] = []
+        all_vars[var_name]['persistable'] = var_desc.persistable()
         attr_dict = {}
         for attr_name in var_desc.attr_names():
           attr_dict[attr_name] = var_desc.attr(attr_name)
@@ -89,9 +110,12 @@ def analyse_model(model_pb):
           all_vars[variable_name]['from_node'] = op_name
 
       attr_dict = {}
+      attr_type_dict = {}
       for attr_name in op_desc.attr_names():
          attr_dict[attr_name] = op_desc.attr(attr_name)
+         attr_type_dict[attr_name] = attr_type_name[op_desc.attr_type(attr_name)]
       all_ops[op_name]['attrs'] = attr_dict
+      all_ops[op_name]['attr_types'] = attr_type_dict
       all_ops[op_name]['children_node'] = []
       all_ops[op_name]['input_nodes'] = []
       all_ops[op_name]['output_nodes'] = []

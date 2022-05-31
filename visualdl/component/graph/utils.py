@@ -2,6 +2,7 @@ from collections import deque
 
 import paddle.nn as nn
 from paddle.fluid.framework import name_scope
+from paddle.fluid.core import AttrType
 
 _name_scope_stack = deque()
 
@@ -9,9 +10,6 @@ def _opname_creation_prehook(layer, inputs):
     global _name_scope_stack
     _name_scope_stack.append(name_scope(layer.full_name()))
     _name_scope_stack[-1].__enter__()
-
-
-
 
 def _opname_creation_posthook(layer, inputs, outputs):
     global _name_scope_stack
@@ -27,4 +25,17 @@ def create_opname_scope(layer: nn.Layer):
     layer.register_forward_post_hook(_opname_creation_posthook)
 
 
-
+attr_type_name = {
+    AttrType.INT : "INT",
+    AttrType.INTS :"INTS",
+    AttrType.LONG :"LONG",
+    AttrType.LONGS :"LONGS",
+    AttrType.FLOAT :"FLOAT",
+    AttrType.FLOATS :"FLOATS",
+    AttrType.STRING :"STRING",
+    AttrType.STRINGS :"STRINGS",
+    AttrType.BOOL :"BOOL",
+    AttrType.BOOLS :"BOOLS",
+    AttrType.BLOCK :"BLOCK",
+    AttrType.BLOCKS :"BLOCKS"
+}
