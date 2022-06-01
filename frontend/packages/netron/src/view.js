@@ -27,7 +27,6 @@ const dagre = require('dagre');
 const grapher = require('netron/src/view-grapher');
 
 const sidebar = require('./sidebar');
-const graphModel = require('../../mock/graph_demo1.js');
 const view = {};
 
 view.View = class {
@@ -284,7 +283,6 @@ view.View = class {
             while (graphElement.lastChild) {
                 graphElement.removeChild(graphElement.lastChild);
             }
-            graph = graphModel.defaultpw
             if (!graph) {
                 return Promise.resolve();
             } else {
