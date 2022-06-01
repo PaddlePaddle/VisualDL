@@ -86,8 +86,9 @@ class Node(dict):
     self.outputs = [Parameter(key, [Argument(name, all_vars[name]) for name in value]) for key, value in node["output_vars"].items()]
     self.chain = []
     self.visible = True 
+    self.is_leaf = node['is_leaf_node']
     super(Node, self).__init__(name=self.name, type=self.type, attributes=self.attributes, inputs=self.inputs,
-                  outputs=self.outputs, chain=self.chain, visible=self.visible)
+                  outputs=self.outputs, chain=self.chain, visible=self.visible, is_leaf=self.is_leaf)
 
 
 class Attribute(dict):

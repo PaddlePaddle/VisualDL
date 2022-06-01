@@ -95,6 +95,7 @@ def analyse_model(model_pb):
       all_ops[op_name]['name'] = op_name
       all_ops[op_name]['type'] = str(op_desc.type())
       all_ops[op_name]['input_vars'] = {}
+      all_ops[op_name]['is_leaf_node'] = True
       for input_name, variable_list in op_desc.inputs().items():
         all_ops[op_name]['input_vars'][input_name] = variable_list
         op_inputvars_dict[op_name].extend(variable_list)
@@ -150,6 +151,7 @@ def analyse_model(model_pb):
         all_ops[parent_node_name]['parent_node'] = ''
         all_ops[parent_node_name]['edge_input_nodes'] = []
         all_ops[parent_node_name]['edge_output_nodes'] = []
+        all_ops[parent_node_name]['is_leaf_node'] = False
 
       all_ops[child_node_name]['parent_node'] = parent_node_name
       all_ops[parent_node_name]['children_node'].add(child_node_name)
