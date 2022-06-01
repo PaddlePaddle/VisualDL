@@ -10,7 +10,10 @@ class Model:
     self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in graph_data['nodes'] }
     self.visible_memory_maps = {node['name']: (True if not node['children_node'] else False) for node in graph_data['nodes']}
 
-  def make_graph(self):
+  def make_graph(self, refresh=False):
+    if refresh == True:
+      self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values() }
+      self.visible_memory_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values()}
     self.current_nodes = {node['name']:node  for node in self.all_nodes.values() if self.visible_maps[node['name']] }
     return Graph(self.current_nodes, self.all_vars)
 
