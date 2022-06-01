@@ -524,10 +524,10 @@ def get_histogram(log_reader, run, tag):
     return results
 
 
-def get_graph(graph_reader, run):
+def get_graph(graph_reader, run, nodeid=None, expand=None):
     result = ""
     run = graph_reader.displayname2runs[run] if run in graph_reader.displayname2runs else run
-    result = graph_reader.get_graph(run)
+    result = graph_reader.get_graph(run, nodeid, expand)
     return result
 
 

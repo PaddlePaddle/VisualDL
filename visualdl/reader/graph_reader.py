@@ -18,6 +18,7 @@ import tempfile
 
 from visualdl.io import bfile
 from visualdl.component.graph.graph_component import analyse_model
+from visualdl.component.graph.netron_graph import Model
 
 
 def is_VDLGraph_file(path):
@@ -95,17 +96,22 @@ class GraphReader(object):
         self.graphs(update=update)
         return list(self.walks.keys())
     
-    def get_graph(self, run):
+    def get_graph(self, run, nodeid=None, expand=None):
       if run in self.walks:
         if run in self.walks_buffer:
             if self.walks[run] == self.walks_buffer[run]:
-                return self.graph_buffer[run]
+                graph_model = self.graph_buffer[run]
+                if nodeid is not None:
+                    graph_model.adjust_visible(nodeid, expand)
+                return graph_model.make_graph()
         
         data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
-        data = json.loads(data.decode())
-        self.graph_buffer[run] = data
+        graph_model = Model(json.loads(data.decode()))
+        self.graph_buffer[run] = graph_model
         self.walks_buffer[run] = self.walks[run]
-        return data
+        if nodeid is not None:
+            graph_model.adjust_visible(nodeid, expand)
+        return graph_model.make_graph()
     
     def set_displayname(self, log_reader):
       self.displayname2runs = log_reader.name2tags
@@ -133,13 +139,13 @@ class GraphReader(object):
             
         if file_type == 'pdmodel':
             data = analyse_model(content)
-            self.graph_buffer['manual_input_model'] = data
+            self.graph_buffer['manual_input_model'] = Model(data)
             temp = tempfile.NamedTemporaryFile(suffix='.pdmodel', delete=False)
             temp.write(json.dumps(data).encode())
             temp.close()
             
         elif file_type == 'vdlgraph':
-            self.graph_buffer['manual_input_model'] = json.loads(content.decode())
+            self.graph_buffer['manual_input_model'] = Model(json.loads(content.decode()))
             temp = tempfile.NamedTemporaryFile(suffix='.log', prefix='vdlgraph.', delete=False)
             temp.write(content)
             temp.close()
