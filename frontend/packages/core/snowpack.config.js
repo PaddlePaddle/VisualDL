@@ -107,7 +107,7 @@ export default {
     ],
     devOptions: {
         hostname: process.env.HOST || 'localhost',
-        port: Number.parseInt(process.env.PORT || 3000, 10)
+        port: Number.parseInt(process.env.PORT || 8634, 10)
     },
     packageOptions: {
         polyfillNode: true,
