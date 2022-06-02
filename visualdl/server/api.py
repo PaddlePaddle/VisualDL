@@ -275,12 +275,16 @@ class Api(object):
                 self._graph_reader.set_input_graph(file_handle.stream.read(), 'vdlgraph')
     
     @result()
-    def graph_manipulate(self, run, nodeid, expand):
+    def graph_manipulate(self, run, nodeid, expand, keep_state):
         if (expand.lower()=='true'):
             expand = True
         else:
             expand = False
-        return lib.get_graph(self._graph_reader, run, nodeid, expand)
+        if (keep_state.lower()=='true'):
+            keep_state = True
+        else:
+            keep_state = False
+        return lib.get_graph(self._graph_reader, run, nodeid, expand, keep_state)
 
 
 def create_api_call(logdir, model, cache_timeout):
@@ -314,7 +318,7 @@ def create_api_call(logdir, model, cache_timeout):
         'histogram/list': (api.histogram_list, ['run', 'tag']),
         'graph/graph': (api.graph_graph, ['run']),
         'graph/upload': (api.graph_upload, []),
-        'graph/manipulate': (api.graph_manipulate, ['run', 'nodeid', 'expand']),
+        'graph/manipulate': (api.graph_manipulate, ['run', 'nodeid', 'expand', 'keep_state']),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'roc-curve/list': (api.roc_curves_roc_curve, ['run', 'tag']),
         'pr-curve/steps': (api.pr_curves_steps, ['run']),

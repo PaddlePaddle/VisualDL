@@ -20,7 +20,8 @@ def _opname_creation_posthook(layer, inputs, outputs):
 def create_opname_scope(layer: nn.Layer):
     layer.register_forward_pre_hook(_opname_creation_prehook)
     for name, sublayer in layer.named_children():
-        sublayer._full_name = '{}[{}]'.format(sublayer.__class__.__name__, name)
+        # sublayer._full_name = '{}[{}]'.format(sublayer.__class__.__name__, name)
+        sublayer._full_name = '{}'.format(sublayer.__class__.__name__)
         create_opname_scope(sublayer)
     layer.register_forward_post_hook(_opname_creation_posthook)
 

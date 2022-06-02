@@ -8,55 +8,45 @@ class Model:
     self.all_vars = {var['name']:var for var in graph_data['vars']}
     self.all_edges = {(edge['from_node'], edge['to_node']): edge for edge in graph_data['edges']}
     self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in graph_data['nodes'] }
-    self.visible_memory_maps = {node['name']: (True if not node['children_node'] else False) for node in graph_data['nodes']}
 
   def make_graph(self, refresh=False):
     if refresh == True:
       self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values() }
-      self.visible_memory_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values()}
-    self.current_nodes = {node['name']:node  for node in self.all_nodes.values() if self.visible_maps[node['name']] }
+    self.current_nodes = {node_name:self.all_nodes[node_name]  for node_name in self.get_current_visible_nodes()}
     return Graph(self.current_nodes, self.all_vars)
 
-  def adjust_visible(self, node_name, expand=True):
+  def get_current_visible_nodes(self):
+    # bfs traversal to get current visible nodes
+    # if one node is visible now, all its children nodes are invisible
+    current_visible_nodes = []
+    travesal_queue = deque()
+    visited_map = defaultdict(bool)
+    travesal_queue.append('/')
+    visited_map['/'] = True
+    while travesal_queue:
+      current_name = travesal_queue.popleft()
+      current_node = self.all_nodes[current_name]
+      if self.visible_maps[current_name] == True:
+        current_visible_nodes.append(current_name)
+      else:
+        for child_name in current_node['children_node']:
+          if visited_map[child_name] == False:
+            travesal_queue.append(child_name)
+            visited_map[child_name] = True
+    return current_visible_nodes
+
+
+
+  def adjust_visible(self, node_name, expand=True, keep_state=True):
     if(expand):
-      visited_map = defaultdict(bool)
-      travesal_stack = deque()
-      visited_map[node_name] = True
-      self.visible_maps[node_name] = False
-      self.visible_memory_maps[node_name] = False
-      current_node = self.all_nodes[node_name]
-      for child_name in current_node['children_node']:
-          if visited_map[child_name] == False:
-            travesal_stack.append(child_name)
-            visited_map[child_name] = True
-      while travesal_stack:
-        current_name = travesal_stack.pop()
-        current_node = self.all_nodes[current_name]
-        self.visible_maps[current_name] = self.visible_memory_maps[current_name]
+      if keep_state:
+        self.visible_maps[node_name] = False
+      else:
+        current_node = self.all_nodes[node_name]
         for child_name in current_node['children_node']:
-          if visited_map[child_name] == False:
-            travesal_stack.append(child_name)
-            visited_map[child_name] = True
+          self.visible_maps[child_name] = True
     else:
-      visited_map = defaultdict(bool)
-      travesal_stack = deque()
-      visited_map[node_name] = True
       self.visible_maps[node_name] = True
-      self.visible_memory_maps[node_name] = True
-      current_node = self.all_nodes[node_name]
-      for child_name in current_node['children_node']:
-          if visited_map[child_name] == False:
-            travesal_stack.append(child_name)
-            visited_map[child_name] = True
-      while travesal_stack:
-        current_name = travesal_stack.pop()
-        current_node = self.all_nodes[current_name]
-        self.visible_memory_maps[current_name] = self.visible_maps[current_name]
-        self.visible_maps[current_name] = False
-        for child_name in current_node['children_node']:
-          if visited_map[child_name] == False:
-            travesal_stack.append(child_name)
-            visited_map[child_name] = True
   
 
 class Graph(dict):
@@ -80,7 +70,7 @@ class Graph(dict):
 class Node(dict):
   def __init__(self, node, all_vars):
     self.name =  node['name']
-    self.type = node['type']
+    self.type = node['type'] if node['is_leaf_node'] else node['type'] + "[Layer]"
     self.attributes = [Attribute(key, value, node['attr_types'][key]) for key, value in node['attrs'].items()]
     self.inputs = [Parameter(key, [Argument(name, all_vars[name]) for name in value]) for key, value in node["input_vars"].items()]
     self.outputs = [Parameter(key, [Argument(name, all_vars[name]) for name in value]) for key, value in node["output_vars"].items()]
