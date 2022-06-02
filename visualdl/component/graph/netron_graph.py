@@ -44,6 +44,8 @@ class Model:
 
   def adjust_visible(self, node_name, expand=True, keep_state=True):
     if(expand):
+      if self.all_nodes[node_name]['is_leaf_node'] == True:
+        return
       if keep_state:
         self.visible_maps[node_name] = False
       else:
@@ -76,6 +78,7 @@ class Graph(dict):
 class Node(dict):
   def __init__(self, node, all_vars):
     self.name =  node['name']
+    self.show_name = node['show_name']
     self.type = node['type']
     self.attributes = [Attribute(key, value, node['attr_types'][key]) for key, value in node['attrs'].items()]
     self.inputs = [Parameter(key, [Argument(name, all_vars[name]) for name in value]) for key, value in node["input_vars"].items()]
@@ -84,7 +87,7 @@ class Node(dict):
     self.visible = True 
     self.is_leaf = node['is_leaf_node']
     super(Node, self).__init__(name=self.name, type=self.type, attributes=self.attributes, inputs=self.inputs,
-                  outputs=self.outputs, chain=self.chain, visible=self.visible, is_leaf=self.is_leaf)
+                  outputs=self.outputs, chain=self.chain, visible=self.visible, is_leaf=self.is_leaf, show_name=self.show_name)
 
 
 class Attribute(dict):
