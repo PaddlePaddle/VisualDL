@@ -47,6 +47,7 @@ class Model:
       if keep_state:
         self.visible_maps[node_name] = False
       else:
+        self.visible_maps[node_name] = False
         current_node = self.all_nodes[node_name]
         for child_name in current_node['children_node']:
           self.visible_maps[child_name] = True
