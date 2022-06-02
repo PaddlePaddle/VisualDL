@@ -92,7 +92,7 @@ class Api(object):
 
     def _get_with_retry(self, key, func, *args, **kwargs):
         return self._cache(key, try_call, func, self._reader, *args, **kwargs)
-    
+
     def _get_with_reader(self, key, func, reader, *args, **kwargs):
         return self._cache(key, func, reader, *args, **kwargs)
 
@@ -260,10 +260,22 @@ class Api(object):
         return self._get_with_retry(key, lib.get_roc_curve_step, run)
 
     @result()
-    def graph_graph(self, run):
-        key = os.path.join('data/plugin/graphs/graph', run)
-        return self._get_with_reader(key, lib.get_graph, self._graph_reader, run)
-    
+    def graph_graph(self, run, expand_all, refresh):
+        if expand_all != None:
+            if (expand_all.lower()=='true'):
+                expand_all = True
+            else:
+                expand_all = False
+        else:
+            expand_all = False
+        if refresh != None:
+            if (refresh.lower()=='true'):
+                refresh = True
+            else:
+                refresh = False
+        else:
+            refresh = True
+        return lib.get_graph(self._graph_reader, run, expand_all=expand_all, refresh=refresh)
     @result()
     def graph_upload(self):
         files = request.files
@@ -273,15 +285,21 @@ class Api(object):
                 self._graph_reader.set_input_graph(file_handle.stream.read(), 'pdmodel')
             elif 'vdlgraph' in file_handle.filename:
                 self._graph_reader.set_input_graph(file_handle.stream.read(), 'vdlgraph')
-    
+
     @result()
     def graph_manipulate(self, run, nodeid, expand, keep_state):
-        if (expand.lower()=='true'):
-            expand = True
+        if expand != None:
+            if (expand.lower()=='true'):
+                expand = True
+            else:
+                expand = False
         else:
             expand = False
-        if (keep_state.lower()=='true'):
-            keep_state = True
+        if keep_state != None:
+            if (keep_state.lower()=='true'):
+                keep_state = True
+            else:
+                keep_state = False
         else:
             keep_state = False
         return lib.get_graph(self._graph_reader, run, nodeid, expand, keep_state)
@@ -316,7 +334,7 @@ def create_api_call(logdir, model, cache_timeout):
         'embedding/tensor': (api.embedding_tensor, ['name']),
         'embedding/metadata': (api.embedding_metadata, ['name']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
-        'graph/graph': (api.graph_graph, ['run']),
+        'graph/graph': (api.graph_graph, ['run', 'expand_all', 'refresh']),
         'graph/upload': (api.graph_upload, []),
         'graph/manipulate': (api.graph_manipulate, ['run', 'nodeid', 'expand', 'keep_state']),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),

@@ -9,8 +9,13 @@ class Model:
     self.all_edges = {(edge['from_node'], edge['to_node']): edge for edge in graph_data['edges']}
     self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in graph_data['nodes'] }
 
-  def make_graph(self, refresh=False):
+  def make_graph(self, refresh=False, expand_all=False):
     if refresh == True:
+      self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values()}
+      root_node = self.all_nodes['/']
+      for child_name in root_node['children_node']:
+        self.visible_maps[child_name] = True
+    if expand_all == True:
       self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values() }
     self.current_nodes = {node_name:self.all_nodes[node_name]  for node_name in self.get_current_visible_nodes()}
     return Graph(self.current_nodes, self.all_vars)
@@ -70,7 +75,7 @@ class Graph(dict):
 class Node(dict):
   def __init__(self, node, all_vars):
     self.name =  node['name']
-    self.type = node['type'] if node['is_leaf_node'] else node['type'] + "[Layer]"
+    self.type = node['type']
     self.attributes = [Attribute(key, value, node['attr_types'][key]) for key, value in node['attrs'].items()]
     self.inputs = [Parameter(key, [Argument(name, all_vars[name]) for name in value]) for key, value in node["input_vars"].items()]
     self.outputs = [Parameter(key, [Argument(name, all_vars[name]) for name in value]) for key, value in node["output_vars"].items()]

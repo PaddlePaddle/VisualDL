@@ -96,14 +96,14 @@ class GraphReader(object):
         self.graphs(update=update)
         return list(self.walks.keys())
     
-    def get_graph(self, run, nodeid=None, expand=None, keep_state=True, refresh=False):
+    def get_graph(self, run, nodeid=None, expand=False, keep_state=False, expand_all=False, refresh=False):
       if run in self.walks:
         if run in self.walks_buffer:
             if self.walks[run] == self.walks_buffer[run]:
                 graph_model = self.graph_buffer[run]
                 if nodeid is not None:
                     graph_model.adjust_visible(nodeid, expand, keep_state)
-                return graph_model.make_graph(refresh=refresh)
+                return graph_model.make_graph(refresh=refresh, expand_all=expand_all)
         
         data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
         graph_model = Model(json.loads(data.decode()))
@@ -111,7 +111,7 @@ class GraphReader(object):
         self.walks_buffer[run] = self.walks[run]
         if nodeid is not None:
             graph_model.adjust_visible(nodeid, expand, keep_state)
-        return graph_model.make_graph(refresh=refresh)
+        return graph_model.make_graph(refresh=refresh, expand_all=expand_all)
     
     def set_displayname(self, log_reader):
       self.displayname2runs = log_reader.name2tags
