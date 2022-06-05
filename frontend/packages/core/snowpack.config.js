@@ -111,6 +111,7 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
+        namedExports:['gl-vec2','dagre'],
         knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
     },
     buildOptions: {

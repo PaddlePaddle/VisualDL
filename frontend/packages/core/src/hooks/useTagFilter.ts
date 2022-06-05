@@ -108,10 +108,14 @@ const reducer = (state: State, action: Action): State => {
         case ActionType.initRuns: {
             const initRuns = action.payload;
             const validGlobalRuns = initRuns.length ? intersection(initRuns, state.globalRuns) : state.globalRuns;
+            // 返回一个包含所有传入数组交集元素的新数组。例子
+            // _.intersection([2, 1], [4, 2], [1, 2]);
+            // => [2]
             const globalRuns = validGlobalRuns.length ? validGlobalRuns : initRuns;
             const runs = attachRunColor(initRuns);
             const selectedRuns = runs.filter(run => globalRuns.includes(run.label));
             const tags = groupTags(selectedRuns, state.initTags);
+            
             return {
                 ...state,
                 initRuns,
@@ -179,9 +183,8 @@ const reducer = (state: State, action: Action): State => {
 // TODO: refactor to improve performance
 const useTagFilter = (type: Page, running: boolean) => {
     const query = useQuery();
-
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
-
+    console.log('请求数据', data);
     // clear cache in order to fully reload data when switching page
     const {cache} = useSWRConfig();
     useEffect(() => () => cache.delete(`/${type}/tags`), [type, cache]);
@@ -189,23 +192,40 @@ const useTagFilter = (type: Page, running: boolean) => {
     const storeDispatch = useDispatch();
     const selector = useMemo(() => selectors.runs.getRunsByPage(type), [type]);
     const storedRuns = useSelector(selector);
-
+    console.log('storedRuns', storedRuns);
+    // train", "test" store中存储的
     const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
+    // runs: ['train', 'test'],
+    // 请求获取的数据的 runs
+    console.log('runs', runs);
     const tags: Tags = useMemo(
+        // train
         () =>
             data
-                ? runs.reduce<Tags>((m, run, i) => {
-                      if (m[run]) {
+                ? runs.reduce<Tags>((m, run, i) => {           
+                      if (m[run]) {                     
                           m[run] = [...m[run], ...(data.tags?.[i] ?? [])];
                       } else {
                           m[run] = data.tags[i] ?? [];
+                          // {
+                                // train : ['layer2/biases/summaries/mean', 'test/1234', 'another'],
+                                // test : [
+                                //     'layer2/biases/summaries/mean',
+                                //     'layer2/biases/summaries/accuracy',
+                                //     'layer2/biases/summaries/cost',
+                                //     'test/431',
+                                //     'others'
+                                // ]
+
+                          //}
                       }
                       return m;
                   }, {})
                 : {},
         [runs, data]
     );
-
+    // 左边的主数据
+    console.log(tags);
     const [state, dispatch] = useReducer(reducer, {
         initRuns: [],
         globalRuns: storedRuns,
@@ -226,6 +246,7 @@ const useTagFilter = (type: Page, running: boolean) => {
 
     useEffect(() => dispatch({type: ActionType.initRuns, payload: runs || []}), [runs]);
     useEffect(() => dispatch({type: ActionType.initTags, payload: tags || {}}), [tags]);
+    // 初始化
 
     useEffect(() => {
         if (queryRuns.length) {
@@ -251,12 +272,12 @@ const useTagFilter = (type: Page, running: boolean) => {
             }, []),
         [state.tags]
     );
-
     const runsInTags = useMemo(
         () => state.selectedRuns.filter(run => !!tags?.[run.label]?.length),
+        // 判断 tags中的数据不为空
         [state.selectedRuns, tags]
     );
-
+    console.log('tate.selectedRuns',state.selectedRuns);
     return {
         ...state,
         tagsWithSingleRun,

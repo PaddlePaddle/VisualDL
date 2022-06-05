@@ -97,13 +97,13 @@ export type RunAsideProps = {
 };
 
 const RunAside: FunctionComponent<RunAsideProps> = ({
-    runs,
-    selectedRuns,
+    runs, // 运行中数据流
+    selectedRuns, // 选中的的运行项目
     onChangeRuns,
-    running,
-    onToggleRunning,
+    running, // 是否有程序在运行中
+    onToggleRunning, // 下方组建
     loading,
-    children
+    children // 底部内容
 }) => {
     const {t} = useTranslation('common');
 
@@ -126,6 +126,7 @@ const RunAside: FunctionComponent<RunAsideProps> = ({
         (run: Run, toggle) => {
             let selected = selectedRuns ?? [];
             if (toggle) {
+                // 去重， 根据r.label
                 selected = uniqBy([...selected, run], r => r.label);
             } else {
                 selected = selected.filter(r => r.label !== run.label);

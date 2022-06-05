@@ -35,7 +35,8 @@ type PropertiesProps = PropertiesType & {
 
 const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, expand, showNodeDocumentation}) => {
     const {t} = useTranslation('graph');
-
+    console.log('properties, groups, expand',properties, groups, expand);
+    
     return (
         <>
             {properties?.map((property, index) => (
@@ -51,9 +52,10 @@ const Properties: FunctionComponent<PropertiesProps> = ({properties, groups, exp
                     <Header>{t(`graph:properties.${group.name}`)}</Header>
                     {group.properties?.map((property, anotherIndex) => (
                         <Property
-                            {...property}
+                            name={property.name}
+                            values={property.values}
                             key={anotherIndex}
-                            expand={expand}
+                            expand={false}
                             showNodeDocumentation={showNodeDocumentation}
                         />
                     ))}

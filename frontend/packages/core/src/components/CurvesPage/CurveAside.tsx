@@ -73,13 +73,16 @@ const CurveAside: FunctionComponent<CurveAsideProps> = ({type, onChangeLoading, 
         `${type}-curve` as 'pr-curve' | 'roc-curve',
         running
     );
-
+    // 第一次拿到runsInTags
+    console.log('runsInTags', runsInTags);
+    // {label: 'train', colors: Array(2)}
     const {data: stepInfo} = useRunningRequest<StepInfo[]>(
         runsInTags.map(run => `/${type}-curve/steps?${queryString.stringify({run: run.label})}`),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
-
+    // 根据tags再次请求拿到不同的数据
+    console.log('stepInfo', stepInfo);
     const [indexes, setIndexes] = useState<Record<string, number>>({});
     const onChangeIndexes = useCallback(
         (run: string, index: number) =>
@@ -101,19 +104,22 @@ const CurveAside: FunctionComponent<CurveAsideProps> = ({type, onChangeLoading, 
             ),
         [runsInTags]
     );
-
+    console.log('indexes', indexes);
     const curveRun = useMemo<CurveRun[]>(
         () =>
-            runsInTags.map((run, i) => ({
+            runsInTags.map((run, i) => (
+                {
                 ...run,
                 index: indexes[run.label] ?? (stepInfo?.[i].length ?? 1) - 1,
-                steps: stepInfo?.[i].map(j => j[1]) ?? [],
-                wallTimes: stepInfo?.[i].map(j => Math.floor(j[0])) ?? [],
-                relatives: stepInfo?.[i].map(j => j[0] - stepInfo[i][0][0]) ?? []
+                steps: stepInfo?.[i].map(j => j[1]) ?? [], // 后面步长的值
+                wallTimes: stepInfo?.[i].map(j => Math.floor(j[0])) ?? [], // stepInfo 中数组的值每个向上取整
+                relatives: stepInfo?.[i].map(j => j[0] - stepInfo[i][0][0]) ?? [] // 每个的第一个的值 减去?
+                // [1593069993786.464, 0]
             })),
         [runsInTags, stepInfo, indexes]
     );
-
+    console.log('curveRun', curveRun);
+    
     const [timeType, setTimeType] = useState<TimeType>(TimeType.Step);
 
     useEffect(() => {

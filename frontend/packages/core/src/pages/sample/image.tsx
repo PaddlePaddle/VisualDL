@@ -34,13 +34,13 @@ import {useTranslation} from 'react-i18next';
 const ImageSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
 
-    const [running, setRunning] = useState(true);
+    const [running, setRunning] = useState(true); // 运行中
 
     const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('image', running);
 
-    const [showActualSize, setShowActualSize] = useState(false);
-    const [brightness, setBrightness] = useState(1);
-    const [contrast, setContrast] = useState(1);
+    const [showActualSize, setShowActualSize] = useState(false); // 是否按照真实大小展示
+    const [brightness, setBrightness] = useState(1); // 亮度
+    const [contrast, setContrast] = useState(1); // 对比度
 
     const aside = useMemo(
         () => (

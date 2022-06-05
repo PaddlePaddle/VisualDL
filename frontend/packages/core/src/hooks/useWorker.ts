@@ -32,6 +32,7 @@ const useWorker = <D, P = unknown, E extends Error = Error>(name: string, params
     useEffect(() => {
         setResult({});
         const worker = new WebWorker(`${BASE_URI}/_dist_/worker/${name}.js`);
+        console.log('worker', worker);
         worker.on('INITIALIZED', () => {
             setResult({worker});
             worker.emit('RUN', params);

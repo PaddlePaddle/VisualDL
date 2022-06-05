@@ -72,7 +72,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     running
 }) => {
     const {t, i18n} = useTranslation(['scalar', 'common']);
-
+    console.log('runs.map(run => `/scalar/list?${queryString.stringify({run: run.label, tag})}`)',runs.map(run => `/scalar/list?${queryString.stringify({run: run.label, tag})}`));
+    
     const {
         data: datasetsWithNull,
         error,
@@ -82,33 +83,45 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         !!running,
         (...urls) => cycleFetcher(urls)
     );
-
+    
+    // 第一个参数请求地址的拼接，第二个参数为是否在运行中，第三个为请求的fetcher
+    console.log('datasetsWithNull', datasetsWithNull);
     const datasets = useMemo(
         () => (datasetsWithNull?.filter(r => r != null).slice(0, runs.length) ?? []) as ScalarDataset[],
         [datasetsWithNull, runs.length]
     );
+    // 此处datasets 将datasetsWithNull中的数据判定不为空之后拷贝出来，
 
     const xAxisType = useMemo(() => (xAxis === XAxis.WallTime ? XAxisType.time : XAxisType.value), [xAxis]);
-
+    // XAxisType {value = 'value',log = 'log',time = 'time'}  
     const transformParams = useMemo(
         () => [
+            // Number.isFinite返回值 一个布尔值 表示给定的值是否是一个有穷数
             datasets.map(data => data.map(row => [row[0], row[1], Number.isFinite(row[2]) ? row[2] : null]) ?? []) ??
                 [],
             smoothing
         ],
         [datasets, smoothing]
     );
+    //  对datasets数据进一步的处理
     const {data: smoothedDatasetsOrUndefined} = useWebAssembly<Dataset[]>('scalar_transform', transformParams);
+    console.log('smoothedDatasetsOrUndefined', smoothedDatasetsOrUndefined);
+    //  对datasets数据进一步的处理,transformParams的基础上 进一步的处理 增加了两位
     const smoothedDatasets = useMemo<NonNullable<typeof smoothedDatasetsOrUndefined>>(
         () => smoothedDatasetsOrUndefined ?? [],
         [smoothedDatasetsOrUndefined]
     );
+    // 最后对数据进行自检判断，判断是否不为空
 
-    const axisRangeParams = useMemo(() => [smoothedDatasets, !!outlier], [smoothedDatasets, outlier]);
+    const axisRangeParams = useMemo(() => [smoothedDatasets, !!outlier], [smoothedDatasets, outlier]); //  是否忽略极端值
+
     const {data: yRange} = useWebAssembly<Range>('scalar_axis_range', axisRangeParams);
+    // 进一步处理数据
 
     const datasetRangesParams = useMemo(() => [smoothedDatasets], [smoothedDatasets]);
+
     const {data: datasetRanges} = useWebAssembly<Range[]>('scalar_range', datasetRangesParams);
+    // 进一步处理数据
 
     const ranges: Record<'x' | 'y', Range | undefined> = useMemo(() => {
         let x: Range | undefined = undefined;
@@ -118,14 +131,17 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         if (smoothedDatasets.length === 1 && smoothedDatasets[0].length === 1) {
             if ([XAxisType.value, XAxisType.log].includes(xAxisType)) {
                 x = singlePointRange(smoothedDatasets[0][0][xAxisMap[xAxis]]);
+                // 如果是有穷数的两倍为轴的长度，如果不是 就以 -0.5 0.5
             }
             y = singlePointRange(smoothedDatasets[0][0][2]);
         }
+        // x轴 y轴 范围
         return {x, y};
     }, [smoothedDatasets, yRange, xAxisType, xAxis]);
 
     const [data, setData] = useState<ReturnType<typeof chartData>>([]);
     useEffect(() => {
+        console.log('smoothedDatasets, datasets, runs',smoothedDatasets, datasets, runs ); 
         if (smoothedDatasets.length === runs.length && datasets.length === runs.length) {
             setData(
                 chartData({
@@ -142,11 +158,17 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const maxStepLength = useMemo(
         () => String(Math.max(...smoothedDatasets.map(i => Math.max(...i.map(j => j[1]))))).length,
+        // 取出步骤的最大值
         [smoothedDatasets]
     );
     const getTooltipTableData = useCallback(
         (_, value: number) => {
             const idx = xAxisMap[xAxis];
+            //  datasets 请求数据的返回
+            //  moothedDatasets  经过useWebAssembly插件处理的数据
+            //  runs label标签 train 和颜色
+            //  idx  右侧选择器的步差  
+            //  value 每项的axisValue
             const points = nearestPoint(smoothedDatasets, datasets, runs, idx, value).map(point => ({
                 ...point,
                 ...datasetRanges?.[runs.findIndex(run => run.label === point.run.label)]
@@ -185,7 +207,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     if (!data && error) {
         return <Error>{t('common:error')}</Error>;
     }
-
+    console.log('ScalarPageData',data);
     return (
         <SChart
             title={tag}

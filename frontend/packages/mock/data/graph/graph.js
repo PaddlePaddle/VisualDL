@@ -16,7 +16,7 @@
 
 // cSpell:disable
 
-import graph from '../../assets/graph/yolov3.cfg';
+// import graph from '../../assets/graph/yolov3.cfg';
 
 export default async () => {
     const result = await fetch(graph);
@@ -29,3 +29,13 @@ export default async () => {
         }
     });
 };
+// export default {
+//     'inputs':[{
+//         'arguments':[{
+//             'initializer': null,
+//             'name':'x',
+
+//         }]
+//     }]
+// }
+

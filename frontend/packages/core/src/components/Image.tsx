@@ -27,7 +27,15 @@ type ImageProps = {
     error?: Error;
     onClick?: () => unknown;
 };
-
+// {
+        //     data: Blob {size: 48406, type: ''}
+        //     filename: null
+        //     type: "/__snowpack__/link/packages/mock/assets/image/1.jpeg"
+        //     [[Prototype]]: Object
+        //     error: undefined
+        //     loading: false
+        //     [[Prototype]]: Object
+        // }
 const Image: FunctionComponent<ImageProps & WithStyled> = ({data, loading, error, onClick, className}) => {
     const {t} = useTranslation('common');
 

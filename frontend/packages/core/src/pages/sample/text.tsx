@@ -31,9 +31,8 @@ const TextSample: FunctionComponent = () => {
     const {t} = useTranslation(['sample', 'common']);
 
     const [running, setRunning] = useState(true);
-
     const {runs, tagsWithSingleRun, selectedRuns, onChangeRuns, loading} = useTagFilter('text', running);
-
+    console.log('runs', runs);
     const aside = useMemo(
         () => (
             <RunAside

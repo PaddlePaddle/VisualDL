@@ -98,7 +98,8 @@ type MenuChartToolboxItem = {
     toggle?: false;
     tooltip: undefined;
     menuList: ChartToolboxItemChild[];
-} & BaseChartToolboxItem;
+    icon: Icons;
+}
 
 export type ChartToolboxItem = NormalChartToolboxItem | ToggleChartToolboxItem | MenuChartToolboxItem;
 

@@ -63,6 +63,7 @@ const IndexPage: FunctionComponent = () => {
 
     useEffect(() => {
         if (activeComponents.length) {
+            // 此处对路由进行重定向，目前重定向的的路由scalar
             history.replace(activeComponents[0].path + location.search);
         } else {
             // TODO: no component available, add a error tip

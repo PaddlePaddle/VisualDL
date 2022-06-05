@@ -287,6 +287,17 @@ const SampleChart: FunctionComponent<SampleChartProps> = ({
         if (isEmpty(data)) {
             return <span>{t('common:empty')}</span>;
         }
+        // 如果有数据就开始渲染
+        console.log('entityProps', entityProps);
+        // {
+        //     data: Blob {size: 48406, type: ''}
+        //     filename: null
+        //     type: "/__snowpack__/link/packages/mock/assets/image/1.jpeg"
+        //     [[Prototype]]: Object
+        //     error: undefined
+        //     loading: false
+        //     [[Prototype]]: Object
+        // }
         if (entityProps) {
             return renderContent(entityProps);
         }

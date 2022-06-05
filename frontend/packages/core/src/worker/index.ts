@@ -56,6 +56,7 @@ export default class WebWorker implements IWorker {
             this.emitter = new EventEmitter();
             this.emitter.addListener('message', this.listener.bind(this));
             window.setTimeout(() => {
+                console.log('runner',runner);
                 runner(name, this);
             }, 200);
         }
