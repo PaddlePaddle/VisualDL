@@ -24,8 +24,10 @@ from flask import request
 from visualdl import LogReader
 from visualdl.server import lib
 from visualdl.server.log import logger
+from visualdl.client_manager import ClientManager
 from visualdl.python.cache import MemCache
 from visualdl.reader.graph_reader import GraphReader
+
 
 
 
@@ -82,7 +84,7 @@ class Api(object):
             self.model_name = os.path.basename(model)
         else:
             self.model_name = ''
-
+        self.graph_reader_client_manager = ClientManager(self._graph_reader)
         # use a memory cache to reduce disk reading frequency.
         cache = MemCache(timeout=cache_timeout)
         self._cache = lib.cache_get(cache)
@@ -261,6 +263,8 @@ class Api(object):
 
     @result()
     def graph_graph(self, run, expand_all, refresh):
+        client_ip = request.remote_addr
+        graph_reader = self.graph_reader_client_manager.get_data(client_ip)
         if expand_all != None:
             if (expand_all.lower()=='true'):
                 expand_all = True
@@ -275,19 +279,23 @@ class Api(object):
                 refresh = False
         else:
             refresh = True
-        return lib.get_graph(self._graph_reader, run, expand_all=expand_all, refresh=refresh)
+        return lib.get_graph(graph_reader, run, expand_all=expand_all, refresh=refresh)
     @result()
     def graph_upload(self):
+        client_ip = request.remote_addr
+        graph_reader = self.graph_reader_client_manager.get_data(client_ip)
         files = request.files
         if 'file' in files:
             file_handle = request.files['file']
             if 'pdmodel' in file_handle.filename:
-                self._graph_reader.set_input_graph(file_handle.stream.read(), 'pdmodel')
+                graph_reader.set_input_graph(file_handle.stream.read(), 'pdmodel')
             elif 'vdlgraph' in file_handle.filename:
-                self._graph_reader.set_input_graph(file_handle.stream.read(), 'vdlgraph')
+                graph_reader.set_input_graph(file_handle.stream.read(), 'vdlgraph')
 
     @result()
     def graph_manipulate(self, run, nodeid, expand, keep_state):
+        client_ip = request.remote_addr
+        graph_reader = self.graph_reader_client_manager.get_data(client_ip)
         if expand != None:
             if (expand.lower()=='true'):
                 expand = True
@@ -302,7 +310,7 @@ class Api(object):
                 keep_state = False
         else:
             keep_state = False
-        return lib.get_graph(self._graph_reader, run, nodeid, expand, keep_state)
+        return lib.get_graph(graph_reader, run, nodeid, expand, keep_state)
 
 
 def create_api_call(logdir, model, cache_timeout):
