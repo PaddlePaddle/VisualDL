@@ -24,7 +24,7 @@ from flask import request
 from visualdl import LogReader
 from visualdl.server import lib
 from visualdl.server.log import logger
-from visualdl.client_manager import ClientManager
+from visualdl.server.client_manager import ClientManager
 from visualdl.python.cache import MemCache
 from visualdl.reader.graph_reader import GraphReader
 
