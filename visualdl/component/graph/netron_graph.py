@@ -66,7 +66,7 @@ class Model:
     while(parent_node_name != '/'):
       parent_node_name = self.all_nodes[parent_node_name]['parent_node']
       for child_name in self.all_nodes[parent_node_name]['children_node']:
-        if child_name != key_path_node_name
+        if child_name != key_path_node_name:
           self.visible_maps[child_name] = True
         else:
           self.visible_maps[child_name] = False
