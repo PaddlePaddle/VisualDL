@@ -8,7 +8,9 @@ class Model:
     self.all_vars = {var['name']:var for var in graph_data['vars']}
     self.all_edges = {(edge['from_node'], edge['to_node']): edge for edge in graph_data['edges']}
     self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in graph_data['nodes'] }
-
+    root_node = self.all_nodes['/']
+    for child_name in root_node['children_node']:
+      self.visible_maps[child_name] = True
   def make_graph(self, refresh=False, expand_all=False):
     if refresh == True:
       self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values()}
