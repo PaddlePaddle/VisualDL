@@ -532,6 +532,12 @@ def get_graph(graph_reader, run, nodeid=None, expand=False, keep_state=False, ex
     result = graph_reader.get_graph(run, nodeid, expand, keep_state, expand_all, refresh)
     return result
 
+def get_graph_search(graph_reader, run, nodeid):
+    result = ""
+    run = graph_reader.displayname2runs[run] if run in graph_reader.displayname2runs else run
+    result = graph_reader.search_graph_node(run, nodeid)
+    return result
+
 
 def retry(ntimes, function, time2sleep, *args, **kwargs):
     """

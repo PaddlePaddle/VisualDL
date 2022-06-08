@@ -41,7 +41,6 @@ class Model:
     return current_visible_nodes
 
 
-
   def adjust_visible(self, node_name, expand=True, keep_state=True):
     if(expand):
       if self.all_nodes[node_name]['is_leaf_node'] == True:
@@ -56,6 +55,23 @@ class Model:
     else:
       self.visible_maps[node_name] = True
   
+  def adjust_search_node_visible(self, node_name):
+    if node_name is None:
+      return
+    parent_node_name = self.all_nodes[node_name]['parent_node']
+    for child_name in self.all_nodes[parent_node_name]['children_node']:
+        self.visible_maps[child_name] = True
+    self.visible_maps[parent_node_name] = False
+    key_path_node_name = parent_node_name
+    while(parent_node_name != '/'):
+      parent_node_name = self.all_nodes[parent_node_name]['parent_node']
+      for child_name in self.all_nodes[parent_node_name]['children_node']:
+        if child_name != key_path_node_name
+          self.visible_maps[child_name] = True
+        else:
+          self.visible_maps[child_name] = False
+      key_path_node_name = parent_node_name
+
 
 class Graph(dict):
   def __init__(self, nodes, all_vars):
