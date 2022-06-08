@@ -23,8 +23,8 @@ class Model:
     return Graph(self.current_nodes, self.all_vars)
   
   def get_all_leaf_nodes(self):
-    all_leaf_nodes = [node['name'] if not node['children_node'] for node in self.all_nodes.values()]
-    current_nodes = {node_name:self.all_nodes[node_name]  for node_name in all_leaf_nodes}
+    all_leaf_nodes = [node['name'] for node in self.all_nodes.values() if not node['children_node']]
+    current_nodes = {node_name : self.all_nodes[node_name] for node_name in all_leaf_nodes}
     return Graph(current_nodes, self.all_vars)
 
   def get_current_visible_nodes(self):
