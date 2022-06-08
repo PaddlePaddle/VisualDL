@@ -113,19 +113,19 @@ class GraphReader(object):
             graph_model.adjust_visible(nodeid, expand, keep_state)
         return graph_model.make_graph(refresh=refresh, expand_all=expand_all)
     
-    def search_graph_node(self, run, nodeid):
+    def search_graph_node(self, run, nodeid, keep_state=False):
       if run in self.walks:
         if run in self.walks_buffer:
             if self.walks[run] == self.walks_buffer[run]:
                 graph_model = self.graph_buffer[run]
-                graph_model.adjust_search_node_visible(nodeid)
+                graph_model.adjust_search_node_visible(nodeid, keep_state=keep_state)
                 return graph_model.make_graph(refresh=False, expand_all=False)
         
         data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
         graph_model = Model(json.loads(data.decode()))
         self.graph_buffer[run] = graph_model
         self.walks_buffer[run] = self.walks[run]
-        graph_model.adjust_search_node_visible(nodeid)
+        graph_model.adjust_search_node_visible(nodeid, keep_state=keep_state)
         return graph_model.make_graph(refresh=False, expand_all=False)
     
     
