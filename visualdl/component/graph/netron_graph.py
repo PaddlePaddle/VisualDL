@@ -21,6 +21,11 @@ class Model:
       self.visible_maps = {node['name']: (True if not node['children_node'] else False) for node in self.all_nodes.values() }
     self.current_nodes = {node_name:self.all_nodes[node_name]  for node_name in self.get_current_visible_nodes()}
     return Graph(self.current_nodes, self.all_vars)
+  
+  def get_all_leaf_nodes(self):
+    all_leaf_nodes = [node['name'] if not node['children_node'] for node in self.all_nodes.values()]
+    current_nodes = {node_name:self.all_nodes[node_name]  for node_name in all_leaf_nodes}
+    return Graph(current_nodes, self.all_vars)
 
   def get_current_visible_nodes(self):
     # bfs traversal to get current visible nodes
@@ -57,36 +62,44 @@ class Model:
     else:
       self.visible_maps[node_name] = True
   
-  def adjust_search_node_visible(self, node_name, keep_state=False):
+  def adjust_search_node_visible(self, node_name, keep_state=False, is_node=True):
     if node_name is None:
       return
-    topmost_parent = None
-    parent_node_name = self.all_nodes[node_name]['parent_node']
-    while(parent_node_name != '/'):
-      if self.visible_maps[parent_node_name] == True:
-        topmost_parent = parent_node_name
-      parent_node_name = self.all_nodes[parent_node_name]['parent_node']
-    if topmost_parent is not None:
-      self.visible_maps[topmost_parent] = False
+    node_names = []
+    if is_node == False:
+      var = self.all_vars[node_name]
+      node_names.append(var['from_node'])
+      node_names.extend(var['to_nodes'])
+    else:
+      node_names.append(node_name)
+    for node_name in node_names:
+      topmost_parent = None
       parent_node_name = self.all_nodes[node_name]['parent_node']
-      if(keep_state):
-        self.visible_maps[node_name] = True
-        while(parent_node_name != topmost_parent):
-          self.visible_maps[parent_node_name] = False
-          parent_node_name = self.all_nodes[parent_node_name]['parent_node']
-      else:
-        for child_name in self.all_nodes[parent_node_name]['children_node']:
-            self.visible_maps[child_name] = True
-        self.visible_maps[parent_node_name] = False
-        key_path_node_name = parent_node_name
-        while(parent_node_name != topmost_parent):
-          parent_node_name = self.all_nodes[parent_node_name]['parent_node']
+      while(parent_node_name != '/'):
+        if self.visible_maps[parent_node_name] == True:
+          topmost_parent = parent_node_name
+        parent_node_name = self.all_nodes[parent_node_name]['parent_node']
+      if topmost_parent is not None:
+        self.visible_maps[topmost_parent] = False
+        parent_node_name = self.all_nodes[node_name]['parent_node']
+        if(keep_state):
+          self.visible_maps[node_name] = True
+          while(parent_node_name != topmost_parent):
+            self.visible_maps[parent_node_name] = False
+            parent_node_name = self.all_nodes[parent_node_name]['parent_node']
+        else:
           for child_name in self.all_nodes[parent_node_name]['children_node']:
-            if child_name != key_path_node_name:
               self.visible_maps[child_name] = True
-            else:
-              self.visible_maps[child_name] = False
+          self.visible_maps[parent_node_name] = False
           key_path_node_name = parent_node_name
+          while(parent_node_name != topmost_parent):
+            parent_node_name = self.all_nodes[parent_node_name]['parent_node']
+            for child_name in self.all_nodes[parent_node_name]['children_node']:
+              if child_name != key_path_node_name:
+                self.visible_maps[child_name] = True
+              else:
+                self.visible_maps[child_name] = False
+            key_path_node_name = parent_node_name
 
 
 class Graph(dict):

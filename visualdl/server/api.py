@@ -313,7 +313,7 @@ class Api(object):
         return lib.get_graph(graph_reader, run, nodeid, expand, keep_state)
 
     @result()
-    def graph_search(self, run, nodeid, keep_state):
+    def graph_search(self, run, nodeid, keep_state, is_node):
         client_ip = request.remote_addr
         graph_reader = self.graph_reader_client_manager.get_data(client_ip)
         if keep_state != None:
@@ -323,7 +323,21 @@ class Api(object):
                 keep_state = False
         else:
             keep_state = False
-        return lib.get_graph_search(graph_reader, run, nodeid, keep_state)
+
+        if is_node != None:
+            if (is_node.lower()=='true'):
+                is_node = True
+            else:
+                is_node = False
+        else:
+            is_node = False
+        return lib.get_graph_search(graph_reader, run, nodeid, keep_state, is_node)
+    
+    @result()
+    def graph_get_all_nodes(self, run):
+        client_ip = request.remote_addr
+        graph_reader = self.graph_reader_client_manager.get_data(client_ip)
+        return lib.get_graph_all_nodes(graph_reader, run)
 
 
 def create_api_call(logdir, model, cache_timeout):
@@ -357,7 +371,8 @@ def create_api_call(logdir, model, cache_timeout):
         'histogram/list': (api.histogram_list, ['run', 'tag']),
         'graph/graph': (api.graph_graph, ['run', 'expand_all', 'refresh']),
         'graph/upload': (api.graph_upload, []),
-        'graph/search': (api.graph_search, ['run', 'nodeid', 'keep_state']),
+        'graph/search': (api.graph_search, ['run', 'nodeid', 'keep_state', 'is_node']),
+        'graph/get_all_nodes': (api.graph_get_all_nodes, ['run']),
         'graph/manipulate': (api.graph_manipulate, ['run', 'nodeid', 'expand', 'keep_state']),
         'pr-curve/list': (api.pr_curves_pr_curve, ['run', 'tag']),
         'roc-curve/list': (api.roc_curves_roc_curve, ['run', 'tag']),
