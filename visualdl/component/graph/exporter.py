@@ -1,4 +1,3 @@
-import os
 # Copyright (c) 2022 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,7 @@ import os
 
 import json
 import tempfile
+import os
 
 from .graph_component import analyse_model
 from .utils import create_opname_scope
@@ -23,6 +23,7 @@ from .utils import create_opname_scope
 def translate_graph(model, input_spec, verbose=True):
   import paddle
   with tempfile.TemporaryDirectory() as tmp:
+    model._full_name = '{}[{}]'.format(model.__class__.__name__, "model")
     create_opname_scope(model)
     paddle.jit.save(model, os.path.join(tmp, 'temp'), input_spec)
     model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()

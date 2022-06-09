@@ -23,19 +23,3 @@ def create_opname_scope(layer: nn.Layer):
         sublayer._full_name = '{}[{}]'.format(sublayer.__class__.__name__, name)
         create_opname_scope(sublayer)
     layer.register_forward_post_hook(_opname_creation_posthook)
-
-
-attr_type_name = {
-    AttrType.INT : "INT",
-    AttrType.INTS :"INTS",
-    AttrType.LONG :"LONG",
-    AttrType.LONGS :"LONGS",
-    AttrType.FLOAT :"FLOAT",
-    AttrType.FLOATS :"FLOATS",
-    AttrType.STRING :"STRING",
-    AttrType.STRINGS :"STRINGS",
-    AttrType.BOOL :"BOOL",
-    AttrType.BOOLS :"BOOLS",
-    AttrType.BLOCK :"BLOCK",
-    AttrType.BLOCKS :"BLOCKS"
-}

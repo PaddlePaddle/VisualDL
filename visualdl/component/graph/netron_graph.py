@@ -108,13 +108,11 @@ class Graph(dict):
     self.inputs = []
     self.outputs = []
     self.name = 'Paddle Graph'
-    input_idx = 0
     output_idx = 0
     for op_node in nodes.values():
       if op_node['type'] == 'feed':
         for key, value in op_node["output_vars"].items():
-          self.inputs.append(Parameter('Input{}'.format(input_idx), [Argument(name, all_vars[name]) for name in value]))
-          input_idx += 1
+          self.inputs.append(Parameter(value[0], [Argument(name, all_vars[name]) for name in value]))
         continue
       if op_node['type'] == 'fetch':
         for key, value in op_node["input_vars"].items():
@@ -176,10 +174,3 @@ class TensorShape(dict):
   def __init__(self, dimensions):
     self.dimensions = dimensions
     super(TensorShape, self).__init__(dimensions=self.dimensions)
-
-# from graph_component import analyse_model
-# import json
-
-# graph_model = Model(analyse_model(open('../../../test_output/model.pdmodel','rb').read()))
-# graph_model.adjust_visible('/UNet', expand=False)
-# print(json.dumps(graph_model.make_graph(), indent=2))

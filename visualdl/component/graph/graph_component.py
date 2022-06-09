@@ -18,7 +18,6 @@ import collections
 import json
 import re
 
-# from .utils import attr_type_name
 from paddle.fluid.core import AttrType
 
 attr_type_name = {
@@ -301,9 +300,6 @@ def analyse_model(model_pb):
     'edges': list(all_edges.values())
   }  
   return final_data
-
-
-# print(json.dumps(analyse_model(open('../../../test_output/model.pdmodel','rb').read()), indent=2))
 
 
     
