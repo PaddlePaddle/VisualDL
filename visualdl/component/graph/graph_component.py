@@ -94,7 +94,7 @@ def analyse_model(model_pb):
       op_name = op_desc.attr('op_namescope') + name_generator(str(op_desc.type()))
       all_ops[op_name] = {}
       all_ops[op_name]['name'] = op_name
-      all_ops[op_name]['show_name'] = re.sub(r'\[\w*\]', '', op_name)
+      all_ops[op_name]['show_name'] = re.sub(r'\[(\w|\.)*\]', '', op_name)
       all_ops[op_name]['type'] = str(op_desc.type())
       all_ops[op_name]['input_vars'] = {}
       all_ops[op_name]['is_leaf_node'] = True

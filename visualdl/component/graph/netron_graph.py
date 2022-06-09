@@ -108,13 +108,18 @@ class Graph(dict):
     self.inputs = []
     self.outputs = []
     self.name = 'Paddle Graph'
-    
+    input_idx = 0
+    output_idx = 0
     for op_node in nodes.values():
       if op_node['type'] == 'feed':
-        self.inputs = [Parameter('Input{}'.format(i), [Argument(name, all_vars[name]) for name in value]) for i, (key, value) in enumerate(op_node["output_vars"].items())]
+        for key, value in op_node["output_vars"].items():
+          self.inputs.append(Parameter('Input{}'.format(input_idx), [Argument(name, all_vars[name]) for name in value]))
+          input_idx += 1
         continue
       if op_node['type'] == 'fetch':
-        self.outputs = [Parameter('Output{}'.format(i), [Argument(name, all_vars[name]) for name in value]) for i, (key, value) in enumerate(op_node["input_vars"].items())]
+        for key, value in op_node["input_vars"].items():
+          self.outputs.append(Parameter('Output{}'.format(output_idx), [Argument(name, all_vars[name]) for name in value]))
+          output_idx += 1
         continue
       self.nodes.append(Node(op_node, all_vars))
       
