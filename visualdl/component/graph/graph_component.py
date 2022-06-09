@@ -148,7 +148,7 @@ def analyse_model(model_pb):
         all_ops[parent_node_name]['attrs'] = {}
         all_ops[parent_node_name]['input_nodes'] = set()
         all_ops[parent_node_name]['output_nodes'] = set()
-        all_ops[parent_node_name]['type'] = os.path.basename(parent_node_name)
+        all_ops[parent_node_name]['type'] = os.path.basename(all_ops[parent_node_name]['show_name'])
         all_ops[parent_node_name]['input_vars'] = set()
         all_ops[parent_node_name]['output_vars'] = set()
         all_ops[parent_node_name]['parent_node'] = ''
