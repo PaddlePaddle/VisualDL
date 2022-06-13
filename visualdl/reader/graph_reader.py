@@ -16,8 +16,8 @@ import json
 import os
 import tempfile
 
-from visualdl.component.graph.graph_component import analyse_model
-from visualdl.component.graph.netron_graph import Model
+from visualdl.component.graph import analyse_model
+from visualdl.component.graph import Model
 from visualdl.io import bfile
 
 
