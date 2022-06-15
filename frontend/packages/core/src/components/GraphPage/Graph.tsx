@@ -23,9 +23,11 @@ import logo from '~/assets/images/netron.png';
 import netron from '@visualdl/netron';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
+import isString from 'lodash/isString';
 import {fetcher} from '~/utils/fetch';
 import useTheme from '~/hooks/useTheme';
 import {useTranslation} from 'react-i18next';
+import { t } from 'numeric';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
@@ -87,27 +89,6 @@ const Content = styled.div`
             vertical-align: middle;
         }
     }
-    .small-position {
-        width: ${rem(300)};
-        width: ${rem(200)};
-        position: absolute;
-        right: 0%;
-        bottom: 0%;
-        .small-container {
-            position: relative;
-            .inside-box {
-                background-color: #5b88f1;
-                position: absolute;
-                opacity: 0.3;
-                width: 100%;
-                height: 100%;
-                left: 0;
-                top: 0;
-                z-index: 200;
-                cursor: move;
-            }
-        }
-    }
 `;
 
 const Loading = styled.div`
@@ -127,12 +108,14 @@ export type GraphRef = {
     changeGraph(name: string): void;
     search(value: string): void;
     select(item: SearchItem): void;
-    setSelectItems(data: any): void;
-    setLoadings(data: any): void;
+    setSelectItems(data: Theobj): void;
+    setLoadings(data: boolean): void;
     showModelProperties(): void;
-    showNodeDocumentation(data: any): void;
+    showNodeDocumentation(data: Theobj): void;
 };
-
+interface Theobj {
+    [propname:string]:any
+}
 type GraphProps = {
     files: FileList | File[] | null;
     uploader: JSX.Element;
@@ -141,8 +124,8 @@ type GraphProps = {
     showNames: boolean;
     horizontal: boolean;
     isKeepData: boolean;
-    runs: any;
-    selectedRuns: any;
+    runs: string[] | undefined;
+    selectedRuns: string;
     onRendered?: () => unknown;
     onOpened?: (data: OpenedResult) => unknown;
     onSearch?: (data: SearchResult) => unknown;
@@ -176,13 +159,13 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         const [ready, setReady] = useState(false);
         const [rendered, setRendered] = useState(false);
         const [loading, setLoading] = useState(true);
-        const [item, setSelectItem] = useState<any>();
+        const [item, setSelectItem] = useState<Theobj | null>();
         const [isExpend, setIsExpend] = useState(0);
         const [isRetract, setIsretract] = useState(0);
-        const [modelDatas, setModelDatas] = useState();
-        const [allModelDatas, setAllModelDatas] = useState();
+        const [modelDatas, setModelDatas] = useState<Theobj>();
+        const [allModelDatas, setAllModelDatas] = useState<Theobj>();
         const [selectNodeId, setSelectNodeId] = useState();
-        const [searchNodeId, setSearchNodeId] = useState<any>();
+        const [searchNodeId, setSearchNodeId] = useState<Theobj>();
         const iframe = useRef<HTMLIFrameElement>(null);
         const handler = useCallback(
             (event: MessageEvent) => {
@@ -250,25 +233,28 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 setLoading(true);
                 const refresh = true;
                 const expand_all = false;
-                let ModelDatas: any = '';
-                let AllModelDatas: any = '';
-                // fetcher(
-                //     '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                // ).then((res: any) => {
-                //     ModelDatas = res;
-                //     fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res: any) => {
-                //         setSelectItem(null);
-                //         AllModelDatas = res;
-                //         setModelDatas(ModelDatas);
-                //         setAllModelDatas(AllModelDatas);
-                //     });
-                // });
-                if (selectedRuns === runs[0]) {
-                    fetcher('/graph/graph').then((res: any) => {
-                        setModelDatas(res);
-                        setAllModelDatas(res);
+                let ModelDatas:Theobj
+                let AllModelDatas:Theobj
+                fetcher(
+                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                ).then((res) => {
+                    ModelDatas = res
+                    fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res) => {
+                        setSelectItem(null);
+                        AllModelDatas = res
+                        setModelDatas(ModelDatas);
+                        setAllModelDatas(AllModelDatas);
                     });
-                }
+                });
+                // if (runs) {
+                //     if (selectedRuns === runs[0]) {
+                //         fetcher('/graph/graph').then((res : unknown) => {
+                //             const result = res as Theobj
+                //             setModelDatas(result);
+                //             setAllModelDatas(result);
+                //          });
+                //     }
+                // }
             }
         }, [selectedRuns]);
         useEffect(() => {
@@ -279,7 +265,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 const expand_all = true;
                 fetcher(
                     '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                ).then((res: any) => {
+                ).then((res: Theobj) => {
                     setSelectItem(null);
                     setModelDatas(res);
                 });
@@ -293,7 +279,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 const expand_all = false;
                 fetcher(
                     '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                ).then((res: any) => {
+                ).then((res: Theobj) => {
                     setSelectItem(null);
                     setModelDatas(res);
                 });
@@ -327,14 +313,14 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
             // debugger;
             setLoading(true);
-            const selectNodeIds: any = selectNodeId;
+            const selectNodeIds: Theobj = selectNodeId;
             fetcher(
                 '/graph/manipulate' +
                     `?run=${selectedRuns}` +
                     `&nodeid=${selectNodeIds.nodeId}` +
                     `&expand=${selectNodeIds.expand}` +
                     `&keep_state=${isKeepData}`
-            ).then((res: any) => {
+            ).then((res: Theobj) => {
                 setModelDatas(res);
             });
         }, [selectNodeId]);
@@ -344,7 +330,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
             // debugger
             setLoading(true);
-            const searchNodeIds: any = searchNodeId;
+            const searchNodeIds:Theobj = searchNodeId;
             const is_node = searchNodeIds.type === 'node' ? true : false;
             fetcher(
                 '/graph/search' +
@@ -352,7 +338,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     `&nodeid=${searchNodeIds.name}` +
                     `&keep_state=${isKeepData}` +
                     `&is_node=${is_node}`
-            ).then((res: any) => {
+            ).then((res: Theobj) => {
                 setModelDatas(res);
             });
         }, [searchNodeId]);
@@ -381,10 +367,10 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             search(value) {
                 dispatch('search', value);
             },
-            setSelectItems(data: any) {
+            setSelectItems(data: Theobj) {
                 setSelectItem(data);
             },
-            setLoadings(data: any) {
+            setLoadings(data: boolean) {
                 setLoading(data);
             },
             select(item) {

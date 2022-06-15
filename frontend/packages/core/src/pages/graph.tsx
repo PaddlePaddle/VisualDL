@@ -81,8 +81,8 @@
      const file = useRef<HTMLInputElement>(null);
      const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
      const [filesId, setFilesId] = useState(0);
-     const [runs, setRuns] = useState([]);
-     const [selectedRuns, setSelectedRuns] = useState();
+     const [runs, setRuns] = useState<string[]>();
+     const [selectedRuns, setSelectedRuns] = useState<string>('');
      const [isKeepData, setIsKeepData] = useState(false);
  
  
@@ -114,10 +114,10 @@
          if (target && target.files && target.files.length) {
              let files = e.target.files;
              // 通过FormData将文件转成二进制数据
-             fileUploader(files);
+             files && fileUploader(files);
          }
      };
-     const fileUploader = (files: any) => {
+     const fileUploader = (files:FileList) => {
          let formData = new FormData();
          // 将文件转二进制
          formData.append('file', files[0]);
@@ -171,9 +171,10 @@
      const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
      useEffect(() => {
          // debugger
-         fetcher('/graph_runs').then((res: any) => {
-             setRuns(res);
-             setSelectedRuns(res[0]);
+         fetcher('/graph_runs').then((res : unknown) => {
+            const result = res as string[]
+            setRuns(result);
+            setSelectedRuns(result[0]);
          });
      }, [filesId]);
      useEffect(() => {
@@ -295,7 +296,7 @@
                          <AsideSection>
                              <Field label={t('graph:Choose-model')}>
                                  <div className="run-list">
-                                     {runs.map((run:any, index:number) => (
+                                     {runs && runs.map((run:string, index:number) => (
                                          <div key={index}>
                                              <Checkbox2
                                                  selectedRuns={selectedRuns}

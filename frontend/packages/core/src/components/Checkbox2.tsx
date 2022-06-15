@@ -94,7 +94,6 @@ type CheckboxProps = {
 const Checkbox: FunctionComponent<any> = ({
     value,
     checked,
-    selectedRuns,
     children,
     size,
     disabled,
@@ -102,14 +101,6 @@ const Checkbox: FunctionComponent<any> = ({
     title,
     onChange
 }) => {
-    // const [checked, setChecked] = useState(false);
-    // useEffect(() => {
-    //     if (value === selectedRuns) {
-    //         setChecked(true)
-    //     } else {
-    //         setChecked(false)
-    //     }
-    // },[selectedRuns,value]);
     const onChangeInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             if (disabled) {
