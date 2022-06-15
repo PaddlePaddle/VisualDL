@@ -22,7 +22,7 @@
  import {actions, selectors} from '~/store';
  import {primaryColor, rem, size} from '~/utils/style';
  import {useDispatch, useSelector} from 'react-redux';
- import Checkbox2 from '~/components/Checkbox2';
+ import Check from '~/components/Check';
  import Button from '~/components/Button';
  import Checkbox from '~/components/Checkbox';
  import Content from '~/components/Content';
@@ -298,7 +298,7 @@
                                  <div className="run-list">
                                      {runs && runs.map((run:string, index:number) => (
                                          <div key={index}>
-                                             <Checkbox2
+                                             <Check
                                                  selectedRuns={selectedRuns}
                                                  checked={selectedRuns === run ? true : false}
                                                  value={run}
@@ -313,7 +313,7 @@
                                                          {run.split('/')[ run.split('/').length -1]}
                                                      </span>
                                                  {/* </Popover> */}
-                                             </Checkbox2>
+                                             </Check>
                                          </div>
                                      ))}
                                  </div>
