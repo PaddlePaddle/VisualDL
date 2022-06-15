@@ -254,28 +254,28 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 const expand_all = false;
                 let ModelDatas: any = '';
                 let AllModelDatas: any = '';
-                // fetcher(
-                //     '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                // ).then((res: any) => {
-                //     ModelDatas = res;
-                //     fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res: any) => {
-                //         setSelectItem(null);
-                //         AllModelDatas = res;
-                //         setModelDatas(ModelDatas);
-                //         setAllModelDatas(AllModelDatas);
+                fetcher(
+                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                ).then((res: any) => {
+                    ModelDatas = res;
+                    fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res: any) => {
+                        setSelectItem(null);
+                        AllModelDatas = res;
+                        setModelDatas(ModelDatas);
+                        setAllModelDatas(AllModelDatas);
+                    });
+                });
+                // if (selectedRuns === runs[0]) {
+                //     fetcher('/graph/graph2').then((res: any) => {
+                //         setModelDatas(res);
+                //         setAllModelDatas(res);
                 //     });
-                // });
-                if (selectedRuns === runs[0]) {
-                    fetcher('/graph/graph2').then((res: any) => {
-                        setModelDatas(res);
-                        setAllModelDatas(res);
-                    });
-                } else if (selectedRuns === runs[1]) {
-                    fetcher('/graph/graph2').then((res: any) => {
-                        setModelDatas(res);
-                        setAllModelDatas(res);
-                    });
-                }
+                // } else if (selectedRuns === runs[1]) {
+                //     fetcher('/graph/graph2').then((res: any) => {
+                //         setModelDatas(res);
+                //         setAllModelDatas(res);
+                //     });
+                // }
             }
         }, [selectedRuns]);
         useEffect(() => {
