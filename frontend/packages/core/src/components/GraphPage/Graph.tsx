@@ -17,13 +17,13 @@
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
-
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
 import netron from '@visualdl/netron';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
+import {fetcher} from '~/utils/fetch';
 import useTheme from '~/hooks/useTheme';
 import {useTranslation} from 'react-i18next';
 
@@ -87,6 +87,27 @@ const Content = styled.div`
             vertical-align: middle;
         }
     }
+    .small-position {
+        width: ${rem(300)};
+        width: ${rem(200)};
+        position: absolute;
+        right: 0%;
+        bottom: 0%;
+        .small-container {
+            position: relative;
+            .inside-box {
+                background-color: #5b88f1;
+                position: absolute;
+                opacity: 0.3;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                z-index: 200;
+                cursor: move;
+            }
+        }
+    }
 `;
 
 const Loading = styled.div`
@@ -106,8 +127,10 @@ export type GraphRef = {
     changeGraph(name: string): void;
     search(value: string): void;
     select(item: SearchItem): void;
+    setSelectItems(data: any): void;
+    setLoadings(data: any): void;
     showModelProperties(): void;
-    showNodeDocumentation(data: Properties): void;
+    showNodeDocumentation(data: any): void;
 };
 
 type GraphProps = {
@@ -117,6 +140,9 @@ type GraphProps = {
     showInitializers: boolean;
     showNames: boolean;
     horizontal: boolean;
+    isKeepData: boolean;
+    runs: any;
+    selectedRuns: any;
     onRendered?: () => unknown;
     onOpened?: (data: OpenedResult) => unknown;
     onSearch?: (data: SearchResult) => unknown;
@@ -128,9 +154,11 @@ type GraphProps = {
 const Graph = React.forwardRef<GraphRef, GraphProps>(
     (
         {
-            files,
             uploader,
             showAttributes,
+            runs,
+            selectedRuns,
+            isKeepData,
             showInitializers,
             showNames,
             horizontal,
@@ -144,14 +172,19 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         ref
     ) => {
         const {t} = useTranslation('graph');
-
         const theme = useTheme();
-
         const [ready, setReady] = useState(false);
-        const [loading, setLoading] = useState(false);
         const [rendered, setRendered] = useState(false);
-
+        const [loading, setLoading] = useState(true);
+        const [item, setSelectItem] = useState<any>();
+        const [isExpend, setIsExpend] = useState(0);
+        const [isRetract, setIsretract] = useState(0);
+        const [modelDatas, setModelDatas] = useState();
+        const [allModelDatas, setAllModelDatas] = useState();
+        const [selectNodeId, setSelectNodeId] = useState();
+        const [searchNodeId, setSearchNodeId] = useState<any>();
         const iframe = useRef<HTMLIFrameElement>(null);
+        const Canvas = useRef<any>(null);
         const handler = useCallback(
             (event: MessageEvent) => {
                 if (event.data) {
@@ -162,10 +195,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 case 'ready':
                                     return setReady(true);
                                 case 'loading':
-                                    return setLoading(true);
+                                    // return setLoading(true);
+                                    return 1;
                                 case 'rendered':
                                     setLoading(false);
                                     setRendered(true);
+                                    // changeSvg()
                                     onRendered?.();
                                     return;
                             }
@@ -186,6 +221,10 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             return onShowNodeProperties?.(data);
                         case 'show-node-documentation':
                             return onShowNodeDocumentation?.(data);
+                        case 'nodeId':
+                            return setSelectNodeId?.(data);
+                        case 'selectItem':
+                            return setSelectItem?.(data);
                     }
                 }
             },
@@ -207,8 +246,123 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 window.removeEventListener('message', handler);
             };
         }, [handler, dispatch]);
-
-        useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
+        // useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
+        useEffect(() => {
+            if (selectedRuns) {
+                setLoading(true);
+                const refresh = true;
+                const expand_all = false;
+                let ModelDatas: any = '';
+                let AllModelDatas: any = '';
+                // fetcher(
+                //     '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                // ).then((res: any) => {
+                //     ModelDatas = res;
+                //     fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res: any) => {
+                //         setSelectItem(null);
+                //         AllModelDatas = res;
+                //         setModelDatas(ModelDatas);
+                //         setAllModelDatas(AllModelDatas);
+                //     });
+                // });
+                if (selectedRuns === runs[0]) {
+                    fetcher('/graph/graph2').then((res: any) => {
+                        setModelDatas(res);
+                        setAllModelDatas(res);
+                    });
+                } else if (selectedRuns === runs[1]) {
+                    fetcher('/graph/graph2').then((res: any) => {
+                        setModelDatas(res);
+                        setAllModelDatas(res);
+                    });
+                }
+            }
+        }, [selectedRuns]);
+        useEffect(() => {
+            if (isExpend) {
+                // debugger
+                setLoading(true);
+                const refresh = false;
+                const expand_all = true;
+                fetcher(
+                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                ).then((res: any) => {
+                    setSelectItem(null);
+                    setModelDatas(res);
+                });
+            }
+        }, [isExpend]);
+        useEffect(() => {
+            if (isRetract) {
+                // debugger
+                setLoading(true);
+                const refresh = true;
+                const expand_all = false;
+                fetcher(
+                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                ).then((res: any) => {
+                    setSelectItem(null);
+                    setModelDatas(res);
+                });
+            }
+        }, [isRetract]);
+        useEffect(() => {
+            if (ready) {
+                dispatch('change-select', item);
+            }
+        }, [dispatch, item, ready]);
+        useEffect(() => {
+            if (!allModelDatas) {
+                return;
+            }
+            if (ready) {
+                dispatch('change-allGraph', allModelDatas);
+            }
+        }, [dispatch, allModelDatas, ready]);
+        useEffect(() => {
+            if (!modelDatas) {
+                return;
+            }
+            // debugger
+            if (ready) {
+                dispatch('change-graph', modelDatas);
+            }
+        }, [dispatch, modelDatas, ready]);
+        useEffect(() => {
+            if (!selectNodeId) {
+                return;
+            }
+            // debugger;
+            setLoading(true);
+            const selectNodeIds: any = selectNodeId;
+            fetcher(
+                '/graph/manipulate' +
+                    `?run=${selectedRuns}` +
+                    `&nodeid=${selectNodeIds.nodeId}` +
+                    `&expand=${selectNodeIds.expand}` +
+                    `&keep_state=${isKeepData}`
+            ).then((res: any) => {
+                setModelDatas(res);
+            });
+        }, [selectNodeId]);
+        useEffect(() => {
+            if (!searchNodeId) {
+                return;
+            }
+            // debugger
+            setLoading(true);
+            const searchNodeIds: any = searchNodeId;
+            const is_node = searchNodeIds.type === 'node' ? true : false;
+            fetcher(
+                '/graph/search' +
+                    `?run=${selectedRuns}` +
+                    `&nodeid=${searchNodeIds.name}` +
+                    `&keep_state=${isKeepData}` +
+                    `&is_node=${is_node}`
+            ).then((res: any) => {
+                setModelDatas(res);
+            });
+        }, [searchNodeId]);
         useEffect(
             () => (ready && dispatch('toggle-attributes', showAttributes)) || undefined,
             [dispatch, showAttributes, ready]
@@ -218,6 +372,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             [dispatch, showInitializers, ready]
         );
         useEffect(() => (ready && dispatch('toggle-names', showNames)) || undefined, [dispatch, showNames, ready]);
+        // useEffect(() => (ready && dispatch('toggle-KeepData', isKeepData)) || undefined, [dispatch, showNames, ready]);
         useEffect(
             () => (ready && dispatch('toggle-direction', horizontal)) || undefined,
             [dispatch, horizontal, ready]
@@ -225,6 +380,18 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
 
         useEffect(() => (ready && dispatch('toggle-theme', theme)) || undefined, [dispatch, theme, ready]);
 
+        // useEffect(() => {
+        //     if (!rendered || !ready) {
+        //         return;
+        //     }
+        //     initSmallMap(true)
+        // }, [rendered,ready]);
+        // useEffect(()=>{
+        //     if (!graph || !insideBox || !smallMap || !smallContainer) {
+        //         return
+        //     }
+        //     setSmallMapEvents(graph, insideBox);
+        // },[graph, insideBox,smallMap, smallContainer,clickSmall])
         useImperativeHandle(ref, () => ({
             export(type) {
                 dispatch('export', type);
@@ -235,8 +402,41 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             search(value) {
                 dispatch('search', value);
             },
+            setSelectItems(data: any) {
+                setSelectItem(data);
+            },
+            setLoadings(data: any) {
+                setLoading(data);
+            },
             select(item) {
-                dispatch('select', item);
+                let a = document.querySelector('iframe') as HTMLIFrameElement;
+                let documents = a.contentWindow?.document as Document;
+                if (item.type === 'node') {
+                    for (const node of documents.getElementsByClassName('cluster')) {
+                        // dispatchs(node.name,item)
+                        if (node.getAttribute('id') === `node-${item.name}`) {
+                            dispatch('select', item);
+                            return;
+                        }
+                    }
+                    for (const node of documents.getElementsByClassName('node')) {
+                        // dispatchs(node.name,item)
+                        if (node.getAttribute('id') === `node-${item.name}`) {
+                            dispatch('select', item);
+                            return;
+                        }
+                    }
+                } else if (item.type === 'input') {
+                    for (const node of documents.getElementsByClassName('edge-path')) {
+                        // dispatchs(node.name,item)
+                        if (node.getAttribute('id') === `edge-${item.name}`) {
+                            dispatch('select', item);
+                            return;
+                        }
+                    }
+                }
+                setSelectItem(item);
+                setSearchNodeId(item);
             },
             showModelProperties() {
                 dispatch('show-model-properties');
@@ -245,24 +445,51 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 dispatch('show-node-documentation', data);
             }
         }));
-
         const content = useMemo(() => {
-            if (!ready || loading) {
+            if (loading) {
                 return (
                     <Loading>
                         <HashLoader size="60px" color={primaryColor} />
                     </Loading>
                 );
             }
-            if (ready && !rendered) {
+            return null;
+        }, [loading]);
+        const uploaderContent = useMemo(() => {
+            if (!runs && !loading) {
                 return uploader;
             }
-            return null;
-        }, [ready, loading, rendered, uploader]);
-
+        }, [runs, loading, uploader]);
+        const svgContent = useMemo(() => {
+            // if(!rendered) {
+            //     return
+            // }
+            // debugger
+            return (
+                <Content>
+                    <iframe
+                        ref={iframe}
+                        src={PUBLIC_PATH + netron}
+                        frameBorder={0}
+                        scrolling="yes"
+                        marginWidth={0}
+                        marginHeight={0}
+                    ></iframe>
+                    <a
+                        className="powered-by"
+                        href="https://github.com/lutzroeder/netron"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Powered by <img src={PUBLIC_PATH + logo} alt="netron" />
+                    </a>
+                </Content>
+            );
+        }, [rendered]);
         return (
             <Wrapper>
                 {content}
+                {uploaderContent}
                 <RenderContent show={!loading && rendered}>
                     <Toolbox
                         items={[
@@ -278,31 +505,27 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             },
                             {
                                 icon: 'restore-size',
-                                tooltip: t('graph:restore-size'),
-                                onClick: () => dispatch('zoom-reset')
+                                tooltip: t('expend-size'),
+                                onClick: () => {
+                                    const id = isExpend + 1;
+                                    // changeExpend(id);
+                                    setIsExpend(id);
+                                }
+                            },
+                            {
+                                icon: 'shrink',
+                                tooltip: t('restore-size'),
+                                onClick: () => {
+                                    const id = isRetract + 1;
+                                    // changeRetract(id);
+                                    setIsretract(id);
+                                }
                             }
                         ]}
                         reversed
                         tooltipPlacement="bottom"
                     />
-                    <Content>
-                        <iframe
-                            ref={iframe}
-                            src={PUBLIC_PATH + netron}
-                            frameBorder={0}
-                            scrolling="no"
-                            marginWidth={0}
-                            marginHeight={0}
-                        ></iframe>
-                        <a
-                            className="powered-by"
-                            href="https://github.com/lutzroeder/netron"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Powered by <img src={PUBLIC_PATH + logo} alt="netron" />
-                        </a>
-                    </Content>
+                    {svgContent}
                 </RenderContent>
             </Wrapper>
         );
@@ -312,3 +535,37 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
 Graph.displayName = 'Graph';
 
 export default Graph;
+
+{
+    /* <div id="small-position" className="small-position">
+                            <div id="small-container" className="small-container">
+                                <div
+                                    id="inside-box"
+                                    className="inside-box"
+                                    style={{
+                                        width: insideBox?.width,
+                                        height: insideBox?.height,
+                                        left: insideBox?.left,
+                                        top: insideBox?.top
+                                    }}
+                                ></div>
+                                <canvas
+                                    ref={Canvas}
+                                    style={{
+                                        width: smallContainer?.width,
+                                        height: smallContainer?.height
+                                    }}
+                                ></canvas>
+                            </div>
+                        </div> */
+}
+// const [smallContainer, setSmallContainer] = useState<any>(null);
+// const [smallMap, setSmallMap] = useState();
+// const [insideBox, setInsideBox] = useState<any>(null);
+// const [clickSmall, setClickSmall] = useState(false);
+// const [svg, setSvg] = useState(null);
+// const [graph, setGraph] = useState(null);
+// const [img, setImg] = useState(null);
+// const eventDelay = 200;
+// Which mouse button is triggered when the thumbnail is clicked. -1 indicates that no click event is triggered,
+// 0 indicates the left key, 1 indicates the middle key, and 2 means right key.
