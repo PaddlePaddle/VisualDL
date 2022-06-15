@@ -317,12 +317,9 @@ view.View = class {
                     return this.renderGraph(this._model, this._activeGraph)
                         .then(() => {
                             this._host.status('rendered');
+                        }).finally(() => {
                             throw error;
                         })
-                        .catch(() => {
-                            throw error;
-                        });
-                    throw error;
                 });
         });
     }
@@ -354,12 +351,9 @@ view.View = class {
                     return this.renderGraph(this._model, this._activeGraph)
                         .then(() => {
                             this._host.status('rendered');
+                        }).finally(() => {
                             throw error;
                         })
-                        .catch(() => {
-                            throw error;
-                        });
-                    throw error;
                 });
         });
     }
