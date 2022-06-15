@@ -71,18 +71,6 @@
      }
  `;
  
- const Loading = styled.div`
-     ${size('100%', '100%')}
-     display: flex;
-     flex-direction: column;
-     justify-content: center;
-     align-items: center;
-     overscroll-behavior: none;
-     cursor: progress;
-     font-size: ${rem(16)};
-     line-height: ${rem(60)};
- `;
- 
  const Graph: FunctionComponent = () => {
      const {t} = useTranslation(['graph', 'common']);
  
@@ -97,7 +85,6 @@
      const [selectedRuns, setSelectedRuns] = useState();
      const [isKeepData, setIsKeepData] = useState(false);
  
-     // const [item, setSelectItem] = useState<any>();
  
      const setModelFile = useCallback(
          (f: FileList | File[]) => {
@@ -216,9 +203,6 @@
          if (!rendered) {
              return null;
          }
-         // if (loading) {
-         //     return null;
-         // }
          if (nodeDocumentation) {
              return (
                  <Aside width={rem(360)}>
@@ -318,7 +302,7 @@
                                                  checked={selectedRuns === run ? true : false}
                                                  value={run}
                                                  title={run}
-                                                 onChange={(value: any) => {
+                                                 onChange={(value: string) => {
                                                      setSelectedRuns(run);
                                                  }}
                                              >
@@ -355,7 +339,6 @@
          showNames,
          horizontal,
          rendered,
-         // loading,
          nodeData,
          nodeDocumentation
      ]);

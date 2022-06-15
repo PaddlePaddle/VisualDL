@@ -184,7 +184,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         const [selectNodeId, setSelectNodeId] = useState();
         const [searchNodeId, setSearchNodeId] = useState<any>();
         const iframe = useRef<HTMLIFrameElement>(null);
-        const Canvas = useRef<any>(null);
         const handler = useCallback(
             (event: MessageEvent) => {
                 if (event.data) {
@@ -246,7 +245,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 window.removeEventListener('message', handler);
             };
         }, [handler, dispatch]);
-        // useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
         useEffect(() => {
             if (selectedRuns) {
                 setLoading(true);
@@ -254,28 +252,23 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 const expand_all = false;
                 let ModelDatas: any = '';
                 let AllModelDatas: any = '';
-                fetcher(
-                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                ).then((res: any) => {
-                    ModelDatas = res;
-                    fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res: any) => {
-                        setSelectItem(null);
-                        AllModelDatas = res;
-                        setModelDatas(ModelDatas);
-                        setAllModelDatas(AllModelDatas);
+                // fetcher(
+                //     '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                // ).then((res: any) => {
+                //     ModelDatas = res;
+                //     fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`).then((res: any) => {
+                //         setSelectItem(null);
+                //         AllModelDatas = res;
+                //         setModelDatas(ModelDatas);
+                //         setAllModelDatas(AllModelDatas);
+                //     });
+                // });
+                if (selectedRuns === runs[0]) {
+                    fetcher('/graph/graph').then((res: any) => {
+                        setModelDatas(res);
+                        setAllModelDatas(res);
                     });
-                });
-                // if (selectedRuns === runs[0]) {
-                //     fetcher('/graph/graph2').then((res: any) => {
-                //         setModelDatas(res);
-                //         setAllModelDatas(res);
-                //     });
-                // } else if (selectedRuns === runs[1]) {
-                //     fetcher('/graph/graph2').then((res: any) => {
-                //         setModelDatas(res);
-                //         setAllModelDatas(res);
-                //     });
-                // }
+                }
             }
         }, [selectedRuns]);
         useEffect(() => {
@@ -372,26 +365,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             [dispatch, showInitializers, ready]
         );
         useEffect(() => (ready && dispatch('toggle-names', showNames)) || undefined, [dispatch, showNames, ready]);
-        // useEffect(() => (ready && dispatch('toggle-KeepData', isKeepData)) || undefined, [dispatch, showNames, ready]);
         useEffect(
             () => (ready && dispatch('toggle-direction', horizontal)) || undefined,
             [dispatch, horizontal, ready]
         );
 
         useEffect(() => (ready && dispatch('toggle-theme', theme)) || undefined, [dispatch, theme, ready]);
-
-        // useEffect(() => {
-        //     if (!rendered || !ready) {
-        //         return;
-        //     }
-        //     initSmallMap(true)
-        // }, [rendered,ready]);
-        // useEffect(()=>{
-        //     if (!graph || !insideBox || !smallMap || !smallContainer) {
-        //         return
-        //     }
-        //     setSmallMapEvents(graph, insideBox);
-        // },[graph, insideBox,smallMap, smallContainer,clickSmall])
         useImperativeHandle(ref, () => ({
             export(type) {
                 dispatch('export', type);
@@ -413,14 +392,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 let documents = a.contentWindow?.document as Document;
                 if (item.type === 'node') {
                     for (const node of documents.getElementsByClassName('cluster')) {
-                        // dispatchs(node.name,item)
                         if (node.getAttribute('id') === `node-${item.name}`) {
                             dispatch('select', item);
                             return;
                         }
                     }
                     for (const node of documents.getElementsByClassName('node')) {
-                        // dispatchs(node.name,item)
                         if (node.getAttribute('id') === `node-${item.name}`) {
                             dispatch('select', item);
                             return;
@@ -428,7 +405,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     }
                 } else if (item.type === 'input') {
                     for (const node of documents.getElementsByClassName('edge-path')) {
-                        // dispatchs(node.name,item)
                         if (node.getAttribute('id') === `edge-${item.name}`) {
                             dispatch('select', item);
                             return;
@@ -461,10 +437,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
         }, [runs, loading, uploader]);
         const svgContent = useMemo(() => {
-            // if(!rendered) {
-            //     return
-            // }
-            // debugger
             return (
                 <Content>
                     <iframe
@@ -508,7 +480,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 tooltip: t('expend-size'),
                                 onClick: () => {
                                     const id = isExpend + 1;
-                                    // changeExpend(id);
                                     setIsExpend(id);
                                 }
                             },
@@ -517,7 +488,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 tooltip: t('restore-size'),
                                 onClick: () => {
                                     const id = isRetract + 1;
-                                    // changeRetract(id);
                                     setIsretract(id);
                                 }
                             }
@@ -535,37 +505,3 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
 Graph.displayName = 'Graph';
 
 export default Graph;
-
-{
-    /* <div id="small-position" className="small-position">
-                            <div id="small-container" className="small-container">
-                                <div
-                                    id="inside-box"
-                                    className="inside-box"
-                                    style={{
-                                        width: insideBox?.width,
-                                        height: insideBox?.height,
-                                        left: insideBox?.left,
-                                        top: insideBox?.top
-                                    }}
-                                ></div>
-                                <canvas
-                                    ref={Canvas}
-                                    style={{
-                                        width: smallContainer?.width,
-                                        height: smallContainer?.height
-                                    }}
-                                ></canvas>
-                            </div>
-                        </div> */
-}
-// const [smallContainer, setSmallContainer] = useState<any>(null);
-// const [smallMap, setSmallMap] = useState();
-// const [insideBox, setInsideBox] = useState<any>(null);
-// const [clickSmall, setClickSmall] = useState(false);
-// const [svg, setSvg] = useState(null);
-// const [graph, setGraph] = useState(null);
-// const [img, setImg] = useState(null);
-// const eventDelay = 200;
-// Which mouse button is triggered when the thumbnail is clicked. -1 indicates that no click event is triggered,
-// 0 indicates the left key, 1 indicates the middle key, and 2 means right key.
