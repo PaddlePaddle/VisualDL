@@ -16,7 +16,8 @@ import collections
 import os.path
 import re
 
-from paddle.core import AttrType
+from paddle.framework import core
+AttrType = core.AttrType
 
 attr_type_name = {
     AttrType.INT: "INT",
@@ -37,7 +38,7 @@ _graph_version = '1.0.0'
 
 
 def analyse_model(model_pb):
-    from paddle.core import ProgramDesc
+    ProgramDesc = core.ProgramDesc
     from paddle.utils.unique_name import generate
     program_desc = ProgramDesc(model_pb)
     all_ops = {}

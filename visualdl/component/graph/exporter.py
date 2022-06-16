@@ -29,7 +29,8 @@ def translate_graph(model, input_spec, verbose=True):
         model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
         result = analyse_model(model_data)
     if verbose:
-        from paddle.core import ProgramDesc
+        from paddle.framework import core
+        ProgramDesc = core.ProgramDesc
         program_desc = ProgramDesc(model_data)
         print(program_desc)
     result = json.dumps(result, indent=2)
