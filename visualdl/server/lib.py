@@ -63,21 +63,26 @@ def get_scalars_tags(log_reader):
     component = "scalars"
     all_tag = log_reader.data_manager.get_reservoir(component).keys
     tags = {}
+    subruns = {}
     for item in all_tag:
         # remove sub tags
         index = item.rfind('/')
-        sub_tag = encode_tag(item[index+1:])
+        sub_run = encode_tag(item[index+1:])
         item = item[0:index]
         index = item.rfind('/')
         run = item[0:index]
         tag = encode_tag(item[index + 1:])
         if run in tags.keys():
-            if tag in tags[run]:
-                tags[run][tag].append(sub_tag)
-            else:
-                tags[run][tag] = [sub_tag]
+            tags[run].append(tag)
         else:
-            tags[run] = {tag: [sub_tag]}
+            tags[run] = [tag]
+        if tag in subruns:
+            if run in subruns[tag]:
+                subruns[tag][run].append(sub_run)
+            else:
+                subruns[tag][run] = [sub_run]
+        else:
+            subruns[tag] = {run:[sub_run]}
         if run not in log_reader.tags2name.keys():
             log_reader.tags2name[run] = run
             log_reader.name2tags[run] = run
@@ -87,12 +92,21 @@ def get_scalars_tags(log_reader):
             fake_tags[log_reader.tags2name[key]] = value
         else:
             fake_tags[key] = value
+    fake_subruns = {}
+    for key, value in subruns.items():
+        fake_subruns[key] = {}
+        for run, subrun_list in value.items():
+            if run in log_reader.tags2name:
+                fake_subruns[key][log_reader.tags2name[run]] = subrun_list
+            else:
+                fake_subruns[key][run] = subrun_list
 
-    run2tag = {'runs': [], 'tags': []}
+    run2tag = {'runs': [], 'tags': [], 'sub_tags': fake_subruns}
     for run, tags in fake_tags.items():
         run2tag['runs'].append(run)
         run2tag['tags'].append(tags)
 
+    runname_sub_map = {}
     run_prefix = os.getenv('VISUALDL_RUN_PREFIX')
     global MODIFY_PREFIX, MODIFIED_RUNS
     if component not in MODIFY_PREFIX:
@@ -114,10 +128,17 @@ def get_scalars_tags(log_reader):
                 log_reader.tags2name.update({value: temp_key})
 
                 run2tag['runs'][run2tag['runs'].index(key)] = temp_key
+                runname_sub_map[key] = temp_key
             else:
                 temp_key = key
 
             MODIFIED_RUNS.append(temp_key)
+    # modify according run names in run2tag['sub_tags']
+    for key, value in run2tag['sub_tags'].items():
+        for run, subrun_list in value.items():
+            if run in runname_sub_map:
+                run2tag['sub_tags'][key].pop(run)
+                run2tag['sub_tags'][key][runname_sub_map[run]] = subrun_list
 
     return run2tag
 
