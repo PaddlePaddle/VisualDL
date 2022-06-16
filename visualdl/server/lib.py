@@ -81,7 +81,6 @@ def get_scalars_tags(log_reader):
         if run not in log_reader.tags2name.keys():
             log_reader.tags2name[run] = run
             log_reader.name2tags[run] = run
-    return tags
     fake_tags = {}
     for key, value in tags.items():
         if key in log_reader.tags2name:
