@@ -1,13 +1,10 @@
 bce-python-sdk
-flake8 >= 3.7.9
-flask >= 1.1.1
-Flask-Babel >= 1.0.0
+flask >= 2.1.0
+Flask-Babel >= 2.0.0
 numpy
 Pillow >= 7.0.0
-pre-commit
 protobuf >= 3.11.0
 requests
-shellcheck-py
 six >= 1.14.0
 matplotlib
 pandas
