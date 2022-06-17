@@ -15,13 +15,11 @@
 from collections import Counter
 from collections import deque
 
-import paddle.nn as nn
-from paddle.static import name_scope
-
 _name_scope_stack = deque()
 
 
 def _opname_creation_prehook(layer, inputs):
+    from paddle.static import name_scope
     global _name_scope_stack
     _name_scope_stack.append(name_scope(layer.full_name()))
     _name_scope_stack[-1].__enter__()
@@ -33,7 +31,7 @@ def _opname_creation_posthook(layer, inputs, outputs):
     name_scope_manager.__exit__(None, None, None)
 
 
-def create_opname_scope(layer: nn.Layer):
+def create_opname_scope(layer):
     layer.register_forward_pre_hook(_opname_creation_prehook)
     for name, sublayer in layer.named_children():
         sublayer._full_name = '{}[{}]'.format(sublayer.__class__.__name__,
