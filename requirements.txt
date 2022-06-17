@@ -1,6 +1,6 @@
 bce-python-sdk
-flask >= 2.1.0
-Flask-Babel >= 2.0.0
+flask >= 1.1.1
+Flask-Babel >= 1.0.0
 numpy
 Pillow >= 7.0.0
 protobuf >= 3.11.0
