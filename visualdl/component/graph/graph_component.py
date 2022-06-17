@@ -16,28 +16,33 @@ import collections
 import os.path
 import re
 
-from paddle.framework import core
-AttrType = core.AttrType
-
-attr_type_name = {
-    AttrType.INT: "INT",
-    AttrType.INTS: "INTS",
-    AttrType.LONG: "LONG",
-    AttrType.LONGS: "LONGS",
-    AttrType.FLOAT: "FLOAT",
-    AttrType.FLOATS: "FLOATS",
-    AttrType.STRING: "STRING",
-    AttrType.STRINGS: "STRINGS",
-    AttrType.BOOL: "BOOL",
-    AttrType.BOOLS: "BOOLS",
-    AttrType.BLOCK: "BLOCK",
-    AttrType.BLOCKS: "BLOCKS"
-}
-
 _graph_version = '1.0.0'
 
 
-def analyse_model(model_pb):
+def analyse_model(model_pb):  # noqa: C901
+    try:
+        from paddle.framework import core
+    except Exception:
+        print("Paddlepaddle is required to use add_graph interface.\n\
+              Please refer to \
+              https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html\
+              to install paddlepaddle.")
+
+    AttrType = core.AttrType
+    attr_type_name = {
+        AttrType.INT: "INT",
+        AttrType.INTS: "INTS",
+        AttrType.LONG: "LONG",
+        AttrType.LONGS: "LONGS",
+        AttrType.FLOAT: "FLOAT",
+        AttrType.FLOATS: "FLOATS",
+        AttrType.STRING: "STRING",
+        AttrType.STRINGS: "STRINGS",
+        AttrType.BOOL: "BOOL",
+        AttrType.BOOLS: "BOOLS",
+        AttrType.BLOCK: "BLOCK",
+        AttrType.BLOCKS: "BLOCKS"
+    }
     ProgramDesc = core.ProgramDesc
     from paddle.utils.unique_name import generate
     program_desc = ProgramDesc(model_pb)
