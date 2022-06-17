@@ -154,7 +154,9 @@
          },
          ref
      ) => {
-         const {t} = useTranslation('graph');
+         const {t,i18n} = useTranslation('graph');
+         const language:string = i18n.language
+         console.log('language',language);
          const theme = useTheme();
          const [ready, setReady] = useState(false);
          const [rendered, setRendered] = useState(false);
@@ -177,12 +179,10 @@
                                  case 'ready':
                                      return setReady(true);
                                  case 'loading':
-                                     // return setLoading(true);
                                      return 1;
                                  case 'rendered':
                                      setLoading(false);
                                      setRendered(true);
-                                     // changeSvg()
                                      onRendered?.();
                                      return;
                              }
@@ -221,6 +221,9 @@
                  IFRAME_HOST
              );
          }, []);
+         useEffect(()=>{
+            keydown()
+         },[])
          useEffect(() => {
              window.addEventListener('message', handler);
              dispatch('ready');
@@ -232,6 +235,7 @@
              if (selectedRuns) {
                  setLoading(true);
                  getGraph()
+                 // getAllGraph()
              }
          }, [selectedRuns]);
          useEffect(() => {
@@ -332,8 +336,9 @@
              () => (ready && dispatch('toggle-direction', horizontal)) || undefined,
              [dispatch, horizontal, ready]
          );
- 
          useEffect(() => (ready && dispatch('toggle-theme', theme)) || undefined, [dispatch, theme, ready]);
+         useEffect(() => (ready && dispatch('toggle-Language', language)) || undefined, [dispatch, language,ready]);
+
          useImperativeHandle(ref, () => ({
              export(type) {
                  dispatch('export', type);
@@ -384,11 +389,26 @@
                  dispatch('show-node-documentation', data);
              }
          }));
+         const keydown = () => {
+            document.addEventListener("keydown",(e) => {
+                if (e.code === 'MetaLeft') {
+                    dispatch('isAlt', true);
+                }
+            })
+            document.addEventListener("keyup",(e) => {
+                if (e.code === 'MetaLeft') {
+                    dispatch('isAlt', false);
+                }
+            })
+        }
          const getGraph = async () => {
              const refresh = true;
              const expand_all = false;
-             const result = await fetcher('/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`);
+             const result = await fetcher('/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`);
+             console.log('result',result);
+             
              const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
+            // const allResult = await fetcher('/graph/graph2' + `?run=${selectedRuns}`);
              setSelectItem(null);
              if (result) setModelDatas(result);
              if (allResult) setAllModelDatas(allResult);

@@ -72,17 +72,23 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     running
 }) => {
     const {t, i18n} = useTranslation(['scalar', 'common']);
-
+    console.log('runs',runs);
     const {
         data: datasetsWithNull,
         error,
         loading
     } = useRunningRequest<(ScalarDataset | null)[]>(
-        runs.map(run => `/scalar/list?${queryString.stringify({run: run.label, tag})}`),
+        runs.map((run) => {
+                const newRun = run.label.split('/')[0]
+                const sub_tags = run.label.split('/')[1]
+                console.log(`/scalar/list?${queryString.stringify({run: newRun, tag,sub_tags:sub_tags})}`);
+                return `/scalar/list?${queryString.stringify({run: newRun, tag,sub_tags:sub_tags})}`
+        }),
         !!running,
         (...urls) => cycleFetcher(urls)
     );
-
+    console.log('data1',datasetsWithNull);
+    
     const datasets = useMemo(
         () => (datasetsWithNull?.filter(r => r != null).slice(0, runs.length) ?? []) as ScalarDataset[],
         [datasetsWithNull, runs.length]

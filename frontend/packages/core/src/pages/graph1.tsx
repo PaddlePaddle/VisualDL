@@ -99,23 +99,17 @@
              file.current.click();
          }
      }, []);
-     // const onChangeFile = useCallback(
-     //     (e: React.ChangeEvent<HTMLInputElement>) => {
-     //         const target = e.target;
-     //         if (target && target.files && target.files.length) {
-     //             // setModelFile(target.files);
-     //         }
-     //     },
-     //     [setModelFile]
-     // );
      const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-         const target = e.target;
-         // debugger
-         if (target && target.files && target.files.length) {
-             let files = e.target.files;
-             // 通过FormData将文件转成二进制数据
-             files && fileUploader(files);
-         }
+        const target = e.target as EventTarget & HTMLInputElement
+        const file:any= target.files
+        console.log('file[0]',file[0].name.split('.')[1]);
+        if (file[0].name.split('.')[1] !== 'pdmodel') {
+            alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面')
+            return
+        }
+        if (target && target.files && target.files.length) {
+            setModelFile(target.files);
+        }
      };
      const fileUploader = (files:FileList) => {
          let formData = new FormData();

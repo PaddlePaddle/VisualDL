@@ -64,17 +64,10 @@ host.BrowserHost = class {
                     const type = originalData.type;
                     const data = originalData.data;
                     switch (type) {
-                        // 在此书添加一个this._view的事件传递Graph页面过来的数据
                         case 'change-files':
                             return this._changeFiles(data);
                         case 'zoom-in':
                             return this._view.zoomIn();
-                        case 'select-item':
-                            return this._view.selectItem(data);
-                        case 'toggle-Language':
-                            return this._view.toggleLanguage(data);
-                        case 'isAlt':
-                            return this._view.changeAlt(data);
                         case 'zoom-out':
                             return this._view.zoomOut();
                         case 'zoom-reset':
@@ -85,8 +78,6 @@ host.BrowserHost = class {
                             return this._view.toggleInitializers(data);
                         case 'toggle-names':
                             return this._view.toggleNames(data);
-                        case 'toggle-KeepData':
-                            return this._view.toggleKeepData(data);
                         case 'toggle-direction':
                             return this._view.toggleDirection(data);
                         case 'toggle-theme':
@@ -95,10 +86,6 @@ host.BrowserHost = class {
                             return this._view.export(`${document.title}.${data}`);
                         case 'change-graph':
                             return this._view.changeGraph(data);
-                        case 'change-allGraph':
-                            return this._view.changeAllGrap(data);
-                        case 'change-select':
-                            return this._view.changeSelect(data);
                         case 'search':
                             return this._view.find(data);
                         case 'select':
@@ -128,16 +115,8 @@ host.BrowserHost = class {
         }
     }
 
-    status(status) { // 反传回去
+    status(status) {
         this.message('status', status);
-    }
-    selectNodeId(nodeInfo) { // 反传回去
-        console.log('节点点击事件触发了',nodeInfo);
-        this.message('nodeId', nodeInfo);
-    }
-    selectItems(item) { // 反传回去
-        console.log('节点点击事件触发了',item);
-        this.message('selectItem', item);
     }
 
     error(message, detail) {

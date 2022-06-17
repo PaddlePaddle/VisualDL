@@ -98,6 +98,7 @@ const ChartPage = <T extends Item>({
     className
 }: PropsWithChildren<ChartPageProps<T> & WithStyled>): ReturnType<FunctionComponent> => {
     const {t} = useTranslation('common');
+    console.log('items',items);
 
     const [page, setPage] = useState(1);
     const pageSize = 12;
@@ -126,6 +127,7 @@ const ChartPage = <T extends Item>({
     const groupedItems = useMemo(
         () =>
             Object.entries(groupBy<T>(items ?? [], item => item.label.split('/')[0])).sort(([a], [b]) => {
+                console.log('items',items);
                 const ua = a.toUpperCase();
                 const ub = b.toUpperCase();
                 if (ua < ub) {
@@ -148,6 +150,7 @@ const ChartPage = <T extends Item>({
                     loader
                 ) : charts.length ? (
                     charts.map((item, j) => {
+                        console.log('item',item);
                         return <React.Fragment key={item.id || item.label}>{renderChart?.(item, j)}</React.Fragment>;
                     })
                 ) : (
@@ -169,6 +172,7 @@ const ChartPage = <T extends Item>({
     );
 
     const content = useMemo(() => {
+        console.log('groupedItems',groupedItems);
         if (loading) {
             return Array.from({length: 3}).map((_, index) => (
                 <ChartCollapse key={index} title={<ChartCollapseTitleLoader />} opened={!index}>

@@ -14,28 +14,10 @@
  * limitations under the License.
  */
 
-// cSpell:disable
-
-import graph from '../../assets/graph/yolov3.cfg';
-
-export default async () => {
-    const result = await fetch(graph);
-
-    return new Response(await result.arrayBuffer(), {
-        status: 200,
-        headers: {
-            'Content-Type': 'application/octet-stream',
-            'Content-Disposition': 'attachment; filename="yolov3.cfg"'
-        }
-    });
+window.base = require('netron/src/base');
+window.flatbuffers = require('netron/src/flatbuffers');
+window.long = {
+    Long: require('long')
 };
-// export default {
-//     'inputs':[{
-//         'arguments':[{
-//             'initializer': null,
-//             'name':'x',
-
-//         }]
-//     }]
-// }
-
+window.protobuf = require('netron/src/protobuf');
+window.zip = require('netron/src/zip');

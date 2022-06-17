@@ -184,14 +184,17 @@ const ImagePreviewer: FunctionComponent<ImagePreviewerProps> = ({
             img.onload = () => {
                 const rect = container.current?.getBoundingClientRect();
                 if (rect) {
+                    // img.naturalWidth 以像素为单位返回图像的原始宽度
                     const r = rect.width / rect.height;
                     const ir = img.naturalWidth / img.naturalHeight;
+                    // 如果容器宽高比大于图片的宽高比， 且 图片的高度大于容器
                     if (r >= ir && img.naturalHeight > rect.height * 0.9) {
                         setHeight(rect.height * 0.9);
                         setWidth(ir * rect.height * 0.9);
                     } else if (ir >= r && img.naturalWidth > rect.width * 0.9) {
                         setWidth(rect.width * 0.9);
-                        setHeight(ir * rect.width * 0.9);
+                        // setHeight(ir * rect.width * 0.9);
+                        setHeight(rect.width / ir * 0.9);
                     } else {
                         setWidth(img.naturalWidth);
                         setHeight(img.naturalHeight);

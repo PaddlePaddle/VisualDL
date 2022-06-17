@@ -12,10 +12,10 @@ grapher.Renderer = class {
     }
 
     render(graph) {
-        let svgClusterGroup = null;
-        let svgEdgePathGroup = null;
-        let svgEdgeLabelGroup = null;
-        let svgNodeGroup = null;
+        let svgClusterGroup = null
+        let svgEdgePathGroup = null
+        let svgEdgeLabelGroup = null
+        let svgNodeGroup = null
         svgClusterGroup = this.createElement('g');
         svgClusterGroup.setAttribute('id', 'clusters');
         svgClusterGroup.setAttribute('class', 'clusters');
@@ -35,17 +35,28 @@ grapher.Renderer = class {
         svgNodeGroup.setAttribute('id', 'nodes');
         svgNodeGroup.setAttribute('class', 'nodes');
         this._svgElement.appendChild(svgNodeGroup);
+        // } else {
+        //     svgClusterGroup = this._document.getElementById('clusters')
+        //     svgEdgePathGroup = this._document.getElementById('edge-paths')
+        //     svgEdgeLabelGroup = this._document.getElementById('edge-labels')
+        //     svgNodeGroup = this._document.getElementById('nodes')
+        // }
+        
 
         for (const nodeId of graph.nodes()) {
             if (graph.children(nodeId).length == 0) {
                 const node = graph.node(nodeId);
+                // 在这里进行缓存的判断
+                // console.log('this._document', this._document);
+                // const nodeDom = this._document.getElementById(node.id);
+                // console.log('nodeDom', nodeDom);
                 if (this._view._nodes.hasOwnProperty(node.id)) {
                     // 这个节点存在过
                     svgNodeGroup.appendChild(this._view._nodes[node.id]);
                     const nodeBox = this._view._nodes[node.id].getBBox();
                     node.width = nodeBox.width;
                     node.height = nodeBox.height;
-                    node.element = this._view._nodes[node.id];
+                    node.element = this._view._nodes[node.id]
                 } else {
                     const element = this.createElement('g');
                     if (node.id) {
@@ -58,6 +69,7 @@ grapher.Renderer = class {
                     element.style.opacity = 0;
                     const container = this.createElement('g');
                     container.appendChild(node.label);
+                    // node.label 就是fromat 之后的节点
                     element.appendChild(container);
                     svgNodeGroup.appendChild(element);
                     const nodeBox = node.label.getBBox();
@@ -171,8 +183,16 @@ grapher.Renderer = class {
         for (const nodeId of newGroupArray) {
             if (graph.children(nodeId).length > 0) {
                 const node = graph.node(nodeId);
+                // const nodeDom = this._document.getElementById(`node-${nodeId}`)
+                // if (this._view._nodes.hasOwnProperty(node.id)) {
+                //     // 这个节点存在过
+                //     svgNodeGroup.appendChild(this._view._nodes[node.id]);
+                //     const nodeBox = this._view._nodes[node.id].getBBox();
+                //     node.width = nodeBox.width;
+                //     node.height = nodeBox.height;
+                //     node.element = this._view._nodes[node.id]
                 if (this._view._clusters.hasOwnProperty(node.id)) {
-                    const nodeDom = this._view._clusters.hasOwnProperty(node.id);
+                    const nodeDom = this._view._clusters.hasOwnProperty(node.id)
                     nodeDom.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
                     nodeDom.firstChild.setAttribute('x', -node.width / 2);
                     nodeDom.firstChild.setAttribute('y', -node.height / 2);
@@ -202,7 +222,12 @@ grapher.Renderer = class {
                     tspan.setAttribute('x', 0);
                     tspan.setAttribute('y', -(node.height / 2) + 5);
                     tspan.setAttribute('text-anchor', 'middle');
-                    const name = node.showName.split('/')[node.showName.split('/').length - 1];
+                    let name = ''
+                    for (const nodes of this._host._view._allGraph.nodes) {
+                        if (nodes.name === node.nodeId) {
+                            name = nodes.show_name.split('/')[nodes.show_name.split('/').length - 1];
+                        }
+                    }
                     tspan.appendChild(this._document.createTextNode(name));
                     buttonSign.appendChild(this._document.createTextNode('-'));
                     const text = this.createElement('text');
@@ -249,10 +274,28 @@ grapher.Renderer = class {
                         });
                     });
                     rect.addEventListener('click', () => {
-                        for (const nodes of this._host._view._allGraph.nodes) {
-                            if (nodes.name === node.nodeId) {
-                                this._host._view.showNodeProperties(nodes);
-                                return;
+                        if (this._view.isCtrl) {
+                            for (const nodes of this._view._allGraph.nodes) {
+                                if (nodes.name === node.nodeId) {
+                                    for (const type of this._view.non_graphMetadatas) {
+                                        if (type.name === nodes.type) {
+                                            if (this._view.Language === 'zh') {
+                                                window.open(`https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`)
+                                            } else {
+                                                window.open(`https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/nn/${type.name}_en.html`)
+                                            }
+                                        }
+                                    }
+                                    this._view.showNodeProperties(nodes);
+                                    return;
+                                }
+                            }
+                        } else {
+                            for (const nodes of this._view._allGraph.nodes) {
+                                if (nodes.name === node.nodeId) {
+                                    this._view.showNodeProperties(nodes);
+                                    return;
+                                }
                             }
                         }
                     });

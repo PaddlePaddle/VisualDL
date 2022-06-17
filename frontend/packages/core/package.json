@@ -41,6 +41,7 @@
         "@tippyjs/react": "4.2.5",
         "@visualdl/icons": "2.2.1",
         "@visualdl/netron": "2.2.1",
+        "@visualdl/netron2": "2.2.1",
         "@visualdl/wasm": "2.2.1",
         "bignumber.js": "9.0.1",
         "classnames": "2.3.1",

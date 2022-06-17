@@ -28,8 +28,14 @@ import uniq from 'lodash/uniq';
 import useQuery from '~/hooks/useQuery';
 import {useRunningRequest} from '~/hooks/useRequest';
 import {useSWRConfig} from 'swr';
+import { isArray } from 'lodash';
+import { log } from 'numeric';
 
 type Tags = Record<string, string[]>;
+
+interface Theobj {
+    [propname:string]:any
+}
 
 type State = {
     initRuns: string[];
@@ -52,7 +58,7 @@ enum ActionType {
 
 type ActionInitRuns = {
     type: ActionType.initRuns;
-    payload: string[];
+    payload: any;
 };
 
 type ActionSetRuns = {
@@ -74,44 +80,76 @@ type Action = ActionInitRuns | ActionSetRuns | ActionInitTags | ActionSetTags;
 
 type SingleTag = {label: Tag['label']; run: Tag['runs'][number]};
 
-const groupTags = (runs: Run[], tags?: Tags): Tag[] =>
+const groupTags = (runs: Run[], tags?: Tags): Tag[] => 
+        
     Object.entries(
         groupBy<SingleTag>(
             runs
                 // get tags of selected runs
-                .filter(run => !!runs.find(r => r.label === run.label))
+                .filter(run => {
+                   return runs.find(r => {
+                       return r.label === run.label
+                    })
+                })
                 // group by runs
                 .reduce<SingleTag[]>((prev, run) => {
-                    if (tags && tags[run.label]) {
+                    console.log('reducetags',tags);
+                    const newRun = run.label.split('/')[0]
+                    console.log('newRun',newRun);
+                    
+                    if (tags && tags[newRun]) {
                         Array.prototype.push.apply(
                             prev,
-                            tags[run.label].map(label => ({label, run}))
+                            tags[newRun].map(label => ({label, run}))
                         );
                     }
+                    console.log('prev',prev);
+                    
                     return prev;
                 }, []),
             tag => tag.label
         )
     ).map(([label, tags]) => ({label, runs: tags.map(tag => tag.run)}));
 
-const attachRunColor = (runs: string[]): Run[] =>
-    runs?.map((run, index) => {
+
+const attachRunColor = (runs: string[]): Run[] => {
+    return runs?.map((run, index) => {
         const i = index % color.length;
         return {
             label: run,
             colors: [color[i], colorAlt[i]]
         };
     });
+}
 
 const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case ActionType.initRuns: {
-            const initRuns = action.payload;
+            let initRuns = []
+            if (action.payload.runs) {
+                const sub_runs = action.payload.sub_runs 
+                const Run_sub:string[] = []
+                for ( const tag of Object.keys(sub_runs)) {
+                    for (const run of Object.keys(sub_runs[tag])) {
+                        for (const label of sub_runs[tag][run]) {
+                            if (label) {
+                                Run_sub.push(`${run}/${label}`)
+                            }
+                        }
+                    }
+                }
+                initRuns = Run_sub
+            } else {
+                initRuns = action.payload
+            }
             const validGlobalRuns = initRuns.length ? intersection(initRuns, state.globalRuns) : state.globalRuns;
             const globalRuns = validGlobalRuns.length ? validGlobalRuns : initRuns;
             const runs = attachRunColor(initRuns);
             const selectedRuns = runs.filter(run => globalRuns.includes(run.label));
+            console.log('selectedRuns',selectedRuns,state.initTags);
+            
             const tags = groupTags(selectedRuns, state.initTags);
+            
             return {
                 ...state,
                 initRuns,
@@ -148,6 +186,7 @@ const reducer = (state: State, action: Action): State => {
         }
         case ActionType.initTags: {
             const initTags = action.payload;
+            console.log('initTags',initTags);
             const tags = groupTags(state.selectedRuns, initTags);
             return {
                 ...state,
@@ -189,7 +228,7 @@ const useTagFilter = (type: Page, running: boolean) => {
     const storeDispatch = useDispatch();
     const selector = useMemo(() => selectors.runs.getRunsByPage(type), [type]);
     const storedRuns = useSelector(selector);
-
+    const sub_runs:Theobj  =  useMemo(() => data?.sub_runs ?? [], [data]);
     const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
     const tags: Tags = useMemo(
         () =>
@@ -205,7 +244,7 @@ const useTagFilter = (type: Page, running: boolean) => {
                 : {},
         [runs, data]
     );
-
+    
     const [state, dispatch] = useReducer(reducer, {
         initRuns: [],
         globalRuns: storedRuns,
@@ -224,7 +263,16 @@ const useTagFilter = (type: Page, running: boolean) => {
     const onChangeRuns = useCallback((runs: Run[]) => dispatch({type: ActionType.setSelectedRuns, payload: runs}), []);
     const onChangeTags = useCallback((tags: Tag[]) => dispatch({type: ActionType.setSelectedTags, payload: tags}), []);
 
-    useEffect(() => dispatch({type: ActionType.initRuns, payload: runs || []}), [runs]);
+    useEffect(() => {
+        if (!isArray(sub_runs)) {
+            dispatch({type: ActionType.initRuns, payload: {
+                runs:runs,
+                sub_runs:sub_runs
+            } || []})
+        } else {
+            dispatch({type: ActionType.initRuns, payload: runs || []})
+        }  
+    }, [runs,sub_runs]);
     useEffect(() => dispatch({type: ActionType.initTags, payload: tags || {}}), [tags]);
 
     useEffect(() => {
@@ -259,6 +307,7 @@ const useTagFilter = (type: Page, running: boolean) => {
 
     return {
         ...state,
+        sub_runs,
         tagsWithSingleRun,
         runsInTags,
         onChangeRuns,

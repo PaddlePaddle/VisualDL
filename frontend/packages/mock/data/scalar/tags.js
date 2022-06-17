@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
+// export default {
+//     runs: ['train', 'test'],
+//     tags: [
+//         ['layer2/biases/summaries/mean', 'test/1234', 'another'],
+//         [
+//             'layer2/biases/summaries/mean',
+//             'layer2/biases/summaries/accuracy',
+//             'layer2/biases/summaries/cost',
+//             'test/431',
+//             'others'
+//         ]
+//     ]
+// };
+
 export default {
-    runs: ['train', 'test'],
+    runs: ['train','test'],
     tags: [
         ['layer2/biases/summaries/mean', 'test/1234', 'another'],
         [
@@ -25,5 +39,11 @@ export default {
             'test/431',
             'others'
         ]
-    ]
+    ],
+    sub_runs: {
+        'layer2/biases/summaries/mean': {
+            train:['mean1','mean3'], 
+            test:['mean2']
+        }
+    }
 };

@@ -54,9 +54,9 @@ const Scalar: FunctionComponent = () => {
     const query = useQuery();
 
     const [running, setRunning] = useState(true);
-
-    const {runs, tags, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
-
+    const {runs, tags, sub_runs, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
+    console.log('tags',tags);
+    
     const [smoothingFromLocalStorage, setSmoothingFromLocalStorage] = useLocalStorage('scalar_smoothing');
     const parsedSmoothing = useMemo(() => {
         if (query.smoothing != null) {
@@ -66,7 +66,6 @@ const Scalar: FunctionComponent = () => {
     }, [query.smoothing, smoothingFromLocalStorage]);
     const [smoothing, setSmoothing] = useState(parsedSmoothing);
     useEffect(() => setSmoothingFromLocalStorage(String(smoothing)), [smoothing, setSmoothingFromLocalStorage]);
-
     const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step);
 
     const [tooltipSorting, setTooltipSorting] = useState<SortingMethod>(toolTipSortingValues[0]);

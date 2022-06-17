@@ -75,8 +75,19 @@ const routes: Route[] = [
     },
     {
         id: Pages.Graph,
-        path: '/graph',
-        component: React.lazy(() => import('~/pages/graph'))
+        children: [
+            {
+                id: 'graph1',
+                path: '/graph1',
+                component: React.lazy(() => import('~/pages/graph1'))
+            },
+            {
+                id: 'graph2',
+                path: '/graph2',
+                component: React.lazy(() => import('~/pages/graph2'))
+            },
+        ]
+        
     },
     {
         id: Pages.Histogram,

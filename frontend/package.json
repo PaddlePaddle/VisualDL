@@ -28,6 +28,7 @@
     },
     "scripts": {
         "bootstrap": "lerna bootstrap",
+        "publish": "lerna publish",
         "build": "./scripts/build.sh",
         "build:core": "yarn workspace @visualdl/core build",
         "build:demo": "yarn workspace @visualdl/demo build",

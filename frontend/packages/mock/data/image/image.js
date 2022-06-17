@@ -22,9 +22,11 @@ import image5 from '../../assets/image/5.gif';
 import image6 from '../../assets/image/6.gif';
 import image7 from '../../assets/image/7.gif';
 import image8 from '../../assets/image/8.jpeg';
+import image9 from '../../assets/image/test_image_matrix.png';
+
 import mime from 'mime-types';
 
-const images = [image1, image2, image3, image4, image5, image6, image7, image8];
+const images = [image1, image2, image3, image4, image5, image6, image7, image8,image9];
 
 export default async req => {
     const index = +(req.query.index ?? 0) % images.length;

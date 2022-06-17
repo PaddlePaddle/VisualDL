@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+interface Theobj {
+    [propname:string]:any
+}
 export interface TagsData {
     runs: string[];
     tags: string[][];
+    sub_runs?:Theobj
 }
 
 export interface Run {
