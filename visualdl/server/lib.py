@@ -73,7 +73,8 @@ def get_scalars_tags(log_reader):
         run = item[0:index]
         tag = encode_tag(item[index + 1:])
         if run in tags.keys():
-            tags[run].append(tag)
+            if tag not in tags[run]:
+                tags[run].append(tag)
         else:
             tags[run] = [tag]
         if tag in subruns:
