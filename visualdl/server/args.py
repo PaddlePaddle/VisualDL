@@ -45,6 +45,7 @@ class DefaultArgs(object):
         self.theme = args.get('theme', None)
         self.dest = args.get('dest', '')
         self.behavior = args.get('behavior', '')
+        self.data_dir = args.get('data_dir', '')
 
 
 def get_host(host=default_host, port=default_port):
@@ -112,6 +113,7 @@ class ParseArgs(object):
         self.theme = args.theme
         self.dest = args.dest
         self.behavior = args.behavior
+        self.data_dir = args.data_dir
 
 
 def parse_args():
@@ -220,7 +222,12 @@ def parse_args():
         "behavior",
         nargs='?'
     )
-
+    parser.add_argument(
+        "--data_dir",
+        type=str,
+        action="store",
+        default="",
+        help="set model visual network data path")
     args = parser.parse_args()
 
     init_logger(args.verbose)

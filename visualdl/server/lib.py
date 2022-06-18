@@ -21,6 +21,7 @@ import os
 import io
 import csv
 import math
+import json
 import numpy as np
 from visualdl.server.log import logger
 from visualdl.io import bfile
@@ -552,3 +553,85 @@ def cache_get(cache):
         return data
 
     return _handler
+
+
+def get_network(log_reader, stage):
+    response = {}
+    network_dir = os.path.join(log_reader.data_dir, "output", "{}_network.json".format(stage))
+    network_dir = os.path.normpath(network_dir)
+    if not os.path.exists(network_dir):
+        logger.error("fail to read network file")
+        return response
+    with open(network_dir, 'r') as fp:
+        network_data = json.load(fp)
+        if not network_data:
+            logger.error("no data in network file")
+        else:
+            response = network_data
+    return response
+
+
+def get_basic_data(log_reader, stage, node):
+    response = {}
+    grad_node = node + "@GRAD"
+    basic_data_dir = os.path.join(log_reader.data_dir, "output", "static.data")
+    basic_data_dir = os.path.normpath(basic_data_dir)
+    if not os.path.exists(basic_data_dir):
+        logger.error("fail to read data file")
+        return response
+    response[node] = []
+    response[grad_node] = []
+    with open(basic_data_dir, 'r') as fp:
+        for line in fp:
+            column_datas = line.strip().split('\t')
+            delta_k = column_datas[0]
+            stage_k = column_datas[1]
+            node_k = column_datas[2]
+            if stage_k != stage or (node_k != node and node_k != grad_node):
+                continue
+            avg_k = column_datas[3]
+            zero_k = column_datas[4]
+            var_k = column_datas[5]
+            ab_avg_k = column_datas[6]
+            tmp_res = {}
+            tmp_res["delta_num"] = delta_k
+            tmp_res["avg"] = avg_k
+            tmp_res["var"] = var_k
+            tmp_res["zero"] = zero_k
+            tmp_res["ab_avg"] = ab_avg_k
+            if node_k in response.keys():
+                response[node_k].append(tmp_res)
+    return response
+
+def get_detail_data(log_reader, stage, node, type):
+    response = {}
+    detail_data_dir = os.path.join(log_reader.data_dir, "output", "detail.data")
+    detail_data_dir = os.path.normpath(detail_data_dir)
+    if not os.path.exists(detail_data_dir):
+        logger.error("fail to read data file")
+        return response
+    response["data"] = []
+    with open(detail_data_dir, 'r') as fp:
+        res = []
+        for line in fp:
+            column_datas = line.strip().split('\t')
+            delta_k = column_datas[0]
+            stage_k = column_datas[1]
+            if stage_k != stage:
+                continue
+            node_k = column_datas[2]
+            if node_k != node:
+                continue
+            length_k = column_datas[3]
+            data_k1 = column_datas[4]
+            data_k2 = column_datas[5]
+            tmp = {}
+            tmp["delta_num"] = delta_k
+            if int(type) == 1:
+                tmp["neuron_num"] = length_k
+                tmp["neuron_values"] = data_k2
+            elif int(type) == 2:
+                tmp["bucket_xy"] = data_k1
+            res.append(tmp)
+        response["data"] = res
+    return response
