@@ -46,10 +46,6 @@ grapher.Renderer = class {
         for (const nodeId of graph.nodes()) {
             if (graph.children(nodeId).length == 0) {
                 const node = graph.node(nodeId);
-                // 在这里进行缓存的判断
-                // console.log('this._document', this._document);
-                // const nodeDom = this._document.getElementById(node.id);
-                // console.log('nodeDom', nodeDom);
                 if (this._view._nodes.hasOwnProperty(node.id)) {
                     // 这个节点存在过
                     svgNodeGroup.appendChild(this._view._nodes[node.id]);

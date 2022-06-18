@@ -274,24 +274,20 @@ view.View = class {
     changeAlt(data) {
         this.isCtrl = data
     }
-    // keydown() {
-    //     // 用户按下ctrl后变量isCtrl为true
-    //     this._host.document.onkeydown = e => {
-    //         let el = e || window.event || arguments.callee.caller.arguments[0];
-    //         if (el.keyCode === 91) {
-    //             console.log('按下函数执行了');
-    //             this.isCtrl = true;
-    //         }
-    //     };
-    //     // 用户松开ctrl后变量isCtrl为false
-    //     this._host.document.onkeyup = e => {
-    //         let el = e || window.event || arguments.callee.caller.arguments[0];
-    //         if (el.keyCode === 91) {
-    //             console.log('松开函数执行了');
-    //             this.isCtrl = false;
-    //         }
-    //     };
-    // }
+    keydown() {
+        // 用户按下ctrl后变量isCtrl为true
+        this._host.document.onkeydown = e => {
+            if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
+                this.isCtrl = true;
+            }
+        };
+        // 用户松开ctrl后变量isCtrl为false
+        this._host.document.onkeyup = e => {
+            if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
+                this.isCtrl = false;
+            }
+        };
+    }
     changeGraph(name) {
         this._updateActiveGraph(name);
     }
@@ -300,7 +296,6 @@ view.View = class {
         for (const node of graph.nodes) {
             this._nodeName[node.name] = node;
         }
-        // console.log('this._nodeName',this._nodeName);
     }
     changeSelect(selectItem) {
         this._selectItem = selectItem;
@@ -387,14 +382,11 @@ view.View = class {
         });
     }
     jumpRoute(node) {
-        console.log('node',node);
         if (node.is_leaf) {
-            console.log('isCtrl',this.isCtrl);
             if (this.isCtrl) {
                 for (const nodes of this._allGraph.nodes) {
                     if (nodes.name === node.name) {
                         for (const type of this.non_graphMetadatas) {
-                            console.log('type',type.name.toLowerCase(),node.type);
                             if (type.name.toLowerCase() === node.type) {
                                 if (this.Language === 'zh') {
                                     window.open(`https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`)
@@ -423,7 +415,7 @@ view.View = class {
     }
     renderGraph(model, graph) {
         try {
-            // this.keydown()
+            this.keydown()
             this.graphMetadatas = graphMetadata.default.leaf_nodes;
             this.non_graphMetadatas = graphMetadata.default.non_leaf_nodes;
             const typeLayer = {}

@@ -34,10 +34,8 @@ function isWorkspace() {
         return false;
     }
 }
-
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
-const netronPath2 = path.dirname(resolve.sync(cwd, '@visualdl/netron2'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
@@ -97,10 +95,6 @@ export default {
                     {
                         source: [path.join(netronPath, '**/*')],
                         destination: path.join(dest, 'netron/dist')
-                    },
-                    {
-                        source: [path.join(netronPath2, '**/*')],
-                        destination: path.join(dest, 'netron2/dist')
                     },
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],

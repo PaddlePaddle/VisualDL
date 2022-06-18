@@ -156,7 +156,6 @@
      ) => {
          const {t,i18n} = useTranslation('graph');
          const language:string = i18n.language
-         console.log('language',language);
          const theme = useTheme();
          const [ready, setReady] = useState(false);
          const [rendered, setRendered] = useState(false);
@@ -179,10 +178,12 @@
                                  case 'ready':
                                      return setReady(true);
                                  case 'loading':
+                                     // return setLoading(true);
                                      return 1;
                                  case 'rendered':
                                      setLoading(false);
                                      setRendered(true);
+                                     // changeSvg()
                                      onRendered?.();
                                      return;
                              }
@@ -283,7 +284,6 @@
              if (!modelDatas) {
                  return;
              }
-             // debugger
              if (ready) {
                  dispatch('change-graph', modelDatas);
              }
@@ -391,12 +391,12 @@
          }));
          const keydown = () => {
             document.addEventListener("keydown",(e) => {
-                if (e.code === 'MetaLeft') {
+                if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
                     dispatch('isAlt', true);
                 }
             })
             document.addEventListener("keyup",(e) => {
-                if (e.code === 'MetaLeft') {
+                if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
                     dispatch('isAlt', false);
                 }
             })
@@ -404,11 +404,10 @@
          const getGraph = async () => {
              const refresh = true;
              const expand_all = false;
-             const result = await fetcher('/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`);
-             console.log('result',result);
+             const result = await fetcher('/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`);
              
              const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
-            // const allResult = await fetcher('/graph/graph2' + `?run=${selectedRuns}`);
+            // const allResult = await fetcher('/graph/graph' + `?run=${selectedRuns}`);
              setSelectItem(null);
              if (result) setModelDatas(result);
              if (allResult) setAllModelDatas(allResult);

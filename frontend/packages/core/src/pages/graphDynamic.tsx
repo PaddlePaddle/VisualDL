@@ -16,7 +16,7 @@
 
  import Aside, {AsideSection} from '~/components/Aside';
  import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
- import GraphComponent, {GraphRef} from '~/components/GraphPage/Graph';
+ import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphDynamic';
  import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
  import Select, {SelectProps} from '~/components/Select';
  import {actions, selectors} from '~/store';
@@ -102,7 +102,6 @@
      const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const target = e.target as EventTarget & HTMLInputElement
         const file:any= target.files
-        console.log('file[0]',file[0].name.split('.')[1]);
         if (file[0].name.split('.')[1] !== 'pdmodel') {
             alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面')
             return

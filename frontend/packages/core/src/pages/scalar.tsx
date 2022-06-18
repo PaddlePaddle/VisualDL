@@ -55,7 +55,6 @@ const Scalar: FunctionComponent = () => {
 
     const [running, setRunning] = useState(true);
     const {runs, tags, sub_runs, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
-    console.log('tags',tags);
     
     const [smoothingFromLocalStorage, setSmoothingFromLocalStorage] = useLocalStorage('scalar_smoothing');
     const parsedSmoothing = useMemo(() => {

@@ -707,13 +707,6 @@ sidebar.FindSidebar = class {
             let edgePathElement = edgePathsElement.firstChild;
             while (edgePathElement) {
                 if (edgePathElement.id === id) {
-                    // console.log('edgePathElement',edgePathElement.getAttribute("fromnode"),item);
-                    // if (item.fromnode && edgePathElement.getAttribute("fromnode") === item.fromnode) {
-                    //     selection.push(edgePathElement);
-                    // }
-                    // if (item.tonode && edgePathElement.getAttribute("tonode") === item.tonode) {
-                    //     selection.push(edgePathElement);
-                    // }
                     selection.push(edgePathElement);
                 }
                 edgePathElement = edgePathElement.nextSibling;
@@ -838,50 +831,6 @@ sidebar.FindSidebar = class {
                 });
                 nodeMatches.add(name);
             }
-            // let path = node.name.split('/');
-            // path.pop();
-            // let groupName = path.join('/');
-            // console.log('groupName', groupName);
-            // const clusterNode = name => {
-            //     if (
-            //         !nodeMatches.has(name) &&
-            //         name &&
-            //         (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
-            //     ) {
-            //         result.push({
-            //             type: 'node',
-            //             name: name,
-            //             id: 'node-' + name
-            //         });
-            //         nodeMatches.add(name);
-            //         let path = name.split('/');
-            //         while (path.length > 0) {
-            //             const name = path.join('/');
-            //             path.pop();
-            //             if (name) {
-            //                 clusterNode(name);
-            //             }
-            //         }
-            //     }
-            // };
-            // if (groupName) {
-            //     clusterNode(groupName);
-            //     // g.setParent(nodeId, groupName);
-            // }
-            // clusterNode(node.show_name);
-            // if (
-            //     !nodeMatches.has(name) &&
-            //     name &&
-            //     (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
-            // ) {
-            //     result.push({
-            //         type: 'node',
-            //         name: node.name,
-            //         id: 'node-' + node.name
-            //     });
-            //     //
-            //     nodeMatches.add(node.name);
-            // }
             for (const initializer of initializers) {
                 result.push({
                     type: 'initializer',

@@ -93,9 +93,7 @@ const groupTags = (runs: Run[], tags?: Tags): Tag[] =>
                 })
                 // group by runs
                 .reduce<SingleTag[]>((prev, run) => {
-                    console.log('reducetags',tags);
                     const newRun = run.label.split('/')[0]
-                    console.log('newRun',newRun);
                     
                     if (tags && tags[newRun]) {
                         Array.prototype.push.apply(
@@ -103,7 +101,6 @@ const groupTags = (runs: Run[], tags?: Tags): Tag[] =>
                             tags[newRun].map(label => ({label, run}))
                         );
                     }
-                    console.log('prev',prev);
                     
                     return prev;
                 }, []),
@@ -146,7 +143,6 @@ const reducer = (state: State, action: Action): State => {
             const globalRuns = validGlobalRuns.length ? validGlobalRuns : initRuns;
             const runs = attachRunColor(initRuns);
             const selectedRuns = runs.filter(run => globalRuns.includes(run.label));
-            console.log('selectedRuns',selectedRuns,state.initTags);
             
             const tags = groupTags(selectedRuns, state.initTags);
             
@@ -186,7 +182,6 @@ const reducer = (state: State, action: Action): State => {
         }
         case ActionType.initTags: {
             const initTags = action.payload;
-            console.log('initTags',initTags);
             const tags = groupTags(state.selectedRuns, initTags);
             return {
                 ...state,

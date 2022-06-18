@@ -106,7 +106,6 @@ const Checkbox: FunctionComponent<any> = ({
             if (disabled) {
                 return;
             }
-            // console.log('e.target',e);
             
             onChange(value);
         },

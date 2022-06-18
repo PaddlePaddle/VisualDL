@@ -17,9 +17,8 @@
 // cSpell:words actived nextcode
 
 const view = require('./view');
-
+const view2 = require('./view2');
 const host = {};
-
 host.BrowserHost = class {
     constructor() {
         window.eval = () => {
@@ -54,7 +53,6 @@ host.BrowserHost = class {
         this._view = view;
         return Promise.resolve();
     }
-
     start() {
         window.addEventListener(
             'message',
@@ -69,14 +67,14 @@ host.BrowserHost = class {
                             return this._changeFiles(data);
                         case 'zoom-in':
                             return this._view.zoomIn();
+                        case 'zoom-out':
+                            return this._view.zoomOut();
                         case 'select-item':
                             return this._view.selectItem(data);
                         case 'toggle-Language':
                             return this._view.toggleLanguage(data);
                         case 'isAlt':
                             return this._view.changeAlt(data);
-                        case 'zoom-out':
-                            return this._view.zoomOut();
                         case 'zoom-reset':
                             return this._view.resetZoom();
                         case 'toggle-attributes':
@@ -132,11 +130,9 @@ host.BrowserHost = class {
         this.message('status', status);
     }
     selectNodeId(nodeInfo) { // 反传回去
-        console.log('节点点击事件触发了',nodeInfo);
         this.message('nodeId', nodeInfo);
     }
     selectItems(item) { // 反传回去
-        console.log('节点点击事件触发了',item);
         this.message('selectItem', item);
     }
 
@@ -197,6 +193,7 @@ host.BrowserHost = class {
     }
 
     _changeFiles(files) {
+        console.log('files',files);
         if (files && files.length) {
             files = Array.from(files);
             const file = files.find(file => this._view.accept(file.name));
@@ -519,4 +516,15 @@ class BrowserFileContext {
     }
 }
 
-window.__view__ = new view.View(new host.BrowserHost());
+function getCaption(obj){
+    let index = obj.lastIndexOf('/');    //获取-后边的字符串
+    let newObj = obj.substring(index+1,obj.length);
+    return newObj;
+}
+const hash = getCaption(document.referrer)
+console.log('hash',hash);
+if (hash === 'graphStatic') {
+    window.__view__ = new view2.View(new host.BrowserHost());
+} else {
+    window.__view__ = new view.View(new host.BrowserHost());
+}

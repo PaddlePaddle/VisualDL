@@ -93,15 +93,6 @@ text {
         fill-opacity: 0.9;
     }
 }
-// .node-item-buttons {
-//     stroke: none;
-//     cursor: pointer;
-
-//     path {
-//         fill: #8BB8FF;
-//         fill-opacity: 0.9;
-//     }
-// }
 
 .node-item-type-constant path {
     fill: #B4CCB7;
@@ -263,9 +254,7 @@ text {
 }
 
 .cluster .clusterGroup {
-    fill: #A8E9B8;
-    // fill-opacity: 0.1;
-    // stroke-opacity: 0.06;
+    fill: #F4E0E0;
     stroke: #666;
     stroke-width: 1px;
 }
@@ -273,30 +262,8 @@ text {
     fill: #9BB9E8;
     fill-opacity: 0.7;
 }
-
-// .node-item-type {
-//     cursor: pointer;
-
-//     path {
-//         fill: #8BB8FF;
-//         fill-opacity: 0.9;
-//     }
-// }
-// .node-item-buttons {
-//     stroke: none;
-//     cursor: pointer;
-
-//     path {
-//         fill: #8BB8FF;
-//         fill-opacity: 0.9;
-//     }
-// }
-.cluster .clusterGroup {
-    fill: #F4E0E0;
-}
 .cluster .clusterGroup-constant {
     fill:  #E8EFE9;;
-
 }
 
 .cluster .clusterGroup-control {
@@ -308,7 +275,7 @@ text {
 }
 
 .cluster .clusterGroup-conv {
-    background: #D3F0F6;
+    fill: #D3F0F6;
 }
 
 .cluster .clusterGroup-container {
@@ -331,55 +298,37 @@ text {
     fill: #F3DFEA;
 }
 
-
 .cluster .clusterGroup-dropout {
     fill: #C0E1CA;;
 }
 
 .cluster .clusterGroup-pad {
     fill: #C0E1CA;;
-    // fill-opacity: 0.7;
 }
 
 .cluster .clusterGroup-shape {
     fill: #F2EDD9;
-    // fill-opacity: 0.7;
-    // stroke: #D6C482;
-    // stroke-width: 1px;
 }
 
 .cluster .clusterGroup-tensor {
     fill: #D3D7F6;
-    // fill-opacity: 0.7;
-    // stroke: #6D7CE4;
-    // stroke-width: 1px;
 }
 
 .cluster .clusterGroup-transform {
     fill: #F0EFD5;
-    // stroke: #CDCB74;
-    // stroke-width: 1px;
 }
 
 
 .cluster .clusterGroup-sequence {
     fill: #F0EFD5;
-    // stroke: #CDCB74;
-    // stroke-width: 1px;
 }
 
 .cluster .clusterGroup-data {
     fill:  #BDD5E6;
-    // fill-opacity: 0.7;
-    // stroke: #2576AD;
-    // stroke-width: 1px;
 }
 
 .cluster .clusterGroup-custom {
     fill: #F6D3D3;
-    // fill-opacity: 0.7;
-    // stroke: #E46D6D;
-    // stroke-width: 1px;
 }
 .cluster .clusterButton {
     fill-opacity: 0.3;
