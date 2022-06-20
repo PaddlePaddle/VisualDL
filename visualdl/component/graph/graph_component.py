@@ -118,8 +118,10 @@ def analyse_model(model_pb):  # noqa: C901
             attr_type_dict = {}
             for attr_name in op_desc.attr_names():
                 attr_dict[attr_name] = op_desc.attr(attr_name)
-                attr_type_dict[attr_name] = attr_type_name[op_desc.attr_type(
-                    attr_name)]
+                attr_type = op_desc.attr_type(attr_name)
+                attr_type_dict[attr_name] = attr_type_name[
+                    attr_type] if attr_type in attr_type_name else str(
+                        attr_type).split('.')[1]
             all_ops[op_name]['attrs'] = attr_dict
             all_ops[op_name]['attr_types'] = attr_type_dict
             all_ops[op_name]['children_node'] = []
