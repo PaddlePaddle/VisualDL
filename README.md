@@ -37,24 +37,6 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 
 
-## Recent Activities
-
-- 🔔**2021.5.26**
-
-  **"VisualDL--Quickly get a perfect model by using the visualization analysis tool "**
-
-  💙 **Time: Wednesday (5.26) 19:00 at [PaddlePaddle's bilibili Live broadcast](http://live.bilibili.com/21689802)** 💙
-
-  📣**Preview**
-
-  - Analysis of Key Problems in Creating Deep Learning models
-  - Tips of Parameter Optimization by VisualDL
-  - Tricks of Training a Classification Model with Good Performance
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/119295192-c87ad780-bc88-11eb-86b2-d67765486530.jpg" width="30%"/>
-</p>
-
 ## Contents
 
 * [Key Highlights](#Key-Highlights)
@@ -157,6 +139,16 @@ with LogWriter(logdir="./log/scalar_test/train") as writer:
     writer.add_scalar(tag="acc", step=1, value=0.5678)
     writer.add_scalar(tag="acc", step=2, value=0.6878)
     writer.add_scalar(tag="acc", step=3, value=0.9878)
+# you can also use the following method without using context manager `with`:
+"""
+writer = LogWriter(logdir="./log/scalar_test/train")
+
+writer.add_scalar(tag="acc", step=1, value=0.5678)
+writer.add_scalar(tag="acc", step=2, value=0.6878)
+writer.add_scalar(tag="acc", step=3, value=0.9878)
+
+writer.close()
+"""
 ```
 
 ### 2. Launch Panel

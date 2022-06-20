@@ -14,63 +14,109 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
+// cspell:words pnpify svgs entrypoints
 
-require('./builder/environment');
-const mock = require('./builder/mock');
-const icons = require('./builder/icons');
-const netron = require('./builder/netron');
-const wasm = require('./builder/wasm');
+import * as env from './builder/env.js';
 
-const port = Number.parseInt(process.env.PORT || 3000, 10);
-const devServer = {
-    port: port + 1,
-    host: '127.0.0.1'
-};
+import {fileURLToPath} from 'url';
+import fs from 'fs';
+import path from 'path';
+import resolve from 'enhanced-resolve';
 
-module.exports = {
-    extends: '@snowpack/app-scripts-react',
-    plugins: [
-        '@snowpack/plugin-dotenv',
-        [
-            '@snowpack/plugin-optimize',
-            {
-                minifyHTML: false, // we will do it later in post-build
-                preloadModules: true,
-                target: ['chrome79', 'firefox67', 'safari11.1', 'edge79'] // browsers support es module
-            }
-        ],
-        [
-            '@snowpack/plugin-run-script',
-            {
-                cmd: 'node builder/icons.js && node builder/netron.js && node builder/wasm.js',
-                watch: `node builder/dev-server.js --port ${devServer.port} --host ${devServer.host}`,
-                output: 'dashboard'
-            }
-        ]
+const cwd = path.dirname(fileURLToPath(import.meta.url));
+const workspaceRoot = path.resolve(cwd, '../../');
+
+function isWorkspace() {
+    try {
+        const packageJson = fs.readFileSync(path.resolve(workspaceRoot, './package.json'), 'utf-8');
+        return !!JSON.parse(packageJson).workspaces;
+    } catch {
+        return false;
+    }
+}
+
+const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
+const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
+const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
+const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
+
+/** @type {import("snowpack").SnowpackUserConfig } */
+export default {
+    cwd,
+    workspaceRoot: isWorkspace() ? workspaceRoot : undefined,
+    mount: {
+        src: '/_dist_',
+        public: {
+            url: '/',
+            static: true
+        }
+    },
+    routes: [
+        {
+            match: 'routes',
+            src: '.*',
+            dest: '/index.html'
+        }
     ],
-    install: ['@visualdl/wasm'],
+    env,
     alias: {
         '~': './src'
     },
-    proxy: {
-        ...[mock.pathname, icons.pathname, netron.pathname, wasm.pathname].reduce((m, pathname) => {
-            m[
-                process.env.SNOWPACK_PUBLIC_BASE_URI + pathname
-            ] = `http://${devServer.host}:${devServer.port}${pathname}`;
-            return m;
-        }, {})
-    },
+    plugins: [
+        '@snowpack/plugin-react-refresh',
+        '@snowpack/plugin-dotenv',
+        [
+            '@snowpack/plugin-typescript',
+            {
+                /* Yarn PnP workaround: see https://www.npmjs.com/package/@snowpack/plugin-typescript */
+                ...(process.versions.pnp ? {tsc: 'yarn pnpify tsc'} : {})
+            }
+        ],
+        [
+            '@snowpack/plugin-optimize',
+            {
+                minifyHTML: false,
+                preloadModules: true,
+                preloadCSS: true,
+                target: ['chrome79', 'firefox67', 'safari11.1', 'edge79']
+            }
+        ],
+        [
+            'snowpack-plugin-copy',
+            {
+                patterns: [
+                    {
+                        source: ['components/*.js', 'svgs/*.svg'],
+                        destination: path.join(dest, 'icons'),
+                        options: {
+                            cwd: iconsPath,
+                            parents: true
+                        }
+                    },
+                    {
+                        source: [path.join(netronPath, '**/*')],
+                        destination: path.join(dest, 'netron/dist')
+                    },
+                    {
+                        source: [path.join(wasmPath, '*.{js,wasm}')],
+                        destination: path.join(dest, 'wasm/dist')
+                    }
+                ]
+            }
+        ]
+    ],
     devOptions: {
         hostname: process.env.HOST || 'localhost',
-        port
+        port: Number.parseInt(process.env.PORT || 3000, 10)
+    },
+    packageOptions: {
+        polyfillNode: true,
+        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
     },
     buildOptions: {
         out: 'dist',
-        baseUrl: '/', // set it in post-build
-        clean: true
-    },
-    installOptions: {
-        polyfillNode: true
+        baseUrl: '/',
+        clean: true,
+        metaUrlPath: '__snowpack__'
     }
 };

@@ -79,7 +79,7 @@ interface ScalarChartProps {
     xAxisType?: XAxisType;
     xRange?: Range;
     yRange?: Range;
-    getTooltipTableData: (series: number[]) => TooltipTableData;
+    getTooltipTableData: (series: number[], value: number) => TooltipTableData;
     downloadData?: (type: keyof typeof DownloadDataTypes) => void;
 }
 
@@ -107,7 +107,10 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
             const series: number[] = Array.isArray(params) ? params[0].data : params.data;
-            return renderToStaticMarkup(<TooltipTable run={t('common:runs')} {...getTooltipTableData(series)} />);
+            const value: number = (Array.isArray(params) ? params[0].axisValue : params.axisValue) as number;
+            return renderToStaticMarkup(
+                <TooltipTable run={t('common:runs')} {...getTooltipTableData(series, value)} />
+            );
         },
         [getTooltipTableData, t]
     );

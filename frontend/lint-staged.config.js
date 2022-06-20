@@ -26,8 +26,7 @@ const getPackages = filenames =>
 
 module.exports = {
     // lint all files when global package.json or eslint config changes.
-    './(package.json|.eslintrc.js)': () =>
-        `eslint --ext .tsx,.jsx.ts,.js --ignore-path ${path.join(__dirname, '.gitignore')} ${__dirname}`,
+    './(package.json|.eslintrc.js)': () => `eslint --ext .tsx,.jsx.ts,.js ${__dirname}`,
 
     // check types when ts file or package.json changes.
     './(packages/*/package.json|packages/*/**/*.ts?(x))': filenames =>

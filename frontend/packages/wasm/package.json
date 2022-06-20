@@ -1,6 +1,6 @@
 {
     "name": "@visualdl/wasm",
-    "version": "2.2.0-1",
+    "version": "2.2.1",
     "title": "VisualDL",
     "description": "A platform to visualize the deep learning process and result.",
     "keywords": [
@@ -33,6 +33,7 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "wasm-pack build --release --out-dir dist --out-name index --target web .",
+        "dev": "wasm-pack build --dev --out-dir dist --out-name index --target web .",
         "test": "echo \"Error: no test specified\" && exit 0"
     },
     "devDependencies": {

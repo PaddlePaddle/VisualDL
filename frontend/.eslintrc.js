@@ -22,10 +22,9 @@ module.exports = {
     },
     extends: ['plugin:prettier/recommended'],
     parserOptions: {
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         sourceType: 'module'
     },
-    ignorePatterns: ['node_modules/', 'dist/', 'output/', 'license-header.js'],
     plugins: ['license-header'],
     rules: {
         'no-console': 'warn',
@@ -34,7 +33,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['packages/cli/**/*', 'packages/mock/**/*', 'packages/demo/**/*', 'packages/server/**/*'],
+            files: ['packages/cli/**/*', 'packages/demo/**/*', 'packages/server/**/*'],
             extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
             parser: '@typescript-eslint/parser',
             rules: {
@@ -71,6 +70,9 @@ module.exports = {
                 'react/prop-types': 'off',
                 'react/react-in-jsx-scope': 'off'
             }
+        },
+        {
+            files: ['packages/icons/**/*']
         }
     ]
 };

@@ -14,31 +14,17 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-console */
+// cspell:words baiducloud
 
-const path = require('path');
-const fs = require('fs/promises');
-const {BosClient} = require('@baiducloud/sdk');
-const mime = require('mime-types');
+import {BosClient} from '@baiducloud/sdk';
+import Logger from './log.js';
+import fs from 'fs/promises';
+import mime from 'mime-types';
+import path from 'path';
 
-const endpoint = process.env.BOS_ENDPOINT || 'https://bos.bj.baidubce.com';
-const ak = process.env.BOS_AK;
-const sk = process.env.BOS_SK;
-
-const version = process.env.CDN_VERSION || 'latest';
-
-const config = {
-    endpoint,
-    credentials: {
-        ak,
-        sk
-    }
-};
+const logger = new Logger('CDN');
 
 const bucket = 'visualdl-static';
-
-const client = new BosClient(config);
 
 async function getFiles(dir) {
     const result = [];
@@ -57,14 +43,20 @@ async function getFiles(dir) {
             }
         }
     } catch (e) {
-        console.error(e);
+        logger.error(e);
     }
     return result;
 }
 
 async function push(directory, options) {
-    if (!ak || !sk) {
-        console.error('No AK and SK specified!');
+    logger.start();
+
+    const version = options?.version ?? 'latest';
+
+    logger.process(`pushing to CDN with version "${version}"...`);
+
+    if (!options?.ak || !options?.sk) {
+        logger.error('No AK and SK specified!');
         process.exit(1);
     }
 
@@ -83,24 +75,51 @@ async function push(directory, options) {
                 size: stats.size
             });
         } else {
-            console.error(`${directory} does not exist!`);
+            logger.error(`${directory} does not exist!`);
             process.exit(1);
         }
     } catch (e) {
-        console.error(e);
+        logger.error(e);
         process.exit(1);
     }
+
+    const config = {
+        endpoint: options?.endpoint ?? 'https://bos.bj.baidubce.com',
+        credentials: {
+            ak: options.ak,
+            sk: options.sk
+        }
+    };
+    const client = new BosClient(config);
+
+    const q = [];
     for (const file of files) {
         (function (f) {
-            client
-                .putObjectFromFile(bucket, `assets/${version}/${f.filename}`, f.name, {
-                    'Content-Length': f.size,
-                    'Content-Type': `${f.mime}`
+            q.push(
+                new Promise((resolve, reject) => {
+                    client
+                        .putObjectFromFile(bucket, `assets/${version}/${f.filename}`, f.name, {
+                            'Content-Length': f.size,
+                            'Content-Type': `${f.mime}`
+                        })
+                        .then(() => {
+                            logger.info([f.filename, f.mime, f.size].join(', '));
+                            resolve();
+                        })
+                        .catch(error => {
+                            logger.error(f + error + '');
+                            reject();
+                        });
                 })
-                .then(() => console.log([f.name, f.mime, f.size].join(', ')))
-                .catch(error => console.error(f, error));
+            );
         })(file);
+    }
+    try {
+        await Promise.all(q);
+        logger.end('CDN Pushed.');
+    } catch {
+        logger.error('Some errors occurred when pushing to CDN.');
     }
 }
 
-module.exports = push;
+export default push;

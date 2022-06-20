@@ -21,6 +21,7 @@ import {contentHeight, position, primaryColor, rem, size, transitionProps} from 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
+import netron from '@visualdl/netron';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import useTheme from '~/hooks/useTheme';
@@ -176,7 +177,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                         case 'cancel':
                             return setLoading(false);
                         case 'error':
-                            toast(data);
+                            toast.error(data);
                             setLoading(false);
                             return;
                         case 'show-model-properties':
@@ -287,7 +288,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Content>
                         <iframe
                             ref={iframe}
-                            src={`${PUBLIC_PATH}/netron/index.html`}
+                            src={PUBLIC_PATH + netron}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}
