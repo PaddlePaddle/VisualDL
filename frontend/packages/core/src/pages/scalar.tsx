@@ -54,8 +54,13 @@ const Scalar: FunctionComponent = () => {
     const query = useQuery();
 
     const [running, setRunning] = useState(true);
-    const {runs, tags, sub_runs, selectedRuns, onChangeRuns, loading} = useTagFilter('scalar', running);
-    
+    const scalarData = useTagFilter('scalar', running);
+    const scalarsData = useTagFilter('scalars', running);
+    const runs = [...scalarData.runs,...scalarsData.runs]
+    const selectedRuns = [...scalarData.selectedRuns,...scalarsData.selectedRuns]
+    const tags = scalarData.tags
+    const onChangeRuns = scalarData.onChangeRuns
+    const loading = scalarData.loading || scalarsData.loading
     const [smoothingFromLocalStorage, setSmoothingFromLocalStorage] = useLocalStorage('scalar_smoothing');
     const parsedSmoothing = useMemo(() => {
         if (query.smoothing != null) {

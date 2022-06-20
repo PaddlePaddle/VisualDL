@@ -20,6 +20,7 @@ import {ActionTypes} from './types';
 
 const initState: RunsState = {
     scalar: [],
+    scalars: [],
     histogram: [],
     image: [],
     audio: [],

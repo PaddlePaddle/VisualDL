@@ -215,11 +215,9 @@ const useTagFilter = (type: Page, running: boolean) => {
     const query = useQuery();
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
-
     // clear cache in order to fully reload data when switching page
     const {cache} = useSWRConfig();
     useEffect(() => () => cache.delete(`/${type}/tags`), [type, cache]);
-
     const storeDispatch = useDispatch();
     const selector = useMemo(() => selectors.runs.getRunsByPage(type), [type]);
     const storedRuns = useSelector(selector);
