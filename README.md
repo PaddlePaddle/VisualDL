@@ -37,24 +37,6 @@ VisualDL natively supports the use of Python. Developers can retrieve plentiful 
 
 
 
-## Recent Activities
-
-- 🔔**2021.5.26**
-
-  **"VisualDL--Quickly get a perfect model by using the visualization analysis tool "**
-
-  💙 **Time: Wednesday (5.26) 19:00 at [PaddlePaddle's bilibili Live broadcast](http://live.bilibili.com/21689802)** 💙
-
-  📣**Preview**
-
-  - Analysis of Key Problems in Creating Deep Learning models
-  - Tips of Parameter Optimization by VisualDL
-  - Tricks of Training a Classification Model with Good Performance
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/119295192-c87ad780-bc88-11eb-86b2-d67765486530.jpg" width="30%"/>
-</p>
-
 ## Contents
 
 * [Key Highlights](#Key-Highlights)
