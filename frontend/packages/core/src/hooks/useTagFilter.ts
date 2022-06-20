@@ -86,22 +86,15 @@ const groupTags = (runs: Run[], tags?: Tags): Tag[] =>
         groupBy<SingleTag>(
             runs
                 // get tags of selected runs
-                .filter(run => {
-                   return runs.find(r => {
-                       return r.label === run.label
-                    })
-                })
+                .filter(run => !!runs.find(r => r.label === run.label))
                 // group by runs
                 .reduce<SingleTag[]>((prev, run) => {
-                    const newRun = run.label.split('/')[0]
-                    
-                    if (tags && tags[newRun]) {
+                    if (tags && tags[run.label]) {
                         Array.prototype.push.apply(
                             prev,
-                            tags[newRun].map(label => ({label, run}))
+                            tags[run.label].map(label => ({label, run}))
                         );
                     }
-                    
                     return prev;
                 }, []),
             tag => tag.label
@@ -109,9 +102,12 @@ const groupTags = (runs: Run[], tags?: Tags): Tag[] =>
     ).map(([label, tags]) => ({label, runs: tags.map(tag => tag.run)}));
 
 
-const attachRunColor = (runs: string[]): Run[] => {
+const attachRunColor = (runs: string[],oldRuns?:number): Run[] => {
     return runs?.map((run, index) => {
-        const i = index % color.length;
+        let i = index % color.length;
+        if (oldRuns) {
+            i = i + oldRuns
+        }
         return {
             label: run,
             colors: [color[i], colorAlt[i]]
@@ -123,6 +119,7 @@ const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case ActionType.initRuns: {
             let initRuns = []
+            let oldRuns
             if (action.payload.runs) {
                 const sub_runs = action.payload.sub_runs 
                 const Run_sub:string[] = []
@@ -136,16 +133,16 @@ const reducer = (state: State, action: Action): State => {
                     }
                 }
                 initRuns = Run_sub
+                oldRuns = action.payload.oldRuns
             } else {
                 initRuns = action.payload
             }
             const validGlobalRuns = initRuns.length ? intersection(initRuns, state.globalRuns) : state.globalRuns;
             const globalRuns = validGlobalRuns.length ? validGlobalRuns : initRuns;
-            const runs = attachRunColor(initRuns);
+            const runs = attachRunColor(initRuns,oldRuns);
             const selectedRuns = runs.filter(run => globalRuns.includes(run.label));
-            
             const tags = groupTags(selectedRuns, state.initTags);
-            
+
             return {
                 ...state,
                 initRuns,
@@ -211,7 +208,7 @@ const reducer = (state: State, action: Action): State => {
 };
 
 // TODO: refactor to improve performance
-const useTagFilter = (type: Page, running: boolean) => {
+const useTagFilter = (type: Page, running: boolean,oldRuns?:number) => {
     const query = useQuery();
 
     const {data, loading, error} = useRunningRequest<TagsData>(`/${type}/tags`, running);
@@ -223,21 +220,45 @@ const useTagFilter = (type: Page, running: boolean) => {
     const storedRuns = useSelector(selector);
     const sub_runs:Theobj  =  useMemo(() => data?.sub_runs ?? [], [data]);
     const runs: string[] = useMemo(() => data?.runs ?? [], [data]);
-    const tags: Tags = useMemo(
-        () =>
-            data
-                ? runs.reduce<Tags>((m, run, i) => {
-                      if (m[run]) {
-                          m[run] = [...m[run], ...(data.tags?.[i] ?? [])];
-                      } else {
-                          m[run] = data.tags[i] ?? [];
-                      }
-                      return m;
-                  }, {})
-                : {},
-        [runs, data]
-    );
-    
+    const gettuns = (sub_runs:Theobj) => {
+        const tags_object:Theobj = {}
+        for ( const tag of Object.keys(sub_runs)) {
+            for (const run of Object.keys(sub_runs[tag])) {
+                for (const label of sub_runs[tag][run]) {
+                    if (label) {
+                        const runs =`${run}/${label}`
+                        if(!tags_object[runs]){
+                            tags_object[runs] = [tag]
+                        } else {
+                            tags_object[runs].push(tag)
+                        }
+                    }
+                }
+            }
+        }
+        return tags_object
+    }
+    let tags: Tags
+    if (!isArray(sub_runs)) {
+        tags = useMemo(() => {
+            return gettuns(sub_runs)
+        },[runs, data])
+    } else {
+        tags = useMemo(
+            () =>
+                data
+                    ? runs.reduce<Tags>((m, run, i) => {
+                          if (m[run]) {
+                              m[run] = [...m[run], ...(data.tags?.[i] ?? [])];
+                          } else {
+                              m[run] = data.tags[i] ?? [];
+                          }
+                          return m;
+                      }, {})
+                    : {},
+            [runs, data]
+        );
+    }
     const [state, dispatch] = useReducer(reducer, {
         initRuns: [],
         globalRuns: storedRuns,
@@ -260,7 +281,8 @@ const useTagFilter = (type: Page, running: boolean) => {
         if (!isArray(sub_runs)) {
             dispatch({type: ActionType.initRuns, payload: {
                 runs:runs,
-                sub_runs:sub_runs
+                sub_runs:sub_runs,
+                oldRuns:oldRuns
             } || []})
         } else {
             dispatch({type: ActionType.initRuns, payload: runs || []})

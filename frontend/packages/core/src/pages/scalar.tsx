@@ -48,19 +48,20 @@ const TooltipSortingDiv = styled.div`
         flex-grow: 1;
     }
 `;
-
+interface Theobj {
+    [propname: string]: any;
+}
 const Scalar: FunctionComponent = () => {
     const {t} = useTranslation(['scalar', 'common']);
     const query = useQuery();
 
     const [running, setRunning] = useState(true);
+    const scalarsData = useTagFilter('scalars', running, 3);
     const scalarData = useTagFilter('scalar', running);
-    const scalarsData = useTagFilter('scalars', running);
-    const runs = [...scalarData.runs,...scalarsData.runs]
-    const selectedRuns = [...scalarData.selectedRuns,...scalarsData.selectedRuns]
-    const tags = scalarData.tags
-    const onChangeRuns = scalarData.onChangeRuns
-    const loading = scalarData.loading || scalarsData.loading
+    const runs = [...scalarData.runs, ...scalarsData.runs];
+    const selectedRuns = [...scalarData.selectedRuns, ...scalarsData.selectedRuns];
+    const onChangeRuns = scalarData.onChangeRuns;
+    const loading = scalarData.loading || scalarsData.loading;
     const [smoothingFromLocalStorage, setSmoothingFromLocalStorage] = useLocalStorage('scalar_smoothing');
     const parsedSmoothing = useMemo(() => {
         if (query.smoothing != null) {
@@ -79,7 +80,6 @@ const Scalar: FunctionComponent = () => {
     const [smoothedDataOnly, setSmoothedDataOnly] = useState(false);
 
     const [showMostValue, setShowMostValue] = useState(false);
-
     const aside = useMemo(
         () => (
             <RunAside
@@ -145,7 +145,50 @@ const Scalar: FunctionComponent = () => {
             xAxis
         ]
     );
-
+    const clone = (obj: any, o:any = undefined) => {
+        //Object.prototype.toString.call(obj)返回类似[Object Array] 利用slice来截取我们需要的字符串
+        let type = Object.prototype.toString.call(obj).slice(8, -1); //slice方法创建新的数组
+        // 如果是Object
+        if (type === 'Object') {
+            o = {};
+            for (let k in obj) {
+                o[k] = clone(obj[k]);
+            }
+            // 如果是对象
+        } else if (type === 'Array') {
+            // 直接使用 = 赋值，只是指向相同的引用，如果原数组变化，克隆的数组也会跟着变化
+            o = [];
+            for (let i = 0; i < obj.length; i++) {
+                o.push(clone(obj[i]));
+            }
+        } else {
+            // 非引用类型
+            o = obj;
+        }
+        return o; // 在Javascript里，如果克隆对象是基本类型，我们直接赋值就可以了
+        // 把一个值赋给另一个变量时，当那个变量的值改变的时候，另一个值不会受到影响。
+    };
+    const sumTags = clone([...scalarsData.tags,...scalarData.tags]);
+    const newtags:any = []
+    const getTags = (tags: any,newtags:any) => {
+        if (tags.length > 0) {
+            const Objecttags: Theobj = {};
+            for (const tag of tags) {
+                if (!Objecttags[tag.label]) {
+                    Objecttags[tag.label] = tag;
+                } else {
+                    const oldruns = Objecttags[tag.label].runs;
+                    Objecttags[tag.label].runs = [...oldruns, ...tag.runs];
+                }
+            }
+            for (const label of Object.keys(Objecttags)) {
+                newtags.push(Objecttags[label]);
+            }
+            // return newtags;
+        }
+    };
+    getTags(sumTags,newtags);
+    const tags = newtags
     const renderChart = useCallback<RenderChart<Tag>>(
         ({label, runs}) => (
             <ScalarChart

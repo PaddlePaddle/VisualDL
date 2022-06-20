@@ -71,6 +71,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     showMostValue,
     running
 }) => {
+    
     const {t, i18n} = useTranslation(['scalar', 'common']);
     const {
         data: datasetsWithNull,
@@ -80,6 +81,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         runs.map((run) => {
                 const newRun = run.label.split('/')[0]
                 const sub_tags = run.label.split('/')[1]
+                
                 return `/scalar/list?${queryString.stringify({run: newRun, tag,sub_tags:sub_tags})}`
         }),
         !!running,
