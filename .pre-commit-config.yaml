@@ -33,3 +33,16 @@ repos:
     hooks:
       - id: check-hooks-apply
       - id: check-useless-excludes
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.4.0
+    hooks:
+      - id: reorder-python-imports
+
+  - repo: local
+    hooks:
+      - id: yapf
+        name: yapf
+        entry: yapf
+        language: system
+        args: [-i, --style .style.yapf]
+        files: \.py$
