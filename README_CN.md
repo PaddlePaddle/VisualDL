@@ -35,23 +35,6 @@ VisualDL支持浏览器：
 
 VisualDL原生支持Python的使用， 通过在模型的Python配置中添加几行代码，便可为训练过程提供丰富的可视化支持。
 
-## 🔥近期活动更新🔥
-
-- 🔔**2021.5.26**
-
-   **《VisualDL 可视化分析工具助力AI算法快速开发》**
-
-  💙 **时间：5月26日（周三）19：00 [飞桨B站直播间](http://live.bilibili.com/21689802)** 💙
-
-  📣**精彩抢先看：**
-
-  * 深度学习算法开发痛点剖析
-  * VisualDL可视化调参Tips大放送
-  * 图像分类模型训练及选型技巧大揭秘
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/119295192-c87ad780-bc88-11eb-86b2-d67765486530.jpg" width="30%"/>
-</p>
 
 ## 目录
 
