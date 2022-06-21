@@ -391,12 +391,16 @@
          }));
          const keydown = () => {
             document.addEventListener("keydown",(e) => {
-                if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
+                console.log('按键按下了',e.code);
+                if (e.code === 'MetaLeft' ||  e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'AltLeft' || e.code === 'AltRight') {
+                    debugger
                     dispatch('isAlt', true);
                 }
             })
             document.addEventListener("keyup",(e) => {
-                if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
+                console.log('按键松开了',e.code);
+                if (e.code === 'MetaLeft' ||  e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'AltLeft' || e.code === 'AltRight') {
+                    debugger
                     dispatch('isAlt', false);
                 }
             })
@@ -404,10 +408,10 @@
          const getGraph = async () => {
              const refresh = true;
              const expand_all = false;
-             const result = await fetcher('/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`);
+             const result = await fetcher('/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`);
              
-             const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
-            // const allResult = await fetcher('/graph/graph2' + `?run=${selectedRuns}`);
+            //  const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
+            const allResult = await fetcher('/graph/graph2' + `?run=${selectedRuns}`);
              setSelectItem(null);
              if (result) setModelDatas(result);
              if (allResult) setAllModelDatas(allResult);

@@ -277,13 +277,15 @@ view.View = class {
     keydown() {
         // 用户按下ctrl后变量isCtrl为true
         this._host.document.onkeydown = e => {
-            if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
+            console.log('按键按下了',e.code);
+            if (e.code === 'MetaLeft' ||  e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'AltLeft' || e.code === 'AltRight') {
                 this.isCtrl = true;
             }
         };
         // 用户松开ctrl后变量isCtrl为false
         this._host.document.onkeyup = e => {
-            if (e.code === 'MetaLeft' || e.code === 'ControlLeft') {
+            console.log('按键松开了',e.code);
+            if (e.code === 'MetaLeft' ||  e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'AltLeft' || e.code === 'AltRight') {
                 this.isCtrl = false;
             }
         };
