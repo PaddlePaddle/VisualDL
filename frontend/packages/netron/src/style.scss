@@ -27,7 +27,7 @@ body {
 
 .canvas {
     display: block;
-    position: absolute;
+    // position: absolute;
     text-rendering: geometricPrecision;
     user-select: none;
     cursor: grab;
@@ -107,7 +107,17 @@ text {
     fill-opacity: 0.7;
 }
 
+.node-item-type-container path {
+    fill: #DB989A;
+    fill-opacity: 0.7;
+}
+
 .node-item-type-wrapper path {
+    fill: #6DCDE4;
+    fill-opacity: 0.7;
+}
+
+.node-item-type-conv path {
     fill: #6DCDE4;
     fill-opacity: 0.7;
 }
@@ -131,6 +141,10 @@ text {
     fill: #309E51;
     fill-opacity: 0.7;
 }
+.node-item-type-pad path {
+    fill: #309E51;
+    fill-opacity: 0.7;
+}
 
 .node-item-type-shape path {
     fill: #D6C482;
@@ -143,6 +157,10 @@ text {
 }
 
 .node-item-type-transform path {
+    fill: #CDCB74;
+}
+
+.node-item-type-sequence path {
     fill: #CDCB74;
 }
 
@@ -235,14 +253,95 @@ text {
     stroke-dasharray: 3, 2;
 }
 
-.cluster rect {
-    stroke: #000;
-    fill: #000;
-    fill-opacity: 0.02;
-    stroke-opacity: 0.06;
+.cluster .clusterGroup {
+    fill: #DCE9FF;
+    stroke: #666;
     stroke-width: 1px;
 }
+.node-item-function path {
+    fill: #9BB9E8;
+    fill-opacity: 0.7;
+}
+.cluster .clusterGroup-constant {
+    fill:  #E8EFE9;;
+}
 
+.cluster .clusterGroup-control {
+    fill:  #E4F8E9;;
+}
+
+.cluster .clusterGroup-layer {
+    fill: #F4E0E0;
+}
+
+.cluster .clusterGroup-conv {
+    fill: #D3F0F6;
+}
+
+.cluster .clusterGroup-container {
+    fill: #F4E0E0;
+}
+
+.cluster .clusterGroup-wrapper {
+    fill: #D3F0F6;
+}
+
+.cluster .clusterGroup-activation {
+    fill: #DEECEF;
+}
+
+.cluster .clusterGroup-pool {
+    fill: #F5D7F0;
+}
+
+.cluster .clusterGroup-normalization {
+    fill: #F3DFEA;
+}
+
+.cluster .clusterGroup-dropout {
+    fill: #C0E1CA;;
+}
+
+.cluster .clusterGroup-pad {
+    fill: #C0E1CA;;
+}
+
+.cluster .clusterGroup-shape {
+    fill: #F2EDD9;
+}
+
+.cluster .clusterGroup-tensor {
+    fill: #D3D7F6;
+}
+
+.cluster .clusterGroup-transform {
+    fill: #F0EFD5;
+}
+
+
+.cluster .clusterGroup-sequence {
+    fill: #F0EFD5;
+}
+
+.cluster .clusterGroup-data {
+    fill:  #BDD5E6;
+}
+
+.cluster .clusterGroup-custom {
+    fill: #F6D3D3;
+}
+.cluster .clusterButton {
+    fill-opacity: 0.3;
+    fill: #DB989A ;
+    stroke: #999;
+    cursor:pointer;
+}
+.cluster .button-text{
+    fill: #999;
+}
+.cluster.border{
+    display: none;
+}
 .select {
 
     &.edge-path {
@@ -254,6 +353,14 @@ text {
     }
 
     .node.border {
+        stroke: #1527C2;
+        stroke-width: 2px;
+        stroke-dasharray: 6px 3px;
+        stroke-dashoffset: 0;
+        animation: pulse 4s infinite linear;
+    }
+    .cluster.border {
+        display: block;
         stroke: #1527C2;
         stroke-width: 2px;
         stroke-dasharray: 6px 3px;
