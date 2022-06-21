@@ -107,7 +107,7 @@
             return
         }
         if (target && target.files && target.files.length) {
-            setModelFile(target.files);
+            fileUploader(target.files)
         }
      };
      const fileUploader = (files:FileList) => {
