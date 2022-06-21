@@ -102,8 +102,10 @@ class Api(object):
 
     @result()
     def graph_runs(self):
+        client_ip = request.remote_addr
+        graph_reader = self.graph_reader_client_manager.get_data(client_ip)
         return self._get_with_reader('data/graph_runs', lib.get_graph_runs,
-                                     self._graph_reader)
+                                     graph_reader)
 
     @result()
     def tags(self):
