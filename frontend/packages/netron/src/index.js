@@ -126,13 +126,16 @@ host.BrowserHost = class {
         }
     }
 
-    status(status) { // 反传回去
+    status(status) {
+        // 反传回去
         this.message('status', status);
     }
-    selectNodeId(nodeInfo) { // 反传回去
+    selectNodeId(nodeInfo) {
+        // 反传回去
         this.message('nodeId', nodeInfo);
     }
-    selectItems(item) { // 反传回去
+    selectItems(item) {
+        // 反传回去
         this.message('selectItem', item);
     }
 
@@ -193,7 +196,7 @@ host.BrowserHost = class {
     }
 
     _changeFiles(files) {
-        console.log('files',files);
+        console.log('files', files);
         if (files && files.length) {
             files = Array.from(files);
             const file = files.find(file => this._view.accept(file.name));
@@ -516,13 +519,13 @@ class BrowserFileContext {
     }
 }
 
-function getCaption(obj){
-    let index = obj.lastIndexOf('/');    //获取-后边的字符串
-    let newObj = obj.substring(index+1,obj.length);
+function getCaption(obj) {
+    let index = obj.lastIndexOf('/'); //获取-后边的字符串
+    let newObj = obj.substring(index + 1, obj.length);
     return newObj;
 }
-const hash = getCaption(document.referrer)
-console.log('hash',hash);
+const hash = getCaption(document.referrer);
+console.log('hash', hash);
 if (hash === 'graphStatic') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {

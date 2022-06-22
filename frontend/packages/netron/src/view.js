@@ -33,11 +33,11 @@ view.View = class {
         this._host
             .initialize(this)
             .then(() => {
-                this.typeLayer = {}
-                this.Language = 'zh'
-                this.graphMetadatas = []
-                this.non_graphMetadatas = []
-                this.isCtrl = false
+                this.typeLayer = {};
+                this.Language = 'zh';
+                this.graphMetadatas = [];
+                this.non_graphMetadatas = [];
+                this.isCtrl = false;
                 this._clusters = {};
                 this._nodeName = {};
                 this._nodes = {};
@@ -132,7 +132,7 @@ view.View = class {
         // this._reload();
     }
     toggleLanguage(data) {
-        this.Language = data
+        this.Language = data;
     }
     get showNames() {
         return this._showNames;
@@ -272,20 +272,32 @@ view.View = class {
         });
     }
     changeAlt(data) {
-        this.isCtrl = data
+        this.isCtrl = data;
     }
     keydown() {
         // 用户按下ctrl后变量isCtrl为true
         this._host.document.onkeydown = e => {
-            console.log('按键按下了',e.code);
-            if (e.code === 'MetaLeft' ||  e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'AltLeft' || e.code === 'AltRight') {
+            console.log('按键按下了', e.code);
+            if (
+                e.code === 'MetaLeft' ||
+                e.code === 'MetaRight' ||
+                e.code === 'ControlLeft' ||
+                e.code === 'AltLeft' ||
+                e.code === 'AltRight'
+            ) {
                 this.isCtrl = true;
             }
         };
         // 用户松开ctrl后变量isCtrl为false
         this._host.document.onkeyup = e => {
-            console.log('按键松开了',e.code);
-            if (e.code === 'MetaLeft' ||  e.code === 'MetaRight' || e.code === 'ControlLeft' || e.code === 'AltLeft' || e.code === 'AltRight') {
+            console.log('按键松开了', e.code);
+            if (
+                e.code === 'MetaLeft' ||
+                e.code === 'MetaRight' ||
+                e.code === 'ControlLeft' ||
+                e.code === 'AltLeft' ||
+                e.code === 'AltRight'
+            ) {
                 this.isCtrl = false;
             }
         };
@@ -391,11 +403,14 @@ view.View = class {
                         for (const type of this.non_graphMetadatas) {
                             if (type.name.toLowerCase() === node.type) {
                                 if (this.Language === 'zh') {
-                                    window.open(`https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`)
+                                    window.open(
+                                        `https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`
+                                    );
                                 } else {
-                                    window.open(`https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/nn/${type.name}_en.html`)
+                                    window.open(
+                                        `https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/nn/${type.name}_en.html`
+                                    );
                                 }
-                                
                             }
                         }
                     }
@@ -407,7 +422,9 @@ view.View = class {
                     if (nodes.name === node.name) {
                         for (const type of this.non_graphMetadatas) {
                             if (type.name === node.type) {
-                                window.open(`https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`)
+                                window.open(
+                                    `https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`
+                                );
                             }
                         }
                     }
@@ -417,14 +434,14 @@ view.View = class {
     }
     renderGraph(model, graph) {
         try {
-            this.keydown()
+            this.keydown();
             this.graphMetadatas = graphMetadata.default.leaf_nodes;
             this.non_graphMetadatas = graphMetadata.default.non_leaf_nodes;
-            const typeLayer = {}
+            const typeLayer = {};
             for (const type of graphMetadata.default.non_leaf_nodes) {
-                typeLayer[type.name] = true
+                typeLayer[type.name] = true;
             }
-            this.typeLayer = typeLayer
+            this.typeLayer = typeLayer;
             const graphElement = this._host.document.getElementById('canvas');
             while (graphElement.lastChild) {
                 // 做上一次渲染的的清理动作
@@ -507,7 +524,7 @@ view.View = class {
                             const content = this.showNames && node.name ? nodeName : type.split('.').pop();
                             const tooltip = this.showNames && node.name ? type : nodeName;
                             header.add(null, styles, content, tooltip, () => {
-                                this.jumpRoute(node)
+                                this.jumpRoute(node);
                                 this.showNodeProperties(node);
                                 this.select({
                                     id: `node-${node.name}`,
@@ -518,7 +535,6 @@ view.View = class {
                                 for (const input of inputs) {
                                     for (const argument of input.arguments) {
                                         if (argument.name != '' && !argument.initializer) {
-
                                             this.select2({
                                                 id: `edge-${argument.name}`,
                                                 name: argument.name,
@@ -599,7 +615,7 @@ view.View = class {
                                 const block = element.block('list');
                                 block.handler = () => {
                                     // 侧边栏点击事件
-                                    this.jumpRoute(node)
+                                    this.jumpRoute(node);
                                     this.showNodeProperties(node);
                                     this.select({
                                         id: `node-${node.name}`,

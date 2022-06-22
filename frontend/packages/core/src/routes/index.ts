@@ -14,107 +14,105 @@
  * limitations under the License.
  */
 
- import type {FunctionComponent, LazyExoticComponent} from 'react';
+import type {FunctionComponent, LazyExoticComponent} from 'react';
 
- import React from 'react';
- 
- export enum Pages {
-     Scalar = 'scalar',
-     Histogram = 'histogram',
-     Image = 'image',
-     Audio = 'audio',
-     Text = 'text',
-     Graph = 'graph',
-     HighDimensional = 'high-dimensional',
-     PRCurve = 'pr-curve',
-     ROCCurve = 'roc-curve',
-     HyperParameter = 'hyper-parameter'
- }
- 
- export interface Route {
-     id: Pages | string;
-     default?: boolean;
-     visible?: boolean;
-     path?: string;
-     component?: LazyExoticComponent<FunctionComponent>;
-     children?: Pick<Route, 'id' | 'path' | 'component'>[];
- }
- 
- const routes: Route[] = [
-     {
-         id: 'index',
-         default: true,
-         visible: false,
-         path: '/index',
-         component: React.lazy(() => import('~/pages/index'))
-     },
-     {
-         id: Pages.Scalar,
-         path: '/scalar',
-         component: React.lazy(() => import('~/pages/scalar'))
-     },
-     {
-         id: 'sample',
-         children: [
-             {
-                 id: Pages.Image,
-                 path: '/sample/image',
-                 component: React.lazy(() => import('~/pages/sample/image'))
-             },
-             {
-                 id: Pages.Audio,
-                 path: '/sample/audio',
-                 component: React.lazy(() => import('~/pages/sample/audio'))
-             },
-             {
-                 id: Pages.Text,
-                 path: '/sample/text',
-                 component: React.lazy(() => import('~/pages/sample/text'))
-             }
-         ]
-     },
-     {
-         id: Pages.Graph,
-         children: [
-             {
-                 id: 'graphDynamic',
-                 path: '/graphDynamic',
-                 component: React.lazy(() => import('~/pages/graphDynamic'))
-             },
-             {
-                 id: 'graphStatic',
-                 path: '/graphStatic',
-                 component: React.lazy(() => import('~/pages/graphStatic'))
-             },
-         ]
-         
-     },
-     {
-         id: Pages.Histogram,
-         path: '/histogram',
-         component: React.lazy(() => import('~/pages/histogram'))
-     },
-     {
-         id: Pages.HyperParameter,
-         path: '/hyper-parameter',
-         component: React.lazy(() => import('~/pages/hyper-parameter'))
-     },
-     {
-         id: Pages.HighDimensional,
-         path: '/high-dimensional',
-         component: React.lazy(() => import('~/pages/high-dimensional'))
-     },
-     {
-         id: Pages.PRCurve,
-         path: '/pr-curve',
-         component: React.lazy(() => import('~/pages/curves/pr'))
-     },
-     {
-         id: Pages.ROCCurve,
-         path: '/roc-curve',
-         component: React.lazy(() => import('~/pages/curves/roc'))
-     }
- ];
- 
- export default routes;
- 
+import React from 'react';
+
+export enum Pages {
+    Scalar = 'scalar',
+    Histogram = 'histogram',
+    Image = 'image',
+    Audio = 'audio',
+    Text = 'text',
+    Graph = 'graph',
+    HighDimensional = 'high-dimensional',
+    PRCurve = 'pr-curve',
+    ROCCurve = 'roc-curve',
+    HyperParameter = 'hyper-parameter'
+}
+
+export interface Route {
+    id: Pages | string;
+    default?: boolean;
+    visible?: boolean;
+    path?: string;
+    component?: LazyExoticComponent<FunctionComponent>;
+    children?: Pick<Route, 'id' | 'path' | 'component'>[];
+}
+
+const routes: Route[] = [
+    {
+        id: 'index',
+        default: true,
+        visible: false,
+        path: '/index',
+        component: React.lazy(() => import('~/pages/index'))
+    },
+    {
+        id: Pages.Scalar,
+        path: '/scalar',
+        component: React.lazy(() => import('~/pages/scalar'))
+    },
+    {
+        id: 'sample',
+        children: [
+            {
+                id: Pages.Image,
+                path: '/sample/image',
+                component: React.lazy(() => import('~/pages/sample/image'))
+            },
+            {
+                id: Pages.Audio,
+                path: '/sample/audio',
+                component: React.lazy(() => import('~/pages/sample/audio'))
+            },
+            {
+                id: Pages.Text,
+                path: '/sample/text',
+                component: React.lazy(() => import('~/pages/sample/text'))
+            }
+        ]
+    },
+    {
+        id: Pages.Graph,
+        children: [
+            {
+                id: 'graphDynamic',
+                path: '/graphDynamic',
+                component: React.lazy(() => import('~/pages/graphDynamic'))
+            },
+            {
+                id: 'graphStatic',
+                path: '/graphStatic',
+                component: React.lazy(() => import('~/pages/graphStatic'))
+            }
+        ]
+    },
+    {
+        id: Pages.Histogram,
+        path: '/histogram',
+        component: React.lazy(() => import('~/pages/histogram'))
+    },
+    {
+        id: Pages.HyperParameter,
+        path: '/hyper-parameter',
+        component: React.lazy(() => import('~/pages/hyper-parameter'))
+    },
+    {
+        id: Pages.HighDimensional,
+        path: '/high-dimensional',
+        component: React.lazy(() => import('~/pages/high-dimensional'))
+    },
+    {
+        id: Pages.PRCurve,
+        path: '/pr-curve',
+        component: React.lazy(() => import('~/pages/curves/pr'))
+    },
+    {
+        id: Pages.ROCCurve,
+        path: '/roc-curve',
+        component: React.lazy(() => import('~/pages/curves/roc'))
+    }
+];
+
+export default routes;
