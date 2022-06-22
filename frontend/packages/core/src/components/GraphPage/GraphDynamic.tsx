@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';

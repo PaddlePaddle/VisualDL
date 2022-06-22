@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
