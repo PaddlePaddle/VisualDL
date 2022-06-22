@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
-
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
 import netron from '@visualdl/netron';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
+import {fetcher} from '~/utils/fetch';
 import useTheme from '~/hooks/useTheme';
 import {useTranslation} from 'react-i18next';
 
@@ -106,10 +105,14 @@ export type GraphRef = {
     changeGraph(name: string): void;
     search(value: string): void;
     select(item: SearchItem): void;
+    setSelectItems(data: Theobj): void;
+    setLoadings(data: boolean): void;
     showModelProperties(): void;
-    showNodeDocumentation(data: Properties): void;
+    showNodeDocumentation(data: Theobj): void;
 };
-
+interface Theobj {
+    [propname: string]: any;
+}
 type GraphProps = {
     files: FileList | File[] | null;
     uploader: JSX.Element;
@@ -117,6 +120,9 @@ type GraphProps = {
     showInitializers: boolean;
     showNames: boolean;
     horizontal: boolean;
+    isKeepData: boolean;
+    runs: string[] | undefined;
+    selectedRuns: string;
     onRendered?: () => unknown;
     onOpened?: (data: OpenedResult) => unknown;
     onSearch?: (data: SearchResult) => unknown;
@@ -128,9 +134,11 @@ type GraphProps = {
 const Graph = React.forwardRef<GraphRef, GraphProps>(
     (
         {
-            files,
             uploader,
             showAttributes,
+            runs,
+            selectedRuns,
+            isKeepData,
             showInitializers,
             showNames,
             horizontal,
@@ -143,14 +151,19 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         },
         ref
     ) => {
-        const {t} = useTranslation('graph');
-
+        const {t, i18n} = useTranslation('graph');
+        const language: string = i18n.language;
         const theme = useTheme();
-
         const [ready, setReady] = useState(false);
-        const [loading, setLoading] = useState(false);
         const [rendered, setRendered] = useState(false);
-
+        const [loading, setLoading] = useState(true);
+        const [item, setSelectItem] = useState<Theobj | null>();
+        const [isExpend, setIsExpend] = useState(0);
+        const [isRetract, setIsretract] = useState(0);
+        const [modelDatas, setModelDatas] = useState<Theobj>();
+        const [allModelDatas, setAllModelDatas] = useState<Theobj>();
+        const [selectNodeId, setSelectNodeId] = useState();
+        const [searchNodeId, setSearchNodeId] = useState<Theobj>();
         const iframe = useRef<HTMLIFrameElement>(null);
         const handler = useCallback(
             (event: MessageEvent) => {
@@ -162,10 +175,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 case 'ready':
                                     return setReady(true);
                                 case 'loading':
-                                    return setLoading(true);
+                                    // return setLoading(true);
+                                    return 1;
                                 case 'rendered':
                                     setLoading(false);
                                     setRendered(true);
+                                    // changeSvg()
                                     onRendered?.();
                                     return;
                             }
@@ -186,6 +201,10 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             return onShowNodeProperties?.(data);
                         case 'show-node-documentation':
                             return onShowNodeDocumentation?.(data);
+                        case 'nodeId':
+                            return setSelectNodeId?.(data);
+                        case 'selectItem':
+                            return setSelectItem?.(data);
                     }
                 }
             },
@@ -201,14 +220,106 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             );
         }, []);
         useEffect(() => {
+            keydown();
+        }, []);
+        useEffect(() => {
             window.addEventListener('message', handler);
             dispatch('ready');
             return () => {
                 window.removeEventListener('message', handler);
             };
         }, [handler, dispatch]);
-
-        useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
+        useEffect(() => {
+            if (selectedRuns) {
+                setLoading(true);
+                getGraph();
+                // getAllGraph()
+            }
+        }, [selectedRuns]);
+        useEffect(() => {
+            if (isExpend) {
+                // debugger
+                setLoading(true);
+                const refresh = false;
+                const expand_all = true;
+                fetcher(
+                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                ).then((res: Theobj) => {
+                    setSelectItem(null);
+                    setModelDatas(res);
+                });
+            }
+        }, [isExpend]);
+        useEffect(() => {
+            if (isRetract) {
+                // debugger
+                setLoading(true);
+                const refresh = true;
+                const expand_all = false;
+                fetcher(
+                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                ).then((res: Theobj) => {
+                    setSelectItem(null);
+                    setModelDatas(res);
+                });
+            }
+        }, [isRetract]);
+        useEffect(() => {
+            if (ready) {
+                dispatch('change-select', item);
+            }
+        }, [dispatch, item, ready]);
+        useEffect(() => {
+            if (!allModelDatas) {
+                return;
+            }
+            if (ready) {
+                dispatch('change-allGraph', allModelDatas);
+            }
+        }, [dispatch, allModelDatas, ready]);
+        useEffect(() => {
+            if (!modelDatas) {
+                return;
+            }
+            if (ready) {
+                dispatch('change-graph', modelDatas);
+            }
+        }, [dispatch, modelDatas, ready]);
+        useEffect(() => {
+            if (!selectNodeId) {
+                return;
+            }
+            // debugger;
+            setLoading(true);
+            const selectNodeIds: Theobj = selectNodeId;
+            fetcher(
+                '/graph/manipulate' +
+                    `?run=${selectedRuns}` +
+                    `&nodeid=${selectNodeIds.nodeId}` +
+                    `&expand=${selectNodeIds.expand}` +
+                    `&keep_state=${isKeepData}`
+            ).then((res: Theobj) => {
+                setModelDatas(res);
+            });
+        }, [selectNodeId]);
+        useEffect(() => {
+            if (!searchNodeId) {
+                return;
+            }
+            // debugger
+            setLoading(true);
+            const searchNodeIds: Theobj = searchNodeId;
+            const is_node = searchNodeIds.type === 'node' ? true : false;
+            fetcher(
+                '/graph/search' +
+                    `?run=${selectedRuns}` +
+                    `&nodeid=${searchNodeIds.name}` +
+                    `&keep_state=${isKeepData}` +
+                    `&is_node=${is_node}`
+            ).then((res: Theobj) => {
+                setModelDatas(res);
+            });
+        }, [searchNodeId]);
         useEffect(
             () => (ready && dispatch('toggle-attributes', showAttributes)) || undefined,
             [dispatch, showAttributes, ready]
@@ -222,8 +333,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             () => (ready && dispatch('toggle-direction', horizontal)) || undefined,
             [dispatch, horizontal, ready]
         );
-
         useEffect(() => (ready && dispatch('toggle-theme', theme)) || undefined, [dispatch, theme, ready]);
+        useEffect(() => (ready && dispatch('toggle-Language', language)) || undefined, [dispatch, language, ready]);
 
         useImperativeHandle(ref, () => ({
             export(type) {
@@ -235,8 +346,38 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             search(value) {
                 dispatch('search', value);
             },
+            setSelectItems(data: Theobj) {
+                setSelectItem(data);
+            },
+            setLoadings(data: boolean) {
+                setLoading(data);
+            },
             select(item) {
-                dispatch('select', item);
+                let a = document.querySelector('iframe') as HTMLIFrameElement;
+                let documents = a.contentWindow?.document as Document;
+                if (item.type === 'node') {
+                    for (const node of documents.getElementsByClassName('cluster')) {
+                        if (node.getAttribute('id') === `node-${item.name}`) {
+                            dispatch('select', item);
+                            return;
+                        }
+                    }
+                    for (const node of documents.getElementsByClassName('node')) {
+                        if (node.getAttribute('id') === `node-${item.name}`) {
+                            dispatch('select', item);
+                            return;
+                        }
+                    }
+                } else if (item.type === 'input') {
+                    for (const node of documents.getElementsByClassName('edge-path')) {
+                        if (node.getAttribute('id') === `edge-${item.name}`) {
+                            dispatch('select', item);
+                            return;
+                        }
+                    }
+                }
+                setSelectItem(item);
+                setSearchNodeId(item);
             },
             showModelProperties() {
                 dispatch('show-model-properties');
@@ -245,24 +386,83 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 dispatch('show-node-documentation', data);
             }
         }));
-
+        const keydown = () => {
+            document.addEventListener('keydown', e => {
+                if (
+                    e.code === 'MetaLeft' ||
+                    e.code === 'MetaRight' ||
+                    e.code === 'ControlLeft' ||
+                    e.code === 'AltLeft' ||
+                    e.code === 'AltRight'
+                ) {
+                    dispatch('isAlt', true);
+                }
+            });
+            document.addEventListener('keyup', e => {
+                if (
+                    e.code === 'MetaLeft' ||
+                    e.code === 'MetaRight' ||
+                    e.code === 'ControlLeft' ||
+                    e.code === 'AltLeft' ||
+                    e.code === 'AltRight'
+                ) {
+                    dispatch('isAlt', false);
+                }
+            });
+        };
+        const getGraph = async () => {
+            const refresh = true;
+            const expand_all = false;
+            const result = await fetcher(
+                '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+            );
+            const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
+            // const allResult = await fetcher('/graph/graph' + `?run=${selectedRuns}`);
+            setSelectItem(null);
+            if (result) setModelDatas(result);
+            if (allResult) setAllModelDatas(allResult);
+        };
         const content = useMemo(() => {
-            if (!ready || loading) {
+            if (loading) {
                 return (
                     <Loading>
                         <HashLoader size="60px" color={primaryColor} />
                     </Loading>
                 );
             }
-            if (ready && !rendered) {
+            return null;
+        }, [loading]);
+        const uploaderContent = useMemo(() => {
+            if (!runs && !loading) {
                 return uploader;
             }
-            return null;
-        }, [ready, loading, rendered, uploader]);
-
+        }, [runs, loading, uploader]);
+        const svgContent = useMemo(() => {
+            return (
+                <Content>
+                    <iframe
+                        ref={iframe}
+                        src={PUBLIC_PATH + netron}
+                        frameBorder={0}
+                        scrolling="yes"
+                        marginWidth={0}
+                        marginHeight={0}
+                    ></iframe>
+                    <a
+                        className="powered-by"
+                        href="https://github.com/lutzroeder/netron"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Powered by <img src={PUBLIC_PATH + logo} alt="netron" />
+                    </a>
+                </Content>
+            );
+        }, [rendered]);
         return (
             <Wrapper>
                 {content}
+                {uploaderContent}
                 <RenderContent show={!loading && rendered}>
                     <Toolbox
                         items={[
@@ -278,31 +478,25 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             },
                             {
                                 icon: 'restore-size',
-                                tooltip: t('graph:restore-size'),
-                                onClick: () => dispatch('zoom-reset')
+                                tooltip: t('expend-size'),
+                                onClick: () => {
+                                    const id = isExpend + 1;
+                                    setIsExpend(id);
+                                }
+                            },
+                            {
+                                icon: 'shrink',
+                                tooltip: t('restore-size'),
+                                onClick: () => {
+                                    const id = isRetract + 1;
+                                    setIsretract(id);
+                                }
                             }
                         ]}
                         reversed
                         tooltipPlacement="bottom"
                     />
-                    <Content>
-                        <iframe
-                            ref={iframe}
-                            src={PUBLIC_PATH + netron}
-                            frameBorder={0}
-                            scrolling="no"
-                            marginWidth={0}
-                            marginHeight={0}
-                        ></iframe>
-                        <a
-                            className="powered-by"
-                            href="https://github.com/lutzroeder/netron"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Powered by <img src={PUBLIC_PATH + logo} alt="netron" />
-                        </a>
-                    </Content>
+                    {svgContent}
                 </RenderContent>
             </Wrapper>
         );
