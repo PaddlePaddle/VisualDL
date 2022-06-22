@@ -27,6 +27,7 @@
         "dev:reload": "yarn dev --reload",
         "build": "snowpack build && node builder/post-build.js",
         "snowpack": "snowpack",
+        "lint": "eslint --ext .tsx,.jsx.ts,.js,.mjs",
         "test": "web-test-runner \"test/**/*.tsx\""
     },
     "type": "module",
