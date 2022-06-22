@@ -12,10 +12,10 @@ grapher.Renderer = class {
     }
 
     render(graph) {
-        let svgClusterGroup = null
-        let svgEdgePathGroup = null
-        let svgEdgeLabelGroup = null
-        let svgNodeGroup = null
+        let svgClusterGroup = null;
+        let svgEdgePathGroup = null;
+        let svgEdgeLabelGroup = null;
+        let svgNodeGroup = null;
         svgClusterGroup = this.createElement('g');
         svgClusterGroup.setAttribute('id', 'clusters');
         svgClusterGroup.setAttribute('class', 'clusters');
@@ -41,7 +41,6 @@ grapher.Renderer = class {
         //     svgEdgeLabelGroup = this._document.getElementById('edge-labels')
         //     svgNodeGroup = this._document.getElementById('nodes')
         // }
-        
 
         for (const nodeId of graph.nodes()) {
             if (graph.children(nodeId).length == 0) {
@@ -56,7 +55,7 @@ grapher.Renderer = class {
                     const nodeBox = this._view._nodes[node.id].getBBox();
                     node.width = nodeBox.width;
                     node.height = nodeBox.height;
-                    node.element = this._view._nodes[node.id]
+                    node.element = this._view._nodes[node.id];
                 } else {
                     const element = this.createElement('g');
                     if (node.id) {
@@ -192,7 +191,7 @@ grapher.Renderer = class {
                 //     node.height = nodeBox.height;
                 //     node.element = this._view._nodes[node.id]
                 if (this._view._clusters.hasOwnProperty(node.id)) {
-                    const nodeDom = this._view._clusters.hasOwnProperty(node.id)
+                    const nodeDom = this._view._clusters.hasOwnProperty(node.id);
                     nodeDom.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
                     nodeDom.firstChild.setAttribute('x', -node.width / 2);
                     nodeDom.firstChild.setAttribute('y', -node.height / 2);
@@ -222,7 +221,7 @@ grapher.Renderer = class {
                     tspan.setAttribute('x', 0);
                     tspan.setAttribute('y', -(node.height / 2) + 5);
                     tspan.setAttribute('text-anchor', 'middle');
-                    let name = ''
+                    let name = '';
                     for (const nodes of this._host._view._allGraph.nodes) {
                         if (nodes.name === node.nodeId) {
                             name = nodes.show_name.split('/')[nodes.show_name.split('/').length - 1];
@@ -280,9 +279,13 @@ grapher.Renderer = class {
                                     for (const type of this._view.non_graphMetadatas) {
                                         if (type.name === nodes.type) {
                                             if (this._view.Language === 'zh') {
-                                                window.open(`https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`)
+                                                window.open(
+                                                    `https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`
+                                                );
                                             } else {
-                                                window.open(`https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/nn/${type.name}_en.html`)
+                                                window.open(
+                                                    `https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/nn/${type.name}_en.html`
+                                                );
                                             }
                                         }
                                     }

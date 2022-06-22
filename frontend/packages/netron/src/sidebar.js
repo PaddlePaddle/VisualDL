@@ -825,7 +825,7 @@ sidebar.FindSidebar = class {
             }
 
             const name = node.name;
-            console.log('name',node);
+            console.log('name', node);
             const operator = node.type;
             if (
                 !nodeMatches.has(name) &&
