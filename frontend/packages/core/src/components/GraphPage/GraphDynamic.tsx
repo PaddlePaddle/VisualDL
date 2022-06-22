@@ -111,7 +111,7 @@ export type GraphRef = {
     showNodeDocumentation(data: Theobj): void;
 };
 interface Theobj {
-    [propname: string]: any;
+    [propname: string]: unknown;
 }
 type GraphProps = {
     files: FileList | File[] | null;
@@ -354,7 +354,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             },
             select(item) {
                 let a = document.querySelector('iframe') as HTMLIFrameElement;
-                let documents = a.contentWindow?.document as Document;
+                const documents = a.contentWindow?.document as Document;
                 if (item.type === 'node') {
                     for (const node of documents.getElementsByClassName('cluster')) {
                         if (node.getAttribute('id') === `node-${item.name}`) {
@@ -414,7 +414,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             const refresh = true;
             const expand_all = false;
             const result = await fetcher(
-                '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                '/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
             );
             const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
             // const allResult = await fetcher('/graph/graph' + `?run=${selectedRuns}`);

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
-import {WithStyled, ellipsis, em, half, math, position, sameBorder, size, transitionProps} from '~/utils/style';
+import React, {FunctionComponent, useCallback} from 'react';
+import {ellipsis, em, half, math, position, sameBorder, size, transitionProps} from '~/utils/style';
 
 import styled from 'styled-components';
 const height = em(20);
@@ -93,7 +93,7 @@ type CheckboxProps = {
 
 const Checkbox: FunctionComponent<CheckboxProps> = ({value, checked, children, size, disabled, className, title, onChange}) => {
     const onChangeInput = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
+        () => {
             if (disabled) {
                 return;
             }
