@@ -29,7 +29,7 @@ module.exports = {
     rules: {
         'no-console': 'warn',
         'sort-imports': 'warn',
-        'license-header/header': ['error', './license-header.js']
+        // 'license-header/header': ['error', './license-header.js']
     },
     overrides: [
         {
