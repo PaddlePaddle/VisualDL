@@ -247,7 +247,7 @@ export const Loader: FunctionComponent = () => (
             <TextWrapper>
                 <TextChartLoader width={270} />
             </TextWrapper>
-            <TextWrapper>ß
+            <TextWrapper>
                 <TextChartLoader width={640} />
             </TextWrapper>
         </Wrapper>
