@@ -43,16 +43,19 @@
         "type": "类型",
         "version": "版本"
     },
-    "restore-size": "重置大小",
+    "restore-size": "全收缩数据模型",
+    "expend-size": "全展开数据模型",
     "show-attributes": "显示参数",
     "show-initializers": "显示初始化参数",
     "show-node-names": "显示节点名称",
     "subgraph": "选择子图",
+    "keep-expanded": "保持展开",
     "supported-model": "VisualDL支持：",
     "supported-model-list": "PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite",
     "upload-model": "上传模型",
     "upload-tip": "点击或拖拽文件到页面上传模型，进行结构展示",
     "vertical": "垂直",
+    "Choose-model": "选择模型",
     "zoom-in": "放大",
     "zoom-out": "缩小"
 }
