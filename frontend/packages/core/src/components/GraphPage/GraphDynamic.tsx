@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
@@ -23,11 +22,9 @@ import logo from '~/assets/images/netron.png';
 import netron from '@visualdl/netron';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
-import isString from 'lodash/isString';
 import {fetcher} from '~/utils/fetch';
 import useTheme from '~/hooks/useTheme';
 import {useTranslation} from 'react-i18next';
-import {t} from 'numeric';
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
