@@ -82,27 +82,33 @@ const Content = styled.div<{disabled?: boolean}>`
 `;
 
 type CheckboxProps = {
-    value:string
+    value: string;
     checked?: boolean;
-    className?:string
+    className?: string;
     onChange?: (checked: string) => unknown;
     size?: 'small';
     title?: string;
     disabled?: boolean;
 };
 
-const Checkbox: FunctionComponent<CheckboxProps> = ({value, checked, children, size, disabled, className, title, onChange}) => {
-    const onChangeInput = useCallback(
-        () => {
-            if (disabled) {
-                return;
-            }
-            if(onChange) {
-                onChange(value);
-            }
-        },
-        [disabled, onChange]
-    );
+const Checkbox: FunctionComponent<CheckboxProps> = ({
+    value,
+    checked,
+    children,
+    size,
+    disabled,
+    className,
+    title,
+    onChange
+}) => {
+    const onChangeInput = useCallback(() => {
+        if (disabled) {
+            return;
+        }
+        if (onChange) {
+            onChange(value);
+        }
+    }, [disabled, onChange]);
 
     return (
         <Wrapper disabled={disabled} className={className} title={title}>
