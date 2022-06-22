@@ -25,23 +25,26 @@ module.exports = {
         ecmaVersion: 2020,
         sourceType: 'module'
     },
-    plugins: ['license-header', 'simple-import-sort'],
+    plugins: ['license-header',''],
     rules: {
         'no-console': 'warn',
-        'simple-import-sort/imports': 'error',
-        'simple-import-sort/exports': 'error',
-        'sort-imports': 'error',
+        'sort-imports': 'off',
+        'import/order': 'off',
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error",
         'license-header/header': ['error', './license-header.js']
     },
     overrides: [
         {
-            files: ['packages/cli/**/*', 'packages/demo/**/*', 'packages/server/**/*'],
+            files: ['packages/cli/**/*', 'packages/demo/**/*', 'packages/server/**/*','packages/core/**/*'],
             extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
             parser: '@typescript-eslint/parser',
             rules: {
                 '@typescript-eslint/explicit-function-return-type': 'off',
                 '@typescript-eslint/explicit-module-boundary-types': 'off',
-                '@typescript-eslint/no-explicit-any': 'error'
+                '@typescript-eslint/no-explicit-any': 'error',
+                "simple-import-sort/imports": "off",
+                "import/order": ["error", { "newlines-between": "always" }]
             }
         },
         {
