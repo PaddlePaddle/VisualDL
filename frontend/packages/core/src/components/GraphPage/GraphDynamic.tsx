@@ -353,7 +353,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 setLoading(data);
             },
             select(item) {
-                let a = document.querySelector('iframe') as HTMLIFrameElement;
+                const a = document.querySelector('iframe') as HTMLIFrameElement;
                 const documents = a.contentWindow?.document as Document;
                 if (item.type === 'node') {
                     for (const node of documents.getElementsByClassName('cluster')) {
