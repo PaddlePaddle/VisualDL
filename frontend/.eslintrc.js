@@ -25,9 +25,11 @@ module.exports = {
         ecmaVersion: 2020,
         sourceType: 'module'
     },
-    plugins: ['license-header'],
+    plugins: ['license-header', 'simple-import-sort'],
     rules: {
         'no-console': 'warn',
+        'simple-import-sort/imports': 'error',
+        'simple-import-sort/exports': 'error',
         'sort-imports': 'error',
         'license-header/header': ['error', './license-header.js']
     },

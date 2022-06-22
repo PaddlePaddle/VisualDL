@@ -100,7 +100,7 @@ const Graph: FunctionComponent = () => {
     }, []);
     const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const target = e.target as EventTarget & HTMLInputElement;
-        const file: any = target.files;
+        const file:FileList | null = target.files as FileList;
         if (file[0].name.split('.')[1] !== 'pdmodel') {
             alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面');
             return;
@@ -110,7 +110,7 @@ const Graph: FunctionComponent = () => {
         }
     };
     const fileUploader = (files: FileList) => {
-        let formData = new FormData();
+        const formData = new FormData();
         // 将文件转二进制
         formData.append('file', files[0]);
         formData.append('filename', files[0].name);
@@ -291,7 +291,6 @@ const Graph: FunctionComponent = () => {
                                         runs.map((run: string, index: number) => (
                                             <div key={index}>
                                                 <Check
-                                                    selectedRuns={selectedRuns}
                                                     checked={selectedRuns === run ? true : false}
                                                     value={run}
                                                     title={run}

@@ -82,21 +82,24 @@ const Content = styled.div<{disabled?: boolean}>`
 `;
 
 type CheckboxProps = {
+    value:string
     checked?: boolean;
-    onChange?: (checked: boolean) => unknown;
+    className?:string
+    onChange?: (checked: string) => unknown;
     size?: 'small';
     title?: string;
     disabled?: boolean;
 };
 
-const Checkbox: FunctionComponent<any> = ({value, checked, children, size, disabled, className, title, onChange}) => {
+const Checkbox: FunctionComponent<CheckboxProps> = ({value, checked, children, size, disabled, className, title, onChange}) => {
     const onChangeInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             if (disabled) {
                 return;
             }
-
-            onChange(value);
+            if(onChange) {
+                onChange(value);
+            }
         },
         [disabled, onChange]
     );
