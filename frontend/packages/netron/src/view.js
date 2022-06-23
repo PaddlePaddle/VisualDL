@@ -24,12 +24,12 @@ const protobuf = require('netron/src/protobuf');
 const d3 = require('d3');
 const dagre = require('dagre');
 
-const grapher = require('netron/src/view-grapher');
+const grapher = require('./view-grapher');
 
 const sidebar = require('./sidebar');
 
 const view = {};
-
+const graphModel = require('../../mock/graph_demo1.js');
 view.View = class {
     constructor(host) {
         this._host = host;
@@ -74,7 +74,6 @@ view.View = class {
             this._host.message('search', view.update(value));
         }
     }
-
     toggleAttributes(toggle) {
         if (toggle != null && !(toggle ^ this._showAttributes)) {
             return;
@@ -245,6 +244,7 @@ view.View = class {
 
     _updateGraph(model, graph) {
         return this._timeout(100).then(() => {
+            // 直接在此处传入模型数据的数据
             if (graph && graph != this._activeGraph) {
                 const nodes = graph.nodes;
                 if (nodes.length > 1400) {
@@ -290,12 +290,36 @@ view.View = class {
                 this._zoom = null;
                 graphElement.style.position = 'absolute';
                 graphElement.style.margin = '0';
-
-                const groups = graph.groups;
-
+                
+                // const groups = graph.groups;
+                const groups = true;
+                graph = graphModel.default
+                console.log('graph', graph);
+                // const consoles = (data, filename) => {
+                //     if (!data) {
+                //         console.error('Console.save: No data');
+                //         return;
+                //     }
+                //     if (!filename) filename = 'console.json';
+            
+                //     if (typeof data === 'object') {
+                //         data = JSON.stringify(data, undefined, 4);
+                //     }
+            
+                //     var blob = new Blob([data], {type: 'text/json'}),
+                //         e = document.createEvent('MouseEvents'),
+                //         a = document.createElement('a');
+            
+                //     a.download = filename;
+                //     a.href = window.URL.createObjectURL(blob);
+                //     a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+                //     e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                //     a.dispatchEvent(e);
+                // }
+                // consoles(graph)
                 const graphOptions = {};
-                graphOptions.nodesep = 25;
-                graphOptions.ranksep = 20;
+                graphOptions.nodesep = 65;
+                graphOptions.ranksep = 60;
                 if (this._showHorizontal) {
                     graphOptions.rankdir = 'LR';
                 }
@@ -311,21 +335,46 @@ view.View = class {
                 const clusterMap = {};
                 const clusterParentMap = {};
                 let id = new Date().getTime();
-                const nodes = graph.nodes;
-
+                let nodes = graph.nodes;
+                const age2 = false
+                if (age2) {
+                    const newNode =  {}
+                    // newNode.inputs = nodes[9].inputs
+                    newNode.attributes = nodes[7].attributes
+                    newNode.chain = nodes[7].chain
+                    newNode.metadata = nodes[7].metadata
+                    newNode.name =nodes[7].name
+                    newNode.outputs = nodes[7].outputs
+                    newNode.type = nodes[7].type
+                    newNode.inputs = nodes[4].inputs
+                    nodes.splice(4, 4, newNode)
+                    console.log('nodesss',nodes);
+                }
                 if (nodes.length > 1500) {
                     graphOptions.ranker = 'longest-path';
                 }
 
                 if (groups) {
                     for (const node of nodes) {
-                        if (node.group) {
-                            const path = node.group.split('/');
-                            while (path.length > 0) {
-                                const name = path.join('/');
-                                path.pop();
-                                clusterParentMap[name] = path.join('/');
+                        // debugger
+                        // if (node.group) {
+                        //     const path = node.group.split('/');
+                        //     while (path.length > 0) {
+                        //         const name = path.join('/');
+                        //         path.pop();
+                        //         clusterParentMap[name] = path.join('/');
+                        //     }
+                        // }
+                        let path = '';
+                        for (const attribute of node.attributes) {
+                            if (attribute.name === 'op_namescope') {
+                                path = attribute.value.split('/');
                             }
+                        }
+                        while (path.length > 0) {
+                            const name = path.join('/');
+                            path.pop();
+                            clusterParentMap[name] = path.join('/');
                         }
                     }
                 }
@@ -349,6 +398,7 @@ view.View = class {
                             );
                         }
                         const content = this.showNames && node.name ? node.name : type.split('.').pop();
+                        // 显示节点名称
                         const tooltip = this.showNames && node.name ? type : node.name;
                         header.add(null, styles, content, tooltip, () => {
                             this.showNodeProperties(node);
@@ -363,6 +413,7 @@ view.View = class {
                         const initializers = [];
                         let hiddenInitializers = false;
                         if (this._showInitializers) {
+                            // 是否显示初始化参数
                             for (const input of node.inputs) {
                                 if (
                                     input.visible &&
@@ -382,6 +433,7 @@ view.View = class {
                         let sortedAttributes = [];
                         const attributes = node.attributes;
                         if (this.showAttributes && attributes) {
+                            // 是否显示属性参数
                             sortedAttributes = attributes.filter(attribute => attribute.visible).slice();
                             sortedAttributes.sort((a, b) => {
                                 const au = a.name.toUpperCase();
@@ -392,6 +444,7 @@ view.View = class {
                         if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
                             const block = element.block('list');
                             block.handler = () => {
+                                // 侧边栏点击事件
                                 this.showNodeProperties(node);
                             };
                             for (const initializer of initializers) {
@@ -449,21 +502,45 @@ view.View = class {
 
                         if (edges) {
                             const inputs = node.inputs;
-                            for (const input of inputs) {
-                                for (const argument of input.arguments) {
-                                    if (argument.name != '' && !argument.initializer) {
-                                        let tuple = edgeMap[argument.name];
-                                        if (!tuple) {
-                                            tuple = {from: null, to: []};
-                                            edgeMap[argument.name] = tuple;
+                            const age1 = false;
+                            if (age1) {
+                                if (nodeId !== 5 || nodeId !== 6 || nodeId !== 7) {
+                                    for (const input of inputs) {
+                                        for (const argument of input.arguments) {
+                                            if (argument.name != '' && !argument.initializer) {
+                                                let tuple = edgeMap[argument.name];
+                                                if (!tuple) {
+                                                    tuple = {from: null, to: []};
+                                                    edgeMap[argument.name] = tuple;
+                                                }
+                                                tuple.to.push({
+                                                    // 这个节点的id
+                                                    node: nodeId,
+                                                    name: input.name
+                                                });
+                                            }
                                         }
-                                        tuple.to.push({
-                                            node: nodeId,
-                                            name: input.name
-                                        });
+                                    }
+                                }
+                            } else {
+                                for (const input of inputs) {
+                                    for (const argument of input.arguments) {
+                                        if (argument.name != '' && !argument.initializer) {
+                                            let tuple = edgeMap[argument.name];
+                                            if (!tuple) {
+                                                tuple = {from: null, to: []};
+                                                edgeMap[argument.name] = tuple;
+                                            }
+                                            tuple.to.push({
+                                                // 这个节点的id
+                                                node: nodeId,
+                                                name: input.name
+                                            });
+                                        }
                                     }
                                 }
                             }
+
                             let outputs = node.outputs;
                             if (node.chain && node.chain.length > 0) {
                                 const chainOutputs = node.chain[node.chain.length - 1].outputs;
@@ -471,19 +548,40 @@ view.View = class {
                                     outputs = chainOutputs;
                                 }
                             }
-                            for (const output of outputs) {
-                                for (const argument of output.arguments) {
-                                    if (argument.name != '') {
-                                        let tuple = edgeMap[argument.name];
-                                        if (!tuple) {
-                                            tuple = {from: null, to: []};
-                                            edgeMap[argument.name] = tuple;
+                            if (age1) {
+                                if (nodeId !== 4 || nodeId !== 6 || nodeId !== 5) {
+                                    for (const output of outputs) {
+                                        for (const argument of output.arguments) {
+                                            if (argument.name != '') {
+                                                let tuple = edgeMap[argument.name];
+                                                if (!tuple) {
+                                                    tuple = {from: null, to: []};
+                                                    edgeMap[argument.name] = tuple;
+                                                }
+                                                tuple.from = {
+                                                    node: nodeId,
+                                                    name: output.name,
+                                                    type: argument.type
+                                                };
+                                            }
                                         }
-                                        tuple.from = {
-                                            node: nodeId,
-                                            name: output.name,
-                                            type: argument.type
-                                        };
+                                    }
+                                }
+                            } else {
+                                for (const output of outputs) {
+                                    for (const argument of output.arguments) {
+                                        if (argument.name != '') {
+                                            let tuple = edgeMap[argument.name];
+                                            if (!tuple) {
+                                                tuple = {from: null, to: []};
+                                                edgeMap[argument.name] = tuple;
+                                            }
+                                            tuple.from = {
+                                                node: nodeId,
+                                                name: output.name,
+                                                type: argument.type
+                                            };
+                                        }
                                     }
                                 }
                             }
@@ -526,8 +624,13 @@ view.View = class {
                     }
 
                     const createCluster = function (name) {
+                        // const element = new grapher.NodeElement(this._host.document);
                         if (!clusterMap[name]) {
-                            g.setNode(name, {rx: 5, ry: 5});
+                            g.setNode(name, {
+                                rx: 5,
+                                ry: 5,
+                                a: 'lalalalal'
+                            });
                             clusterMap[name] = true;
                             const parent = clusterParentMap[name];
                             if (parent) {
@@ -538,7 +641,14 @@ view.View = class {
                     };
 
                     if (groups) {
-                        let groupName = node.group;
+                        // let groupName = node.group;
+                        let groupName = '';
+                        for (const attribute of node.attributes) {
+                            if (attribute.name === 'op_namescope') {
+                                groupName = attribute.value;
+                            }
+                        }
+                        console.log('groupName', groupName);
                         if (groupName && groupName.length > 0) {
                             if (!Object.prototype.hasOwnProperty.call(clusterParentMap, groupName)) {
                                 const lastIndex = groupName.lastIndexOf('/');
@@ -552,8 +662,18 @@ view.View = class {
                                 }
                             }
                             if (groupName) {
-                                createCluster(groupName);
-                                g.setParent(nodeId, groupName);
+                                if(age2) {
+                                    if(nodeId === 4) {
+                                        g.setParent(nodeId, '/encode');
+                                    } else {
+                                         createCluster(groupName);
+                                        g.setParent(nodeId, groupName);
+                                    }
+                                } else {
+                                    createCluster(groupName);
+                                    g.setParent(nodeId, groupName);
+                                }
+                               
                             }
                         }
                     }
@@ -632,6 +752,7 @@ view.View = class {
                                     class: 'edge-path-control-dependency'
                                 });
                             } else {
+                                console.log('tuple.from.node, to.node', tuple);
                                 g.setEdge(tuple.from.node, to.node, {
                                     label: text,
                                     id: 'edge-' + edge,
@@ -807,6 +928,7 @@ view.View = class {
         if (this._model) {
             const modelSidebar = new sidebar.ModelSidebar(this._host, this._model, this._activeGraph);
             this._host.message('show-model-properties', modelSidebar.render());
+            // 通信函数
         }
     }
 
