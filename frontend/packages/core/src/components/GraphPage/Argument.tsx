@@ -61,7 +61,7 @@ const Wrapper = styled.div`
             ${transitionProps('color')}
 
             &:hover,
-            &:active {
+              &:active {
                 color: var(--text-light-color);
             }
         }
@@ -96,7 +96,7 @@ const Argument: FunctionComponent<ArgumentProps> = ({value, expand, showNodeDocu
                             {value.name}: <b>{value.value}</b>
                         </>
                     ) : (
-                        value.value.split('\n').map((line, index) => (
+                        new String(value.value).split('\n').map((line, index) => (
                             <React.Fragment key={index}>
                                 {index !== 0 && <br />}
                                 {line}

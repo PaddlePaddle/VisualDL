@@ -8,8 +8,8 @@ body {
     margin: 0;
     width: 100vw;
     height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans',
-        sans-serif, 'PingFang SC';
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif,
+        'PingFang SC';
     font-size: 12px;
     text-rendering: geometricPrecision;
     background-color: #fff;
@@ -27,7 +27,7 @@ body {
 
 .canvas {
     display: block;
-    position: absolute;
+    // position: absolute;
     text-rendering: geometricPrecision;
     user-select: none;
     cursor: grab;
@@ -46,13 +46,14 @@ line {
 }
 
 text {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "PingFang SC";
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif,
+        'PingFang SC';
     font-size: 11px;
     text-rendering: geometricPrecision;
     fill: #000;
 
     .dark & {
-        fill: #CFCFD1;
+        fill: #cfcfd1;
     }
 }
 
@@ -70,7 +71,7 @@ text {
 
     &:hover {
         path {
-            fill: #2932E1;
+            fill: #2932e1;
             fill-opacity: 1;
         }
 
@@ -81,7 +82,7 @@ text {
 }
 
 .node-item-function path {
-    fill: #9BB9E8;
+    fill: #9bb9e8;
     fill-opacity: 0.7;
 }
 
@@ -89,70 +90,88 @@ text {
     cursor: pointer;
 
     path {
-        fill: #8BB8FF;
+        fill: #8bb8ff;
         fill-opacity: 0.9;
     }
 }
 
 .node-item-type-constant path {
-    fill: #B4CCB7;
+    fill: #b4ccb7;
 }
 
 .node-item-type-control path {
-    fill: #A8E9B8;
+    fill: #a8e9b8;
 }
 
 .node-item-type-layer path {
-    fill: #DB989A;
+    fill: #db989a;
+    fill-opacity: 0.7;
+}
+
+.node-item-type-container path {
+    fill: #db989a;
     fill-opacity: 0.7;
 }
 
 .node-item-type-wrapper path {
-    fill: #6DCDE4;
+    fill: #6dcde4;
+    fill-opacity: 0.7;
+}
+
+.node-item-type-conv path {
+    fill: #6dcde4;
     fill-opacity: 0.7;
 }
 
 .node-item-type-activation path {
-    fill: #93C2CA;
+    fill: #93c2ca;
     fill-opacity: 0.7;
 }
 
 .node-item-type-pool path {
-    fill: #DE7CCE;
+    fill: #de7cce;
     fill-opacity: 0.7;
 }
 
 .node-item-type-normalization path {
-    fill: #DA96BC;
+    fill: #da96bc;
     fill-opacity: 0.7;
 }
 
 .node-item-type-dropout path {
-    fill: #309E51;
+    fill: #309e51;
+    fill-opacity: 0.7;
+}
+.node-item-type-pad path {
+    fill: #309e51;
     fill-opacity: 0.7;
 }
 
 .node-item-type-shape path {
-    fill: #D6C482;
+    fill: #d6c482;
     fill-opacity: 0.7;
 }
 
 .node-item-type-tensor path {
-    fill: #6D7CE4;
+    fill: #6d7ce4;
     fill-opacity: 0.7;
 }
 
 .node-item-type-transform path {
-    fill: #CDCB74;
+    fill: #cdcb74;
+}
+
+.node-item-type-sequence path {
+    fill: #cdcb74;
 }
 
 .node-item-type-data path {
-    fill: #2576AD;
+    fill: #2576ad;
     fill-opacity: 0.7;
 }
 
 .node-item-type-custom path {
-    fill: #E46D6D;
+    fill: #e46d6d;
     fill-opacity: 0.7;
 }
 
@@ -176,7 +195,7 @@ text {
     cursor: pointer;
 
     path {
-        fill: #CA5353;
+        fill: #ca5353;
         fill-opacity: 0.7;
     }
 }
@@ -203,7 +222,7 @@ text {
     cursor: pointer;
 
     path {
-        fill: #E49D6D;
+        fill: #e49d6d;
         fill-opacity: 0.7;
     }
 }
@@ -212,7 +231,7 @@ text {
     cursor: pointer;
 
     path {
-        fill: #E4E06D;
+        fill: #e4e06d;
         fill-opacity: 0.9;
     }
 }
@@ -235,18 +254,97 @@ text {
     stroke-dasharray: 3, 2;
 }
 
-.cluster rect {
-    stroke: #000;
-    fill: #000;
-    fill-opacity: 0.02;
-    stroke-opacity: 0.06;
+.cluster .clusterGroup {
+    fill: #dce9ff;
+    stroke: #666;
     stroke-width: 1px;
 }
+.node-item-function path {
+    fill: #9bb9e8;
+    fill-opacity: 0.7;
+}
+.cluster .clusterGroup-constant {
+    fill: #e8efe9;
+}
 
+.cluster .clusterGroup-control {
+    fill: #e4f8e9;
+}
+
+.cluster .clusterGroup-layer {
+    fill: #f4e0e0;
+}
+
+.cluster .clusterGroup-conv {
+    fill: #d3f0f6;
+}
+
+.cluster .clusterGroup-container {
+    fill: #f4e0e0;
+}
+
+.cluster .clusterGroup-wrapper {
+    fill: #d3f0f6;
+}
+
+.cluster .clusterGroup-activation {
+    fill: #deecef;
+}
+
+.cluster .clusterGroup-pool {
+    fill: #f5d7f0;
+}
+
+.cluster .clusterGroup-normalization {
+    fill: #f3dfea;
+}
+
+.cluster .clusterGroup-dropout {
+    fill: #c0e1ca;
+}
+
+.cluster .clusterGroup-pad {
+    fill: #c0e1ca;
+}
+
+.cluster .clusterGroup-shape {
+    fill: #f2edd9;
+}
+
+.cluster .clusterGroup-tensor {
+    fill: #d3d7f6;
+}
+
+.cluster .clusterGroup-transform {
+    fill: #f0efd5;
+}
+
+.cluster .clusterGroup-sequence {
+    fill: #f0efd5;
+}
+
+.cluster .clusterGroup-data {
+    fill: #bdd5e6;
+}
+
+.cluster .clusterGroup-custom {
+    fill: #f6d3d3;
+}
+.cluster .clusterButton {
+    fill-opacity: 0.3;
+    fill: #db989a;
+    stroke: #999;
+    cursor: pointer;
+}
+.cluster .button-text {
+    fill: #999;
+}
+.cluster.border {
+    display: none;
+}
 .select {
-
     &.edge-path {
-        stroke: #1527C2;
+        stroke: #1527c2;
         stroke-width: 2px;
         stroke-dasharray: 6px 3px;
         stroke-dashoffset: 0;
@@ -254,7 +352,15 @@ text {
     }
 
     .node.border {
-        stroke: #1527C2;
+        stroke: #1527c2;
+        stroke-width: 2px;
+        stroke-dasharray: 6px 3px;
+        stroke-dashoffset: 0;
+        animation: pulse 4s infinite linear;
+    }
+    .cluster.border {
+        display: block;
+        stroke: #1527c2;
         stroke-width: 2px;
         stroke-dasharray: 6px 3px;
         stroke-dashoffset: 0;
