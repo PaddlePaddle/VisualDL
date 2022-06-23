@@ -27,9 +27,9 @@ module.exports = {
     },
     plugins: ['license-header'],
     rules: {
-        'no-console': 'warn',
-        'sort-imports': 'error',
-        'license-header/header': ['error', './license-header.js']
+        'sort-imports': 'warn',
+        'no-console': 'warn'
+        // 'license-header/header': ['error', './license-header.js']
     },
     overrides: [
         {
