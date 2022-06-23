@@ -362,6 +362,72 @@ class Api(object):
         client_ip = request.remote_addr
         graph_reader = self.graph_reader_client_manager.get_data(client_ip)
         return lib.get_graph_all_nodes(graph_reader, run)
+    
+    @result()
+    def profiler_runs(self):
+        pass
+
+    @result()
+    def profiler_views(self, run):
+        pass
+
+    @result()
+    def profiler_workers(self, run, view):
+        pass
+
+    @result()
+    def profiler_spans(self, run, worker):
+        pass
+
+    @result()
+    def profiler_overview_environment(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_overview_pie(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_overview_table(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_operation_pie(self, run, worker, span, group_by):
+        pass
+
+    @result()
+    def profiler_operation_table(self, run, worker, span, group_by):
+        pass
+
+    @result()
+    def profiler_operation_stack(self, run, worker, span, op_name, group_by, input_shape):
+        pass
+
+    @result()
+    def profiler_kernel_pie(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_kernel_table(self, run, worker, span, group_by):
+        pass
+
+    @result()
+    def profiler_kernel_tc_pie(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_distributed_info(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_distributed_overlap(self, run, worker, span):
+        pass
+
+    @result()
+    def profiler_trace(self, run, worker, span):
+        pass
+
+
 
 
 def create_api_call(logdir, model, cache_timeout):
@@ -409,7 +475,23 @@ def create_api_call(logdir, model, cache_timeout):
         'hparams/data': (api.hparam_data, ['type']),
         'hparams/indicators': (api.hparam_indicator, []),
         'hparams/list': (api.hparam_list, []),
-        'hparams/metric': (api.hparam_metric, ['run', 'metric'])
+        'hparams/metric': (api.hparam_metric, ['run', 'metric']),
+        'profiler/runs': (api.profiler_runs, []),
+        'profiler/views': (api.profiler_views ,["run"]),
+        'profiler/workers': (api.profiler_workers, ["run", "view"]),
+        'profiler/spans':(api.profiler_spans, ["run", "worker"]),
+        'profiler/overview/environment': (api.profiler_overview_environment, ["run", "worker", "span"]),
+        'profiler/overview/pie': (api.profiler_overview_pie, ["run", "worker", "span"]),
+        'profiler/overview/table': (api.profiler_overview_table, ["run", "worker", "span"]),
+        'profiler/operation/pie': (api.profiler_operation_pie, ["run", "worker", "span", "group_by"]),
+        'profiler/operation/table': (api.profiler_operation_table, ["run", "worker", "span", "group_by"]),
+        'profiler/operation/stack': (api.profiler_operation_stack, ["run", "worker", "span", "op_name", "group_by", "input_shape"]),
+        'profiler/kernel/pie': (api.profiler_kernel_pie, ["run", "worker", "span"]),
+        'profiler/kernel/table': (api.profiler_kernel_table, ["run", "worker", "span", "group_by"]),
+        'profiler/kernel/tc_pie': (api.profiler_kernel_tc_pie, ["run", "worker", "span"]),
+        'profiler/distributed/info': (api.profiler_distributed_info, ["run", "worker", "span"]),
+        'profiler/distributed/overlap': (api.profiler_distributed_overlap, ["run", "worker", "span"]),
+        'profiler/trace': (api.profiler_trace, ["run", "worker", "span"])
     }
 
     def call(path: str, args):
