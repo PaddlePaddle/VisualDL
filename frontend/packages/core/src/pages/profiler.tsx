@@ -23,17 +23,14 @@ import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
 import BodyLoading from '~/components/BodyLoading';
 import Button from '~/components/Button';
 import Content from '~/components/Content';
-import Empty from '~/components/HyperParameterPage/Empty';
-import Field from '~/components/Field';
-// import ImportanceDialog from '~/components/HyperParameterPage/ImportanceDialog';
-import IndicatorFilter from '~/components/HyperParameterPage/IndicatorFilter/IndicatorFilter';
-import ParallelCoordinatesView from '~/components/HyperParameterPage/ParallelCoordinatesView';
-import ScatterPlotMatrixView from '~/components/HyperParameterPage/ScatterPlotMatrixView';
-import Tab from '~/components/Tab';
-import TableView from '~/components/HyperParameterPage/TableView';
+import Empty from '~/components/ProfilerPage/Empty';
+import IndicatorFilter from '~/components/ProfilerPage/IndicatorFilter';
+import OverView from '~/components/ProfilerPage/overview';
+import OperatorView from '~/components/ProfilerPage/OperatorView';
+import NuclearView from '~/components/ProfilerPage/NuclearView';
+
+
 import Title from '~/components/Title';
-import queryString from 'query-string';
-import saveFile from '~/utils/saveFile';
 import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
@@ -78,7 +75,7 @@ const ViewWrapper = styled.div`
     position: relative;
 `;
 
-const HyperParameter: FunctionComponent = () => {
+const Profiler: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
 
     const {data: indicatorsData, loading: loadingIndicators} = useRequest<IndicatorData>('/hparams/indicators');
@@ -110,7 +107,7 @@ const HyperParameter: FunctionComponent = () => {
 
     const tabs = useMemo(
         () =>
-            ['table', 'parallel-coordinates', 'scatter-plot-matrix'].map(value => ({
+            ['OperatorView', 'parallel-coordinates', 'scatter-plot-matrix'].map(value => ({
                 value,
                 label: t(`hyper-parameter:views.${value}`)
             })),
@@ -128,12 +125,12 @@ const HyperParameter: FunctionComponent = () => {
     );
     const view = useMemo(() => {
         switch (tabView) {
-            case 'table':
-                return <TableView {...viewData} />;
-            case 'parallel-coordinates':
-                return <ParallelCoordinatesView {...viewData} />;
-            case 'scatter-plot-matrix':
-                return <ScatterPlotMatrixView {...viewData} />;
+            case 'OverView':
+                return <OverView/>;
+            case 'OperatorView':
+                return <OperatorView/>;
+            case 'NuclearView':
+                return <NuclearView/>;
             default:
                 return null;
         }
@@ -141,54 +138,13 @@ const HyperParameter: FunctionComponent = () => {
 
     // const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
 
-    const downloadData = useCallback(
-        (type: 'tsv' | 'csv') =>
-            saveFile(
-                queryString.stringifyUrl({
-                    url: '/hparams/data',
-                    query: {
-                        type
-                    }
-                }),
-                `visualdl-hyper-parameters.${type}`
-            ),
-        []
-    );
-
     const aside = useMemo(
         () => (
-            <Aside
-                bottom={
-                    <>
-                        {/* <AsideSection>
-                            <ImportanceButton
-                                rounded
-                                outline
-                                type="primary"
-                                onClick={() => setImportanceDialogVisible(v => !v)}
-                            >
-                                {t('hyper-parameter:show-parameter-importance')}
-                            </ImportanceButton>
-                        </AsideSection> */}
-                        <AsideSection>
-                            <Field label={t('common:download-data')}>
-                                <DownloadButtons>
-                                    <Button rounded outline onClick={() => downloadData('csv')}>
-                                        {t('common:download-data-format', {format: 'CSV'})}
-                                    </Button>
-                                    <Button rounded outline onClick={() => downloadData('tsv')}>
-                                        {t('common:download-data-format', {format: 'TSV'})}
-                                    </Button>
-                                </DownloadButtons>
-                            </Field>
-                        </AsideSection>
-                    </>
-                }
-            >
+            <Aside>
                 <IndicatorFilter indicators={indicators} onChange={setFilteredIndicators} />
             </Aside>
         ),
-        [downloadData, indicators, t]
+        [indicators, t]
     );
 
     return (
@@ -197,7 +153,6 @@ const HyperParameter: FunctionComponent = () => {
             <Content aside={aside}>
                 {loading ? <BodyLoading /> : null}
                 <HPWrapper>
-                    <Tab list={tabs} value={tabView} onChange={setTabView} />
                     <ViewWrapper>
                         {isEmpty ? <Empty /> : view}
                     </ViewWrapper>
@@ -207,4 +162,4 @@ const HyperParameter: FunctionComponent = () => {
     );
 };
 
-export default HyperParameter;
+export default Profiler;

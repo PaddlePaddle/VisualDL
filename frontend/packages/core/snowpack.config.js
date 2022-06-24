@@ -65,6 +65,8 @@ export default {
     plugins: [
         '@snowpack/plugin-react-refresh',
         '@snowpack/plugin-dotenv',
+        'snowpack-plugin-less',
+        '@snowpack/plugin-sass',
         [
             '@snowpack/plugin-typescript',
             {
@@ -111,7 +113,8 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
+        // knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is','rc-util/es/hooks/useId','rc-util/es/Portal','rc-util/es/Dom/contains','rc-util/es/Dom/css','rc-util/es/getScrollBarSize','rc-util/es/PortalWrapper','rc-select/es/hooks/useId','rc-util/es/Dom/isVisible','rc-util/es/Dom/focus','rc-util/es/Dom/focus']
+        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is','antd']
     },
     buildOptions: {
         out: 'dist',
