@@ -196,14 +196,6 @@ grapher.Renderer = class {
         for (const nodeId of newGroupArray) {
             if (graph.children(nodeId).length > 0) {
                 const node = graph.node(nodeId);
-                // const nodeDom = this._document.getElementById(`node-${nodeId}`)
-                // if (this._view._nodes.hasOwnProperty(node.id)) {
-                //     // 这个节点存在过
-                //     svgNodeGroup.appendChild(this._view._nodes[node.id]);
-                //     const nodeBox = this._view._nodes[node.id].getBBox();
-                //     node.width = nodeBox.width;
-                //     node.height = nodeBox.height;
-                //     node.element = this._view._nodes[node.id]
                 if (this._view._clusters.hasOwnProperty(node.id)) {
                     const nodeDom = this._view._clusters.hasOwnProperty(node.id);
                     nodeDom.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
@@ -256,7 +248,7 @@ grapher.Renderer = class {
                     borderElement.setAttribute('class', ['cluster', 'border'].join(' '));
                     borderElement.setAttribute(
                         'd',
-                        grapher.NodeElement.roundedRect(
+                        grapher.NodeElement.roundedRect2(
                             -node.width / 2,
                             -node.height / 2,
                             node.width + 10,
@@ -488,6 +480,60 @@ grapher.NodeElement = class {
             'z'
         );
     }
+    static roundedRect2(x, y, width, height, r1, r2, r3, r4) {
+        const radius = 10;
+        r1 = r1 ? radius : 0;
+        r2 = r2 ? radius : 0;
+        r3 = r3 ? radius : 0;
+        r4 = r4 ? radius : 0;
+        return (
+            'M' +
+            (x + r1) +
+            ',' +
+            y +
+            'h' +
+            (width - r1 - r2) +
+            'a' +
+            r2 +
+            ',' +
+            r2 +
+            ' 0 0 1 ' +
+            r2 +
+            ',' +
+            r2 +
+            'v' +
+            (height - r2 - r3) +
+            'a' +
+            r3 +
+            ',' +
+            r3 +
+            ' 0 0 1 ' +
+            -r3 +
+            ',' +
+            r3 +
+            'h' +
+            (r3 + r4 - width) +
+            'a' +
+            r4 +
+            ',' +
+            r4 +
+            ' 0 0 1 ' +
+            -r4 +
+            ',' +
+            -r4 +
+            'v' +
+            (-height + r4 + r1) +
+            'a' +
+            r1 +
+            ',' +
+            r1 +
+            ' 0 0 1 ' +
+            r1 +
+            ',' +
+            -r1 +
+            'z'
+        );
+    }
 
     createElement(name) {
         return this._document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -603,8 +649,8 @@ grapher.NodeElement.Header = class {
                 'd',
                 grapher.NodeElement.roundedRect(0, 0, element.width, element.height, r1, r2, r3, r4)
             );
-            element.text.setAttribute('x', 6);
-            element.text.setAttribute('y', element.ty);
+            element.text.setAttribute('x', 7);
+            element.text.setAttribute('y', element.ty - 1);
         }
 
         let lineElement;
