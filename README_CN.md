@@ -337,12 +337,18 @@ value: 3.1297709941864014
 
 ### Graph
 
-一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。
+一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。当前分为动态图和静态图两个版本。
+- 动态图
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/22424850/175770313-2509f7e9-041a-4654-9a0f-45f4bd76e1e8.gif" width="85%"/>
 </p>
 
+- 静态图
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/175770315-11e2c3f5-141c-4f05-be86-0e1e2785e11f.gif" width="85%"/>
+</p>
 
 ### Histogram
 
