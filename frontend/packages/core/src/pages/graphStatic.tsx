@@ -117,7 +117,7 @@ const Graph: FunctionComponent = () => {
         [setModelFile]
     );
 
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
+    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/static_graph');
 
     useEffect(() => {
         if (data?.data?.size) {
