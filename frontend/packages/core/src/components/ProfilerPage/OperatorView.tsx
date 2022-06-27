@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import React, {FunctionComponent, useCallback, useRef, useMemo, useState} from 'react';
 import {DownOutlined} from '@ant-design/icons';
 import PieChart, {LineChartRef} from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
@@ -78,7 +78,7 @@ const Configure = styled.div`
 `;
 const EchartPie = styled.div`
     width: 100%;
-    height:${rem(270)};
+    height: ${rem(270)};
     border: 1px solid #dddddd;
     display: flex;
     .wraper {
@@ -156,6 +156,10 @@ const Pagination = styled.div`
 
 const OperatorView: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
+    const table1 = useRef<any>(null);
+    const [isclick2, setIsclick2] = useState(false);
+    const [Dom, setDom] = useState();
+    const [isExpend, setIsExpend] = useState(false);
     const columns: ColumnsType<DataType> = [
         {
             title: 'Name',
@@ -216,18 +220,34 @@ const OperatorView: FunctionComponent = () => {
             title: 'Gender',
             dataIndex: 'gender',
             key: 'gender',
-            width: 80,
-            render: () => <div onClick={(e)=>{
-                // debugger
-                const Dom:any = e.currentTarget.parentElement?.parentElement?.firstChild?.firstChild
-                console.log('Dom',Dom);
-                
-                Dom.trigger('click')
-                
-                
-            }}>
-                查看调用栈
-            </div>,
+            width: 100,
+            render: () => (
+                <div
+                    onClick={e => {
+                        // debugger
+                        const Dom: any = e.currentTarget.parentElement?.parentElement?.firstChild?.firstChild;
+                        // console.log(Dom.getAttribute('aria-label'));
+                        setDom(Dom);
+                        debugger;
+                        const label = Dom.getAttribute('aria-label');
+                        if (label === 'Expand row') {
+                            // 此时未展开需要展开且 setcloums1 和data
+                            setIsclick2(true);
+                            Dom.click();
+                        } else if (isclick2 && isExpend) {
+                            // 自己展开自己收起
+                            setIsclick2(false);
+                            Dom.click();
+                        } else if (!isclick2 && isExpend) {
+                            // 别人收起自己展开
+                            setIsclick2(true);
+                            Dom.click();
+                        }
+                    }}
+                >
+                    查看调用栈
+                </div>
+            ),
             fixed: 'right'
         }
     ];
@@ -253,50 +273,110 @@ const OperatorView: FunctionComponent = () => {
             ]}
         />
     );
-    const expandedRowRender = () => {
-        const columns: ColumnsType<ExpandedDataType> = [
-            {title: 'Date', dataIndex: 'date', key: 'date'},
-            {title: 'Name', dataIndex: 'name', key: 'name'},
-            {
-                title: 'Status',
-                key: 'state',
-                render: () => (
-                    <span>
-                        <Badge status="success" />
-                        Finished
-                    </span>
-                )
-            },
-            {title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum'},
-            {
-                title: 'Action',
-                dataIndex: 'operation',
-                key: 'operation',
-                render: () => (
-                    <Space size="middle">
-                        <a>Pause</a>
-                        <a>Stop</a>
-                        <Dropdown overlay={menu}>
-                            <a>
-                                More <DownOutlined />
-                            </a>
-                        </Dropdown>
-                    </Space>
-                )
+    const expandedRowRender = useCallback(
+        (e: any, a: any, b: any, c: any) => {
+            console.log('isclick2', isclick2);
+            setIsExpend(c);
+            debugger;
+            if (!c && isclick2 && Dom) { // 符合这个有两种 
+                if (Dom) {
+                    const Doms: any = Dom;
+                    setIsclick2(false);
+                    Doms.click();
+                }
+            } else if (!c && !isclick2 && Dom) { // 符合此条件有两种 自己展开 自己收起
+                if (Dom) {
+                    // const Doms: any = Dom;
+                    // setIsclick2(true);
+                    // Doms.click();
+                    return
+                }
+            } else if (isclick2 && c) {
+                if (Dom) {
+                    const columns: ColumnsType<ExpandedDataType> = [
+                        {title: 'Date', dataIndex: 'date', key: 'date'},
+                        {title: 'Name', dataIndex: 'name', key: 'name'},
+                        {
+                            title: 'Status',
+                            key: 'state',
+                            render: () => (
+                                <span>
+                                    <Badge status="success" />
+                                    Finished
+                                </span>
+                            )
+                        },
+                        {title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum'},
+                        {
+                            title: 'Action',
+                            dataIndex: 'operation',
+                            key: 'operation',
+                            render: () => (
+                                <Space size="middle">
+                                    <a>Pause</a>
+                                    <a>Stop</a>
+                                    <Dropdown overlay={menu}>
+                                        <a>
+                                            More <DownOutlined />
+                                        </a>
+                                    </Dropdown>
+                                </Space>
+                            )
+                        }
+                    ];
+                    const data = [];
+                    for (let i = 0; i < 3; ++i) {
+                        data.push({
+                            key: i,
+                            date: '2014-12-24 23:12:00',
+                            name: 'This is production name',
+                            upgradeNum: 'Upgraded: 56'
+                        });
+                    }
+                    return <Table ref={table1} columns={columns} dataSource={data} pagination={false} />;
+                } else {
+                    const columns: ColumnsType<ExpandedDataType> = [{title: 'Date', dataIndex: 'date', key: 'date'}];
+                    const data = [];
+                    data.push(
+                        {
+                            key: 'aten:convolut',
+                            date: 'aten:convolut',
+                            name: 'This is production name',
+                            upgradeNum: 'Upgraded: 56'
+                        },
+                        {
+                            key: 'ion_backward',
+                            date: 'ion_backward',
+                            name: 'This is production name',
+                            upgradeNum: 'Upgraded: 56'
+                        }
+                    );
+                    return (
+                        <Table ref={table1} columns={columns} dataSource={data} pagination={false} showHeader={false} />
+                    );
+                }
+            } else if (!isclick2) {
+                const columns: ColumnsType<ExpandedDataType> = [{title: 'Date', dataIndex: 'date', key: 'date'}];
+                const data = [];
+                data.push(
+                    {
+                        key: 'aten:convolut',
+                        date: 'aten:convolut',
+                        name: 'This is production name',
+                        upgradeNum: 'Upgraded: 56'
+                    },
+                    {
+                        key: 'ion_backward',
+                        date: 'ion_backward',
+                        name: 'This is production name',
+                        upgradeNum: 'Upgraded: 56'
+                    }
+                );
+                return <Table ref={table1} columns={columns} dataSource={data} pagination={false} showHeader={false} />;
             }
-        ];
-
-        const data = [];
-        for (let i = 0; i < 3; ++i) {
-            data.push({
-                key: i,
-                date: '2014-12-24 23:12:00',
-                name: 'This is production name',
-                upgradeNum: 'Upgraded: 56'
-            });
-        }
-        return <Table columns={columns} dataSource={data} pagination={false} />;
-    };
+        },
+        [isclick2, Dom]
+    );
     return (
         <ViewWrapper>
             <Title>算子视图</Title>
@@ -320,35 +400,32 @@ const OperatorView: FunctionComponent = () => {
                         bordered
                         size="middle"
                         pagination={false}
-                        expandable={{expandedRowRender}}
+                        expandable={{
+                            expandedRowRender: expandedRowRender,
+                            fixed: 'right'
+                        }}
                         scroll={{x: 'calc(700px + 50%)', y: 240}}
                     />
                 </Wraper>
                 <Pagination>
-                        <div className="Pagination_left">
-                            <div className='buttons'>
-                                <Button block>
-                                    上一页
-                                </Button>
-                            </div>
-                            <div className='buttons next'>
-                                <Button block>
-                                    下一页
-                                </Button>
-                            </div>
+                    <div className="Pagination_left">
+                        <div className="buttons">
+                            <Button block>上一页</Button>
                         </div>
-                        <div className="Pagination_right">
-                            <div className='describe'>共5页，跳转至</div>
-                            <div className='input_wrapper'>
-                                <Input placeholder="Basic usage" />;
-                            </div>
-                            <div className='buttons'>
-                                <Button block>
-                                    确定
-                                </Button>
-                            </div>
+                        <div className="buttons next">
+                            <Button block>下一页</Button>
                         </div>
-                    </Pagination>
+                    </div>
+                    <div className="Pagination_right">
+                        <div className="describe">共5页，跳转至</div>
+                        <div className="input_wrapper">
+                            <Input placeholder="Basic usage" />;
+                        </div>
+                        <div className="buttons">
+                            <Button block>确定</Button>
+                        </div>
+                    </div>
+                </Pagination>
             </Configure>
         </ViewWrapper>
     );
