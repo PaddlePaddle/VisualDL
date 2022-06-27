@@ -315,7 +315,7 @@ Developers can compare multiple experiments by specifying and uploading the path
 
 ### Graph
 
-**Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows developers to explore model attributes, node information, node input and output. aiding them analyze model structures quickly and understand the direction of data flow easily. Currently we provide two versions to visualize dynamic and static model graph individually.
+**Graph** enables developers to visualize model structures by only one click. Moreover, **Graph** allows developers to explore model attributes, node information, node input and output. aiding them analyze model structures quickly and understand the direction of data flow easily. Additionally, Graph supports the visualization of dynamic and static model graph respectively.
 
 - dynamic graph
 

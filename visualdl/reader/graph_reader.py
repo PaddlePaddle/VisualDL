@@ -13,6 +13,7 @@
 # limitations under the License.
 # =======================================================================
 import json
+import os
 
 from visualdl.component.graph import analyse_model
 from visualdl.component.graph import Model
@@ -62,6 +63,7 @@ class GraphReader(object):
     def get_all_walk(self):
         flush_walks = {}
         for dir in self.dir:
+            dir = os.path.realpath(dir)
             for root, dirs, files in bfile.walk(dir):
                 flush_walks.update({root: files})
         return flush_walks

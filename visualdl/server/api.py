@@ -73,8 +73,9 @@ class Api(object):
         self._graph_reader = GraphReader(logdir)
         self._graph_reader.set_displayname(self._reader)
         if model:
+            if 'vdlgraph' in model:
+                self._graph_reader.set_input_graph(model)
             self._reader.model = model
-            self._graph_reader.set_input_graph(model)
             self.model_name = os.path.basename(model)
         else:
             self.model_name = ''
@@ -280,6 +281,13 @@ class Api(object):
         key = os.path.join('data/plugin/roc_curves/steps', run)
         return self._get_with_retry(key, lib.get_roc_curve_step, run)
 
+    @result('application/octet-stream', lambda s: {
+        "Content-Disposition": 'attachment; filename="%s"' % s.model_name
+    } if len(s.model_name) else None)
+    def graph_static_graph(self):
+        key = os.path.join('data/plugin/graphs/static_graph')
+        return self._get_with_retry(key, lib.get_static_graph)
+
     @result()
     def graph_graph(self, run, expand_all, refresh):
         client_ip = request.remote_addr
@@ -395,6 +403,7 @@ def create_api_call(logdir, model, cache_timeout):
         'embedding/metadata': (api.embedding_metadata, ['name']),
         'histogram/list': (api.histogram_list, ['run', 'tag']),
         'graph/graph': (api.graph_graph, ['run', 'expand_all', 'refresh']),
+        'graph/static_graph': (api.graph_static_graph, []),
         'graph/upload': (api.graph_upload, []),
         'graph/search': (api.graph_search,
                          ['run', 'nodeid', 'keep_state', 'is_node']),

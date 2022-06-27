@@ -514,7 +514,7 @@ visualdl --logdir ./log --port 8080
 
 ### 介绍
 
-Graph组件一键可视化模型的网络结构。用于查看模型属性、节点信息、节点输入输出等，并进行节点搜索，协助开发者们快速分析模型结构与了解数据流向。
+Graph组件一键可视化模型的网络结构。用于查看模型属性、节点信息、节点输入输出等，并进行节点搜索，协助开发者们快速分析模型结构与了解数据流向，覆盖动态图与静态图两种格式。
 
 ### 记录接口
 
@@ -599,17 +599,25 @@ visualdl --logdir ./log/graph_test/ --port 8080
 
 **注意**
 
-VisualDL之前的版本支持通过--model参数直接指定模型结构文件，现在仍然保持这一选项，但是只能指定飞桨的模型，
-模型结构文件为通过`add_graph`接口导出的文件（文件名包含"vdlgraph"), 或者是静态图结构文件（文件名后缀包含"pdmodel")，
-在页面中以'manual_input_model'来表示通过该参数指定的模型。
+VisualDL之前的版本支持通过--model参数直接指定模型结构文件，现在仍然保持这一选项，
+通过`add_graph`接口导出的动态图模型文件（文件名包含"vdlgraph"), 在动态图页面展示，
+并在页面中以'manual_input_model'来表示通过该参数指定的模型。其余所支持的文件格式在静态图页面中展示。
+
 例如
 ```shell
 visualdl --model ./log/model.pdmodel --port 8080
 ```
+将展示在静态图页面。
+
+```shell
+visualdl --model ./log/vdlgraph.1655783158.log --port 8080
+```
+将展示在动态图页面。
+
 
 ### 功能操作说明
 
-当前Graph页面分为动态图和静态图两个页面。其中动态图页面用来展示通过add_graph接口导出的飞桨动态图模型结构，静态图页面用来展示飞桨静态图模型结构（通过飞桨的[paddle.jit.save](https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/jit/save_cn.html)导出的后缀名为pdmodel的文件）。
+当前Graph页面分为动态图和静态图两个页面。其中动态图页面用来展示通过add_graph接口导出的飞桨动态图模型结构，静态图页面用来展示飞桨静态图模型结构（通过飞桨的[paddle.jit.save](https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/jit/save_cn.html)导出的后缀名为pdmodel的文件）及其它可支持框架的模型。
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/175809463-56c0801a-744e-49ed-97bb-66122a351ff7.png" width="80%"/>
 </p>

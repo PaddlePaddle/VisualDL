@@ -537,12 +537,22 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 **Note**
 
-We provide option --model to specify model structure file in previous versions, and this option is still supported now. However, you can only specify model exported by `add_graph` interface ("vdlgraph" contained in filename) or exported by `paddle.jit.save` (filename extension is "pdmodel"). We use string "manual_input_model" in web page to denote the model you specify by this option.
+We provide option --model to specify model structure file in previous versions, and this option is still supported now. You can specify model exported by `add_graph` interface ("vdlgraph" contained in filename), which will be shown in dynamic graph page, and we use string "manual_input_model" in the page to denote the model you specify by this option. Other supported file formats are presented in static graph page.
+
+For example
+```shell
+visualdl --model ./log/model.pdmodel --port 8080
+```
+which will be shown in static graph page. And
+```shell
+visualdl --model ./log/vdlgraph.1655783158.log --port 8080
+```
+shown in dynamic graph page.
 
 ### Functional Instructions
 
 Graph page is divided into dynamic and static version currently. Dynamic version is used to visualize dynamic model of paddle, which is exported by add_graph interface.
-The other is used to visualize static model of paddle, which is exported by [paddle.jit.save](https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/jit/save_en.html) interface.
+The other is used to visualize static model of paddle, which is exported by [paddle.jit.save](https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/jit/save_en.html) interface and other supported formats.
 
 
 <p align="center">
