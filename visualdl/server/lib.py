@@ -563,6 +563,14 @@ def get_histogram(log_reader, run, tag):
     return results
 
 
+def get_static_graph(log_reader):
+    result = b""
+    if log_reader.model:
+        with bfile.BFile(log_reader.model, 'rb') as bfp:
+            result = bfp.read_file(log_reader.model)
+    return result
+
+
 def get_graph(graph_reader,
               run,
               nodeid=None,
