@@ -186,11 +186,6 @@ const Graph: FunctionComponent = () => {
 
     const [rendered, setRendered] = useState(false);
 
-    const content = (runs: string) => {
-        return <div>{runs}</div>;
-        // return (<p>Content</p>)
-    };
-
     const aside = useMemo(() => {
         if (!rendered) {
             return null;
@@ -318,6 +313,7 @@ const Graph: FunctionComponent = () => {
         t,
         bottom,
         search,
+        runs,
         searching,
         searchResult,
         selectedRuns,
