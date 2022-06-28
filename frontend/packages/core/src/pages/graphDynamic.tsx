@@ -327,6 +327,7 @@ const Graph: FunctionComponent = () => {
         changeGraph,
         onSearch,
         onSelect,
+        runs,
         showAttributes,
         showInitializers,
         showNames,
