@@ -14,7 +14,6 @@
 # =======================================================================
 import json
 import os
-import tempfile
 
 from visualdl.component.graph import analyse_model
 from visualdl.component.graph import Model
@@ -56,7 +55,6 @@ class GraphReader(object):
         self.runs2displayname = {}
         self.graph_buffer = {}
         self.walks_buffer = {}
-        self.tempfile = None
 
     @property
     def logdir(self):
@@ -64,11 +62,8 @@ class GraphReader(object):
 
     def get_all_walk(self):
         flush_walks = {}
-        if 'manual_input_model' in self.walks:
-            flush_walks['manual_input_model'] = [
-                self.walks['manual_input_model']
-            ]
         for dir in self.dir:
+            dir = os.path.realpath(dir)
             for root, dirs, files in bfile.walk(dir):
                 flush_walks.update({root: files})
         return flush_walks
@@ -99,7 +94,10 @@ class GraphReader(object):
 
     def runs(self, update=True):
         self.graphs(update=update)
-        return list(self.walks.keys())
+        graph_runs = list(self.walks.keys(
+        )) if 'manual_input_model' not in self.graph_buffer else list(
+            self.walks.keys()) + ['manual_input_model']
+        return sorted(graph_runs)
 
     def get_graph(self,
                   run,
@@ -108,6 +106,12 @@ class GraphReader(object):
                   keep_state=False,
                   expand_all=False,
                   refresh=False):
+        if run == 'manual_input_model' and run in self.graph_buffer:
+            graph_model = self.graph_buffer[run]
+            if nodeid is not None:
+                graph_model.adjust_visible(nodeid, expand, keep_state)
+            return graph_model.make_graph(
+                refresh=refresh, expand_all=expand_all)
         if run in self.walks:
             if run in self.walks_buffer:
                 if self.walks[run] == self.walks_buffer[run]:
@@ -118,7 +122,10 @@ class GraphReader(object):
                         refresh=refresh, expand_all=expand_all)
 
             data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
-            graph_model = Model(json.loads(data.decode()))
+            if 'pdmodel' in self.walks[run]:
+                graph_model = Model(analyse_model(data))
+            else:
+                graph_model = Model(json.loads(data.decode()))
             self.graph_buffer[run] = graph_model
             self.walks_buffer[run] = self.walks[run]
             if nodeid is not None:
@@ -127,6 +134,11 @@ class GraphReader(object):
                 refresh=refresh, expand_all=expand_all)
 
     def search_graph_node(self, run, nodeid, keep_state=False, is_node=True):
+        if run == 'manual_input_model' and run in self.graph_buffer:
+            graph_model = self.graph_buffer[run]
+            graph_model.adjust_search_node_visible(
+                nodeid, keep_state=keep_state, is_node=is_node)
+            return graph_model.make_graph(refresh=False, expand_all=False)
         if run in self.walks:
             if run in self.walks_buffer:
                 if self.walks[run] == self.walks_buffer[run]:
@@ -137,7 +149,10 @@ class GraphReader(object):
                         refresh=False, expand_all=False)
 
             data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
-            graph_model = Model(json.loads(data.decode()))
+            if 'pdmodel' in self.walks[run]:
+                graph_model = Model(analyse_model(data))
+            else:
+                graph_model = Model(json.loads(data.decode()))
             self.graph_buffer[run] = graph_model
             self.walks_buffer[run] = self.walks[run]
             graph_model.adjust_search_node_visible(
@@ -145,6 +160,9 @@ class GraphReader(object):
             return graph_model.make_graph(refresh=False, expand_all=False)
 
     def get_all_nodes(self, run):
+        if run == 'manual_input_model' and run in self.graph_buffer:
+            graph_model = self.graph_buffer[run]
+            return graph_model.get_all_leaf_nodes()
         if run in self.walks:
             if run in self.walks_buffer:
                 if self.walks[run] == self.walks_buffer[run]:
@@ -152,7 +170,10 @@ class GraphReader(object):
                     return graph_model.get_all_leaf_nodes()
 
             data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
-            graph_model = Model(json.loads(data.decode()))
+            if 'pdmodel' in self.walks[run]:
+                graph_model = Model(analyse_model(data))
+            else:
+                graph_model = Model(json.loads(data.decode()))
             self.graph_buffer[run] = graph_model
             self.walks_buffer[run] = self.walks[run]
             return graph_model.get_all_leaf_nodes()
@@ -167,10 +188,6 @@ class GraphReader(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
-    def __del__(self):
-        if self.tempfile:
-            os.unlink(self.tempfile.name)
-
     def set_input_graph(self, content, file_type='pdmodel'):
         if isinstance(content, str):
             if not is_VDLGraph_file(content):
@@ -184,23 +201,10 @@ class GraphReader(object):
         if file_type == 'pdmodel':
             data = analyse_model(content)
             self.graph_buffer['manual_input_model'] = Model(data)
-            temp = tempfile.NamedTemporaryFile(suffix='.pdmodel', delete=False)
-            temp.write(json.dumps(data).encode())
-            temp.close()
 
         elif file_type == 'vdlgraph':
             self.graph_buffer['manual_input_model'] = Model(
                 json.loads(content.decode()))
-            temp = tempfile.NamedTemporaryFile(
-                suffix='.log', prefix='vdlgraph.', delete=False)
-            temp.write(content)
-            temp.close()
 
         else:
             return
-
-        if self.tempfile:
-            os.unlink(self.tempfile.name)
-        self.tempfile = temp
-        self.walks['manual_input_model'] = temp.name
-        self.walks_buffer['manual_input_model'] = temp.name
