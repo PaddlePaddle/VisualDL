@@ -4,6 +4,34 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.3.0 - 2022-06-30
+
+**ZH**
+
+- 功能新增
+  - **BE**:  增加add_graph接口支持动态图模型可视化 （#1077 #1093）
+  - **FE**:  增加动态图可视化页面 （#1091 #1096 #1097）
+
+- 问题修复
+  - **FE**:  修复图像数据放大后比例失调的问题 （##1090）
+
+- 其他改进
+  - **FE**:  优化文本数据显示的用户体验 （##1090）
+
+**EN**
+
+- Features
+  - **BE**:  Add add_graph interface for dynamic model of paddle（#1077 #1093）
+  - **FE**:  Add dynamic graph page （#1091 #1096 #1097）
+
+- Bug Fixes
+  - **FE**:  Fix unbalance ratio of upscaled image when zoom in. （##1090）
+
+- Enhancement
+  - **FE**:  Refine user experience for text presentation. （##1090）
+
+  
+
 ## v2.2.1 - 2021-09-02
 
 **ZH**
