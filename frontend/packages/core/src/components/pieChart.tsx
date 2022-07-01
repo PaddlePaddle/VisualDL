@@ -19,7 +19,7 @@ import * as chart from '~/utils/chart';
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-
+import {color, colorAlt} from '~/utils/chart';
 import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -52,7 +52,7 @@ export type LineChartRef = {
 };
 
 const PieChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit,isCpu}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -83,61 +83,112 @@ const PieChart = React.forwardRef<LineChartRef, any>(
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, series, ...defaults} = chart;
+            const chartData = [];
+            if (data) {
+                for (const item of data) {
+                    chartData.push({
+                        value: item.total_time,
+                        name: item.name,
+                        proportion: item.ratio
+                    });
+                }
+                console.log('chartData', chartData);
 
-            let chartOptions: EChartOption = defaultsDeep({
-                tooltip: {
-                  trigger: 'item'
-                },
-                legend: {
-                  top: 'center',
-                  left: '10%',
-                  orient: "vertical",
-                  height:160,
-                  type: 'scroll',
-                },
-                series: [
-                  {
-                    name: 'Access From',
-                    type: 'pie',
-                    radius: ['40%', '70%'],
-                    avoidLabelOverlap: false,
-                    label: {
-                      show: false,
-                      position: 'center'
+                let chartOptions: EChartOption = defaultsDeep({
+                    grid: {
+                        left: '0'
                     },
-                    emphasis: {
-                      label: {
-                        show: true,
-                        fontSize: 40,
-                        fontWeight: 'bold'
-                      }
+                    color: color,
+                    tooltip: {
+                        trigger: 'item',
+                        extraCssText:
+                            'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(255,255,255,1);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                        axisPointer: {
+                            type: 'none'
+                        },
+                        textStyle: {
+                            fontSize: '14',
+                            color: '#666'
+                        },
+                        formatter: function (params: any) {
+                            console.log('params', params);
+                            var str = ''; //声明一个变量用来存储数据
+                            str += '<div>' + params.data.name + '</div>';
+                            str +=
+                                '<span style="display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                params.color +
+                                ';"></span>' +
+                                '耗时' +
+                                '</span> : <span>' +
+                                params.data.value +
+                                '</br>';
+                            str +=
+                                '<span style="display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                params.color +
+                                ';"></span>' +
+                                '占比' +
+                                '</span> : <span>' +
+                                params.data.proportion +
+                                '</br>';
+                            return str;
+                        }
                     },
-                    labelLine: {
-                      show: false
+                    legend: {
+                        top: 'center',
+                        right: '50',
+                        orient: 'vertical',
+                        height: 160,
+                        type: 'scroll'
                     },
-                    data: [
-                      { value: 1048, name: 'Search Engine' },
-                      { value: 735, name: 'Direct' },
-                      { value: 580, name: 'Email' },
-                      { value: 484, name: 'Union Ads' },
-                      { value: 300, name: 'Video bds' },
-                      { value: 300, name: 'Video cds' },
-                      { value: 300, name: 'Video dds' },
-                      { value: 300, name: 'Video eds' },
-                      { value: 300, name: 'Video fds' },
-                      { value: 300, name: 'Video gds' },
-                      { value: 300, name: 'Video hds' },
+                    series: [
+                        {
+                            right: '200',
+                            name: 'Access From',
+                            type: 'pie',
+                            radius: ['50%', '85%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: true,
+                                position: 'center',
+                                textStyle: {
+                                    fontSize: '14',
+                                    color: '#666'
+                                },
+                                formatter: function () {
+                                    var str = isCpu ? 'CPU' : 'GPU'; //声明一个变量用来存储数据
+                                    return str;
+                                }
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            // data: [
+                            //     {value: 41234, name: 'Communication', proportion: '81.45%'},
+                            //     {value: 7359, name: 'Direct', proportion: '11.45%'},
+                            //     {value: 5801, name: 'Email', proportion: '11.45%'},
+                            //     {value: 4841, name: 'Union Ads', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video bds', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video cds', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video dds', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video eds', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video fds', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video gds', proportion: '11.45%'},
+                            //     {value: 3000, name: 'Video hds', proportion: '11.45%'}
+                            // ]
+                            data: chartData
+                        }
                     ]
-                  }
-                ]
-              },
-              {
-                left: '10%'  
-              }
-              );
-            echart?.setOption(chartOptions, {notMerge: true});
+                });
+                echart?.setOption(chartOptions, {notMerge: true});
+            }
         }, [options, data, title, theme, i18n.language, echart]);
+        // const attachRunColor = (runs: string[]): string[] =>
+        //   runs?.map((run, index) => {
+        //       const i = index % color.length;
+        //       return  {
 
+        //       }
+        // });
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

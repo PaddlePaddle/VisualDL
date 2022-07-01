@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-import IndicatorFilter from './IndicatorFilter';
-
-export default IndicatorFilter;
-
-// export type {IndicatorFilterProps} from './IndicatorFilter';
+ export default ['OverView','ComparedView','OperatorView', 'parallel-coordinates', 'scatter-plot-matrix']

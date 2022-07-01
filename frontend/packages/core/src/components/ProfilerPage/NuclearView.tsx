@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+ import React, {FunctionComponent, useCallback, useMemo, useState,useEffect} from 'react';
  import {DownOutlined} from '@ant-design/icons';
  import PieChart, {LineChartRef} from '~/components/pieChart';
  import StackColumnChart from '~/components/StackColumnChart';
@@ -22,6 +22,7 @@
  import {asideWidth, rem} from '~/utils/style';
  import styled from 'styled-components';
  import {useTranslation} from 'react-i18next';
+ import {fetcher} from '~/utils/fetch';
  import {Badge, Dropdown, Menu, Space, Table, Input, Button} from 'antd';
  import type {ColumnsType} from 'antd/lib/table';
  
@@ -199,13 +200,29 @@
         }
     }
  `;
- 
- const NuclearView: FunctionComponent = () => {
+ export type overViewProps = {
+    runs: string;
+    views: string;
+    workers: string;
+    spans: string;
+};
+ const NuclearView: FunctionComponent<overViewProps> = ({runs, views, workers, spans}) => {
      const {t} = useTranslation(['hyper-parameter', 'common']);
-    
+     const [distributed, setDistributed] = useState<any>();
+     useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher('/profiler/overview/distributed' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('distributed,', Data);
+                    setDistributed(Data);
+                }
+            );
+        }
+    }, [runs, workers, spans, views]);
      return (
          <ViewWrapper>
-             <Title>算子视图</Title>
+             <Title>分布视图</Title>
              <Configure>
                  <div className="title">设备信息</div>
                  <div>
@@ -308,7 +325,7 @@
              <Configure>
                 <div className="title">模型各阶段消耗分布</div>
                 <EchartPie>
-                    <StackColumnChart className={'Content'}></StackColumnChart>
+                    <StackColumnChart className={'Content'} data={distributed}></StackColumnChart>
                 </EchartPie>
             </Configure>
          </ViewWrapper>

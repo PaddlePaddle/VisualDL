@@ -19,7 +19,7 @@ import * as chart from '~/utils/chart';
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-
+import {color, colorAlt} from '~/utils/chart';
 import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -51,8 +51,8 @@ export type LineChartRef = {
     saveAsImage(): void;
 };
 
-const StackColumnChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit}, ref) => {
+const Charts = React.forwardRef<LineChartRef, any>(
+    ({options, data, title, loading, zoom, className, onInit, text, isCpu}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -82,105 +82,99 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {color, colorAlt, series, ...defaults} = chart;
+            const {colorAlt, series, ...defaults} = chart;
+            const chartData = data;
+            const color = ['#2932E1', '#066BFF', '#00CC88', '#FF6600', '#25C9FF'];
+            const title = text === 1 ? '调用量（次)' : text === 2 ? '持续时间（us)' : '整体占比（%)';
+            const values = [];
+            for (let index = 0; index < chartData.value.length; index++) {
+                values.push({
+                    value: chartData.value[index],
+                    itemStyle:{
+                        color:color[index]
+                    }
+                });
+            }
+            console.log('values', values);
             if (data) {
-                const titles = data.order,
-                    v1s = data.CudaRuntime,
-                    v2s = data.OperatorInner,
-                    v3s = data.Operator,
-                    v4s = data.PythonUserDefined;
-                // debugger
-                const series:any= []
-                for (let index = 0; index < titles.length; index++) {
-                    const element = titles[index];
-                    series.push({
-                        name: element,
-                        type: 'bar',
-                        stack: '数据',
-                        barMaxWidth: 38,
-                        itemStyle: {
-                            color: color[index]
-                        },
-                        emphasis: {
-                            focus: 'series'
-                        },
-                        data: v4s
-                    })
-                    
-                }
                 let chartOptions: EChartOption = defaultsDeep({
+                    title: {
+                        bottom: '10%',
+                        left: 'center',
+                        show: true,
+                        text: title,
+                        textStyle: {
+                            color: '#666666',
+                            fontStyle: 'PingFangSC-Regular',
+                            fontWeight: '400',
+                            fontSize: 12
+                        }
+                    },
                     tooltip: {
                         trigger: 'axis',
                         axisPointer: {
-                            // 坐标轴指示器，坐标轴触发有效
-                            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                            type: 'shadow'
                         }
                     },
-                    legend: {
-                        data: titles,
-                        top: 10,
-                        right:10,
-                        textStyle: {
-                            fontSize: 9,
-                            color: '#333'
-                        },
-                        itemWidth: 10,
-                        itemHeight: 10
-                    },
                     grid: {
-                        left: '5%',
-                        right: '5%',
-                        bottom: 20,
+                        left: '3%',
+                        right: '4%',
+                        bottom: '20%',
                         containLabel: true
                     },
                     xAxis: [
                         {
                             type: 'category',
-                            // data: ['安徽战区', '江苏战区', '湖北战区', '上海战区', '广东战区', '特许直营', '浙江战区', '北京战区', '特许加盟'],
-                            data: titles,
-                            axisLabel: {
-                                fontSize: 10,
-                                color: '#333'
-                            },
-                            axisLine: {
-                                lineStyle: {
-                                    color: '#ccc'
-                                }
-                            },
+                            data: chartData.key,
                             axisTick: {
+                                alignWithLabel: false,
                                 show: false
                             },
-                            splitArea: {
+                            axisLabel: {
                                 show: false
                             },
-                            splitLine: {
-                                show: false
+                            axisLine:{
+                                lineStyle:{
+                                    color:'#CCCCCC'
+                                }
                             }
                         }
                     ],
-                    yAxis: {
-                        type: 'value',
-                        axisLine: {show: false},
-                        axisTick: {
-                            show: false
-                        },
-                        splitArea: {
-                            show: false
-                        },
-                        splitLine: {
-                            show: false
-                        },
-                        axisLabel: {
-                            fontSize: 10,
-                            color: '#333'
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisTick: {
+                                show: false
+
+                            },
+                            axisLabel:{
+                                color: '#666666'
+                            },
+                            axisLine:{
+                                lineStyle:{
+                                    color:'#CCCCCC'
+                                }
+                            }
                         }
-                    },
-                    series: series
+                    ],
+                    series: [
+                        {
+                            type: 'bar',
+                            barWidth: '30%',
+                            data: values
+                        }
+                    ]
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
         }, [options, data, title, theme, i18n.language, echart]);
+        // const attachRunColor = (runs: string[]): string[] =>
+        //   runs?.map((run, index) => {
+        //       const i = index % color.length;
+        //       return  {
 
+        //       }
+        // });
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
@@ -194,4 +188,4 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
     }
 );
 
-export default StackColumnChart;
+export default Charts;

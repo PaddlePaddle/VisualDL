@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-import Aside, {AsideSection} from '~/components/Aside';
+import Aside from '~/components/Aside';
+import type {SelectProps} from '~/components/Select';
 import type {Indicator, IndicatorData, ListItem, ViewData} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState, useRef} from 'react';
 import {asideWidth, rem} from '~/utils/style';
 import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
-
+import queryString from 'query-string';
 import BodyLoading from '~/components/BodyLoading';
 import Button from '~/components/Button';
 import Content from '~/components/Content';
 import Empty from '~/components/ProfilerPage/Empty';
-import IndicatorFilter from '~/components/ProfilerPage/IndicatorFilter';
 import OverView from '~/components/ProfilerPage/overview';
 import OperatorView from '~/components/ProfilerPage/OperatorView';
+import MemoryView from '~/components/ProfilerPage/MemoryView'
 import NuclearView from '~/components/ProfilerPage/NuclearView';
-
-
+import ComparedView from '~/components/ProfilerPage/ComparedView';
+import Select from '~/components/Select';
+import {fetcher} from '~/utils/fetch';
+import Field from '~/components/Field';
 import Title from '~/components/Title';
 import styled from 'styled-components';
-import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
-
 // const ImportanceButton = styled(Button)`
 //     width: 100%;
 // `;
@@ -60,7 +61,59 @@ const DownloadButtons = styled.div`
         }
     }
 `;
-
+const TitleContent = styled.div`
+    padding: ${rem(20)};
+    border-bottom: 1px solid #dddddd;
+`;
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
+    width: 100%;
+`;
+const Titles = styled.div`
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(14)};
+    color: #000000;
+    letter-spacing: 0;
+    line-height: ${rem(14)};
+    font-weight: 400;
+    margin-bottom: ${rem(20)};
+`;
+const ButtonsLeft = styled.div`
+    border: 1px solid #dddddd;
+    border-right: none;
+    width: ${rem(110)};
+    height: ${rem(36)};
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(12)};
+    text-align: center;
+    line-height: ${rem(36)};
+    font-weight: 400;
+    border-radius: 4px 0 0 4px;
+`;
+const ButtonsRight = styled.div`
+    border: 1px solid #dddddd;
+    border-radius: 0 4px 4px 0;
+    width: ${rem(110)};
+    height: ${rem(36)};
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(12)};
+    text-align: center;
+    line-height: ${rem(36)};
+    font-weight: 400;
+`;
+const RadioButtons = styled.div`
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+`;
+const Selectlist = styled.div`
+    height: ${rem(36)};
+    width: 100%;
+    padding: 20px;
+    border-radius: 4px;
+`;
+const AsideSection = styled.div`
+    margin-bottom: ${rem(20)};
+`;
 const HPWrapper = styled.div`
     width: 100%;
     height: 100%;
@@ -74,88 +127,142 @@ const ViewWrapper = styled.div`
     flex-grow: 1;
     position: relative;
 `;
-
+type SelectListItem<T> = {
+    value: T;
+    label: string;
+};
 const Profiler: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-
-    const {data: indicatorsData, loading: loadingIndicators} = useRequest<IndicatorData>('/hparams/indicators');
-    const isEmpty = useMemo(() => {
-        if (indicatorsData) {
-            const {hparams, metrics} = indicatorsData;
-            return hparams.length === 0 || metrics.length === 0;
+    const asideRef = useRef<any>(null);
+    const [runs, setRuns] = useState<string>('');
+    const [views, setViews] = useState<string>('');
+    const [workers, setWorkers] = useState<string>('');
+    const [spans, setSpans] = useState<string>('');
+    const [runsList, setrunsList] = useState<SelectListItem<string>[]>();
+    const [viewsList, setViewsList] = useState<SelectListItem<string>[]>();
+    const [workersList, setWorkersList] = useState<SelectListItem<string>[]>();
+    const [spansList, setSpansList] = useState<SelectListItem<string>[]>();
+    useEffect(() => {
+        fetcher('/profiler/runs').then((res: unknown) => {
+            const runsData = res as string[];
+            const runsList = runsData.map((item, index) => {
+                return {label: item, value: item};
+            });
+            setrunsList(runsList);
+            console.log('runsData',runsData[0]);
+            setRuns(runsData[0]);
+        });
+    }, []);
+    useEffect(() => {
+        if (runs) {
+            console.log('runs', runs);
+            fetcher('/profiler/views' + `?run=${runs}`).then((res: unknown) => {
+                const viewData = res as string[];
+                const viewList = viewData.map((item, index) => {
+                    return {label: item, value: item};
+                });
+                setViewsList(viewList);
+                setViews(viewData[0])
+            });
         }
-        return true;
-    }, [indicatorsData]);
-
-    const indicators = useMemo(
-        () => [
-            ...formatIndicators(indicatorsData?.hparams ?? [], 'hparams'),
-            ...formatIndicators(indicatorsData?.metrics ?? [], 'metrics')
-        ],
-        [indicatorsData]
-    );
-
-    const {data: list, loading: loadingList} = useRequest<ListItem[]>('/hparams/list');
-
-    const [filteredIndicators, setFilteredIndicators] = useState<Indicator[]>(indicators);
-
-    const filteredList = useMemo(() => filter(list ?? [], filteredIndicators), [filteredIndicators, list]);
-
-    const formattedList = useMemo(() => format(filteredList, indicators), [filteredList, indicators]);
-
-    const loading = useMemo(() => loadingIndicators || loadingList, [loadingIndicators, loadingList]);
-
-    const tabs = useMemo(
-        () =>
-            ['OperatorView', 'parallel-coordinates', 'scatter-plot-matrix'].map(value => ({
-                value,
-                label: t(`hyper-parameter:views.${value}`)
-            })),
-        [t]
-    );
-    const [tabView, setTabView] = useState(tabs[0].value);
-
-    const viewData = useMemo<ViewData>(
-        () => ({
-            indicators: filteredIndicators,
-            list: formattedList,
-            data: filteredList
-        }),
-        [filteredIndicators, filteredList, formattedList]
-    );
+    }, [runs]);
+    useEffect(() => {
+        if (runs && views) {
+            console.log('views', views);
+            fetcher('/profiler/workers' + `?run=${runs}` + `&work=${views}`).then((res: unknown) => {
+                const workerData = res as string[];
+                const workerList = workerData.map((item, index) => {
+                    return {label: item, value: item};
+                });
+                setWorkersList(workerList);
+                setWorkers(workerData[0])
+            });
+        }
+    }, [runs, views]);
+    useEffect(() => {
+        if (runs && workers) {
+            console.log('workers', workers);
+            fetcher('/profiler/spans' + `?run=${runs}` + `&spans=${workers}`).then((res: unknown) => {
+                const spanData = res as string[];
+                const spanList = spanData.map((item, index) => {
+                    return {label: item, value: item};
+                });
+                setSpansList(spanList);
+                setSpans(spanData[0])
+            });
+        }
+    }, [runs, workers]);
     const view = useMemo(() => {
-        switch (tabView) {
+        switch (views) {
             case 'OverView':
-                return <OverView/>;
+                return <OverView runs={runs} views={views} workers={workers} spans={spans}/>;
             case 'OperatorView':
-                return <OperatorView/>;
-            case 'NuclearView':
-                return <NuclearView/>;
+                return <OperatorView runs={runs} views={views} workers={workers} spans={spans}/>;
+            case 'parallel-coordinates':
+                return <NuclearView runs={runs} views={views} workers={workers} spans={spans}/>;
+            case 'ComparedView':
+                return <ComparedView runs={runs} views={views} workers={workers} spans={spans}/>;
+            case 'scatter-plot-matrix':
+                return <MemoryView runs={runs} views={views} workers={workers} spans={spans}/>;
             default:
                 return null;
         }
-    }, [tabView, viewData]);
-
+    }, [views,runs,workers,spans]);
     // const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
 
     const aside = useMemo(
         () => (
             <Aside>
-                <IndicatorFilter indicators={indicators} onChange={setFilteredIndicators} />
+                <TitleContent>
+                    <Titles>性能分析</Titles>
+                    <RadioButtons>
+                        <ButtonsLeft>正常模式</ButtonsLeft>
+                        <ButtonsRight>对比模式</ButtonsRight>
+                    </RadioButtons>
+                </TitleContent>
+                <Selectlist>
+                    <AsideSection>
+                        <Field label={'数据流'}>
+                            <FullWidthSelect list={runsList} value={runs} onChange={setRuns} />
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={'视图'}>
+                            <FullWidthSelect list={viewsList} value={views} onChange={setViews} />
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={'进程'}>
+                            <FullWidthSelect list={workersList} value={workers} onChange={setWorkers} />
+                        </Field>
+                    </AsideSection>
+                    <AsideSection>
+                        <Field label={'进程跨度'}>
+                            <FullWidthSelect list={spansList} value={spans} onChange={setSpans} />
+                        </Field>
+                    </AsideSection>
+                </Selectlist>
             </Aside>
         ),
-        [indicators, t]
+        [
+            spansList,
+            spans,
+            workersList,
+            workers,
+            viewsList,
+            views,
+            runsList,
+            runs,
+        ]
     );
 
     return (
         <>
             <Title>{t('common:hyper-parameter')}</Title>
             <Content aside={aside}>
-                {loading ? <BodyLoading /> : null}
+                {/* {loading ? <BodyLoading /> : null} */}
                 <HPWrapper>
-                    <ViewWrapper>
-                        {isEmpty ? <Empty /> : view}
-                    </ViewWrapper>
+                    <ViewWrapper>{view}</ViewWrapper>
                 </HPWrapper>
             </Content>
         </>

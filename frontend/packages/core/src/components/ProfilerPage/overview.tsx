@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useMemo, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import PieChart, {LineChartRef} from '~/components/pieChart';
+import BarsChart from '~/components/BarsChart';
 import StackColumnChart from '~/components/StackColumnChart';
 import Trainchart from '~/components/Trainchart';
-
+import {fetcher} from '~/utils/fetch';
 import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
+import {Table, Tabs} from 'antd';
+import type {ColumnsType} from 'antd/lib/table';
 
 // const ImportanceButton = styled(Button)`
 //     width: 100%;
@@ -170,7 +173,6 @@ const CPU = styled.div`
 const EchartPie = styled.div`
     width: 100%;
     height: ${rem(270)};
-    border: 1px solid #dddddd;
     display: flex;
     .wraper {
         flex: 1;
@@ -183,9 +185,275 @@ const EchartPie = styled.div`
         width: 100%;
     }
 `;
-
-const overView: FunctionComponent = () => {
+const EchartPie2 = styled.div`
+    width: 100%;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    height: ${rem(270)};
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+`;
+const EchartPie3 = styled.div`
+    width: 100%;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    height: ${rem(444)};
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+`;
+const EchartPie4 = styled.div`
+    width: 100%;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    height: ${rem(366)};
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+`;
+const PieceContent = styled.div`
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+    padding-bottom: ${rem(20)};
+    .expendButton {
+        color: #a3a3a3;
+        margin-left: ${rem(20)};
+    }
+    .tableContent {
+        padding: ${rem(20)};
+    }
+`;
+const PerformanceContent = styled.div`
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    width: 100%;
+    height: ${rem(378)};
+    .titles {
+        height:${rem(20)};
+    }
+    .chartContent{
+        width: 100%;
+        height: ${rem(358)};
+        display:flex;
+        .chart{
+            .Content{
+                height: 100%;
+            }
+            flex:1;
+        }
+    }
+`;
+export type overViewProps = {
+    runs: string;
+    views: string;
+    workers: string;
+    spans: string;
+};
+interface DataType {
+    key: React.Key;
+    name: string;
+    total_time: number;
+    max_time: number;
+    min_time: number;
+    avg_time: number;
+    ratio: number;
+    GPUtotal_time: number;
+    GPUmax_time: number;
+    GPUmin_time: number;
+    GPUavg_time: number;
+    GPUratio: number;
+}
+const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
+    const [environment, setEnvironment] = useState<any>();
+    const [distributed, setDistributed] = useState<any>();
+
+    const [cpuData, setCpuData] = useState<any>();
+    const [performanceData, setPerformanceData] = useState<any>();
+    const [isExpend, setIsExpend] = useState<any>(false);
+    const [tableData, setTableData] = useState<any>();
+    const {TabPane} = Tabs;
+    useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher('/profiler/overview/environment' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('environment', Data);
+                    setEnvironment(Data);
+                }
+            );
+        }
+        if (runs && workers && spans) {
+            fetcher('/profiler/overview/distributed' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('distributed,', Data);
+                    setDistributed(Data);
+                }
+            );
+        }
+    }, [runs, workers, spans, views]);
+    useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher('/profiler/overview/pie' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: unknown) => {
+                    const result: any = res;
+                    let tableData: any = [];
+                    let data: any = [];
+                    for (const item of result.gpu) {
+                        const DataTypeItem: any = {};
+                        for (const key of result.column_name) {
+                            const name = 'GPU' + key;
+                            DataTypeItem[name] = item[key];
+                        }
+                        data.push(DataTypeItem);
+                    }
+                    for (let index = 0; index < result.cpu.length; index++) {
+                        const DataTypeItem: any = {
+                            ...result.cpu[index],
+                            ...data[index]
+                        };
+                        tableData.push(DataTypeItem);
+                    }
+                    console.log('tableData', tableData);
+                    setTableData(tableData);
+                    setCpuData(res);
+                }
+            );
+        }
+    }, [runs, workers, spans, views]);
+    useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher('/profiler/overview/performance' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: unknown) => {
+                    const result: any = res;
+                    setPerformanceData(result)
+                }
+            );
+        }
+    }, [runs, workers, spans, views]);
+    const onChange = (key: string) => {
+        console.log(key);
+    };
+    const columns: ColumnsType<DataType> = useMemo(() => {
+        return [
+            {
+                title: '阶段',
+                dataIndex: 'name',
+                key: 'name',
+                width: 100,
+                // fixed: 'left',
+                onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
+            },
+            {
+                title: 'CPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'total_time',
+                        key: 'total_time',
+                        width: 150,
+                        sorter: (a, b) => a.total_time - b.total_time
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'avg_time',
+                        key: 'avg_time',
+                        width: 150,
+                        sorter: (a, b) => a.avg_time - b.avg_time
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'max_time',
+                        key: 'max_time',
+                        width: 150,
+                        sorter: (a, b) => a.max_time - b.max_time
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'min_time',
+                        key: 'min_time',
+                        width: 150,
+                        sorter: (a, b) => a.min_time - b.min_time
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'ratio',
+                        key: 'ratio',
+                        width: 150,
+                        sorter: (a, b) => a.ratio - b.ratio
+                    }
+                ]
+            },
+            {
+                title: 'GPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'GPUtotal_time',
+                        key: 'GPUtotal_time',
+                        width: 150,
+                        sorter: (a, b) => a.GPUtotal_time - b.GPUtotal_time
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'avg_time',
+                        key: 'avg_time',
+                        width: 150,
+                        sorter: (a, b) => a.GPUavg_time - b.GPUavg_time
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'max_time',
+                        key: 'max_time',
+                        width: 150,
+                        sorter: (a, b) => a.GPUmax_time - b.GPUmax_time
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'min_time',
+                        key: 'min_time',
+                        width: 150,
+                        sorter: (a, b) => a.GPUmin_time - b.GPUmin_time
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'ratio',
+                        key: 'ratio',
+                        width: 150,
+                        sorter: (a, b) => a.GPUratio - b.GPUratio
+                    }
+                ]
+            }
+        ];
+    }, []);
     return (
         <ViewWrapper>
             <Title>总览视图</Title>
@@ -194,11 +462,11 @@ const overView: FunctionComponent = () => {
                 <Processes>
                     <div className="Processes_items">
                         <div className="label">进程数</div>
-                        <div className="conent">12</div>
+                        <div className="conent">{environment?.number_workers}</div>
                     </div>
                     <div className="Processes_items">
                         <div className="label">设备类型</div>
-                        <div className="conent">qwer-sdf</div>
+                        <div className="conent">{environment?.device_type}</div>
                     </div>
                 </Processes>
             </Configure>
@@ -209,11 +477,11 @@ const overView: FunctionComponent = () => {
                         <div className="CPU_title">CPU</div>
                         <div className="itemlist">
                             <div className="items">
-                                <div className="percentage">12%</div>
+                                <div className="percentage">{environment?.CPU.process_utilization}%</div>
                                 <div className="items_label">进程利用率</div>
                             </div>
                             <div className="items items_last">
-                                <div className="percentage">23%</div>
+                                <div className="percentage">{environment?.CPU.system_utilization}%</div>
                                 <div className="items_label">系统利用率</div>
                             </div>
                         </div>
@@ -225,19 +493,19 @@ const overView: FunctionComponent = () => {
                         </div>
                         <div className="GPU_itemlist">
                             <div className="items">
-                                <div className="percentage">23%</div>
+                                <div className="percentage">{environment?.GPU.utilization}%</div>
                                 <div className="items_label">利用率</div>
                             </div>
                             <div className="items">
-                                <div className="percentage">20%</div>
+                                <div className="percentage">{environment?.GPU.sm_efficiency}%</div>
                                 <div className="items_label">流量处理器效率</div>
                             </div>
                             <div className="items">
-                                <div className="percentage">18%</div>
+                                <div className="percentage">{environment?.GPU.achieved_occupancy}%</div>
                                 <div className="items_label">流量处理器占用率</div>
                             </div>
                             <div className="items items_last">
-                                <div className="percentage">45%</div>
+                                <div className="percentage">{environment?.GPU.tensor_core_percentage}%</div>
                                 <div className="items_label">tensor core使用时间占比</div>
                             </div>
                         </div>
@@ -246,29 +514,80 @@ const overView: FunctionComponent = () => {
             </Configure>
             <Configure>
                 <div className="title">运行耗时</div>
-                <EchartPie>
-                    <div className="wraper">
-                        <PieChart className={'Content'} />
+                <PieceContent>
+                    <EchartPie>
+                        <div className="wraper">
+                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} />
+                        </div>
+                        <div className="wraper">
+                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} />
+                        </div>
+                    </EchartPie>
+                    <div
+                        className="expendButton"
+                        onClick={() => {
+                            setIsExpend(!isExpend);
+                        }}
+                    >
+                        展开查看耗时详情
                     </div>
-                    <div className="wraper">
-                        <PieChart className={'Content'} />
-                    </div>
-                </EchartPie>
+                    {isExpend && tableData ? (
+                        <div className="tableContent">
+                            <Table
+                                columns={columns}
+                                dataSource={tableData}
+                                bordered
+                                size="middle"
+                                pagination={false}
+                                scroll={{x: 'calc(700px + 50%)', y: 240}}
+                            ></Table>
+                        </div>
+                    ) : null}
+                </PieceContent>
             </Configure>
             <Configure>
                 <div className="title">训练步数耗时</div>
-                <EchartPie>
+                <EchartPie3>
                     <Trainchart className={'Content'}></Trainchart>
-                </EchartPie>
+                </EchartPie3>
             </Configure>
             <Configure>
                 <div className="title">性能消耗</div>
+                <Tabs defaultActiveKey="1" onChange={onChange}>
+                    {
+                        performanceData && Object.keys(performanceData).map((item:any,index:any)=>{
+                            return <TabPane tab={item} key={index}>
+                            <PerformanceContent>
+                                <div className="titles"></div>
+                                <div className="chartContent">
+                                    <div className="chart">
+                                        <BarsChart className={'Content'} data={performanceData[item].calling_times} text={1}></BarsChart>
+                                    </div>
+                                    <div className="chart">
+                                        <BarsChart className={'Content'} data={performanceData[item].durations} text={2}></BarsChart>
+                                    </div>
+                                    <div className="chart">
+                                        <BarsChart className={'Content'} data={performanceData[item].ratios} text={3}></BarsChart>
+                                    </div>
+                                </div>
+                            </PerformanceContent>
+                        </TabPane>
+                        })
+                    }
+                    
+                    {/* <TabPane tab="Tab 2" key="2">
+                        Content of Tab Pane 2
+                    </TabPane>
+                    <TabPane tab="Tab 3" key="3">
+                        Content of Tab Pane 3
+                    </TabPane> */}
+                </Tabs>
             </Configure>
             <Configure>
                 <div className="title">模型各阶段消耗分布</div>
-                <EchartPie>
-                    <StackColumnChart className={'Content'}></StackColumnChart>
-                </EchartPie>
+                <EchartPie4>
+                    <StackColumnChart className={'Content'} data={distributed}></StackColumnChart>
+                </EchartPie4>
             </Configure>
         </ViewWrapper>
     );

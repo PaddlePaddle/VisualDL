@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export default {
-    runs: ['train', 'test'],
-    tags: [
-        ['layer2/biases/summaries/mean'],
-        ['layer2/biases/summaries/mean', 'layer2/biases/summaries/accuracy', 'layer2/biases/summaries/cost']
-    ]
-};
+ export default ['profile_experiment1', 'profile_experiment2']
