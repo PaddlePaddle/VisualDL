@@ -16,17 +16,17 @@
 
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
 import DistributedChart from '~/components/DistributedChart';
-import Model from '~/components/ProfilerPage/model';
+import Inputs from '~/components/Input';
 import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import {Select, Table, Input, Button} from 'antd';
+import {Table} from 'antd';
 import {Slider} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
 import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
-const {Option} = Select;
-const {Search} = Input;
+import debounce from 'lodash/debounce';
+import { line } from 'd3';
 interface DataType {
     key: React.Key;
     name: string;
@@ -94,15 +94,15 @@ const Configure = styled.div`
                 width: ${rem(160)};
                 align-items: center;
                 height: 100%;
-                padding-top:${rem(12)};
-                .ant-slider{
-                    margin:${rem(0)};
+                padding-top: ${rem(12)};
+                .ant-slider {
+                    margin: ${rem(0)};
                 }
                 .ant-slider-track {
                     background: #2932e1;
                 }
                 .ant-slider-handle {
-                    border: solid 2px #2932e1;
+                    border: solid 4px #2932e1;
                 }
                 margin: ${rem(0)} ${rem(20)};
             }
@@ -116,8 +116,16 @@ const Configure = styled.div`
                 width: ${rem(88)};
 
                 .unit-number {
-                    padding-left: ${rem(10)};
+                    padding: ${rem(5)};
                     line-height: ${rem(36)};
+                    display: flex;
+                    align-items: center;
+                    .wrappers {
+                        width: 100%;
+                        height: 100%;
+                        border: none;
+                        font-size: 14px;
+                    }
                 }
                 .unit {
                     font-size: 14px;
@@ -130,8 +138,10 @@ const Configure = styled.div`
 `;
 const EchartPie = styled.div`
     width: 100%;
-    height: ${rem(398)};
     border: 1px solid #dddddd;
+    border-radius: 4px;
+    height: ${rem(366)};
+    padding: ${rem(24)};
     display: flex;
     .wraper {
         flex: 1;
@@ -146,74 +156,28 @@ const EchartPie = styled.div`
 `;
 const Wraper = styled.div`
     width: 100%;
-    border: 1px solid #dddddd;
+    .ant-table-pagination.ant-pagination {
+        margin: ${rem(20)} 0;
+        padding-right: ${rem(20)};
+    }
+    .ant-table.ant-table-bordered > .ant-table-container {
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+    }
 `;
-const Pagination = styled.div`
-  display:flex;
-  width:100%;
-  justify-content: space-between;
-  margin-top: ${rem(20)};
-  margin-bottom: ${rem(20)};
-  font-family: PingFangSC-Regular;
-  font-size: 14px;
-  font-weight: 400;
-  .Pagination_left{
-     display:flex;
-     .buttons{
-         width: ${rem(82)};
-         height: ${rem(36)};
-         margin-right: ${rem(15)};
-         .ant-btn-block{
-             border-radius: 4px;
-             height:100%;
-         }
-     }
-     .next{
-             .ant-btn-block {
-                 color: #999999;
-             }
-         }
-  }
-  .Pagination_right{
-     display:flex;
-     .describe{
-     line-height:${rem(36)};
-     margin-right: ${rem(15)};
-     color: #000000;
-  }
-  .buttons{
-     width: ${rem(82)};
-     height: ${rem(36)};
-     .ant-btn-block{
-         height:100%;
-         background: #2932E1;
-         border-radius: 4px;
-         color: #FFFFFF;
-     }
-  }
-  .input_wrapper{
-     width: ${rem(80)};
-     height: ${rem(36)};
-     margin-right: ${rem(15)};
-     .ant-input{
-         border-radius: 4px;
-         height: 100%;
-     }
-  }
-  `;
 
 const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, spans}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const model = useRef<any>(null);
-    const [cpuData, setCpuData] = useState<any>();
+    const [lineData, setLineData] = useState<any>();
     const [search, setSearch] = useState<string>();
-    const [Sliders, setSliders] = useState<any>();
+    const [Sliders1, setSliders1] = useState<number>(0);
+    const [Sliders2, setSliders2] = useState<number>(100);
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/comparedView/pie' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
-                (res: unknown) => {
-                    const result: any = res;
-                    setCpuData(res);
+            fetcher('/profiler/memory/line' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: any) => {
+                    setLineData(res.data);
                 }
             );
         }
@@ -435,25 +399,44 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, s
             english: 89
         }
     ];
-    const onSearch = (value: string) => {
-        console.log(value);
-    };
     const getTable = useMemo(() => {
-        return <Table columns={columns} dataSource={data} bordered size="middle" pagination={false}></Table>;
+        const paginations = {
+            showSizeChanger: true,
+        };
+        return <Table columns={columns} dataSource={data} bordered size="middle" pagination={paginations}></Table>;
     }, [columns, data]);
     const getTable2 = useMemo(() => {
-        return <Table columns={columns} dataSource={data2} bordered size="middle" pagination={false}></Table>;
+        const paginations = {
+            showSizeChanger: true,
+        };
+        return <Table columns={columns} dataSource={data2} bordered size="middle" pagination={paginations}></Table>;
     }, [columns, data]);
     const SliderChange = (value: any) => {
-        console.log('SliderValue', value);
-        setSliders(value);
+        setSliders1(value[0])
+        setSliders2(value[1])
     };
+    const inputChange = (value: string) => {
+        const slider = Number(value);
+        if (slider) {
+            console.log('SliderValue', slider);
+            setSliders1(slider);
+        }
+    };
+    const inputChange2 = (value: string) => {
+        const slider = Number(value);
+        if (slider) {
+            console.log('SliderValue', slider);
+            setSliders2(slider);
+        }
+    };
+    console.log('Sliders', Sliders1, Sliders2);
+
     return (
         <ViewWrapper>
-            <Title>分布视图</Title>
+            <Title>显存视图</Title>
             <Configure>
                 <EchartPie>
-                    <DistributedChart className={'Content'}></DistributedChart>
+                    <DistributedChart className={'Content'} data={lineData}></DistributedChart>
                 </EchartPie>
             </Configure>
             <Configure>
@@ -469,44 +452,26 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, s
                     </div>
                     <div className="SliderContent">
                         <div className="Slider_input_content">
-                            <div className='unit-number'>
-                                {Sliders ? Sliders[0] : null}
+                            <div className="unit-number">
+                                <Inputs className="wrappers" onChange={inputChange} value={Sliders1 + ''} />
                             </div>
                             <div className="unit">KB</div>
                         </div>
                         <div className="Slider_wrapper">
-                            <Slider range defaultValue={[0, 100]} onChange={SliderChange} />
+                            <Slider range value={[Sliders1, Sliders2]} onChange={SliderChange} />
                         </div>
                         <div className="Slider_input_content">
-                            <div className='unit-number'>
-                                {Sliders ? Sliders[1] : null}
+                            <div className="unit-number">
+                                {/* {Sliders ? Sliders[1] : null} */}
+                                <Inputs className="wrappers" onChange={inputChange2} value={Sliders2 + ''} />
                             </div>
                             <div className="unit">KB</div>
                         </div>
                     </div>
                 </div>
                 <Wraper>{getTable}</Wraper>
-                <Pagination>
-                    <div className="Pagination_left">
-                        <div className="buttons">
-                            <Button block>上一页</Button>
-                        </div>
-                        <div className="buttons next">
-                            <Button block>下一页</Button>
-                        </div>
-                    </div>
-                    <div className="Pagination_right">
-                        <div className="describe">共5页，跳转至</div>
-                        <div className="input_wrapper">
-                            <Input placeholder="Basic usage" />;
-                        </div>
-                        <div className="buttons">
-                            <Button block>确定</Button>
-                        </div>
-                    </div>
-                </Pagination>
             </Configure>
-            <Configure>
+            <Configure style={{marginTop: '0px'}}>
                 <div className="titleContent">
                     <div className="input_wrapper">
                         <SearchInput
@@ -519,29 +484,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, s
                     </div>
                 </div>
                 <Wraper>{getTable2}</Wraper>
-                <Pagination>
-                    <div className="Pagination_left">
-                        <div className="buttons">
-                            <Button block>上一页</Button>
-                        </div>
-                        <div className="buttons next">
-                            <Button block>下一页</Button>
-                        </div>
-                    </div>
-                    <div className="Pagination_right">
-                        <div className="describe">共5页，跳转至</div>
-                        <div className="input_wrapper">
-                            <Input placeholder="Basic usage" />
-                        </div>
-                        <div className="buttons">
-                            <Button block>确定</Button>
-                        </div>
-                    </div>
-                </Pagination>
             </Configure>
-            <Model ref={model}></Model>
         </ViewWrapper>
     );
 };
-
 export default MemoryView;

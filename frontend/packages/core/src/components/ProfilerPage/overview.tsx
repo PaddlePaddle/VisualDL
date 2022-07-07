@@ -23,8 +23,10 @@ import {fetcher} from '~/utils/fetch';
 import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import {Table, Tabs} from 'antd';
+import {Table, Tabs, Popover} from 'antd';
+import Icon from '~/components/Icon';
 import type {ColumnsType} from 'antd/lib/table';
+import {em, sameBorder, transitionProps} from '~/utils/style';
 
 // const ImportanceButton = styled(Button)`
 //     width: 100%;
@@ -67,7 +69,50 @@ const Configure = styled.div`
     padding-left: ${rem(20)};
     padding-right: ${rem(20)};
     .title {
+        display: flex;
         margin-bottom: ${rem(20)};
+        div {
+            line-height: 18px;
+        }
+        .argument-operation {
+            flex: none;
+            cursor: pointer;
+            font-size: ${em(14)};
+            margin-left: ${em(10)};
+            color: var(--text-lighter-color);
+            ${transitionProps('color')}
+            &:hover,
+            &:active {
+                color: #2932e1;
+            }
+        }
+    }
+    .tabs_title {
+        position: absolute;
+        margin-bottom: 0px;
+        height: 46px;
+        line-height: 46px;
+    }
+    .ant-tabs-centered > .ant-tabs-nav .ant-tabs-nav-wrap:not([class*='ant-tabs-nav-wrap-ping']) {
+        justify-content: flex-end;
+    }
+    .ant-tabs-ink-bar {
+        display: none;
+    }
+    .ant-tabs-top > .ant-tabs-nav,
+    .ant-tabs-bottom > .ant-tabs-nav,
+    .ant-tabs-top > div > .ant-tabs-nav,
+    .ant-tabs-bottom > div > .ant-tabs-nav {
+        margin-bottom: 0px;
+        border: none;
+    }
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+        color: #1527c2;
+    }
+    .is_active {
+        color: #FFFFFF;
+        background: #2932E1;
+        border: 1px solid rgba(41,50,225,1);
     }
 `;
 const Processes = styled.div`
@@ -208,6 +253,7 @@ const EchartPie3 = styled.div`
     border-radius: 4px;
     height: ${rem(444)};
     display: flex;
+    padding: ${rem(24)};
     .wraper {
         flex: 1;
         .Content {
@@ -224,6 +270,7 @@ const EchartPie4 = styled.div`
     border: 1px solid #dddddd;
     border-radius: 4px;
     height: ${rem(366)};
+    padding: ${rem(24)};
     display: flex;
     .wraper {
         flex: 1;
@@ -242,9 +289,16 @@ const PieceContent = styled.div`
     width: 100%;
     height: auto;
     padding-bottom: ${rem(20)};
-    .expendButton {
-        color: #a3a3a3;
-        margin-left: ${rem(20)};
+    .expendContent {
+        display: flex;
+        .expendButton {
+            color: #a3a3a3;
+            margin-left: ${rem(20)};
+            margin-right: ${rem(10)};
+        }
+        i {
+            line-height: ${rem(30)};
+        }
     }
     .tableContent {
         padding: ${rem(20)};
@@ -256,19 +310,71 @@ const PerformanceContent = styled.div`
     width: 100%;
     height: ${rem(378)};
     .titles {
-        height:${rem(20)};
-    }
-    .chartContent{
-        width: 100%;
-        height: ${rem(358)};
-        display:flex;
-        .chart{
-            .Content{
-                height: 100%;
+        height: ${rem(40)};
+        display: flex;
+        justify-content: flex-end;
+        padding-right: ${rem(30)};
+        .legend {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            .labels {
+                width: 17px;
+                height: 5px;
+                background: yellow;
+                line-height: 22px;
             }
-            flex:1;
+            .legend_name {
+                margin-left: 20px;
+                font-family: PingFangSC-Regular;
+                font-size: 14px;
+                color: #666666;
+                letter-spacing: 0;
+                line-height: 14px;
+                font-weight: 400;
+            }
         }
     }
+    .chartContent {
+        width: 100%;
+        height: ${rem(338)};
+        display: flex;
+        .chart {
+            .Content {
+                height: 100%;
+            }
+            flex: 1;
+        }
+    }
+`;
+const ButtonsRight = styled.div`
+    border: 1px solid #dddddd;
+    border-radius: 0 4px 4px 0;
+    width: ${rem(110)};
+    height: ${rem(36)};
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(12)};
+    text-align: center;
+    line-height: ${rem(36)};
+    font-weight: 400;
+`;
+const ButtonsLeft = styled.div`
+    border: 1px solid #dddddd;
+    border-right: none;
+    width: ${rem(110)};
+    height: ${rem(36)};
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(12)};
+    text-align: center;
+    line-height: ${rem(36)};
+    font-weight: 400;
+    border-radius: 4px 0 0 4px;
+`;
+
+const RadioButtons = styled.div`
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
 `;
 export type overViewProps = {
     runs: string;
@@ -294,7 +400,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [environment, setEnvironment] = useState<any>();
     const [distributed, setDistributed] = useState<any>();
-
+    const [isCPU, setIsCPU] = useState(true);
     const [cpuData, setCpuData] = useState<any>();
     const [performanceData, setPerformanceData] = useState<any>();
     const [isExpend, setIsExpend] = useState<any>(false);
@@ -354,7 +460,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             fetcher('/profiler/overview/performance' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
                     const result: any = res;
-                    setPerformanceData(result)
+                    setPerformanceData(result);
                 }
             );
         }
@@ -454,6 +560,26 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             }
         ];
     }, []);
+    const tooltips = (
+        <div>
+            <p>Content</p>
+            <p>Content</p>
+        </div>
+    );
+    const color = [
+        '#2932E1',
+        '#066BFF',
+        '#00CC88',
+        '#FF6600',
+        '#25C9FF'
+    ];
+    const color2 = [
+        '#2932E1',
+        '#066BFF',
+        '#FF6600',
+        '#D50505',
+        '#3AEB0D'
+    ];
     return (
         <ViewWrapper>
             <Title>总览视图</Title>
@@ -471,7 +597,14 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 </Processes>
             </Configure>
             <Configure>
-                <div className="title">设备详情</div>
+                <div className="title">
+                    <div>设备详情</div>
+                    <Popover content={tooltips} placement="right">
+                        <a className="argument-operation" onClick={() => {}}>
+                            <Icon type="question-circle" />
+                        </a>
+                    </Popover>
+                </div>
                 <CPU>
                     <div className="CPU_content">
                         <div className="CPU_title">CPU</div>
@@ -515,21 +648,22 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             <Configure>
                 <div className="title">运行耗时</div>
                 <PieceContent>
-                    <EchartPie>
-                        <div className="wraper">
-                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} />
+                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
+                        <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
+                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color2}/>
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} />
+                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color2}/>
                         </div>
                     </EchartPie>
                     <div
-                        className="expendButton"
+                        className="expendContent"
                         onClick={() => {
                             setIsExpend(!isExpend);
                         }}
                     >
-                        展开查看耗时详情
+                        <div className="expendButton">展开查看耗时详情</div>
+                        <Icon type={isExpend ? 'chevron-up' : 'chevron-down'} />
                     </div>
                     {isExpend && tableData ? (
                         <div className="tableContent">
@@ -552,41 +686,84 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 </EchartPie3>
             </Configure>
             <Configure>
-                <div className="title">性能消耗</div>
-                <Tabs defaultActiveKey="1" onChange={onChange}>
-                    {
-                        performanceData && Object.keys(performanceData).map((item:any,index:any)=>{
-                            return <TabPane tab={item} key={index}>
-                            <PerformanceContent>
-                                <div className="titles"></div>
-                                <div className="chartContent">
-                                    <div className="chart">
-                                        <BarsChart className={'Content'} data={performanceData[item].calling_times} text={1}></BarsChart>
-                                    </div>
-                                    <div className="chart">
-                                        <BarsChart className={'Content'} data={performanceData[item].durations} text={2}></BarsChart>
-                                    </div>
-                                    <div className="chart">
-                                        <BarsChart className={'Content'} data={performanceData[item].ratios} text={3}></BarsChart>
-                                    </div>
-                                </div>
-                            </PerformanceContent>
-                        </TabPane>
-                        })
-                    }
-                    
-                    {/* <TabPane tab="Tab 2" key="2">
-                        Content of Tab Pane 2
-                    </TabPane>
-                    <TabPane tab="Tab 3" key="3">
-                        Content of Tab Pane 3
-                    </TabPane> */}
+                <RadioButtons>
+                    <ButtonsLeft
+                        onClick={() => {
+                            setIsCPU(true);
+                        }}
+                        className={isCPU ? 'is_active' : ''}
+                    >
+                        CPU
+                    </ButtonsLeft>
+                    <ButtonsRight
+                        className={!isCPU ? 'is_active' : ''}
+                        onClick={() => {
+                            setIsCPU(false);
+                        }}
+                    >
+                        GPU
+                    </ButtonsRight>
+                </RadioButtons>
+            </Configure>
+            <Configure>
+                <div className="title tabs_title">性能消耗</div>
+                <Tabs defaultActiveKey="1" onChange={onChange} centered>
+                    {performanceData &&
+                        Object.keys(performanceData).map((item: any, index: any) => {
+                            return (
+                                <TabPane tab={item} key={index}>
+                                    <PerformanceContent>
+                                        <div className="titles">
+                                            {performanceData[item].calling_times.key.map(
+                                                (item: string, index: number) => {
+                                                    return (
+                                                        <div className="legend">
+                                                            <div
+                                                                className="labels"
+                                                                style={{background: `${color[index]}`}}
+                                                            ></div>
+                                                            <div className="legend_name">{item}</div>
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
+                                        </div>
+                                        <div className="chartContent">
+                                            <div className="chart">
+                                                <BarsChart
+                                                    className={'Content'}
+                                                    data={performanceData[item].calling_times}
+                                                    text={1}
+                                                    isLegend={false}
+                                                ></BarsChart>
+                                            </div>
+                                            <div className="chart">
+                                                <BarsChart
+                                                    className={'Content'}
+                                                    data={performanceData[item].durations}
+                                                    text={2}
+                                                    isLegend={false}
+                                                ></BarsChart>
+                                            </div>
+                                            <div className="chart">
+                                                <BarsChart
+                                                    className={'Content'}
+                                                    data={performanceData[item].ratios}
+                                                    text={3}
+                                                    isLegend={true}
+                                                ></BarsChart>
+                                            </div>
+                                        </div>
+                                    </PerformanceContent>
+                                </TabPane>
+                            );
+                        })}
                 </Tabs>
             </Configure>
             <Configure>
                 <div className="title">模型各阶段消耗分布</div>
                 <EchartPie4>
-                    <StackColumnChart className={'Content'} data={distributed}></StackColumnChart>
+                    <StackColumnChart className={'Content'} data={distributed} color={color}></StackColumnChart>
                 </EchartPie4>
             </Configure>
         </ViewWrapper>

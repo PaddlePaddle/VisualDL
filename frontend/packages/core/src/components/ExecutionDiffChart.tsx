@@ -51,8 +51,8 @@ export type LineChartRef = {
     saveAsImage(): void;
 };
 
-const Charts = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, text, isCpu,isLegend}, ref) => {
+const ExecutionDiffChart = React.forwardRef<LineChartRef, any>(
+    ({options, data, title, loading, zoom, className, onInit, isCpu}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -82,27 +82,16 @@ const Charts = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {colorAlt, series, ...defaults} = chart;
-            const chartData = data;
-            const color = ['#2932E1', '#066BFF', '#00CC88', '#FF6600', '#25C9FF'];
-            const title = text === 1 ? '调用量（次)' : text === 2 ? '持续时间（us)' : '整体占比（%)';
-            const values = [];
-            for (let index = 0; index < chartData.value.length; index++) {
-                values.push({
-                    value: chartData.value[index],
-                    itemStyle:{
-                        color:color[index]
-                    }
-                });
-            }
-            console.log('values', values);
-            if (data) {
-                console.log('isLegend',isLegend);
-                
+            const {color, colorAlt, series, ...defaults} = chart;
+            const chartData = true;
+            if (chartData) {
+                const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartOption = defaultsDeep({
+                    color: ["#2932E1","#DC3912"],
+                    // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {
-                        bottom: '5%',
-                        left: 'center',
+                        top: '0%',
+                        left: '0%',
                         show: true,
                         text: title,
                         textStyle: {
@@ -112,85 +101,112 @@ const Charts = React.forwardRef<LineChartRef, any>(
                             fontSize: 12
                         }
                     },
+                    legend: {
+                        type: 'plain',
+                        show: true,
+                        left: 'center',
+                        data: [
+                            {
+                                name: '日增量'
+                            },
+                            {
+                                name: '当前数量'
+                            },
+                            {
+                                name: 'value大小'
+                            }
+                        ]
+                    },
                     tooltip: {
                         trigger: 'axis',
-                        axisPointer: {
-                            type: 'shadow'
+                        formatter: {
+                            _custom: {
+                                type: 'function',
+                                display: '<span>ƒ</span> formatter(params, ticket, callback)'
+                            }
                         }
                     },
-                    legend: {
-                        show:isLegend,
-                        data: ['Kernel', 'Memcpy', 'Memset', 'Communication', 'Runtime'],
-                        top: 0,
-                        right: 0,
-                        itemGap: 20,
-                        textStyle: {
-                            fontSize: 14,
-                            color: '#666666'
-                        },
-                        itemWidth: 17,
-                        itemHeight: 5
-                    },
                     grid: {
-                        left: '3%',
-                        right: '4%',
-                        top: '10%',
-                        bottom: '15%',
-                        containLabel: true
+                        top: '22%',
+                        left: '7%',
+                        right: '5%',
+                        bottom: '6%'
                     },
                     xAxis: [
                         {
                             type: 'category',
-                            data: chartData.key,
+                            min: 1,
                             axisTick: {
-                                alignWithLabel: false,
                                 show: false
+                            },
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#CCCCCC'
+                                }
                             },
                             axisLabel: {
-                                show: false
+                                color: '#666666'
                             },
-                            axisLine:{
-                                lineStyle:{
-                                    color:'#CCCCCC'
-                                }
-                            }
+                            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
                         }
                     ],
                     yAxis: [
                         {
                             type: 'value',
+                            name: '内存使用量（MB）',
+                            position: 'left',
+                            offset: 0,
                             axisTick: {
                                 show: false
-
                             },
-                            axisLabel:{
-                                color: '#666666'
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#CCCCCC'
+                                }
                             },
-                            axisLine:{
-                                lineStyle:{
-                                    color:'#CCCCCC'
+                            axisLabel: {
+                                color: '#666666',
+                                formatter: {
+                                    _custom: {
+                                        type: 'function',
+                                        display: '<span>ƒ</span> labelFormatter(val)'
+                                    }
                                 }
                             }
                         }
                     ],
                     series: [
                         {
-                            type: 'bar',
-                            barWidth: '30%',
-                            data: values
+                            name: '邮件',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {
+                                color: 'rgba(41,50,225 , 0.3)'
+                            },
+                            step: true,
+                            data: [-120, -132, -201, -234, -90, -230, -210]
+                        },
+                        {
+                            name: '联盟',
+                            type: 'line',
+                            stack: '总量',
+                            areaStyle: {
+                                color: 'rgba(220, 57, 18, 0.3)'
+                            },
+                            step: true,
+                            data: [-220, -182, -291, -364, -440, -330, -410]
                         }
                     ]
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, title, theme, i18n.language, echart,isLegend]);
-        // const attachRunColor = (runs: string[]): string[] =>
-        //   runs?.map((run, index) => {
-        //       const i = index % color.length;
-        //       return  {
-
-        //       }
-        // });
+        }, [options, data, title, theme, i18n.language, echart]);
+        // useEffect(()=>{
+        //     echart?.on('click', (params:any) => {
+        //         console.log('params',params)
+        //       })
+        //     debugger
+        // },[])
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
@@ -204,4 +220,4 @@ const Charts = React.forwardRef<LineChartRef, any>(
     }
 );
 
-export default Charts;
+export default ExecutionDiffChart;

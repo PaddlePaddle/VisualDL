@@ -15,7 +15,7 @@
  */
 
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
-import DistributedChart from '~/components/DistributedChart';
+import ExecutionDiffChart from '~/components/ExecutionDiffChart';
 import ComparsionChart from '~/components/ComparsionChart';
 import Model from '~/components/ProfilerPage/model';
 import {asideWidth, rem} from '~/utils/style';
@@ -134,6 +134,7 @@ const Configure = styled.div`
 const EchartPie = styled.div`
     width: 100%;
     height: ${rem(398)};
+    padding: ${rem(24)};
     border: 1px solid #dddddd;
     display: flex;
     .wraper {
@@ -149,61 +150,15 @@ const EchartPie = styled.div`
 `;
 const Wraper = styled.div`
     width: 100%;
-    border: 1px solid #dddddd;
+    .ant-table-pagination.ant-pagination {
+        margin: ${rem(20)} 0;
+        padding-right: ${rem(20)};
+    }
+    .ant-table.ant-table-bordered > .ant-table-container {
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+    }
 `;
-const Pagination = styled.div`
-   display:flex;
-   width:100%;
-   justify-content: space-between;
-   margin-top: ${rem(20)};
-   margin-bottom: ${rem(20)};
-   font-family: PingFangSC-Regular;
-   font-size: 14px;
-   font-weight: 400;
-   .Pagination_left{
-      display:flex;
-      .buttons{
-          width: ${rem(82)};
-          height: ${rem(36)};
-          margin-right: ${rem(15)};
-          .ant-btn-block{
-              border-radius: 4px;
-              height:100%;
-          }
-      }
-      .next{
-              .ant-btn-block {
-                  color: #999999;
-              }
-          }
-   }
-   .Pagination_right{
-      display:flex;
-      .describe{
-      line-height:${rem(36)};
-      margin-right: ${rem(15)};
-      color: #000000;
-   }
-   .buttons{
-      width: ${rem(82)};
-      height: ${rem(36)};
-      .ant-btn-block{
-          height:100%;
-          background: #2932E1;
-          border-radius: 4px;
-          color: #FFFFFF;
-      }
-   }
-   .input_wrapper{
-      width: ${rem(80)};
-      height: ${rem(36)};
-      margin-right: ${rem(15)};
-      .ant-input{
-          border-radius: 4px;
-          height: 100%;
-      }
-   }
-   `;
 
 const DiffView: FunctionComponent<DiffViewProps> = ({
     diffRuns1,
@@ -561,7 +516,10 @@ const DiffView: FunctionComponent<DiffViewProps> = ({
         console.log(value);
     };
     const getTable = useMemo(() => {
-        return <Table columns={columns} dataSource={data} bordered size="middle" pagination={false}></Table>;
+        const paginations = {
+            showSizeChanger: true,
+        };
+        return <Table columns={columns} dataSource={data} bordered size="middle" pagination={paginations}></Table>;
     }, [columns, data]);
     const SliderChange = (value: any) => {
         console.log('SliderValue', value);
@@ -573,13 +531,13 @@ const DiffView: FunctionComponent<DiffViewProps> = ({
             <Configure>
                 <div className="title">Execution Comparsion</div>
                 <EchartPie>
-                    <DistributedChart className={'Content'}></DistributedChart>
+                    <ComparsionChart className={'Content'}></ComparsionChart>
                 </EchartPie>
             </Configure>
             <Configure>
                 <div className="title">Execution Comparsion</div>
                 <EchartPie>
-                    <ComparsionChart className={'Content'}></ComparsionChart>
+                    <ExecutionDiffChart className={'Content'}></ExecutionDiffChart>
                 </EchartPie>
             </Configure>
             <Configure>
@@ -598,25 +556,6 @@ const DiffView: FunctionComponent<DiffViewProps> = ({
                     </div>
                 </div>
                 <Wraper>{getTable}</Wraper>
-                <Pagination>
-                    <div className="Pagination_left">
-                        <div className="buttons">
-                            <Button block>上一页</Button>
-                        </div>
-                        <div className="buttons next">
-                            <Button block>下一页</Button>
-                        </div>
-                    </div>
-                    <div className="Pagination_right">
-                        <div className="describe">共5页，跳转至</div>
-                        <div className="input_wrapper">
-                            <Input placeholder="Basic usage" />;
-                        </div>
-                        <div className="buttons">
-                            <Button block>确定</Button>
-                        </div>
-                    </div>
-                </Pagination>
             </Configure>
         </ViewWrapper>
     );

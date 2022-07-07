@@ -80,7 +80,7 @@
          <Control className={className}>
              <StyledInput ref={input} value={value} onChange={onChange} {...props} />
              {!!value && <CloseIcon type="close" onClick={clear} />}
-             <SearchIcon type="search" />
+             {!value && <SearchIcon type="search" />}
          </Control>
      );
  };

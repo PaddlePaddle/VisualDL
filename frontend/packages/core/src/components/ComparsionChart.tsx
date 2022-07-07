@@ -16,7 +16,7 @@
 
 import * as chart from '~/utils/chart';
 
-import React, {useEffect, useImperativeHandle} from 'react';
+import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
@@ -25,7 +25,7 @@ import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
-import { autoType } from 'd3';
+import {autoType} from 'd3';
 
 type LineChartProps = {
     options?: EChartOption;
@@ -55,7 +55,7 @@ export type LineChartRef = {
 const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
-
+        const [selectId,setSelectId] = useState<string>()
         const {
             ref: echartRef,
             echart,
@@ -98,10 +98,6 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                             color: '#000000',
                             fontSize: 14
                         }
-                        // trigger: 'axis'
-                        // axisPointer: {
-                        //     type: 'shadow'
-                        // }
                     },
                     legend: {
                         data: ['盘点数据总量', '稽核通过率'],
@@ -116,7 +112,7 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                         left: '6%',
                         right: '6%',
                         bottom: '12%',
-                        top: '15%',
+                        top: '15%'
                         // containLabel: true
                     }, //折线柱状图位置
                     xAxis: [
@@ -186,45 +182,75 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                         {
                             name: '盘点数据总量',
                             type: 'bar',
-                            barGap: '3',
-                            barWidth: '5%',
+                            barGap: '0',
+                            barWidth: '15%',
                             itemStyle: {
                                 normal: {
                                     // barBorderRadius: [30, 30, 0, 0],
                                     color: '#00CC88' //柱状图颜色
                                 }
                             },
-                            data: [140, 110, 100, 100, 100, 150] //数据总量数据
+                            data: [
+                                {
+                                    value: 140,
+                                    id: '1'
+                                },
+                                {
+                                    value: 120,
+                                    id: '2'
+                                },
+                                {
+                                    value: 130,
+                                    id: '3'
+                                },
+                                {
+                                    value: 109,
+                                    id: '1'
+                                },
+                                {
+                                    value: 150,
+                                    id: '1'
+                                }
+                            ] //数据总量数据
                         },
                         {
                             name: '盘点数据总量2',
                             type: 'bar',
-                            barGap: '3',
-                            barWidth: '5%',
+                            // barGap: '3',
+                            barWidth: '15%',
                             itemStyle: {
                                 normal: {
                                     // barBorderRadius: [30, 30, 0, 0],
                                     color: '#2932E1' //柱状图颜色
                                 }
                             },
-                            data: [120, 130, 140, 140, 190] //数据总量数据
+                            data: [
+                                {
+                                    value: 120,
+                                    id: '1'
+                                },
+                                {
+                                    value: 140,
+                                    id: '2'
+                                },
+                                {
+                                    value: 160,
+                                    id: '3'
+                                },
+                                {
+                                    value: 119,
+                                    id: '1'
+                                },
+                                {
+                                    value: 137,
+                                    id: '1'
+                                }
+                            ] //数据总量数据
                         },
                         {
                             name: '稽核通过率',
                             type: 'line',
                             yAxisIndex: 1,
-                            // symbol: 'circle', //折线图，节点形状
-                            // symbolSize: 15, //折线图，节点圆圈大小
-                            // itemStyle: {
-                            //     normal: {
-                            //         show:false,
-                            //         color: 'white', //折线图点的颜色
-                            //         barBorderRadius: [30, 30, 0, 0],
-                            //         lineStyle: {
-                            //             color: '#25C9FF' //折线颜色
-                            //         }
-                            //     }
-                            // },
                             label: {
                                 show: false,
                                 position: 'top',
@@ -264,6 +290,12 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                     chartOptions
                 );
             }
+            echart?.on('click', (params: any) => {
+                if (params.componentSubType === 'bar') {
+                    console.log('params',params);
+                    setSelectId(params.data.id)
+                }
+            });
             echart?.setOption(chartOptions, {notMerge: true});
         }, [options, data, title, theme, i18n.language, echart]);
 

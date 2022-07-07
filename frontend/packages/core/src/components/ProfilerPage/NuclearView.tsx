@@ -14,90 +14,109 @@
  * limitations under the License.
  */
 
- import React, {FunctionComponent, useCallback, useMemo, useState,useEffect} from 'react';
- import {DownOutlined} from '@ant-design/icons';
- import PieChart, {LineChartRef} from '~/components/pieChart';
- import StackColumnChart from '~/components/StackColumnChart';
- import Trainchart from '~/components/Trainchart';
- import {asideWidth, rem} from '~/utils/style';
- import styled from 'styled-components';
- import {useTranslation} from 'react-i18next';
- import {fetcher} from '~/utils/fetch';
- import {Badge, Dropdown, Menu, Space, Table, Input, Button} from 'antd';
- import type {ColumnsType} from 'antd/lib/table';
- 
- interface DataType {
-     key: React.Key;
-     name: string;
-     age: number;
-     street: string;
-     building: string;
-     number: number;
-     companyAddress: string;
-     companyName: string;
-     gender: string;
- }
- interface ExpandedDataType {
-     key: React.Key;
-     date: string;
-     name: string;
-     upgradeNum: string;
- }
- asideWidth;
- 
- const ViewWrapper = styled.div`
-     width: 100%;
-     height: 100%;
-     flex-grow: 1;
-     position: relative;
-     background-color: #fff;
- `;
- const Title = styled.div`
-     width: 100%;
-     height: ${rem(50)};
-     font-family: PingFangSC-Medium;
-     font-size: ${rem(16)};
-     color: #333333;
-     line-height: ${rem(50)};
-     font-weight: 500;
-     padding-left: ${rem(20)};
-     border-bottom: 1px solid #dddddd;
-     margin-bottom: ${rem(20)};
- `;
- const Configure = styled.div`
-     margin-top: ${rem(30)};
-     width: 100%;
-     font-family: PingFangSC-Medium;
-     font-size: ${rem(16)};
-     color: #333333;
-     font-weight: 500;
-     padding-left: ${rem(20)};
-     padding-right: ${rem(20)};
-     .title {
-         margin-bottom: ${rem(20)};
-     }
- `;
- const EchartPie = styled.div`
-     width: 100%;
-     height:${rem(270)};
-     border: 1px solid #dddddd;
-     display: flex;
-     .wraper {
-         flex: 1;
-         .Content {
-             height: 100%;
-         }
-     }
-     .Content {
-         height: 100%;
-         width: 100%;
-     }
- `;
- const Wraper = styled.div`
-     width: 100%;
-     border: 1px solid #dddddd;
- `;
- const Pagination = styled.div`
+import React, {FunctionComponent, useCallback, useMemo, useState, useEffect} from 'react';
+import {DownOutlined} from '@ant-design/icons';
+import PieChart, {LineChartRef} from '~/components/pieChart';
+import StackColumnChart from '~/components/StackColumnChart';
+import Trainchart from '~/components/Trainchart';
+import {asideWidth, rem} from '~/utils/style';
+import styled from 'styled-components';
+import {useTranslation} from 'react-i18next';
+import {fetcher} from '~/utils/fetch';
+import {Badge, Dropdown, Menu, Space, Table, Input, Button} from 'antd';
+import type {ColumnsType} from 'antd/lib/table';
+
+interface DataType {
+    key: React.Key;
+    name: string;
+    age: number;
+    street: string;
+    building: string;
+    number: number;
+    companyAddress: string;
+    companyName: string;
+    gender: string;
+}
+interface ExpandedDataType {
+    key: React.Key;
+    date: string;
+    name: string;
+    upgradeNum: string;
+}
+asideWidth;
+
+const ViewWrapper = styled.div`
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    position: relative;
+    background-color: #fff;
+`;
+const Title = styled.div`
+    width: 100%;
+    height: ${rem(50)};
+    font-family: PingFangSC-Medium;
+    font-size: ${rem(16)};
+    color: #333333;
+    line-height: ${rem(50)};
+    font-weight: 500;
+    padding-left: ${rem(20)};
+    border-bottom: 1px solid #dddddd;
+    margin-bottom: ${rem(20)};
+`;
+const Configure = styled.div`
+    margin-top: ${rem(30)};
+    width: 100%;
+    font-family: PingFangSC-Medium;
+    font-size: ${rem(16)};
+    color: #333333;
+    font-weight: 500;
+    padding-left: ${rem(20)};
+    padding-right: ${rem(20)};
+    .title {
+        margin-bottom: ${rem(20)};
+    }
+`;
+const EchartPie = styled.div`
+    width: 100%;
+    height: ${rem(270)};
+    padding: ${rem(24)};
+    border: 1px solid #dddddd;
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+`;
+const EchartPie4 = styled.div`
+    width: 100%;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    height: ${rem(366)};
+    padding: ${rem(24)};
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+`;
+const Wraper = styled.div`
+    width: 100%;
+    border: 1px solid #dddddd;
+`;
+const Pagination = styled.div`
      display:flex;
      width:100%;
      justify-content: space-between;
@@ -154,183 +173,132 @@
          }
      }
  `;
- const Card = styled.div`
+const Card = styled.div`
     width: 100%;
     height: ${rem(142)};
     border: 1px solid #dddddd;
     font-family: PingFangSC-Regular;
     font-size: 14px;
     font-weight: 400;
-    display:flex;
+    display: flex;
     .item_list {
-        flex:1;
-        display:flex;
-        align-items:center;
-        div:nth-of-type(1){
-            padding-left:20px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        div:nth-of-type(1) {
+            padding-left: 20px;
         }
-        div:nth-of-type(3){
-            border-right:none;
+        div:nth-of-type(3) {
+            border-right: none;
         }
-        .items{
-            padding-left:30px;
-            padding-right:30px;
-            border-right:1px solid #dddddd;;
+        .items {
+            padding-left: 30px;
+            padding-right: 30px;
+            border-right: 1px solid #dddddd;
         }
     }
     .info_list {
-        flex:1;
-        .items:nth-of-type(1){
-            margin-top:14px;
+        flex: 1;
+        .items:nth-of-type(1) {
+            margin-top: 14px;
         }
-        .items{
-            display:flex;
-            margin-top:8px;
+        .items {
+            display: flex;
+            margin-top: 8px;
             justify-content: center;
-            .label{
-                width:220px;
-                padding-right:30px;
+            .label {
+                width: 220px;
+                padding-right: 30px;
                 text-align: right;
                 color: #666666;
             }
-            .info{
-                width:220px;
+            .info {
+                width: 220px;
                 text-align: left;
+                color: #000000;
             }
         }
     }
- `;
- export type overViewProps = {
+`;
+export type overViewProps = {
     runs: string;
     views: string;
     workers: string;
     spans: string;
 };
- const NuclearView: FunctionComponent<overViewProps> = ({runs, views, workers, spans}) => {
-     const {t} = useTranslation(['hyper-parameter', 'common']);
-     const [distributed, setDistributed] = useState<any>();
-     useEffect(() => {
+const NuclearView: FunctionComponent<overViewProps> = ({runs, views, workers, spans}) => {
+    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const [computation, setComputation] = useState<any>();
+    const [distributedData, setDistributedData] = useState<any>();
+
+    useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/overview/distributed' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+            fetcher('/profiler/NuclearView/Computation' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
                     const Data: any = res;
                     console.log('distributed,', Data);
-                    setDistributed(Data);
+                    setComputation(Data);
                 }
             );
+            fetcher(
+                '/profiler/NuclearView/distributed' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
+            ).then((res: any) => {
+                setDistributedData(res.data);
+            });
         }
     }, [runs, workers, spans, views]);
-     return (
-         <ViewWrapper>
-             <Title>分布视图</Title>
-             <Configure>
-                 <div className="title">设备信息</div>
-                 <div>
-                    <Card>
-                        <div className='item_list'>
-                            <div className='items'>
-                                worker0
-                            </div>
-                            <div className='items'>
-                                Process0
-                            </div>
-                            <div className='items'>
-                                GPU0
-                            </div>
-                        </div>
-                        <div className='info_list'>
-                            <div className='items'>
-                                <div className='label'>
-                                    Name:
+    const color = [
+        '#2932E1',
+        '#066BFF',
+        '#00CC88',
+        '#FF6600',
+        '#25C9FF'
+    ];
+    return (
+        <ViewWrapper>
+            <Title>分布视图</Title>
+            <Configure>
+                <div className="title">设备信息</div>
+                <div>
+                    {distributedData && distributedData.map((items: any) => {
+                        return (
+                            <Card>
+                                <div className="item_list">
+                                    <div className="items">{items.attr0}</div>
+                                    <div className="items">{items.attr1}</div>
+                                    <div className="items">{items.attr2}</div>
                                 </div>
-                                <div className='info'>
-                                    Tesla P40
+                                <div className="info_list">
+                                    <div className="items">
+                                        <div className="label">Name:</div>
+                                        <div className="info">{items.name}</div>
+                                    </div>
+                                    <div className="items">
+                                        <div className="label">Memory:</div>
+                                        <div className="info">{items.memory}</div>
+                                    </div>
+                                    <div className="items">
+                                        <div className="label">Memory Raw:</div>
+                                        <div className="info">{items.computeCapability}</div>
+                                    </div>
+                                    <div className="items">
+                                        <div className="label">Compute Capability:</div>
+                                        <div className="info">{items.utilization}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='items'>
-                                <div className='label'>
-                                    Memory:
-                                </div>
-                                <div className='info'>
-                                    22.38 GB
-                                </div>
-                            </div>
-                            <div className='items'>
-                                <div className='label'>
-                                    Memory Raw:
-                                </div>
-                                <div className='info'>
-                                    24032378880
-                                </div>
-                            </div>
-                            <div className='items'>
-                                <div className='label'>
-                                    Compute Capability:
-                                </div>
-                                <div className='info'>
-                                    6.1
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card>
-                    <div className='item_list'>
-                            <div className='items'>
-                                worker0
-                            </div>
-                            <div className='items'>
-                                Process0
-                            </div>
-                            <div className='items'>
-                                GPU0
-                            </div>
-                        </div>
-                        <div className='info_list'>
-                            <div className='items'>
-                                <div className='label'>
-                                    Name:
-                                </div>
-                                <div className='info'>
-                                    Tesla P40
-                                </div>
-                            </div>
-                            <div className='items'>
-                                <div className='label'>
-                                    Memory:
-                                </div>
-                                <div className='info'>
-                                    22.38 GB
-                                </div>
-                            </div>
-                            <div className='items'>
-                                <div className='label'>
-                                    Memory Raw:
-                                </div>
-                                <div className='info'>
-                                    24032378880
-                                </div>
-                            </div>
-                            <div className='items'>
-                                <div className='label'>
-                                    Compute Capability:
-                                </div>
-                                <div className='info'>
-                                    6.1
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                 </div>
-             </Configure>
-             <Configure>
-                <div className="title">模型各阶段消耗分布</div>
-                <EchartPie>
-                    <StackColumnChart className={'Content'} data={distributed}></StackColumnChart>
-                </EchartPie>
+                            </Card>
+                        );
+                    })}
+                </div>
             </Configure>
-         </ViewWrapper>
-     );
- };
- 
- export default NuclearView;
- 
+            <Configure>
+                <div className="title">Computation和communication的耗时对比</div>
+                <EchartPie4>
+                    <StackColumnChart className={'Content'} data={computation} color={color}></StackColumnChart>
+                </EchartPie4>
+            </Configure>
+        </ViewWrapper>
+    );
+};
+
+export default NuclearView;

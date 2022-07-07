@@ -15,6 +15,10 @@
  */
 
 import * as chart from '~/utils/chart';
+import leftIcon from '@visualdl/icons/icons/left.svg';
+import defaultLeftIcon from '@visualdl/icons/icons/defaultLeft.svg';
+import rightIcon from '@visualdl/icons/icons/right.svg';
+import defaultRightIcon from '@visualdl/icons/icons/defaultRight.svg';
 
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
@@ -52,7 +56,7 @@ export type LineChartRef = {
 };
 
 const PieChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit,isCpu}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit,isCpu,color}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -82,9 +86,9 @@ const PieChart = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {color, colorAlt, series, ...defaults} = chart;
+            const {colorAlt, series, ...defaults} = chart;
             const chartData = [];
-            if (data) {
+            if (data && color) {
                 for (const item of data) {
                     chartData.push({
                         value: item.total_time,
@@ -93,10 +97,9 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                     });
                 }
                 console.log('chartData', chartData);
-
                 let chartOptions: EChartOption = defaultsDeep({
                     grid: {
-                        left: '0'
+                        left: 0
                     },
                     color: color,
                     tooltip: {
@@ -111,7 +114,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                             color: '#666'
                         },
                         formatter: function (params: any) {
-                            console.log('params', params);
+                            console.log('pieparams', params);
                             var str = ''; //声明一个变量用来存储数据
                             str += '<div>' + params.data.name + '</div>';
                             str +=
@@ -128,7 +131,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                                 ';"></span>' +
                                 '占比' +
                                 '</span> : <span>' +
-                                params.data.proportion +
+                                params.data.proportion + '%'
                                 '</br>';
                             return str;
                         }
@@ -138,14 +141,20 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         right: '50',
                         orient: 'vertical',
                         height: 160,
-                        type: 'scroll'
+                        icon: "circle",
+                        type: 'scroll',
+                        pageIcons:{
+                            vertical:['image://' + leftIcon,
+                            'image://' + rightIcon]
+                        },
+                        pageIconInactiveColor:'#981EFF'
                     },
                     series: [
                         {
                             right: '200',
                             name: 'Access From',
                             type: 'pie',
-                            radius: ['50%', '85%'],
+                            radius: ['70%', '100%'],
                             avoidLabelOverlap: false,
                             label: {
                                 show: true,

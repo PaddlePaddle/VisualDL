@@ -15,16 +15,17 @@
  */
 
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import type {SelectProps} from '~/components/Select';
 import PieChart, {LineChartRef} from '~/components/pieChart';
 import Model from '~/components/ProfilerPage/model';
 import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import {Select, Table, Input, Button} from 'antd';
+import {Table} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
 import {fetcher} from '~/utils/fetch';
-const {Option} = Select;
-const { Search } = Input;
+import Select from '~/components/Select';
+import SearchInput from '~/components/searchInput2';
 interface DataType {
     key: React.Key;
     name: string;
@@ -57,6 +58,9 @@ const ViewWrapper = styled.div`
     flex-grow: 1;
     position: relative;
     background-color: #fff;
+    .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
+        background: #f3f8fe;
+    }
 `;
 const Title = styled.div`
     width: 100%;
@@ -82,50 +86,55 @@ const Configure = styled.div`
     .title {
         margin-bottom: ${rem(20)};
     }
-    .titleContent{
+    .titleContent {
         margin-bottom: ${rem(10)};
         .title {
             margin-bottom: ${rem(0)};
-            line-height:${rem(36)};
+            line-height: ${rem(36)};
         }
-        display:flex;
-        justify-content:space-between;
-        .searchContent{
-            display:flex;
-            .input_wrapper{
+        display: flex;
+        justify-content: space-between;
+        .searchContent {
+            display: flex;
+            .input_wrapper {
                 width: ${rem(160)};
                 height: ${rem(36)};
-                .ant-input-group-wrapper{
+                .ant-input-group-wrapper {
                     height: 100%;
                     width: 100%;
-                    .ant-input-wrapper{
+                    .ant-input-wrapper {
                         height: 100%;
-                        .ant-input{
+                        .ant-input {
                             height: 100%;
                         }
-                        .ant-btn{
+                        .ant-btn {
                             height: 100%;
                         }
                     }
-                    .ant-btn{
-                        border-left:none
+                    .ant-btn {
+                        border-left: none;
                     }
                 }
             }
-            .select_wrapper{
+            .select_wrapper {
                 width: ${rem(160)};
                 height: ${rem(36)};
                 margin-right: ${rem(15)};
-                .ant-select{
+                .ant-select {
                     border-radius: 4px;
                     height: 100%;
-                    .ant-select-selector{
+                    .ant-select-selector {
                         height: 100%;
                     }
                 }
             }
         }
     }
+`;
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
+    width: 100%;
+    height: 100%;
+    font-size: ${rem(14)};
 `;
 const EchartPie = styled.div`
     width: 100%;
@@ -145,93 +154,53 @@ const EchartPie = styled.div`
 `;
 const Wraper = styled.div`
     width: 100%;
-    border: 1px solid #dddddd;
+    .ant-table-pagination.ant-pagination {
+        margin: ${rem(20)} 0;
+        padding-right: ${rem(20)};
+    }
+    .ant-table.ant-table-bordered > .ant-table-container {
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+    }
 `;
-const Pagination = styled.div`
- display:flex;
- width:100%;
- justify-content: space-between;
- margin-top: ${rem(20)};
- margin-bottom: ${rem(20)};
- font-family: PingFangSC-Regular;
- font-size: 14px;
- font-weight: 400;
- .Pagination_left{
-    display:flex;
-    .buttons{
-        width: ${rem(82)};
-        height: ${rem(36)};
-        margin-right: ${rem(15)};
-        .ant-btn-block{
-            border-radius: 4px;
-            height:100%;
-        }
-    }
-    .next{
-            .ant-btn-block {
-                color: #999999;
-            }
-        }
- }
- .Pagination_right{
-    display:flex;
-    .describe{
-    line-height:${rem(36)};
-    margin-right: ${rem(15)};
-    color: #000000;
- }
- .buttons{
-    width: ${rem(82)};
-    height: ${rem(36)};
-    .ant-btn-block{
-        height:100%;
-        background: #2932E1;
-        border-radius: 4px;
-        color: #FFFFFF;
-    }
- }
- .input_wrapper{
-    width: ${rem(80)};
-    height: ${rem(36)};
-    margin-right: ${rem(15)};
-    .ant-input{
-        border-radius: 4px;
-        height: 100%;
-    }
- }
- `;
-
+type SelectListItem<T> = {
+    value: T;
+    label: string;
+};
 const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, workers, spans}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const model = useRef<any>(null);
     const [cpuData, setCpuData] = useState<any>();
+    const [tableData, setTableData] = useState<any>();
+    const [search, setSearch] = useState<string>();
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
+    const [items, setItems] = useState<string>('');
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/comparedView/pie' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
-                (res: unknown) => {
-                    const result: any = res;
-                    // let tableData: any = [];
-                    // let data: any = [];
-                    // for (const item of result.gpu) {
-                    //     const DataTypeItem: any = {};
-                    //     for (const key of result.column_name) {
-                    //         const name = 'GPU' + key;
-                    //         DataTypeItem[name] = item[key];
-                    //     }
-                    //     data.push(DataTypeItem);
-                    // }
-                    // for (let index = 0; index < result.cpu.length; index++) {
-                    //     const DataTypeItem: any = {
-                    //         ...result.cpu[index],
-                    //         ...data[index]
-                    //     };
-                    //     tableData.push(DataTypeItem);
-                    // }
-                    // console.log('tableData', tableData);
-                    // setTableData(tableData);
-                    setCpuData(res);
-                }
-            );
+            const time_unit = 1;
+            fetcher(
+                '/profiler/operator/pie' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&time_unit=${time_unit}`
+            ).then((res: unknown) => {
+                setCpuData(res);
+            });
+        }
+    }, [runs, workers, spans, views]);
+    useEffect(() => {
+        if (runs && workers && spans) {
+            const time_unit = 1;
+            fetcher(
+                '/profiler/operator/table' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&time_unit=${time_unit}`
+            ).then((res: any) => {
+                setTableData(res.data);
+            });
         }
     }, [runs, workers, spans, views]);
     const columns: ColumnsType<DataType> = useMemo(() => {
@@ -245,50 +214,77 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
             },
             {
-                title: 'Other',
+                title: '调用量',
+                dataIndex: 'call',
+                key: 'call',
+                width: 100,
+                // fixed: 'left',
+                onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
+            },
+            {
+                title: 'GPU',
                 children: [
                     {
-                        title: 'Age',
-                        dataIndex: 'age',
-                        key: 'age',
+                        title: '总耗时',
+                        dataIndex: 'cpu_total_time',
+                        key: 'cpu_total_time',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age2',
-                        dataIndex: 'age2',
-                        key: 'age2',
+                        title: '平均耗时',
+                        dataIndex: 'cpu_avg_time',
+                        key: 'cpu_avg_time',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age3',
-                        dataIndex: 'age3',
-                        key: 'age',
+                        title: '最短耗时',
+                        dataIndex: 'cpu_min_time',
+                        key: 'cpu_min_time',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age4',
-                        dataIndex: 'age4',
-                        key: 'age4',
+                        title: '百分比',
+                        dataIndex: 'cpu_ratio',
+                        key: 'cpu_ratio',
+                        width: 150,
+                        sorter: (a, b) => a.age - b.age
+                    },
+                ]
+            },
+            {
+                title: 'GPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'gpu_total_time',
+                        key: 'gpu_total_time',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age5',
-                        dataIndex: 'age5',
-                        key: 'age5',
+                        title: '平均耗时',
+                        dataIndex: 'gpu_avg_time',
+                        key: 'gpu_avg_time',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age6',
-                        dataIndex: 'age6',
-                        key: 'age6',
+                        title: '最短耗时',
+                        dataIndex: 'gpu_min_time',
+                        key: 'gpu_min_time',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
-                    }
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'gpu_ratio',
+                        key: 'gpu_ratio',
+                        width: 150,
+                        sorter: (a, b) => a.age - b.age
+                    },
                 ]
             },
             {
@@ -310,72 +306,72 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             }
         ];
     }, []);
-
-    const data: any = useMemo(() => {
-        let data: any = [];
-        for (let i = 0; i < 100; i++) {
-            data.push({
-                key: i,
-                name: 'John Brown',
-                age: i + 1,
-                age2: 'Lake Park',
-                age3: 'C',
-                age4: 2035,
-                age5: 'Lake Street 42',
-                age6: 'SoftLake Co',
-                gender: 'M'
-            });
-        }
-        return data;
-    }, []);
     const onSearch = (value: string) => {
         console.log(value);
-    }
+    };
     const expandedRowRender = useCallback((e: any, a: any, b: any, c: any) => {
-        const columns: ColumnsType<ExpandedDataType> = [{title: 'Date', dataIndex: 'date', key: 'date'}];
-        const data = [];
-        data.push(
-            {
-                key: 'aten:convolut',
-                date: 'aten:convolut',
-                name: 'This is production name',
-                upgradeNum: 'Upgraded: 56'
-            },
-            {
-                key: 'ion_backward',
-                date: 'ion_backward',
-                name: 'This is production name',
-                upgradeNum: 'Upgraded: 56'
-            }
-        );
+        console.log('e,a,b,c,',e,a,b,c);
+        // debugger
+        if (!tableData) {
+            return
+        }
+        const columns: ColumnsType<ExpandedDataType> = [
+            {title: 'name', dataIndex: 'name', key: 'name'},
+            // {title: 'compute', dataIndex: 'compute', key: 'compute'},
+            // {title: 'grad_node_creation', dataIndex: 'grad_node_creation', key: 'grad_node_creation'}
+        ];
+        const numbers = Number(a)
+        // debugger
+        const data = tableData[numbers].expends
+        // data.push(
+        //     {
+        //         key: 'aten:convolut',
+        //         date: 'aten:convolut',
+        //         name: 'This is production name',
+        //         upgradeNum: 'Upgraded: 56'
+        //     },
+        //     {
+        //         key: 'ion_backward',
+        //         date: 'ion_backward',
+        //         name: 'This is production name',
+        //         upgradeNum: 'Upgraded: 56'
+        //     }
+        // );
         return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
-    }, []);
+    }, [tableData]);
     const getTable = useMemo(() => {
         return (
             <Table
                 columns={columns}
-                dataSource={data}
+                dataSource={tableData}
                 bordered
                 size="middle"
-                pagination={false}
+                // pagination={false}
                 expandable={{
                     expandedRowRender
                 }}
                 scroll={{x: 'calc(700px + 50%)', y: 240}}
             ></Table>
         );
-    }, [columns, data, expandedRowRender]);
+    }, [columns, tableData, expandedRowRender]);
+    const color = [
+        '#2932E1',
+        '#066BFF',
+        '#FF6600',
+        '#D50505',
+        '#3AEB0D'
+    ];
     return (
         <ViewWrapper>
             <Title>算子视图</Title>
             <Configure>
                 <div className="title">耗时情况</div>
-                <EchartPie>
-                    <div className="wraper">
-                        <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} />
+                <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
+                    <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
+                        <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color}/>
                     </div>
                     <div className="wraper">
-                        <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} />
+                        <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color}/>
                     </div>
                 </EchartPie>
             </Configure>
@@ -384,53 +380,21 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     <div className="title">耗时情况</div>
                     <div className="searchContent">
                         <div className="select_wrapper">
-                            <Select
-                                showSearch
-                                placeholder="Search to Select"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                    (option!.children as unknown as string).includes(input)
-                                }
-                                filterSort={(optionA, optionB) =>
-                                    (optionA!.children as unknown as string)
-                                        .toLowerCase()
-                                        .localeCompare((optionB!.children as unknown as string).toLowerCase())
-                                }
-                            >
-                                <Option value="1">按算子分组</Option>
-                                <Option value="2">Closed</Option>
-                                <Option value="3">Communicated</Option>
-                                <Option value="4">Identified</Option>
-                                <Option value="5">Resolved</Option>
-                                <Option value="6">Cancelled</Option>
-                            </Select>
+                            <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
                         </div>
                         <div className="input_wrapper">
                             {/* <Input placeholder="Basic usage" />; */}
-                            <Search placeholder="input search text" onSearch={onSearch} />
+                            <SearchInput
+                                className="search-input"
+                                value={search}
+                                onChange={setSearch}
+                                placeholder={t('common:search-runs')}
+                                rounded
+                            />
                         </div>
                     </div>
                 </div>
-                <Wraper>{getTable}</Wraper>
-                <Pagination>
-                    <div className="Pagination_left">
-                        <div className="buttons">
-                            <Button block>上一页</Button>
-                        </div>
-                        <div className="buttons next">
-                            <Button block>下一页</Button>
-                        </div>
-                    </div>
-                    <div className="Pagination_right">
-                        <div className="describe">共5页，跳转至</div>
-                        <div className="input_wrapper">
-                            <Input placeholder="Basic usage" />;
-                        </div>
-                        <div className="buttons">
-                            <Button block>确定</Button>
-                        </div>
-                    </div>
-                </Pagination>
+                <Wraper>{tableData && getTable}</Wraper>
             </Configure>
             <Model ref={model}></Model>
         </ViewWrapper>

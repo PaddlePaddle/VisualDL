@@ -25,6 +25,7 @@ import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
+import {TorusGeometry} from 'three';
 
 type LineChartProps = {
     options?: EChartOption;
@@ -88,8 +89,8 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                 v2s = [123, 15, 123, 122],
                 v3s = [26, 234, 23, 111],
                 v4s = [234, 67, 234, 23],
-                v5s = [234, 89, 234, 64]
-            
+                v5s = [234, 89, 234, 64];
+
             let chartOptions: EChartOption = defaultsDeep({
                 // dataZoom: {
                 //     type: 'slider',
@@ -99,37 +100,47 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                 //     end: 10
 
                 // },
-                color:color,
+                color: color,
                 tooltip: {
                     trigger: 'axis',
+                    extraCssText:
+                        'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
                     axisPointer: {
                         // 坐标轴指示器，坐标轴触发有效
                         type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                    },
+                    formatter: function (params: any) {
+                        console.log('Trainchart', params);
                     }
-                    // formatter: function (params: any) {
-                    //     console.log('params',params);
-
-                    // }
                 },
                 legend: {
                     data: ['Kernel', 'Memcpy', 'Memset', 'Communication', 'Runtime'],
-                    top: 10,
-                    right:10,
+                    top: 0,
+                    right: 0,
+                    itemGap: 20,
                     textStyle: {
-                        fontSize: 9,
-                        color: '#333'
+                        fontSize: 14,
+                        color: '#666666',
+                        padding: [0, 0, 0, 10]
                     },
-                    itemWidth: 10,
-                    itemHeight: 10
+                    itemWidth: 17,
+                    itemHeight: 5
                 },
                 grid: {
-                    left: '5%',
-                    right: '5%',
-                    bottom: '8%',
+                    left: '0%',
+                    right: '3%',
+                    bottom: '0%',
+                    top: '15%',
                     containLabel: true
                 },
                 xAxis: [
                     {
+                        name: '步',
+                        nameLocation: 'end',
+                        nameTextStyle: {
+                            fontSize: 12,
+                            color: '#999999'
+                        },
                         type: 'category',
                         // data: ['安徽战区', '江苏战区', '湖北战区', '上海战区', '广东战区', '特许直营', '浙江战区', '北京战区', '特许加盟'],
                         // max: 6,
@@ -147,24 +158,38 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         },
                         splitLine: {
                             show: false
+                        },
+                        axisLabel: {
+                            fontSize: 12,
+                            color: '#666666'
                         }
                     }
                 ],
                 yAxis: {
+                    name: '耗时',
+                    nameTextStyle: {
+                        fontSize: 12,
+                        color: '#999999'
+                    },
                     type: 'value',
-                    axisLine: {show: false},
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#ccc'
+                        }
+                    },
                     axisTick: {
                         show: false
                     },
-                    splitArea: {
-                        show: false
-                    },
                     splitLine: {
-                        show: false
+                        show: true,
+                        lineStyle: {
+                            opacity: 0.3
+                        }
                     },
                     axisLabel: {
-                        fontSize: 10,
-                        color: '#333'
+                        fontSize: 12,
+                        color: '#666666'
                     }
                 },
                 series: [
@@ -226,7 +251,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         type: 'bar',
                         stack: '数据',
                         // barMinWidth: '50%',
-                        barCategoryGap:'0%',
+                        barCategoryGap: '0%',
                         itemStyle: {
                             opacity: 0.5,
                             color: '#25C9FF'

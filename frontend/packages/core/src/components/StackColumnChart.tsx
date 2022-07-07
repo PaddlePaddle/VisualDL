@@ -52,7 +52,7 @@ export type LineChartRef = {
 };
 
 const StackColumnChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit,color}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -82,15 +82,11 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {color, colorAlt, series, ...defaults} = chart;
-            if (data) {
-                const titles = data.order,
-                    v1s = data.CudaRuntime,
-                    v2s = data.OperatorInner,
-                    v3s = data.Operator,
-                    v4s = data.PythonUserDefined;
-                // debugger
-                const series:any= []
+            const {colorAlt, series, ...defaults} = chart;
+            
+            if (data && color) {
+                const titles = data.order
+                const series: any = [];
                 for (let index = 0; index < titles.length; index++) {
                     const element = titles[index];
                     series.push({
@@ -104,44 +100,64 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                         emphasis: {
                             focus: 'series'
                         },
-                        data: v4s
-                    })
-                    
+                        data: data[element]
+                    });
                 }
                 let chartOptions: EChartOption = defaultsDeep({
                     tooltip: {
                         trigger: 'axis',
+                        extraCssText:
+                            'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
                         axisPointer: {
                             // 坐标轴指示器，坐标轴触发有效
                             type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                        },
+                        formatter: function (params: any, index: any) {
+                            console.log('StackColumnChart', params, index);
+                            var str = ''; //声明一个变量用来存储数据
+                            str +=
+                                '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:10px;">' +
+                                params[0].name +
+                                '</div>';
+                            for (let index = 0; index < params.length; index++) {
+                                const element = params[index];
+                                str +=
+                                    '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                    element.color +
+                                    ';"></span>' +
+                                    `${element.seriesName}` +
+                                    '</span> : <span>' +
+                                    element.value +
+                                    '</br>';
+                            }
+                            return str;
                         }
                     },
                     legend: {
                         data: titles,
-                        top: 10,
-                        right:10,
+                        top: 0,
+                        right: 0,
+                        itemGap: 20,
                         textStyle: {
-                            fontSize: 9,
-                            color: '#333'
+                            fontSize: 14,
+                            color: '#666666',
                         },
-                        itemWidth: 10,
-                        itemHeight: 10
+                        itemWidth: 17,
+                        itemHeight: 5
                     },
                     grid: {
-                        left: '5%',
-                        right: '5%',
-                        bottom: 20,
+                        left: '0%',
+                        right: '0%',
+                        bottom: '0%',
+                        top: '15%',
                         containLabel: true
                     },
                     xAxis: [
                         {
                             type: 'category',
                             // data: ['安徽战区', '江苏战区', '湖北战区', '上海战区', '广东战区', '特许直营', '浙江战区', '北京战区', '特许加盟'],
+                            // max: 6,
                             data: titles,
-                            axisLabel: {
-                                fontSize: 10,
-                                color: '#333'
-                            },
                             axisLine: {
                                 lineStyle: {
                                     color: '#ccc'
@@ -155,31 +171,45 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                             },
                             splitLine: {
                                 show: false
+                            },
+                            axisLabel: {
+                                fontSize: 12,
+                                color: '#666666'
                             }
                         }
                     ],
                     yAxis: {
+                        name: '耗时',
+                        nameTextStyle: {
+                            fontSize: 12,
+                            color: '#999999'
+                        },
                         type: 'value',
-                        axisLine: {show: false},
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#ccc'
+                            }
+                        },
                         axisTick: {
                             show: false
                         },
-                        splitArea: {
-                            show: false
-                        },
                         splitLine: {
-                            show: false
+                            show: true,
+                            lineStyle: {
+                                opacity: 0.3
+                            }
                         },
                         axisLabel: {
-                            fontSize: 10,
-                            color: '#333'
+                            fontSize: 12,
+                            color: '#666666'
                         }
                     },
                     series: series
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, title, theme, i18n.language, echart]);
+        }, [options, data, color,title, theme, i18n.language, echart]);
 
         return (
             <Wrapper ref={wrapper} className={className}>

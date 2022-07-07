@@ -105,6 +105,11 @@ const RadioButtons = styled.div`
     display: flex;
     align-items: center;
     border-radius: 4px;
+    .is_active {
+        color: #FFFFFF;
+        background: #2932E1;
+        border: 1px solid rgba(41,50,225,1);
+    }
 `;
 const Selectlist = styled.div`
     width: 100%;
@@ -266,6 +271,7 @@ const Profiler: FunctionComponent = () => {
                     <Titles>性能分析</Titles>
                     <RadioButtons>
                         <ButtonsLeft
+                            className={!isCompared ? 'is_active' : ''}
                             onClick={() => {
                                 setIsCompared(false);
                             }}
@@ -273,6 +279,7 @@ const Profiler: FunctionComponent = () => {
                             正常模式
                         </ButtonsLeft>
                         <ButtonsRight
+                            className={isCompared ? 'is_active' : ''}
                             onClick={() => {
                                 setIsCompared(true);
                             }}

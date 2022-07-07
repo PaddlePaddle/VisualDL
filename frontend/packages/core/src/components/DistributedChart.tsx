@@ -85,20 +85,12 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             const {color, colorAlt, series, ...defaults} = chart;
             const chartData = true;
             if (chartData) {
-                //  for (const item of data) {
-                //      chartData.push({
-                //          value: item.total_time,
-                //          name: item.name,
-                //          proportion: item.ratio
-                //      });
-                //  }
-                console.log('chartData', chartData);
-                const title = 'Peak Memory Usage: 0.4MB'
+                const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartOption = defaultsDeep({
                     color: ['#5793f3', '#d14a61', '#368c6c', '#675bba'],
                     // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {
-                        top: '5%',
+                        top: '0%',
                         left: '0%',
                         show: true,
                         text: title,
@@ -133,6 +125,12 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                                 display: '<span>ƒ</span> formatter(params, ticket, callback)'
                             }
                         }
+                    },
+                    grid: {
+                        top: '22%',
+                        left: '7%',
+                        right:'5%',
+                        bottom: '6%'
                     },
                     dataset: {
                         source: [
@@ -1102,6 +1100,14 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                             axisTick: {
                                 show: false
                             },
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#CCCCCC'
+                                }
+                            },
+                            axisLabel: {
+                                color: '#666666',
+                            }
                         }
                     ],
                     yAxis: [
@@ -1113,9 +1119,9 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                             axisTick: {
                                 show: false
                             },
-                            axisLine:{
-                                lineStyle:{
-                                    color:'#CCCCCC'
+                            axisLine: {
+                                lineStyle: {
+                                    color: '#CCCCCC'
                                 }
                             },
                             axisLabel: {
@@ -1127,21 +1133,12 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                                     }
                                 }
                             }
-
-                        }
-                    ],
-                    grid: [
-                        {
-                            left: '8%',
-                            right: '13%',
-                            top: '22%',
-                            bottom: '10%'
                         }
                     ],
                     series: [
                         {
                             name: '内存使用量（MB）',
-                            // step: 'end',
+                            step: 'true',
                             type: 'line',
                             smooth: true,
                             yAxisIndex: 0,
@@ -1165,13 +1162,6 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 echart?.setOption(chartOptions, {notMerge: true});
             }
         }, [options, data, title, theme, i18n.language, echart]);
-        // const attachRunColor = (runs: string[]): string[] =>
-        //   runs?.map((run, index) => {
-        //       const i = index % color.length;
-        //       return  {
-
-        //       }
-        // });
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
