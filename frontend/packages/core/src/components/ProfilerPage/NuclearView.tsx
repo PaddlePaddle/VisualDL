@@ -99,7 +99,6 @@ const EchartPie4 = styled.div`
     border: 1px solid #dddddd;
     border-radius: 4px;
     height: ${rem(366)};
-    padding: ${rem(24)};
     display: flex;
     .wraper {
         flex: 1;

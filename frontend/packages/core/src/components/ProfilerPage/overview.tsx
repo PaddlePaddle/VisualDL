@@ -110,9 +110,9 @@ const Configure = styled.div`
         color: #1527c2;
     }
     .is_active {
-        color: #FFFFFF;
-        background: #2932E1;
-        border: 1px solid rgba(41,50,225,1);
+        color: #ffffff;
+        background: #2932e1;
+        border: 1px solid rgba(41, 50, 225, 1);
     }
 `;
 const Processes = styled.div`
@@ -124,7 +124,8 @@ const Processes = styled.div`
     align-items: center;
     .Processes_items {
         display: flex;
-        margin-right: ${rem(100)};
+        padding-right: ${rem(50)};
+        border-right: 1px solid #dddddd;
         .label {
             margin-right: ${rem(20)};
             color: #666666;
@@ -134,6 +135,7 @@ const Processes = styled.div`
         .conent {
             font-size: 18px;
             color: #333333;
+            line-height: ${rem(32)};
         }
     }
 `;
@@ -173,6 +175,19 @@ const CPU = styled.div`
         line-height: 16px;
         font-weight: 600;
         margin-bottom: ${rem(20)};
+        margin-left: ${rem(49)};
+        display: flex;
+        justify-content: space-between;
+        .title_list {
+            font-size: 12px;
+            color: #666666;
+            display: flex;
+            .list_items {
+                padding-right: ${rem(10)};
+                padding-left: ${rem(10)};
+                border-right: 1px solid #dddddd;
+            }
+        }
     }
     .itemlist {
         display: flex;
@@ -253,7 +268,7 @@ const EchartPie3 = styled.div`
     border-radius: 4px;
     height: ${rem(444)};
     display: flex;
-    padding: ${rem(24)};
+    // padding: ${rem(24)};
     .wraper {
         flex: 1;
         .Content {
@@ -270,7 +285,7 @@ const EchartPie4 = styled.div`
     border: 1px solid #dddddd;
     border-radius: 4px;
     height: ${rem(366)};
-    padding: ${rem(24)};
+    // padding: ${rem(24)};
     display: flex;
     .wraper {
         flex: 1;
@@ -302,6 +317,13 @@ const PieceContent = styled.div`
     }
     .tableContent {
         padding: ${rem(20)};
+        .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
+            background: #f3f8fe;
+        }
+        .ant-table.ant-table-bordered > .ant-table-container {
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+        }
     }
 `;
 const PerformanceContent = styled.div`
@@ -310,7 +332,7 @@ const PerformanceContent = styled.div`
     width: 100%;
     height: ${rem(378)};
     .titles {
-        height: ${rem(40)};
+        height: ${rem(63)};
         display: flex;
         justify-content: flex-end;
         padding-right: ${rem(30)};
@@ -337,13 +359,15 @@ const PerformanceContent = styled.div`
     }
     .chartContent {
         width: 100%;
-        height: ${rem(338)};
+        height: ${rem(315)};
         display: flex;
+        padding: ${rem(0)} ${rem(33)};
         .chart {
             .Content {
                 height: 100%;
             }
             flex: 1;
+            margin-right: ${rem(43)};
         }
     }
 `;
@@ -568,17 +592,17 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     );
     const color = [
         '#2932E1',
-        '#066BFF',
         '#00CC88',
-        '#FF6600',
-        '#25C9FF'
-    ];
-    const color2 = [
-        '#2932E1',
+        '#981EFF',
         '#066BFF',
-        '#FF6600',
-        '#D50505',
-        '#3AEB0D'
+        '#3AEB0D',
+        '#E71ED5',
+        '#25C9FF',
+        '#0DEBB0',
+        '#FF0287',
+        '#00E2FF',
+        '#00FF9D',
+        '#D50505'
     ];
     return (
         <ViewWrapper>
@@ -590,7 +614,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         <div className="label">进程数</div>
                         <div className="conent">{environment?.number_workers}</div>
                     </div>
-                    <div className="Processes_items">
+                    <div className="Processes_items" style={{paddingLeft: `${rem(50)}`, borderRight: 'none'}}>
                         <div className="label">设备类型</div>
                         <div className="conent">{environment?.device_type}</div>
                     </div>
@@ -622,7 +646,13 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     <div className="GPU_content">
                         <div className="GPU_title">
                             <div>GPU</div>
-                            {/* <div>GPU</div> */}
+                            <div className="title_list">
+                                <div className="list_items">Intel UHD Graphics</div>
+                                <div className="list_items">显存22.38GB</div>
+                                <div className="list_items" style={{borderRight: 'none'}}>
+                                    算力6.1
+                                </div>
+                            </div>
                         </div>
                         <div className="GPU_itemlist">
                             <div className="items">
@@ -648,12 +678,12 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             <Configure>
                 <div className="title">运行耗时</div>
                 <PieceContent>
-                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
-                        <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color2}/>
+                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`, paddingBottom: `${rem(0)}`}}>
+                        <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(10)}`}}>
+                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color} />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color2}/>
+                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color} />
                         </div>
                     </EchartPie>
                     <div
@@ -745,7 +775,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                                                     isLegend={false}
                                                 ></BarsChart>
                                             </div>
-                                            <div className="chart">
+                                            <div className="chart" style={{marginRight: `${rem(0)}`}}>
                                                 <BarsChart
                                                     className={'Content'}
                                                     data={performanceData[item].ratios}
@@ -760,7 +790,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         })}
                 </Tabs>
             </Configure>
-            <Configure>
+            <Configure style={{marginBottom: `${rem(20)}`}}>
                 <div className="title">模型各阶段消耗分布</div>
                 <EchartPie4>
                     <StackColumnChart className={'Content'} data={distributed} color={color}></StackColumnChart>

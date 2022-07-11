@@ -52,7 +52,7 @@ export type LineChartRef = {
 };
 
 const StackColumnChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit,color}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, color}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -83,9 +83,9 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
-            
+
             if (data && color) {
-                const titles = data.order
+                const titles = data.order;
                 const series: any = [];
                 for (let index = 0; index < titles.length; index++) {
                     const element = titles[index];
@@ -135,22 +135,22 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                     },
                     legend: {
                         data: titles,
-                        top: 0,
-                        right: 0,
-                        itemGap: 20,
+                        top: 20,
+                        right: 43,
+                        itemGap: 14,
                         textStyle: {
                             fontSize: 14,
-                            color: '#666666',
+                            color: '#666666'
                         },
                         itemWidth: 17,
                         itemHeight: 5
                     },
                     grid: {
-                        left: '0%',
-                        right: '0%',
-                        bottom: '0%',
-                        top: '15%',
-                        containLabel: true
+                        left: '54',
+                        right: '43',
+                        bottom: '40',
+                        top: '84',
+                        containLabel: false
                     },
                     xAxis: [
                         {
@@ -209,7 +209,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, color,title, theme, i18n.language, echart]);
+        }, [options, data, color, title, theme, i18n.language, echart]);
 
         return (
             <Wrapper ref={wrapper} className={className}>

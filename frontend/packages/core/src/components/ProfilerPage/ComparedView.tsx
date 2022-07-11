@@ -15,8 +15,10 @@
  */
 
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import type {RadioChangeEvent} from 'antd';
 import type {SelectProps} from '~/components/Select';
-import PieChart, {LineChartRef} from '~/components/pieChart';
+import PieChart from '~/components/pieChart';
+import {Radio} from 'antd';
 import Model from '~/components/ProfilerPage/model';
 import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
@@ -71,8 +73,28 @@ const Title = styled.div`
     line-height: ${rem(50)};
     font-weight: 500;
     padding-left: ${rem(20)};
+`;
+const TitleNav = styled.div`
+    display: flex;
     border-bottom: 1px solid #dddddd;
-    margin-bottom: ${rem(20)};
+`;
+const RadioContent = styled.div`
+    display: flex;
+    align-items: center;
+    .ant-radio-group {
+        display: flex;
+    }
+    .ant-radio-wrapper {
+        span {
+            white-space: nowrap;
+        }
+        .ant-radio-checked .ant-radio-inner {
+            border-color: #2932e1;
+        }
+        .ant-radio-inner::after {
+            background-color: #2932e1;
+        }
+    }
 `;
 const Configure = styled.div`
     margin-top: ${rem(30)};
@@ -175,11 +197,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     const [search, setSearch] = useState<string>();
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
     const [items, setItems] = useState<string>('');
+    const [radioValue, setradioValue] = useState(1);
     useEffect(() => {
         if (runs && workers && spans) {
             const time_unit = 1;
             fetcher(
-                '/profiler/operator/pie' +
+                '/profiler/ComparedView/pie' +
                     `?run=${runs}` +
                     `&worker=${workers}` +
                     `&span=${spans}` +
@@ -193,7 +216,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         if (runs && workers && spans) {
             const time_unit = 1;
             fetcher(
-                '/profiler/operator/table' +
+                '/profiler/ComparedView/table' +
                     `?run=${runs}` +
                     `&worker=${workers}` +
                     `&span=${spans}` +
@@ -210,7 +233,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 dataIndex: 'name',
                 key: 'name',
                 width: 100,
-                // fixed: 'left',
                 onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
             },
             {
@@ -218,7 +240,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 dataIndex: 'call',
                 key: 'call',
                 width: 100,
-                // fixed: 'left',
                 onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
             },
             {
@@ -251,7 +272,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                         key: 'cpu_ratio',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
-                    },
+                    }
                 ]
             },
             {
@@ -284,7 +305,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                         key: 'gpu_ratio',
                         width: 150,
                         sorter: (a, b) => a.age - b.age
-                    },
+                    }
                 ]
             },
             {
@@ -309,36 +330,20 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     const onSearch = (value: string) => {
         console.log(value);
     };
-    const expandedRowRender = useCallback((e: any, a: any, b: any, c: any) => {
-        console.log('e,a,b,c,',e,a,b,c);
-        // debugger
-        if (!tableData) {
-            return
-        }
-        const columns: ColumnsType<ExpandedDataType> = [
-            {title: 'name', dataIndex: 'name', key: 'name'},
-            // {title: 'compute', dataIndex: 'compute', key: 'compute'},
-            // {title: 'grad_node_creation', dataIndex: 'grad_node_creation', key: 'grad_node_creation'}
-        ];
-        const numbers = Number(a)
-        // debugger
-        const data = tableData[numbers].expends
-        // data.push(
-        //     {
-        //         key: 'aten:convolut',
-        //         date: 'aten:convolut',
-        //         name: 'This is production name',
-        //         upgradeNum: 'Upgraded: 56'
-        //     },
-        //     {
-        //         key: 'ion_backward',
-        //         date: 'ion_backward',
-        //         name: 'This is production name',
-        //         upgradeNum: 'Upgraded: 56'
-        //     }
-        // );
-        return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
-    }, [tableData]);
+    const expandedRowRender = useCallback(
+        (e: any, a: any, b: any, c: any) => {
+            console.log('e,a,b,c,', e, a, b, c);
+            // debugger
+            if (!tableData) {
+                return;
+            }
+            const columns: ColumnsType<ExpandedDataType> = [{title: 'name', dataIndex: 'name', key: 'name'}];
+            const numbers = Number(a);
+            const data = tableData[numbers].expends;
+            return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
+        },
+        [tableData]
+    );
     const getTable = useMemo(() => {
         return (
             <Table
@@ -356,22 +361,41 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     }, [columns, tableData, expandedRowRender]);
     const color = [
         '#2932E1',
+        '#00CC88',
+        '#981EFF',
         '#066BFF',
-        '#FF6600',
-        '#D50505',
-        '#3AEB0D'
+        '#3AEB0D',
+        '#E71ED5',
+        '#25C9FF',
+        '#0DEBB0',
+        '#FF0287',
+        '#00E2FF',
+        '#00FF9D',
+        '#D50505'
     ];
+    const onChange = (e: RadioChangeEvent) => {
+        console.log('radio checked', e.target.value);
+        setradioValue(e.target.value);
+    };
     return (
         <ViewWrapper>
-            <Title>算子视图</Title>
-            <Configure>
+            <TitleNav>
+                <Title>核视图</Title>
+                <RadioContent>
+                    <Radio.Group onChange={onChange} value={radioValue}>
+                        <Radio value={1}>显示全量内核</Radio>
+                        <Radio value={2}>显示Top内核</Radio>
+                    </Radio.Group>
+                </RadioContent>
+            </TitleNav>
+            <Configure style={{marginTop: `${rem(25)}`}}>
                 <div className="title">耗时情况</div>
                 <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
                     <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                        <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color}/>
+                        <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color} />
                     </div>
                     <div className="wraper">
-                        <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color}/>
+                        <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color} />
                     </div>
                 </EchartPie>
             </Configure>

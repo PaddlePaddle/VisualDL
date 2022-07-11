@@ -17,15 +17,12 @@
 import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-import {color, colorAlt} from '~/utils/chart';
 import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
-import {TorusGeometry} from 'three';
 
 type LineChartProps = {
     options?: EChartOption;
@@ -83,7 +80,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {color, colorAlt, series, ...defaults} = chart;
+            const {colorAlt, series, ...defaults} = chart;
             const titles = ['0', '1', '2', '3'],
                 v1s = [0, 132, 123, 111],
                 v2s = [123, 15, 123, 122],
@@ -92,15 +89,6 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                 v5s = [234, 89, 234, 64];
 
             let chartOptions: EChartOption = defaultsDeep({
-                // dataZoom: {
-                //     type: 'slider',
-                //     show: true,
-                //     xAxisIndex: [0],
-                //     start: 1,
-                //     end: 10
-
-                // },
-                color: color,
                 tooltip: {
                     trigger: 'axis',
                     extraCssText:
@@ -115,9 +103,9 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                 },
                 legend: {
                     data: ['Kernel', 'Memcpy', 'Memset', 'Communication', 'Runtime'],
-                    top: 0,
-                    right: 0,
-                    itemGap: 20,
+                    top: 20,
+                    right: 43,
+                    itemGap: 14,
                     textStyle: {
                         fontSize: 14,
                         color: '#666666',
@@ -127,11 +115,11 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                     itemHeight: 5
                 },
                 grid: {
-                    left: '0%',
-                    right: '3%',
-                    bottom: '0%',
-                    top: '15%',
-                    containLabel: true
+                    left: '54',
+                    right: '43',
+                    bottom: '40',
+                    top: '84',
+                    containLabel: false
                 },
                 xAxis: [
                     {
@@ -201,8 +189,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                             focus: 'series'
                         },
                         itemStyle: {
-                            color: '#00CC88',
-                            opacity: 0.5
+                            color: '#2932E1'
                         },
                         data: v1s
                     },
@@ -211,7 +198,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         type: 'bar',
                         stack: '数据',
                         itemStyle: {
-                            color: '#FFB27F'
+                            color: '#00CC88'
                         },
                         emphasis: {
                             focus: 'series'
@@ -225,7 +212,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         // barMinWidth: '50%',
                         itemStyle: {
                             opacity: 0.5,
-                            color: '#066BFF'
+                            color: '#981EFF'
                         },
                         emphasis: {
                             focus: 'series'
@@ -239,7 +226,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         // barMinWidth: '50%',
                         itemStyle: {
                             opacity: 0.5,
-                            color: '#2932E1'
+                            color: '#066BFF'
                         },
                         emphasis: {
                             focus: 'series'
@@ -254,7 +241,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         barCategoryGap: '0%',
                         itemStyle: {
                             opacity: 0.5,
-                            color: '#25C9FF'
+                            color: '#3AEB0D'
                         },
                         data: v5s,
                         emphasis: {

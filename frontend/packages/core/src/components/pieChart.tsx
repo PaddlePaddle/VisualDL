@@ -56,7 +56,7 @@ export type LineChartRef = {
 };
 
 const PieChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit,isCpu,color}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, isCpu, color}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -99,13 +99,14 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                 console.log('chartData', chartData);
                 let chartOptions: EChartOption = defaultsDeep({
                     grid: {
-                        left: 0
+                        left: 0,
+                        // top: '23%'
                     },
                     color: color,
                     tooltip: {
                         trigger: 'item',
                         extraCssText:
-                            'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(255,255,255,1);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                        'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
                         axisPointer: {
                             type: 'none'
                         },
@@ -116,45 +117,50 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         formatter: function (params: any) {
                             console.log('pieparams', params);
                             var str = ''; //声明一个变量用来存储数据
-                            str += '<div>' + params.data.name + '</div>';
+                            str += '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:10px;">' + 
+                                    params.data.name + '</div>';
                             str +=
-                                '<span style="display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                            '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
                                 params.color +
                                 ';"></span>' +
-                                '耗时' +
-                                '</span> : <span>' +
+                                '<span style="color: #FFFFFF;">' + '耗时' +  '</span>' +
+                                '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.value +
                                 '</br>';
                             str +=
-                                '<span style="display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                '<span style="display:inline-block;color: #FFFFFF;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
                                 params.color +
                                 ';"></span>' +
                                 '占比' +
-                                '</span> : <span>' +
-                                params.data.proportion + '%'
-                                '</br>';
+                                '</span> : <span style="color: #FFFFFF;">' +
+                                    params.data.proportion +
+                                '%';
+                            ('</br>');
                             return str;
                         }
                     },
                     legend: {
-                        top: 'center',
-                        right: '50',
+                        top: '20',
+                        right: '70',
                         orient: 'vertical',
                         height: 160,
-                        icon: "circle",
-                        type: 'scroll',
-                        pageIcons:{
-                            vertical:['image://' + leftIcon,
-                            'image://' + rightIcon]
+                        itemHeight: '8',
+                        textStyle:{
+                            fontSize:14
                         },
-                        pageIconInactiveColor:'#981EFF'
+                        icon: 'circle',
+                        type: 'scroll',
+                        pageIcons: {
+                            vertical: ['image://' + leftIcon, 'image://' + rightIcon]
+                        },
+                        pageIconInactiveColor: '#981EFF'
                     },
                     series: [
                         {
-                            right: '200',
+                            right: '220',
                             name: 'Access From',
                             type: 'pie',
-                            radius: ['70%', '100%'],
+                            radius: ['63%', '90%'],
                             avoidLabelOverlap: false,
                             label: {
                                 show: true,
@@ -171,19 +177,6 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                             labelLine: {
                                 show: false
                             },
-                            // data: [
-                            //     {value: 41234, name: 'Communication', proportion: '81.45%'},
-                            //     {value: 7359, name: 'Direct', proportion: '11.45%'},
-                            //     {value: 5801, name: 'Email', proportion: '11.45%'},
-                            //     {value: 4841, name: 'Union Ads', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video bds', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video cds', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video dds', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video eds', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video fds', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video gds', proportion: '11.45%'},
-                            //     {value: 3000, name: 'Video hds', proportion: '11.45%'}
-                            // ]
                             data: chartData
                         }
                     ]
@@ -191,13 +184,6 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                 echart?.setOption(chartOptions, {notMerge: true});
             }
         }, [options, data, title, theme, i18n.language, echart]);
-        // const attachRunColor = (runs: string[]): string[] =>
-        //   runs?.map((run, index) => {
-        //       const i = index % color.length;
-        //       return  {
-
-        //       }
-        // });
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
