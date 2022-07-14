@@ -13,6 +13,7 @@
 # limitations under the License.
 # =======================================================================
 # from .parser.distributed_parser import DistributedParser
+from collections import defaultdict
 from collections import OrderedDict
 
 from .parser.kernel_parser import KernelParser
@@ -69,7 +70,7 @@ class ProfileData:
         self.gpu_ids = self.kernel_parser.gpu_ids
 
         # cache data
-        self.cache = {}
+        self.cache = defaultdict(lambda: defaultdict(list))
 
     # profiler/overview/environment
     #   {
@@ -160,8 +161,8 @@ class ProfileData:
         '''
     Get total cpu and gpu statistics for model perspective of each profiler step.
     '''
-        if 'get_model_perspective' in self.cache:
-            return self.cache['get_model_perspective']
+        if 'get_model_perspective' in self.cache[time_unit]:
+            return self.cache[time_unit]['get_model_perspective']
         data = OrderedDict()
         data['column_name'] = [
             "name", "calls", "total_time", "avg_time", "max_time", "min_time",
@@ -229,8 +230,8 @@ class ProfileData:
     # }
 
     def get_model_perspective_perstep(self, device_type, time_unit):
-        if 'get_model_perspective_perstep' in self.cache:
-            return self.cache['get_model_perspective_perstep']
+        if 'get_model_perspective_perstep' in self.cache[time_unit]:
+            return self.cache[time_unit]['get_model_perspective_perstep']
         try:
             data = OrderedDict()
             data['order'] = []
@@ -315,8 +316,8 @@ class ProfileData:
     #      event type:
     #           { "calls" :[], "times": [], "total_time": 0 }
     def get_event_type_perspective(self, device_type, time_unit):
-        if 'get_event_type_perspective' in self.cache:
-            return self.cache['get_event_type_perspective']
+        if 'get_event_type_perspective' in self.cache[time_unit]:
+            return self.cache[time_unit]['get_event_type_perspective']
         data = OrderedDict()
         data['order'] = []
         if device_type == 'cpu':
@@ -417,8 +418,8 @@ class ProfileData:
     #      event type:
     #           { "calls" :[], "times": [], "total_time": 0 }
     def get_event_type_model_perspective(self, time_unit):
-        if 'get_event_type_model_perspective' in self.cache:
-            return self.cache['get_event_type_model_perspective']
+        if 'get_event_type_model_perspective' in self.cache[time_unit]:
+            return self.cache[time_unit]['get_event_type_model_perspective']
         data = OrderedDict()
         data['order'] = []
         data['phase_type'] = []
@@ -478,8 +479,8 @@ class ProfileData:
     #  }]
     # }
     def get_userdefined_perspective(self, time_unit):
-        if 'get_userdefined_perspective' in self.cache:
-            return self.cache['get_userdefined_perspective']
+        if 'get_userdefined_perspective' in self.cache[time_unit]:
+            return self.cache[time_unit]['get_userdefined_perspective']
         data = OrderedDict()
         data['column_name'] = [
             'name', 'calls', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',

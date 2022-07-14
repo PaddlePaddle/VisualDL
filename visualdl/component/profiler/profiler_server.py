@@ -45,6 +45,10 @@ class ProfilerApi(object):
         return run_manager.get_spans(worker)
 
     @result()
+    def timeunits(self):
+        return ['ns', 'us', 'ms', 's']
+
+    @result()
     def overview_environment(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
         span = str(span)
@@ -133,6 +137,7 @@ def create_profiler_api_call(logdir):
         'views': (api.views, ["run"]),
         'workers': (api.workers, ["run", "view"]),
         'spans': (api.spans, ["run", "worker"]),
+        'timeunits': (api.timeunits, []),
         'overview/environment': (api.overview_environment,
                                  ["run", "worker", "span"]),
         'overview/model_perspective': (api.model_perspective,
