@@ -875,7 +875,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <div className="title tabs_title">性能消耗</div>
                 <Tabs defaultActiveKey="1" onChange={onChange} centered>
                     {performanceData &&
-                        Object.keys(performanceData).map((item: any, index: any) => {
+                        performanceData.order.map((item: any, index: any) => {
                             return (
                                 <TabPane tab={item} key={index}>
                                     <PerformanceContent>

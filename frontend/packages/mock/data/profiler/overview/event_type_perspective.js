@@ -1,4 +1,5 @@
 export default {
+    order: ['Operator', 'OperatorInner'],
     Operator: {
         calling_times: {
             key: ['DataLoader', 'Forward', 'Backward', 'Optimization', 'Others'],
