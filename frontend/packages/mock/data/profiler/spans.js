@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-export default {
-    runs: ['train', 'test'],
-    tags: [
-        ['layer2/biases/summaries/mean'],
-        ['layer2/biases/summaries/mean', 'layer2/biases/summaries/accuracy', 'layer2/biases/summaries/cost']
-    ]
-};
+export default ['0', '1', '2'];
+// {
+//     titles['0', '1'],
+//     v1s[122, 132],
+//     v2s[123],
+//     v3s[23, 234],
+//     v4s[234, 67],
+//     v5s[234, 89];
+// }
