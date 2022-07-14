@@ -220,7 +220,7 @@ const Profiler: FunctionComponent = () => {
     useEffect(() => {
         if (runs && views) {
             console.log('views', views);
-            fetcher('/profiler/workers' + `?run=${runs}` + `&work=${views}`).then((res: unknown) => {
+            fetcher('/profiler/workers' + `?run=${runs}` + `&view=${views}`).then((res: unknown) => {
                 const workerData = res as string[];
                 const workerList = workerData.map((item, index) => {
                     return {label: item, value: item};
@@ -233,7 +233,7 @@ const Profiler: FunctionComponent = () => {
     useEffect(() => {
         if (runs && workers) {
             console.log('workers', workers);
-            fetcher('/profiler/spans' + `?run=${runs}` + `&spans=${workers}`).then((res: unknown) => {
+            fetcher('/profiler/spans' + `?run=${runs}` + `&worker=${workers}`).then((res: unknown) => {
                 const spanData = res as string[];
                 const spanList = spanData.map((item, index) => {
                     return {label: item, value: item};
