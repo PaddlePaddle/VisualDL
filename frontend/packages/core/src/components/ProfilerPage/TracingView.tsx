@@ -89,7 +89,7 @@ const TracingView: React.FC<IProps> = props => {
                 // scrolling="no"
                 marginWidth={0}
                 marginHeight={0}
-                src={PUBLIC_PATH + '/static/index'}
+                src={PUBLIC_PATH + '/__snowpack__/link/packages/Trace/dist/trace_embedding.html'}
             ></iframe>
          </Content>
     );
