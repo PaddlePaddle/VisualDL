@@ -27,17 +27,10 @@ import {Table, Tabs, Popover} from 'antd';
 import Icon from '~/components/Icon';
 import type {ColumnsType} from 'antd/lib/table';
 import {em, sameBorder, transitionProps} from '~/utils/style';
+import logo from '~/assets/images/question-circle.svg';
+import hover from '~/assets/images/hover.svg';
 
-// const ImportanceButton = styled(Button)`
-//     width: 100%;
-// `;
-
-// const HParamsImportanceDialog = styled(ImportanceDialog)`
-//     position: fixed;
-//     right: calc(${asideWidth} + ${rem(20)});
-//     bottom: ${rem(20)};
-// `;
-// NOTICE: remove it!!!
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 asideWidth;
 
 const ViewWrapper = styled.div`
@@ -70,6 +63,7 @@ const Configure = styled.div`
     padding-right: ${rem(20)};
     .title {
         display: flex;
+        align-items:center;
         margin-bottom: ${rem(20)};
         div {
             line-height: 18px;
@@ -84,6 +78,13 @@ const Configure = styled.div`
             &:hover,
             &:active {
                 color: #2932e1;
+            }
+            img {
+                width: 16px;
+                height: 16px;
+            }
+            img:hover{
+                content: url(${hover});
             }
         }
     }
@@ -245,23 +246,6 @@ const EchartPie = styled.div`
         width: 100%;
     }
 `;
-const EchartPie2 = styled.div`
-    width: 100%;
-    border: 1px solid #dddddd;
-    border-radius: 4px;
-    height: ${rem(270)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-`;
 const EchartPie3 = styled.div`
     width: 100%;
     border: 1px solid #dddddd;
@@ -278,6 +262,20 @@ const EchartPie3 = styled.div`
     .Content {
         height: 100%;
         width: 100%;
+    }
+    .ant-radio-inner {
+        background-color: #fff;
+        border-color: #FFFFFF;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 50%;
+    }
+    .tooltipContent{
+        padding-right:${rem(30)};
+        .tooltipitems{
+            display: flex;
+            align-items:center;
+        }
     }
 `;
 const EchartPie4 = styled.div`
@@ -405,6 +403,8 @@ export type overViewProps = {
     views: string;
     workers: string;
     spans: string;
+    units: string;
+
 };
 interface DataType {
     key: React.Key;
@@ -420,7 +420,21 @@ interface DataType {
     GPUavg_time: number;
     GPUratio: number;
 }
-const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans}) => {
+interface DataType2 {
+    key: React.Key;
+    name: string;
+    cpu_total_time: number;
+    cpu_max_time: number;
+    cpu_min_time: number;
+    cpu_avg_time: number;
+    cpu_ratio: number;
+    gpu_total_time: number;
+    gpu_max_time: number;
+    gpu_min_time: number;
+    gpu_avg_time: number;
+    gpu_ratio: number;
+}
+const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans,units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [environment, setEnvironment] = useState<any>();
     const [distributed, setDistributed] = useState<any>();
@@ -429,9 +443,12 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const [performanceData, setPerformanceData] = useState<any>();
     const [isExpend, setIsExpend] = useState<any>(false);
     const [tableData, setTableData] = useState<any>();
+    const [tableData2, setTableData2] = useState<any>();
+    const [trainData,setTrainData] = useState<any>();
     const {TabPane} = Tabs;
     useEffect(() => {
         if (runs && workers && spans) {
+            // 设备详情
             fetcher('/profiler/overview/environment' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
                     const Data: any = res;
@@ -440,19 +457,10 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 }
             );
         }
+
         if (runs && workers && spans) {
-            fetcher('/profiler/overview/distributed' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
-                (res: unknown) => {
-                    const Data: any = res;
-                    console.log('distributed,', Data);
-                    setDistributed(Data);
-                }
-            );
-        }
-    }, [runs, workers, spans, views]);
-    useEffect(() => {
-        if (runs && workers && spans) {
-            fetcher('/profiler/overview/pie' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+            // 运行耗时
+            fetcher('/profiler/overview/model_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&time_unit=${units}`).then(
                 (res: unknown) => {
                     const result: any = res;
                     let tableData: any = [];
@@ -477,18 +485,52 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     setCpuData(res);
                 }
             );
+            // 训练步数耗时
+            fetcher('/profiler/overview/model_perspective_perstep' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&time_unit=${units}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('TrainData,', Data);
+                    setTrainData(Data);
+                }
+            );
+            // 自定义事件耗时
+            fetcher('/profiler/overview/userdefined_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&time_unit=${units}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('TableData2,', Data);
+                    setTableData2(Data.events);
+                }
+            );
         }
     }, [runs, workers, spans, views]);
+
     useEffect(() => {
+        const device_type = isCPU ? 'cpu' : 'gpu'
         if (runs && workers && spans) {
-            fetcher('/profiler/overview/performance' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+            // 性能消耗
+            fetcher('/profiler/overview/event_type_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}` + `&device_type=${device_type}`+ `&time_unit=${units}`).then(
                 (res: unknown) => {
                     const result: any = res;
                     setPerformanceData(result);
                 }
             );
+            // 模型各阶段消耗
+            fetcher('/profiler/overview/event_type_model_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}` + `&device_type=${device_type}`+ `&time_unit=${units}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('distributed,', Data);
+                    setDistributed(Data);
+                }
+            );
+            fetcher('/profiler/overview/event_type_model_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}` + `&device_type=${device_type}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('distributed,', Data);
+                    setDistributed(Data);
+                }
+            );
         }
-    }, [runs, workers, spans, views]);
+    }, [runs, workers, spans, views,isCPU]);
     const onChange = (key: string) => {
         console.log(key);
     };
@@ -584,6 +626,106 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             }
         ];
     }, []);
+    const columns2: ColumnsType<DataType2> = useMemo(() => {
+        return [
+            {
+                title: '阶段',
+                dataIndex: 'name',
+                key: 'name',
+                width: 100,
+                // fixed: 'left',
+                onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
+            },
+            {
+                title: '调用次数',
+                dataIndex: 'calls',
+                key: 'calls',
+                width: 100,
+                // fixed: 'left',
+                onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
+            },
+            {
+                title: 'CPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'cpu_total_time',
+                        key: 'cpu_total_time',
+                        width: 150,
+                        sorter: (a, b) => a.cpu_total_time - b.cpu_total_time
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'cpu_avg_time',
+                        key: 'cpu_avg_time',
+                        width: 150,
+                        sorter: (a, b) => a.cpu_avg_time - b.cpu_avg_time
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'cpu_max_time',
+                        key: 'cpu_max_time',
+                        width: 150,
+                        sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'cpu_min_time',
+                        key: 'cpu_min_time',
+                        width: 150,
+                        sorter: (a, b) => a.cpu_min_time - b.cpu_min_time
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'cpu_ratio',
+                        key: 'cpu_ratio',
+                        width: 150,
+                        sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
+                    }
+                ]
+            },
+            {
+                title: 'GPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'gpu_total_time',
+                        key: 'gpu_total_time',
+                        width: 150,
+                        sorter: (a, b) => a.gpu_total_time - b.gpu_total_time
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'gpu_avg_time',
+                        key: 'gpu_avg_time',
+                        width: 150,
+                        sorter: (a, b) => a.gpu_avg_time - b.gpu_avg_time
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'gpu_max_time',
+                        key: 'gpu_max_time',
+                        width: 150,
+                        sorter: (a, b) => a.gpu_max_time - b.gpu_max_time
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'gpu_min_time',
+                        key: 'gpu_min_time',
+                        width: 150,
+                        sorter: (a, b) => a.gpu_min_time - b.gpu_min_time
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'gpu_ratio',
+                        key: 'gpu_ratio',
+                        width: 150,
+                        sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
+                    }
+                ]
+            }
+        ];
+    }, []);
     const tooltips = (
         <div>
             <p>Content</p>
@@ -625,7 +767,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     <div>设备详情</div>
                     <Popover content={tooltips} placement="right">
                         <a className="argument-operation" onClick={() => {}}>
-                            <Icon type="question-circle" />
+                            <img src={PUBLIC_PATH + logo} alt="" />
                         </a>
                     </Popover>
                 </div>
@@ -712,7 +854,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             <Configure>
                 <div className="title">训练步数耗时</div>
                 <EchartPie3>
-                    <Trainchart className={'Content'}></Trainchart>
+                    <Trainchart className={'Content'} data = {trainData}></Trainchart>
                 </EchartPie3>
             </Configure>
             <Configure>
@@ -790,12 +932,28 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         })}
                 </Tabs>
             </Configure>
-            <Configure style={{marginBottom: `${rem(20)}`}}>
+            <Configure>
                 <div className="title">模型各阶段消耗分布</div>
                 <EchartPie4>
                     <StackColumnChart className={'Content'} data={distributed} color={color}></StackColumnChart>
                 </EchartPie4>
             </Configure>
+            <Configure style={{marginBottom: `${rem(20)}`}}>
+                <div className="title">自定义事件耗时</div>
+                {tableData2 ? (
+                        <div className="tableContent">
+                            <Table
+                                columns={columns2}
+                                dataSource={tableData2}
+                                bordered
+                                size="middle"
+                                pagination={false}
+                                scroll={{x: 'calc(700px + 50%)', y: 240}}
+                            ></Table>
+                        </div>
+                ) : null}
+            </Configure>
+
         </ViewWrapper>
     );
 };

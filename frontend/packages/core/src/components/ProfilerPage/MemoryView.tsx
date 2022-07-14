@@ -25,8 +25,8 @@ import {Slider} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
 import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
-import debounce from 'lodash/debounce';
-import { line } from 'd3';
+import Select from '~/components/Select';
+import type {SelectProps} from '~/components/Select';
 interface DataType {
     key: React.Key;
     name: string;
@@ -45,6 +45,7 @@ export type MemoryViewProps = {
     views: string;
     workers: string;
     spans: string;
+    units: string;
 };
 
 asideWidth;
@@ -56,6 +57,25 @@ const ViewWrapper = styled.div`
     position: relative;
     background-color: #fff;
 `;
+const TitleNav = styled.div`
+    display: flex;
+    align-items:center;
+    border-bottom: 1px solid #dddddd;
+    margin-bottom: ${rem(20)};
+    .searchContent {
+        display: flex;
+        align-items:center;
+        .select_label{
+            margin-right: ${rem(15)};
+            white-space:nowrap;
+        }
+        .select_wrapper {
+            width: ${rem(64)};
+            height: ${rem(36)};
+            margin-right: ${rem(15)};
+        }
+    }
+`;
 const Title = styled.div`
     width: 100%;
     height: ${rem(50)};
@@ -65,8 +85,11 @@ const Title = styled.div`
     line-height: ${rem(50)};
     font-weight: 500;
     padding-left: ${rem(20)};
-    border-bottom: 1px solid #dddddd;
-    margin-bottom: ${rem(20)};
+`;
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
+    width: 100%;
+    height: 100%;
+    font-size: ${rem(14)};
 `;
 const Configure = styled.div`
     margin-top: ${rem(30)};
@@ -164,15 +187,23 @@ const Wraper = styled.div`
         border: 1px solid #dddddd;
         border-radius: 8px;
     }
+    .ant-table-thead > tr > th {
+        background: #f3f8fe;
+    }
 `;
-
-const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, spans}) => {
+type SelectListItem<T> = {
+    value: T;
+    label: string;
+};
+const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, spans,units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const model = useRef<any>(null);
     const [lineData, setLineData] = useState<any>();
     const [search, setSearch] = useState<string>();
     const [Sliders1, setSliders1] = useState<number>(0);
     const [Sliders2, setSliders2] = useState<number>(100);
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
+    const [items, setItems] = useState<string>('2');
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher('/profiler/memory/line' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
@@ -433,7 +464,17 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, s
 
     return (
         <ViewWrapper>
-            <Title>显存视图</Title>
+            <TitleNav>
+                <Title>显存视图</Title>
+                <div className="searchContent">
+                    <div className='select_label'>
+                        设备
+                    </div>
+                    <div className="select_wrapper">
+                        <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
+                    </div>
+                </div>
+            </TitleNav>
             <Configure>
                 <EchartPie>
                     <DistributedChart className={'Content'} data={lineData}></DistributedChart>

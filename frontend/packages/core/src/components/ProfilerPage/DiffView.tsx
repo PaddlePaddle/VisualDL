@@ -158,6 +158,9 @@ const Wraper = styled.div`
         border: 1px solid #dddddd;
         border-radius: 8px;
     }
+    .ant-table-thead > tr > th {
+        background: #f3f8fe;
+    }
 `;
 
 const DiffView: FunctionComponent<DiffViewProps> = ({

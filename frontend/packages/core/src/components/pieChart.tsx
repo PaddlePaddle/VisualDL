@@ -106,7 +106,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                     tooltip: {
                         trigger: 'item',
                         extraCssText:
-                        'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                        'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
                         axisPointer: {
                             type: 'none'
                         },
@@ -121,15 +121,15 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                                     params.data.name + '</div>';
                             str +=
                             '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
-                                params.color +
+                                color[0] +
                                 ';"></span>' +
-                                '<span style="color: #FFFFFF;">' + '耗时' +  '</span>' +
+                                '<span style="color: #FFFFFF;">' + '耗时' + '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.value +
                                 '</br>';
                             str +=
                                 '<span style="display:inline-block;color: #FFFFFF;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
-                                params.color +
+                                color[1] +
                                 ';"></span>' +
                                 '占比' +
                                 '</span> : <span style="color: #FFFFFF;">' +

@@ -79,30 +79,100 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
         }));
 
         useEffect(() => {
+            if (!data) {
+                return
+            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
-            const titles = ['0', '1', '2', '3'],
-                v1s = [0, 132, 123, 111],
-                v2s = [123, 15, 123, 122],
-                v3s = [26, 234, 23, 111],
-                v4s = [234, 67, 234, 23],
-                v5s = [234, 89, 234, 64];
-
+            const titles = data.steps
+            const order= data.order
+            const color = [
+                '#2932E1',
+                '#00CC88',
+                '#981EFF',
+                '#066BFF',
+                '#3AEB0D',
+                '#E71ED5',
+                '#25C9FF',
+                '#0DEBB0',
+                '#FF0287',
+                '#00E2FF',
+                '#00FF9D',
+                '#D50505'
+            ];
+            const dataSerites = order.map((item:string,index:number)=>{
+                return {
+                    name: item,
+                    type: 'bar',
+                    stack: '数据',
+                    // barMinWidth: '50%',
+                    barCategoryGap: '0%',
+                    itemStyle: {
+                        color: color[index]
+                    },
+                    data: data[item],
+                    emphasis: {
+                        focus: 'series'
+                    }
+                }
+            })
             let chartOptions: EChartOption = defaultsDeep({
                 tooltip: {
                     trigger: 'axis',
                     extraCssText:
-                        'padding:15px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                        'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
                     axisPointer: {
                         // 坐标轴指示器，坐标轴触发有效
                         type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
                     },
                     formatter: function (params: any) {
                         console.log('Trainchart', params);
+                        let totals = 0;
+                        for (let index = 0; index < params.length; index++) {
+                            const element = params[index];
+                            totals += element.data;
+                        }
+                        let str = ''; //声明一个变量用来存储数据
+                        str +=
+                            '<div style="font-size:16px;color:#FFFFFF;font-weight:500;margin-left:17px;">' +
+                            'step' +
+                            params[0].axisValue +
+                            '</div>';
+                        str += '<div class="tooltipContent">';
+                        str += '<div class="tooltipitems">';
+                        str +=
+                            '<span style="display:inline-block;margin-right:5px;width:12px;height:12px;background-color:' +
+                            '#2932E1' +
+                            ';" class="ant-radio-inner ant-radio-checked"></span>' +
+                            '<span style="color: #FFFFFF;">' +
+                            'total' +
+                            '</span>' +
+                            '</span> : <span style="color: #FFFFFF;">' +
+                            totals +
+                            '</span>';
+                        str += '</div>';
+                        str += '</div>';
+                        for (let index = 0; index < params.length; index++) {
+                            const element = params[index];
+                            str += '<div class="tooltipitems">';
+                            str +=
+                                '<span style="font-size:12px;display:inline-block;margin-right:5px;width:12px;height:12px;border-radius:50%;background-color:' +
+                                element.color +
+                                ';"></span>' +
+                                '<span style="color: #FFFFFF;">' +
+                                element.seriesName +
+                                '</span>' +
+                                '</span> : <span style="color: #FFFFFF;">' +
+                                element.data +
+                                '</span>';
+                            str += '</div>';
+                        }
+                        str += '</div>';
+                        return str;
                     }
                 },
                 legend: {
-                    data: ['Kernel', 'Memcpy', 'Memset', 'Communication', 'Runtime'],
+                    data: order,
                     top: 20,
                     right: 43,
                     itemGap: 14,
@@ -130,8 +200,6 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                             color: '#999999'
                         },
                         type: 'category',
-                        // data: ['安徽战区', '江苏战区', '湖北战区', '上海战区', '广东战区', '特许直营', '浙江战区', '北京战区', '特许加盟'],
-                        // max: 6,
                         data: titles,
                         axisLine: {
                             lineStyle: {
@@ -180,75 +248,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         color: '#666666'
                     }
                 },
-                series: [
-                    {
-                        name: 'Kernel',
-                        type: 'bar',
-                        stack: '数据',
-                        emphasis: {
-                            focus: 'series'
-                        },
-                        itemStyle: {
-                            color: '#2932E1'
-                        },
-                        data: v1s
-                    },
-                    {
-                        name: 'Memcpy',
-                        type: 'bar',
-                        stack: '数据',
-                        itemStyle: {
-                            color: '#00CC88'
-                        },
-                        emphasis: {
-                            focus: 'series'
-                        },
-                        data: v2s
-                    },
-                    {
-                        name: 'Memset',
-                        type: 'bar',
-                        stack: '数据',
-                        // barMinWidth: '50%',
-                        itemStyle: {
-                            opacity: 0.5,
-                            color: '#981EFF'
-                        },
-                        emphasis: {
-                            focus: 'series'
-                        },
-                        data: v3s
-                    },
-                    {
-                        name: 'Communication',
-                        type: 'bar',
-                        stack: '数据',
-                        // barMinWidth: '50%',
-                        itemStyle: {
-                            opacity: 0.5,
-                            color: '#066BFF'
-                        },
-                        emphasis: {
-                            focus: 'series'
-                        },
-                        data: v4s
-                    },
-                    {
-                        name: 'Runtime',
-                        type: 'bar',
-                        stack: '数据',
-                        // barMinWidth: '50%',
-                        barCategoryGap: '0%',
-                        itemStyle: {
-                            opacity: 0.5,
-                            color: '#3AEB0D'
-                        },
-                        data: v5s,
-                        emphasis: {
-                            focus: 'series'
-                        }
-                    }
-                ]
+                series: dataSerites
             });
             echart?.setOption(chartOptions, {notMerge: true});
         }, [options, data, title, theme, i18n.language, echart]);

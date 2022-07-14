@@ -29,6 +29,7 @@ import OverView from '~/components/ProfilerPage/overview';
 import OperatorView from '~/components/ProfilerPage/OperatorView';
 import DiffView from '~/components/ProfilerPage/DiffView';
 import MemoryView from '~/components/ProfilerPage/MemoryView';
+import TracingView from '~/components/ProfilerPage/TracingView';
 import NuclearView from '~/components/ProfilerPage/NuclearView';
 import ComparedView from '~/components/ProfilerPage/ComparedView';
 import Select from '~/components/Select';
@@ -174,12 +175,15 @@ const Profiler: FunctionComponent = () => {
     const [diffWorker1, setDiffWorker1] = useState<string>('');
     const [diffWorker2, setDiffWorker2] = useState<string>('');
     const [spans, setSpans] = useState<string>('');
+    const [units, setUnits] = useState<string>('');
     const [diffSpan1, setDiffSpan1] = useState<string>('');
     const [diffSpan2, setDiffSpan2] = useState<string>('');
     const [runsList, setrunsList] = useState<SelectListItem<string>[]>();
     const [viewsList, setViewsList] = useState<SelectListItem<string>[]>();
     const [workersList, setWorkersList] = useState<SelectListItem<string>[]>();
     const [spansList, setSpansList] = useState<SelectListItem<string>[]>();
+    const [unitsList, setUnitsList] = useState<SelectListItem<string>[]>();
+
     useEffect(() => {
         fetcher('/profiler/runs').then((res: unknown) => {
             const runsData = res as string[];
@@ -189,6 +193,15 @@ const Profiler: FunctionComponent = () => {
             setrunsList(runsList);
             console.log('runsData', runsData[0]);
             setRuns(runsData[0]);
+        });
+        fetcher('/profiler/units').then((res: unknown) => {
+            const runsData = res as string[];
+            const runsList = runsData.map((item, index) => {
+                return {label: item, value: item};
+            });
+            setUnitsList(runsList);
+            console.log('unitsData', runsData[0]);
+            setUnits(runsData[0]);
         });
     }, []);
     useEffect(() => {
@@ -233,15 +246,28 @@ const Profiler: FunctionComponent = () => {
     const view = useMemo(() => {
         switch (views) {
             case 'OverView':
-                return <OverView runs={runs} views={views} workers={workers} spans={spans} />;
+                return <OverView runs={runs} views={views} workers={workers}
+                units={units}
+                spans={spans} />;
             case 'OperatorView':
-                return <OperatorView runs={runs} views={views} workers={workers} spans={spans} />;
+                return <OperatorView runs={runs} views={views} workers={workers}
+                units={units}
+                spans={spans} />;
             case 'parallel-coordinates':
-                return <NuclearView runs={runs} views={views} workers={workers} spans={spans} />;
+                return <NuclearView runs={runs} views={views} workers={workers}
+                units={units}
+                spans={spans} />;
             case 'ComparedView':
-                return <ComparedView runs={runs} views={views} workers={workers} spans={spans} />;
+                return <ComparedView runs={runs} views={views} workers={workers}
+                units={units}
+                spans={spans} />;
             case 'scatter-plot-matrix':
-                return <MemoryView runs={runs} views={views} workers={workers} spans={spans} />;
+                return <MemoryView runs={runs} views={views} workers={workers}
+                units={units}
+                spans={spans} />;
+            case 'Trace':
+                return <TracingView runs={runs} views={views} workers={workers}
+                spans={spans} />;
             default:
                 return null;
         }
@@ -308,6 +334,11 @@ const Profiler: FunctionComponent = () => {
                         <AsideSection>
                             <Field label={'进程跨度'}>
                                 <FullWidthSelect list={spansList} value={spans} onChange={setSpans} />
+                            </Field>
+                        </AsideSection>
+                        <AsideSection>
+                            <Field label={'时间单位'}>
+                                <FullWidthSelect list={unitsList} value={units} onChange={setUnits} />
                             </Field>
                         </AsideSection>
                     </Selectlist>

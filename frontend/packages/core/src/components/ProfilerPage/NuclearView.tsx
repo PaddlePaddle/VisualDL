@@ -15,17 +15,17 @@
  */
 
 import React, {FunctionComponent, useCallback, useMemo, useState, useEffect} from 'react';
-import {DownOutlined} from '@ant-design/icons';
-import PieChart, {LineChartRef} from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
-import Trainchart from '~/components/Trainchart';
-import {asideWidth, rem} from '~/utils/style';
+import Select from '~/components/Select';
+import type {SelectProps} from '~/components/Select';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
-import {Badge, Dropdown, Menu, Space, Table, Input, Button} from 'antd';
-import type {ColumnsType} from 'antd/lib/table';
-
+import {Popover} from 'antd';
+import {em, sameBorder, transitionProps,asideWidth, rem} from '~/utils/style';
+import logo from '~/assets/images/question-circle.svg';
+import hover from '~/assets/images/hover.svg';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
     name: string;
@@ -36,12 +36,6 @@ interface DataType {
     companyAddress: string;
     companyName: string;
     gender: string;
-}
-interface ExpandedDataType {
-    key: React.Key;
-    date: string;
-    name: string;
-    upgradeNum: string;
 }
 asideWidth;
 
@@ -64,6 +58,11 @@ const Title = styled.div`
     border-bottom: 1px solid #dddddd;
     margin-bottom: ${rem(20)};
 `;
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
+    width: 100%;
+    height: 100%;
+    font-size: ${rem(14)};
+`;
 const Configure = styled.div`
     margin-top: ${rem(30)};
     width: 100%;
@@ -73,25 +72,50 @@ const Configure = styled.div`
     font-weight: 500;
     padding-left: ${rem(20)};
     padding-right: ${rem(20)};
-    .title {
+    .titles{
         margin-bottom: ${rem(20)};
     }
-`;
-const EchartPie = styled.div`
-    width: 100%;
-    height: ${rem(270)};
-    padding: ${rem(24)};
-    border: 1px solid #dddddd;
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
+    .titleContent {
+        margin-bottom: ${rem(10)};
+        display: flex;
+        align-items: center;
+        .title {
+            display: flex;
+            align-items: center;
+            .argument-operation {
+                flex: none;
+                cursor: pointer;
+                font-size: ${em(14)};
+                margin-left: ${em(10)};
+                color: var(--text-lighter-color);
+                ${transitionProps('color')}
+                &:hover,
+                &:active {
+                    color: #2932e1;
+                }
+                img {
+                    width: 16px;
+                    height: 16px;
+                }
+                img:hover {
+                    content: url(${hover});
+                }
+            }
         }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        .searchContent {
+            display: flex;
+            align-items:center;
+            .select_label{
+                margin-right: ${rem(15)};
+            }
+            .select_wrapper {
+                width: ${rem(64)};
+                height: ${rem(36)};
+                margin-right: ${rem(15)};
+            }
+        }
     }
 `;
 const EchartPie4 = styled.div`
@@ -111,67 +135,6 @@ const EchartPie4 = styled.div`
         width: 100%;
     }
 `;
-const Wraper = styled.div`
-    width: 100%;
-    border: 1px solid #dddddd;
-`;
-const Pagination = styled.div`
-     display:flex;
-     width:100%;
-     justify-content: space-between;
-     margin-top: ${rem(20)};
-     margin-bottom: ${rem(20)};
-     font-family: PingFangSC-Regular;
-     font-size: 14px;
-     font-weight: 400;
-     .Pagination_left{
-         display:flex;
-         .buttons{
-             width: ${rem(82)};
-             height: ${rem(36)};
-             margin-right: ${rem(15)};
-             .ant-btn-block{
-                 border-radius: 4px;
-                 height:100%;
-             }
-             
-         }
-         .next{
-             .ant-btn-block {
-                 color: #999999;
-             }
-         }
-     }
-     .Pagination_right{
-         display:flex;
-         .describe{
-             line-height:${rem(36)};
-             margin-right: ${rem(15)};
-             color: #000000;
-         }
-         .buttons{
-             width: ${rem(82)};
-             height: ${rem(36)};
-             .ant-btn-block{
-                 height:100%;
-                 background: #2932E1;
-                 border-radius: 4px;
-                 color: #FFFFFF;
-             }
- 
-         }
-         .input_wrapper{
-             width: ${rem(80)};
-             height: ${rem(36)};
-             margin-right: ${rem(15)};
-             .ant-input{
-                 border-radius: 4px;
-                 height: 100%;
-             }
- }
-         }
-     }
- `;
 const Card = styled.div`
     width: 100%;
     height: ${rem(142)};
@@ -219,17 +182,25 @@ const Card = styled.div`
         }
     }
 `;
-export type overViewProps = {
+
+export type NuclearViewProps = {
     runs: string;
     views: string;
     workers: string;
     spans: string;
+    units: string;
+
 };
-const NuclearView: FunctionComponent<overViewProps> = ({runs, views, workers, spans}) => {
+type SelectListItem<T> = {
+    value: T;
+    label: string;
+};
+const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans,units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [computation, setComputation] = useState<any>();
     const [distributedData, setDistributedData] = useState<any>();
-
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
+    const [items, setItems] = useState<string>('2');
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher('/profiler/NuclearView/Computation' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
@@ -253,11 +224,17 @@ const NuclearView: FunctionComponent<overViewProps> = ({runs, views, workers, sp
         '#FF6600',
         '#25C9FF'
     ];
+    const tooltips = (
+        <div>
+            <p>Content</p>
+            <p>Content</p>
+        </div>
+    );
     return (
         <ViewWrapper>
             <Title>分布视图</Title>
             <Configure>
-                <div className="title">设备信息</div>
+                <div className="titles">设备信息</div>
                 <div>
                     {distributedData && distributedData.map((items: any) => {
                         return (
@@ -291,7 +268,24 @@ const NuclearView: FunctionComponent<overViewProps> = ({runs, views, workers, sp
                 </div>
             </Configure>
             <Configure>
-                <div className="title">Computation和communication的耗时对比</div>
+            <div className="titleContent">
+                    <div className="title">
+                        <div>Computation和communication的耗时对比</div>
+                        <Popover content={tooltips} placement="right">
+                        <a className="argument-operation" onClick={() => {}}>
+                            <img src={PUBLIC_PATH + logo} alt="" />
+                        </a>
+                        </Popover>
+                    </div>
+                    <div className="searchContent">
+                        <div className='select_label'>
+                            训练步数
+                        </div>
+                        <div className="select_wrapper">
+                            <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
+                        </div>
+                    </div>
+                </div>
                 <EchartPie4>
                     <StackColumnChart className={'Content'} data={computation} color={color}></StackColumnChart>
                 </EchartPie4>

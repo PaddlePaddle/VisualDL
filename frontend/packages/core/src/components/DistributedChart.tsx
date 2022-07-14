@@ -82,12 +82,12 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {color, colorAlt, series, ...defaults} = chart;
+            const {colorAlt, series, ...defaults} = chart;
             const chartData = true;
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartOption = defaultsDeep({
-                    color: ['#5793f3', '#d14a61', '#368c6c', '#675bba'],
+                    color: ['#2932E1', '#D50505'],
                     // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {
                         top: '0%',
@@ -119,12 +119,12 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     },
                     tooltip: {
                         trigger: 'axis',
-                        formatter: {
-                            _custom: {
-                                type: 'function',
-                                display: '<span>ƒ</span> formatter(params, ticket, callback)'
-                            }
-                        }
+                        // formatter: {
+                        //     _custom: {
+                        //         type: 'function',
+                        //         display: '<span>ƒ</span> formatter(params, ticket, callback)'
+                        //     }
+                        // }
                     },
                     grid: {
                         top: '22%',
@@ -1135,6 +1135,9 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                             }
                         }
                     ],
+                    axisPointer:{
+                        // show:false
+                    },
                     series: [
                         {
                             name: '内存使用量（MB）',
@@ -1142,21 +1145,24 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                             type: 'line',
                             smooth: true,
                             yAxisIndex: 0,
+                            showSymbol:false,
+                            symbol:'circle',
+                            symbolSize: 4,
+                            emphasis: {
+                                focus: 'series',
+                                itemStyle: {
+                                    opacity:1,
+                                    borderWidth:2,
+                                    borderColor: '#fff',
+                                    shadowColor: color[0],
+                                    shadowBlur: 2
+                                }
+                            },
                             encode: {
                                 x: 'day',
                                 y: 'incre'
                             }
                         }
-                        // {
-                        //     "name":"第二个",
-                        //     "type":"line",
-                        //     "smooth":true,
-                        //     "yAxisIndex":0,
-                        //     "encode":{
-                        //         "x":"day",
-                        //         "y":"row"
-                        //     }
-                        // },
                     ]
                 });
                 echart?.setOption(chartOptions, {notMerge: true});

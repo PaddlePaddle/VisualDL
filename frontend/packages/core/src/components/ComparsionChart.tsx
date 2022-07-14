@@ -55,7 +55,7 @@ export type LineChartRef = {
 const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
-        const [selectId,setSelectId] = useState<string>()
+        const [selectId, setSelectId] = useState<string>();
         const {
             ref: echartRef,
             echart,
@@ -87,7 +87,7 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
             let chartOptions: EChartOption = defaultsDeep(
                 {
                     backgroundColor: '#fff', //背景颜色
-                    color: ['#2adecf'],
+                    color: ['#25C9FF','#FF6600'],
                     textStyle: {
                         color: '#999' //侧边字体颜色
                     },
@@ -100,7 +100,7 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                         }
                     },
                     legend: {
-                        data: ['盘点数据总量', '稽核通过率'],
+                        data: ['盘点数据总量', '稽核通过率','盘点数据总量2', '稽核通过率2'],
                         textStyle: {
                             color: '#999', //标题：对应图标字体颜色
                             fontSize: '16'
@@ -139,9 +139,9 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                             },
                             axisLabel: {
                                 interval: 0,
-                                width: 100,
-                                ellipsis: '...',
-                                overflow: 'truncate'
+                                formatter: function (value: string) {
+                                    return value.length > 10 ? value.slice(0, 10) + '...' : value;
+                                }
                             }
                         }
                     ],
@@ -184,6 +184,8 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                             type: 'bar',
                             barGap: '0',
                             barWidth: '15%',
+                            showSymbol: false,
+                            yAxisIndex: 0,
                             itemStyle: {
                                 normal: {
                                     // barBorderRadius: [30, 30, 0, 0],
@@ -216,8 +218,10 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                         {
                             name: '盘点数据总量2',
                             type: 'bar',
-                            // barGap: '3',
+                            barGap: '0',
                             barWidth: '15%',
+                            showSymbol: false,
+                            yAxisIndex: 0,
                             itemStyle: {
                                 normal: {
                                     // barBorderRadius: [30, 30, 0, 0],
@@ -251,14 +255,43 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                             name: '稽核通过率',
                             type: 'line',
                             yAxisIndex: 1,
+                            showSymbol: false,
                             label: {
                                 show: false,
                                 position: 'top',
                                 formatter: '{c} %',
-                                color: '#333',
+                                // color: '#333',
                                 fontSize: '14'
                             },
+                            itemStyle: {
+                                normal: {
+                                    lineStyle: {
+                                        color: '#25C9FF' //折线颜色
+                                    }
+                                }
+                            },
                             data: [30, 110, 130, 130, 200] //稽核通过率数据
+                        },
+                        {
+                            name: '稽核通过率2',
+                            type: 'line',
+                            yAxisIndex: 1,
+                            showSymbol: false,
+                            label: {
+                                show: false,
+                                position: 'top',
+                                formatter: '{c} %',
+                                // color: '#333',
+                                fontSize: '14'
+                            },
+                            itemStyle: {
+                                normal: {
+                                    lineStyle: {
+                                        color: '#FF6600' //折线颜色
+                                    }
+                                }
+                            },
+                            data: [40, 120, 140, 140, 240] //稽核通过率数据
                         }
                     ]
                 },
@@ -292,8 +325,8 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
             }
             echart?.on('click', (params: any) => {
                 if (params.componentSubType === 'bar') {
-                    console.log('params',params);
-                    setSelectId(params.data.id)
+                    console.log('params', params);
+                    setSelectId(params.data.id);
                 }
             });
             echart?.setOption(chartOptions, {notMerge: true});

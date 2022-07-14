@@ -16,18 +16,24 @@
 
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
+import NumberInput from '~/components/HyperParameterPage/IndicatorFilter/NumberInput';
+import StackColumnChart from '~/components/StackColumnChart';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
 import Model from '~/components/ProfilerPage/model';
-import {asideWidth, rem} from '~/utils/style';
+import {asideWidth, rem, em, transitionProps} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import {Table} from 'antd';
+import {Table, Popover} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
 import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
+import Icon from '~/components/Icon';
+import logo from '~/assets/images/question-circle.svg';
+import hover from '~/assets/images/hover.svg';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
     name: string;
@@ -45,11 +51,12 @@ interface ExpandedDataType {
     name: string;
     upgradeNum: string;
 }
-export type ComparedViewProps = {
+export type OperatorViewProps = {
     runs: string;
     views: string;
     workers: string;
     spans: string;
+    units: string;
 };
 
 asideWidth;
@@ -63,6 +70,12 @@ const ViewWrapper = styled.div`
     .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
         background: #f3f8fe;
     }
+`;
+const Input = styled(NumberInput)`
+    width: 100%;
+    height: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 0;
 `;
 const Title = styled.div`
     width: 100%;
@@ -81,6 +94,7 @@ const TitleNav = styled.div`
 const RadioContent = styled.div`
     display: flex;
     align-items: center;
+    padding-right: ${rem(20)};
     .ant-radio-group {
         display: flex;
     }
@@ -95,6 +109,32 @@ const RadioContent = styled.div`
             background-color: #2932e1;
         }
     }
+    .AdditionContent {
+        display: flex;
+        align-items: center;
+        .input_wrapper {
+            width: ${rem(50)};
+            height: ${rem(32)};
+        }
+        .Addition {
+            width: ${rem(32)};
+            height: ${rem(32)};
+            line-height: ${rem(30)};
+            font-size: ${rem(16)};
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-right: none;
+        }
+        .subtraction {
+            width: ${rem(32)};
+            height: ${rem(32)};
+            font-size: ${rem(16)};
+            line-height: ${rem(30)};
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-left: none;
+        }
+    }
 `;
 const Configure = styled.div`
     margin-top: ${rem(30)};
@@ -106,7 +146,31 @@ const Configure = styled.div`
     padding-left: ${rem(20)};
     padding-right: ${rem(20)};
     .title {
+        display: flex;
+        align-items: center;
         margin-bottom: ${rem(20)};
+        div {
+            line-height: 18px;
+        }
+        .argument-operation {
+            flex: none;
+            cursor: pointer;
+            font-size: ${em(14)};
+            margin-left: ${em(10)};
+            color: var(--text-lighter-color);
+            ${transitionProps('color')}
+            &:hover,
+             &:active {
+                color: #2932e1;
+            }
+            img {
+                width: 16px;
+                height: 16px;
+            }
+            img:hover {
+                content: url(${hover});
+            }
+        }
     }
     .titleContent {
         margin-bottom: ${rem(10)};
@@ -153,6 +217,44 @@ const Configure = styled.div`
         }
     }
 `;
+const ButtonsRight = styled.div`
+    border: 1px solid #dddddd;
+    border-radius: 0 4px 4px 0;
+    width: ${rem(110)};
+    height: ${rem(36)};
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(12)};
+    text-align: center;
+    line-height: ${rem(36)};
+    font-weight: 400;
+`;
+const ButtonsLeft = styled.div`
+    border: 1px solid #dddddd;
+    border-right: none;
+    width: ${rem(110)};
+    height: ${rem(36)};
+    font-family: PingFangSC-Regular;
+    font-size: ${rem(12)};
+    text-align: center;
+    line-height: ${rem(36)};
+    font-weight: 400;
+    border-radius: 4px 0 0 4px;
+`;
+
+const RadioButtons = styled.div`
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    position: absolute;
+    top: ${rem(14)};
+    left: ${rem(20)};
+    z-index: 20;
+    .is_active {
+        color: #ffffff;
+        background: #2932e1;
+        border: 1px solid rgba(41, 50, 225, 1);
+    }
+`;
 const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
     width: 100%;
     height: 100%;
@@ -161,7 +263,61 @@ const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select
 const EchartPie = styled.div`
     width: 100%;
     height: ${rem(270)};
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+    .ant-radio-inner {
+        background-color: #fff;
+        border-color: #ffffff;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 50%;
+    }
+    .tooltipContent {
+        padding-right: ${rem(30)};
+        .tooltipitems {
+            display: flex;
+            align-items: center;
+        }
+    }
+`;
+const PieceContent = styled.div`
     border: 1px solid #dddddd;
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+    padding-bottom: ${rem(20)};
+    .expendContent {
+        display: flex;
+        .expendButton {
+            color: #a3a3a3;
+            margin-left: ${rem(20)};
+            margin-right: ${rem(10)};
+        }
+        i {
+            line-height: ${rem(30)};
+        }
+    }
+    .is_expend {
+        margin-bottom: ${rem(20)};
+    }
+    .tableContent {
+        position: relative;
+    }
+`;
+const EchartPie4 = styled.div`
+    width: 100%;
+    border-radius: 4px;
+    height: ${rem(366)};
+    // padding: ${rem(24)};
     display: flex;
     .wraper {
         flex: 1;
@@ -189,43 +345,90 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
-const OperatorView: FunctionComponent<ComparedViewProps> = ({runs, views, workers, spans}) => {
+const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const model = useRef<any>(null);
     const [cpuData, setCpuData] = useState<any>();
     const [tableData, setTableData] = useState<any>();
-    const [search, setSearch] = useState<string>();
+    const [distributed, setDistributed] = useState<any>();
+    const [isCPU, setIsCPU] = useState(true);
+    const [search, setSearch] = useState<string>('');
+    const [isExpend, setIsExpend] = useState<any>(false);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
-    const [items, setItems] = useState<string>('');
+    const [group, setGroup] = useState<string>('');
     const [radioValue, setradioValue] = useState(1);
+    const [top, setTop] = useState(0);
+
     useEffect(() => {
-        if (runs && workers && spans) {
-            const time_unit = 1;
-            fetcher(
-                '/profiler/OperatorView/pie' +
-                    `?run=${runs}` +
-                    `&worker=${workers}` +
-                    `&span=${spans}` +
-                    `&time_unit=${time_unit}`
-            ).then((res: unknown) => {
-                setCpuData(res);
-            });
+        if (runs && workers && spans && radioValue) {
+            if (top > 0) {
+                fetcher(
+                    '/profiler/operator/pie' +
+                        `?run=${runs}` +
+                        `&worker=${workers}` +
+                        `&span=${spans}` +
+                        `&time_unit=${units}` +
+                        `&topk=${top}`
+                ).then((res: unknown) => {
+                    setCpuData(res);
+                });
+            } else {
+                fetcher(
+                    '/profiler/operator/pie' +
+                        `?run=${runs}` +
+                        `&worker=${workers}` +
+                        `&span=${spans}` +
+                        `&time_unit=${units}`
+                ).then((res: unknown) => {
+                    setCpuData(res);
+                });
+            }
         }
-    }, [runs, workers, spans, views]);
+    }, [runs, workers, spans, radioValue]);
     useEffect(() => {
         if (runs && workers && spans) {
-            const time_unit = 1;
             fetcher(
-                '/profiler/OperatorView/table' +
+                '/profiler/operator/table' +
                     `?run=${runs}` +
                     `&worker=${workers}` +
                     `&span=${spans}` +
-                    `&time_unit=${time_unit}`
+                    `&time_unit=${units}` +
+                    `&search_name=${search}` +
+                    `&group_by=${group}`
             ).then((res: any) => {
                 setTableData(res.data);
             });
         }
-    }, [runs, workers, spans, views]);
+    }, [runs, workers, spans, search]);
+    useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher(
+                '/profiler/overview/event_type_model_perspective' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}`
+            ).then((res: unknown) => {
+                const Data: any = res;
+                console.log('distributed,', Data);
+                setDistributed(Data);
+            });
+        }
+    }, [runs, workers, spans, search]);
+    useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher(
+                '/profiler/operator/table' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&time_unit=${units}` +
+                    `&search_name=${search}` +
+                    `&group_by=${group}`
+            ).then((res: any) => {
+                setTableData(res.data);
+            });
+        }
+    }, [runs, workers, spans, search]);
     const columns: ColumnsType<DataType> = useMemo(() => {
         return [
             {
@@ -313,11 +516,14 @@ const OperatorView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 dataIndex: 'gender',
                 key: 'gender',
                 width: 100,
-                render: () => (
+                render: (text, record, index) => (
                     <div
                         onClick={e => {
                             // debugger
+                            // console.log('Gender',e);
+                            const indexs = index - 0;
                             model.current?.showModal();
+                            model.current?.getStack(tableData[indexs].name);
                         }}
                     >
                         查看调用栈
@@ -326,7 +532,7 @@ const OperatorView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 fixed: 'right'
             }
         ];
-    }, []);
+    }, [tableData]);
     const onSearch = (value: string) => {
         console.log(value);
     };
@@ -377,34 +583,106 @@ const OperatorView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
     };
+    const onTopchange = (value: number) => {
+        setTop(value);
+    };
+    const tooltips = (
+        <div>
+            <p>Content</p>
+            <p>Content</p>
+        </div>
+    );
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>算子视图</Title>
+                <Title>核视图</Title>
                 <RadioContent>
                     <Radio.Group onChange={onChange} value={radioValue}>
                         <Radio value={1}>显示全部算子</Radio>
                         <Radio value={2}>显示Top算子</Radio>
                     </Radio.Group>
+                    {radioValue === 2 ? (
+                        <div className="AdditionContent">
+                            <div className="Addition ">+</div>
+                            <div className="input_wrapper">
+                                {/* <Input placeholder="Basic usage" />; */}
+                                <Input value={10} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
+                            </div>
+                            <div className="subtraction">-</div>
+                        </div>
+                    ) : null}
                 </RadioContent>
             </TitleNav>
             <Configure style={{marginTop: `${rem(25)}`}}>
-                <div className="title">耗时情况</div>
-                <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
-                    <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                        <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color} />
+                <div className="title">
+                    <div>耗时概况</div>
+                    <Popover content={tooltips} placement="right">
+                        <a className="argument-operation" onClick={() => {}}>
+                            <img src={PUBLIC_PATH + logo} alt="" />
+                        </a>
+                    </Popover>
+                </div>
+                <PieceContent>
+                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
+                        <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
+                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color} />
+                        </div>
+                        <div className="wraper">
+                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color} />
+                        </div>
+                    </EchartPie>
+                    <div
+                        className={`expendContent ${isExpend ? 'is_expend' : ''}`}
+                        onClick={() => {
+                            setIsExpend(!isExpend);
+                        }}
+                    >
+                        <div className="expendButton">展开查看耗时详情</div>
+                        <Icon type={isExpend ? 'chevron-up' : 'chevron-down'} />
                     </div>
-                    <div className="wraper">
-                        <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color} />
-                    </div>
-                </EchartPie>
+                    {isExpend ? (
+                        <div className="tableContent">
+                            <RadioButtons>
+                                <ButtonsLeft
+                                    onClick={() => {
+                                        setIsCPU(true);
+                                    }}
+                                    className={isCPU ? 'is_active' : ''}
+                                >
+                                    CPU耗时
+                                </ButtonsLeft>
+                                <ButtonsRight
+                                    className={!isCPU ? 'is_active' : ''}
+                                    onClick={() => {
+                                        setIsCPU(false);
+                                    }}
+                                >
+                                    GPU耗时
+                                </ButtonsRight>
+                            </RadioButtons>
+                            <EchartPie4>
+                                <StackColumnChart
+                                    className={'Content'}
+                                    data={distributed}
+                                    color={color}
+                                    options={{
+                                        yAxis: {
+                                            name: ''
+                                        },
+                                        
+                                    }}
+                                ></StackColumnChart>
+                            </EchartPie4>
+                        </div>
+                    ) : null}
+                </PieceContent>
             </Configure>
             <Configure>
                 <div className="titleContent">
                     <div className="title">耗时情况</div>
                     <div className="searchContent">
                         <div className="select_wrapper">
-                            <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
+                            <FullWidthSelect list={itemsList} value={group} onChange={setGroup} />
                         </div>
                         <div className="input_wrapper">
                             {/* <Input placeholder="Basic usage" />; */}
@@ -420,7 +698,7 @@ const OperatorView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 </div>
                 <Wraper>{tableData && getTable}</Wraper>
             </Configure>
-            <Model ref={model}></Model>
+            <Model ref={model} runs={runs} views={views} workers={workers}></Model>
         </ViewWrapper>
     );
 };

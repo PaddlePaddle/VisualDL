@@ -1,6 +1,7 @@
 import {Button, Modal, Table} from 'antd';
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect, useImperativeHandle} from 'react';
 import type {ColumnsType} from 'antd/lib/table';
+import {fetcher} from '~/utils/fetch';
 export type ModelRef = {
     showModal: () => unknown;
 };
@@ -21,14 +22,33 @@ interface ExpandedDataType {
     name: string;
     upgradeNum: string;
 }
-const Model = React.forwardRef<ModelRef, any>(({}, ref) => {
+const Model = React.forwardRef<ModelRef, any>(({runs, workers, spans}, ref) => {
     const [visible, setVisible] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [bounds, setBounds] = useState({left: 0, top: 0, bottom: 0, right: 0});
     const draggleRef = useRef<HTMLDivElement>(null);
-
+    const [stack, setStack] = useState<string>();
+    const [tableData, setTableData] = useState<any>();
+    useEffect(() => {
+        if (stack) {
+            const time_unit = 1;
+            fetcher(
+                '/profiler/operator/stack_table' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&time_unit=${time_unit}` +
+                    `&op_name=${stack}`
+            ).then((res: any) => {
+                setTableData(res.data);
+            });
+        }
+    }, [stack]);
     const showModal = () => {
         setVisible(true);
+    };
+    const getStack = (value: string) => {
+        setStack(value);
     };
     const handleOk = (e: React.MouseEvent<HTMLElement>) => {
         console.log(e);
@@ -39,27 +59,23 @@ const Model = React.forwardRef<ModelRef, any>(({}, ref) => {
         console.log(e);
         setVisible(false);
     };
-    const expandedRowRender = useCallback((e: any, a: any, b: any, c: any) => {
-      const columns: ColumnsType<ExpandedDataType> = [{title: 'Date', dataIndex: 'date', key: 'date'}];
-      const data = [];
-      data.push(
-          {
-              key: 'aten:convolut',
-              date: 'aten:convolut',
-              name: 'This is production name',
-              upgradeNum: 'Upgraded: 56'
-          },
-          {
-              key: 'ion_backward',
-              date: 'ion_backward',
-              name: 'This is production name',
-              upgradeNum: 'Upgraded: 56'
-          }
-      );
-      return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
-  }, []);
+    const expandedRowRender = useCallback(
+        (e: any, a: any, b: any, c: any) => {
+            console.log('e,a,b,c,', e, a, b, c);
+            // debugger
+            if (!tableData) {
+                return;
+            }
+            const columns: ColumnsType<ExpandedDataType> = [{title: 'name', dataIndex: 'name', key: 'name'}];
+            const numbers = Number(a);
+            const data = tableData[numbers].expends;
+            return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
+        },
+        [tableData]
+    );
     useImperativeHandle(ref, () => ({
-        showModal
+        showModal,
+        getStack
     }));
     const columns: ColumnsType<DataType> = useMemo(() => {
         return [
@@ -67,97 +83,85 @@ const Model = React.forwardRef<ModelRef, any>(({}, ref) => {
                 title: 'Name',
                 dataIndex: 'name',
                 key: 'name',
-                width: 100,
-                // fixed: 'left',
                 onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
             },
             {
-                title: 'Other',
+                title: 'GPU',
                 children: [
                     {
-                        title: 'Age',
-                        dataIndex: 'age',
-                        key: 'age',
-                        width: 150,
+                        title: '总耗时',
+                        dataIndex: 'cpu_total_time',
+                        key: 'cpu_total_time',
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age2',
-                        dataIndex: 'age2',
-                        key: 'age2',
-                        width: 150,
+                        title: '平均耗时',
+                        dataIndex: 'cpu_avg_time',
+                        key: 'cpu_avg_time',
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age3',
-                        dataIndex: 'age3',
-                        key: 'age',
-                        width: 150,
+                        title: '最短耗时',
+                        dataIndex: 'cpu_min_time',
+                        key: 'cpu_min_time',
                         sorter: (a, b) => a.age - b.age
                     },
                     {
-                        title: 'Age4',
-                        dataIndex: 'age4',
-                        key: 'age4',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
-                    },
-                    {
-                        title: 'Age5',
-                        dataIndex: 'age5',
-                        key: 'age5',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
-                    },
-                    {
-                        title: 'Age6',
-                        dataIndex: 'age6',
-                        key: 'age6',
-                        width: 150,
+                        title: '百分比',
+                        dataIndex: 'cpu_ratio',
+                        key: 'cpu_ratio',
                         sorter: (a, b) => a.age - b.age
                     }
                 ]
             },
             {
-                title: 'Gender',
-                dataIndex: 'gender',
-                key: 'gender',
-                width: 100
+                title: 'GPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'gpu_total_time',
+                        key: 'gpu_total_time',
+                        sorter: (a, b) => a.age - b.age
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'gpu_avg_time',
+                        key: 'gpu_avg_time',
+                        sorter: (a, b) => a.age - b.age
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'gpu_min_time',
+                        key: 'gpu_min_time',
+                        sorter: (a, b) => a.age - b.age
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'gpu_ratio',
+                        key: 'gpu_ratio',
+                        sorter: (a, b) => a.age - b.age
+                    }
+                ]
             }
         ];
     }, []);
-    const data: any = useMemo(() => {
-        let data: any = [];
-        for (let i = 0; i < 3; i++) {
-            data.push({
-                key: i,
-                name: 'John Brown',
-                age: i + 1,
-                age2: 'Lake Park',
-                age3: 'C',
-                age4: 2035,
-                age5: 'Lake Street 42',
-                age6: 'SoftLake Co',
-                gender: 'M'
-            });
-        }
-        return data;
-    }, []);
     const getTable = useMemo(() => {
-        return (
-            <Table
-                columns={columns}
-                dataSource={data}
-                bordered
-                size="middle"
-                pagination={false}
-                scroll={{x: 'calc(700px + 50%)', y: 240}}
-                expandable={{
-                  expandedRowRender
-                }}
-            ></Table>
-        );
-    }, [columns, data]);
+        if (columns && tableData) {
+            return (
+                <Table
+                    columns={columns}
+                    dataSource={tableData}
+                    bordered
+                    size="middle"
+                    pagination={false}
+                    scroll={{x: 'calc(700px + 50%)', y: 240}}
+                    expandable={{
+                        expandedRowRender
+                    }}
+                ></Table>
+            );
+        }
+    }, [columns, tableData, expandedRowRender]);
     return (
         <>
             <Modal
@@ -179,15 +183,17 @@ const Model = React.forwardRef<ModelRef, any>(({}, ref) => {
                         onBlur={() => {}}
                         // end
                     >
-                        Draggable Modal
+                        调用栈详情
                     </div>
                 }
                 width={800}
                 visible={visible}
+                okText="确认"
+                cancelText="取消"
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
-              {getTable}
+                {getTable}
             </Modal>
         </>
     );

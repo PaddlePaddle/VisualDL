@@ -37,6 +37,7 @@ function isWorkspace() {
 
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
+const TracePath = path.dirname(resolve.sync(cwd, './public/static'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
@@ -56,7 +57,7 @@ export default {
             match: 'routes',
             src: '.*',
             dest: '/index.html'
-        }
+        },
     ],
     env,
     alias: {
@@ -98,6 +99,10 @@ export default {
                     {
                         source: [path.join(netronPath, '**/*')],
                         destination: path.join(dest, 'netron/dist')
+                    },
+                    {
+                        source: [path.join(TracePath, '**/*')],
+                        destination: path.join(dest, 'Trace/dist')
                     },
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],

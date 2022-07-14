@@ -129,6 +129,34 @@ const Charts = React.forwardRef<LineChartRef, any>(
                         trigger: 'axis',
                         axisPointer: {
                             type: 'shadow'
+                        },
+                        extraCssText:
+                            'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                        formatter: function (params: any, index: any) {
+                            console.log('StackColumnChart', params, index);
+                            var str = ''; //声明一个变量用来存储数据
+                            str +=
+                                '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:17px;">' +
+                                params[0].name +
+                                '</div>';
+                            str += '<div class="tooltipContent">';
+                            for (let index = 0; index < params.length; index++) {
+                                const element = params[index];
+                                str += '<div class="tooltipitems">';
+                                str +=
+                                    '<span style="font-size:12px;display:inline-block;margin-right:5px;width:12px;height:12px;border-radius:50%;background-color:' +
+                                    element.color +
+                                    ';"></span>' +
+                                    '<span style="color: #FFFFFF;">' +
+                                    element.name +
+                                    '</span>' +
+                                    '</span> : <span style="color: #FFFFFF;">' +
+                                    element.data.value +
+                                    '</span>';
+                                str += '</div>';
+                            }
+                            str += '</div>';
+                            return str;
                         }
                     },
                     legend: {
@@ -196,13 +224,6 @@ const Charts = React.forwardRef<LineChartRef, any>(
                 echart?.setOption(chartOptions, {notMerge: true});
             }
         }, [options, data, title, theme, i18n.language, echart, isLegend]);
-        // const attachRunColor = (runs: string[]): string[] =>
-        //   runs?.map((run, index) => {
-        //       const i = index % color.length;
-        //       return  {
-
-        //       }
-        // });
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
