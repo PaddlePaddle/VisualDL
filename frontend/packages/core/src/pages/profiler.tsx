@@ -194,7 +194,7 @@ const Profiler: FunctionComponent = () => {
             console.log('runsData', runsData[0]);
             setRuns(runsData[0]);
         });
-        fetcher('/profiler/units').then((res: unknown) => {
+        fetcher('/profiler/timeunits').then((res: unknown) => {
             const runsData = res as string[];
             const runsList = runsData.map((item, index) => {
                 return {label: item, value: item};
