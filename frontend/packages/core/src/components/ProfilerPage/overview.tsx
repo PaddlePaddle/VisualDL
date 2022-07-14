@@ -511,18 +511,12 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             fetcher('/profiler/overview/event_type_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}` + `&device_type=${device_type}`+ `&time_unit=${units}`).then(
                 (res: unknown) => {
                     const result: any = res;
+                    console.log('PerformanceData', result);
                     setPerformanceData(result);
                 }
             );
             // 模型各阶段消耗
             fetcher('/profiler/overview/event_type_model_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}` + `&device_type=${device_type}`+ `&time_unit=${units}`).then(
-                (res: unknown) => {
-                    const Data: any = res;
-                    console.log('distributed,', Data);
-                    setDistributed(Data);
-                }
-            );
-            fetcher('/profiler/overview/event_type_model_perspective' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}` + `&device_type=${device_type}`).then(
                 (res: unknown) => {
                     const Data: any = res;
                     console.log('distributed,', Data);
@@ -596,29 +590,29 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     },
                     {
                         title: '平均耗时',
-                        dataIndex: 'avg_time',
-                        key: 'avg_time',
+                        dataIndex: 'GPUavg_time',
+                        key: 'GPUavg_time',
                         width: 150,
                         sorter: (a, b) => a.GPUavg_time - b.GPUavg_time
                     },
                     {
                         title: '最长耗时',
-                        dataIndex: 'max_time',
-                        key: 'max_time',
+                        dataIndex: 'GPUmax_time',
+                        key: 'GPUmax_time',
                         width: 150,
                         sorter: (a, b) => a.GPUmax_time - b.GPUmax_time
                     },
                     {
                         title: '最短耗时',
-                        dataIndex: 'min_time',
-                        key: 'min_time',
+                        dataIndex: 'GPUmin_time',
+                        key: 'GPUmin_time',
                         width: 150,
                         sorter: (a, b) => a.GPUmin_time - b.GPUmin_time
                     },
                     {
                         title: '百分比',
-                        dataIndex: 'ratio',
-                        key: 'ratio',
+                        dataIndex: 'GPUratio',
+                        key: 'GPUratio',
                         width: 150,
                         sorter: (a, b) => a.GPUratio - b.GPUratio
                     }
@@ -789,28 +783,28 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         <div className="GPU_title">
                             <div>GPU</div>
                             <div className="title_list">
-                                <div className="list_items">Intel UHD Graphics</div>
-                                <div className="list_items">显存22.38GB</div>
+                                <div className="list_items">{environment?.GPU?.name ? environment?.GPU?.name : 0}</div>
+                                <div className="list_items">{environment?.GPU?.memory ? environment?.GPU?.memory : 0}</div>
                                 <div className="list_items" style={{borderRight: 'none'}}>
-                                    算力6.1
+                                    算力{environment?.GPU?.compute_capability ? environment?.GPU?.compute_capability : 0}
                                 </div>
                             </div>
                         </div>
                         <div className="GPU_itemlist">
                             <div className="items">
-                                <div className="percentage">{environment?.GPU.utilization}%</div>
+                                <div className="percentage">{environment?.GPU?.utilization ? environment?.GPU?.utilization : 0}%</div>
                                 <div className="items_label">利用率</div>
                             </div>
                             <div className="items">
-                                <div className="percentage">{environment?.GPU.sm_efficiency}%</div>
+                                <div className="percentage">{environment?.GPU?.sm_efficiency ? environment?.GPU?.sm_efficiency : 0 }%</div>
                                 <div className="items_label">流量处理器效率</div>
                             </div>
                             <div className="items">
-                                <div className="percentage">{environment?.GPU.achieved_occupancy}%</div>
+                                <div className="percentage">{environment?.GPU.achieved_occupancy ? environment?.GPU.achieved_occupancy : 0}%</div>
                                 <div className="items_label">流量处理器占用率</div>
                             </div>
                             <div className="items items_last">
-                                <div className="percentage">{environment?.GPU.tensor_core_percentage}%</div>
+                                <div className="percentage">{environment?.GPU?.tensor_core_percentage ? environment?.GPU?.tensor_core_percentage : 0}%</div>
                                 <div className="items_label">tensor core使用时间占比</div>
                             </div>
                         </div>
@@ -886,7 +880,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                                 <TabPane tab={item} key={index}>
                                     <PerformanceContent>
                                         <div className="titles">
-                                            {performanceData[item].calling_times.key.map(
+                                            {performanceData[item]?.calling_times?.key.map(
                                                 (item: string, index: number) => {
                                                     return (
                                                         <div className="legend">
