@@ -12,10 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import collections
+
+from paddle.framework import core
+
+from .utils import HostStatisticNode
+from .utils import merge_ranges
+from .utils import merge_self_ranges
+from .utils import sum_ranges
+from .utils import wrap_tree
+
+StageType = ['Dataloader', 'Forward', 'Backward', 'Optimization']
+
+CPUType = [
+    'Operator', 'CudaRuntime', 'UserDefined', 'OperatorInner', 'Communication',
+    'PythonOp', 'PythonUserDefined', 'MluRuntime'
+]
+
+GPUType = ['Kernel', 'Memcpy', 'Memset']
 
 
 class GeneralItem:
-
     def __init__(self, name):
         self.name = name
         self.call = 0
@@ -72,122 +89,412 @@ class GeneralItem:
         self.add_general_gpu_time(node.general_gpu_time)
 
 
+class ModelPerspectiveItem:
+    def __init__(self, name):
+        self.name = name
+        self.call = 0
+        self.cpu_time = 0
+        self.max_cpu_time = 0
+        self.min_cpu_time = float('inf')
+        self.gpu_time = 0
+        self.max_gpu_time = 0
+        self.min_gpu_time = float('inf')
+        self.cpu_times = {}
+        self.gpu_times = {}
+
+    @property
+    def avg_cpu_time(self):
+        return self.cpu_time / self.call
+
+    @property
+    def avg_gpu_time(self):
+        return self.gpu_time / self.call
+
+    def add_call(self):
+        self.call += 1
+
+    def add_cpu_time(self, time):
+        self.add_call()
+        if time > self.max_cpu_time:
+            self.max_cpu_time = time
+        if time < self.min_cpu_time:
+            self.min_cpu_time = time
+        self.cpu_time += time
+
+    def add_gpu_time(self, time):
+        if time > self.max_gpu_time:
+            self.max_gpu_time = time
+        if time < self.min_gpu_time:
+            self.min_gpu_time = time
+        self.gpu_time += time
+
+    def set_gpu_time(self, time):
+        '''
+        Use this to set total gpu time in case gpu time calculated by add_gpu_time include overlap.
+        '''
+        self.gpu_time = time
+
+
 class OverviewParser:
     r"""
     Analyse time ranges for each TracerEventType, and summarize the time.
     """
 
     def __init__(self):
-        self.CPUTimeRange = collections.defaultdict(list)
-        self.GPUTimeRange = collections.defaultdict(
-            lambda: collections.defaultdict(
-                list))  # GPU events should be divided into different devices
-        self.CPUTimeRangeSum = collections.defaultdict(int)
-        self.GPUTimeRangeSum = collections.defaultdict(
-            lambda: collections.defaultdict(int))
-        self.call_times = collections.defaultdict(int)
-
-        self.userdefined_items = {}  # for userdefined summary
-        self.userdefined_thread_items = collections.defaultdict(
-            dict)  # for userdefined summary
-        self.model_perspective_items = {}  # for model summary
+        # event name: GeneralItem
         self.memory_manipulation_items = {}  # for memory manipulation summary
+        self.userdefined_items = {}  # for userdefined summary
+        self.model_perspective_items = {}
+        # phase name:
+        #   device name:
+        #     stage idx:
+        #      thread name:
+        #        event type:
+        #             {"events" :[], "times": []}
+        self.events_per_stage = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: collections.defaultdict(
+                lambda: collections.defaultdict(
+                    lambda: collections.defaultdict(lambda: collections.
+                                                    defaultdict(list))))))
+        # phase name:
+        #   device name:
+        #     stage idx:
+        #      event type:
+        #           { "calls" :[], "times": [], "total_time": 0 }
+
+        self.merged_events_per_stage = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: collections.defaultdict(
+                lambda: collections.defaultdict(lambda: collections.
+                                                defaultdict(list)))))
+
+        self.stage_nums = 0
+        self.gpu_ulitization = 0.0
 
     def parse(self, nodetrees):
         r"""
         Analysis node trees in profiler result, and get time range for different tracer event type.
         """
-        self._parse_time_range(nodetrees)
-        self._parse_general_events(nodetrees)
-       
+        self._parse_events(nodetrees)
+        # statistic calling times
+        # merge time, get time summarization
+        for stage_name, stage_data in self.events_per_stage.items():
+            for device_name, steps_data in stage_data.items():
+                for step_idx, thread_data in steps_data.items():
+                    for thread_id, events in thread_data.items():
+                        for event_type, events_data in events.items():
+                            if 'calls' not in self.merged_events_per_stage[
+                                    stage_name][device_name][step_idx][
+                                        event_type]:
+                                self.merged_events_per_stage[stage_name][
+                                    device_name][step_idx][event_type][
+                                        'calls'] = 0
+                            events_data['times'] = merge_self_ranges(
+                                events_data['times'], is_sorted=False)
+                            self.merged_events_per_stage[stage_name][
+                                device_name][step_idx][event_type][
+                                    'calls'] += len(events_data['events'])
+                            self.merged_events_per_stage[stage_name][device_name][step_idx][event_type]['times'] = \
+                                merge_ranges(self.merged_events_per_stage[stage_name][device_name][step_idx][event_type]['times'], events_data['times'], is_sorted=True)
 
-    def _parse_time_range(self, nodetrees):
-        thread2hostnodes = traverse_tree(nodetrees)
-        for threadid, hostnodes in thread2hostnodes.items():
-            CPUTimeRange = collections.defaultdict(list)
-            GPUTimeRange = collections.defaultdict(
-                lambda: collections.defaultdict(lambda: collections.defaultdict(
-                    list)))  # device_id/type/stream_id
-            for hostnode in hostnodes[1:]:  #skip root node
-                CPUTimeRange[hostnode.type].append(
-                    (hostnode.start_ns, hostnode.end_ns))
-                self.call_times[hostnode.type] += 1
-                for runtimenode in hostnode.runtime_node:
-                    CPUTimeRange[runtimenode.type].append(
+        # merge different stages into profile step
+        init = self.merged_events_per_stage['ProfileStep']
+        for stage_name, stage_data in self.merged_events_per_stage.items():
+            for device_name, steps_data in stage_data.items():
+                for step_idx, events in steps_data.items():
+                    for event_type, events_data in events.items():
+                        events_data['total_time'] = sum_ranges(
+                            events_data['times'])
+                        if 'calls' not in self.merged_events_per_stage[
+                                'ProfileStep'][device_name][step_idx][
+                                    event_type]:
+                            self.merged_events_per_stage['ProfileStep'][
+                                device_name][step_idx][event_type]['calls'] = 0
+                        if 'total_time' not in self.merged_events_per_stage[
+                                'ProfileStep'][device_name][step_idx][
+                                    event_type]:
+                            self.merged_events_per_stage['ProfileStep'][
+                                device_name][step_idx][event_type][
+                                    'total_time'] = 0
+                        self.merged_events_per_stage['ProfileStep'][
+                            device_name][step_idx][event_type][
+                                'calls'] += events_data['calls']
+                        self.merged_events_per_stage['ProfileStep'][
+                            device_name][step_idx][event_type][
+                                'total_time'] += events_data['total_time']
+                        self.merged_events_per_stage['ProfileStep'][
+                            device_name][step_idx][event_type][
+                                'times'] = merge_ranges(
+                                    self.merged_events_per_stage['ProfileStep']
+                                    [device_name][step_idx][event_type]
+                                    ['times'],
+                                    events_data['times'],
+                                    is_sorted=True)
+
+        # add gpu time for model perspective summary
+        for stage_name, stage_data in self.merged_events_per_stage.items():
+            for device_name, steps_data in stage_data.items():
+                for step_idx, events in steps_data.items():
+                    # print(stage_name, step_idx, events.keys())
+                    if 'Kernel' in events:
+                        if step_idx == 'ALL':
+                            self.model_perspective_items[
+                                stage_name].set_gpu_time(
+                                    events['Kernel']['total_time'])
+                            continue
+                        self.model_perspective_items[stage_name].add_gpu_time(
+                            events['Kernel']['total_time'])
+                        self.model_perspective_items[stage_name].gpu_times[
+                            step_idx] = events['Kernel']['total_time']
+                    else:
+                        self.model_perspective_items[stage_name].set_gpu_time(
+                            0.0)
+                        self.model_perspective_items[stage_name].add_gpu_time(
+                            0.0)
+                        self.model_perspective_items[stage_name].gpu_times[
+                            step_idx] = 0.0
+
+        self.gpu_ulitization = self.merged_events_per_stage['ProfileStep'][
+            'GPU']['ALL']['Kernel'][
+                'total_time'] / self.model_perspective_items[
+                    'ProfileStep'].cpu_time
+
+    def _fill_stage_events(self, node, stage_idx):
+        if node.type == 'Forward':
+            stage_name = 'Forward'
+        elif node.type == 'Backward':
+            stage_name = 'Backward'
+        elif node.type == 'Optimization':
+            stage_name = 'Optimization'
+        elif node.type == 'Dataloader':
+            stage_name = 'Dataloader'
+        else:
+            stage_name = 'Other'
+
+        stack = []
+        if node.type in StageType:
+            for children in node.children_node:
+                stack.append(children)
+        else:
+            stack.append(node)
+        while stack:
+            current_node = stack.pop()
+            self.events_per_stage[stage_name]["CPU"][stage_idx][
+                current_node.thread_id][current_node.type]['events'].append(
+                    current_node)
+            self.events_per_stage[stage_name]["CPU"][stage_idx][
+                current_node.thread_id][current_node.type]['times'].append(
+                    (current_node.start_ns, current_node.end_ns))
+            self.events_per_stage[stage_name]["CPU"]['ALL'][
+                current_node.thread_id][current_node.type]['events'].append(
+                    current_node)
+            self.events_per_stage[stage_name]["CPU"]['ALL'][
+                current_node.thread_id][current_node.type]['times'].append(
+                    (current_node.start_ns, current_node.end_ns))
+            for childnode in current_node.children_node:
+                stack.append(childnode)
+            for runtimenode in current_node.runtime_node:
+                self.events_per_stage[stage_name]["CPU"][stage_idx][
+                    runtimenode.thread_id][runtimenode.type]['events'].append(
+                        runtimenode)
+                self.events_per_stage[stage_name]["CPU"][stage_idx][
+                    runtimenode.thread_id][runtimenode.type]['times'].append(
                         (runtimenode.start_ns, runtimenode.end_ns))
-                    self.call_times[runtimenode.type] += 1
-                    for devicenode in runtimenode.device_node:
-                        GPUTimeRange[devicenode.device_id][devicenode.type][
-                            devicenode.stream_id].append(
-                                (devicenode.start_ns, devicenode.end_ns))
-                        self.call_times[devicenode.type] += 1
+                self.events_per_stage[stage_name]["CPU"]['ALL'][
+                    runtimenode.thread_id][runtimenode.type]['events'].append(
+                        runtimenode)
+                self.events_per_stage[stage_name]["CPU"]['ALL'][
+                    runtimenode.thread_id][runtimenode.type]['times'].append(
+                        (runtimenode.start_ns, runtimenode.end_ns))
+                for devicenode in runtimenode.device_node:
+                    self.events_per_stage[stage_name]["GPU"][stage_idx][
+                        devicenode.stream_id][
+                            devicenode.type]['events'].append(devicenode)
+                    self.events_per_stage[stage_name]["GPU"][stage_idx][
+                        devicenode.stream_id][devicenode.type]['times'].append(
+                            (devicenode.start_ns, devicenode.end_ns))
+                    self.events_per_stage[stage_name]["GPU"]['ALL'][
+                        devicenode.stream_id][
+                            devicenode.type]['events'].append(devicenode)
+                    self.events_per_stage[stage_name]["GPU"]['ALL'][
+                        devicenode.stream_id][devicenode.type]['times'].append(
+                            (devicenode.start_ns, devicenode.end_ns))
 
-            for event_type, time_ranges in CPUTimeRange.items():
-                time_ranges = merge_self_ranges(time_ranges, is_sorted=False)
-                self.CPUTimeRange[event_type] = merge_ranges(
-                    self.CPUTimeRange[event_type], time_ranges, is_sorted=True)
-            for device_id, device_time_ranges in GPUTimeRange.items():
-                for event_type, event_time_ranges in device_time_ranges.items():
-                    for stream_id, time_ranges in event_time_ranges.items():
-                        time_ranges = merge_self_ranges(time_ranges,
-                                                        is_sorted=False)
-                        self.GPUTimeRange[device_id][event_type] = merge_ranges(
-                            self.GPUTimeRange[device_id][event_type],
-                            time_ranges,
-                            is_sorted=True)
+    def _rebuild_node_trees(self, nodetrees):
+        template_root = None
+        # First, we find the tree which includes Forward event.
+        # print("I am in overview rebuild node trees", nodetrees)
+        for threadid, root in nodetrees.items():
+            # print(root)
+            has_find_template_root = False
+            for children in root.children_node:
+                # print(children.type)
+                if children.type == 'ProfileStep':
+                    template_root = HostStatisticNode(root)
+                    profiler_step_node = HostStatisticNode(children)
+                    template_root.children_node.append(profiler_step_node)
+                    has_find_template_root = True
+                    for stage_node in children.children_node:
+                        if stage_node.type in StageType:
+                            # print(stage_node.type)
+                            profiler_step_node.children_node.append(
+                                HostStatisticNode(stage_node))
+                else:
+                    break
+            if has_find_template_root == True:
+                break
 
-        for event_type, time_ranges in self.CPUTimeRange.items():
-            self.CPUTimeRangeSum[event_type] = sum_ranges(time_ranges)
-        for device_id, device_time_ranges in self.GPUTimeRange.items():
-            for event_type, time_ranges in device_time_ranges.items():
-                self.GPUTimeRangeSum[device_id][event_type] = sum_ranges(
-                    time_ranges)
-    
-    def _parse_general_events(self, nodetrees):
-        node_statistic_trees, thread2host_statistic_nodes = wrap_tree(nodetrees)
-        for threadid, host_statistic_nodes in thread2host_statistic_nodes.items(
-        ):
-            for host_statistic_node in host_statistic_nodes[
-                    1:]:  #skip root node
-                if host_statistic_node.type == TracerEventType.UserDefined\
-                    or host_statistic_node.type == TracerEventType.PythonUserDefined:
-                    if 'memcpy' in host_statistic_node.name.lower() or 'memorycopy' in host_statistic_node.name.lower()\
-                        or 'memset' in host_statistic_node.name.lower():
-                        self.add_memory_manipulation_item(host_statistic_node)
+        if template_root == None:
+            print('No profiler steps found, overview page will have no data.')
+
+        wrapped_tree = {}
+        results = collections.defaultdict(list)
+        newresults = collections.defaultdict(list)
+        for thread_id, rootnode in nodetrees.items():
+            has_find_template_root = False
+            for children in rootnode.children_node:
+                if children.type == 'ProfileStep':
+                    has_find_template_root = True
+                    break
+
+            unwrapped_stack = []
+            warpped_stack = []
+
+            root_statistic_node = HostStatisticNode(rootnode)
+            # print('has_find_template_root', has_find_template_root)
+            wrapped_tree[thread_id] = root_statistic_node
+            threadlist = results[thread_id]
+            newthreadlist = newresults[thread_id]
+            if has_find_template_root == False:
+                for profiler_step_node in template_root.children_node:
+                    profiler_step_wrap_node = HostStatisticNode(
+                        profiler_step_node.hostnode)
+                    root_statistic_node.children_node.append(
+                        profiler_step_wrap_node)
+                    for stage_node in profiler_step_node.children_node:
+                        stage_wrap_node = HostStatisticNode(
+                            stage_node.hostnode)
+                        profiler_step_wrap_node.children_node.append(
+                            stage_wrap_node)
+                # insert nodes in original root into new stage nodes
+                # algorithm: post order traversal the tree
+                stack = []
+                flag_stack = []
+                post_order_nodes = []
+                stack.append(root_statistic_node)
+                flag_stack.append(0)
+                while stack:
+                    current_node = stack.pop()
+                    flag = flag_stack.pop()
+                    if flag == 0:
+                        stack.append(current_node)
+                        flag_stack.append(1)
+                        for children_node in reversed(
+                                current_node.children_node):
+                            stack.append(children_node)
+                            flag_stack.append(0)
                     else:
-                        self.add_userdefined_item(host_statistic_node)
+                        post_order_nodes.append(current_node)
+                # traverse post_order_nodes and insert right position
+                newthreadlist.extend(post_order_nodes)
+                for node in rootnode.children_node:
+                    unwrapped_stack.append(node)
+                    for wrapped_node in post_order_nodes:
+                        if node.start_ns >= wrapped_node.start_ns and node.end_ns <= wrapped_node.end_ns:
+                            child_wrapped_node = HostStatisticNode(node)
+                            warpped_stack.append(child_wrapped_node)
+                            wrapped_node.children_node.append(
+                                child_wrapped_node)
+                            break
+            else:
+                unwrapped_stack.append(rootnode)
+                warpped_stack.append(root_statistic_node)
+            while unwrapped_stack:
+                current_node = unwrapped_stack.pop()
+                threadlist.append(current_node)
+                current_wrapped_node = warpped_stack.pop()
+                newthreadlist.append(current_wrapped_node)
+                for childnode in current_node.children_node:
+                    unwrapped_stack.append(childnode)
+                    child_wrapped_node = HostStatisticNode(childnode)
+                    current_wrapped_node.children_node.append(
+                        child_wrapped_node)
+                    warpped_stack.append(child_wrapped_node)
+                for runtimenode in current_node.runtime_node:
+                    runtime_wrapped_node = HostStatisticNode(runtimenode)
+                    current_wrapped_node.runtime_node.append(
+                        runtime_wrapped_node)
 
-        for threadid, root_statistic_node in node_statistic_trees.items():
-            deque = collections.deque()
-            deque.append(root_statistic_node)
-            while deque:
-                current_node = deque.popleft()
-                for child in current_node.children_node:
-                    if child.type == TracerEventType.Forward or child.type == TracerEventType.Dataloader\
-                        or child.type == TracerEventType.Backward or child.type == TracerEventType.Optimization:
+            print('after rebuild:', thread_id, len(newthreadlist))
+
+        # recursive calculate node statistic values
+        for thread_id, root_wrapped_node in wrapped_tree.items():
+            root_wrapped_node.cal_statistic()
+        self.wrapped_tree = wrapped_tree
+        self.wrapped_node_threadlist = newresults
+        return wrapped_tree, newresults
+
+    def _parse_events(self, nodetrees):
+        # print('I am in parse_events overview', nodetrees)
+        node_wrapped_trees, node_wrapped_threadlist = self._rebuild_node_trees(
+            nodetrees)
+
+        # analyse user-defined summary
+        for threadid, wrapped_nodes in node_wrapped_threadlist.items():
+            for wrapped_node in wrapped_nodes[1:]:  #skip root node
+                if wrapped_node.type == 'UserDefined'\
+                    or wrapped_node.type == 'PythonUserDefined':
+                    if 'memcpy' in wrapped_node.name.lower() or 'memorycopy' in wrapped_node.name.lower()\
+                        or 'memset' in wrapped_node.name.lower():
+                        self.add_memory_manipulation_item(wrapped_node)
+                    else:
+                        self.add_userdefined_item(wrapped_node)
+
+        # analyse all events in per stage
+        thread_count = 0
+        for threadid, root_wrapped_node in node_wrapped_trees.items():
+            thread_count += 1
+            wrapped_profiler_step_nodes = []
+            for wrapped_node in root_wrapped_node.children_node:
+                wrapped_profiler_step_nodes.append(wrapped_node)
+            self.stage_nums = 0
+            for wrapped_profiler_step_node in wrapped_profiler_step_nodes:
+                if wrapped_profiler_step_node.type == 'ProfileStep':
+                    stage_idx = wrapped_profiler_step_node.name.split('#')[1]
+                    total_time = 0
+                    accumulated_stage_time = 0
+                    if thread_count == 1:
                         self.add_model_perspective_item(
-                            child)  #find first model perspective node
-                    else:
-                        if child.type == TracerEventType.ProfileStep:
-                            self.add_model_perspective_item(child)
-                        deque.append(child)
+                            wrapped_profiler_step_node)
+                        self.model_perspective_items['ProfileStep'].cpu_times[
+                            stage_idx] = wrapped_profiler_step_node.cpu_time
+                        total_time = wrapped_profiler_step_node.cpu_time
+                    self.stage_nums += 1
+                    for stage_wrapped_node in wrapped_profiler_step_node.children_node:
+                        if thread_count == 1:
+                            self.add_model_perspective_item(stage_wrapped_node)
+                            if stage_wrapped_node.type in StageType:
+                                self.model_perspective_items[
+                                    stage_wrapped_node.type].cpu_times[
+                                        stage_idx] = stage_wrapped_node.cpu_time
+                            if stage_wrapped_node.type in StageType:
+                                accumulated_stage_time += stage_wrapped_node.cpu_time
+                        self._fill_stage_events(stage_wrapped_node, stage_idx)
+                    if 'Other' not in self.model_perspective_items:
+                        self.model_perspective_items[
+                            'Other'] = ModelPerspectiveItem('Other')
+                    if thread_count == 1:
+                        self.model_perspective_items['Other'].add_cpu_time(
+                            total_time - accumulated_stage_time)
+                        self.model_perspective_items['Other'].cpu_times[
+                            stage_idx] = total_time - accumulated_stage_time
 
-    
     def add_userdefined_item(self, userdefined_node):
         if userdefined_node.name not in self.userdefined_items:
-            self.userdefined_items[
-                userdefined_node.name] = GeneralItem(
-                    userdefined_node.name)
+            self.userdefined_items[userdefined_node.name] = GeneralItem(
+                userdefined_node.name)
 
-        self.userdefined_items[userdefined_node.name].add_item(userdefined_node)
-
-        if userdefined_node.name not in self.userdefined_thread_items[
-                userdefined_node.thread_id]:
-            self.userdefined_thread_items[userdefined_node.thread_id][
-                userdefined_node.name] = GeneralItem(
-                    userdefined_node.name)
-        self.userdefined_thread_items[userdefined_node.thread_id][
-            userdefined_node.name].add_item(userdefined_node)
+        self.userdefined_items[userdefined_node.name].add_item(
+            userdefined_node)
 
     def add_memory_manipulation_item(self, memory_manipulation_node):
         if memory_manipulation_node.name not in self.memory_manipulation_items:
@@ -197,32 +504,21 @@ class OverviewParser:
         self.memory_manipulation_items[memory_manipulation_node.name].add_item(
             memory_manipulation_node)
 
-
     def add_model_perspective_item(self, model_perspective_node):
-        if model_perspective_node.type == TracerEventType.Forward:
+        # print("I am in add_model_perspective_item", model_perspective_node.type)
+        if model_perspective_node.type == 'Forward':
             name = 'Forward'
-        elif model_perspective_node.type == TracerEventType.Backward:
+        elif model_perspective_node.type == 'Backward':
             name = 'Backward'
-        elif model_perspective_node.type == TracerEventType.Optimization:
+        elif model_perspective_node.type == 'Optimization':
             name = 'Optimization'
-        elif model_perspective_node.type == TracerEventType.Dataloader:
+        elif model_perspective_node.type == 'Dataloader':
             name = 'Dataloader'
-        elif model_perspective_node.type == TracerEventType.ProfileStep:
+        elif model_perspective_node.type == 'ProfileStep':
             name = 'ProfileStep'
         else:
             return
         if name not in self.model_perspective_items:
-            self.model_perspective_items[name] = GeneralItem(name)
-        self.model_perspective_items[name].add_item(model_perspective_node)
-
-
-    def get_gpu_devices(self):
-        return self.GPUTimeRange.keys()
-
-    def get_gpu_range_sum(self, device_id, event_type):
-        return self.GPUTimeRangeSum[device_id][event_type]
-
-    def get_cpu_range_sum(self, event_type):
-        return self.CPUTimeRangeSum[event_type]
-
-
+            self.model_perspective_items[name] = ModelPerspectiveItem(name)
+        self.model_perspective_items[name].add_cpu_time(
+            model_perspective_node.cpu_time)

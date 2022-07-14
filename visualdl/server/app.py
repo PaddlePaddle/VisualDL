@@ -32,6 +32,7 @@ from flask_babel import Babel
 
 import visualdl.server
 from visualdl import __version__
+from visualdl.component.profiler.profiler_server import create_profiler_api_call
 from visualdl.server.api import create_api_call
 from visualdl.server.args import parse_args
 from visualdl.server.args import ParseArgs
@@ -66,7 +67,7 @@ def create_app(args):
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
     babel = Babel(app)
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
-
+    profiler_api_call = create_profiler_api_call(args.logdir)
     if args.telemetry:
         update_util.PbUpdater(args.product).start()
 
@@ -131,6 +132,13 @@ def create_app(args):
     @app.route(api_path + '/<path:method>', methods=["GET", "POST"])
     def serve_api(method):
         data, mimetype, headers = api_call(method, request.args)
+        return make_response(
+            Response(data, mimetype=mimetype, headers=headers))
+
+    @app.route(api_path + '/profiler/<path:method>', methods=["GET", "POST"])
+    def serve_profiler_api(method):
+        print(method)
+        data, mimetype, headers = profiler_api_call(method, request.args)
         return make_response(
             Response(data, mimetype=mimetype, headers=headers))
 

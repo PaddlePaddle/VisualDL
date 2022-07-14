@@ -27,15 +27,16 @@ def merge_self_ranges(src_ranges, is_sorted=False):
         if not is_sorted:
             src_ranges.sort(key=lambda x: x[0])
         cur_indx = 0
-        merged_ranges.append((src_ranges[cur_indx][0], src_ranges[cur_indx][1]))
+        merged_ranges.append((src_ranges[cur_indx][0],
+                              src_ranges[cur_indx][1]))
         for cur_indx in range(1, len(src_ranges)):
             if src_ranges[cur_indx][1] > merged_ranges[-1][1]:
                 if src_ranges[cur_indx][0] <= merged_ranges[-1][1]:
                     merged_ranges[-1] = (merged_ranges[-1][0],
                                          src_ranges[cur_indx][1])
                 else:
-                    merged_ranges.append(
-                        (src_ranges[cur_indx][0], src_ranges[cur_indx][1]))
+                    merged_ranges.append((src_ranges[cur_indx][0],
+                                          src_ranges[cur_indx][1]))
     return merged_ranges
 
 
@@ -244,7 +245,9 @@ class HostStatisticNode:
         self.is_terminal_operator_node = True
 
     def cal_statistic(self):
+        # print('name: {} , children length: {}'.format(self.name, len(self.children_node)))
         for child in self.children_node:
+            # print(child.name)
             child.cal_statistic()
             if child.is_terminal_operator_node == False:
                 self.is_terminal_operator_node = False
@@ -252,7 +255,7 @@ class HostStatisticNode:
             rt.cal_statistic()
         self.cpu_time = self.hostnode.end_ns - self.hostnode.start_ns
         for child in self.children_node:
-            if child.type == TracerEventType.Operator:
+            if child.type == 'Operator':
                 self.is_terminal_operator_node = False
             self.gpu_time += child.gpu_time
             self.general_gpu_time += child.general_gpu_time
@@ -264,7 +267,7 @@ class HostStatisticNode:
             self.general_gpu_time += rt.general_gpu_time
             self.self_general_gpu_time += rt.general_gpu_time
         for device in self.hostnode.device_node:
-            if device.type == TracerEventType.Kernel:
+            if device.type == 'Kernel':
                 self.gpu_time += (device.end_ns - device.start_ns)
                 self.self_gpu_time += (device.end_ns - device.start_ns)
             self.general_gpu_time += (device.end_ns - device.start_ns)
@@ -349,3 +352,27 @@ def wrap_tree(nodetrees):
         root_statistic_node.cal_statistic()
 
     return node_statistic_tree, newresults
+
+
+def format_time(time, unit='ms'):
+    r"""
+    Transform time in ns to time in unit.
+    """
+    if time == float('inf'):
+        return '-'
+    else:
+        result = float(time)
+        if unit == 's':
+            result /= 1e9
+        elif unit == 'ms':
+            result /= 1e6
+        elif unit == 'us':
+            result /= 1e3
+        return '{:.2f}'.format(result)
+
+
+def format_ratio(ratio):
+    r"""
+    Transform ratio within [0, 1] to percentage presentation.
+    """
+    return '{:.2f}'.format(ratio * 100)

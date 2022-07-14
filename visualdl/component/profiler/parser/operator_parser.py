@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import collections
+
 from .kernel_parser import DeviceItem
+from .utils import wrap_tree
+
 
 class OperatorItem:
     def __init__(self, name):
@@ -72,10 +76,10 @@ class OperatorItem:
         self.add_gpu_time(node.gpu_time)
         self.add_general_gpu_time(node.general_gpu_time)
         for child in node.children_node:
-            if child.name not in self.operator_inners:
-                self.operator_inners[
-                    child.name] = OperatorItem(child.name)
-            self.operator_inners[child.name].add_item(child)
+            if child.type != 'Operator':
+                if child.name not in self.operator_inners:
+                    self.operator_inners[child.name] = OperatorItem(child.name)
+                self.operator_inners[child.name].add_item(child)
 
         for runtimenode in node.runtime_node:
             for devicenode in runtimenode.device_node:
@@ -89,6 +93,7 @@ class OperatorParser:
     r"""
     Analyse operator event in profiling data, correlate with its device event.
     """
+
     def __init__(self):
         self.items = {}  # for operator summary
         self.thread_items = collections.defaultdict(
@@ -98,33 +103,24 @@ class OperatorParser:
         r"""
         Analysis operator event in the nodetress.
         """
-        node_statistic_trees, thread2host_statistic_nodes = wrap_tree(nodetrees)
+        node_statistic_trees, thread2host_statistic_nodes = wrap_tree(
+            nodetrees)
         for threadid, host_statistic_nodes in thread2host_statistic_nodes.items(
         ):
             for host_statistic_node in host_statistic_nodes[
                     1:]:  #skip root node
-                if host_statistic_node.type == TracerEventType.Operator:
+                if host_statistic_node.type == 'Operator':
                     self.add_operator_item(host_statistic_node)
-                if host_statistic_node.type == TracerEventType.UserDefined\
-                    or host_statistic_node.type == TracerEventType.PythonUserDefined:
-                    if 'memcpy' in host_statistic_node.name.lower() or 'memorycopy' in host_statistic_node.name.lower()\
-                        or 'memset' in host_statistic_node.name.lower():
-                        self.add_memory_manipulation_item(host_statistic_node)
-                    else:
-                        self.add_userdefined_item(host_statistic_node)
 
     def add_operator_item(self, operator_node):
-        if operator_node.is_terminal_operator_node == False:
-            return
         if operator_node.name not in self.items:
-            self.items[operator_node.name] = OperatorItem(
-                operator_node.name)
+            self.items[operator_node.name] = OperatorItem(operator_node.name)
 
         self.items[operator_node.name].add_item(operator_node)
 
-        if operator_node.name not in self.thread_items[operator_node.thread_id]:
+        if operator_node.name not in self.thread_items[
+                operator_node.thread_id]:
             self.thread_items[operator_node.thread_id][
-                operator_node.name] = OperatorItem(
-                    operator_node.name)
-        self.thread_items[operator_node.thread_id][operator_node.name].add_item(
-            operator_node)
+                operator_node.name] = OperatorItem(operator_node.name)
+        self.thread_items[operator_node.thread_id][
+            operator_node.name].add_item(operator_node)
