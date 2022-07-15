@@ -75,22 +75,30 @@ class KernelParser:
     def parse(self, nodelists):
         total_duration = 0.0
         weighted_occupancy = 0.0
-        weighted_sm_efficency = 0.0
+        weighted_sm_efficiency = 0.0
         for threadid, nodes in nodelists.items():
             for node in nodes:
-                if node.type == 'Kernel':
-                    name = node.name
-                    if name not in self.kernel_items:
-                        self.kernel_items[name] = EventSummary.DeviceItem(name)
-                    self.kernel_items[name].add_item(node)
-                    weighted_occupancy += node.occupancy * (
-                        node.end_ns - node.start_ns)
-                    weighted_sm_efficency += node.blocks_per_sm * (
-                        node.end_ns - node.start_ns)
-                    total_duration += (node.end_ns - node.start_ns)
-                    self.gpu_ids.add(node.device_id)
+                for runtime_node in node.runtime_node:
+                    for device_node in runtime_node.device_node:
+                        if device_node.type == 'Kernel':
+                            name = device_node.name
+                            if name not in self.kernel_items:
+                                self.kernel_items[name] = DeviceItem(name)
+                            self.kernel_items[name].add_item(device_node)
+                            weighted_occupancy += (
+                                device_node.occupancy / 100) * (
+                                    device_node.end_ns - device_node.start_ns)
+                            if device_node.blocks_per_sm > 1:
+                                sm_efficiency = 1
+                            else:
+                                sm_efficiency = device_node.blocks_per_sm
+                            weighted_sm_efficiency += sm_efficiency * (
+                                device_node.end_ns - device_node.start_ns)
+                            total_duration += (
+                                device_node.end_ns - device_node.start_ns)
+                            self.gpu_ids.add(device_node.device_id)
         self.occupancy = weighted_occupancy / total_duration if total_duration != 0 else 0.0
-        self.sm_efficiency = weighted_sm_efficency / total_duration if total_duration != 0 else 0.0
+        self.sm_efficiency = weighted_sm_efficiency / total_duration if total_duration != 0 else 0.0
         total_count = 0
         total_tensorcore_count = 0
         for name, node in self.kernel_items.items():

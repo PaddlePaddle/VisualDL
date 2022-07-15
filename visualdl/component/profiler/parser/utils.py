@@ -368,11 +368,25 @@ def format_time(time, unit='ms'):
             result /= 1e6
         elif unit == 'us':
             result /= 1e3
-        return '{:.2f}'.format(result)
+        # return '{:.2f}'.format(result)
+        return round(result, 2)
 
 
 def format_ratio(ratio):
     r"""
     Transform ratio within [0, 1] to percentage presentation.
     """
-    return '{:.2f}'.format(ratio * 100)
+    # return '{:.2f}'.format(ratio * 100)
+    return round(ratio * 100, 2)
+
+
+def format_memory(memory, memory_unit):
+    result = float(memory)
+    if memory_unit == 'GB':
+        result /= 1e9
+    elif memory_unit == 'MB':
+        result /= 1e6
+    elif memory_unit == 'KB':
+        result /= 1e3
+    # return '{:.2f}'.format(result)
+    return round(result, 2)

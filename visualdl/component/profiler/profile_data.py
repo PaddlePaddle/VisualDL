@@ -22,6 +22,7 @@ from .parser.overview_parser import CPUType
 from .parser.overview_parser import GPUType
 from .parser.overview_parser import OverviewParser
 from .parser.trace_parser import TraceParser
+from .parser.utils import format_memory
 from .parser.utils import format_ratio
 from .parser.utils import format_time
 from .parser.utils import traverse_tree
@@ -122,7 +123,10 @@ class ProfileData:
                     "name":
                     self.device_infos[gpu_id]['name'],
                     "memory":
-                    self.device_infos[gpu_id]['totalGlobalMem'],
+                    "{} GB".format(
+                        format_memory(
+                            self.device_infos[gpu_id]['totalGlobalMem'],
+                            'GB')),
                     "compute_capability":
                     '{}.{}'.format(self.device_infos[gpu_id]['computeMajor'],
                                    self.device_infos[gpu_id]['computeMinor']),
@@ -360,6 +364,7 @@ class ProfileData:
                                     ['CPU']['ALL'][event_type]['total_time']))
                 if event_type_data['calling_times']['key']:
                     data[event_type] = event_type_data
+                    data['order'].append(event_type)
         else:
             for event_type in GPUType:
                 event_type_data = {}
@@ -400,7 +405,8 @@ class ProfileData:
                                     ['GPU']['ALL'][event_type]['total_time']))
                 if event_type_data['calling_times']['key']:
                     data[event_type] = event_type_data
-        self.cache['get_event_type_perspective'] = data
+                    data['order'].append(event_type)
+        self.cache[time_unit]['get_event_type_perspective'] = data
         return data
 
     # profiler/overview/event_type_model_perspective
@@ -465,10 +471,17 @@ class ProfileData:
                                         [event_type]['total_time'], time_unit))
                             else:
                                 data[event_type].append(0)
+            newdata = OrderedDict()
+            newdata['order'] = data['order']
+            newdata['phase_type'] = data['phase_type']
+            newdata['data'] = []
+            for key in newdata['order']:
+                newdata['data'].append(data[key])
+
         except Exception as e:
             print('error in get_event_type_model_perspective', e)
-        self.cache['get_event_type_model_perspective'] = data
-        return data
+        self.cache['get_event_type_model_perspective'] = newdata
+        return newdata
 
     # profiler/overview/userdefined_perspective
     #   {
@@ -529,11 +542,11 @@ class ProfileData:
         '''
     Return available views this profile data can provide.
     '''
-        views = ['overview']
+        views = ['Overview']
         if self.operator_items:
-            views.append('operator')
+            views.append('Operator')
         if self.kernel_items:
-            views.append('kernel')
+            views.append('GPU Kernel')
         return views
 
 

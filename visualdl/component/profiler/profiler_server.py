@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import json
+
 from .profiler_reader import ProfileReader
+from visualdl.server.api import gen_result
 from visualdl.server.api import result
 
 
@@ -54,67 +57,92 @@ class ProfilerApi(object):
         span = str(span)
         profiler_data = run_manager.get_profile_data(worker, span)
         result = profiler_data.get_device_infos()
-        # print('result', result)
-        num_workers = len(run_manager.get_workers('overview'))
+        num_workers = len(run_manager.get_workers('Overview'))
         result['num_workers'] = num_workers
         return result
 
     @result()
-    def model_perspective(self, run, worker, span, time_unit):
+    def model_perspective(self, run, worker, span, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_model_perspective(time_unit)
 
     @result()
-    def model_perspective_perstep(self, run, worker, span, device_type,
-                                  time_unit):
+    def model_perspective_perstep(self,
+                                  run,
+                                  worker,
+                                  span,
+                                  device_type,
+                                  time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_model_perspective_perstep(
             device_type, time_unit)
 
     @result()
-    def event_type_perspective(self, run, worker, span, device_type,
-                               time_unit):
+    def event_type_perspective(self,
+                               run,
+                               worker,
+                               span,
+                               device_type,
+                               time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_event_type_perspective(device_type, time_unit)
 
     @result()
-    def event_type_model_perspective(self, run, worker, span, time_unit):
+    def event_type_model_perspective(self, run, worker, span, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_event_type_model_perspective(time_unit)
 
     @result()
-    def userdefined_perspective(self, run, worker, span, time_unit):
+    def userdefined_perspective(self, run, worker, span, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_userdefined_perspective(time_unit)
 
     @result()
-    def operator_pie(self, run, worker, span, group_by):
+    def operator_pie(self, run, worker, span, topk, time_unit='ms'):
         pass
 
     @result()
-    def operator_table(self, run, worker, span, group_by):
+    def operator_table(self,
+                       run,
+                       worker,
+                       span,
+                       group_by,
+                       search_name,
+                       time_unit='ms'):
         pass
 
     @result()
-    def operator_stack_table(self, run, worker, span, op_name, group_by,
-                             input_shape):
+    def operator_stack_table(self,
+                             run,
+                             worker,
+                             span,
+                             op_name,
+                             group_by,
+                             input_shape,
+                             time_unit='ms'):
         pass
 
     @result()
-    def kernel_pie(self, run, worker, span):
+    def kernel_pie(self, run, worker, span, topk, time_unit='ms'):
         pass
 
     @result()
-    def kernel_table(self, run, worker, span, group_by):
+    def kernel_table(self,
+                     run,
+                     worker,
+                     span,
+                     group_by,
+                     search_name,
+                     time_unit='ms'):
         pass
 
     @result()
-    def kernel_tc_pie(self, run, worker, span):
+    def kernel_tc_pie(self, run, worker, span, topk, time_unit='ms'):
         pass
 
     @result()
@@ -122,11 +150,59 @@ class ProfilerApi(object):
         pass
 
     @result()
-    def distributed_overlap(self, run, worker, span):
+    def distributed_table(self, run, worker, span):
         pass
 
     @result()
     def trace(self, run, worker, span):
+        pass
+
+    @result()
+    def memory_devices(self, run, worker, span):
+        pass
+
+    @result()
+    def memory_curve(self, run, worker, span, device_type):
+        pass
+
+    @result()
+    def memory_events(self, run, worker, span, device_type, min_size, max_size,
+                      search_name):
+        pass
+
+    @result()
+    def op_memory_events(self, run, worker, span, device_type, search_name):
+        pass
+
+    @result()
+    def comparison_phase(self, base_run, base_worker, base_span, exp_run,
+                         exp_worker, exp_span):
+        pass
+
+    @result()
+    def comparison_phase_diff(self, base_run, base_worker, base_span, exp_run,
+                              exp_worker, exp_span):
+        pass
+
+    @result()
+    def comparison_phase_table(self, base_run, base_worker, base_span, exp_run,
+                               exp_worker, exp_span):
+        pass
+
+    @result()
+    def comparison_phase_inner(self, base_run, base_worker, base_span, exp_run,
+                               exp_worker, exp_span, phase_name):
+        pass
+
+    @result()
+    def comparison_phase_diff_inner(self, base_run, base_worker, base_span,
+                                    exp_run, exp_worker, exp_span, phase_name):
+        pass
+
+    @result()
+    def comparison_phase_table_inner(self, base_run, base_worker, base_span,
+                                     exp_run, exp_worker, exp_span,
+                                     phase_name):
         pass
 
 
@@ -156,16 +232,57 @@ def create_profiler_api_call(logdir):
         'operator/pie': (api.operator_pie,
                          ["run", "worker", "span", "time_unit", "topk"]),
         'operator/table': (api.operator_table, [
-            "run", "worker", "span", "time_unit", "group_by", "search_name",
-            "input_shape"
+            "run", "worker", "span", "time_unit", "group_by", "search_name"
         ]),
         'operator/stack_table': (api.operator_stack_table, [
-            "run", "worker", "span", "time_unit", "op_name", "group_by"
+            "run", "worker", "span", "time_unit", "op_name", "group_by",
+            "input_shape"
+        ]),
+        'kernel/pie': (api.kernel_pie,
+                       ["run", "worker", "span", "time_unit", "topk"]),
+        'kernel/tensorcore_pie':
+        (api.kernel_tc_pie, ["run", "worker", "span", "time_unit", "topk"]),
+        'kernel/table': (api.kernel_table, [
+            "run", "worker", "span", "time_unit", "group_by", "search_name"
         ]),
         'distributed/info': (api.distributed_info, ["run", "worker", "span"]),
-        'distributed/overlap': (api.distributed_overlap,
-                                ["run", "worker", "span"]),
-        'trace': (api.trace, ["run", "worker", "span"])
+        'distributed/table': (api.distributed_table, ["run", "worker",
+                                                      "span"]),
+        'trace': (api.trace, ["run", "worker", "span"]),
+        'memory/devices': (api.memory_devices, ["run", "worker", "span"]),
+        'memory/curve': (api.memory_curve,
+                         ["run", "worker", "span", "device_type"]),
+        'memory/memory_events': (api.memory_events, [
+            "run", "worker", "span", "device_type", "min_size", "max_size",
+            "search_name"
+        ]),
+        'memory/op_memory_events': (api.op_memory_events, [
+            "run", "worker", "span", "device_type", "search_name"
+        ]),
+        'comparison/phase': (api.comparison_phase, [
+            "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
+            "exp_span"
+        ]),
+        'comparison/phase_diff': (api.comparison_phase_diff, [
+            "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
+            "exp_span"
+        ]),
+        'comparison/phase_table': (api.comparison_phase_table, [
+            "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
+            "exp_span"
+        ]),
+        'comparison/phase_inner': (api.comparison_phase_inner, [
+            "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
+            "exp_span", "phase_name"
+        ]),
+        'comparison/phase_diff_inner': (api.comparison_phase_diff_inner, [
+            "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
+            "exp_span", "phase_name"
+        ]),
+        'comparison/phase_table_inner': (api.comparison_phase_table_inner, [
+            "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
+            "exp_span", "phase_name"
+        ])
     }
 
     def call(path: str, args):
