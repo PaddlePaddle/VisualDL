@@ -25,7 +25,7 @@ import BodyLoading from '~/components/BodyLoading';
 import Button from '~/components/Button';
 import Content from '~/components/Content';
 import Empty from '~/components/ProfilerPage/Empty';
-import OverView from '~/components/ProfilerPage/overview';
+import OverView from '~/components/ProfilerPage/overview/overview';
 import OperatorView from '~/components/ProfilerPage/OperatorView';
 import DiffView from '~/components/ProfilerPage/DiffView';
 import MemoryView from '~/components/ProfilerPage/MemoryView';
@@ -245,23 +245,23 @@ const Profiler: FunctionComponent = () => {
     }, [runs, workers]);
     const view = useMemo(() => {
         switch (views) {
-            case 'OverView':
+            case 'Overview':
                 return <OverView runs={runs} views={views} workers={workers}
                 units={units}
                 spans={spans} />;
-            case 'OperatorView':
+            case 'Operator':
                 return <OperatorView runs={runs} views={views} workers={workers}
                 units={units}
                 spans={spans} />;
-            case 'parallel-coordinates':
+            case 'Distributed':
                 return <NuclearView runs={runs} views={views} workers={workers}
                 units={units}
                 spans={spans} />;
-            case 'ComparedView':
+            case 'GPU Kernel':
                 return <ComparedView runs={runs} views={views} workers={workers}
                 units={units}
                 spans={spans} />;
-            case 'scatter-plot-matrix':
+            case 'Memory':
                 return <MemoryView runs={runs} views={views} workers={workers}
                 units={units}
                 spans={spans} />;

@@ -130,8 +130,9 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         let totals = 0;
                         for (let index = 0; index < params.length; index++) {
                             const element = params[index];
-                            totals += element.data;
+                            totals += Number(element.data)
                         }
+                        totals = Number(totals.toFixed(2))
                         let str = ''; //声明一个变量用来存储数据
                         str +=
                             '<div style="font-size:16px;color:#FFFFFF;font-weight:500;margin-left:17px;">' +

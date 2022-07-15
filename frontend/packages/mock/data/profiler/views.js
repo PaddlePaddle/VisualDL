@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
- export default ['OverView','ComparedView','OperatorView','Trace','parallel-coordinates', 'scatter-plot-matrix']
+export default ['Overview', 'Operator', 'GPU Kernel', 'Trace', 'Distributed', 'Memory'];

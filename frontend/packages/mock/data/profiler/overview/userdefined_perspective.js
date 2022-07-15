@@ -15,18 +15,18 @@ export default {
     ],
     events: [
         {
-            name: 'user_record1',
-            calls: 10,
-            cpu_total_time: 5322,
-            cpu_max_time: 40,
-            cpu_min_time: 20,
-            cpu_avg_time: 30,
-            cpu_ratio: 30,
-            gpu_total_time: 5322,
-            gpu_max_time: 40,
-            gpu_min_time: 20,
-            gpu_avg_time: 30,
-            gpu_ratio: 30
+            name: 'root node',
+            calls: 2,
+            cpu_total_time: '18446744073709.55',
+            cpu_avg_time: '9223372036854.78',
+            cpu_max_time: '9223372036854.78',
+            cpu_min_time: '9223372036854.78',
+            cpu_ratio: '100.00',
+            gpu_total_time: '1.33',
+            gpu_avg_time: '0.66',
+            gpu_max_time: '1.33',
+            gpu_min_time: '0.00',
+            gpu_ratio: '100.00'
         }
     ]
 };
