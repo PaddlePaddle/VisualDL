@@ -17,7 +17,8 @@
 import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import * as echarts from 'echarts';
+import {WithStyled, primaryColor, opacify} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import {color, colorAlt} from '~/utils/chart';
 import type {EChartOption} from 'echarts';
@@ -87,116 +88,170 @@ const ExecutionDiffChart = React.forwardRef<LineChartRef, any>(
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartOption = defaultsDeep({
-                    color: ["#2932E1","#DC3912"],
-                    // backgroundColor: 'rgb(128, 128, 128, .04)',
-                    title: {
-                        top: '0%',
-                        left: '0%',
-                        show: true,
-                        text: title,
-                        textStyle: {
-                            color: '#666666',
-                            fontStyle: 'PingFangSC-Regular',
-                            fontWeight: '400',
-                            fontSize: 12
-                        }
-                    },
-                    legend: {
-                        type: 'plain',
-                        show: true,
-                        left: 'center',
-                        data: [
-                            {
-                                name: '日增量'
-                            },
-                            {
-                                name: '当前数量'
-                            },
-                            {
-                                name: 'value大小'
-                            }
-                        ]
-                    },
+                    // backgroundColor:'#0c2d55',
                     tooltip: {
                         trigger: 'axis',
-                        formatter: {
-                            _custom: {
-                                type: 'function',
-                                display: '<span>ƒ</span> formatter(params, ticket, callback)'
-                            }
+                    },
+                    color:['#fcba62','#69f0ff'],
+                    legend: {
+                        x: 'left',
+                        top: '11%',
+                        left:'15%',
+                        textStyle: {
+                            color: '#68a9ff',
+                            fontSize: 14,
+                            padding:[0,8,0,8]
                         }
                     },
                     grid: {
-                        top: '22%',
-                        left: '7%',
+                        top: '15%',
+                        left: '10%',
                         right: '5%',
-                        bottom: '6%'
+                        bottom: '15%',
                     },
                     xAxis: [
                         {
                             type: 'category',
-                            min: 1,
-                            axisTick: {
-                                show: false
-                            },
                             axisLine: {
                                 lineStyle: {
-                                    color: '#CCCCCC'
+                                    color: '#425b78'
                                 }
                             },
                             axisLabel: {
-                                color: '#666666'
+                                color: '#b9bec6',
                             },
-                            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                        }
+                            splitLine: {
+                                show: false,
+                            },
+                            boundaryGap: false,
+                            data: ['2020-06-21', '2020-06-22', '2020-06-23', '2020-06-24', '2020-06-25', '2020-06-26', '2020-06-27'], //this.$moment(data.times).format("HH-mm") ,
+                        },
                     ],
+                
                     yAxis: [
                         {
                             type: 'value',
-                            name: '内存使用量（MB）',
-                            position: 'left',
-                            offset: 0,
-                            axisTick: {
-                                show: false
-                            },
+                            name: '单位：m/s',
+                            nameTextStyle:{
+                                         color:"#b9bec6", 
+                                         fontSize:12,  
+                                     },
                             axisLine: {
                                 lineStyle: {
-                                    color: '#CCCCCC'
+                                    color: '#425b78',
+                                    fontSize: 14
                                 }
                             },
+                            splitLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: '#587485',
+                                },
+                            },
                             axisLabel: {
-                                color: '#666666',
-                                formatter: {
-                                    _custom: {
-                                        type: 'function',
-                                        display: '<span>ƒ</span> labelFormatter(val)'
-                                    }
-                                }
-                            }
-                        }
+                                show: true,
+                                textStyle: {
+                                    color: '#b9bec6',
+                
+                                },
+                            },
+                        },
                     ],
                     series: [
                         {
-                            name: '邮件',
+                            name: '风速',
                             type: 'line',
-                            stack: '总量',
-                            areaStyle: {
-                                color: 'rgba(41,50,225 , 0.3)'
+                            showSymbol: false,
+                            step:'end',
+                            lineStyle: {
+                                normal: {
+                                    color: '#fcba62',
+                                },
                             },
-                            step: true,
-                            data: [-120, -132, -201, -234, -90, -230, -210]
+                            // label: {
+                            //     show: true,
+                            //     position: 'top',
+                            //     textStyle: {
+                            //         color: '#A582EA',
+                            //     }
+                            // },
+                            // itemStyle: {
+                            //     color: "#fff",
+                            //     borderColor: "#A582EA",
+                            //     borderWidth: 2,
+                            // },
+                            areaStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        [
+                                            {
+                                                offset: 0,
+                                                color: 'rgba(223,172,105,1)',
+                                            },
+                                            {
+                                                offset: 1,
+                                                color: 'rgba(212,190,161,0.7)',
+                                            },
+                                        ],
+                                        false
+                                    ),
+                                },
+                            },
+                            data: [4, 7, 5, 4, 3, 5, 8], //data.values
                         },
                         {
-                            name: '联盟',
+                            name: '两层风速',
                             type: 'line',
-                            stack: '总量',
-                            areaStyle: {
-                                color: 'rgba(220, 57, 18, 0.3)'
+                            showSymbol: false,
+                            step:'end',
+                            // showAllSymbol: true,
+                            // symbol: 'circle',
+                            // symbolSize: 10,
+                            lineStyle: {
+                                normal: {
+                                    color: '#69f0ff',
+                                },
                             },
-                            step: true,
-                            data: [-220, -182, -291, -364, -440, -330, -410]
-                        }
-                    ]
+                            // label: {
+                            //     show: true,
+                            //     position: 'top',
+                            //     textStyle: {
+                            //         color: '#2CABE3',
+                            //     }
+                            // },
+                            // itemStyle: {
+                            //     color: "#fff",
+                            //     borderColor: "#2CABE3",
+                            //     // borderWidth: 2,
+                            // },
+                            areaStyle: {
+                                normal: {
+                                    color: new echarts.graphic.LinearGradient(
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        [
+                                            {
+                                                offset: 0,
+                                                color: 'rgba(107,205,216,1)',
+                                            },
+                                            {
+                                                offset: 1,
+                                                color: 'rgba(143,192,127,0.7)',
+                                            },
+                                        ],
+                                        false
+                                    ),
+                                },
+                            },
+                            data: [3, 5, 4, 2, 1, 7, 6], //data.values
+                        },
+                    ],
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }

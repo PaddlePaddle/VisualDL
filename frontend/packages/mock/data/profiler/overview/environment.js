@@ -1,17 +1,14 @@
 export default {
-    number_workers: 5,
     device_type: 'GPU',
-    CPU: {
-        process_utilization: 78,
-        system_utilization: 30
-    },
+    CPU: {process_utilization: '125.00', system_utilization: '10.47'},
     GPU: {
         name: 'Tesla P40',
-        memory: '22.3 GB',
+        memory: 2557542400,
         compute_capability: '6.1',
-        utilization: 50,
-        sm_efficiency: 57,
-        achieved_occupancy: 33,
-        tensor_core_percentage: 55
-    }
+        utilization: '9.05',
+        sm_efficiency: '722.00',
+        achieved_occupancy: '3258.94',
+        tensor_core_percentage: '0.00'
+    },
+    num_workers: 2
 };
