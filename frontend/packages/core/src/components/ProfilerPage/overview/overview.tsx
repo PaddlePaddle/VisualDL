@@ -453,7 +453,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     let DataTypeItem: any = {};
                     for (const key of result.column_name) {
                         const keys = 'GPU' + key;
-                        const items:any = item
+                        const items: any = item;
                         DataTypeItem[keys] = items[key];
                     }
                     data.push(DataTypeItem);
@@ -491,18 +491,6 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 }
                 setChartData(chartData);
             });
-            // 训练步数耗时
-            fetcher(
-                '/profiler/overview/model_perspective_perstep' +
-                    `?run=${runs}` +
-                    `&worker=${workers}` +
-                    `&span=${spans}` +
-                    `&time_unit=${units}`
-            ).then((res: unknown) => {
-                const Data = res as trainType;
-                console.log('TrainData,', Data);
-                setTrainData(Data);
-            });
             // 自定义事件耗时
             fetcher(
                 '/profiler/overview/userdefined_perspective' +
@@ -514,12 +502,12 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 const Data = res as perspectiveType;
                 console.log('TableData2,', Data);
                 const events = Data.events;
-                const TableDatas = events.map((item:any)=>{
+                const TableDatas = events.map((item: any) => {
                     return {
-                        key:item.name,
+                        key: item.name,
                         ...item
-                    }
-                })
+                    };
+                });
                 setTableData2(TableDatas);
             });
             // 模型各阶段消耗
@@ -552,6 +540,19 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 const result: any = res as performanceType;
                 console.log('PerformanceData', result);
                 setPerformanceData(result);
+            });
+            // 训练步数耗时
+            fetcher(
+                '/profiler/overview/model_perspective_perstep' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&device_type=${device_type}` +
+                    `&time_unit=${units}`
+            ).then((res: unknown) => {
+                const Data = res as trainType;
+                console.log('TrainData,', Data);
+                setTrainData(Data);
             });
         }
     }, [runs, workers, spans, views, isCPU, units]);
