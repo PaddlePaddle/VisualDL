@@ -447,13 +447,14 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const result = res as consumingType;
-                let tableData: tableType[] = [];
+                let tableDatas: tableType[] = [];
                 let data = [];
                 for (const item of result.gpu) {
                     let DataTypeItem: any = {};
                     for (const key of result.column_name) {
                         const keys = 'GPU' + key;
-                        DataTypeItem[keys] = (item as any).key;
+                        const items:any = item
+                        DataTypeItem[keys] = items[key];
                     }
                     data.push(DataTypeItem);
                 }
@@ -462,10 +463,10 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         ...result.cpu[index],
                         ...data[index]
                     };
-                    tableData.push(DataTypeItem);
+                    tableDatas.push(DataTypeItem);
                 }
-                console.log('tableData', tableData);
-                setTableData(tableData);
+                console.log('tableData', tableDatas);
+                setTableData(tableDatas);
                 result.cpu.shift();
                 result.gpu.shift();
                 const chartData: any = {

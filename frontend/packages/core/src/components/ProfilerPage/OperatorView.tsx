@@ -18,6 +18,7 @@ import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEff
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/HyperParameterPage/IndicatorFilter/NumberInput';
 import StackColumnChart from '~/components/StackColumnChart';
+import type {TableColumnsType} from 'antd';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
@@ -406,12 +407,12 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: any) => {
-                const TableDatas = res.events.map((item:any)=>{
+                const TableDatas = res.events.map((item: any) => {
                     return {
-                        key:item.name,
+                        key: item.name,
                         ...item
-                    }
-                })
+                    };
+                });
                 setTableData(TableDatas);
             });
         }
@@ -433,14 +434,14 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const columns: ColumnsType<DataType> = useMemo(() => {
         let columns = [
             {
-                title: 'Name',
+                title: '算子名称',
                 dataIndex: 'name',
-                key: 'name',
+                key: 'name'
             },
             {
                 title: '调用量',
-                dataIndex: 'call',
-                key: 'call',
+                dataIndex: 'calls',
+                key: 'calls'
             },
             {
                 title: 'GPU',
@@ -449,25 +450,25 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         title: '总耗时',
                         dataIndex: 'cpu_total_time',
                         key: 'cpu_total_time',
-                        sorter: (a:any, b:any):any => a.age - b.age
+                        sorter: (a: any, b: any): any => a.age - b.age
                     },
                     {
                         title: '平均耗时',
                         dataIndex: 'cpu_avg_time',
                         key: 'cpu_avg_time',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
                         title: '最短耗时',
                         dataIndex: 'cpu_min_time',
                         key: 'cpu_min_time',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
                         title: '百分比',
                         dataIndex: 'cpu_ratio',
                         key: 'cpu_ratio',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     }
                 ]
             },
@@ -478,139 +479,132 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         title: '总耗时',
                         dataIndex: 'gpu_total_time',
                         key: 'gpu_total_time',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
                         title: '平均耗时',
                         dataIndex: 'gpu_avg_time',
                         key: 'gpu_avg_time',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
                         title: '最短耗时',
                         dataIndex: 'gpu_min_time',
                         key: 'gpu_min_time',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
                         title: '百分比',
                         dataIndex: 'gpu_ratio',
                         key: 'gpu_ratio',
-                        sorter: (a:any, b:any) => a.age - b.age
+                        sorter: (a: any, b: any) => a.age - b.age
                     }
                 ]
             }
         ];
         if (group === 'op_name_input_shape') {
-            columns.splice(1,0,{
+            columns.splice(1, 0, {
                 title: '输入形状',
                 dataIndex: 'input_shape',
                 key: 'input_shape'
-            },)
+            });
         }
-        return columns
-    }, [tableData,group]);
+        return columns;
+    }, [tableData, group]);
     const onSearch = (value: string) => {
         console.log(value);
     };
-    const expandedRowRender = useCallback(
-        (record:any, index:any, indent:any, expanded:any) => {
-            // debugger
-            if (!tableData) {
-                return;
+    const expandedRowRender = (record: any, index: any, indent: any, expanded: any) => {
+        const columns: TableColumnsType<ExpandedDataType> = [
+            {
+                title: '算子名称',
+                dataIndex: 'name',
+                key: 'name'
+            },
+            {
+                title: '调用量',
+                dataIndex: 'calls',
+                key: 'calls'
+            },
+            {
+                title: 'GPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'cpu_total_time',
+                        key: 'cpu_total_time',
+                        sorter: (a: any, b: any): any => a.age - b.age
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'cpu_avg_time',
+                        key: 'cpu_avg_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'cpu_max_time',
+                        key: 'cpu_max_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'cpu_min_time',
+                        key: 'cpu_min_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'cpu_ratio',
+                        key: 'cpu_ratio',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    }
+                ]
+            },
+            {
+                title: 'GPU',
+                children: [
+                    {
+                        title: '总耗时',
+                        dataIndex: 'gpu_total_time',
+                        key: 'gpu_total_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '平均耗时',
+                        dataIndex: 'gpu_avg_time',
+                        key: 'gpu_avg_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '最短耗时',
+                        dataIndex: 'gpu_min_time',
+                        key: 'gpu_min_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'gpu_max_time',
+                        key: 'gpu_max_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '百分比',
+                        dataIndex: 'gpu_ratio',
+                        key: 'gpu_ratio',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    }
+                ]
             }
-            const columns: ColumnsType<ExpandedDataType> = [
-                {
-                    title: 'Name',
-                    dataIndex: 'name',
-                    key: 'name',
-                },
-                {
-                    title: '调用量',
-                    dataIndex: 'call',
-                    key: 'call',
-                },
-                {
-                    title: 'GPU',
-                    children: [
-                        {
-                            title: '总耗时',
-                            dataIndex: 'cpu_total_time',
-                            key: 'cpu_total_time',
-                            sorter: (a:any, b:any):any => a.age - b.age
-                        },
-                        {
-                            title: '平均耗时',
-                            dataIndex: 'cpu_avg_time',
-                            key: 'cpu_avg_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '最长耗时',
-                            dataIndex: 'cpu_max_time',
-                            key: 'cpu_max_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '最短耗时',
-                            dataIndex: 'cpu_min_time',
-                            key: 'cpu_min_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '百分比',
-                            dataIndex: 'cpu_ratio',
-                            key: 'cpu_ratio',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        }
-                    ]
-                },
-                {
-                    title: 'GPU',
-                    children: [
-                        {
-                            title: '总耗时',
-                            dataIndex: 'gpu_total_time',
-                            key: 'gpu_total_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '平均耗时',
-                            dataIndex: 'gpu_avg_time',
-                            key: 'gpu_avg_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '最短耗时',
-                            dataIndex: 'gpu_min_time',
-                            key: 'gpu_min_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '最长耗时',
-                            dataIndex: 'gpu_max_time',
-                            key: 'gpu_max_time',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        },
-                        {
-                            title: '百分比',
-                            dataIndex: 'gpu_ratio',
-                            key: 'gpu_ratio',
-                            sorter: (a:any, b:any) => a.age - b.age
-                        }
-                    ]
-                }
-            ];
-            const numbers = Number(index);
-            const data = tableData[numbers].expands;
-            console.log('tabledata',data);
-            console.log('columns1',columns);
-            if (data) {
-                return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
-            }
-        },
-        [tableData]
-    );
+        ];
+        const numbers = Number(index);
+        const data = tableData[numbers].expands;
+        console.log('tabledata', data);
+        console.log('columns1', columns);
+        if (data) {
+            return <Table columns={columns} dataSource={data} pagination={false} />;
+        }
+    };
     const getTable = useMemo(() => {
         return (
             <Table
