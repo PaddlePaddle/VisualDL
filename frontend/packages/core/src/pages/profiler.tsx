@@ -165,7 +165,6 @@ type SelectListItem<T> = {
 };
 const Profiler: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const asideRef = useRef<any>(null);
     const [isCompared, setIsCompared] = useState(false);
     const [runs, setRuns] = useState<string>('');
     const [diffRuns1, setDiffRuns1] = useState<string>('');
@@ -271,7 +270,7 @@ const Profiler: FunctionComponent = () => {
             default:
                 return null;
         }
-    }, [views, runs, workers, spans]);
+    }, [views, runs, workers, spans,units]);
     const diffView = useMemo(() => {
         if (diffWorker2 && diffSpan1 && diffRuns1 && diffWorker1 && diffSpan2 && diffRuns1) {
             return (

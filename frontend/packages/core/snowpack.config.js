@@ -102,7 +102,7 @@ export default {
                     },
                     {
                         source: [path.join(TracePath, '**/*')],
-                        destination: path.join(dest, 'Trace/dist')
+                        destination: path.join(dest, 'trace/dist')
                     },
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],

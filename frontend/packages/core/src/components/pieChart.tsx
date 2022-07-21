@@ -87,26 +87,18 @@ const PieChart = React.forwardRef<LineChartRef, any>(
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
-            const chartData = [];
             if (data && color) {
-                for (const item of data) {
-                    chartData.push({
-                        value: item.total_time,
-                        name: item.name,
-                        proportion: item.ratio
-                    });
-                }
-                console.log('chartData', chartData);
+                console.log('chartData', data);
                 let chartOptions: EChartOption = defaultsDeep({
                     grid: {
-                        left: 0,
+                        left: 0
                         // top: '23%'
                     },
                     color: color,
                     tooltip: {
                         trigger: 'item',
                         extraCssText:
-                        'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                            'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
                         axisPointer: {
                             type: 'none'
                         },
@@ -117,13 +109,17 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         formatter: function (params: any) {
                             console.log('pieparams', params);
                             var str = ''; //声明一个变量用来存储数据
-                            str += '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:10px;">' + 
-                                    params.data.name + '</div>';
                             str +=
-                            '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:10px;">' +
+                                params.data.name +
+                                '</div>';
+                            str +=
+                                '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
                                 color[0] +
                                 ';"></span>' +
-                                '<span style="color: #FFFFFF;">' + '耗时' + '</span>' +
+                                '<span style="color: #FFFFFF;">' +
+                                '耗时' +
+                                '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.value +
                                 '</br>';
@@ -133,7 +129,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                                 ';"></span>' +
                                 '占比' +
                                 '</span> : <span style="color: #FFFFFF;">' +
-                                    params.data.proportion +
+                                params.data.proportion +
                                 '%';
                             ('</br>');
                             return str;
@@ -141,12 +137,17 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                     },
                     legend: {
                         top: '20',
-                        right: '70',
+                        left: '60%',
+                        width: '30%',
                         orient: 'vertical',
-                        height: 160,
+                        height: 165,
                         itemHeight: '8',
-                        textStyle:{
-                            fontSize:14
+                        textStyle: {
+                            fontSize: 14,
+                            width: 20
+                        },
+                        formatter: function (name: string) {
+                            return name.length > 10 ? name.slice(0, 10) + '...' : name;
                         },
                         icon: 'circle',
                         type: 'scroll',
@@ -177,7 +178,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                             labelLine: {
                                 show: false
                             },
-                            data: chartData
+                            data: data
                         }
                     ]
                 });

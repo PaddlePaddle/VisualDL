@@ -52,7 +52,7 @@ export type LineChartRef = {
 };
 
 const Charts = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, text, isCpu, isLegend}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, text, isCpu, isLegend,units}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -82,34 +82,37 @@ const Charts = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {colorAlt, series, ...defaults} = chart;
-            const chartData = data;
-            const color = [
-                '#2932E1',
-                '#00CC88',
-                '#981EFF',
-                '#066BFF',
-                '#3AEB0D',
-                '#E71ED5',
-                '#25C9FF',
-                '#0DEBB0',
-                '#FF0287',
-                '#00E2FF',
-                '#00FF9D',
-                '#D50505'
-            ];
-            const title = text === 1 ? '调用量（次)' : text === 2 ? '持续时间（us)' : '整体占比（%)';
-            const values = [];
-            for (let index = 0; index < chartData.value.length; index++) {
-                values.push({
-                    value: chartData.value[index],
-                    itemStyle: {
-                        color: color[index]
-                    }
-                });
-            }
-            console.log('values', values);
+            console.log('chartData',data);
             if (data) {
+                const {colorAlt, series, ...defaults} = chart;
+                const chartData = data;
+                const color = [
+                    '#2932E1',
+                    '#00CC88',
+                    '#981EFF',
+                    '#066BFF',
+                    '#3AEB0D',
+                    '#E71ED5',
+                    '#25C9FF',
+                    '#0DEBB0',
+                    '#FF0287',
+                    '#00E2FF',
+                    '#00FF9D',
+                    '#D50505'
+                ];
+                const title = text === 1 ? '调用量（次)' : text === 2 ? `持续时间（${units})` : '整体占比（%)';
+                console.log('units',units);
+                
+                const values = [];
+                for (let index = 0; index < chartData.value.length; index++) {
+                    values.push({
+                        value: chartData.value[index],
+                        itemStyle: {
+                            color: color[index]
+                        }
+                    });
+                }
+                console.log('values', values);
                 console.log('isLegend', isLegend);
 
                 let chartOptions: EChartOption = defaultsDeep({
@@ -223,7 +226,7 @@ const Charts = React.forwardRef<LineChartRef, any>(
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, title, theme, i18n.language, echart, isLegend]);
+        }, [options, data, title, theme, i18n.language, echart, isLegend,units]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

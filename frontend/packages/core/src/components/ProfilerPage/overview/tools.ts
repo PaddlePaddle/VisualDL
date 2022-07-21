@@ -1,8 +1,8 @@
 import type {ColumnsType} from 'antd/lib/table';
 
 interface DataType {
-    key: React.Key;
     name: string;
+    calls: number;
     total_time: number;
     max_time: number;
     min_time: number;
@@ -15,17 +15,17 @@ interface DataType {
     GPUratio: number;
 }
 interface DataType2 {
-    key: React.Key;
     name: string;
+    calls: number;
     cpu_total_time: number;
+    cpu_avg_time: number;
     cpu_max_time: number;
     cpu_min_time: number;
-    cpu_avg_time: number;
     cpu_ratio: number;
     gpu_total_time: number;
+    gpu_avg_time: number;
     gpu_max_time: number;
     gpu_min_time: number;
-    gpu_avg_time: number;
     gpu_ratio: number;
 }
 const columns: ColumnsType<DataType> = [
