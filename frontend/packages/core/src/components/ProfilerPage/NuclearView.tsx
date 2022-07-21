@@ -15,7 +15,7 @@
  */
 
 import React, {FunctionComponent, useCallback, useMemo, useState, useEffect} from 'react';
-import StackColumnChart from '~/components/StackColumnChart';
+import StackColumnChart from '~/components/StackColumnChart2';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
 import styled from 'styled-components';
