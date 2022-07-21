@@ -13,6 +13,8 @@
 # limitations under the License.
 import collections
 
+StageType = ['Dataloader', 'Forward', 'Backward', 'Optimization']
+
 
 def sum_ranges(ranges):
     result = 0
@@ -353,6 +355,110 @@ def wrap_tree(nodetrees):
 
     return node_statistic_tree, newresults
 
+def rebuild_node_trees(nodetrees):
+    template_root = None
+    # First, we find the tree which includes Forward event.
+    # print("I am in overview rebuild node trees", nodetrees)
+    for threadid, root in nodetrees.items():
+        # print(root)
+        has_find_template_root = False
+        for children in root.children_node:
+            # print(children.type)
+            if children.type == 'ProfileStep':
+                template_root = HostStatisticNode(root)
+                profiler_step_node = HostStatisticNode(children)
+                template_root.children_node.append(profiler_step_node)
+                has_find_template_root = True
+                for stage_node in children.children_node:
+                    if stage_node.type in StageType:
+                        # print(stage_node.type)
+                        profiler_step_node.children_node.append(
+                            HostStatisticNode(stage_node))
+            else:
+                break
+        if has_find_template_root == True:
+            break
+
+    if template_root == None:
+        print('No profiler steps found, overview page will have no data.')
+
+    wrapped_tree = {}
+    for thread_id, rootnode in nodetrees.items():
+        has_find_template_root = False
+        for children in rootnode.children_node:
+            if children.type == 'ProfileStep':
+                has_find_template_root = True
+                break
+
+        unwrapped_stack = []
+        warpped_stack = []
+
+        root_statistic_node = HostStatisticNode(rootnode)
+        # print('has_find_template_root', has_find_template_root)
+        wrapped_tree[thread_id] = root_statistic_node
+        if has_find_template_root == False:
+            for profiler_step_node in template_root.children_node:
+                profiler_step_wrap_node = HostStatisticNode(
+                    profiler_step_node.hostnode)
+                root_statistic_node.children_node.append(
+                    profiler_step_wrap_node)
+                for stage_node in profiler_step_node.children_node:
+                    stage_wrap_node = HostStatisticNode(
+                        stage_node.hostnode)
+                    profiler_step_wrap_node.children_node.append(
+                        stage_wrap_node)
+            # insert nodes in original root into new stage nodes
+            # algorithm: post order traversal the tree
+            stack = []
+            flag_stack = []
+            post_order_nodes = []
+            stack.append(root_statistic_node)
+            flag_stack.append(0)
+            while stack:
+                current_node = stack.pop()
+                flag = flag_stack.pop()
+                if flag == 0:
+                    stack.append(current_node)
+                    flag_stack.append(1)
+                    for children_node in reversed(
+                            current_node.children_node):
+                        stack.append(children_node)
+                        flag_stack.append(0)
+                else:
+                    post_order_nodes.append(current_node)
+            # traverse post_order_nodes and insert right position
+            for node in rootnode.children_node:
+                unwrapped_stack.append(node)
+                for wrapped_node in post_order_nodes:
+                    if node.start_ns >= wrapped_node.start_ns and node.end_ns <= wrapped_node.end_ns:
+                        child_wrapped_node = HostStatisticNode(node)
+                        warpped_stack.append(child_wrapped_node)
+                        wrapped_node.children_node.append(
+                            child_wrapped_node)
+                        break
+        else:
+            unwrapped_stack.append(rootnode)
+            warpped_stack.append(root_statistic_node)
+        while unwrapped_stack:
+            current_node = unwrapped_stack.pop()
+            current_wrapped_node = warpped_stack.pop()
+            for childnode in current_node.children_node:
+                unwrapped_stack.append(childnode)
+                child_wrapped_node = HostStatisticNode(childnode)
+                current_wrapped_node.children_node.append(
+                    child_wrapped_node)
+                warpped_stack.append(child_wrapped_node)
+            for runtimenode in current_node.runtime_node:
+                runtime_wrapped_node = HostStatisticNode(runtimenode)
+                current_wrapped_node.runtime_node.append(
+                    runtime_wrapped_node)
+
+    # recursive calculate node statistic values
+    for thread_id, root_wrapped_node in wrapped_tree.items():
+        root_wrapped_node.cal_statistic()
+    return wrapped_tree
+
+
 
 def format_time(time, unit='ms'):
     r"""
@@ -378,6 +484,9 @@ def format_ratio(ratio):
     """
     # return '{:.2f}'.format(ratio * 100)
     return round(ratio * 100, 2)
+
+def format_float(float_data):
+    return round(float_data, 2)
 
 
 def format_memory(memory, memory_unit):

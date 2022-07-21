@@ -20,7 +20,7 @@ from .utils import HostStatisticNode
 from .utils import merge_ranges
 from .utils import merge_self_ranges
 from .utils import sum_ranges
-from .utils import wrap_tree
+from .utils import wrap_tree, traverse_tree, rebuild_node_trees
 
 StageType = ['Dataloader', 'Forward', 'Backward', 'Optimization']
 
@@ -319,135 +319,19 @@ class OverviewParser:
                         devicenode.stream_id][devicenode.type]['times'].append(
                             (devicenode.start_ns, devicenode.end_ns))
 
-    def _rebuild_node_trees(self, nodetrees):
-        template_root = None
-        # First, we find the tree which includes Forward event.
-        # print("I am in overview rebuild node trees", nodetrees)
-        for threadid, root in nodetrees.items():
-            # print(root)
-            has_find_template_root = False
-            for children in root.children_node:
-                # print(children.type)
-                if children.type == 'ProfileStep':
-                    template_root = HostStatisticNode(root)
-                    profiler_step_node = HostStatisticNode(children)
-                    template_root.children_node.append(profiler_step_node)
-                    has_find_template_root = True
-                    for stage_node in children.children_node:
-                        if stage_node.type in StageType:
-                            # print(stage_node.type)
-                            profiler_step_node.children_node.append(
-                                HostStatisticNode(stage_node))
-                else:
-                    break
-            if has_find_template_root == True:
-                break
-
-        if template_root == None:
-            print('No profiler steps found, overview page will have no data.')
-
-        wrapped_tree = {}
-        results = collections.defaultdict(list)
-        newresults = collections.defaultdict(list)
-        for thread_id, rootnode in nodetrees.items():
-            has_find_template_root = False
-            for children in rootnode.children_node:
-                if children.type == 'ProfileStep':
-                    has_find_template_root = True
-                    break
-
-            unwrapped_stack = []
-            warpped_stack = []
-
-            root_statistic_node = HostStatisticNode(rootnode)
-            # print('has_find_template_root', has_find_template_root)
-            wrapped_tree[thread_id] = root_statistic_node
-            threadlist = results[thread_id]
-            newthreadlist = newresults[thread_id]
-            if has_find_template_root == False:
-                for profiler_step_node in template_root.children_node:
-                    profiler_step_wrap_node = HostStatisticNode(
-                        profiler_step_node.hostnode)
-                    root_statistic_node.children_node.append(
-                        profiler_step_wrap_node)
-                    for stage_node in profiler_step_node.children_node:
-                        stage_wrap_node = HostStatisticNode(
-                            stage_node.hostnode)
-                        profiler_step_wrap_node.children_node.append(
-                            stage_wrap_node)
-                # insert nodes in original root into new stage nodes
-                # algorithm: post order traversal the tree
-                stack = []
-                flag_stack = []
-                post_order_nodes = []
-                stack.append(root_statistic_node)
-                flag_stack.append(0)
-                while stack:
-                    current_node = stack.pop()
-                    flag = flag_stack.pop()
-                    if flag == 0:
-                        stack.append(current_node)
-                        flag_stack.append(1)
-                        for children_node in reversed(
-                                current_node.children_node):
-                            stack.append(children_node)
-                            flag_stack.append(0)
-                    else:
-                        post_order_nodes.append(current_node)
-                # traverse post_order_nodes and insert right position
-                newthreadlist.extend(post_order_nodes)
-                for node in rootnode.children_node:
-                    unwrapped_stack.append(node)
-                    for wrapped_node in post_order_nodes:
-                        if node.start_ns >= wrapped_node.start_ns and node.end_ns <= wrapped_node.end_ns:
-                            child_wrapped_node = HostStatisticNode(node)
-                            warpped_stack.append(child_wrapped_node)
-                            wrapped_node.children_node.append(
-                                child_wrapped_node)
-                            break
-            else:
-                unwrapped_stack.append(rootnode)
-                warpped_stack.append(root_statistic_node)
-            while unwrapped_stack:
-                current_node = unwrapped_stack.pop()
-                threadlist.append(current_node)
-                current_wrapped_node = warpped_stack.pop()
-                newthreadlist.append(current_wrapped_node)
-                for childnode in current_node.children_node:
-                    unwrapped_stack.append(childnode)
-                    child_wrapped_node = HostStatisticNode(childnode)
-                    current_wrapped_node.children_node.append(
-                        child_wrapped_node)
-                    warpped_stack.append(child_wrapped_node)
-                for runtimenode in current_node.runtime_node:
-                    runtime_wrapped_node = HostStatisticNode(runtimenode)
-                    current_wrapped_node.runtime_node.append(
-                        runtime_wrapped_node)
-
-            print('after rebuild:', thread_id, len(newthreadlist))
-
-        # recursive calculate node statistic values
-        for thread_id, root_wrapped_node in wrapped_tree.items():
-            root_wrapped_node.cal_statistic()
-        self.wrapped_tree = wrapped_tree
-        self.wrapped_node_threadlist = newresults
-        return wrapped_tree, newresults
-
+    
     def _parse_events(self, nodetrees):
         # print('I am in parse_events overview', nodetrees)
-        node_wrapped_trees, node_wrapped_threadlist = self._rebuild_node_trees(
+        node_wrapped_trees = rebuild_node_trees(
             nodetrees)
-
+        node_wrapped_threadlist = traverse_tree(node_wrapped_trees)
         # analyse user-defined summary
         for threadid, wrapped_nodes in node_wrapped_threadlist.items():
+            print('threadid', threadid, 'wrapped_nodes[0]', wrapped_nodes[0].name)
             for wrapped_node in wrapped_nodes[1:]:  #skip root node
                 if wrapped_node.type == 'UserDefined'\
                     or wrapped_node.type == 'PythonUserDefined':
-                    if 'memcpy' in wrapped_node.name.lower() or 'memorycopy' in wrapped_node.name.lower()\
-                        or 'memset' in wrapped_node.name.lower():
-                        self.add_memory_manipulation_item(wrapped_node)
-                    else:
-                        self.add_userdefined_item(wrapped_node)
+                    self.add_userdefined_item(wrapped_node)
 
         # analyse all events in per stage
         thread_count = 0
@@ -459,6 +343,7 @@ class OverviewParser:
             self.stage_nums = 0
             for wrapped_profiler_step_node in wrapped_profiler_step_nodes:
                 if wrapped_profiler_step_node.type == 'ProfileStep':
+                    self.process_id = wrapped_profiler_step_node.process_id
                     stage_idx = wrapped_profiler_step_node.name.split('#')[1]
                     total_time = 0
                     accumulated_stage_time = 0

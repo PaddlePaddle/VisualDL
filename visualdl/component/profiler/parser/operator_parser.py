@@ -96,8 +96,7 @@ class OperatorParser:
 
     def __init__(self):
         self.items = {}  # for operator summary
-        self.thread_items = collections.defaultdict(
-            dict)  # for operator summary
+        self.items_with_input_shape = collections.defaultdict(dict)
 
     def parse(self, nodetrees):
         r"""
@@ -112,15 +111,21 @@ class OperatorParser:
                 if host_statistic_node.type == 'Operator':
                     self.add_operator_item(host_statistic_node)
 
+
     def add_operator_item(self, operator_node):
         if operator_node.name not in self.items:
             self.items[operator_node.name] = OperatorItem(operator_node.name)
+        input_shape_str = self._translate_op_input_shape_to_string(operator_node.input_shapes)
+        if input_shape_str not in self.items_with_input_shape[operator_node.name]:
+            self.items_with_input_shape[operator_node.name][input_shape_str] = OperatorItem(operator_node.name)
 
         self.items[operator_node.name].add_item(operator_node)
+        self.items_with_input_shape[operator_node.name][input_shape_str].add_item(operator_node)
 
-        if operator_node.name not in self.thread_items[
-                operator_node.thread_id]:
-            self.thread_items[operator_node.thread_id][
-                operator_node.name] = OperatorItem(operator_node.name)
-        self.thread_items[operator_node.thread_id][
-            operator_node.name].add_item(operator_node)
+    def _translate_op_input_shape_to_string(self, input_shape):
+        result = ''
+        for arg, shape in input_shape.items():
+            result += '{}-{} '.format(arg, shape)
+        return result
+
+        

@@ -39,12 +39,16 @@ class ProfilerApi(object):
 
     @result()
     def workers(self, run, view):
+        if view == 'Distributed':
+            return ['All']
         run_manager = self._reader.get_run_manager(run)
         return run_manager.get_workers(view)
 
     @result()
     def spans(self, run, worker):
         run_manager = self._reader.get_run_manager(run)
+        if worker == 'All':
+            return run_manager.get_distributed_spans()
         return run_manager.get_spans(worker)
 
     @result()
@@ -74,6 +78,7 @@ class ProfilerApi(object):
                                   span,
                                   device_type,
                                   time_unit='ms'):
+        device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_model_perspective_perstep(
@@ -86,6 +91,7 @@ class ProfilerApi(object):
                                span,
                                device_type,
                                time_unit='ms'):
+        device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_event_type_perspective(device_type, time_unit)
@@ -104,7 +110,19 @@ class ProfilerApi(object):
 
     @result()
     def operator_pie(self, run, worker, span, topk, time_unit='ms'):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        topk = int(topk)
+        return profiler_data.get_operator_pie(topk, 'GPUTotal', time_unit)
+    
+    @result()
+    def operator_pie_expand(self, run, worker, span, topk, device_type, time_unit):
+        device_type = device_type.lower()
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        topk = int(topk)
+        return profiler_data.get_operator_pie_expand(topk, device_type, time_unit)
+        
 
     @result()
     def operator_table(self,
@@ -114,7 +132,9 @@ class ProfilerApi(object):
                        group_by,
                        search_name,
                        time_unit='ms'):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_operator_table(group_by, search_name, time_unit)
 
     @result()
     def operator_stack_table(self,
@@ -129,7 +149,10 @@ class ProfilerApi(object):
 
     @result()
     def kernel_pie(self, run, worker, span, topk, time_unit='ms'):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        topk = int(topk)
+        return profiler_data.get_kernel_pie(topk, time_unit)
 
     @result()
     def kernel_table(self,
@@ -139,19 +162,36 @@ class ProfilerApi(object):
                      group_by,
                      search_name,
                      time_unit='ms'):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_kernel_table(group_by, search_name, time_unit)
 
     @result()
     def kernel_tc_pie(self, run, worker, span, topk, time_unit='ms'):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        topk = int(topk)
+        return profiler_data.get_kernel_tc_pie(topk, time_unit)
 
     @result()
     def distributed_info(self, run, worker, span):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        distributed_profiler_data = run_manager.get_distributed_profile_data(span)
+        if distributed_profiler_data is None:
+            return
+        return distributed_profiler_data.get_distributed_info()
+    
+    @result()
+    def distributed_steps(self, run, worker, span):
+        run_manager = self._reader.get_run_manager(run)
+        distributed_profiler_data = run_manager.get_distributed_profile_data(span)
+        return distributed_profiler_data.get_distributed_steps()
 
     @result()
-    def distributed_table(self, run, worker, span):
-        pass
+    def distributed_histogram(self, run, worker, span, step, time_unit='ms'):
+        run_manager = self._reader.get_run_manager(run)
+        distributed_profiler_data = run_manager.get_distributed_profile_data(span)
+        return distributed_profiler_data.get_distributed_histogram(step, time_unit)
 
     @result()
     def trace(self, run, worker, span):
@@ -230,24 +270,26 @@ def create_profiler_api_call(logdir):
         'overview/userdefined_perspective':
         (api.userdefined_perspective, ["run", "worker", "span", "time_unit"]),
         'operator/pie': (api.operator_pie,
-                         ["run", "worker", "span", "time_unit", "topk"]),
+                         ["run", "worker", "span", "topk", "time_unit"]),
+        'operator/pie_expand': (api.operator_pie_expand, ["run", "worker", "span", "topk", "device_type", "time_unit"]),
         'operator/table': (api.operator_table, [
-            "run", "worker", "span", "time_unit", "group_by", "search_name"
+            "run", "worker", "span", "group_by", "search_name", "time_unit"
         ]),
         'operator/stack_table': (api.operator_stack_table, [
-            "run", "worker", "span", "time_unit", "op_name", "group_by",
+            "run", "worker", "span", "op_name", "group_by", "time_unit"
             "input_shape"
         ]),
         'kernel/pie': (api.kernel_pie,
-                       ["run", "worker", "span", "time_unit", "topk"]),
+                       ["run", "worker", "span", "topk", "time_unit"]),
         'kernel/tensorcore_pie':
-        (api.kernel_tc_pie, ["run", "worker", "span", "time_unit", "topk"]),
+        (api.kernel_tc_pie, ["run", "worker", "span", "topk", "time_unit"]),
         'kernel/table': (api.kernel_table, [
-            "run", "worker", "span", "time_unit", "group_by", "search_name"
+            "run", "worker", "span", "group_by", "search_name", "time_unit"
         ]),
         'distributed/info': (api.distributed_info, ["run", "worker", "span"]),
-        'distributed/table': (api.distributed_table, ["run", "worker",
-                                                      "span"]),
+        'distributed/steps': (api.distributed_steps, ["run", "worker", "span"]),
+        'distributed/histogram': (api.distributed_histogram, ["run", "worker",
+                                                      "span", "step", "time_unit"]),
         'trace': (api.trace, ["run", "worker", "span"]),
         'memory/devices': (api.memory_devices, ["run", "worker", "span"]),
         'memory/curve': (api.memory_curve,

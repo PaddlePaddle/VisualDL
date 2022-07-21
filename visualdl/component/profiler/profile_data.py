@@ -21,10 +21,11 @@ from .parser.operator_parser import OperatorParser
 from .parser.overview_parser import CPUType
 from .parser.overview_parser import GPUType
 from .parser.overview_parser import OverviewParser
+from .parser.distributed_parser import DistributedParser
 from .parser.trace_parser import TraceParser
 from .parser.utils import format_memory
 from .parser.utils import format_ratio
-from .parser.utils import format_time
+from .parser.utils import format_time, format_float
 from .parser.utils import traverse_tree
 
 # from .parser.memory_parser import MemoryParser
@@ -44,7 +45,10 @@ class ProfileData:
   Hold all parsed data to serve for user requests.
   '''
 
-    def __init__(self, profiler_result):
+    def __init__(self, run, worker_name, span_indx, profiler_result):
+        self.run = run
+        self.worker_name = worker_name
+        self.span_indx = span_indx
         self.node_trees = profiler_result.get_data()
         filter_type(self.node_trees)
         self.extra_infos = profiler_result.get_extra_info()
@@ -57,21 +61,41 @@ class ProfileData:
         self.model_perspective_items = self.overview_parser.model_perspective_items
         self.userdefined_items = self.overview_parser.userdefined_items
         self.gpu_ulitization = self.overview_parser.gpu_ulitization
+        self.process_id = self.overview_parser.process_id
         # operator parser
         self.operator_parser = OperatorParser()
         self.operator_parser.parse(self.node_trees)
         self.operator_items = self.operator_parser.items
+        self.operator_items_with_input_shape = self.operator_parser.items_with_input_shape
         # kernel parser
         self.kernel_parser = KernelParser()
         self.kernel_parser.parse(traverse_tree(self.node_trees))
         self.kernel_items = self.kernel_parser.kernel_items
+        self.kernel_items_with_op_name_attributes = self.kernel_parser.kernel_items_with_op_name_attributes
         self.occupancy = self.kernel_parser.occupancy
         self.sm_efficiency = self.kernel_parser.sm_efficiency
         self.tensorcore_ratio = self.kernel_parser.tensor_core_ratio
         self.gpu_ids = self.kernel_parser.gpu_ids
+        # distributed parser
+        self.distributed_parser = DistributedParser()
+        self.distributed_parser.parse(self.node_trees)
+        self.distributed_time = self.distributed_parser.steps_time
+        
 
         # cache data
         self.cache = defaultdict(lambda: defaultdict(list))
+
+    def get_views(self):
+        '''
+        Return available views this profile data can provide.
+        '''
+        views = ['Overview']
+        if self.operator_items:
+            views.append('Operator')
+        if self.kernel_items:
+            views.append('GPU Kernel')
+        views.append('Trace')
+        return views
 
     # profiler/overview/environment
     #   {
@@ -277,8 +301,14 @@ class ProfileData:
                             data[stage_name].append(0)
         except Exception as e:
             print('error in get_model_perspective_perstep', e)
-        self.cache['get_model_perspective_perstep'] = data
-        return data
+        new_data = {}
+        new_data['order'] = data['order']
+        new_data['steps'] = data['steps']
+        new_data['data'] = []
+        for name in new_data['order']:
+            new_data['data'].append(data[name])
+        self.cache['get_model_perspective_perstep'] = new_data
+        return new_data
 
     # profiler/overview/event_type_perspective
     #   {
@@ -538,23 +568,741 @@ class ProfileData:
         self.cache['get_userdefined_perspective'] = data
         return data
 
-    def get_views(self):
-        '''
-    Return available views this profile data can provide.
-    '''
-        views = ['Overview']
-        if self.operator_items:
-            views.append('Operator')
-        if self.kernel_items:
-            views.append('GPU Kernel')
-        return views
+    # get_operator_pie
+    #   {
+    #   "column_name": ["total_time",  "max_time", "min_time", "avg_time", "ratio"]
+    #   "cpu":
+    #   [
+    #     { "name": "Dataloader", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Forward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Backward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Optimization", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Others", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 }
+    # ]
+    #   "gpu":
+    #   [
+    #     { "name": "Dataloader", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Forward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Backward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Optimization", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
+    #     { "name": "Others", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 }
+    # ]
+    # }
+    # sorted_by 
+    
+    def get_operator_pie(self, topk, sorted_by='GPUTotal', time_unit='ms'):
+        data = OrderedDict()
+        data['column_name'] = [
+            "name", "calls", "total_time", "avg_time", "max_time", "min_time",
+            "ratio"
+        ]
+        data['cpu'] = []
+        data['gpu'] = []
+        if sorted_by == 'CPUTotal':
+            sorted_items = sorted(
+                self.operator_items.items(), key=lambda x: x[1].cpu_time, reverse=True)
+        elif sorted_by == 'CPUAvg':
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].avg_cpu_time,
+                reverse=True)
+        elif sorted_by == 'CPUMax':
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].max_cpu_time,
+                reverse=True)
+        elif sorted_by == 'CPUMin':
+            sorted_items = sorted(
+                self.operator_items.items(), key=lambda x: x[1].min_cpu_time)
+        elif sorted_by == 'GPUTotal':
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].general_gpu_time,
+                reverse=True)
+        elif sorted_by == 'GPUAvg':
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].avg_general_gpu_time,
+                reverse=True)
+        elif sorted_by == 'GPUMax':
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].max_general_gpu_time,
+                reverse=True)
+        elif sorted_by == 'GPUMin':
+            sorted_items = sorted(
+                self.operator_items.items(), key=lambda x: x[1].min_general_gpu_time)
+        else:
+            sorted_items = sorted(
+                self.operator_items.items(), key=lambda x: x[1].general_gpu_time, reverse=True)
+        # print('topk:', topk)
+        if topk <= 0:
+            items = sorted_items
+        else:
+            items = sorted_items[:topk]
+        # print(sorted_items)
+        total_cpu_time = 0.0
+        total_gpu_time = 0.0
+        for op_name, item in items:
+            total_cpu_time += item.cpu_time
+            total_gpu_time += item.gpu_time
+        
+        for op_name, item in items:
+            # print(op_name)
+            cpu_stage_data = OrderedDict()
+            cpu_stage_data['name'] = op_name
+            cpu_stage_data['calls'] = item.call
+            cpu_stage_data['total_time'] = format_time(
+                item.cpu_time,
+                time_unit)
+            cpu_stage_data['avg_time'] = format_time(
+                item.avg_cpu_time,
+                time_unit)
+            cpu_stage_data['max_time'] = format_time(
+                item.max_cpu_time,
+                time_unit)
+            cpu_stage_data['min_time'] = format_time(
+                item.min_cpu_time,
+                time_unit)
+            cpu_stage_data['ratio'] = format_ratio(
+                item.cpu_time /
+                total_cpu_time)
+            gpu_stage_data = OrderedDict()
+            gpu_stage_data['name'] = op_name
+            gpu_stage_data['calls'] = item.call
+            gpu_stage_data['total_time'] = format_time(
+                item.gpu_time,
+                time_unit)
+            gpu_stage_data['avg_time'] = format_time(
+                item.avg_gpu_time,
+                time_unit)
+            gpu_stage_data['max_time'] = format_time(
+                item.max_gpu_time,
+                time_unit)
+            gpu_stage_data['min_time'] = format_time(
+                item.min_gpu_time,
+                time_unit)
+            gpu_stage_data['ratio'] = format_ratio(
+                item.gpu_time /
+                total_gpu_time)
+            data['cpu'].append(cpu_stage_data)
+            data['gpu'].append(gpu_stage_data)
+        return data
+    #{'order': ['Operator', 'CudaRuntime', 'UserDefined', 'OperatorInner', 'Kernel', 'Memcpy', 'Memset'], 'phase_type': ['ProfileStep', 'Dataloader', 'Forward', 'Backward', 'Optimization', 'Other'], 'data': [[80.16, 3.8, 11.45, 10.52, 8.15, 6.16], [29.46, 1.33, 3.65, 4.61, 2.28, 2.85], [1.74, 0.02, 0, 0.2, 0, 0.65], [54.45, 2.41, 8.68, 8.37, 3.51, 4.25], [16.78, 0.11, 2.5, 5.09, 0.45, 0.23], [0.07, 0.0, 0, 0.01, 0, 0.02], [0.03, 0, 0, 0.01, 0, 0]]}
+    #
+    #
+    def get_operator_pie_expand(self, topk, device_type, time_unit):
+        data = OrderedDict()
+        data['order'] = []
+        data['phase_type'] = []
+        data['data'] = []
+        if device_type == 'cpu':
+            sorted_items = sorted(
+                self.operator_items.items(), key=lambda x: x[1].cpu_time, reverse=True)
+        else:
+            sorted_items = sorted(
+                self.operator_items.items(), key=lambda x: x[1].min_cpu_time)
+        # print('topk:', topk)
+        if topk <= 0 or topk >=20:
+            items = sorted_items[:20]
+            other_items = sorted_items[20:]
+        else:
+            items = sorted_items[:topk]
+            other_items = []
+        
+        # for op_name, event in sorted_items:
+        #     for innerop_name, item in event.operator_inners.items():
+        #         name_sets.add(innerop_name)
+        # data['order'].extend(name_sets)
+        data['order'].extend(['infer_shape', 'compute', 'node_creation'])
+        inner_op_data = defaultdict(list)
+        for op_name, event in items:
+            data['phase_type'].append(op_name)
+            for innerop_name, item in event.operator_inners.items():
+                if 'infer_shape' in innerop_name:
+                        innerop_name = 'infer_shape' 
+                elif 'compute' in innerop_name:
+                    innerop_name = 'compute' 
+                elif 'node_creation' in innerop_name:
+                    innerop_name = 'node_creation'
+                else:
+                    continue
+                if device_type == 'cpu':
+                    inner_op_data[innerop_name].append(format_time(item.cpu_time, time_unit))
+                else:
+                    inner_op_data[innerop_name].append(format_time(item.general_gpu_time, time_unit))
+            for innerop_name in data['order']:
+                hasfound = False
+                for key in event.operator_inners:
+                    if innerop_name in key:
+                        hasfound = True
+                        break
+                if hasfound == False:
+                    inner_op_data[innerop_name].append(0)
+        if other_items:
+            data['phase_type'].append('others')
+            others_time = defaultdict(float)
+            for op_name, event in other_items: 
+                for innerop_name, item in event.operator_inners.items():
+                    if 'infer_shape' in innerop_name:
+                        innerop_name = 'infer_shape' 
+                    elif 'compute' in innerop_name:
+                        innerop_name = 'compute' 
+                    elif 'node_creation' in innerop_name:
+                        innerop_name = 'node_creation'
+                    else:
+                        continue
+                    if device_type == 'cpu':
+                        others_time[innerop_name] += item.cpu_time
+                    else:
+                        others_time[innerop_name] += item.general_gpu_time
+            for innerop_name in data['order']:
+                if innerop_name not in others_time:
+                    inner_op_data[innerop_name].append(0.0)
+                else:
+                    inner_op_data[innerop_name].append(format_time(others_time[innerop_name], time_unit))
+        for innerop_name in data['order']:
+            data['data'].append(inner_op_data[innerop_name])
+        return data
+    
+
+    def get_operator_table(self, group_by='op_name', search_name=None, time_unit='ms'):
+        def get_children_data(event):
+            datas = []
+            for innerop_name, item in event.operator_inners.items(
+                    ):
+                
+                if item.cpu_time == 0:
+                    cpu_ratio = 0
+                else:
+                    cpu_ratio = float(
+                        item.cpu_time) / event.cpu_time
+                if item.general_gpu_time == 0:
+                    gpu_ratio = 0
+                else:
+                    gpu_ratio = float(item.general_gpu_time
+                                        ) / event.general_gpu_time
+                data = {
+                        "name":
+                        innerop_name,
+                        "calls":
+                        item.call,
+                        "cpu_total_time":
+                        format_time(item.cpu_time, time_unit),
+                        "cpu_avg_time":
+                        format_time(item.avg_cpu_time, time_unit),
+                        "cpu_max_time":
+                        format_time(item.max_cpu_time, time_unit),
+                        "cpu_min_time":
+                        format_time(item.min_cpu_time, time_unit),
+                        "cpu_ratio":
+                        format_ratio(cpu_ratio),
+                        "gpu_total_time":
+                        format_time(item.general_gpu_time, time_unit),
+                        "gpu_avg_time":
+                        format_time(item.avg_general_gpu_time, time_unit),
+                        "gpu_max_time":
+                        format_time(item.max_general_gpu_time, time_unit),
+                        "gpu_min_time":
+                        format_time(item.min_general_gpu_time, time_unit),
+                        "gpu_ratio":
+                        format_ratio(gpu_ratio)
+                    }
+                datas.append(data)
+            return datas
+                
+        data = OrderedDict()
+        data['events'] = []
+        total_cpu_time = 0
+        total_gpu_time = 0
+        for name, event in self.operator_items.items():
+            total_cpu_time += event.cpu_time
+            total_gpu_time += event.general_gpu_time
+        if not search_name:
+            if group_by == 'op_name':
+                data['column_name'] = [
+                    'name', 'calls', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',
+                    'cpu_min_time', 'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                    'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                ]
+                sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].max_general_gpu_time,
+                reverse=True)
+                for name, event in sorted_items:
+                    data['events'].append({
+                        "name":
+                        name,
+                        "calls":
+                        event.call,
+                        "expands":
+                        get_children_data(event),
+                        "cpu_total_time":
+                        format_time(event.cpu_time, time_unit),
+                        "cpu_avg_time":
+                        format_time(event.avg_cpu_time, time_unit),
+                        "cpu_max_time":
+                        format_time(event.max_cpu_time, time_unit),
+                        "cpu_min_time":
+                        format_time(event.min_cpu_time, time_unit),
+                        "cpu_ratio":
+                        format_ratio(event.cpu_time /
+                                    total_cpu_time if total_cpu_time != 0 else 0.0),
+                        "gpu_total_time":
+                        format_time(event.general_gpu_time, time_unit),
+                        "gpu_avg_time":
+                        format_time(event.avg_general_gpu_time, time_unit),
+                        "gpu_max_time":
+                        format_time(event.max_general_gpu_time, time_unit),
+                        "gpu_min_time":
+                        format_time(event.min_general_gpu_time, time_unit),
+                        "gpu_ratio":
+                        format_ratio(event.general_gpu_time /
+                                    total_gpu_time if total_gpu_time != 0 else 0.0)
+                    })
+            else:
+                data['column_name'] = [
+                    'name', 'calls', 'input_shape', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',
+                    'cpu_min_time', 'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                    'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                ]
+                new_arrange_data = {}
+                for op_name, items_with_input_shape in self.operator_items_with_input_shape.items():
+                    for input_shape, item in items_with_input_shape.items():
+                        new_arrange_data[(op_name, input_shape)] = item
+                sorted_items = sorted(
+                new_arrange_data.items(),
+                key=lambda x: x[1].max_general_gpu_time,
+                reverse=True)
+                for (name, input_shape), event in sorted_items:
+                    data['events'].append({
+                        "name":
+                        name,
+                        "calls":
+                        event.call,
+                        "expands":
+                        get_children_data(event),
+                        "input_shapes":
+                        input_shape,
+                        "cpu_total_time":
+                        format_time(event.cpu_time, time_unit),
+                        "cpu_avg_time":
+                        format_time(event.avg_cpu_time, time_unit),
+                        "cpu_max_time":
+                        format_time(event.max_cpu_time, time_unit),
+                        "cpu_min_time":
+                        format_time(event.min_cpu_time, time_unit),
+                        "cpu_ratio":
+                        format_ratio(event.cpu_time /
+                                    total_cpu_time if total_cpu_time != 0 else 0.0),
+                        "gpu_total_time":
+                        format_time(event.general_gpu_time, time_unit),
+                        "gpu_avg_time":
+                        format_time(event.avg_general_gpu_time, time_unit),
+                        "gpu_max_time":
+                        format_time(event.max_general_gpu_time, time_unit),
+                        "gpu_min_time":
+                        format_time(event.min_general_gpu_time, time_unit),
+                        "gpu_ratio":
+                        format_ratio(event.general_gpu_time /
+                                    total_gpu_time if total_gpu_time != 0 else 0.0)
+                    })
+            
+        else:
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].max_general_gpu_time,
+                reverse=True)
+            results = []
+            for op_name, item in sorted_items:
+                if search_name in op_name:
+                    results.append(op_name)
+
+            if group_by == 'op_name':
+                data['column_name'] = [
+                    'name', 'calls', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',
+                    'cpu_min_time', 'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                    'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                ]
+                for op_name in results:
+                    event = self.operator_items[op_name]
+                    data['events'].append({
+                            "name":
+                            op_name,
+                            "calls":
+                            event.call,
+                            "expands":
+                            get_children_data(event),
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time /
+                                        total_cpu_time if total_cpu_time != 0 else 0.0),
+                            "gpu_total_time":
+                            format_time(event.general_gpu_time, time_unit),
+                            "gpu_avg_time":
+                            format_time(event.avg_general_gpu_time, time_unit),
+                            "gpu_max_time":
+                            format_time(event.max_general_gpu_time, time_unit),
+                            "gpu_min_time":
+                            format_time(event.min_general_gpu_time, time_unit),
+                            "gpu_ratio":
+                            format_ratio(event.general_gpu_time /
+                                        total_gpu_time if total_gpu_time != 0 else 0.0)
+                        })
+            else:
+                data['column_name'] = [
+                    'name', 'calls', 'input_shape', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',
+                    'cpu_min_time', 'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                    'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                ]
+                for op_name in results:
+                    for input_shape, event in self.operator_items_with_input_shape[op_name].items():
+                        data['events'].append({
+                            "name":
+                            op_name,
+                            "calls":
+                            event.call,
+                            "expands":
+                            get_children_data(event),
+                            "input_shapes":
+                            input_shape,
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time /
+                                        total_cpu_time if total_cpu_time != 0 else 0.0),
+                            "gpu_total_time":
+                            format_time(event.general_gpu_time, time_unit),
+                            "gpu_avg_time":
+                            format_time(event.avg_general_gpu_time, time_unit),
+                            "gpu_max_time":
+                            format_time(event.max_general_gpu_time, time_unit),
+                            "gpu_min_time":
+                            format_time(event.min_general_gpu_time, time_unit),
+                            "gpu_ratio":
+                            format_ratio(event.general_gpu_time /
+                                        total_gpu_time if total_gpu_time != 0 else 0.0)
+                        })
+
+        return data
 
 
+
+    def get_kernel_pie(self, topk, time_unit='ms'):
+        data = OrderedDict()
+        data['column_name'] = [
+            "name", "calls", "total_time", "avg_time", "max_time", "min_time", "mean blocks per sm", "mean est achieved occupancy", "tensor core used", "ratio"  
+        ]
+        
+        data['events'] = []
+        
+        sorted_items = sorted(
+            self.kernel_items.items(),
+            key=lambda x: x[1].gpu_time,
+            reverse=True)
+        
+        if topk <= 0:
+            items = sorted_items
+        else:
+            items = sorted_items[:topk]
+
+        total_gpu_time = 0.0
+        for kernel_name, item in items:
+            total_gpu_time += item.gpu_time
+        
+        for kernel_name, item in items:
+            gpu_stage_data = OrderedDict()
+            gpu_stage_data['name'] = kernel_name
+            gpu_stage_data['calls'] = item.call
+            gpu_stage_data['total_time'] = format_time(
+                item.gpu_time,
+                time_unit)
+            gpu_stage_data['avg_time'] = format_time(
+                item.avg_gpu_time,
+                time_unit)
+            gpu_stage_data['max_time'] = format_time(
+                item.max_gpu_time,
+                time_unit)
+            gpu_stage_data['min_time'] = format_time(
+                item.min_gpu_time,
+                time_unit)
+            gpu_stage_data['mean blocks per sm'] = format_float(item.sum_blocks_per_sm / item.call)
+            gpu_stage_data['mean est achieved occupancy'] = format_float(item.sum_occupancy / item.call)
+            gpu_stage_data['tensor core used'] = item.tensorcore_used
+            gpu_stage_data['ratio'] = format_ratio(
+                item.gpu_time /
+                total_gpu_time)
+            data['events'].append(gpu_stage_data)
+        return data
+    
+
+    def get_kernel_table(self, group_by='', search_name=None, time_unit='ms'):
+        data = OrderedDict()
+        data['events'] = []
+        total_gpu_time = 0
+        for name, event in self.kernel_items.items():
+            total_gpu_time += event.gpu_time
+        if not search_name:
+            if group_by == 'kernel_name':
+                data['column_name'] = [
+                                        "name", "calls", "total_time", "avg_time", "max_time", "min_time", "mean blocks per sm", "mean est achieved occupancy", "tensor core used", "ratio"  
+                                        ]
+                sorted_items = sorted(
+                self.kernel_items.items(),
+                key=lambda x: x[1].gpu_time,
+                reverse=True)
+                for name, item in sorted_items:
+                    gpu_stage_data = OrderedDict()
+                    gpu_stage_data['name'] = name
+                    gpu_stage_data['calls'] = item.call
+                    gpu_stage_data['total_time'] = format_time(
+                        item.gpu_time,
+                        time_unit)
+                    gpu_stage_data['avg_time'] = format_time(
+                        item.avg_gpu_time,
+                        time_unit)
+                    gpu_stage_data['max_time'] = format_time(
+                        item.max_gpu_time,
+                        time_unit)
+                    gpu_stage_data['min_time'] = format_time(
+                        item.min_gpu_time,
+                        time_unit)
+                    gpu_stage_data['mean blocks per sm'] = format_float(item.sum_blocks_per_sm / item.call)
+                    gpu_stage_data['mean est achieved occupancy'] = format_float(item.sum_occupancy / item.call)
+                    gpu_stage_data['tensor core used'] = item.tensorcore_used
+                    gpu_stage_data['ratio'] = format_ratio(
+                        item.gpu_time /
+                        total_gpu_time)
+                    data['events'].append(gpu_stage_data)
+            else:
+                data['column_name'] = [
+                    "name", "calls", "operator", "grid", "block", "register per thread", "shared memory", "total_time", "avg_time", "max_time", "min_time", "mean blocks per sm", "mean est achieved occupancy", "tensor core used", "ratio"
+                ]
+                new_arrange_data = {}
+                for name, items_with_attributes in self.kernel_items_with_op_name_attributes.items():
+                    for attributes, item in items_with_attributes.items():
+                        new_arrange_data[(name, attributes)] = item
+                sorted_items = sorted(
+                new_arrange_data.items(),
+                key=lambda x: x[1].gpu_time,
+                reverse=True)
+                for (name, attributes), item in sorted_items:
+                    operator, grid, block, register_per_thread, shared_memory = attributes.split('-')
+                    gpu_stage_data = OrderedDict()
+                    gpu_stage_data['name'] = name
+                    gpu_stage_data['calls'] = item.call
+                    gpu_stage_data['operator'] = operator
+                    gpu_stage_data['grid'] = grid
+                    gpu_stage_data['block'] = block
+                    gpu_stage_data['register per thread'] = register_per_thread
+                    gpu_stage_data['shared memory'] = shared_memory
+                    gpu_stage_data['total_time'] = format_time(
+                        item.gpu_time,
+                        time_unit)
+                    gpu_stage_data['avg_time'] = format_time(
+                        item.avg_gpu_time,
+                        time_unit)
+                    gpu_stage_data['max_time'] = format_time(
+                        item.max_gpu_time,
+                        time_unit)
+                    gpu_stage_data['min_time'] = format_time(
+                        item.min_gpu_time,
+                        time_unit)
+                    gpu_stage_data['mean blocks per sm'] = format_float(item.sum_blocks_per_sm / item.call)
+                    gpu_stage_data['mean est achieved occupancy'] = format_float(item.sum_occupancy / item.call)
+                    gpu_stage_data['tensor core used'] = item.tensorcore_used
+                    gpu_stage_data['ratio'] = format_ratio(
+                        item.gpu_time /
+                        total_gpu_time)
+                    data['events'].append(gpu_stage_data)
+            
+        else:
+            sorted_items = sorted(
+                self.kernel_items.items(),
+                key=lambda x: x[1].gpu_time,
+                reverse=True)
+            results = []
+            for kernel_name, item in sorted_items:
+                if search_name in kernel_name:
+                    results.append(kernel_name)
+
+            if group_by == 'kernel_name':
+                data['column_name'] = [
+                                        "name", "calls", "total_time", "avg_time", "max_time", "min_time", "mean blocks per sm", "mean est achieved occupancy", "tensor core used", "ratio"  
+                                        ]
+                for kernel_name in results:
+                    item = self.kernel_items[kernel_name]
+                    gpu_stage_data = OrderedDict()
+                    gpu_stage_data['name'] = kernel_name
+                    gpu_stage_data['calls'] = item.call
+                    gpu_stage_data['total_time'] = format_time(
+                        item.gpu_time,
+                        time_unit)
+                    gpu_stage_data['avg_time'] = format_time(
+                        item.avg_gpu_time,
+                        time_unit)
+                    gpu_stage_data['max_time'] = format_time(
+                        item.max_gpu_time,
+                        time_unit)
+                    gpu_stage_data['min_time'] = format_time(
+                        item.min_gpu_time,
+                        time_unit)
+                    gpu_stage_data['mean blocks per sm'] = format_float(item.sum_blocks_per_sm / item.call)
+                    gpu_stage_data['mean est achieved occupancy'] = format_float(item.sum_occupancy / item.call)
+                    gpu_stage_data['tensor core used'] = item.tensorcore_used
+                    gpu_stage_data['ratio'] = format_ratio(
+                        item.gpu_time /
+                        total_gpu_time)
+                    data['events'].append(gpu_stage_data)
+            else:
+                for kernel_name in results:
+                    for items_with_attributes, item in self.kernel_items_with_op_name_attributes[kernel_name].items():
+                        operator, grid, block, register_per_thread, shared_memory = attributes.split('-')
+                        gpu_stage_data = OrderedDict()
+                        gpu_stage_data['name'] = kernel_name
+                        gpu_stage_data['calls'] = item.call
+                        gpu_stage_data['operator'] = operator
+                        gpu_stage_data['grid'] = grid
+                        gpu_stage_data['block'] = block
+                        gpu_stage_data['register per thread'] = register_per_thread
+                        gpu_stage_data['shared memory'] = shared_memory
+                        gpu_stage_data['total_time'] = format_time(
+                            item.gpu_time,
+                            time_unit)
+                        gpu_stage_data['avg_time'] = format_time(
+                            item.avg_gpu_time,
+                            time_unit)
+                        gpu_stage_data['max_time'] = format_time(
+                            item.max_gpu_time,
+                            time_unit)
+                        gpu_stage_data['min_time'] = format_time(
+                            item.min_gpu_time,
+                            time_unit)
+                        gpu_stage_data['mean blocks per sm'] = format_float(item.sum_blocks_per_sm / item.call)
+                        gpu_stage_data['mean est achieved occupancy'] = format_float(item.sum_occupancy / item.call)
+                        gpu_stage_data['tensor core used'] = item.tensorcore_used
+                        gpu_stage_data['ratio'] = format_ratio(
+                            item.gpu_time /
+                            total_gpu_time)
+                        data['events'].append(gpu_stage_data)
+        return data
+
+    def get_kernel_tc_pie(self, topk, time_unit='ms'):
+        data = OrderedDict()
+        data['column_name'] = [
+            "name",  "calls",  "ratio"  
+        ]
+        
+        data['events'] = []
+        
+        sorted_items = sorted(
+            self.kernel_items.items(),
+            key=lambda x: x[1].gpu_time,
+            reverse=True)
+        
+        if topk <= 0:
+            items = sorted_items
+        else:
+            items = sorted_items[:topk]
+
+        total_calls = 0.0
+        tensorcore_calls = 0.0
+        for kernel_name, item in items:
+            if item.tensorcore_used:
+                tensorcore_calls += item.call
+            total_calls += item.call
+        
+        data['events'].append(
+            {
+                "name": "Tensor core used",
+                "calls": tensorcore_calls,
+                "ratio": tensorcore_calls/total_calls
+            }
+        )
+        data['events'].append(
+            {
+                "name": "Tensor core unused",
+                "calls": total_calls-tensorcore_calls,
+                "ratio": (total_calls-tensorcore_calls)/total_calls
+            }
+        )
+        return data
+    
+    
 class DistributedProfileData:
     '''
-  Hold data for distributed view.
-  Aggregate all data for distributed in ProfileData object.
-  '''
+    Hold data for distributed view.
+    Aggregate all data for distributed in ProfileData object.
+    '''
 
-    def __init__(self):
-        return
+    def __init__(self, run, span, profile_datas):
+        self.run = run
+        self.span = span
+        self.profile_datas = profile_datas
+    
+    def get_distributed_info(self):
+        data = []
+        for profile_data in self.profile_datas:
+            device_infos = profile_data.device_infos
+            gpu_id = int(next(iter(profile_data.gpu_ids)))
+            data.append(
+                {
+                    'worker_name': profile_data.worker_name,
+                    'process_id': profile_data.process_id,
+                    'device_id': 'GPU{}'.format(gpu_id),
+                    'name': device_infos[gpu_id]['name'],
+                    'memory': "{} GB".format(
+                        format_memory(device_infos[gpu_id]['totalGlobalMem'],
+                            'GB')),
+                    'computeCapability': '{}.{}'.format(device_infos[gpu_id]['computeMajor'],
+                                   device_infos[gpu_id]['computeMinor']),
+                    'utilization': format_ratio(profile_data.gpu_ulitization)
+                }
+            )
+        return data
+    
+    ## profiler/overview/get_distributed_table
+    #   {
+    #  "order": ["Communication", "Computation", "Overlap", "Others"],
+    #  "worker_name": ["worker1", "worker2", "worker3",],
+    #  "Communication": [233, 544, 333],
+    #  "Computation": [344, 543, 333],
+    #  "Overlap": [344, 543, 333],
+    #  "Others": [344, 433, 323]
+    # }
+
+    def get_distributed_histogram(self, step, time_unit='ms'):
+        data = {}
+        data['order'] = ["Communication", "Computation", "Overlap", "Others"]
+        data['worker_name'] = []
+        data['data'] = []
+        new_data = defaultdict(list)
+        for profile_data in self.profile_datas:
+            data['worker_name'].append(profile_data.worker_name)
+            new_data['Communication'].append(format_time(profile_data.distributed_time[step]['communication_time'], time_unit))
+            new_data['Computation'].append(format_time(profile_data.distributed_time[step]['computation_time'], time_unit))
+            new_data['Overlap'].append(format_time(profile_data.distributed_time[step]['overlap_time'], time_unit))
+            new_data['Others'].append(format_time(profile_data.distributed_time[step]['others_time'], time_unit))
+        for order in data['order']:
+            data['data'].append(new_data[order])
+        return data
+    
+    def get_distributed_steps(self):
+        for profile_data in self.profile_datas:
+            return list(profile_data.distributed_time.keys())
+
+
+

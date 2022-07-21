@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
+import collections
 
 class TC_Allowlist(dict):
     # Refer to https://github.com/NVIDIA/PyProf/blob/fd1b2902e3306119eee40ba6b6e8b2f816920c29/pyprof/prof/tc.py#L19
@@ -46,8 +46,8 @@ class DeviceItem:
         self.max_gpu_time = 0
         self.min_gpu_time = float('inf')
         self.tensorcore_used = True if name in _allow_list else False
-        self.sm_efficiency = 0.0
-
+        self.sum_blocks_per_sm = 0.0
+        self.sum_occupancy = 0.0
     @property
     def avg_gpu_time(self):
         return self.gpu_time / self.call
@@ -62,11 +62,14 @@ class DeviceItem:
     def add_item(self, node):
         self.call += 1
         self.add_gpu_time(node.end_ns - node.start_ns)
+        self.sum_blocks_per_sm += node.blocks_per_sm
+        self.sum_occupancy += node.occupancy
 
 
 class KernelParser:
     def __init__(self):
         self.kernel_items = {}  # for kernel summary
+        self.kernel_items_with_op_name_attributes =  collections.defaultdict(dict)
         self.gpu_ids = set()
         self.occupancy = 0.0
         self.sm_efficiency = 0.0
@@ -76,6 +79,31 @@ class KernelParser:
         total_duration = 0.0
         weighted_occupancy = 0.0
         weighted_sm_efficiency = 0.0
+        for threadid, nodes in nodelists.items():
+            for node in nodes:
+                if node.type == 'Operator':
+                    op_name = node.name
+                    for children in node.children_node:
+                        if children.type == 'OperatorInner':
+                            for runtime_node in children.runtime_node:
+                                for device_node in runtime_node.device_node:
+                                    if device_node.type == 'Kernel':
+                                        op_attribute_name = self._translate_op_name_attributes_to_string(op_name, device_node)
+                                        if op_attribute_name not in self.kernel_items_with_op_name_attributes[device_node.name]:
+                                            self.kernel_items_with_op_name_attributes[device_node.name][op_attribute_name] = DeviceItem(device_node.name)
+                                        self.kernel_items_with_op_name_attributes[device_node.name][op_attribute_name].add_item(device_node)
+                elif node.type == 'OperatorInner':
+                    continue
+                op_name = node.name
+                for runtime_node in node.runtime_node:
+                    for device_node in runtime_node.device_node:
+                        if device_node.type == 'Kernel':
+                            op_attribute_name = self._translate_op_name_attributes_to_string(op_name, device_node)
+                            if op_attribute_name not in self.kernel_items_with_op_name_attributes[device_node.name]:
+                                self.kernel_items_with_op_name_attributes[device_node.name][op_attribute_name] = DeviceItem(device_node.name)
+                            self.kernel_items_with_op_name_attributes[device_node.name][op_attribute_name].add_item(device_node)
+
+
         for threadid, nodes in nodelists.items():
             for node in nodes:
                 for runtime_node in node.runtime_node:
@@ -106,3 +134,10 @@ class KernelParser:
                 total_tensorcore_count += node.call
             total_count += node.call
         self.tensor_core_ratio = total_tensorcore_count / total_count if total_count != 0 else 0.0
+
+
+    def _translate_op_name_attributes_to_string(self, op_name, event):
+        result = '{}-[{},{},{}]-[{},{},{}]-{}-{}'.format(op_name, event.grid_x,
+            event.grid_y, event.grid_z, event.block_x, event.block_y, event.block_z,
+            event.registers_per_thread, event.shared_memory)
+        return result
