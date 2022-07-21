@@ -43,7 +43,6 @@ interface DataType {
     number: number;
     companyAddress: string;
     companyName: string;
-    gender: string;
 }
 interface ExpandedDataType {
     key: React.Key;
@@ -349,40 +348,51 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const model = useRef<any>(null);
     const [cpuData, setCpuData] = useState<any>();
+    const [gpuData, setGpuData] = useState<any>();
     const [tableData, setTableData] = useState<any>();
     const [distributed, setDistributed] = useState<any>();
     const [isCPU, setIsCPU] = useState(true);
     const [search, setSearch] = useState<string>('');
     const [isExpend, setIsExpend] = useState<any>(false);
-    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
-    const [group, setGroup] = useState<string>('');
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
+        {label: '按算子名称', value: 'op_name'},
+        {label: '按算子名称+输入形状', value: 'input_shape'}
+    ]);
+    const [group, setGroup] = useState<string>('op_name');
     const [radioValue, setradioValue] = useState(1);
     const [top, setTop] = useState(0);
 
     useEffect(() => {
         if (runs && workers && spans && radioValue) {
-            if (top > 0) {
-                fetcher(
-                    '/profiler/operator/pie' +
-                        `?run=${runs}` +
-                        `&worker=${workers}` +
-                        `&span=${spans}` +
-                        `&time_unit=${units}` +
-                        `&topk=${top}`
-                ).then((res: unknown) => {
-                    setCpuData(res);
-                });
-            } else {
-                fetcher(
-                    '/profiler/operator/pie' +
-                        `?run=${runs}` +
-                        `&worker=${workers}` +
-                        `&span=${spans}` +
-                        `&time_unit=${units}`
-                ).then((res: unknown) => {
-                    setCpuData(res);
-                });
-            }
+            fetcher(
+                '/profiler/operator/pie' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&time_unit=${units}` +
+                    `&topk=${top}`
+            ).then((res: any) => {
+                const cpuChartData = [];
+                const gpuChartData = [];
+                for (const item of res.cpu) {
+                    // debugger
+                    cpuChartData.push({
+                        value: item.total_time,
+                        name: item.name,
+                        proportion: item.ratio
+                    });
+                }
+                for (const item of res.gpu) {
+                    // debugger
+                    gpuChartData.push({
+                        value: item.total_time,
+                        name: item.name,
+                        proportion: item.ratio
+                    });
+                }
+                setCpuData(cpuChartData);
+                setGpuData(gpuChartData);
+            });
         }
     }, [runs, workers, spans, radioValue]);
     useEffect(() => {
@@ -396,7 +406,13 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: any) => {
-                setTableData(res.data);
+                const TableDatas = res.events.map((item:any)=>{
+                    return {
+                        key:item.name,
+                        ...item
+                    }
+                })
+                setTableData(TableDatas);
             });
         }
     }, [runs, workers, spans, search]);
@@ -414,36 +430,17 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             });
         }
     }, [runs, workers, spans, search]);
-    useEffect(() => {
-        if (runs && workers && spans) {
-            fetcher(
-                '/profiler/operator/table' +
-                    `?run=${runs}` +
-                    `&worker=${workers}` +
-                    `&span=${spans}` +
-                    `&time_unit=${units}` +
-                    `&search_name=${search}` +
-                    `&group_by=${group}`
-            ).then((res: any) => {
-                setTableData(res.data);
-            });
-        }
-    }, [runs, workers, spans, search]);
     const columns: ColumnsType<DataType> = useMemo(() => {
-        return [
+        let columns = [
             {
                 title: 'Name',
                 dataIndex: 'name',
                 key: 'name',
-                width: 100,
-                onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
             },
             {
                 title: '调用量',
                 dataIndex: 'call',
                 key: 'call',
-                width: 100,
-                onFilter: (value: string | number | boolean, record) => record.name.indexOf(value as string) === 0
             },
             {
                 title: 'GPU',
@@ -452,29 +449,25 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         title: '总耗时',
                         dataIndex: 'cpu_total_time',
                         key: 'cpu_total_time',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any):any => a.age - b.age
                     },
                     {
                         title: '平均耗时',
                         dataIndex: 'cpu_avg_time',
                         key: 'cpu_avg_time',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     },
                     {
                         title: '最短耗时',
                         dataIndex: 'cpu_min_time',
                         key: 'cpu_min_time',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     },
                     {
                         title: '百分比',
                         dataIndex: 'cpu_ratio',
                         key: 'cpu_ratio',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     }
                 ]
             },
@@ -485,68 +478,136 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         title: '总耗时',
                         dataIndex: 'gpu_total_time',
                         key: 'gpu_total_time',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     },
                     {
                         title: '平均耗时',
                         dataIndex: 'gpu_avg_time',
                         key: 'gpu_avg_time',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     },
                     {
                         title: '最短耗时',
                         dataIndex: 'gpu_min_time',
                         key: 'gpu_min_time',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     },
                     {
                         title: '百分比',
                         dataIndex: 'gpu_ratio',
                         key: 'gpu_ratio',
-                        width: 150,
-                        sorter: (a, b) => a.age - b.age
+                        sorter: (a:any, b:any) => a.age - b.age
                     }
                 ]
-            },
-            {
-                title: 'Gender',
-                dataIndex: 'gender',
-                key: 'gender',
-                width: 100,
-                render: (text, record, index) => (
-                    <div
-                        onClick={e => {
-                            // debugger
-                            // console.log('Gender',e);
-                            const indexs = index - 0;
-                            model.current?.showModal();
-                            model.current?.getStack(tableData[indexs].name);
-                        }}
-                    >
-                        查看调用栈
-                    </div>
-                ),
-                fixed: 'right'
             }
         ];
-    }, [tableData]);
+        if (group === 'op_name_input_shape') {
+            columns.splice(1,0,{
+                title: '输入形状',
+                dataIndex: 'input_shape',
+                key: 'input_shape'
+            },)
+        }
+        return columns
+    }, [tableData,group]);
     const onSearch = (value: string) => {
         console.log(value);
     };
     const expandedRowRender = useCallback(
-        (e: any, a: any, b: any, c: any) => {
-            console.log('e,a,b,c,', e, a, b, c);
+        (record:any, index:any, indent:any, expanded:any) => {
             // debugger
             if (!tableData) {
                 return;
             }
-            const columns: ColumnsType<ExpandedDataType> = [{title: 'name', dataIndex: 'name', key: 'name'}];
-            const numbers = Number(a);
-            const data = tableData[numbers].expends;
-            return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
+            const columns: ColumnsType<ExpandedDataType> = [
+                {
+                    title: 'Name',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
+                    title: '调用量',
+                    dataIndex: 'call',
+                    key: 'call',
+                },
+                {
+                    title: 'GPU',
+                    children: [
+                        {
+                            title: '总耗时',
+                            dataIndex: 'cpu_total_time',
+                            key: 'cpu_total_time',
+                            sorter: (a:any, b:any):any => a.age - b.age
+                        },
+                        {
+                            title: '平均耗时',
+                            dataIndex: 'cpu_avg_time',
+                            key: 'cpu_avg_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '最长耗时',
+                            dataIndex: 'cpu_max_time',
+                            key: 'cpu_max_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '最短耗时',
+                            dataIndex: 'cpu_min_time',
+                            key: 'cpu_min_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '百分比',
+                            dataIndex: 'cpu_ratio',
+                            key: 'cpu_ratio',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        }
+                    ]
+                },
+                {
+                    title: 'GPU',
+                    children: [
+                        {
+                            title: '总耗时',
+                            dataIndex: 'gpu_total_time',
+                            key: 'gpu_total_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '平均耗时',
+                            dataIndex: 'gpu_avg_time',
+                            key: 'gpu_avg_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '最短耗时',
+                            dataIndex: 'gpu_min_time',
+                            key: 'gpu_min_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '最长耗时',
+                            dataIndex: 'gpu_max_time',
+                            key: 'gpu_max_time',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        },
+                        {
+                            title: '百分比',
+                            dataIndex: 'gpu_ratio',
+                            key: 'gpu_ratio',
+                            sorter: (a:any, b:any) => a.age - b.age
+                        }
+                    ]
+                }
+            ];
+            const numbers = Number(index);
+            const data = tableData[numbers].expands;
+            console.log('tabledata',data);
+            console.log('columns1',columns);
+            if (data) {
+                return <Table columns={columns} dataSource={data} pagination={false} showHeader={false} />;
+            }
         },
         [tableData]
     );
@@ -564,7 +625,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 scroll={{x: 'calc(700px + 50%)', y: 240}}
             ></Table>
         );
-    }, [columns, tableData, expandedRowRender]);
+    }, [columns, tableData]);
     const color = [
         '#2932E1',
         '#00CC88',
@@ -582,6 +643,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onChange = (e: RadioChangeEvent) => {
         console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
+        if (e.target.value === 1) {
+            setTop(0);
+        }
     };
     const onTopchange = (value: number) => {
         setTop(value);
@@ -595,7 +659,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>核视图</Title>
+                <Title>算子视图</Title>
                 <RadioContent>
                     <Radio.Group onChange={onChange} value={radioValue}>
                         <Radio value={1}>显示全部算子</Radio>
@@ -625,10 +689,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                            <PieChart className={'Content'} data={cpuData?.cpu} isCpu={true} color={color} />
+                            <PieChart className={'Content'} data={gpuData} isCpu={true} color={color} />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={cpuData?.gpu} isCpu={false} color={color} />
+                            <PieChart className={'Content'} data={cpuData} isCpu={false} color={color} />
                         </div>
                     </EchartPie>
                     <div
@@ -668,8 +732,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                     options={{
                                         yAxis: {
                                             name: ''
-                                        },
-                                        
+                                        }
                                     }}
                                 ></StackColumnChart>
                             </EchartPie4>

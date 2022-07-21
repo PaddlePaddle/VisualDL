@@ -6,7 +6,7 @@ import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEff
 import {fetcher} from '~/utils/fetch';
 import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
 import styled from 'styled-components';
-
+// import tracing from '/__snowpack__/link/packages/netron/dist/index.html';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const toolboxHeight = rem(40);
 const Content = styled.div`
@@ -80,18 +80,18 @@ const TracingView: React.FC<IProps> = props => {
     const SetIframeActive = () => {
         iframeRef.current?.focus();
     };
-    
+
     return (
         <Content>
             <iframe
                 ref={iframeRef}
+                src={PUBLIC_PATH + '/__snowpack__/link/packages/trace/dist/trace_embedding.html'}
                 frameBorder={0}
-                // scrolling="no"
+                scrolling="no"
                 marginWidth={0}
                 marginHeight={0}
-                src={PUBLIC_PATH + '/__snowpack__/link/packages/Trace/dist/trace_embedding.html'}
             ></iframe>
-         </Content>
+        </Content>
     );
 };
 export default TracingView;

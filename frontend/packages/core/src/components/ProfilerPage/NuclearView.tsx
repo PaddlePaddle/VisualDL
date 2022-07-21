@@ -199,11 +199,11 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [computation, setComputation] = useState<any>();
     const [distributedData, setDistributedData] = useState<any>();
-    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
-    const [items, setItems] = useState<string>('2');
+    const [stepsList, setStepsList] = useState<SelectListItem<string>[]>();
+    const [steps, setSteps] = useState<string>('2');
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/NuclearView/Computation' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+            fetcher('/profiler/distributed/histogram' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&step=${steps}`+ `&time_unit=${units}`).then(
                 (res: unknown) => {
                     const Data: any = res;
                     console.log('distributed,', Data);
@@ -211,9 +211,18 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                 }
             );
             fetcher(
-                '/profiler/NuclearView/distributed' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
+                '/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
             ).then((res: any) => {
+                console.log('info,', res);
                 setDistributedData(res.data);
+            });
+            fetcher('/profiler/distributed/steps' + `?run=${runs}`).then((res: unknown) => {
+                const stepData = res as string[];
+                const stepList = stepData.map((item, index) => {
+                    return {label: item, value: item};
+                });
+                setStepsList(stepList);
+                setSteps(stepData[0]);
             });
         }
     }, [runs, workers, spans, views]);
@@ -240,9 +249,9 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         return (
                             <Card>
                                 <div className="item_list">
-                                    <div className="items">{items.attr0}</div>
-                                    <div className="items">{items.attr1}</div>
-                                    <div className="items">{items.attr2}</div>
+                                    <div className="items">{items.worker_name}</div>
+                                    <div className="items">{items.process_id}</div>
+                                    <div className="items">{items.device_id}</div>
                                 </div>
                                 <div className="info_list">
                                     <div className="items">
@@ -282,7 +291,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                             训练步数
                         </div>
                         <div className="select_wrapper">
-                            <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
+                            <FullWidthSelect list={stepsList} value={steps} onChange={setSteps} />
                         </div>
                     </div>
                 </div>
