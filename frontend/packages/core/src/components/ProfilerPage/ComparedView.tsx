@@ -370,7 +370,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             ).then((res: any) => {
                 const chartData = [];
                 for (const item of res.events) {
-                    // debugger
                     chartData.push({
                         value: item.calls,
                         name: item.name,
@@ -389,7 +388,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             ).then((res: any) => {
                 const chartData = [];
                 for (const item of res.events) {
-                    // debugger
                     chartData.push({
                         value: item.total_time,
                         name: item.name,
@@ -412,7 +410,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: any) => {
-                debugger
                 const TableDatas = res.events.map((item:any)=>{
                     return {
                         key:item.name,
@@ -616,12 +613,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         if (e.target.value === 1) {
             setTop(0);
         } else if (e.target.value === 2) {
-            debugger;
             setTop(10);
         }
     };
     const onTopchange = (value: number) => {
-        debugger;
         setTop(value);
     };
     const tooltips = (
