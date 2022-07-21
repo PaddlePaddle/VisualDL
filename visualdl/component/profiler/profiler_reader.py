@@ -103,7 +103,7 @@ class ProfileReader(object):
         for run, filenames in self.walks.items():
             if run not in self.run_managers:
                 self.run_managers[run] = RunManager(run)
-            # print(filenames)
+            print(filenames)
             self.run_managers[run].parse_files(filenames)
         return list(self.walks.keys())
 

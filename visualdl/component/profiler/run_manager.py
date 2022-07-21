@@ -16,6 +16,7 @@ import os
 from collections import defaultdict
 
 from .parser.event_node import load_profiler_json
+from .profile_data import DistributedProfileData
 from .profile_data import ProfileData
 
 try:
@@ -43,18 +44,26 @@ class RunManager:
         #       ProfileData
         self.profile_data = defaultdict(dict)
         self.filenames = set()
+        # span:
+        #       DistributedProfileData
+        self.distributed_data = {}
 
     def get_profile_data(self, worker, span):
         if worker in self.profile_data:
             if span in self.profile_data[worker]:
                 return self.profile_data[worker][span]
 
+    def get_distributed_profile_data(self, span):
+        if span in self.distributed_data:
+            return self.distributed_data[span]
+
     def get_views(self):
         all_views = set()
         for worker, span_data in self.profile_data.items():
             for span, profiler_data in span_data.items():
                 all_views.update(profiler_data.get_views())
-        print('all_views', all_views)
+        if self.distributed_data:
+            all_views.add('Distributed')
         return all_views
 
     def get_workers(self, view_name):
@@ -69,6 +78,11 @@ class RunManager:
     def get_spans(self, worker_name):
         spans = []
         spans.extend(list(self.profile_data[worker_name].keys()))
+        return spans
+
+    def get_distributed_spans(self):
+        spans = []
+        spans.extend(list(self.distributed_data.keys()))
         return spans
 
     def parse_files(self, filenames):
@@ -88,4 +102,12 @@ class RunManager:
                             os.path.join(self.run, filename))
                     span = result.get_span_idx()
                     # print('span:', type(span))
-                    self.profile_data[worker_name][span] = ProfileData(result)
+                    self.profile_data[worker_name][span] = ProfileData(
+                        self.run, worker_name, span, result)
+        distributed_profile_data = defaultdict(list)
+        for worker_name, span_data in self.profile_data.items():
+            for span_idx, profile_data in span_data.items():
+                distributed_profile_data[span_idx].append(profile_data)
+        for span_idx, profile_datas in distributed_profile_data.items():
+            self.distributed_data[span_idx] = DistributedProfileData(
+                self.run, span_idx, profile_datas)
