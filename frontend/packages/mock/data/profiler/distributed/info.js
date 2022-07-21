@@ -1,23 +1,20 @@
-export default {
-    order: ['worker_name', 'process_id', 'device_id', 'name', 'memory', 'compute capability', 'utilization'],
-    data: [
-        {
-            worker_name: 'worker0',
-            process_id: 'Process0',
-            device_id: 'GPU0',
-            name: 'Tesla P40',
-            memory: '22.38 GB',
-            computeCapability: '24032378880',
-            utilization: '6.1'
-        },
-        {
-            worker_name: 'worker2',
-            process_id: 'Process2',
-            device_id: 'GPU2',
-            name: 'Tesla P41',
-            memory: '46.38 GB',
-            computeCapability: '240323781234',
-            utilization: '6.7'
-        }
-    ]
-};
+export default [
+    {
+        worker_name: 'host_bjyz-sys-gpu-kongming3.bjyz.baidu.compid_1114',
+        process_id: 1114,
+        device_id: 'GPU0',
+        name: 'Tesla P40',
+        memory: '2.56 GB',
+        computeCapability: '6.1',
+        utilization: 9.05
+    },
+    {
+        worker_name: 'host_bjyz-sys-gpu-kongming3.bjyz.baidu.compid_1291',
+        process_id: 1291,
+        device_id: 'GPU0',
+        name: 'Tesla P40',
+        memory: '2.56 GB',
+        computeCapability: '6.1',
+        utilization: 9.27
+    }
+];

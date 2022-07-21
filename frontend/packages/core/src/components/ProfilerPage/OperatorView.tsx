@@ -17,7 +17,7 @@
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/HyperParameterPage/IndicatorFilter/NumberInput';
-import StackColumnChart from '~/components/StackColumnChart';
+import StackColumnChart from '~/components/StackColumnChart3';
 import type {TableColumnsType} from 'antd';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
@@ -420,9 +420,11 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
-                '/profiler/overview/event_type_model_perspective' +
+                '/profiler/operator/pie_expand' +
                     `?run=${runs}` +
                     `&worker=${workers}` +
+                    `&device_type=${isCPU}` +
+                    `&topk=${top}` +
                     `&span=${spans}`
             ).then((res: unknown) => {
                 const Data: any = res;
@@ -430,7 +432,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setDistributed(Data);
             });
         }
-    }, [runs, workers, spans, search]);
+    }, [runs, workers, spans, isCPU,top]);
     const columns: ColumnsType<DataType> = useMemo(() => {
         let columns = [
             {
