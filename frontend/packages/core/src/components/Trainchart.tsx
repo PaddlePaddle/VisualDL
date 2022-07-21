@@ -80,12 +80,11 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             if (!data) {
-                return
+                return;
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
-            const titles = data.steps
-            const order= data.order
+            const order = data.order;
             const color = [
                 '#2932E1',
                 '#00CC88',
@@ -100,22 +99,39 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                 '#00FF9D',
                 '#D50505'
             ];
-            const dataSerites = order.map((item:string,index:number)=>{
-                return {
-                    name: item,
+            const dataSeries: any = [];
+            const titles = data.steps;
+            for (let index = 0; index < data.steps.length; index++) {
+                const element = titles[index];
+                // debugger
+                dataSeries.push({
+                    name: order[index],
                     type: 'bar',
                     stack: '数据',
-                    // barMinWidth: '50%',
                     barCategoryGap: '0%',
                     itemStyle: {
                         color: color[index]
                     },
-                    data: data[item],
                     emphasis: {
                         focus: 'series'
-                    }
-                }
-            })
+                    },
+                    data: data.data[index]
+                });
+            }
+            // return {
+            //     name: item,
+            //     type: 'bar',
+            //     stack: '数据',
+            //     // barMinWidth: '50%',
+            //     barCategoryGap: '0%',
+            //     itemStyle: {
+            //         color: color[index]
+            //     },
+            //     data: data[item],
+            //     emphasis: {
+            //         focus: 'series'
+            //     }
+            // }
             let chartOptions: EChartOption = defaultsDeep({
                 tooltip: {
                     trigger: 'axis',
@@ -130,9 +146,9 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         let totals = 0;
                         for (let index = 0; index < params.length; index++) {
                             const element = params[index];
-                            totals += Number(element.data)
+                            totals += Number(element.data);
                         }
-                        totals = Number(totals.toFixed(2))
+                        totals = Number(totals.toFixed(2));
                         let str = ''; //声明一个变量用来存储数据
                         str +=
                             '<div style="font-size:16px;color:#FFFFFF;font-weight:500;margin-left:17px;">' +
@@ -249,7 +265,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                         color: '#666666'
                     }
                 },
-                series: dataSerites
+                series: dataSeries
             });
             echart?.setOption(chartOptions, {notMerge: true});
         }, [options, data, title, theme, i18n.language, echart]);
