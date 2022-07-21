@@ -459,6 +459,12 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
+                        title: '最长耗时',
+                        dataIndex: 'cpu_max_time',
+                        key: 'cpu_max_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
                         title: '最短耗时',
                         dataIndex: 'cpu_min_time',
                         key: 'cpu_min_time',
@@ -485,6 +491,12 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         title: '平均耗时',
                         dataIndex: 'gpu_avg_time',
                         key: 'gpu_avg_time',
+                        sorter: (a: any, b: any) => a.age - b.age
+                    },
+                    {
+                        title: '最长耗时',
+                        dataIndex: 'cpu_max_time',
+                        key: 'cpu_max_time',
                         sorter: (a: any, b: any) => a.age - b.age
                     },
                     {
