@@ -416,7 +416,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setTableData(TableDatas);
             });
         }
-    }, [runs, workers, spans, search]);
+    }, [runs, workers, spans, search,group]);
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
