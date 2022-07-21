@@ -214,7 +214,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                 '/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
             ).then((res: any) => {
                 console.log('info,', res);
-                setDistributedData(res.data);
+                setDistributedData(res);
             });
             fetcher('/profiler/distributed/steps' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then((res: unknown) => {
                 const stepData = res as string[];

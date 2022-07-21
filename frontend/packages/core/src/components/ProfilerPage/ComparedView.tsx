@@ -351,10 +351,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     const [tableData, setTableData] = useState<any>();
     const [search, setSearch] = useState<string>('');
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
-        {label: '按内核分组', value: 'Kernel name'},
-        {label: '按内核和算子名称分组', value: 'Kernel properties + Op name'}
+        {label: '按内核分组', value: 'kernel_name'},
+        {label: '按内核和算子名称分组', value: 'kernel_name_attributes'}
     ]);
-    const [group, setGroup] = useState<string>('Kernel name');
+    const [group, setGroup] = useState<string>('kernel_name');
     const [radioValue, setradioValue] = useState(1);
     const [top, setTop] = useState(0);
     const inputRef = useRef<any>()
@@ -412,6 +412,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: any) => {
+                debugger
                 const TableDatas = res.events.map((item:any)=>{
                     return {
                         key:item.name,

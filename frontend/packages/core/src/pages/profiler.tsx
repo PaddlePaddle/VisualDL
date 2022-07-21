@@ -174,7 +174,7 @@ const Profiler: FunctionComponent = () => {
     const [diffWorker1, setDiffWorker1] = useState<string>('');
     const [diffWorker2, setDiffWorker2] = useState<string>('');
     const [spans, setSpans] = useState<string>('');
-    const [units, setUnits] = useState<string>('');
+    const [units, setUnits] = useState<string>('us');
     const [diffSpan1, setDiffSpan1] = useState<string>('');
     const [diffSpan2, setDiffSpan2] = useState<string>('');
     const [runsList, setrunsList] = useState<SelectListItem<string>[]>();
@@ -200,7 +200,6 @@ const Profiler: FunctionComponent = () => {
             });
             setUnitsList(runsList);
             console.log('unitsData', runsData[0]);
-            setUnits(runsData[0]);
         });
     }, []);
     useEffect(() => {
