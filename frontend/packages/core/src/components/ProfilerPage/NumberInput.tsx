@@ -40,24 +40,31 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
 
     useEffect(() => {
         if (inputValue === '' && value !== defaultValue) {
+            debugger
             onChange?.(defaultValue);
             return;
         }
-        const v = Number.parseFloat(inputValue);
+        const v = value as number
         if (!Number.isNaN(v)) {
             onChange?.(v);
+            // debugger
+            setInputValue(v + '');
         }
-    }, [defaultValue, inputValue, onChange, value]);
 
+    }, [defaultValue, onChange, value]);
+    // useEffect(()=>{
+
+    // },[inputValue])
     const check = useCallback(() => {
         const v = Number.parseFloat(inputValue);
         if (Number.isNaN(v)) {
             setInputValue(Number.isFinite(value) ? value + '' : '');
+            onChange?.(0);
         } else {
-            debugger
             setInputValue(v + '');
+            onChange?.(v);
         }
-    }, [inputValue, value]);
+    }, [inputValue]);
 
     return (
         <Input

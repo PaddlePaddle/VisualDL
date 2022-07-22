@@ -3,7 +3,6 @@ export default {
         {
             name: 'backward',
             calls: 7,
-            expands: [],
             cpu_total_time: 10.51,
             cpu_avg_time: 1.5,
             cpu_max_time: 2.09,
@@ -18,7 +17,7 @@ export default {
         {
             name: 'conv2d_grad grad_node',
             calls: 21,
-            expands: [
+            children: [
                 {
                     name: 'conv2d_grad::infer_shape',
                     calls: 21,
@@ -62,7 +61,7 @@ export default {
         {
             name: 'conv2d trace_op',
             calls: 21,
-            expands: [
+            children: [
                 {
                     name: 'conv2d::infer_shape',
                     calls: 21,
@@ -120,7 +119,7 @@ export default {
         {
             name: 'relu_grad grad_node',
             calls: 28,
-            expands: [
+            children: [
                 {
                     name: 'relu_grad::infer_shape',
                     calls: 28,
@@ -164,7 +163,7 @@ export default {
         {
             name: 'pool2d_grad grad_node',
             calls: 14,
-            expands: [
+            children: [
                 {
                     name: 'pool2d_grad::infer_shape',
                     calls: 14,
@@ -208,7 +207,7 @@ export default {
         {
             name: 'elementwise_add trace_op',
             calls: 35,
-            expands: [
+            children: [
                 {
                     name: 'elementwise_add::infer_shape',
                     calls: 35,
@@ -266,7 +265,7 @@ export default {
         {
             name: 'elementwise_add_grad grad_node',
             calls: 35,
-            expands: [
+            children: [
                 {
                     name: 'elementwise_add_grad::infer_shape',
                     calls: 35,
@@ -310,7 +309,7 @@ export default {
         {
             name: 'relu trace_op',
             calls: 28,
-            expands: [
+            children: [
                 {
                     name: 'relu::infer_shape',
                     calls: 28,
@@ -368,7 +367,7 @@ export default {
         {
             name: 'matmul_v2 trace_op',
             calls: 14,
-            expands: [
+            children: [
                 {
                     name: 'matmul_v2::infer_shape',
                     calls: 14,
@@ -426,7 +425,7 @@ export default {
         {
             name: 'pool2d trace_op',
             calls: 14,
-            expands: [
+            children: [
                 {
                     name: 'pool2d::infer_shape',
                     calls: 14,
@@ -484,7 +483,7 @@ export default {
         {
             name: 'matmul_v2_grad grad_node',
             calls: 14,
-            expands: [
+            children: [
                 {
                     name: 'matmul_v2_grad::infer_shape',
                     calls: 14,
@@ -528,7 +527,7 @@ export default {
         {
             name: 'adam trace_op',
             calls: 70,
-            expands: [
+            children: [
                 {
                     name: 'adam::infer_shape',
                     calls: 70,
@@ -586,7 +585,7 @@ export default {
         {
             name: 'transpose2 trace_op',
             calls: 229,
-            expands: [
+            children: [
                 {
                     name: 'transpose2::infer_shape',
                     calls: 229,
@@ -644,7 +643,7 @@ export default {
         {
             name: 'stack trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'stack::infer_shape',
                     calls: 7,
@@ -702,7 +701,7 @@ export default {
         {
             name: 'softmax_with_cross_entropy_grad grad_node',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'softmax_with_cross_entropy_grad::infer_shape',
                     calls: 7,
@@ -746,7 +745,7 @@ export default {
         {
             name: 'softmax_with_cross_entropy trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'softmax_with_cross_entropy::infer_shape',
                     calls: 7,
@@ -804,7 +803,7 @@ export default {
         {
             name: 'reduce_max trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'reduce_max::infer_shape',
                     calls: 7,
@@ -862,7 +861,7 @@ export default {
         {
             name: 'reduce_min trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'reduce_min::infer_shape',
                     calls: 7,
@@ -920,7 +919,7 @@ export default {
         {
             name: 'mean trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'mean::infer_shape',
                     calls: 7,
@@ -978,7 +977,7 @@ export default {
         {
             name: 'cast trace_op',
             calls: 235,
-            expands: [
+            children: [
                 {
                     name: 'cast::infer_shape',
                     calls: 235,
@@ -1036,7 +1035,7 @@ export default {
         {
             name: 'elementwise_mul trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'elementwise_mul::infer_shape',
                     calls: 7,
@@ -1094,7 +1093,7 @@ export default {
         {
             name: 'not_equal trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'not_equal::infer_shape',
                     calls: 7,
@@ -1152,7 +1151,7 @@ export default {
         {
             name: 'greater_equal trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'greater_equal::infer_shape',
                     calls: 7,
@@ -1210,7 +1209,7 @@ export default {
         {
             name: 'less_than trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'less_than::infer_shape',
                     calls: 7,
@@ -1268,7 +1267,7 @@ export default {
         {
             name: 'scale trace_op',
             calls: 228,
-            expands: [
+            children: [
                 {
                     name: 'scale::infer_shape',
                     calls: 228,
@@ -1326,7 +1325,7 @@ export default {
         {
             name: 'mean_grad grad_node',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'mean_grad::infer_shape',
                     calls: 7,
@@ -1370,7 +1369,7 @@ export default {
         {
             name: 'fill_constant trace_op',
             calls: 21,
-            expands: [
+            children: [
                 {
                     name: 'fill_constant::infer_shape',
                     calls: 21,
@@ -1428,7 +1427,7 @@ export default {
         {
             name: 'flatten_contiguous_range_grad grad_node',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'flatten_contiguous_range_grad::infer_shape',
                     calls: 7,
@@ -1472,7 +1471,7 @@ export default {
         {
             name: 'flatten_contiguous_range trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'flatten_contiguous_range::infer_shape',
                     calls: 7,
@@ -1530,7 +1529,7 @@ export default {
         {
             name: 'unsqueeze2 trace_op',
             calls: 7,
-            expands: [
+            children: [
                 {
                     name: 'unsqueeze2::infer_shape',
                     calls: 7,
@@ -1588,7 +1587,7 @@ export default {
         {
             name: 'reshape2 trace_op',
             calls: 229,
-            expands: [
+            children: [
                 {
                     name: 'reshape2::infer_shape',
                     calls: 229,

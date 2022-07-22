@@ -16,14 +16,11 @@
 
 import * as chart from '~/utils/chart';
 import leftIcon from '@visualdl/icons/icons/left.svg';
-import defaultLeftIcon from '@visualdl/icons/icons/defaultLeft.svg';
 import rightIcon from '@visualdl/icons/icons/right.svg';
-import defaultRightIcon from '@visualdl/icons/icons/defaultRight.svg';
-
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-import {color, colorAlt} from '~/utils/chart';
+import styled from 'styled-components';
 import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -54,9 +51,27 @@ export type LineChartRef = {
     restore(): void;
     saveAsImage(): void;
 };
-
+const Content = styled.div`
+    height: 100%;
+    width: 100%;
+    .echarts{
+        height: 100%;
+    }
+    .tooltips {
+        display:flex;
+        .tooltipName {
+            font-size:14px;
+            color:#FFFFFF;
+            font-weight:500;
+            margin-left:10px;
+            white-space:pre-wrap;
+            hegiht:auto;
+            max-width:800px;
+        }
+    }
+`;
 const PieChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, isCpu, color}, ref) => {
+    ({option, data, title, loading, zoom, className, onInit, isCpu, color}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -88,8 +103,9 @@ const PieChart = React.forwardRef<LineChartRef, any>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
             if (data && color) {
-                console.log('chartData', data);
-                let chartOptions: EChartOption = defaultsDeep({
+                console.log('chartData', data,option);
+                // debugger
+                let chartOptions: EChartOption = defaultsDeep(option,{
                     grid: {
                         left: 0
                         // top: '23%'
@@ -106,32 +122,39 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                             fontSize: '14',
                             color: '#666'
                         },
+                        position: ['50%', '0%'],
                         formatter: function (params: any) {
                             console.log('pieparams', params);
                             var str = ''; //声明一个变量用来存储数据
+                            str += '<div class="tooltips">'
                             str +=
-                                '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:10px;">' +
-                                params.data.name +
+                                '<div class="tooltipName">' +
+                                    params.data.name + ''
                                 '</div>';
+                            str += '<div>'
                             str +=
                                 '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
-                                color[0] +
+                                    color[0] +
                                 ';"></span>' +
+
                                 '<span style="color: #FFFFFF;">' +
                                 '耗时' +
                                 '</span>' +
+
                                 '</span> : <span style="color: #FFFFFF;">' +
-                                params.data.value +
+                                    params.data.value +
                                 '</br>';
                             str +=
                                 '<span style="display:inline-block;color: #FFFFFF;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
-                                color[1] +
-                                ';"></span>' +
+                                    color[1] +
+                                ';"></span>' +    
                                 '占比' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.proportion +
                                 '%';
                             ('</br>');
+                            str += '</div>'
+                            str += '</div>'
                             return str;
                         }
                     },
@@ -182,9 +205,10 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         }
                     ]
                 });
+                // debugger
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, title, theme, i18n.language, echart]);
+        }, [option, data, title, theme, i18n.language, echart]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
@@ -192,7 +216,9 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         <GridLoader color={primaryColor} size="10px" />
                     </div>
                 )}
-                <div className="echarts" ref={echartRef}></div>
+                <Content>
+                    <div className="echarts" ref={echartRef}></div>
+                </Content>
             </Wrapper>
         );
     }
