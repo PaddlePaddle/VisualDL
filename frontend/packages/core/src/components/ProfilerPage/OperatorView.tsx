@@ -700,12 +700,18 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </Radio.Group>
                     {radioValue === 2 ? (
                         <div className="AdditionContent">
-                            <div className="Addition ">+</div>
+                            <div className="Addition " onClick={() => {
+                                    const tops = top + 1;
+                                    setTop(tops);
+                                }}>+</div>
                             <div className="input_wrapper">
                                 {/* <Input placeholder="Basic usage" />; */}
                                 <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
                             </div>
-                            <div className="subtraction">-</div>
+                            <div className="subtraction" onClick={() => {
+                                    const tops = top - 1;
+                                    setTop(tops);
+                                }}>-</div>
                         </div>
                     ) : null}
                 </RadioContent>

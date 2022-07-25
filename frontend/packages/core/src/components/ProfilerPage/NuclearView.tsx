@@ -118,7 +118,7 @@ const Configure = styled.div`
         }
     }
 `;
-const EchartPie4 = styled.div`
+const EchartPie = styled.div`
     width: 100%;
     border: 1px solid #dddddd;
     border-radius: 4px;
@@ -156,7 +156,10 @@ const Card = styled.div`
         .items {
             padding-left: 30px;
             padding-right: 30px;
+        }
+        .items:nth-of-type(2) {
             border-right: 1px solid #dddddd;
+            border-left: 1px solid #dddddd;
         }
     }
     .info_list {
@@ -295,9 +298,9 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         </div>
                     </div>
                 </div>
-                <EchartPie4>
+                <EchartPie>
                     <StackColumnChart className={'Content'} data={computation} color={color}></StackColumnChart>
-                </EchartPie4>
+                </EchartPie>
             </Configure>
         </ViewWrapper>
     );
