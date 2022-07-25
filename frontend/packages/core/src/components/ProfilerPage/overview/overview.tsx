@@ -287,23 +287,8 @@ const EchartPie = styled.div`
         width: 100%;
     }
 `;
-const EchartPie3 = styled.div`
-    width: 100%;
-    border: 1px solid #dddddd;
-    border-radius: 4px;
+const EchartPie3 = styled(EchartPie)`
     height: ${rem(444)};
-    display: flex;
-    // padding: ${rem(24)};
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
     .ant-radio-inner {
         background-color: #fff;
         border-color: #ffffff;
@@ -319,23 +304,8 @@ const EchartPie3 = styled.div`
         }
     }
 `;
-const EchartPie4 = styled.div`
-    width: 100%;
-    border: 1px solid #dddddd;
-    border-radius: 4px;
+const EchartPie4 = styled(EchartPie)`
     height: ${rem(366)};
-    // padding: ${rem(24)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
 `;
 const PieceContent = styled.div`
     border: 1px solid #dddddd;
@@ -899,7 +869,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             <Configure>
                 <div className="title">运行耗时</div>
                 <PieceContent>
-                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`, paddingBottom: `${rem(0)}`}}>
+                    <EchartPie style={{paddingRight: `${rem(0)}`, paddingTop: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(10)}`}}>
                             <PieChart className={'Content'} data={chartData?.cpu} isCpu={true} color={color} />
                         </div>
