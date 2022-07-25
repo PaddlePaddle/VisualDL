@@ -188,6 +188,12 @@ class OverviewParser:
                                 self.merged_events_per_stage[stage_name][
                                     device_name][step_idx][event_type][
                                         'calls'] = 0
+                            if 'total_time' not in self.merged_events_per_stage[
+                                    stage_name][device_name][step_idx][
+                                        event_type]:
+                                self.merged_events_per_stage[stage_name][
+                                    device_name][step_idx][event_type][
+                                        'total_time'] = 0
                             events_data['times'] = merge_self_ranges(
                                 events_data['times'], is_sorted=False)
                             self.merged_events_per_stage[stage_name][
@@ -195,10 +201,13 @@ class OverviewParser:
                                     'calls'] += len(events_data['events'])
                             self.merged_events_per_stage[stage_name][device_name][step_idx][event_type]['times'] = \
                                 merge_ranges(self.merged_events_per_stage[stage_name][device_name][step_idx][event_type]['times'], events_data['times'], is_sorted=True)
+                            
 
         # merge different stages into profile step
-        init = self.merged_events_per_stage['ProfileStep']
-        for stage_name, stage_data in self.merged_events_per_stage.items():
+        stage_names = list(self.merged_events_per_stage.keys())
+        self.merged_events_per_stage['ProfileStep']
+        for stage_name in stage_names:
+            stage_data = self.merged_events_per_stage[stage_name]
             for device_name, steps_data in stage_data.items():
                 for step_idx, events in steps_data.items():
                     for event_type, events_data in events.items():
@@ -279,18 +288,6 @@ class OverviewParser:
             stack.append(node)
         while stack:
             current_node = stack.pop()
-            self.events_per_stage[stage_name]["CPU"][stage_idx][
-                current_node.thread_id][current_node.type]['events'].append(
-                    current_node)
-            self.events_per_stage[stage_name]["CPU"][stage_idx][
-                current_node.thread_id][current_node.type]['times'].append(
-                    (current_node.start_ns, current_node.end_ns))
-            self.events_per_stage[stage_name]["CPU"]['ALL'][
-                current_node.thread_id][current_node.type]['events'].append(
-                    current_node)
-            self.events_per_stage[stage_name]["CPU"]['ALL'][
-                current_node.thread_id][current_node.type]['times'].append(
-                    (current_node.start_ns, current_node.end_ns))
             for childnode in current_node.children_node:
                 stack.append(childnode)
             for runtimenode in current_node.runtime_node:
@@ -319,6 +316,20 @@ class OverviewParser:
                     self.events_per_stage[stage_name]["GPU"]['ALL'][
                         devicenode.stream_id][devicenode.type]['times'].append(
                             (devicenode.start_ns, devicenode.end_ns))
+            if current_node.type == 'Forward':
+                continue
+            self.events_per_stage[stage_name]["CPU"][stage_idx][
+                current_node.thread_id][current_node.type]['events'].append(
+                    current_node)
+            self.events_per_stage[stage_name]["CPU"][stage_idx][
+                current_node.thread_id][current_node.type]['times'].append(
+                    (current_node.start_ns, current_node.end_ns))
+            self.events_per_stage[stage_name]["CPU"]['ALL'][
+                current_node.thread_id][current_node.type]['events'].append(
+                    current_node)
+            self.events_per_stage[stage_name]["CPU"]['ALL'][
+                current_node.thread_id][current_node.type]['times'].append(
+                    (current_node.start_ns, current_node.end_ns))
 
     
     def _parse_events(self, nodetrees):
@@ -328,7 +339,7 @@ class OverviewParser:
         node_wrapped_threadlist = traverse_tree(node_wrapped_trees)
         # analyse user-defined summary
         for threadid, wrapped_nodes in node_wrapped_threadlist.items():
-            print('threadid', threadid, 'wrapped_nodes[0]', wrapped_nodes[0].name)
+            # print('threadid', threadid, 'wrapped_nodes[0]', wrapped_nodes[0].name)
             for wrapped_node in wrapped_nodes[1:]:  #skip root node
                 if wrapped_node.type == 'PythonUserDefined':
                     self.add_userdefined_item(wrapped_node)
