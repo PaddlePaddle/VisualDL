@@ -229,6 +229,7 @@ class OverviewParser:
                                     ['times'],
                                     events_data['times'],
                                     is_sorted=True)
+        
 
         # add gpu time for model perspective summary
         for stage_name, stage_data in self.merged_events_per_stage.items():
@@ -329,8 +330,7 @@ class OverviewParser:
         for threadid, wrapped_nodes in node_wrapped_threadlist.items():
             print('threadid', threadid, 'wrapped_nodes[0]', wrapped_nodes[0].name)
             for wrapped_node in wrapped_nodes[1:]:  #skip root node
-                if wrapped_node.type == 'UserDefined'\
-                    or wrapped_node.type == 'PythonUserDefined':
+                if wrapped_node.type == 'PythonUserDefined':
                     self.add_userdefined_item(wrapped_node)
 
         # analyse all events in per stage

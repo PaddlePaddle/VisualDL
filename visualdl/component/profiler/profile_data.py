@@ -62,6 +62,7 @@ class ProfileData:
         self.userdefined_items = self.overview_parser.userdefined_items
         self.gpu_ulitization = self.overview_parser.gpu_ulitization
         self.process_id = self.overview_parser.process_id
+        self.get_event_type_perspective('cpu','us')
         # operator parser
         self.operator_parser = OperatorParser()
         self.operator_parser.parse(self.node_trees)
@@ -350,8 +351,6 @@ class ProfileData:
     #      event type:
     #           { "calls" :[], "times": [], "total_time": 0 }
     def get_event_type_perspective(self, device_type, time_unit):
-        if 'get_event_type_perspective' in self.cache[time_unit]:
-            return self.cache[time_unit]['get_event_type_perspective']
         data = OrderedDict()
         data['order'] = []
         if device_type == 'cpu':
@@ -366,11 +365,13 @@ class ProfileData:
                 event_type_data['ratios'] = {}
                 event_type_data['ratios']['key'] = []
                 event_type_data['ratios']['value'] = []
+                print(event_type)
                 for stage_name in [
                         'Dataloader', 'Forward', 'Backward', 'Optimization',
                         'Other'
                 ]:
                     if stage_name in self.merged_events_per_stage:
+                        print(stage_name, self.merged_events_per_stage[stage_name]['CPU']['ALL'][event_type]['total_time'])
                         if event_type in self.merged_events_per_stage[
                                 stage_name]['CPU']['ALL']:
                             event_type_data['calling_times']['key'].append(
@@ -392,6 +393,7 @@ class ProfileData:
                                     ['CPU']['ALL'][event_type]['total_time'] /
                                     self.merged_events_per_stage['ProfileStep']
                                     ['CPU']['ALL'][event_type]['total_time']))
+                print('ProfileStep', self.merged_events_per_stage['ProfileStep']['CPU']['ALL'][event_type]['total_time'])
                 if event_type_data['calling_times']['key']:
                     data[event_type] = event_type_data
                     data['order'].append(event_type)
@@ -436,7 +438,6 @@ class ProfileData:
                 if event_type_data['calling_times']['key']:
                     data[event_type] = event_type_data
                     data['order'].append(event_type)
-        self.cache[time_unit]['get_event_type_perspective'] = data
         return data
 
     # profiler/overview/event_type_model_perspective
@@ -1229,14 +1230,14 @@ class ProfileData:
             {
                 "name": "Tensor core used",
                 "calls": tensorcore_calls,
-                "ratio": tensorcore_calls/total_calls
+                "ratio": format_ratio(tensorcore_calls/total_calls)
             }
         )
         data['events'].append(
             {
                 "name": "Tensor core unused",
                 "calls": total_calls-tensorcore_calls,
-                "ratio": (total_calls-tensorcore_calls)/total_calls
+                "ratio": format_ratio((total_calls-tensorcore_calls)/total_calls)
             }
         )
         return data
