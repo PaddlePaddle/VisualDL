@@ -333,16 +333,15 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     const [tensorcoreData, setTensorcoreData] = useState<any>();
     const [tableData, setTableData] = useState<any>();
     const [search, setSearch] = useState<string>('');
-    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
+    const [itemsList] = useState<SelectListItem<string>[]>([
         {label: '按内核分组', value: 'kernel_name'},
         {label: '按内核和算子名称分组', value: 'kernel_name_attributes'}
     ]);
     const [group, setGroup] = useState<string>('kernel_name');
     const [radioValue, setradioValue] = useState(1);
     const [top, setTop] = useState(0);
-    const inputRef = useRef<any>()
     useEffect(() => {
-        if (runs && workers && spans) {
+        if (runs && workers && spans && units) {
             fetcher(
                 '/profiler/kernel/tensorcore_pie' +
                     `?run=${runs}` +
@@ -381,7 +380,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 setPieData(chartData);
             });
         }
-    }, [runs, workers, spans, top]);
+    }, [runs, workers, spans, top, units]);
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
@@ -393,194 +392,197 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: any) => {
-                const TableDatas = res.events.map((item:any)=>{
+                const TableDatas = res.events.map((item: any) => {
                     return {
-                        key:item.name,
+                        key: item.name,
                         ...item
-                    }
-                })
+                    };
+                });
                 setTableData(TableDatas);
             });
         }
-    }, [runs, workers, spans, search, group]);
+    }, [runs, workers, spans, search, group, units]);
     const columns: ColumnsType<DataType> = useMemo(() => {
-        let columns:any =  [
-            {
-                title1: '核名称',
-                dataIndex: 'name',
-                key: 'name',
-                width: 100,
-            },
-            {
-                title: '调用量',
-                dataIndex: 'calls',
-                key: 'calls',
-                width: 100,
-            },
-            {
-                title: `总耗时(${units})`,
-                dataIndex: 'total_time',
-                key: 'total_time',
-                width: 150,
-                sorter: (a:any, b:any) => {
-                    console.log('a,b',a,b);
-                    return a.total_time - b.total_time
-                }
-            },
-            {
-                title: `平均耗时(${units})`,
-                dataIndex: 'avg_time',
-                key: 'avg_time',
-                width: 150,
-                sorter: (a:any, b:any) => {
-                    return a.avg_time - b.avg_time
-                }
-            },
-            {
-                title: `最长耗时(${units})`,
-                dataIndex: 'max_time',
-                key: 'max_time',
-                width: 150,
-                sorter: (a:any, b:any) => {
-                    return a.max_time - b.max_time
-                }
-            },
-            {
-                title: `最短耗时(${units})`,
-                dataIndex: 'min_time',
-                key: 'min_time',
-                width: 150,
-                sorter: (a:any, b:any) => {
-                    return a.min_time - b.min_time
-                }
-            },
-            {
-                title: 'sm平均线程块数量',
-                dataIndex: 'mean blocks per sm',
-                key: 'mean blocks per sm',
-                width: 150,
-            },
-            {
-                title: '平均占用率%',
-                dataIndex: 'mean est achieved occupancy',
-                key: 'mean est achieved occupancy',
-                width: 150,
-            },
-            {
-                title: '是否使用tensor core',
-                dataIndex: 'tensor core used',
-                key: 'tensor core used',
-                width: 150,
-            },
-            {
-                title: `百分比%`,
-                dataIndex: 'ratio',
-                key: 'ratio',
-                width: 150,
-                sorter: (a:any, b:any) => {
-                    return a.ratio - b.ratio
-                }
-            }
-        ];
-        if (group === 'kernel_name_attributes') {
-            columns = [
+        if (group === 'kernel_name') {
+            const columns: any = [
                 {
                     title1: '核名称',
                     dataIndex: 'name',
                     key: 'name',
+                    width: 100
                 },
                 {
                     title: '调用量',
                     dataIndex: 'calls',
                     key: 'calls',
-                    sorter: (a:any, b:any) => {
-                        return a.calls - b.calls
-                    }
-                },
-                {
-                    title: '对应算子',
-                    dataIndex: 'operator',
-                    key: 'operator',
-                },
-                {
-                    title: '线程网格',
-                    dataIndex: 'grid',
-                    key: 'grid',
-                },
-                {
-                    title: '线程块',
-                    dataIndex: 'block',
-                    key: 'block',
-                },
-                {
-                    title: '线程平均寄存器数量',
-                    dataIndex: 'register per thread',
-                    key: 'register per thread',
-                },
-                {
-                    title: '共享显存量',
-                    dataIndex: 'shared memory',
-                    key: 'shared memory',
+                    width: 100
                 },
                 {
                     title: `总耗时(${units})`,
                     dataIndex: 'total_time',
                     key: 'total_time',
-                    sorter: (a:any, b:any) => {
-                        return a.total_time - b.total_time
+                    width: 150,
+                    sorter: (a: any, b: any) => {
+                        console.log('a,b', a, b);
+                        return a.total_time - b.total_time;
                     }
                 },
                 {
                     title: `平均耗时(${units})`,
                     dataIndex: 'avg_time',
                     key: 'avg_time',
-                    sorter: (a:any, b:any) => {
-                        return a.avg_time - b.avg_time
+                    width: 150,
+                    sorter: (a: any, b: any) => {
+                        return a.avg_time - b.avg_time;
                     }
                 },
                 {
                     title: `最长耗时(${units})`,
                     dataIndex: 'max_time',
                     key: 'max_time',
-                    sorter: (a:any, b:any) => {
-                        return a.max_time - b.max_time
+                    width: 150,
+                    sorter: (a: any, b: any) => {
+                        return a.max_time - b.max_time;
                     }
                 },
                 {
                     title: `最短耗时(${units})`,
                     dataIndex: 'min_time',
                     key: 'min_time',
-                    sorter: (a:any, b:any) => {
-                        return a.min_time - b.min_time
+                    width: 150,
+                    sorter: (a: any, b: any) => {
+                        return a.min_time - b.min_time;
                     }
                 },
                 {
                     title: 'sm平均线程块数量',
                     dataIndex: 'mean blocks per sm',
                     key: 'mean blocks per sm',
+                    width: 150
                 },
                 {
                     title: '平均占用率%',
                     dataIndex: 'mean est achieved occupancy',
                     key: 'mean est achieved occupancy',
+                    width: 150
                 },
                 {
                     title: '是否使用tensor core',
                     dataIndex: 'tensor core used',
                     key: 'tensor core used',
+                    width: 150
+                },
+                {
+                    title: `百分比%`,
+                    dataIndex: 'ratio',
+                    key: 'ratio',
+                    width: 150,
+                    sorter: (a: any, b: any) => {
+                        return a.ratio - b.ratio;
+                    }
+                }
+            ];
+            return columns;
+        }
+        if (group === 'kernel_name_attributes') {
+            const columns = [
+                {
+                    title1: '核名称',
+                    dataIndex: 'name',
+                    key: 'name'
+                },
+                {
+                    title: '调用量',
+                    dataIndex: 'calls',
+                    key: 'calls',
+                    sorter: (a: any, b: any) => {
+                        return a.calls - b.calls;
+                    }
+                },
+                {
+                    title: '对应算子',
+                    dataIndex: 'operator',
+                    key: 'operator'
+                },
+                {
+                    title: '线程网格',
+                    dataIndex: 'grid',
+                    key: 'grid'
+                },
+                {
+                    title: '线程块',
+                    dataIndex: 'block',
+                    key: 'block'
+                },
+                {
+                    title: '线程平均寄存器数量',
+                    dataIndex: 'register per thread',
+                    key: 'register per thread'
+                },
+                {
+                    title: '共享显存量',
+                    dataIndex: 'shared memory',
+                    key: 'shared memory'
+                },
+                {
+                    title: `总耗时(${units})`,
+                    dataIndex: 'total_time',
+                    key: 'total_time',
+                    sorter: (a: any, b: any) => {
+                        return a.total_time - b.total_time;
+                    }
+                },
+                {
+                    title: `平均耗时(${units})`,
+                    dataIndex: 'avg_time',
+                    key: 'avg_time',
+                    sorter: (a: any, b: any) => {
+                        return a.avg_time - b.avg_time;
+                    }
+                },
+                {
+                    title: `最长耗时(${units})`,
+                    dataIndex: 'max_time',
+                    key: 'max_time',
+                    sorter: (a: any, b: any) => {
+                        return a.max_time - b.max_time;
+                    }
+                },
+                {
+                    title: `最短耗时(${units})`,
+                    dataIndex: 'min_time',
+                    key: 'min_time',
+                    sorter: (a: any, b: any) => {
+                        return a.min_time - b.min_time;
+                    }
+                },
+                {
+                    title: 'sm平均线程块数量',
+                    dataIndex: 'mean blocks per sm',
+                    key: 'mean blocks per sm'
+                },
+                {
+                    title: '平均占用率%',
+                    dataIndex: 'mean est achieved occupancy',
+                    key: 'mean est achieved occupancy'
+                },
+                {
+                    title: '是否使用tensor core',
+                    dataIndex: 'tensor core used',
+                    key: 'tensor core used'
                 },
                 {
                     title: '百分比%',
                     dataIndex: 'ratio',
                     key: 'ratio',
-                    sorter: (a:any, b:any) => {
-                        return a.ratio - b.ratio
+                    sorter: (a: any, b: any) => {
+                        return a.ratio - b.ratio;
                     }
                 }
             ];
+            return columns;
         }
-        return columns
-    }, [tableData,group]);
+    }, [tableData, group]);
     const onSearch = (value: string) => {
         console.log(value);
     };
@@ -650,11 +652,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                             </div>
                             <div className="input_wrapper">
                                 {/* <Input placeholder="Basic usage" />; */}
-                                <Input
-                                    value={top}
-                                    defaultValue={Number.NEGATIVE_INFINITY}
-                                    onChange={onTopchange}
-                                />
+                                <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
                             </div>
                             <div
                                 className="subtraction"
@@ -681,61 +679,72 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                            <PieChart className={'Content'} data={pieData}  color={color} option={{
-                                series: [
-                                    {
-                                        right: '220',
-                                        name: 'Access From',
-                                        type: 'pie',
-                                        radius: ['63%', '90%'],
-                                        avoidLabelOverlap: false,
-                                        label: {
-                                            show: true,
-                                            position: 'center',
-                                            textStyle: {
-                                                fontSize: '14',
-                                                color: '#666'
+                            <PieChart
+                                className={'Content'}
+                                data={pieData}
+                                color={color}
+                                option={{
+                                    series: [
+                                        {
+                                            right: '220',
+                                            name: 'Access From',
+                                            type: 'pie',
+                                            radius: ['63%', '90%'],
+                                            avoidLabelOverlap: false,
+                                            label: {
+                                                show: true,
+                                                position: 'center',
+                                                textStyle: {
+                                                    fontSize: '14',
+                                                    color: '#666'
+                                                },
+                                                formatter: function () {
+                                                    var str = '总耗时'; //声明一个变量用来存储数据
+                                                    return str;
+                                                }
                                             },
-                                            formatter: function () {
-                                                var str = '总耗时' //声明一个变量用来存储数据
-                                                return str;
-                                            }
-                                        },
-                                        labelLine: {
-                                            show: false
-                                        },
-                                        data: pieData
-                                    }
-                                ]
-                            }}/>
+                                            labelLine: {
+                                                show: false
+                                            },
+                                            data: pieData
+                                        }
+                                    ]
+                                }}
+                            />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={tensorcoreData} option={{
-                                series: [
-                                    {
-                                        right: '220',
-                                        name: 'Access From',
-                                        type: 'pie',
-                                        radius: ['63%', '90%'],
-                                        avoidLabelOverlap: false,
-                                        label: {
-                                            show: true,
-                                            position: 'center',
-                                            textStyle: {
-                                                fontSize: '14',
-                                                color: '#666'
+                            <PieChart
+                                className={'Content'}
+                                data={tensorcoreData}
+                                option={{
+                                    series: [
+                                        {
+                                            right: '220',
+                                            name: 'Access From',
+                                            type: 'pie',
+                                            radius: ['63%', '90%'],
+                                            avoidLabelOverlap: false,
+                                            label: {
+                                                show: true,
+                                                position: 'center',
+                                                textStyle: {
+                                                    fontSize: '14',
+                                                    color: '#666'
+                                                },
+                                                formatter: function () {
+                                                    var str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
+                                                    return str;
+                                                }
                                             },
-                                            formatter: function () {
-                                                var str = 'Tensor core\n\n利用率' //声明一个变量用来存储数据
-                                                return str;
-                                            }
-                                        },
-                                        labelLine: {
-                                            show: false
-                                        },
-                                        data: tensorcoreData
-                                    }
-                                ]}} color={color} />
+                                            labelLine: {
+                                                show: false
+                                            },
+                                            data: tensorcoreData
+                                        }
+                                    ]
+                                }}
+                                color={color}
+                            />
                         </div>
                     </EchartPie>
                 </PieceContent>

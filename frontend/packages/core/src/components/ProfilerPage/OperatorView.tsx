@@ -387,7 +387,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 const cpuChartData = [];
                 const gpuChartData = [];
                 for (const item of res.cpu) {
-                    // debugger
                     cpuChartData.push({
                         value: item.total_time,
                         name: item.name,
@@ -395,14 +394,12 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     });
                 }
                 for (const item of res.gpu) {
-                    // debugger
                     gpuChartData.push({
                         value: item.total_time,
                         name: item.name,
                         proportion: item.ratio
                     });
                 }
-                debugger
                 setCpuData(cpuChartData);
                 setGpuData(gpuChartData);
             });
@@ -425,7 +422,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         ...item
                     };
                 });
-                debugger
                 setTableData(TableDatas);
             });
         }
@@ -443,7 +439,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             ).then((res: unknown) => {
                 const Data: any = res;
                 console.log('distributed,', Data);
-                debugger
                 setDistributed(Data);
             });
         }
