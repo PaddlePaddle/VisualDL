@@ -1,5 +1,5 @@
 import type {ColumnsType} from 'antd/lib/table';
-interface DataType {
+export interface DataType {
     name: string;
     calls: number;
     total_time: number;
@@ -13,7 +13,7 @@ interface DataType {
     GPUavg_time: number;
     GPUratio: number;
 }
-interface DataType2 {
+export interface DataType2 {
     name: string;
     calls: number;
     cpu_total_time: number;
