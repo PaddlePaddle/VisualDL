@@ -16,7 +16,7 @@
 
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
-import NumberInput from '~/components/HyperParameterPage/IndicatorFilter/NumberInput';
+import NumberInput from '~/components/ProfilerPage/NumberInput';
 import StackColumnChart from '~/components/StackColumnChart';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
@@ -311,23 +311,6 @@ const PieceContent = styled.div`
         position: relative;
     }
 `;
-const EchartPie4 = styled.div`
-    width: 100%;
-    border-radius: 4px;
-    height: ${rem(366)};
-    // padding: ${rem(24)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-`;
 const Wraper = styled.div`
     width: 100%;
     .ant-table-pagination.ant-pagination {
@@ -435,34 +418,41 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 width: 100,
             },
             {
-                title: '总耗时',
+                title: `总耗时(${units})`,
                 dataIndex: 'total_time',
                 key: 'total_time',
                 width: 150,
                 sorter: (a:any, b:any) => {
-                    a.age - b.age
+                    console.log('a,b',a,b);
+                    return a.total_time - b.total_time
                 }
             },
             {
-                title: '平均耗时',
+                title: `平均耗时(${units})`,
                 dataIndex: 'avg_time',
                 key: 'avg_time',
                 width: 150,
-                sorter: (a:any, b:any) => a.age - b.age
+                sorter: (a:any, b:any) => {
+                    return a.avg_time - b.avg_time
+                }
             },
             {
-                title: '最长耗时',
+                title: `最长耗时(${units})`,
                 dataIndex: 'max_time',
                 key: 'max_time',
                 width: 150,
-                sorter: (a:any, b:any) => a.age - b.age
+                sorter: (a:any, b:any) => {
+                    return a.max_time - b.max_time
+                }
             },
             {
-                title: '最短耗时',
+                title: `最短耗时(${units})`,
                 dataIndex: 'min_time',
                 key: 'min_time',
                 width: 150,
-                sorter: (a:any, b:any) => a.age - b.age
+                sorter: (a:any, b:any) => {
+                    return a.min_time - b.min_time
+                }
             },
             {
                 title: 'sm平均线程块数量',
@@ -471,7 +461,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 width: 150,
             },
             {
-                title: '平均占用率',
+                title: '平均占用率%',
                 dataIndex: 'mean est achieved occupancy',
                 key: 'mean est achieved occupancy',
                 width: 150,
@@ -483,11 +473,13 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 width: 150,
             },
             {
-                title: '百分比',
+                title: `百分比%`,
                 dataIndex: 'ratio',
                 key: 'ratio',
                 width: 150,
-                sorter: (a:any, b:any) => a.age - b.age
+                sorter: (a:any, b:any) => {
+                    return a.ratio - b.ratio
+                }
             }
         ];
         if (group === 'kernel_name_attributes') {
@@ -501,6 +493,9 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: '调用量',
                     dataIndex: 'calls',
                     key: 'calls',
+                    sorter: (a:any, b:any) => {
+                        return a.calls - b.calls
+                    }
                 },
                 {
                     title: '对应算子',
@@ -528,30 +523,36 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     key: 'shared memory',
                 },
                 {
-                    title: '总耗时',
+                    title: `总耗时(${units})`,
                     dataIndex: 'total_time',
                     key: 'total_time',
                     sorter: (a:any, b:any) => {
-                        a.age - b.age
+                        return a.total_time - b.total_time
                     }
                 },
                 {
-                    title: '平均耗时',
+                    title: `平均耗时(${units})`,
                     dataIndex: 'avg_time',
                     key: 'avg_time',
-                    sorter: (a:any, b:any) => a.age - b.age
+                    sorter: (a:any, b:any) => {
+                        return a.avg_time - b.avg_time
+                    }
                 },
                 {
-                    title: '最长耗时',
+                    title: `最长耗时(${units})`,
                     dataIndex: 'max_time',
                     key: 'max_time',
-                    sorter: (a:any, b:any) => a.age - b.age
+                    sorter: (a:any, b:any) => {
+                        return a.max_time - b.max_time
+                    }
                 },
                 {
-                    title: '最短耗时',
+                    title: `最短耗时(${units})`,
                     dataIndex: 'min_time',
                     key: 'min_time',
-                    sorter: (a:any, b:any) => a.age - b.age
+                    sorter: (a:any, b:any) => {
+                        return a.min_time - b.min_time
+                    }
                 },
                 {
                     title: 'sm平均线程块数量',
@@ -559,7 +560,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     key: 'mean blocks per sm',
                 },
                 {
-                    title: '平均占用率',
+                    title: '平均占用率%',
                     dataIndex: 'mean est achieved occupancy',
                     key: 'mean est achieved occupancy',
                 },
@@ -569,10 +570,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     key: 'tensor core used',
                 },
                 {
-                    title: '百分比',
+                    title: '百分比%',
                     dataIndex: 'ratio',
                     key: 'ratio',
-                    sorter: (a:any, b:any) => a.age - b.age
+                    sorter: (a:any, b:any) => {
+                        return a.ratio - b.ratio
+                    }
                 }
             ];
         }
@@ -648,7 +651,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                             <div className="input_wrapper">
                                 {/* <Input placeholder="Basic usage" />; */}
                                 <Input
-                                    value={10}
+                                    value={top}
                                     defaultValue={Number.NEGATIVE_INFINITY}
                                     onChange={onTopchange}
                                 />
@@ -678,10 +681,61 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                            <PieChart className={'Content'} data={pieData} isCpu={true} color={color} />
+                            <PieChart className={'Content'} data={pieData}  color={color} option={{
+                                series: [
+                                    {
+                                        right: '220',
+                                        name: 'Access From',
+                                        type: 'pie',
+                                        radius: ['63%', '90%'],
+                                        avoidLabelOverlap: false,
+                                        label: {
+                                            show: true,
+                                            position: 'center',
+                                            textStyle: {
+                                                fontSize: '14',
+                                                color: '#666'
+                                            },
+                                            formatter: function () {
+                                                var str = '总耗时' //声明一个变量用来存储数据
+                                                return str;
+                                            }
+                                        },
+                                        labelLine: {
+                                            show: false
+                                        },
+                                        data: pieData
+                                    }
+                                ]
+                            }}/>
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={tensorcoreData} isCpu={false} color={color} />
+                            <PieChart className={'Content'} data={tensorcoreData} option={{
+                                series: [
+                                    {
+                                        right: '220',
+                                        name: 'Access From',
+                                        type: 'pie',
+                                        radius: ['63%', '90%'],
+                                        avoidLabelOverlap: false,
+                                        label: {
+                                            show: true,
+                                            position: 'center',
+                                            textStyle: {
+                                                fontSize: '14',
+                                                color: '#666'
+                                            },
+                                            formatter: function () {
+                                                var str = 'Tensor core\n\n利用率' //声明一个变量用来存储数据
+                                                return str;
+                                            }
+                                        },
+                                        labelLine: {
+                                            show: false
+                                        },
+                                        data: tensorcoreData
+                                    }
+                                ]}} color={color} />
                         </div>
                     </EchartPie>
                 </PieceContent>
