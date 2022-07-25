@@ -368,7 +368,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const [isExpend, setIsExpend] = useState<any>(false);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
         {label: '按算子名称', value: 'op_name'},
-        {label: '按算子名称+输入形状', value: 'input_shape'}
+        {label: '按算子名称+输入形状', value: 'op_name_input_shape'}
     ]);
     const [group, setGroup] = useState<string>('op_name');
     const [radioValue, setradioValue] = useState(1);
@@ -539,9 +539,12 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             columns.splice(1, 0, {
                 title: '输入形状',
                 dataIndex: 'input_shape',
-                key: 'input_shape'
+                key: 'input_shape',
+                width:100,
+                render: (text: string) => <div>{text}</div>,
             });
         }
+        console.log('columns',columns);
         return columns;
     }, [tableData, group]);
     const onSearch = (value: string) => {
