@@ -177,6 +177,20 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         pageIcons: {
                             vertical: ['image://' + leftIcon, 'image://' + rightIcon]
                         },
+                        tooltip: {
+                            show: true,
+                            formatter: function (params: any) {
+                                console.log('legend', params);
+                                var str = ''; //声明一个变量用来存储数据
+                                str += '<div class="tooltips">'
+                                str +=
+                                    '<div class="tooltipName">' +
+                                        params.name + ''
+                                    '</div>';
+                                str += '</div>'
+                                return str;
+                            }
+                        },
                         pageIconInactiveColor: '#981EFF'
                     },
                     series: [

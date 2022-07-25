@@ -375,7 +375,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const [top, setTop] = useState(0);
 
     useEffect(() => {
-        if (runs && workers && spans && radioValue) {
+        if (runs && workers && spans) {
             fetcher(
                 '/profiler/operator/pie' +
                     `?run=${runs}` +
@@ -387,7 +387,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 const cpuChartData = [];
                 const gpuChartData = [];
                 for (const item of res.cpu) {
-                    // debugger
                     cpuChartData.push({
                         value: item.total_time,
                         name: item.name,
@@ -395,7 +394,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     });
                 }
                 for (const item of res.gpu) {
-                    // debugger
                     gpuChartData.push({
                         value: item.total_time,
                         name: item.name,
@@ -406,7 +404,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setGpuData(gpuChartData);
             });
         }
-    }, [runs, workers, spans, radioValue]);
+    }, [runs, workers, spans,top,units]);
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
@@ -427,7 +425,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setTableData(TableDatas);
             });
         }
-    }, [runs, workers, spans, search, group]);
+    }, [runs, workers, spans, search, group,units]);
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
@@ -444,7 +442,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setDistributed(Data);
             });
         }
-    }, [runs, workers, spans, isCPU, top]);
+    }, [runs, workers, spans, isCPU, top,units]);
     const columns: ColumnsType<DataType> = useMemo(() => {
         let columns = [
             {
@@ -550,98 +548,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onSearch = (value: string) => {
         console.log(value);
     };
-    // const expandedRowRender = (record: any, index: any, indent: any, expanded: any) => {
-    //     const columns: TableColumnsType<ExpandedDataType> = [
-    //         {
-    //             title: '算子名称',
-    //             dataIndex: 'name',
-    //             key: 'name',
-    //             render: text => <div className='whiteWrap'>{text}</div>,
-    //         },
-    //         {
-    //             title: '调用量',
-    //             dataIndex: 'calls',
-    //             key: 'calls'
-    //         },
-    //         {
-    //             title: 'GPU',
-    //             children: [
-    //                 {
-    //                     title: '总耗时',
-    //                     dataIndex: 'cpu_total_time',
-    //                     key: 'cpu_total_time',
-    //                     sorter: (a: any, b: any): any => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '平均耗时',
-    //                     dataIndex: 'cpu_avg_time',
-    //                     key: 'cpu_avg_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '最长耗时',
-    //                     dataIndex: 'cpu_max_time',
-    //                     key: 'cpu_max_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '最短耗时',
-    //                     dataIndex: 'cpu_min_time',
-    //                     key: 'cpu_min_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '百分比',
-    //                     dataIndex: 'cpu_ratio',
-    //                     key: 'cpu_ratio',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 }
-    //             ]
-    //         },
-    //         {
-    //             title: 'GPU',
-    //             children: [
-    //                 {
-    //                     title: '总耗时',
-    //                     dataIndex: 'gpu_total_time',
-    //                     key: 'gpu_total_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '平均耗时',
-    //                     dataIndex: 'gpu_avg_time',
-    //                     key: 'gpu_avg_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '最短耗时',
-    //                     dataIndex: 'gpu_min_time',
-    //                     key: 'gpu_min_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '最长耗时',
-    //                     dataIndex: 'gpu_max_time',
-    //                     key: 'gpu_max_time',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 },
-    //                 {
-    //                     title: '百分比',
-    //                     dataIndex: 'gpu_ratio',
-    //                     key: 'gpu_ratio',
-    //                     sorter: (a: any, b: any) => a.age - b.age
-    //                 }
-    //             ]
-    //         }
-    //     ];
-    //     const numbers = Number(index);
-    //     const data = tableData[numbers].expands;
-    //     console.log('tabledata', data);
-    //     console.log('columns1', columns);
-    //     if (data) {
-    //         return <Table bordered columns={columns} scroll={{x:'calc(700px + 50%)', y: 100000}} dataSource={data} pagination={false} showHeader={false} />;
-    //     }
-    // };
     const getTable = useMemo(() => {
         return (
             <Table
