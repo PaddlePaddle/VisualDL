@@ -19,8 +19,10 @@ from paddle.framework import core
 from .utils import HostStatisticNode
 from .utils import merge_ranges
 from .utils import merge_self_ranges
+from .utils import rebuild_node_trees
 from .utils import sum_ranges
-from .utils import wrap_tree, traverse_tree, rebuild_node_trees
+from .utils import traverse_tree
+from .utils import wrap_tree
 
 StageType = ['Dataloader', 'Forward', 'Backward', 'Optimization']
 
@@ -201,7 +203,6 @@ class OverviewParser:
                                     'calls'] += len(events_data['events'])
                             self.merged_events_per_stage[stage_name][device_name][step_idx][event_type]['times'] = \
                                 merge_ranges(self.merged_events_per_stage[stage_name][device_name][step_idx][event_type]['times'], events_data['times'], is_sorted=True)
-                            
 
         # merge different stages into profile step
         stage_names = list(self.merged_events_per_stage.keys())
@@ -238,7 +239,6 @@ class OverviewParser:
                                     ['times'],
                                     events_data['times'],
                                     is_sorted=True)
-        
 
         # add gpu time for model perspective summary
         for stage_name, stage_data in self.merged_events_per_stage.items():
@@ -331,11 +331,9 @@ class OverviewParser:
                 current_node.thread_id][current_node.type]['times'].append(
                     (current_node.start_ns, current_node.end_ns))
 
-    
     def _parse_events(self, nodetrees):
         # print('I am in parse_events overview', nodetrees)
-        node_wrapped_trees = rebuild_node_trees(
-            nodetrees)
+        node_wrapped_trees = rebuild_node_trees(nodetrees)
         node_wrapped_threadlist = traverse_tree(node_wrapped_trees)
         # analyse user-defined summary
         for threadid, wrapped_nodes in node_wrapped_threadlist.items():

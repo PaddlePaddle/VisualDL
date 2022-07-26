@@ -114,15 +114,16 @@ class ProfilerApi(object):
         profiler_data = run_manager.get_profile_data(worker, span)
         topk = int(topk)
         return profiler_data.get_operator_pie(topk, 'GPUTotal', time_unit)
-    
+
     @result()
-    def operator_pie_expand(self, run, worker, span, topk, device_type, time_unit):
+    def operator_pie_expand(self, run, worker, span, topk, device_type,
+                            time_unit):
         device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         topk = int(topk)
-        return profiler_data.get_operator_pie_expand(topk, device_type, time_unit)
-        
+        return profiler_data.get_operator_pie_expand(topk, device_type,
+                                                     time_unit)
 
     @result()
     def operator_table(self,
@@ -134,7 +135,8 @@ class ProfilerApi(object):
                        time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
-        return profiler_data.get_operator_table(group_by, search_name, time_unit)
+        return profiler_data.get_operator_table(group_by, search_name,
+                                                time_unit)
 
     @result()
     def operator_stack_table(self,
@@ -176,22 +178,26 @@ class ProfilerApi(object):
     @result()
     def distributed_info(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
-        distributed_profiler_data = run_manager.get_distributed_profile_data(span)
+        distributed_profiler_data = run_manager.get_distributed_profile_data(
+            span)
         if distributed_profiler_data is None:
             return
         return distributed_profiler_data.get_distributed_info()
-    
+
     @result()
     def distributed_steps(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
-        distributed_profiler_data = run_manager.get_distributed_profile_data(span)
+        distributed_profiler_data = run_manager.get_distributed_profile_data(
+            span)
         return distributed_profiler_data.get_distributed_steps()
 
     @result()
     def distributed_histogram(self, run, worker, span, step, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        distributed_profiler_data = run_manager.get_distributed_profile_data(span)
-        return distributed_profiler_data.get_distributed_histogram(step, time_unit)
+        distributed_profiler_data = run_manager.get_distributed_profile_data(
+            span)
+        return distributed_profiler_data.get_distributed_histogram(
+            step, time_unit)
 
     @result()
     def trace(self, run, worker, span):
@@ -199,20 +205,29 @@ class ProfilerApi(object):
 
     @result()
     def memory_devices(self, run, worker, span):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_memory_devices()
 
     @result()
     def memory_curve(self, run, worker, span, device_type):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_memory_curve(device_type)
 
     @result()
     def memory_events(self, run, worker, span, device_type, min_size, max_size,
                       search_name):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_memory_events(device_type, min_size, max_size,
+                                               search_name)
 
     @result()
     def op_memory_events(self, run, worker, span, device_type, search_name):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_op_memory_events(device_type, search_name)
 
     @result()
     def comparison_phase(self, base_run, base_worker, base_span, exp_run,
@@ -271,7 +286,9 @@ def create_profiler_api_call(logdir):
         (api.userdefined_perspective, ["run", "worker", "span", "time_unit"]),
         'operator/pie': (api.operator_pie,
                          ["run", "worker", "span", "topk", "time_unit"]),
-        'operator/pie_expand': (api.operator_pie_expand, ["run", "worker", "span", "topk", "device_type", "time_unit"]),
+        'operator/pie_expand': (api.operator_pie_expand, [
+            "run", "worker", "span", "topk", "device_type", "time_unit"
+        ]),
         'operator/table': (api.operator_table, [
             "run", "worker", "span", "group_by", "search_name", "time_unit"
         ]),
@@ -287,9 +304,11 @@ def create_profiler_api_call(logdir):
             "run", "worker", "span", "group_by", "search_name", "time_unit"
         ]),
         'distributed/info': (api.distributed_info, ["run", "worker", "span"]),
-        'distributed/steps': (api.distributed_steps, ["run", "worker", "span"]),
-        'distributed/histogram': (api.distributed_histogram, ["run", "worker",
-                                                      "span", "step", "time_unit"]),
+        'distributed/steps': (api.distributed_steps, ["run", "worker",
+                                                      "span"]),
+        'distributed/histogram': (api.distributed_histogram, [
+            "run", "worker", "span", "step", "time_unit"
+        ]),
         'trace': (api.trace, ["run", "worker", "span"]),
         'memory/devices': (api.memory_devices, ["run", "worker", "span"]),
         'memory/curve': (api.memory_curve,
