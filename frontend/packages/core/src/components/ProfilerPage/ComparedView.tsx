@@ -406,7 +406,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         if (group === 'kernel_name') {
             const columns: any = [
                 {
-                    title1: '核名称',
+                    title: '核名称',
                     dataIndex: 'name',
                     key: 'name',
                     width: 100
@@ -487,7 +487,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         if (group === 'kernel_name_attributes') {
             const columns = [
                 {
-                    title1: '核名称',
+                    title: '核名称',
                     dataIndex: 'name',
                     key: 'name'
                 },

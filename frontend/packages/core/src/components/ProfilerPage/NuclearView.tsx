@@ -206,13 +206,6 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     const [steps, setSteps] = useState<string>('2');
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/distributed/histogram' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&step=${steps}`+ `&time_unit=${units}`).then(
-                (res: unknown) => {
-                    const Data: any = res;
-                    console.log('distributed,', Data);
-                    setComputation(Data);
-                }
-            );
             fetcher(
                 '/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
             ).then((res: any) => {
@@ -228,7 +221,18 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                 setSteps(stepData[0]);
             });
         }
-    }, [runs, workers, spans, views]);
+    }, [runs, workers, spans,]);
+    useEffect(() => {
+        if (runs && workers && spans && steps && units) {
+            fetcher('/profiler/distributed/histogram' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&step=${steps}`+ `&time_unit=${units}`).then(
+                (res: unknown) => {
+                    const Data: any = res;
+                    console.log('distributed,', Data);
+                    setComputation(Data);
+                }
+            );
+        }
+    }, [runs, workers, spans, views,steps,units]);
     const color = [
         '#2932E1',
         '#066BFF',

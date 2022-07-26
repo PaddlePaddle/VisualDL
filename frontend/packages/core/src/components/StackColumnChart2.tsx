@@ -88,7 +88,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                 const titles = data.worker_name;
                 const order = data.order;
                 const series: any = [];
-                for (let index = 0; index < data.worker_name.length; index++) {
+                for (let index = 0; index < titles.length; index++) {
                     const element = titles[index];
                     // debugger
                     series.push({

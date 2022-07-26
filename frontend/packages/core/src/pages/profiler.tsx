@@ -26,7 +26,7 @@ import Button from '~/components/Button';
 import Content from '~/components/Content';
 import Empty from '~/components/ProfilerPage/Empty';
 import OverView from '~/components/ProfilerPage/overview/overview';
-import OperatorView from '~/components/ProfilerPage/OperatorView';
+import OperatorView from '~/components/ProfilerPage/OperatorView/OperatorView';
 import DiffView from '~/components/ProfilerPage/DiffView';
 import MemoryView from '~/components/ProfilerPage/MemoryView';
 import TracingView from '~/components/ProfilerPage/TracingView';
