@@ -75,6 +75,9 @@ const Configure = styled.div`
     .titles{
         margin-bottom: ${rem(20)};
     }
+    .border {
+        border-top:none
+    }
     .titleContent {
         margin-bottom: ${rem(10)};
         display: flex;
@@ -113,7 +116,6 @@ const Configure = styled.div`
             .select_wrapper {
                 width: ${rem(64)};
                 height: ${rem(36)};
-                margin-right: ${rem(15)};
             }
         }
     }
@@ -249,12 +251,12 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     return (
         <ViewWrapper>
             <Title>分布视图</Title>
-            <Configure>
+            <Configure style={{marginTop:'24px'}}>
                 <div className="titles">设备信息</div>
                 <div>
-                    {distributedData && distributedData.map((items: any) => {
+                    {distributedData && distributedData.map((items: any,index:number) => {
                         return (
-                            <Card>
+                            <Card  className={index === 1 ? 'border' : ''}>
                                 <div className="item_list">
                                     <div className="items">{items.worker_name}</div>
                                     <div className="items">{items.process_id}</div>
@@ -270,12 +272,12 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                                         <div className="info">{items.memory}</div>
                                     </div>
                                     <div className="items">
-                                        <div className="label">Memory Raw:</div>
-                                        <div className="info">{items.computeCapability}</div>
+                                        <div className="label">utilization:</div>
+                                        <div className="info">{items.utilization}</div>
                                     </div>
                                     <div className="items">
-                                        <div className="label">Compute Capability:</div>
-                                        <div className="info">{items.utilization}</div>
+                                        <div className="label">ComputeCapability:</div>
+                                        <div className="info">{items.computeCapability}</div>
                                     </div>
                                 </div>
                             </Card>

@@ -88,8 +88,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                 const titles = data.worker_name;
                 const order = data.order;
                 const series: any = [];
-                for (let index = 0; index < titles.length; index++) {
-                    const element = titles[index];
+                for (let index = 0; index < order.length; index++) {
                     // debugger
                     series.push({
                         name: order[index],
@@ -173,10 +172,10 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                         itemHeight: 5
                     },
                     grid: {
-                        left: '54',
-                        right: '43',
-                        bottom: '40',
                         top: '84',
+                        left: '78',
+                        right:'51',
+                        bottom: '46',
                         containLabel: false
                     },
                     xAxis: [
@@ -206,7 +205,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                         }
                     ],
                     yAxis: {
-                        name: '耗时',
+                        name: '',
                         nameTextStyle: {
                             fontSize: 12,
                             color: '#999999'
