@@ -89,7 +89,9 @@ class ProfileData:
         self.memory_curve = self.memory_parser.memory_curve
         self.allocated_items = self.memory_parser.allocated_items
         self.reserved_items = self.memory_parser.reserved_items
-
+        self.paired_events = self.memory_parser.paired_events
+        self.size_ranges = self.memory_parser.size_ranges
+        # print(self.memory_curve)
         # cache data
         self.cache = defaultdict(lambda: defaultdict(list))
 
@@ -718,7 +720,7 @@ class ProfileData:
         for op_name, event in items:
             data['phase_type'].append(op_name)
             for innerop_name, item in event.operator_inners.items():
-                print(op_name, innerop_name, item.general_gpu_time)
+                # print(op_name, innerop_name, item.general_gpu_time)
                 if 'infer_shape' in innerop_name:
                     innerop_name = 'infer_shape'
                 elif 'compute' in innerop_name:
@@ -1253,17 +1255,141 @@ class ProfileData:
         return data
 
     def get_memory_devices(self):
-        devices = list(self.memory_curve.keys())
-        return devices
+        data = []
+        for device in self.memory_curve.keys():
+            data.append({
+                "device":
+                device,
+                "min_size":
+                format_memory(self.size_ranges[device][0], 'KB'),
+                "max_size":
+                format_memory(self.size_ranges[device][1], 'KB')
+            })
+        return data
 
-    def get_memory_curve(self, device_type):
-        pass
+    def get_memory_curve(self, device_type, time_unit='ms'):
+        curves = self.memory_curve[device_type]
+        data = {}
+        data['axis'] = []
+        data['linedata'] = {}
+        axis_append_count = 0
+        for key, events in curves.items():
+            data['linedata'][key] = []
+            sorted_events = sorted(events, key=lambda x: x[0])
+            for item in sorted_events:
+                timestamp = item[0]
+                size = item[1]
+                event_name = item[2]
+                if axis_append_count == 0:
+                    data['axis'].append(format_time(timestamp, time_unit))
+                data['linedata'][key].append({
+                    "value":
+                    format_memory(size, 'KB'),
+                    "event name":
+                    event_name,
+                    "timestamp":
+                    format_time(timestamp, time_unit)
+                })
+            axis_append_count += 1
+        return data
 
-    def get_memory_events(self, device_type, min_size, max_size, search_name):
-        pass
+    def get_memory_events(self,
+                          device_type,
+                          min_size=0,
+                          max_size=float('inf'),
+                          search_name=None,
+                          time_unit='ms'):
+        data = {}
+        data['column_name'] = [
+            'Memory Type', 'Allocated Event', 'Allocated Timestamp',
+            'Free Event', 'Free Timestamp', 'Duration', 'Size'
+        ]
+        data['data'] = []
+        paired_event_list = self.paired_events[device_type]
 
-    def get_op_memory_events(self, device_type, search_name):
-        pass
+        def filter_func(item):
+            nonlocal min_size
+            nonlocal max_size
+            nonlocal search_name
+            size = format_memory(item[-1], 'KB')
+            if not search_name:
+                if size >= min_size and size <= max_size:
+                    return True
+            else:
+                if size >= min_size and size <= max_size and (
+                        search_name in item[1] or search_name in item[3]):
+                    return True
+            return False
+
+        paired_event_list = filter(filter_func, paired_event_list)
+        paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
+        for item in paired_event_list:
+            if item[2] and item[4]:
+                duration = item[4] - item[2]
+            data['data'].append({
+                "Memory Type":
+                item[0],
+                "Allocated Event":
+                item[1],
+                "Allocated Timestamp":
+                format_time(item[2], time_unit) if item[2] else None,
+                "Free Event":
+                item[3],
+                "Free Timestamp":
+                format_time(item[4], time_unit) if item[4] else None,
+                "Duration":
+                format_time(duration, time_unit),
+                "Size":
+                format_memory(item[5], 'KB')
+            })
+        return data
+
+    def get_op_memory_events(self, device_type, search_name=None):
+        data = {}
+        data['column_name'] = [
+            'Event Name', 'Memory Type', 'Allocation Count', 'Free Count',
+            'Allocation Size', 'Free Size', 'Increased Size'
+        ]
+        data['data'] = []
+        allocated_events = self.allocated_items[device_type]
+
+        def filter_func(item):
+            nonlocal search_name
+            if not search_name:
+                return True
+            else:
+                if search_name in item[0]:
+                    return True
+            return False
+
+        reserved_events = self.reserved_items[device_type]
+        all_events = [(key, item) for key, item in allocated_events.items()]
+        all_events.extend(
+            [(key, item) for key, item in reserved_events.items()])
+        if not search_name:
+            all_events = filter(filter_func, all_events)
+
+        sorted_items = sorted(
+            all_events, key=lambda x: x[1].increase_size, reverse=True)
+
+        for event_name, item in sorted_items:
+            data['data'].append({
+                'Event Name':
+                event_name,
+                'Memory Type':
+                item.memory_type,
+                'Allocation Count':
+                item.allocation_count,
+                'Free Count':
+                item.free_count,
+                'Allocation Size':
+                format_memory(item.allocation_size, 'KB'),
+                'Free Size':
+                format_memory(item.free_size, 'KB'),
+                'Increased Size':
+                format_memory(item.increase_size, 'KB')
+            })
+        return data
 
 
 class DistributedProfileData:

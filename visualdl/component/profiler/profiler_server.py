@@ -210,21 +210,35 @@ class ProfilerApi(object):
         return profiler_data.get_memory_devices()
 
     @result()
-    def memory_curve(self, run, worker, span, device_type):
+    def memory_curve(self, run, worker, span, device_type, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_curve(device_type)
 
     @result()
-    def memory_events(self, run, worker, span, device_type, min_size, max_size,
-                      search_name):
+    def memory_events(self,
+                      run,
+                      worker,
+                      span,
+                      device_type,
+                      min_size=0,
+                      max_size=float('inf'),
+                      search_name=None,
+                      time_unit='ms'):
+        min_size = float(min_size)
+        max_size = float(max_size)
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_events(device_type, min_size, max_size,
                                                search_name)
 
     @result()
-    def op_memory_events(self, run, worker, span, device_type, search_name):
+    def op_memory_events(self,
+                         run,
+                         worker,
+                         span,
+                         device_type,
+                         search_name=None):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_op_memory_events(device_type, search_name)
@@ -312,10 +326,11 @@ def create_profiler_api_call(logdir):
         'trace': (api.trace, ["run", "worker", "span"]),
         'memory/devices': (api.memory_devices, ["run", "worker", "span"]),
         'memory/curve': (api.memory_curve,
-                         ["run", "worker", "span", "device_type"]),
+                         ["run", "worker", "span", "device_type",
+                          "time_unit"]),
         'memory/memory_events': (api.memory_events, [
             "run", "worker", "span", "device_type", "min_size", "max_size",
-            "search_name"
+            "search_name", "time_unit"
         ]),
         'memory/op_memory_events': (api.op_memory_events, [
             "run", "worker", "span", "device_type", "search_name"

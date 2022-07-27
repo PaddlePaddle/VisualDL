@@ -101,7 +101,8 @@ class MemNode:
         self.addr = json_obj['args']['addr'] if 'addr' in json_obj[
             'args'] else 0
         self.process_id = json_obj['pid']
-        self.thread_id = json_obj['tid']
+        self.thread_id = json_obj['tid'].replace(
+            _show_tid_pattern.match(json_obj['tid']).group(1), "")
         self.increase_bytes = json_obj['args'][
             'increase_bytes'] if 'increase_bytes' in json_obj['args'] else 0
         self.place = json_obj['args']['place'] if 'place' in json_obj[
@@ -242,7 +243,6 @@ class ProfilerResult:
         # construct thread2mem_event_nodes
         for memnode in memnodes:
             thread2mem_event_nodes[memnode.thread_id].append(memnode)
-
         # sort host event nodes and runtime event nodes according to start_ns and
         # end_ns
         # the smaller start_ns is, the further ahead position is.
@@ -268,7 +268,7 @@ class ProfilerResult:
             thread2runtime_event_nodes[threadid] = sorted(
                 runtimenodes, key=functools.cmp_to_key(compare_hostnode_func))
         for threadid, memnodes in thread2mem_event_nodes.items():
-            thread2mem_event_nodes[thread_id] = sorted(
+            thread2mem_event_nodes[threadid] = sorted(
                 memnodes, key=functools.cmp_to_key(compare_memnode_func))
 
         # construct trees
@@ -314,6 +314,7 @@ class ProfilerResult:
                     firstposition = 0
                     lastposition = len(runtime_event_nodes)
                     for i, runtimenode in enumerate(runtime_event_nodes):
+                        # print(i, runtimenode.start_ns, runtimenode.end_ns, len(runtime_event_nodes))
                         if runtimenode.start_ns >= stack_top_node.start_ns and runtimenode.end_ns <= stack_top_node.end_ns:
                             if not hasenter:
                                 firstposition = i
@@ -364,18 +365,20 @@ class ProfilerResult:
             if flag == 0:
                 stack.append(current_node)
                 flag_stack.append(1)
-                for child in current_node.children_node:
+                for child in current_node.children_node[::-1]:
                     stack.append(child)
                     flag_stack.append(0)
             else:
                 post_order_nodes.append(current_node)
-
         for node in post_order_nodes:
             hasenter = False
             firstposition = 0
             lastposition = len(mem_event_nodes)
+            # print('mem_event_nodes length', len(mem_event_nodes))
             for i, mem_node in enumerate(mem_event_nodes):
+                # print(i, mem_node.timestamp_ns, node.start_ns, node.end_ns, len(mem_event_nodes))
                 if mem_node.timestamp_ns >= node.start_ns and mem_node.timestamp_ns <= node.end_ns:
+                    # print('add memory node', node.name, mem_node)
                     node.mem_node.append(mem_node)
                     if not hasenter:
                         firstposition = i

@@ -355,6 +355,7 @@ def wrap_tree(nodetrees):
 
     return node_statistic_tree, newresults
 
+
 def rebuild_node_trees(nodetrees):
     template_root = None
     # First, we find the tree which includes Forward event.
@@ -403,8 +404,7 @@ def rebuild_node_trees(nodetrees):
                 root_statistic_node.children_node.append(
                     profiler_step_wrap_node)
                 for stage_node in profiler_step_node.children_node:
-                    stage_wrap_node = HostStatisticNode(
-                        stage_node.hostnode)
+                    stage_wrap_node = HostStatisticNode(stage_node.hostnode)
                     profiler_step_wrap_node.children_node.append(
                         stage_wrap_node)
             # insert nodes in original root into new stage nodes
@@ -420,8 +420,7 @@ def rebuild_node_trees(nodetrees):
                 if flag == 0:
                     stack.append(current_node)
                     flag_stack.append(1)
-                    for children_node in reversed(
-                            current_node.children_node):
+                    for children_node in reversed(current_node.children_node):
                         stack.append(children_node)
                         flag_stack.append(0)
                 else:
@@ -433,8 +432,7 @@ def rebuild_node_trees(nodetrees):
                     if node.start_ns >= wrapped_node.start_ns and node.end_ns <= wrapped_node.end_ns:
                         child_wrapped_node = HostStatisticNode(node)
                         warpped_stack.append(child_wrapped_node)
-                        wrapped_node.children_node.append(
-                            child_wrapped_node)
+                        wrapped_node.children_node.append(child_wrapped_node)
                         break
         else:
             unwrapped_stack.append(rootnode)
@@ -445,19 +443,16 @@ def rebuild_node_trees(nodetrees):
             for childnode in current_node.children_node:
                 unwrapped_stack.append(childnode)
                 child_wrapped_node = HostStatisticNode(childnode)
-                current_wrapped_node.children_node.append(
-                    child_wrapped_node)
+                current_wrapped_node.children_node.append(child_wrapped_node)
                 warpped_stack.append(child_wrapped_node)
             for runtimenode in current_node.runtime_node:
                 runtime_wrapped_node = HostStatisticNode(runtimenode)
-                current_wrapped_node.runtime_node.append(
-                    runtime_wrapped_node)
+                current_wrapped_node.runtime_node.append(runtime_wrapped_node)
 
     # recursive calculate node statistic values
     for thread_id, root_wrapped_node in wrapped_tree.items():
         root_wrapped_node.cal_statistic()
     return wrapped_tree
-
 
 
 def format_time(time, unit='ms'):
@@ -485,11 +480,12 @@ def format_ratio(ratio):
     # return '{:.2f}'.format(ratio * 100)
     return round(ratio * 100, 2)
 
+
 def format_float(float_data):
     return round(float_data, 2)
 
 
-def format_memory(memory, memory_unit):
+def format_memory(memory, memory_unit='KB'):
     result = float(memory)
     if memory_unit == 'GB':
         result /= 1e9

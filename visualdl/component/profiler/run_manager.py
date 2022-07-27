@@ -13,10 +13,12 @@
 # limitations under the License.
 # =======================================================================
 import os
+import threading
 from collections import defaultdict
 
 from .parser.event_node import load_profiler_json
-from .profile_data import ProfileData, DistributedProfileData
+from .profile_data import DistributedProfileData
+from .profile_data import ProfileData
 
 try:
     from paddle.profiler import load_profiler_result
@@ -45,13 +47,13 @@ class RunManager:
         self.filenames = set()
         # span:
         #       DistributedProfileData
-        self.distributed_data= {}
+        self.distributed_data = {}
 
     def get_profile_data(self, worker, span):
         if worker in self.profile_data:
             if span in self.profile_data[worker]:
                 return self.profile_data[worker][span]
-    
+
     def get_distributed_profile_data(self, span):
         if span in self.distributed_data:
             return self.distributed_data[span]
@@ -78,36 +80,42 @@ class RunManager:
         spans = []
         spans.extend(list(self.profile_data[worker_name].keys()))
         return spans
-    
+
     def get_distributed_spans(self):
         spans = []
         spans.extend(list(self.distributed_data.keys()))
         return spans
 
+    def _parse_file(self, filename):
+        match = _name_pattern.match(filename)
+        if match:
+            # print(filename)
+            worker_name = match.group(1)
+            if '.pb' in filename:
+                result = load_profiler_result(os.path.join(self.run, filename))
+            else:
+                result = load_profiler_json(os.path.join(self.run, filename))
+            span = result.get_span_idx()
+            # print('span:', type(span))
+            self.profile_data[worker_name][span] = ProfileData(
+                self.run, worker_name, span, result)
+
     def parse_files(self, filenames):
+        threads = []
         for filename in filenames:
             if filename not in self.filenames:
                 # print(filename)
                 self.filenames.add(filename)
-                match = _name_pattern.match(filename)
-                if match:
-                    # print(filename)
-                    worker_name = match.group(1)
-                    if '.pb' in filename:
-                        result = load_profiler_result(
-                            os.path.join(self.run, filename))
-                    else:
-                        result = load_profiler_json(
-                            os.path.join(self.run, filename))
-                    span = result.get_span_idx()
-                    # print('span:', type(span))
-                    self.profile_data[worker_name][span] = ProfileData(self.run, worker_name, span, result)
+                t = threading.Thread(
+                    target=self._parse_file, args=(filename, ))
+                t.start()
+                threads.append(t)
+        for thread in threads:
+            thread.join()
         distributed_profile_data = defaultdict(list)
         for worker_name, span_data in self.profile_data.items():
             for span_idx, profile_data in span_data.items():
                 distributed_profile_data[span_idx].append(profile_data)
         for span_idx, profile_datas in distributed_profile_data.items():
-            self.distributed_data[span_idx] = DistributedProfileData(self.run, span_idx, profile_datas)
-                
-
-        
+            self.distributed_data[span_idx] = DistributedProfileData(
+                self.run, span_idx, profile_datas)

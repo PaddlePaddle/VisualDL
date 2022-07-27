@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import collections
+
+from .utils import traverse_tree
 
 
 class MemoryItem:
@@ -41,6 +44,7 @@ class MemoryItem:
 
 class MemoryParser:
     def __init__(self):
+        self.start_time = float('inf')
         self.allocated_items = collections.defaultdict(
             dict)  # for memory summary, device type: event
         self.reserved_items = collections.defaultdict(
@@ -48,11 +52,16 @@ class MemoryParser:
         self.peak_allocation_values = collections.defaultdict(int)
         self.peak_reserved_values = collections.defaultdict(int)
         self.memory_events = collections.defaultdict(
-            collections.defaultdict(list)
+            lambda: collections.defaultdict(list)
         )  # device type: (addr, memory_type) : [(timestamp, type, hostnodename, memory_value), (as front)]
         self.memory_curve = collections.defaultdict(
-            defaultdict(list)
-        )  # device type: Allocated, Reserved, PeakAllocated, PeakReserved : (timestamp, hostnodename, memory_value)
+            lambda: collections.defaultdict(list)
+        )  # device type: Allocated, Reserved, PeakAllocated, PeakReserved : (timestamp, memory_value, hostnodename)
+        self.paired_events = collections.defaultdict(
+            list
+        )  # device type: [(Allocated or Reserved, src_event, timestamp_src, dst_event, timestamp_dst, size), (as front)]
+        self.size_ranges = {
+        }  # for front end, provide the range of increase size information
 
     def parse(self, nodetrees):
         r"""
@@ -61,17 +70,70 @@ class MemoryParser:
         thread2hostnodes = traverse_tree(nodetrees)
         for threadid, host_nodes in thread2hostnodes.items():
             for host_node in host_nodes[1:]:  #skip root node
-                if host_node.type == TracerEventType.OperatorInner:
+                if host_node.start_ns < self.start_time:
+                    self.start_time = host_node.start_ns
+
+        for threadid, host_nodes in thread2hostnodes.items():
+            for host_node in host_nodes[1:]:  #skip root node
+                if host_node.start_ns < self.start_time:
+                    self.start_time = host_node.start_ns
+                if host_node.type == 'OperatorInner':
                     continue
-                if host_node.type == TracerEventType.Operator:
+                if host_node.type == 'Operator':
                     for child in host_node.children_node:
                         self._analyse_node_memory(host_node.name, child)
                 self._analyse_node_memory(host_node.name, host_node)
 
-        # To do: pair for memory events
+        # pair for memory events
+        for device_type, memory_events in self.memory_events.items():
+            max_size = 0
+            for (addr, memory_type), memory_lists in memory_events.items():
+                memory_lists = sorted(memory_lists, key=lambda x: x[0])
+                paired_results = []
+                for memory_list in memory_lists:
+                    timestamp, memory_type, hostnodename, size = memory_list
+                    if memory_type == 'Allocate' or memory_type == 'ReservedAllocate':
+                        if size > max_size:
+                            max_size = size
+                        if memory_type == 'Allocate':
+                            paired_results.append([
+                                'Allocated', hostnodename, timestamp, None,
+                                None, size
+                            ])
+                        else:
+                            paired_results.append([
+                                'ReservedAllocate', hostnodename, timestamp,
+                                None, None, size
+                            ])
+                    elif memory_type == 'Free' or memory_type == 'ReservedFree':
+                        if -size > max_size:
+                            max_size = -size
+                        if paired_results:
+                            if paired_results[-1][-3] is None:
+                                paired_results[-1][-3] = hostnodename
+                                paired_results[-1][-2] = timestamp
+                                self.paired_events[device_type].append(
+                                    paired_results.pop())
+                            else:
+                                if memory_type == 'Free':
+                                    paired_results.append([
+                                        'Allocated', None, None, hostnodename,
+                                        timestamp, -size
+                                    ])
+                                else:
+                                    paired_results.append([
+                                        'ReservedAllocate', None, None,
+                                        hostnodename, timestamp, -size
+                                    ])
+                                self.paired_events[device_type].append(
+                                    paired_results.pop())
+                self.paired_events[device_type].extend(paired_results)
+            self.size_ranges[device_type] = (0, max_size)
 
     def _analyse_node_memory(self, event_name, node):
+        # print(event_name)
         for memnode in node.mem_node:  # self mem node
+            # print('memnode', memnode)
             if memnode.type == 'Allocate' or memnode.type == 'Free':
                 if event_name not in self.allocated_items[memnode.place]:
                     self.allocated_items[
@@ -80,13 +142,11 @@ class MemoryParser:
                 self.allocated_items[
                     memnode.place][event_name].add_memory_record(
                         memnode.increase_bytes, memnode.type)
-                self.memory_events[memnode.place][(memnode.addr,
-                                                   'Allocated')].append([
-                                                       memnode.timestamp_ns,
-                                                       memnode.type,
-                                                       event_name,
-                                                       memnode.increase_bytes
-                                                   ])
+                self.memory_events[memnode.place][(
+                    memnode.addr, 'Allocated')].append([
+                        memnode.timestamp_ns - self.start_time, memnode.type,
+                        event_name, memnode.increase_bytes
+                    ])
 
             elif memnode.type == 'ReservedAllocate' or memnode.type == 'ReservedFree':
                 if event_name not in self.reserved_items[memnode.place]:
@@ -96,21 +156,23 @@ class MemoryParser:
                 self.reserved_items[
                     memnode.place][event_name].add_memory_record(
                         memnode.increase_bytes, memnode.type)
-                self.memory_events[memnode.place][(memnode.addr,
-                                                   "Reserved")].append([
-                                                       memnode.timestamp_ns,
-                                                       memnode.type,
-                                                       event_name,
-                                                       memnode.increase_bytes
-                                                   ])
-            self.memory_curve[memnode.place]['Allocated'] = (
-                memnode.timestamp_ns, memnode.current_allocated, event_name)
-            self.memory_curve[memnode.place]['Reserved'] = (
-                memnode.timestamp_ns, memnode.current_reserved, event_name)
-            self.memory_curve[memnode.place]['PeakAllocated'] = (
-                memnode.timestamp_ns, memnode.peak_allocated, event_name)
-            self.memory_curve[memnode.place]['PeakReserved'] = (
-                memnode.timestamp_ns, memnode.peak_reserved, event_name)
+                self.memory_events[memnode.place][(
+                    memnode.addr, "Reserved")].append([
+                        memnode.timestamp_ns - self.start_time, memnode.type,
+                        event_name, memnode.increase_bytes
+                    ])
+            self.memory_curve[memnode.place]['Allocated'].append(
+                (memnode.timestamp_ns - self.start_time,
+                 memnode.current_allocated, event_name))
+            self.memory_curve[memnode.place]['Reserved'].append(
+                (memnode.timestamp_ns - self.start_time,
+                 memnode.current_reserved, event_name))
+            self.memory_curve[memnode.place]['PeakAllocated'].append(
+                (memnode.timestamp_ns - self.start_time,
+                 memnode.peak_allocated, event_name))
+            self.memory_curve[memnode.place]['PeakReserved'].append(
+                (memnode.timestamp_ns - self.start_time, memnode.peak_reserved,
+                 event_name))
             self.peak_allocation_values[memnode.place] = max(
                 self.peak_allocation_values[memnode.place],
                 memnode.peak_allocated)

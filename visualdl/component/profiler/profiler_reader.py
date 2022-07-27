@@ -15,6 +15,7 @@
 import json
 import os
 import tempfile
+import threading
 
 from .run_manager import RunManager
 from visualdl.io import bfile
@@ -99,12 +100,17 @@ class ProfileReader(object):
         return self.walks
 
     def runs(self, update=True):
+        threads = []
         self.profile_runs(update=update)
         for run, filenames in self.walks.items():
             if run not in self.run_managers:
                 self.run_managers[run] = RunManager(run)
-            print(filenames)
-            self.run_managers[run].parse_files(filenames)
+            t = threading.Thread(
+                target=self.run_managers[run].parse_files, args=(filenames, ))
+            t.start()
+            threads.append(t)
+        for thread in threads:
+            thread.join()
         return list(self.walks.keys())
 
     def set_displayname(self, log_reader):
