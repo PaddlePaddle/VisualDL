@@ -69,6 +69,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
 
             setTimeout(() => {
                 if (options.zoom) {
+                    // debugger
                     echartInstance.dispatchAction({
                         type: 'takeGlobalCursor',
                         key: 'dataZoomSelect',

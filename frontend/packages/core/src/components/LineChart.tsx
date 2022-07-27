@@ -145,6 +145,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 );
             }
             echart?.setOption(chartOptions, {notMerge: true});
+            console.log('chartOptions',chartOptions)
         }, [options, data, title, theme, i18n.language, echart]);
 
         return (

@@ -106,6 +106,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
 
     const formatter = useCallback(
         (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
+            console.log('params',params);
+            
             const series: number[] = Array.isArray(params) ? params[0].data : params.data;
             const value: number = (Array.isArray(params) ? params[0].axisValue : params.axisValue) as number;
             return renderToStaticMarkup(

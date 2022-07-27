@@ -67,10 +67,12 @@ const TitleNav = styled.div`
         align-items:center;
         .select_label{
             margin-right: ${rem(15)};
+            color: #000000;
+            font-size: 14px;
             white-space:nowrap;
         }
         .select_wrapper {
-            width: ${rem(64)};
+            width: ${rem(88)};
             height: ${rem(36)};
             margin-right: ${rem(15)};
         }
@@ -104,7 +106,7 @@ const Configure = styled.div`
         margin-bottom: ${rem(20)};
     }
     .titleContent {
-        margin-bottom: ${rem(10)};
+        margin-bottom: ${rem(15)};
         .title {
             margin-bottom: ${rem(0)};
             line-height: ${rem(36)};
@@ -164,7 +166,7 @@ const EchartPie = styled.div`
     border: 1px solid #dddddd;
     border-radius: 4px;
     height: ${rem(366)};
-    padding: ${rem(24)};
+    // padding: ${rem(24)};
     display: flex;
     .wraper {
         flex: 1;
@@ -180,7 +182,7 @@ const EchartPie = styled.div`
 const Wraper = styled.div`
     width: 100%;
     .ant-table-pagination.ant-pagination {
-        margin: ${rem(20)} 0;
+        margin: ${rem(20)} 0 ${rem(30)} 0;
         padding-right: ${rem(20)};
     }
     .ant-table.ant-table-bordered > .ant-table-container {
@@ -195,24 +197,61 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
-const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, spans,units}) => {
+const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const model = useRef<any>(null);
     const [lineData, setLineData] = useState<any>();
     const [search, setSearch] = useState<string>();
     const [Sliders1, setSliders1] = useState<number>(0);
     const [Sliders2, setSliders2] = useState<number>(100);
-    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
-    const [items, setItems] = useState<string>('2');
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>()
+    const [envirements,setEnvirements] = useState<any>()
+    const [items, setItems] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/memory/line' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+            fetcher('/profiler/memory/devices' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: any) => {
-                    setLineData(res.data);
+                    const itemsLists = []
+                    for (let index = 0; index < res.length; index++) {
+                        const element = res[index];
+                        itemsLists.push(
+                            {label: element.device, value: element.device}
+                        )
+                        
+                    }
+                    setEnvirements(res)
+                    setItemsList(itemsLists);
+                    setItems(res[0].device)
                 }
             );
         }
-    }, [runs, workers, spans, views]);
+    }, [runs, workers, spans]);
+    useEffect(() => {
+        if (items && envirements) {
+            for (let index = 0; index < envirements.length; index++) {
+                const element = envirements[index];
+                if (items === element.device) {
+                    setSliders1(element.min_size)
+                    setSliders2(element.max_size)
+                }
+                
+            }
+        }
+    },[items,envirements])
+    useEffect(() => {
+        if (runs && workers && spans) {
+            fetcher('/profiler/memory/curve' + 
+            `?run=${runs}` + 
+            `&worker=${workers}` + 
+            `&span=${spans}` + 
+            `&device_type=${items}` + 
+            `&time_unit=${units}`
+            ).then(
+                (res: any) => {
+                    setLineData(res);
+                }
+            );
+        }
+    }, [runs, workers, spans,units,items]);
 
     const columns: ColumnsType<DataType> = [
         {
@@ -441,7 +480,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, s
             showSizeChanger: true,
         };
         return <Table columns={columns} dataSource={data2} bordered size="middle" pagination={paginations}></Table>;
-    }, [columns, data]);
+    }, [columns, data2]);
     const SliderChange = (value: any) => {
         setSliders1(value[0])
         setSliders2(value[1])
@@ -477,7 +516,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, views, workers, s
             </TitleNav>
             <Configure>
                 <EchartPie>
-                    <DistributedChart className={'Content'} data={lineData}></DistributedChart>
+                    <DistributedChart className={'Content'} data={lineData} zoom={true}></DistributedChart>
                 </EchartPie>
             </Configure>
             <Configure>
