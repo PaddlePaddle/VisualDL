@@ -74,6 +74,7 @@ const TracingView: React.FC<IProps> = props => {
     React.useEffect(() => {
         if (traceData && traceViewReady) {
             traceData.then(data => {
+                console.log('函数执行了');
                 iframeRef.current?.contentWindow?.postMessage({msg: 'data', data}, '*');
             });
         }
