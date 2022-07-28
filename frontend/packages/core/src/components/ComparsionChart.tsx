@@ -20,7 +20,7 @@ import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartOption} from 'echarts';
+import type {EChartsOption,XAXisComponentOption,YAXisComponentOption,LineSeriesOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
@@ -28,9 +28,9 @@ import {useTranslation} from 'react-i18next';
 import {autoType} from 'd3';
 
 type LineChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
+    data?: LineSeriesOption[];
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -84,7 +84,7 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, series, ...defaults} = chart;
 
-            let chartOptions: EChartOption = defaultsDeep(
+            let chartOptions: EChartsOption = defaultsDeep(
                 {
                     backgroundColor: '#fff', //背景颜色
                     color: ['#25C9FF','#FF6600'],
@@ -299,7 +299,7 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                 theme,
                 defaults
             );
-            if ((chartOptions?.xAxis as EChartOption.XAxis).type === 'time') {
+            if ((chartOptions?.xAxis as XAXisComponentOption).type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         xAxis: {
@@ -311,7 +311,7 @@ const ComparsionChart = React.forwardRef<LineChartRef, LineChartProps & WithStyl
                     chartOptions
                 );
             }
-            if ((chartOptions?.yAxis as EChartOption.YAxis).type === 'time') {
+            if ((chartOptions?.yAxis as YAXisComponentOption).type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         yAxis: {

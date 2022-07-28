@@ -20,16 +20,16 @@ import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import {color, colorAlt} from '~/utils/chart';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
 type LineChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
+    data?: any
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -115,7 +115,7 @@ const Charts = React.forwardRef<LineChartRef, any>(
                 console.log('values', values);
                 console.log('isLegend', isLegend);
 
-                let chartOptions: EChartOption = defaultsDeep({
+                let chartOptions: EChartsOption = defaultsDeep({
                     title: {
                         bottom: '5%',
                         left: 'center',

@@ -20,20 +20,20 @@ import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
-type LineChartProps = {
-    options?: EChartOption;
-    title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
-    loading?: boolean;
-    zoom?: boolean;
-    onInit?: Options['onInit'];
-};
+// type LineChartProps = {
+//     options?: EChartsOption;
+//     title?: string;
+//     data?: EChartsOption['line'];
+//     loading?: boolean;
+//     zoom?: boolean;
+//     onInit?: Options['onInit'];
+// };
 
 export enum XAxisType {
     value = 'value',
@@ -88,7 +88,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                 const titles = data.phase_type;
                 const order = data.order;
                 const series: any = [];
-                for (let index = 0; index < data.phase_type.length; index++) {
+                for (let index = 0; index < data.order.length; index++) {
                     const element = titles[index];
                     // debugger
                     series.push({
@@ -105,7 +105,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                         data: data.data[index]
                     });
                 }
-                let chartOptions: EChartOption = defaultsDeep(options, {
+                let chartOptions: EChartsOption = defaultsDeep(options, {
                     tooltip: {
                         trigger: 'axis',
                         extraCssText:

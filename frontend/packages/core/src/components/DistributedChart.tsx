@@ -20,16 +20,16 @@ import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import {color, colorAlt} from '~/utils/chart';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption,RegisteredSeriesOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
 type LineChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
+    data?: Partial<RegisteredSeriesOption['line']>;
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -89,14 +89,13 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             // debugger
             const {colorAlt, series, ...defaults} = chart;
             const chartData = data;
-            console.log('data.axis', data.axis.length);
-            const seriesData = Object.keys(data.linedata).map((items, indexs: number) => {
-                const datas = data.linedata[items].map((item: any, index: number) => {
-                    const arrays = Object.values(item);
-                    arrays.push(data.axis[index]);
-                    return arrays;
-                });
-                console.log('seriesData', datas);
+            // console.log('data.axis', data.axis.length);
+            const seriesData = Object.keys(data.name).map((items, indexs: number) => {
+                // const datas = data.linedata[items].map((item: any, index: number) => {
+                //     const arrays = Object.values(item);
+                //     // arrays.push(data.axis[index]);
+                //     return arrays;
+                // });
                 return {
                     name: `内存使用量（MB)${indexs}`,
                     // step: 'true',
@@ -116,17 +115,18 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     },
                     animationDuration: 100,
-                    hoverAnimation: false,
-                    data: datas,
+                    // hoverAnimation: false,
+                    data: data[items],
                     encode: {
-                        x: [3],
-                        y: [0]
+                        x: [0],
+                        y: [1]
                     }
                 };
             });
+            console.log('seriesData', seriesData);
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
-                let chartOptions: EChartOption = defaultsDeep({
+                let chartOptions: EChartsOption = defaultsDeep({
                     color: ['#2932E1', '#D50505'],
                     // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {

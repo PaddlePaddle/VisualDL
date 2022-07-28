@@ -68,6 +68,12 @@ export const RadioButtons = styled.div`
     display: flex;
     align-items: center;
     border-radius: 4px;
+    margin-left:20px;
+    .is_active {
+        color: #ffffff;
+        background: #2932e1;
+        border: 1px solid rgba(41, 50, 225, 1);
+    }
 `;
 export const Wraper = styled.div`
     width: 100%;

@@ -20,12 +20,13 @@ import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useMemo, useR
 import {position, primaryColor, size} from '~/utils/style';
 
 import type {ECharts} from 'echarts';
+import * as echarts from 'echarts';
+// import * as echarts from 'echarts-gl';
 import {dataURL2Blob} from '~/utils/image';
 import {saveFile} from '~/utils/saveFile';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
-
 export type Options = {
     loading?: boolean;
     gl?: boolean;
@@ -47,6 +48,7 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     const [echart, setEchart] = useState<ECharts | null>(null);
     const theme = useTheme();
 
+
     const onInit = useRef(options.onInit);
     const onDispose = useRef(options.onDispose);
 
@@ -57,26 +59,17 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
             if (!ref.current) {
                 return;
             }
-
-            const {default: echarts} = await import('echarts');
-            if (options.gl) {
-                await import('echarts-gl');
-            }
-
             const echartInstance = echarts.init(ref.current as unknown as HTMLDivElement);
-
             ref.current.addEventListener('mouseleave', hideTip);
 
             setTimeout(() => {
                 if (options.zoom) {
-                    // debugger
                     echartInstance.dispatchAction({
                         type: 'takeGlobalCursor',
                         key: 'dataZoomSelect',
                         dataZoomSelectActive: true
                     });
                 }
-
                 if (echartInstance) {
                     onInit.current?.(echartInstance);
                 }

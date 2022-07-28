@@ -21,7 +21,7 @@ import {rem, size} from '~/utils/style';
 
 import Chart from '~/components/Chart';
 import ChartToolbox from '~/components/ChartToolbox';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption, LineSeriesOption} from 'echarts';
 import TooltipTable from '~/components/TooltipTable';
 import {format} from 'd3-format';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -74,7 +74,7 @@ interface TooltipTableData {
 
 interface ScalarChartProps {
     title: string;
-    data: EChartOption.SeriesLine[];
+    data: any;
     loading: boolean;
     xAxisType?: XAxisType;
     xRange?: Range;
@@ -105,9 +105,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     }, [setYAxisType]);
 
     const formatter = useCallback(
-        (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
-            console.log('params',params);
-            
+        (params: any) => {
+            console.log('params', params);
             const series: number[] = Array.isArray(params) ? params[0].data : params.data;
             const value: number = (Array.isArray(params) ? params[0].axisValue : params.axisValue) as number;
             return renderToStaticMarkup(
@@ -117,7 +116,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [getTooltipTableData, t]
     );
 
-    const options = useMemo(
+    const options: EChartsOption = useMemo(
         () => ({
             legend: {
                 data: []
@@ -143,8 +142,8 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
             yAxis: {
                 type: yAxisType,
                 ...yRange
-            }
-        }),
+            },
+        } as EChartsOption),
         [formatter, xAxisType, xRange, yAxisType, yRange]
     );
 
