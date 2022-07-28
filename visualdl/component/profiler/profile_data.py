@@ -1276,6 +1276,7 @@ class ProfileData:
                 "max_size":
                 format_memory(self.size_ranges[device][1], 'KB')
             })
+        print(data)
         return data
 
     def get_memory_curve(self, device_type, time_unit='ms'):
@@ -1330,6 +1331,7 @@ class ProfileData:
 
         paired_event_list = filter(filter_func, paired_event_list)
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
+        print("I am ok")
         for item in paired_event_list:
             if item[2] and item[4]:
                 duration = item[4] - item[2]
