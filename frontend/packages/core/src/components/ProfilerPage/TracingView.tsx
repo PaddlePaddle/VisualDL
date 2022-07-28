@@ -50,7 +50,8 @@ const TracingView: React.FC<IProps> = props => {
         if (runs && workers && spans) {
             fetcher('/profiler/trace' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: any) => {
-                    setTraceData(res.data);
+                    console.log('res',res);
+                    setTraceData(res);
                 }
             );
         }
