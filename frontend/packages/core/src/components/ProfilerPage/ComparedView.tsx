@@ -603,13 +603,11 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         '#00CC88',
         '#981EFF',
         '#066BFF',
-        '#3AEB0D',
-        '#E71ED5',
-        '#25C9FF',
-        '#0DEBB0',
-        '#FF0287',
         '#00E2FF',
-        '#00FF9D',
+        '#FFAA00',
+        '#E71ED5',
+        '#FF6600',
+        '#0DEBB0',
         '#D50505'
     ];
     const onChange = (e: RadioChangeEvent) => {

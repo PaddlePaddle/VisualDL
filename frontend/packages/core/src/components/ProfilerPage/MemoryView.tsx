@@ -226,8 +226,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
                         const element = res[index];
                         itemsLists.push(
                             {label: element.device, value: element.device}
-                        )
-                        
+                        ) 
                     }
                     setEnvirements(res)
                     setItemsList(itemsLists);
@@ -296,7 +295,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
             `&worker=${workers}` + 
             `&span=${spans}` + 
             `&device_type=${items}` + 
-            `&search_name=${search}`
+            `&search_name=${search2}`
             ).then(
                 (res: any) => {
                     const result = res.data.map((item:any,indexs:number)=>{

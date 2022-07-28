@@ -237,10 +237,15 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     }, [runs, workers, spans, views,steps,units]);
     const color = [
         '#2932E1',
-        '#066BFF',
         '#00CC88',
+        '#981EFF',
+        '#066BFF',
+        '#00E2FF',
+        '#FFAA00',
+        '#E71ED5',
         '#FF6600',
-        '#25C9FF'
+        '#0DEBB0',
+        '#D50505'
     ];
     const tooltips = (
         <div>
