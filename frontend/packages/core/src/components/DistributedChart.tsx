@@ -89,7 +89,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     }
                     const columns = [
                         {label: '时间戳', width: '4em'},
-                        {label: '内存大小（Mb）', width: '8em'},
+                        {label: '内存大小（Kb）', width: '8em'},
                         {label: '事件名称', width: '4.285714286em'}
                     ];
                     return renderToStaticMarkup(
@@ -200,7 +200,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     },
                     yAxis: {
                         type: 'value',
-                        name: '内存使用量（MB',
+                        name: '内存使用量（kb)',
                         position: 'left',
                         // offset: 0,
                         axisTick: {
