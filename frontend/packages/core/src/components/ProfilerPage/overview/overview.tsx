@@ -306,13 +306,11 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
         '#00CC88',
         '#981EFF',
         '#066BFF',
-        '#3AEB0D',
-        '#E71ED5',
-        '#25C9FF',
-        '#0DEBB0',
-        '#FF0287',
         '#00E2FF',
-        '#00FF9D',
+        '#FFAA00',
+        '#E71ED5',
+        '#FF6600',
+        '#0DEBB0',
         '#D50505'
     ];
     return (

@@ -237,10 +237,15 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     }, [runs, workers, spans, views,steps,units]);
     const color = [
         '#2932E1',
-        '#066BFF',
         '#00CC88',
+        '#981EFF',
+        '#066BFF',
+        '#00E2FF',
+        '#FFAA00',
+        '#E71ED5',
         '#FF6600',
-        '#25C9FF'
+        '#0DEBB0',
+        '#D50505'
     ];
     const tooltips = (
         <div>
@@ -272,12 +277,12 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                                         <div className="info">{items.memory}</div>
                                     </div>
                                     <div className="items">
-                                        <div className="label">utilization:</div>
-                                        <div className="info">{items.utilization}</div>
-                                    </div>
-                                    <div className="items">
                                         <div className="label">ComputeCapability:</div>
                                         <div className="info">{items.computeCapability}</div>
+                                    </div>
+                                    <div className="items">
+                                        <div className="label">utilization:</div>
+                                        <div className="info">{items.utilization}</div>
                                     </div>
                                 </div>
                             </Card>

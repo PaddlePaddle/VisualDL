@@ -15,8 +15,9 @@
  */
 
 import * as chart from '~/utils/chart';
-import leftIcon from '@visualdl/icons/icons/left.svg';
-import rightIcon from '@visualdl/icons/icons/right.svg';
+import leftIcon from '~/assets/images/leftClick.svg';
+import rightIcon from '~/assets/images/rightClick.svg';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
@@ -24,7 +25,6 @@ import styled from 'styled-components';
 import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
 // type LineChartProps = {
@@ -175,7 +175,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
                         icon: 'circle',
                         type: 'scroll',
                         pageIcons: {
-                            vertical: ['image://' + leftIcon, 'image://' + rightIcon]
+                            vertical: ['image://' + PUBLIC_PATH + leftIcon, 'image://' + PUBLIC_PATH + rightIcon]
                         },
                         tooltip: {
                             show: true,

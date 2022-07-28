@@ -66,7 +66,7 @@ export let baseColumns = (units: string) => {
             sorter: (a, b) => a.calls - b.calls
         },
         {
-            title: 'GPU',
+            title: 'CPU',
             children: [
                 {
                     title: `总耗时(${units})`,

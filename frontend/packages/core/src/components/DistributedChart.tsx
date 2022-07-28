@@ -89,7 +89,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     }
                     const columns = [
                         {label: '时间戳', width: '4em'},
-                        {label: '内存大小（Mb）', width: '8em'},
+                        {label: '内存大小（Kb）', width: '8em'},
                         {label: '事件名称', width: '4.285714286em'}
                     ];
                     return renderToStaticMarkup(
@@ -119,13 +119,13 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             // debugger
             const {colorAlt, series, ...defaults} = chart;
             const chartData = data;
-            
+
             const seriesData = Object.keys(data.name).map((items, indexs: number) => {
                 return {
                     name: data.name[items],
-                    // step: 'true',
+                    step: 'true',
                     type: 'line',
-                    // smooth: true,
+                    smooth: true,
                     showSymbol: false,
                     symbol: 'circle',
                     symbolSize: 4,
@@ -140,7 +140,6 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     },
                     animationDuration: 100,
-                    // hoverAnimation: false,
                     data: data[items],
                     encode: {
                         x: [0],
@@ -152,7 +151,18 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartsOption = defaultsDeep({
-                    color: ['#2932E1', '#D50505'],
+                    color: [
+                        '#2932E1',
+                        '#00CC88',
+                        '#981EFF',
+                        '#066BFF',
+                        '#00E2FF',
+                        '#FFAA00',
+                        '#E71ED5',
+                        '#FF6600',
+                        '#0DEBB0',
+                        '#D50505'
+                    ],
                     // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {
                         top: '24',
@@ -167,16 +177,24 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     },
                     legend: {
-                        type: 'plain',
-                        show: true,
-                        left: 'center'
+                        type:'plain',
+                        icon:'rect',
+                        top: 20,
+                        right: 43,
+                        itemGap: 14,
+                        textStyle: {
+                            fontSize: 14,
+                            color: '#666666'
+                        },
+                        itemWidth: 17,
+                        itemHeight: 5
                     },
                     tooltip: {
                         trigger: 'axis',
                         formatter,
                         hideDelay: 300,
-                        backgroundColor: "rgba(0, 0, 0, 0.6)",
-                        borderColor: "rgba(0, 0, 0, 0.6)",
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        borderColor: 'rgba(0, 0, 0, 0.6)',
                         textStyle: {color: '#fff'},
                         enterable: true
                     },
@@ -200,7 +218,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     },
                     yAxis: {
                         type: 'value',
-                        name: '内存使用量（MB',
+                        name: '内存使用量（kb)',
                         position: 'left',
                         // offset: 0,
                         axisTick: {
@@ -222,15 +240,24 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         {
                             type: 'inside',
                             xAxisIndex: 0
-                            // startValue: 1574166124,
-                            // endValue:1574194004
                         }
                     ],
+                    // toolbox: {
+                    //     show: false,
+                    //     showTitle: false,
+                    //     itemSize: 0,
+                    //     feature: {
+                    //         dataZoom: {
+                    //             show: true,
+                    //             xAxisIndex: 0
+                    //         }
+                    //     }
+                    // },
                     series: seriesData
                 });
 
                 echart?.setOption(chartOptions, {notMerge: true});
-                console.log('chartOptions', chartOptions);
+                console.log('chartOptions', chartOptions)
             }
         }, [options, data, title, theme, i18n.language, echart]);
         return (
