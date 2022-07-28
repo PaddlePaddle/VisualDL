@@ -78,8 +78,8 @@ const TracingView: React.FC<IProps> = props => {
             //     iframeRef.current?.contentWindow?.postMessage({msg: 'data', data}, '*');
             // });
             console.log('函数执行了');
-            const traceDatas = JSON.stringify(traceData)
-            iframeRef.current?.contentWindow?.postMessage({msg: 'data', traceDatas}, '*');
+            const data = JSON.stringify(traceData)
+            iframeRef.current?.contentWindow?.postMessage({msg: 'data', data}, '*');
         }
     }, [traceData, traceViewReady]);
     const SetIframeActive = () => {
