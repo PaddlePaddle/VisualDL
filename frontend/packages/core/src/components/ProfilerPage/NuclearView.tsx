@@ -272,12 +272,12 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                                         <div className="info">{items.memory}</div>
                                     </div>
                                     <div className="items">
-                                        <div className="label">utilization:</div>
-                                        <div className="info">{items.utilization}</div>
-                                    </div>
-                                    <div className="items">
                                         <div className="label">ComputeCapability:</div>
                                         <div className="info">{items.computeCapability}</div>
+                                    </div>
+                                    <div className="items">
+                                        <div className="label">utilization:</div>
+                                        <div className="info">{items.utilization}</div>
                                     </div>
                                 </div>
                             </Card>
