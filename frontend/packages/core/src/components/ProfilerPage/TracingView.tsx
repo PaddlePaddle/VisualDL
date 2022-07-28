@@ -48,7 +48,7 @@ const TracingView: React.FC<IProps> = props => {
 
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/trace/test' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+            fetcher('/profiler/trace' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: any) => {
                     setTraceData(res.data);
                 }

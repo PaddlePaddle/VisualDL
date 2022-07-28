@@ -87,8 +87,9 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
             if (data && color) {
                 const titles = data.phase_type;
                 const order = data.order;
+                // debugger
                 const series: any = [];
-                for (let index = 0; index < data.phase_type.length; index++) {
+                for (let index = 0; index < data.order.length; index++) {
                     const element = titles[index];
                     // debugger
                     series.push({
