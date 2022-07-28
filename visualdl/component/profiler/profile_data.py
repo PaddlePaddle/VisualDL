@@ -95,6 +95,7 @@ class ProfileData:
         self.reserved_items = self.memory_parser.reserved_items
         self.paired_events = self.memory_parser.paired_events
         self.size_ranges = self.memory_parser.size_ranges
+        print('self.memory_curve.keys()', self.memory_curve.keys())
         # print(self.memory_curve)
         # cache data
         self.cache = defaultdict(lambda: defaultdict(list))
@@ -1267,7 +1268,10 @@ class ProfileData:
 
     def get_memory_devices(self):
         data = []
+        print('self.memory_curve.keys()', self.memory_curve.keys())
         for device in self.memory_curve.keys():
+            if device == 'undefined':
+                continue
             data.append({
                 "device":
                 device,
@@ -1326,12 +1330,14 @@ class ProfileData:
             else:
                 if size >= min_size and size <= max_size and (
                         search_name in item[1] or search_name in item[3]):
+                    print('search_name', search_name, True)
                     return True
             return False
-        print('paired_event_list',len(paired_event_list))
-        print('search_name', search_name)
-        paired_event_list = filter(filter_func, paired_event_list)
+        if search_name:
+            paired_event_list = filter(filter_func, paired_event_list)
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
+        if not paired_event_list:
+            return data
         print("I am ok")
         for item in paired_event_list:
             if item[2] and item[4]:
@@ -1376,12 +1382,12 @@ class ProfileData:
         all_events = [(key, item) for key, item in allocated_events.items()]
         all_events.extend(
             [(key, item) for key, item in reserved_events.items()])
-        if not search_name:
+        if search_name:
             all_events = filter(filter_func, all_events)
-
         sorted_items = sorted(
             all_events, key=lambda x: x[1].increase_size, reverse=True)
-
+        if not sorted_items:
+            return data
         for event_name, item in sorted_items:
             data['data'].append({
                 'EventName':

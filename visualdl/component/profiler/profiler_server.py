@@ -215,7 +215,7 @@ class ProfilerApi(object):
     def memory_curve(self, run, worker, span, device_type, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
-        return profiler_data.get_memory_curve(device_type)
+        return profiler_data.get_memory_curve(device_type, time_unit)
 
     @result()
     def memory_events(self,
@@ -229,10 +229,12 @@ class ProfilerApi(object):
                       time_unit='ms'):
         min_size = float(min_size)
         max_size = float(max_size)
+        if search_name == 'undefined' or not search_name:
+            search_name = None   
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_events(device_type, min_size, max_size,
-                                               search_name)
+                                               search_name, time_unit)
 
     @result()
     def op_memory_events(self,
@@ -241,6 +243,8 @@ class ProfilerApi(object):
                          span,
                          device_type,
                          search_name=None):
+        if search_name == 'undefined' or not search_name:
+            search_name = None  
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_op_memory_events(device_type, search_name)

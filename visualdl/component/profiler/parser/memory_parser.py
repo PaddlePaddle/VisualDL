@@ -57,6 +57,7 @@ class MemoryParser:
         self.memory_curve = collections.defaultdict(
             lambda: collections.defaultdict(list)
         )  # device type: Allocated, Reserved, PeakAllocated, PeakReserved : (timestamp, memory_value, hostnodename)
+        
         self.paired_events = collections.defaultdict(
             list
         )  # device type: [(Allocated or Reserved, src_event, timestamp_src, dst_event, timestamp_dst, size), (as front)]
