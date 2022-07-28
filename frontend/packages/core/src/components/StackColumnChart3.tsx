@@ -243,8 +243,8 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                     series: series
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
-                debugger
-                console.log('chartOptions',chartOptions);
+                // debugger
+                // console.log('chartOptions',chartOptions);
                 
             }
         }, [options, color, title, theme, i18n.language, echart]);
