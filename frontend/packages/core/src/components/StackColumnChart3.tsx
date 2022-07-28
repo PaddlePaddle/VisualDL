@@ -84,7 +84,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
 
-            if (data && color) {
+            if (data) {
                 const titles = data.phase_type;
                 const order = data.order;
                 const series: any = [];
@@ -244,6 +244,9 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                     series: series
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
+                // debugger
+                console.log('chartOptions',chartOptions);
+                
             }
         }, [options, data, color, title, theme, i18n.language, echart]);
 
