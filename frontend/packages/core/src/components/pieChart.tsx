@@ -21,20 +21,20 @@ import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import styled from 'styled-components';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
-type LineChartProps = {
-    options?: EChartOption;
-    title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
-    loading?: boolean;
-    zoom?: boolean;
-    onInit?: Options['onInit'];
-};
+// type LineChartProps = {
+//     options?: EChartsOption;
+//     title?: string;
+//     data?: Partial<NonNullable<EChartsOption<EChartsOption.SeriesLine>['series']>>;
+//     loading?: boolean;
+//     zoom?: boolean;
+//     onInit?: Options['onInit'];
+// };
 
 export enum XAxisType {
     value = 'value',
@@ -105,7 +105,7 @@ const PieChart = React.forwardRef<LineChartRef, any>(
             if (data && color) {
                 console.log('chartData', data,option);
                 // debugger
-                let chartOptions: EChartOption = defaultsDeep(option,{
+                let chartOptions: EChartsOption = defaultsDeep(option,{
                     grid: {
                         left: 0
                         // top: '23%'

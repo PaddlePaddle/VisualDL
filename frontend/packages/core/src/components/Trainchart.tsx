@@ -19,15 +19,15 @@ import * as chart from '~/utils/chart';
 import React, {useEffect, useImperativeHandle} from 'react';
 import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {useTranslation} from 'react-i18next';
 
 type LineChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
+    data?: EChartsOption['line'];
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -132,7 +132,7 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
             //         focus: 'series'
             //     }
             // }
-            let chartOptions: EChartOption = defaultsDeep({
+            let chartOptions: EChartsOption = defaultsDeep({
                 tooltip: {
                     trigger: 'axis',
                     extraCssText:

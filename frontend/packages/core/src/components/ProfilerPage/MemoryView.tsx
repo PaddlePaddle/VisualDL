@@ -27,18 +27,26 @@ import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
+import { number } from 'echarts';
 interface DataType {
     key: React.Key;
-    name: string;
-    chinese: number;
-    math: number;
-    english: number;
+    MemoryType:string ;
+    AllocatedEvent:string ;
+    AllocatedTimestamp:number ;
+    FreeEvent:string ;
+    FreeTimestamp:number ;
+    Duration:number ;
+    Size:number;
 }
-interface ExpandedDataType {
+interface op_DataType {
     key: React.Key;
-    date: string;
-    name: string;
-    upgradeNum: string;
+    EventName: string; 
+    MemoryType: string; 
+    AllocationCount: number; 
+    FreeCount: number; 
+    AllocationSize: number; 
+    FreeSize: number; 
+    IncreasedSize:number;
 }
 export type MemoryViewProps = {
     runs: string;
@@ -201,10 +209,13 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [lineData, setLineData] = useState<any>();
     const [search, setSearch] = useState<string>();
+    const [search2, setSearch2] = useState<string>();
     const [Sliders1, setSliders1] = useState<number>(0);
     const [Sliders2, setSliders2] = useState<number>(100);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>()
     const [envirements,setEnvirements] = useState<any>()
+    const [tableData,settableData] = useState<any>()
+    const [tableData2,settableData2] = useState<any>()
     const [items, setItems] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
@@ -247,240 +258,184 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
             `&time_unit=${units}`
             ).then(
                 (res: any) => {
+                    console.log('lineData',res);
                     setLineData(res);
                 }
             );
         }
     }, [runs, workers, spans,units,items]);
-
+    useEffect(() => {
+        if (runs && workers && spans && items) {
+            fetcher('/profiler/memory/memory_events' + 
+            `?run=${runs}` + 
+            `&worker=${workers}` + 
+            `&span=${spans}` + 
+            `&device_type=${items}` + 
+            `&min_size=${Sliders1}` +
+            `&max_size=${Sliders2}` + 
+            `&search_name=${search}` + 
+            `&time_unit=${units}`
+            ).then(
+                (res: any) => {
+                    const result = res.data.map((item:any,indexs:number)=>{
+                        return {
+                            key:indexs,
+                            ...item
+                        }
+                    })
+                    console.log('tableData',result);
+                    settableData(result);
+                }
+            );
+        }
+    }, [runs, workers, spans,units,items,Sliders1,Sliders2,search]);
+    useEffect(() => {
+        if (runs && workers && spans && items) {
+            fetcher('/profiler/memory/op_memory_events' + 
+            `?run=${runs}` + 
+            `&worker=${workers}` + 
+            `&span=${spans}` + 
+            `&device_type=${items}` + 
+            `&search_name=${search}`
+            ).then(
+                (res: any) => {
+                    const result = res.data.map((item:any,indexs:number)=>{
+                        return {
+                            key:indexs,
+                            ...item
+                        }
+                    })
+                    console.log('tableData',result);
+                    
+                    settableData2(result);
+                }
+            );
+        }
+    }, [runs, workers, spans,items,search2]);
     const columns: ColumnsType<DataType> = [
         {
-            title: 'Opertator',
-            dataIndex: 'name',
+            title: '存储类型',
+            dataIndex: 'MemoryType',
             width: 150
         },
         {
-            title: 'Size(KB)',
-            dataIndex: 'chinese',
-            sorter: {
-                compare: (a, b) => a.chinese - b.chinese,
-                multiple: 3
-            },
+            title: '分配事件',
+            dataIndex: 'AllocatedEvent',
             width: 102
         },
         {
-            title: 'Allocation Time(ms)',
-            dataIndex: 'math',
+            title: '分配时间',
+            dataIndex: 'AllocatedTimestamp',
             sorter: {
-                compare: (a, b) => a.math - b.math,
+                compare: (a, b) => a.AllocatedTimestamp - b.AllocatedTimestamp,
                 multiple: 2
             },
             width: 102
         },
         {
-            title: 'Release Time(ms)',
-            dataIndex: 'english',
+            title: '释放事件',
+            dataIndex: 'FreeEvent',
+            width: 102
+        },
+        {
+            title: '释放时间',
+            dataIndex: 'FreeTimestamp',
             sorter: {
-                compare: (a, b) => a.english - b.english,
+                compare: (a, b) => a.FreeTimestamp - b.FreeTimestamp,
                 multiple: 1
             },
             width: 102
         },
         {
-            title: 'Duration(ms)',
-            dataIndex: 'english',
+            title: '持续时间',
+            dataIndex: 'Duration',
             sorter: {
-                compare: (a, b) => a.english - b.english,
+                compare: (a, b) => a.Duration - b.Duration,
+                multiple: 1
+            },
+            width: 102
+        },
+        {
+            title: '大小（KB)',
+            dataIndex: 'Size',
+            sorter: {
+                compare: (a, b) => a.Size - b.Size,
                 multiple: 1
             },
             width: 102
         }
-    ];
 
-    const data: DataType[] = [
-        {
-            key: '1',
-            name: 'John Brown',
-            chinese: 98,
-            math: 60,
-            english: 70
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            chinese: 98,
-            math: 66,
-            english: 89
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            chinese: 98,
-            math: 90,
-            english: 70
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            chinese: 88,
-            math: 99,
-            english: 89
-        }
     ];
-    const data2: DataType[] = [
+    const op_columns: ColumnsType<op_DataType> = [
         {
-            key: '1',
-            name: 'John Brown',
-            chinese: 98,
-            math: 60,
-            english: 70
+            title: '事件名',
+            dataIndex: 'EventName',
+            width: 150
         },
         {
-            key: '2',
-            name: 'Jim Green',
-            chinese: 98,
-            math: 66,
-            english: 89
+            title: '存储类型',
+            dataIndex: 'MemoryType',
+            width: 102
         },
         {
-            key: '3',
-            name: 'Joe Black',
-            chinese: 98,
-            math: 90,
-            english: 70
+            title: '分配次数',
+            dataIndex: 'AllocationCount',
+            sorter: {
+                compare: (a, b) => a.AllocationCount - b.AllocationCount,
+                multiple: 2
+            },
+            width: 102
         },
         {
-            key: '4',
-            name: 'Jim Red',
-            chinese: 88,
-            math: 99,
-            english: 89
+            title: '释放次数',
+            dataIndex: 'FreeCount',
+            sorter: {
+                compare: (a, b) => a.FreeCount - b.FreeCount,
+                multiple: 1
+            },
+            width: 102
         },
         {
-            key: '1',
-            name: 'John Brown',
-            chinese: 98,
-            math: 60,
-            english: 70
+            title: '分配大小(KB)',
+            dataIndex: 'AllocationSize',
+            sorter: {
+                compare: (a, b) => a.AllocationSize - b.AllocationSize,
+                multiple: 1
+            },
+            width: 102
         },
         {
-            key: '2',
-            name: 'Jim Green',
-            chinese: 98,
-            math: 66,
-            english: 89
+            title: '释放大小（KB)',
+            dataIndex: 'FreeSize',
+            sorter: {
+                compare: (a, b) => a.FreeSize - b.FreeSize,
+                multiple: 1
+            },
+            width: 102
         },
         {
-            key: '3',
-            name: 'Joe Black',
-            chinese: 98,
-            math: 90,
-            english: 70
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            chinese: 88,
-            math: 99,
-            english: 89
-        },
-        {
-            key: '1',
-            name: 'John Brown',
-            chinese: 98,
-            math: 60,
-            english: 70
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            chinese: 98,
-            math: 66,
-            english: 89
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            chinese: 98,
-            math: 90,
-            english: 70
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            chinese: 88,
-            math: 99,
-            english: 89
-        },
-        {
-            key: '1',
-            name: 'John Brown',
-            chinese: 98,
-            math: 60,
-            english: 70
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            chinese: 98,
-            math: 66,
-            english: 89
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            chinese: 98,
-            math: 90,
-            english: 70
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            chinese: 88,
-            math: 99,
-            english: 89
-        },
-        {
-            key: '1',
-            name: 'John Brown',
-            chinese: 98,
-            math: 60,
-            english: 70
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            chinese: 98,
-            math: 66,
-            english: 89
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            chinese: 98,
-            math: 90,
-            english: 70
-        },
-        {
-            key: '4',
-            name: 'Jim Red',
-            chinese: 88,
-            math: 99,
-            english: 89
+            title: '净增量（KB)',
+            dataIndex: 'IncreasedSize',
+            sorter: {
+                compare: (a, b) => a.IncreasedSize - b.IncreasedSize,
+                multiple: 1
+            },
+            width: 102
         }
+
     ];
     const getTable = useMemo(() => {
         const paginations = {
             showSizeChanger: true,
         };
-        return <Table columns={columns} dataSource={data} bordered size="middle" pagination={paginations}></Table>;
-    }, [columns, data]);
+        return <Table columns={columns} dataSource={tableData} bordered size="middle" pagination={paginations}></Table>;
+    }, [columns, tableData]);
     const getTable2 = useMemo(() => {
         const paginations = {
             showSizeChanger: true,
         };
-        return <Table columns={columns} dataSource={data2} bordered size="middle" pagination={paginations}></Table>;
-    }, [columns, data2]);
+        return <Table columns={op_columns} dataSource={tableData2} bordered size="middle" pagination={paginations}></Table>;
+    }, [op_columns, tableData2]);
     const SliderChange = (value: any) => {
         setSliders1(value[0])
         setSliders2(value[1])
@@ -556,8 +511,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
                     <div className="input_wrapper">
                         <SearchInput
                             className="search-input"
-                            value={search}
-                            onChange={setSearch}
+                            value={search2}
+                            onChange={setSearch2}
                             placeholder={t('common:search-runs')}
                             rounded
                         />

@@ -21,20 +21,20 @@ import * as echarts from 'echarts';
 import {WithStyled, primaryColor, opacify} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import {color, colorAlt} from '~/utils/chart';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
-type LineChartProps = {
-    options?: EChartOption;
-    title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
-    loading?: boolean;
-    zoom?: boolean;
-    onInit?: Options['onInit'];
-};
+// type LineChartProps = {
+//     options?: EChartsOption;
+//     title?: string;
+//     data?: Partial<NonNullable<EChartsOption<EChartsOption.SeriesLine>['series']>>;
+//     loading?: boolean;
+//     zoom?: boolean;
+//     onInit?: Options['onInit'];
+// };
 
 export enum XAxisType {
     value = 'value',
@@ -87,7 +87,7 @@ const ExecutionDiffChart = React.forwardRef<LineChartRef, any>(
             const chartData = true;
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
-                let chartOptions: EChartOption = defaultsDeep({
+                let chartOptions: EChartsOption = defaultsDeep({
                     // backgroundColor:'#0c2d55',
                     tooltip: {
                         trigger: 'axis',
