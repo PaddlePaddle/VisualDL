@@ -83,6 +83,10 @@ class ProfileData:
         self.distributed_parser.parse(self.node_trees)
         self.distributed_time = self.distributed_parser.steps_time
 
+        # trace parser
+        self.trace_parser = TraceParser()
+        self.trace_parser.parse(profiler_result.content)
+
         # memory parser
         self.memory_parser = MemoryParser()
         self.memory_parser.parse(self.node_trees)
@@ -104,6 +108,8 @@ class ProfileData:
             views.append('Operator')
         if self.kernel_items:
             views.append('GPU Kernel')
+        if self.memory_curve:
+            views.append('Memory')
         views.append('Trace')
         return views
 
@@ -230,7 +236,8 @@ class ProfileData:
                     time_unit)
                 cpu_stage_data['min_time'] = format_time(
                     self.model_perspective_items[stage_name].min_cpu_time,
-                    time_unit)
+                    time_unit,
+                    inf_subs=0)
                 cpu_stage_data['ratio'] = format_ratio(
                     self.model_perspective_items[stage_name].cpu_time /
                     total_cpu_time)
@@ -249,7 +256,8 @@ class ProfileData:
                     time_unit)
                 gpu_stage_data['min_time'] = format_time(
                     self.model_perspective_items[stage_name].min_gpu_time,
-                    time_unit)
+                    time_unit,
+                    inf_subs=0)
                 gpu_stage_data['ratio'] = format_ratio(
                     self.model_perspective_items[stage_name].gpu_time /
                     total_gpu_time)
@@ -1254,6 +1262,9 @@ class ProfileData:
         })
         return data
 
+    def get_trace_data(self):
+        return self.trace_parser.content
+
     def get_memory_devices(self):
         data = []
         for device in self.memory_curve.keys():
@@ -1270,27 +1281,23 @@ class ProfileData:
     def get_memory_curve(self, device_type, time_unit='ms'):
         curves = self.memory_curve[device_type]
         data = {}
-        data['axis'] = []
-        data['linedata'] = {}
-        axis_append_count = 0
+        data['name'] = {
+            'Allocated': '已分配',
+            'Reserved': '已预留',
+            'PeakAllocated': '最大已分配',
+            'PeakReserved': '最大已预留'
+        }
         for key, events in curves.items():
-            data['linedata'][key] = []
+            data[key] = []
             sorted_events = sorted(events, key=lambda x: x[0])
             for item in sorted_events:
                 timestamp = item[0]
                 size = item[1]
                 event_name = item[2]
-                if axis_append_count == 0:
-                    data['axis'].append(format_time(timestamp, time_unit))
-                data['linedata'][key].append({
-                    "value":
-                    format_memory(size, 'KB'),
-                    "event name":
-                    event_name,
-                    "timestamp":
-                    format_time(timestamp, time_unit)
-                })
-            axis_append_count += 1
+                data[key].append([
+                    format_time(timestamp, time_unit),
+                    format_memory(size, 'KB'), event_name
+                ])
         return data
 
     def get_memory_events(self,
@@ -1301,8 +1308,8 @@ class ProfileData:
                           time_unit='ms'):
         data = {}
         data['column_name'] = [
-            'Memory Type', 'Allocated Event', 'Allocated Timestamp',
-            'Free Event', 'Free Timestamp', 'Duration', 'Size'
+            'MemoryType', 'AllocatedEvent', 'AllocatedTimestamp', 'FreeEvent',
+            'FreeTimestamp', 'Duration', 'Size'
         ]
         data['data'] = []
         paired_event_list = self.paired_events[device_type]
@@ -1327,15 +1334,15 @@ class ProfileData:
             if item[2] and item[4]:
                 duration = item[4] - item[2]
             data['data'].append({
-                "Memory Type":
+                "MemoryType":
                 item[0],
-                "Allocated Event":
+                "AllocatedEvent":
                 item[1],
-                "Allocated Timestamp":
+                "AllocatedTimestamp":
                 format_time(item[2], time_unit) if item[2] else None,
-                "Free Event":
+                "FreeEvent":
                 item[3],
-                "Free Timestamp":
+                "FreeTimestamp":
                 format_time(item[4], time_unit) if item[4] else None,
                 "Duration":
                 format_time(duration, time_unit),
@@ -1347,8 +1354,8 @@ class ProfileData:
     def get_op_memory_events(self, device_type, search_name=None):
         data = {}
         data['column_name'] = [
-            'Event Name', 'Memory Type', 'Allocation Count', 'Free Count',
-            'Allocation Size', 'Free Size', 'Increased Size'
+            'EventName', 'MemoryType', 'AllocationCount', 'FreeCount',
+            'AllocationSize', 'FreeSize', 'IncreasedSize'
         ]
         data['data'] = []
         allocated_events = self.allocated_items[device_type]
@@ -1374,19 +1381,19 @@ class ProfileData:
 
         for event_name, item in sorted_items:
             data['data'].append({
-                'Event Name':
+                'EventName':
                 event_name,
-                'Memory Type':
+                'MemoryType':
                 item.memory_type,
-                'Allocation Count':
+                'AllocationCount':
                 item.allocation_count,
-                'Free Count':
+                'FreeCount':
                 item.free_count,
-                'Allocation Size':
+                'AllocationSize':
                 format_memory(item.allocation_size, 'KB'),
-                'Free Size':
+                'FreeSize':
                 format_memory(item.free_size, 'KB'),
-                'Increased Size':
+                'IncreasedSize':
                 format_memory(item.increase_size, 'KB')
             })
         return data
@@ -1468,4 +1475,7 @@ class DistributedProfileData:
 
     def get_distributed_steps(self):
         for profile_data in self.profile_datas:
-            return list(profile_data.distributed_time.keys())
+            steps = list(profile_data.distributed_time.keys())
+            final_steps = ['All'] + sorted(
+                [int(step) for step in steps if step != 'All'])
+            return final_steps

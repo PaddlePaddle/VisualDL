@@ -455,12 +455,12 @@ def rebuild_node_trees(nodetrees):
     return wrapped_tree
 
 
-def format_time(time, unit='ms'):
+def format_time(time, unit='ms', inf_subs='-'):
     r"""
     Transform time in ns to time in unit.
     """
     if time == float('inf'):
-        return '-'
+        return inf_subs
     else:
         result = float(time)
         if unit == 's':

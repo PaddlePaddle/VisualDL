@@ -255,13 +255,6 @@ class OverviewParser:
                             events['Kernel']['total_time'])
                         self.model_perspective_items[stage_name].gpu_times[
                             step_idx] = events['Kernel']['total_time']
-                    else:
-                        self.model_perspective_items[stage_name].set_gpu_time(
-                            0.0)
-                        self.model_perspective_items[stage_name].add_gpu_time(
-                            0.0)
-                        self.model_perspective_items[stage_name].gpu_times[
-                            step_idx] = 0.0
 
         self.gpu_ulitization = self.merged_events_per_stage['ProfileStep'][
             'GPU']['ALL']['Kernel'][

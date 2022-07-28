@@ -201,7 +201,9 @@ class ProfilerApi(object):
 
     @result()
     def trace(self, run, worker, span):
-        pass
+        run_manager = self._reader.get_run_manager(run)
+        profiler_data = run_manager.get_profile_data(worker, span)
+        return profiler_data.get_trace_data()
 
     @result()
     def memory_devices(self, run, worker, span):

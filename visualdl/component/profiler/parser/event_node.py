@@ -183,6 +183,7 @@ class ProfilerResult:
         self.extra_info = None
         self.schema_version = None
         self.parse(json_data)
+        self.content = json_data
 
     def parse(self, json_data):
         self.schema_version = json_data['schemaVersion']

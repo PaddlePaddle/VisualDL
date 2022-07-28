@@ -13,8 +13,8 @@
 # limitations under the License.
 # =======================================================================
 class TraceParser:
-  def __init__(self):
-    pass
-  
-  def parse(self, nodetree):
-    pass
+    def __init__(self):
+        pass
+
+    def parse(self, content):
+        self.content = content

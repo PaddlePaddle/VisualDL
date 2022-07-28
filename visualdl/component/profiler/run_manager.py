@@ -65,7 +65,15 @@ class RunManager:
                 all_views.update(profiler_data.get_views())
         if self.distributed_data:
             all_views.add('Distributed')
-        return all_views
+        ordered_views = [
+            'Overview', 'Operator', 'GPU Kernel', 'Distributed', 'Trace',
+            'Memory'
+        ]
+        final_views = []
+        for view in ordered_views:
+            if view in all_views:
+                final_views.append(view)
+        return final_views
 
     def get_workers(self, view_name):
         workers = []
