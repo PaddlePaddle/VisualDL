@@ -84,7 +84,8 @@ const TooltipTable: FunctionComponent<TooltipTableProps> = ({run, runs, columns,
     // because we use `ReactDOMServer.renderToStaticMarkup` to render this component into echarts tooltip
     // `ReactDOMServer.renderToStaticMarkup` WILL NOT call hydrate so translation will never be initialized
     // const {t} = useTranslation('common');
-
+    console.log('run, runs, columns, data',run, runs, columns, data);
+    
     return (
         <Wrapper>
             <table>

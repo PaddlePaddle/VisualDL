@@ -16,11 +16,13 @@
 
 import * as chart from '~/utils/chart';
 
-import React, {useEffect, useImperativeHandle} from 'react';
+import React, {useEffect, useImperativeHandle, useCallback} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import {color, colorAlt} from '~/utils/chart';
-import type {EChartsOption,RegisteredSeriesOption} from 'echarts';
+import {renderToStaticMarkup} from 'react-dom/server';
+import TooltipTable from '~/components/TooltipTable';
+import type {EChartsOption, RegisteredSeriesOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
@@ -66,9 +68,34 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             autoFit: true,
             onInit
         });
-
+        const {t} = useTranslation('common');
         const theme = useChartTheme();
-
+        const formatter = useCallback(
+            (params: any) => {
+                console.log('params', params);
+                if (params.length) {
+                    const n = params.length / 4 - 1;
+                    let index = 0;
+                    const datas = [];
+                    const runs = [];
+                    while (index < params.length) {
+                        const element = params[index];
+                        runs.push({label: element.seriesName, colors: [element.color]});
+                        datas.push(element.value);
+                        index += 1 + n;
+                    }
+                    const columns = [
+                        {label: '时间戳', width: '4em'},
+                        {label: '内存大小（Mb）', width: '8em'},
+                        {label: '事件名称', width: '4.285714286em'}
+                    ];
+                    return renderToStaticMarkup(
+                        <TooltipTable run={t('common:runs')} runs={runs} columns={columns} data={datas} />
+                    );
+                }
+            },
+            [t]
+        );
         useImperativeHandle(ref, () => ({
             restore: () => {
                 echart?.dispatchAction({
@@ -89,15 +116,10 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             // debugger
             const {colorAlt, series, ...defaults} = chart;
             const chartData = data;
-            // console.log('data.axis', data.axis.length);
+            
             const seriesData = Object.keys(data.name).map((items, indexs: number) => {
-                // const datas = data.linedata[items].map((item: any, index: number) => {
-                //     const arrays = Object.values(item);
-                //     // arrays.push(data.axis[index]);
-                //     return arrays;
-                // });
                 return {
-                    name: `内存使用量（MB)${indexs}`,
+                    name: data.name[items],
                     // step: 'true',
                     type: 'line',
                     // smooth: true,
@@ -145,40 +167,15 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         type: 'plain',
                         show: true,
                         left: 'center'
-                        // data: [
-                        //     {
-                        //         name: '日增量'
-                        //     },
-                        //     {
-                        //         name: '当前数量'
-                        //     },
-                        //     {
-                        //         name: 'value大小'
-                        //     }
-                        // ]
                     },
                     tooltip: {
                         trigger: 'axis',
-                        formatter: function (params: any) {
-                            console.log('legend', params);
-                            var str = ''; //声明一个变量用来存储数据
-                            str += '<div class="tooltips">';
-                            if (params.length) {
-                                const n = params.length / 4 - 1;
-                                console.log('legendn', n, params.length);
-                                let index = 0;
-                                while (index < params.length) {
-                                    const element = params[index];
-                                    str += '<div class="tooltipName">' + element.seriesName + '';
-                                    ('</div>');
-                                    str += '<div class="tooltipName">' + element.value[0] + '';
-                                    ('</div>');
-                                    index += 1 + n;
-                                }
-                                str += '</div>';
-                            }
-                            return str;
-                        }
+                        formatter,
+                        hideDelay: 300,
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        borderColor: "rgba(0, 0, 0, 0.6)",
+                        textStyle: {color: '#fff'},
+                        enterable: true
                     },
                     grid: {
                         top: '84',
@@ -218,12 +215,14 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         // splitNumber: 5
                     },
 
-                    dataZoom: [{
-                        type: "inside",
-                        xAxisIndex: 0,
-                        // startValue: 1574166124,
-                        // endValue:1574194004
-                    }],
+                    dataZoom: [
+                        {
+                            type: 'inside',
+                            xAxisIndex: 0
+                            // startValue: 1574166124,
+                            // endValue:1574194004
+                        }
+                    ],
                     series: seriesData
                 });
 
