@@ -208,8 +208,8 @@ type SelectListItem<T> = {
 const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [lineData, setLineData] = useState<any>();
-    const [search, setSearch] = useState<string>();
-    const [search2, setSearch2] = useState<string>();
+    const [search, setSearch] = useState<string>('');
+    const [search2, setSearch2] = useState<string>('');
     const [Sliders1, setSliders1] = useState<number>(0);
     const [Sliders2, setSliders2] = useState<number>(100);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>()
