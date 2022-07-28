@@ -1328,7 +1328,8 @@ class ProfileData:
                         search_name in item[1] or search_name in item[3]):
                     return True
             return False
-
+        print('paired_event_list',len(paired_event_list))
+        print('search_name', search_name)
         paired_event_list = filter(filter_func, paired_event_list)
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
         print("I am ok")
