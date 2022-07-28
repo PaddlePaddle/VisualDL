@@ -36,7 +36,10 @@ type LineChartProps = {
     zoom?: boolean;
     onInit?: Options['onInit'];
 };
-
+export interface Run {
+    label: string;
+    colors: [string, string];
+}
 export enum XAxisType {
     value = 'value',
     log = 'log',
@@ -90,7 +93,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         {label: '事件名称', width: '4.285714286em'}
                     ];
                     return renderToStaticMarkup(
-                        <TooltipTable run={t('common:runs')} runs={runs} columns={columns} data={datas} />
+                        <TooltipTable run={t('common:runs')} runs={runs as Run[]} columns={columns} data={datas} />
                     );
                 }
             },
