@@ -30,10 +30,6 @@ from .parser.utils import format_ratio
 from .parser.utils import format_time
 from .parser.utils import traverse_tree
 
-# from .parser.memory_parser import MemoryParser
-# from .parser.parse_data import DataParser
-
-
 def filter_type(node_trees):
     nodelists = traverse_tree(node_trees)
     for thread_id, nodelist in nodelists.items():
@@ -95,8 +91,6 @@ class ProfileData:
         self.reserved_items = self.memory_parser.reserved_items
         self.paired_events = self.memory_parser.paired_events
         self.size_ranges = self.memory_parser.size_ranges
-        print('self.memory_curve.keys()', self.memory_curve.keys())
-        # print(self.memory_curve)
         # cache data
         self.cache = defaultdict(lambda: defaultdict(list))
 
@@ -113,25 +107,6 @@ class ProfileData:
             views.append('Memory')
         views.append('Trace')
         return views
-
-    # profiler/overview/environment
-    #   {
-    #  "number_workers": 5,
-    #  "device_type": "GPU",
-    #  "CPU": {
-    #  "process_utilization": 78,
-    #  "system_utilization": 30
-    #  }
-    #  "GPU": {
-    #   "name": "Tesla P40",
-    #   "memory": "22.3 GB"
-    #   "compute_capability": "6.1",
-    #   "utilization": 50,
-    #   "sm_efficiency": 57,
-    #   "achieved_occupancy": 33,
-    #   "tensor_core_percentage": 55,
-    #  }
-    # }
 
     def get_device_infos(self):
         if not self.gpu_ids:
@@ -182,32 +157,10 @@ class ProfileData:
                 }
             }
 
-    # profiler/overview/model_perspective
-    #   {
-    #   "column_name": ["total_time",  "max_time", "min_time", "avg_time", "ratio"]
-    #   "cpu":
-    #   [
-    #     { "name": "Dataloader", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Forward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Backward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Optimization", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Others", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 }
-    # ]
-    #   "gpu":
-    #   [
-    #     { "name": "Dataloader", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Forward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Backward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Optimization", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Others", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 }
-    # ]
-    # }
     def get_model_perspective(self, time_unit):
         '''
-    Get total cpu and gpu statistics for model perspective of each profiler step.
-    '''
-        if 'get_model_perspective' in self.cache[time_unit]:
-            return self.cache[time_unit]['get_model_perspective']
+        Get total cpu and gpu statistics for model perspective of each profiler step.
+        '''
         data = OrderedDict()
         data['column_name'] = [
             "name", "calls", "total_time", "avg_time", "max_time", "min_time",
@@ -264,21 +217,9 @@ class ProfileData:
                     total_gpu_time)
                 data['cpu'].append(cpu_stage_data)
                 data['gpu'].append(gpu_stage_data)
-        self.cache['get_model_perspective'] = data
         return data
 
-    # profiler/overview/model_perspective_perstep
-    #   {
-    #  "order": ["forward", "backward", "optimization"],
-    #  "steps": [1 , 2,  3],
-    #  "forward": [233, 544, 333],
-    #  "backward": [344, 543, 333],
-    #  "optimization": [344, 433, 323]
-    # }
-
     def get_model_perspective_perstep(self, device_type, time_unit):
-        if 'get_model_perspective_perstep' in self.cache[time_unit]:
-            return self.cache[time_unit]['get_model_perspective_perstep']
         try:
             data = OrderedDict()
             data['order'] = []
@@ -326,48 +267,8 @@ class ProfileData:
         new_data['data'] = []
         for name in new_data['order']:
             new_data['data'].append(data[name])
-        self.cache['get_model_perspective_perstep'] = new_data
         return new_data
 
-    # profiler/overview/event_type_perspective
-    #   {
-    #  "order": ["Operator", "OperatorInner"]
-    #  "Operator": {
-    #    "calling_times": {
-    #      "key" : ["DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #      "value": [3, 23, 3, 4, 6]
-    #    }
-    #    "durations": {
-    #      "key" : ["DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #      "value": [3, 23, 3, 4, 6]
-    #    }
-    #    "ratios": {
-    #      "key" : ["DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #      "value": [3, 23, 3, 4, 6]
-    #    }
-    #  }
-    #  "OperatorInner":
-    #  {
-    #    "calling_times": {
-    #      "key" : ["DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #      "value": [3, 23, 3, 4, 6]
-    #    }
-    #    "durations": {
-    #      "key" : ["DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #      "value": [3, 23, 3, 4, 6]
-    #    }
-    #    "ratios": {
-    #      "key" : ["DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #      "value": [3, 23, 3, 4, 6]
-    #    }
-    #  }
-    # }
-
-    # phase name:
-    #   device name:
-    #     stage idx:
-    #      event type:
-    #           { "calls" :[], "times": [], "total_time": 0 }
     def get_event_type_perspective(self, device_type, time_unit):
         data = OrderedDict()
         data['order'] = []
@@ -455,23 +356,7 @@ class ProfileData:
                     data['order'].append(event_type)
         return data
 
-    # profiler/overview/event_type_model_perspective
-    #   {
-    #  "order": ["CudaRuntime", "OperatorInner", "Operator", "PythonUserDefined"],
-    #  "phase_type": ["Total", "DataLoader", "Forward", "Backward", "Optimization", "Others"],
-    #  "CudaRuntime": [233, 544, 333, 44],
-    #  "OperatorInner": [344, 543, 333, 33],
-    #  "Operator": [344, 543, 333, 33],
-    #  "PythonUserDefined": [344, 433, 323, 22]
-    # }
-    # phase name:
-    #   device name:
-    #     stage idx:
-    #      event type:
-    #           { "calls" :[], "times": [], "total_time": 0 }
     def get_event_type_model_perspective(self, time_unit):
-        if 'get_event_type_model_perspective' in self.cache[time_unit]:
-            return self.cache[time_unit]['get_event_type_model_perspective']
         data = OrderedDict()
         data['order'] = []
         data['phase_type'] = []
@@ -526,20 +411,9 @@ class ProfileData:
 
         except Exception as e:
             print('error in get_event_type_model_perspective', e)
-        self.cache['get_event_type_model_perspective'] = newdata
         return newdata
 
-    # profiler/overview/userdefined_perspective
-    #   {
-    #   "column_name": ["name",  "calls", "min_time", "avg_time", "ratio"]
-    #   "events": [
-    #     { "name": "user_record1",  "cpu_total_time": 5322,  "cpu_max_time": 40, "cpu_min_time": 20, "cpu_avg_time": 30, "cpu_ratio": 30,
-    #        "gpu_total_time": 5322,  "gpu_max_time": 40, "gpu_min_time": 20, "gpu_avg_time": 30, "gpu_ratio": 30
-    #  }]
-    # }
     def get_userdefined_perspective(self, time_unit):
-        if 'get_userdefined_perspective' in self.cache[time_unit]:
-            return self.cache[time_unit]['get_userdefined_perspective']
         data = OrderedDict()
         data['column_name'] = [
             'name', 'calls', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',
@@ -581,30 +455,7 @@ class ProfileData:
                 format_ratio(event.general_gpu_time /
                              total_gpu_time if total_gpu_time != 0 else 0.0)
             })
-        self.cache['get_userdefined_perspective'] = data
         return data
-
-    # get_operator_pie
-    #   {
-    #   "column_name": ["total_time",  "max_time", "min_time", "avg_time", "ratio"]
-    #   "cpu":
-    #   [
-    #     { "name": "Dataloader", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Forward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Backward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Optimization", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Others", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 }
-    # ]
-    #   "gpu":
-    #   [
-    #     { "name": "Dataloader", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Forward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Backward", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Optimization", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 },
-    #     { "name": "Others", "total_time": 5322,  "max_time": 40, "min_time": 20, "avg_time": 30, "ratio": 30 }
-    # ]
-    # }
-    # sorted_by
 
     def get_operator_pie(self, topk, sorted_by='GPUTotal', time_unit='ms'):
         data = OrderedDict()
@@ -656,12 +507,10 @@ class ProfileData:
                 self.operator_items.items(),
                 key=lambda x: x[1].general_gpu_time,
                 reverse=True)
-        # print('topk:', topk)
         if topk <= 0:
             items = sorted_items
         else:
             items = sorted_items[:topk]
-        # print(sorted_items)
         total_cpu_time = 0.0
         total_gpu_time = 0.0
         for op_name, item in items:
@@ -669,7 +518,6 @@ class ProfileData:
             total_gpu_time += item.gpu_time
 
         for op_name, item in items:
-            # print(op_name)
             cpu_stage_data = OrderedDict()
             cpu_stage_data['name'] = op_name
             cpu_stage_data['calls'] = item.call
@@ -700,9 +548,6 @@ class ProfileData:
             data['gpu'].append(gpu_stage_data)
         return data
 
-    #{'order': ['Operator', 'CudaRuntime', 'UserDefined', 'OperatorInner', 'Kernel', 'Memcpy', 'Memset'], 'phase_type': ['ProfileStep', 'Dataloader', 'Forward', 'Backward', 'Optimization', 'Other'], 'data': [[80.16, 3.8, 11.45, 10.52, 8.15, 6.16], [29.46, 1.33, 3.65, 4.61, 2.28, 2.85], [1.74, 0.02, 0, 0.2, 0, 0.65], [54.45, 2.41, 8.68, 8.37, 3.51, 4.25], [16.78, 0.11, 2.5, 5.09, 0.45, 0.23], [0.07, 0.0, 0, 0.01, 0, 0.02], [0.03, 0, 0, 0.01, 0, 0]]}
-    #
-    #
     def get_operator_pie_expand(self, topk, device_type, time_unit):
         data = OrderedDict()
         data['order'] = []
@@ -712,24 +557,17 @@ class ProfileData:
             self.operator_items.items(),
             key=lambda x: x[1].general_gpu_time,
             reverse=True)
-        # print('topk:', topk)
         if topk <= 0 or topk >= 20:
             items = sorted_items[:20]
             other_items = sorted_items[20:]
         else:
             items = sorted_items[:topk]
             other_items = []
-
-        # for op_name, event in sorted_items:
-        #     for innerop_name, item in event.operator_inners.items():
-        #         name_sets.add(innerop_name)
-        # data['order'].extend(name_sets)
         data['order'].extend(['infer_shape', 'compute', 'node_creation'])
         inner_op_data = defaultdict(list)
         for op_name, event in items:
             data['phase_type'].append(op_name)
             for innerop_name, item in event.operator_inners.items():
-                # print(op_name, innerop_name, item.general_gpu_time)
                 if 'infer_shape' in innerop_name:
                     innerop_name = 'infer_shape'
                 elif 'compute' in innerop_name:
@@ -892,6 +730,8 @@ class ProfileData:
                     key=lambda x: x[1].max_general_gpu_time,
                     reverse=True)
                 for (name, input_shape), event in sorted_items:
+                    shapes = input_shape.split('-')
+                    shape_string = ['{}:{}'.format(shapes[i], shapes[i+1]) for i in range(0, len(shapes), 2)]
                     data['events'].append({
                         "name":
                         name,
@@ -900,7 +740,7 @@ class ProfileData:
                         "children":
                         get_children_data(event),
                         "input_shape":
-                        input_shape,
+                        shape_string,
                         "cpu_total_time":
                         format_time(event.cpu_time, time_unit),
                         "cpu_avg_time":
@@ -984,6 +824,8 @@ class ProfileData:
                 for op_name in results:
                     for input_shape, event in self.operator_items_with_input_shape[
                             op_name].items():
+                        shapes = input_shape.split('-')
+                        shape_string = ['{}:{}'.format(shapes[i], shapes[i+1]) for i in range(0, len(shapes), 2)]
                         data['events'].append({
                             "name":
                             op_name,
@@ -992,7 +834,7 @@ class ProfileData:
                             "children":
                             get_children_data(event),
                             "input_shape":
-                            input_shape,
+                            shape_string,
                             "cpu_total_time":
                             format_time(event.cpu_time, time_unit),
                             "cpu_avg_time":
@@ -1337,7 +1179,6 @@ class ProfileData:
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
         if not paired_event_list:
             return data
-        print("I am ok")
         for item in paired_event_list:
             if item[2] and item[4]:
                 duration = item[4] - item[2]
