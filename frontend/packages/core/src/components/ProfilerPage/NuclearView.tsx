@@ -206,7 +206,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     const [computation, setComputation] = useState<any>();
     const [distributedData, setDistributedData] = useState<any>();
     const [stepsList, setStepsList] = useState<SelectListItem<string>[]>();
-    const [steps, setSteps] = useState<string>('2');
+    const [steps, setSteps] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
@@ -216,12 +216,12 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                 setDistributedData(res);
             });
             fetcher('/profiler/distributed/steps' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then((res: unknown) => {
-                const stepData = res as string[];
+                const stepData = res as string[] | number[];
                 const stepList = stepData.map((item, index) => {
-                    return {label: item, value: item};
+                    return {label: item + '', value: item + ''};
                 });
                 setStepsList(stepList);
-                setSteps(stepData[0]);
+                setSteps(stepData[0] + '');
             });
         }
     }, [runs, workers, spans,]);

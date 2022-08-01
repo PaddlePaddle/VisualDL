@@ -31,7 +31,7 @@ import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
-import {options, baseColumns} from './tools';
+import {options, baseColumns2, baseColumns1} from './tools';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
@@ -340,41 +340,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             });
         }
     }, [runs, workers, spans, isCPU, top, units]);
-    const columns = () => {
-        let columns = baseColumns(units);
-        if (group === 'op_name_input_shape') {
-            console.log('columns',columns);
-            columns.splice(1, 0, {
-                title: '输入形状',
-                dataIndex: 'input_shape',
-                key: 'input_shape',
-                width: 100,
-                render: text => {
-                    console.log('text', text);
-                    if (text.length > 0) {
-                        return text.map((item: string) => {
-                            return <div>{item}</div>;
-                        });
-                    } else {
-                        return <div>{'-'}</div>;
-                    }
-                }
-            });
-        }
-        console.log('columns', columns);
-        return columns;
-    };
-    // const getTable = useMemo(() => {
-    //     return (
-    //         <Table
-    //             columns={columns}
-    //             dataSource={tableData}
-    //             bordered
-    //             size="middle"
-    //             scroll={{x: 'calc(700px + 50%)', y: 240}}
-    //         ></Table>
-    //     );
-    // }, [columns, tableData]);
     const color = [
         '#2932E1',
         '#00CC88',
@@ -399,6 +364,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onTopchange = (value: number) => {
         setTop(value);
     };
+    const columns2 = baseColumns2(units);
+    const columns1 = baseColumns1(units);
     const tooltips = (
         <div>
             <p>Content</p>
@@ -521,7 +488,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 <Wraper>
                     {tableData && (
                         <Table
-                            columns={columns()}
+                            columns={group === 'op_name_input_shape' ? columns2 : columns1}
                             dataSource={tableData}
                             bordered
                             size="middle"
