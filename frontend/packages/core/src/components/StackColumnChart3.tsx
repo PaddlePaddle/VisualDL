@@ -157,8 +157,8 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                     },
                     legend: {
                         data: order,
-                        top: 20,
-                        right: 43,
+                        top: 0,
+                        right: 0,
                         itemGap: 14,
                         textStyle: {
                             fontSize: 14,
@@ -168,11 +168,11 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
                         itemHeight: 5
                     },
                     grid: {
-                        left: '54',
-                        right: '43',
-                        bottom: '60',
-                        top: '84',
-                        containLabel: false
+                        left: '0',
+                        right: '0',
+                        bottom: '30',
+                        top: '62',
+                        containLabel: true
                     },
                     xAxis: [
                         {

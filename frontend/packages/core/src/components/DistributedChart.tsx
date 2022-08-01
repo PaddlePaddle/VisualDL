@@ -171,8 +171,8 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     ],
                     // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {
-                        top: '24',
-                        left: '20',
+                        top: '0',
+                        left: '15',
                         show: true,
                         text: title,
                         textStyle: {
@@ -185,8 +185,8 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     legend: {
                         type: 'plain',
                         icon: 'rect',
-                        top: 20,
-                        right: 43,
+                        top: 0,
+                        right: 0,
                         itemGap: 14,
                         textStyle: {
                             fontSize: 14,
@@ -205,10 +205,11 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         enterable: true
                     },
                     grid: {
-                        top: '84',
-                        left: '78',
-                        right: '51',
-                        bottom: '46'
+                        left: '0',
+                        right: '20',
+                        bottom: '0',
+                        top: '62',
+                        containLabel: true
                     },
                     xAxis: {
                         crossStyle: {

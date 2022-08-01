@@ -122,6 +122,7 @@ const Configure = styled.div`
 `;
 const EchartPie = styled.div`
     width: 100%;
+    padding: ${rem(24)};
     border: 1px solid #dddddd;
     border-radius: 4px;
     height: ${rem(366)};

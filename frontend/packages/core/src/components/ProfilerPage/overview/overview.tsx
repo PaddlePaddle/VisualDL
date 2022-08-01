@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent,useEffect,useState} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import PieChart, {LineChartRef} from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
 import Trainchart from '~/components/Trainchart';
@@ -22,7 +22,7 @@ import {fetcher} from '~/utils/fetch';
 import {asideWidth, rem} from '~/utils/style';
 import {consumingColumns, customizeColumns} from './tools';
 import styled from 'styled-components';
-import {Configure, ButtonsLeft, ButtonsRight,RadioButtons} from '../../components';
+import {Configure, ButtonsLeft, ButtonsRight, RadioButtons} from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
 
@@ -33,7 +33,7 @@ import type {
     tableType,
     perspectiveType,
     Event,
-    performanceType,
+    performanceType
 } from './types';
 import {useTranslation} from 'react-i18next';
 import {Table, Tabs, Popover} from 'antd';
@@ -120,10 +120,11 @@ const EchartPie = styled.div`
     }
 `;
 const EchartPie3 = styled(EchartPie)`
+    border: 1px solid #dddddd;
     height: ${rem(444)};
-
+    padding: ${rem(24)};
 `;
-const EchartPie4 = styled(EchartPie)`
+const EchartPie4 = styled(EchartPie3)`
     height: ${rem(366)};
 `;
 const PieceContent = styled.div`
