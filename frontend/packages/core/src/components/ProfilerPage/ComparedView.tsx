@@ -402,201 +402,178 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             });
         }
     }, [runs, workers, spans, search, group, units]);
-    const columns: ColumnsType<DataType> = useMemo(() => {
-        if (group === 'kernel_name') {
-            const columns: any = [
-                {
-                    title: '核名称',
-                    dataIndex: 'name',
-                    key: 'name',
-                    width: 200
-                },
-                {
-                    title: '调用量',
-                    dataIndex: 'calls',
-                    key: 'calls',
-                    width: 100
-                },
-                {
-                    title: `总耗时(${units})`,
-                    dataIndex: 'total_time',
-                    key: 'total_time',
-                    sorter: (a: any, b: any) => {
-                        console.log('a,b', a, b);
-                        return a.total_time - b.total_time;
-                    }
-                },
-                {
-                    title: `平均耗时(${units})`,
-                    dataIndex: 'avg_time',
-                    key: 'avg_time',
-                    sorter: (a: any, b: any) => {
-                        return a.avg_time - b.avg_time;
-                    }
-                },
-                {
-                    title: `最长耗时(${units})`,
-                    dataIndex: 'max_time',
-                    key: 'max_time',
-                    sorter: (a: any, b: any) => {
-                        return a.max_time - b.max_time;
-                    }
-                },
-                {
-                    title: `最短耗时(${units})`,
-                    dataIndex: 'min_time',
-                    key: 'min_time',
-                    sorter: (a: any, b: any) => {
-                        return a.min_time - b.min_time;
-                    }
-                },
-                {
-                    title: 'sm平均线程块数量',
-                    dataIndex: 'mean blocks per sm',
-                    key: 'mean blocks per sm',
-                },
-                {
-                    title: '平均占用率%',
-                    dataIndex: 'mean est achieved occupancy',
-                    key: 'mean est achieved occupancy',
-                },
-                {
-                    title: '是否使用tensor core',
-                    dataIndex: 'tensor core used',
-                    key: 'tensor core used',
-                    render: (text:boolean) => {
-                        if (text) {
-                            return <div>是</div>;
-                        } else {
-                            return <div>否</div>;
-                        }
-                    }
-                },
-                {
-                    title: `百分比%`,
-                    dataIndex: 'ratio',
-                    key: 'ratio',
-                    sorter: (a: any, b: any) => {
-                        return a.ratio - b.ratio;
-                    }
+    const columns1: ColumnsType<DataType> = [
+        {
+            title: '核名称',
+            dataIndex: 'name',
+            key: 'name',
+            width: 200
+        },
+        {
+            title: '调用量',
+            dataIndex: 'calls',
+            key: 'calls',
+            width: 100
+        },
+        {
+            title: `总耗时(${units})`,
+            dataIndex: 'total_time',
+            key: 'total_time',
+            sorter: (a: any, b: any) => {
+                console.log('a,b', a, b);
+                return a.total_time - b.total_time;
+            }
+        },
+        {
+            title: `平均耗时(${units})`,
+            dataIndex: 'avg_time',
+            key: 'avg_time',
+            sorter: (a: any, b: any) => {
+                return a.avg_time - b.avg_time;
+            }
+        },
+        {
+            title: `最长耗时(${units})`,
+            dataIndex: 'max_time',
+            key: 'max_time',
+            sorter: (a: any, b: any) => {
+                return a.max_time - b.max_time;
+            }
+        },
+        {
+            title: `最短耗时(${units})`,
+            dataIndex: 'min_time',
+            key: 'min_time',
+            sorter: (a: any, b: any) => {
+                return a.min_time - b.min_time;
+            }
+        },
+        {
+            title: 'sm平均线程块数量',
+            dataIndex: 'mean blocks per sm',
+            key: 'mean blocks per sm'
+        },
+        {
+            title: '平均占用率%',
+            dataIndex: 'mean est achieved occupancy',
+            key: 'mean est achieved occupancy'
+        },
+        {
+            title: '是否使用tensor core',
+            dataIndex: 'tensor core used',
+            key: 'tensor core used',
+            render: (text: boolean) => {
+                if (text) {
+                    return <div>是</div>;
+                } else {
+                    return <div>否</div>;
                 }
-            ];
-            return columns;
+            }
+        },
+        {
+            title: `百分比%`,
+            dataIndex: 'ratio',
+            key: 'ratio',
+            sorter: (a: any, b: any) => {
+                return a.ratio - b.ratio;
+            }
         }
-        if (group === 'kernel_name_attributes') {
-            const columns = [
-                {
-                    title: '核名称',
-                    dataIndex: 'name',
-                    key: 'name'
-                },
-                {
-                    title: '调用量',
-                    dataIndex: 'calls',
-                    key: 'calls',
-                    sorter: (a: any, b: any) => {
-                        return a.calls - b.calls;
-                    }
-                },
-                {
-                    title: '对应算子',
-                    dataIndex: 'operator',
-                    key: 'operator'
-                },
-                {
-                    title: '线程网格',
-                    dataIndex: 'grid',
-                    key: 'grid'
-                },
-                {
-                    title: '线程块',
-                    dataIndex: 'block',
-                    key: 'block'
-                },
-                {
-                    title: '线程平均寄存器数量',
-                    dataIndex: 'register per thread',
-                    key: 'register per thread'
-                },
-                {
-                    title: '共享显存量',
-                    dataIndex: 'shared memory',
-                    key: 'shared memory'
-                },
-                {
-                    title: `总耗时(${units})`,
-                    dataIndex: 'total_time',
-                    key: 'total_time',
-                    sorter: (a: any, b: any) => {
-                        return a.total_time - b.total_time;
-                    }
-                },
-                {
-                    title: `平均耗时(${units})`,
-                    dataIndex: 'avg_time',
-                    key: 'avg_time',
-                    sorter: (a: any, b: any) => {
-                        return a.avg_time - b.avg_time;
-                    }
-                },
-                {
-                    title: `最长耗时(${units})`,
-                    dataIndex: 'max_time',
-                    key: 'max_time',
-                    sorter: (a: any, b: any) => {
-                        return a.max_time - b.max_time;
-                    }
-                },
-                {
-                    title: `最短耗时(${units})`,
-                    dataIndex: 'min_time',
-                    key: 'min_time',
-                    sorter: (a: any, b: any) => {
-                        return a.min_time - b.min_time;
-                    }
-                },
-                {
-                    title: 'sm平均线程块数量',
-                    dataIndex: 'mean blocks per sm',
-                    key: 'mean blocks per sm'
-                },
-                {
-                    title: '平均占用率%',
-                    dataIndex: 'mean est achieved occupancy',
-                    key: 'mean est achieved occupancy'
-                },
-                {
-                    title: '是否使用tensor core',
-                    dataIndex: 'tensor core used',
-                    key: 'tensor core used'
-                },
-                {
-                    title: '百分比%',
-                    dataIndex: 'ratio',
-                    key: 'ratio',
-                    sorter: (a: any, b: any) => {
-                        return a.ratio - b.ratio;
-                    }
-                }
-            ];
-            return columns;
+    ];
+    const columns2: ColumnsType<DataType> = [
+        {
+            title: '核名称',
+            dataIndex: 'name',
+            key: 'name'
+        },
+        {
+            title: '调用量',
+            dataIndex: 'calls',
+            key: 'calls',
+            sorter: (a: any, b: any) => {
+                return a.calls - b.calls;
+            }
+        },
+        {
+            title: '对应算子',
+            dataIndex: 'operator',
+            key: 'operator'
+        },
+        {
+            title: '线程网格',
+            dataIndex: 'grid',
+            key: 'grid'
+        },
+        {
+            title: '线程块',
+            dataIndex: 'block',
+            key: 'block'
+        },
+        {
+            title: '线程平均寄存器数量',
+            dataIndex: 'register per thread',
+            key: 'register per thread'
+        },
+        {
+            title: '共享显存量',
+            dataIndex: 'shared memory',
+            key: 'shared memory'
+        },
+        {
+            title: `总耗时(${units})`,
+            dataIndex: 'total_time',
+            key: 'total_time',
+            sorter: (a: any, b: any) => {
+                return a.total_time - b.total_time;
+            }
+        },
+        {
+            title: `平均耗时(${units})`,
+            dataIndex: 'avg_time',
+            key: 'avg_time',
+            sorter: (a: any, b: any) => {
+                return a.avg_time - b.avg_time;
+            }
+        },
+        {
+            title: `最长耗时(${units})`,
+            dataIndex: 'max_time',
+            key: 'max_time',
+            sorter: (a: any, b: any) => {
+                return a.max_time - b.max_time;
+            }
+        },
+        {
+            title: `最短耗时(${units})`,
+            dataIndex: 'min_time',
+            key: 'min_time',
+            sorter: (a: any, b: any) => {
+                return a.min_time - b.min_time;
+            }
+        },
+        {
+            title: 'sm平均线程块数量',
+            dataIndex: 'mean blocks per sm',
+            key: 'mean blocks per sm'
+        },
+        {
+            title: '平均占用率%',
+            dataIndex: 'mean est achieved occupancy',
+            key: 'mean est achieved occupancy'
+        },
+        {
+            title: '是否使用tensor core',
+            dataIndex: 'tensor core used',
+            key: 'tensor core used'
+        },
+        {
+            title: '百分比%',
+            dataIndex: 'ratio',
+            key: 'ratio',
+            sorter: (a: any, b: any) => {
+                return a.ratio - b.ratio;
+            }
         }
-    }, [tableData, group]);
-    const onSearch = (value: string) => {
-        console.log(value);
-    };
-    const getTable = useMemo(() => {
-        return (
-            <Table
-                columns={columns}
-                dataSource={tableData}
-                bordered
-                size="middle"
-                // pagination={false}
-                scroll={{x: 'calc(700px + 50%)', y: 900}}
-            ></Table>
-        );
-    }, [columns, tableData]);
+    ];
     const color = [
         '#2932E1',
         '#00CC88',
@@ -765,7 +742,18 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                         </div>
                     </div>
                 </div>
-                <Wraper>{tableData && getTable}</Wraper>
+                <Wraper>
+                    {tableData && (
+                        <Table
+                            columns={group === 'kernel_name' ? columns1 : columns2}
+                            dataSource={tableData}
+                            bordered
+                            size="middle"
+                            // pagination={false}
+                            scroll={{x: 'calc(700px + 50%)', y: 900}}
+                        ></Table>
+                    )}
+                </Wraper>
             </Configure>
             <Model ref={model} runs={runs} views={views} workers={workers}></Model>
         </ViewWrapper>

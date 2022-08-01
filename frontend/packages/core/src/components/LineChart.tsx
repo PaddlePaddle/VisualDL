@@ -155,14 +155,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             }
             setchartOption(chartOptions)
             // debugger
-        },[options,theme,data])
-        useEffect(() => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            if (chartOption) {
-                console.log('chartOptions', chartOption);
-                echart?.setOption(chartOption, {notMerge: true});
-            }
-        }, [chartOption, title, i18n.language, echart]);
+        },[options,theme,data,chartOption, title, i18n.language, echart])
 
         return (
             <Wrapper ref={wrapper} className={className}>

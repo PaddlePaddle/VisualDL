@@ -340,29 +340,30 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             });
         }
     }, [runs, workers, spans, isCPU, top, units]);
-    const columns = useMemo(() => {
+    const columns = () => {
         let columns = baseColumns(units);
         if (group === 'op_name_input_shape') {
+            console.log('columns',columns);
             columns.splice(1, 0, {
                 title: '输入形状',
                 dataIndex: 'input_shape',
                 key: 'input_shape',
                 width: 100,
-                render: (text) => {
+                render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text.length > 0) {
                         return text.map((item: string) => {
                             return <div>{item}</div>;
                         });
                     } else {
-                       return <div>{'-'}</div>;
+                        return <div>{'-'}</div>;
                     }
                 }
             });
         }
         console.log('columns', columns);
         return columns;
-    }, [group, baseColumns, units]);
+    };
     // const getTable = useMemo(() => {
     //     return (
     //         <Table
@@ -520,7 +521,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 <Wraper>
                     {tableData && (
                         <Table
-                            columns={columns}
+                            columns={columns()}
                             dataSource={tableData}
                             bordered
                             size="middle"
