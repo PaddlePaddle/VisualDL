@@ -79,13 +79,20 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 if (params.length) {
                     const n = params.length / 4 - 1;
                     let index = 0;
-                    const datas = [];
-                    const runs = [];
+                    const datas: any = [];
+                    const runs: any = [];
                     while (index < params.length) {
                         const element = params[index];
-                        runs.push({label: element.seriesName, colors: [element.color]});
-                        datas.push(element.value);
-                        index += 1 + n;
+                        if (element) {
+                            console.log('element', element);
+                            runs.push({label: element.seriesName, colors: [element.color]});
+                            datas.push(element.value);
+                        }
+                        if (n >= 0) {
+                            index += 1 + n;
+                        } else {
+                            index += 1
+                        }
                     }
                     const columns = [
                         {label: '时间戳', width: '4em'},
@@ -147,7 +154,6 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     }
                 };
             });
-            console.log('seriesData', seriesData);
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartsOption = defaultsDeep({
@@ -177,8 +183,8 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     },
                     legend: {
-                        type:'plain',
-                        icon:'rect',
+                        type: 'plain',
+                        icon: 'rect',
                         top: 20,
                         right: 43,
                         itemGap: 14,
@@ -257,7 +263,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 });
 
                 echart?.setOption(chartOptions, {notMerge: true});
-                console.log('chartOptions', chartOptions)
+                console.log('chartOptions', chartOptions);
             }
         }, [options, data, title, theme, i18n.language, echart]);
         return (

@@ -236,19 +236,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
         }
     }, [runs, workers, spans]);
     useEffect(() => {
-        if (items && envirements) {
-            for (let index = 0; index < envirements.length; index++) {
-                const element = envirements[index];
-                if (items === element.device) {
-                    setSliders1(element.min_size)
-                    setSliders2(element.max_size)
-                }
-                
-            }
-        }
-    },[items,envirements])
-    useEffect(() => {
-        if (runs && workers && spans) {
+        if (runs && workers && spans && items) {
             fetcher('/profiler/memory/curve' + 
             `?run=${runs}` + 
             `&worker=${workers}` + 
@@ -263,6 +251,18 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
             );
         }
     }, [runs, workers, spans,units,items]);
+    useEffect(() => {
+        if (items && envirements) {
+            for (let index = 0; index < envirements.length; index++) {
+                const element = envirements[index];
+                if (items === element.device) {
+                    setSliders1(element.min_size)
+                    setSliders2(element.max_size)
+                }
+                
+            }
+        }
+    },[items,envirements])
     useEffect(() => {
         if (runs && workers && spans && items) {
             fetcher('/profiler/memory/memory_events' + 
