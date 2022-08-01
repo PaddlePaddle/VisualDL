@@ -27,26 +27,26 @@ import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
-import { number } from 'echarts';
+import {number} from 'echarts';
 interface DataType {
     key: React.Key;
-    MemoryType:string ;
-    AllocatedEvent:string ;
-    AllocatedTimestamp:number ;
-    FreeEvent:string ;
-    FreeTimestamp:number ;
-    Duration:number ;
-    Size:number;
+    MemoryType: string;
+    AllocatedEvent: string;
+    AllocatedTimestamp: number;
+    FreeEvent: string;
+    FreeTimestamp: number;
+    Duration: number;
+    Size: number;
 }
 interface op_DataType {
     key: React.Key;
-    EventName: string; 
-    MemoryType: string; 
-    AllocationCount: number; 
-    FreeCount: number; 
-    AllocationSize: number; 
-    FreeSize: number; 
-    IncreasedSize:number;
+    EventName: string;
+    MemoryType: string;
+    AllocationCount: number;
+    FreeCount: number;
+    AllocationSize: number;
+    FreeSize: number;
+    IncreasedSize: number;
 }
 export type MemoryViewProps = {
     runs: string;
@@ -67,20 +67,20 @@ const ViewWrapper = styled.div`
 `;
 const TitleNav = styled.div`
     display: flex;
-    align-items:center;
+    align-items: center;
     border-bottom: 1px solid #dddddd;
     margin-bottom: ${rem(20)};
     .searchContent {
         display: flex;
-        align-items:center;
-        .select_label{
+        align-items: center;
+        .select_label {
             margin-right: ${rem(15)};
             color: #000000;
             font-size: 14px;
-            white-space:nowrap;
+            white-space: nowrap;
         }
         .select_wrapper {
-            width: ${rem(88)};
+            width: auto;
             height: ${rem(36)};
             margin-right: ${rem(15)};
         }
@@ -172,6 +172,7 @@ const Configure = styled.div`
 const EchartPie = styled.div`
     width: 100%;
     border: 1px solid #dddddd;
+    padding: ${rem(24)};
     border-radius: 4px;
     height: ${rem(366)};
     // padding: ${rem(24)};
@@ -205,112 +206,109 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
-const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,units}) => {
+const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [lineData, setLineData] = useState<any>();
     const [search, setSearch] = useState<string>('');
     const [search2, setSearch2] = useState<string>('');
     const [Sliders1, setSliders1] = useState<number>(0);
     const [Sliders2, setSliders2] = useState<number>(100);
-    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>()
-    const [envirements,setEnvirements] = useState<any>()
-    const [tableData,settableData] = useState<any>()
-    const [tableData2,settableData2] = useState<any>()
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
+    const [envirements, setEnvirements] = useState<any>();
+    const [tableData, settableData] = useState<any>();
+    const [tableData2, settableData2] = useState<any>();
     const [items, setItems] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher('/profiler/memory/devices' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: any) => {
-                    const itemsLists = []
+                    const itemsLists = [];
                     for (let index = 0; index < res.length; index++) {
                         const element = res[index];
-                        itemsLists.push(
-                            {label: element.device, value: element.device}
-                        ) 
+                        let regex1 = /\((.+?)\)/g;
+                        const label:string = element.device.match(regex1)[0];
+                        const labels = label.substring(1, label.length - 1);
+                        itemsLists.push({label: labels, value: element.device});
                     }
-                    setEnvirements(res)
+                    setEnvirements(res);
                     setItemsList(itemsLists);
-                    setItems(res[0].device)
+                    setItems(res[0].device);
                 }
             );
         }
     }, [runs, workers, spans]);
     useEffect(() => {
+        if (runs && workers && spans && items) {
+            fetcher(
+                '/profiler/memory/curve' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&device_type=${items}` +
+                    `&time_unit=${units}`
+            ).then((res: any) => {
+                console.log('lineData', res);
+                setLineData(res);
+            });
+        }
+    }, [runs, workers, spans, units, items]);
+    useEffect(() => {
         if (items && envirements) {
             for (let index = 0; index < envirements.length; index++) {
                 const element = envirements[index];
                 if (items === element.device) {
-                    setSliders1(element.min_size)
-                    setSliders2(element.max_size)
+                    setSliders1(element.min_size);
+                    setSliders2(element.max_size);
                 }
-                
             }
         }
-    },[items,envirements])
-    useEffect(() => {
-        if (runs && workers && spans) {
-            fetcher('/profiler/memory/curve' + 
-            `?run=${runs}` + 
-            `&worker=${workers}` + 
-            `&span=${spans}` + 
-            `&device_type=${items}` + 
-            `&time_unit=${units}`
-            ).then(
-                (res: any) => {
-                    console.log('lineData',res);
-                    setLineData(res);
-                }
-            );
-        }
-    }, [runs, workers, spans,units,items]);
+    }, [items, envirements]);
     useEffect(() => {
         if (runs && workers && spans && items) {
-            fetcher('/profiler/memory/memory_events' + 
-            `?run=${runs}` + 
-            `&worker=${workers}` + 
-            `&span=${spans}` + 
-            `&device_type=${items}` + 
-            `&min_size=${Sliders1}` +
-            `&max_size=${Sliders2}` + 
-            `&search_name=${search}` + 
-            `&time_unit=${units}`
-            ).then(
-                (res: any) => {
-                    const result = res.data.map((item:any,indexs:number)=>{
-                        return {
-                            key:indexs,
-                            ...item
-                        }
-                    })
-                    console.log('tableData',result);
-                    settableData(result);
-                }
-            );
+            fetcher(
+                '/profiler/memory/memory_events' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&device_type=${items}` +
+                    `&min_size=${Sliders1}` +
+                    `&max_size=${Sliders2}` +
+                    `&search_name=${search}` +
+                    `&time_unit=${units}`
+            ).then((res: any) => {
+                const result = res.data.map((item: any, indexs: number) => {
+                    return {
+                        key: indexs,
+                        ...item
+                    };
+                });
+                console.log('tableData', result);
+                settableData(result);
+            });
         }
-    }, [runs, workers, spans,units,items,Sliders1,Sliders2,search]);
+    }, [runs, workers, spans, units, items, Sliders1, Sliders2, search]);
     useEffect(() => {
         if (runs && workers && spans && items) {
-            fetcher('/profiler/memory/op_memory_events' + 
-            `?run=${runs}` + 
-            `&worker=${workers}` + 
-            `&span=${spans}` + 
-            `&device_type=${items}` + 
-            `&search_name=${search2}`
-            ).then(
-                (res: any) => {
-                    const result = res.data.map((item:any,indexs:number)=>{
-                        return {
-                            key:indexs,
-                            ...item
-                        }
-                    })
-                    console.log('tableData',result);
-                    
-                    settableData2(result);
-                }
-            );
+            fetcher(
+                '/profiler/memory/op_memory_events' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&device_type=${items}` +
+                    `&search_name=${search2}`
+            ).then((res: any) => {
+                const result = res.data.map((item: any, indexs: number) => {
+                    return {
+                        key: indexs,
+                        ...item
+                    };
+                });
+                console.log('tableData', result);
+
+                settableData2(result);
+            });
         }
-    }, [runs, workers, spans,items,search2]);
+    }, [runs, workers, spans, items, search2]);
     const columns: ColumnsType<DataType> = [
         {
             title: '存储类型',
@@ -363,7 +361,6 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
             },
             width: 102
         }
-
     ];
     const op_columns: ColumnsType<op_DataType> = [
         {
@@ -421,23 +418,24 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
             },
             width: 102
         }
-
     ];
     const getTable = useMemo(() => {
         const paginations = {
-            showSizeChanger: true,
+            showSizeChanger: true
         };
         return <Table columns={columns} dataSource={tableData} bordered size="middle" pagination={paginations}></Table>;
     }, [columns, tableData]);
     const getTable2 = useMemo(() => {
         const paginations = {
-            showSizeChanger: true,
+            showSizeChanger: true
         };
-        return <Table columns={op_columns} dataSource={tableData2} bordered size="middle" pagination={paginations}></Table>;
+        return (
+            <Table columns={op_columns} dataSource={tableData2} bordered size="middle" pagination={paginations}></Table>
+        );
     }, [op_columns, tableData2]);
     const SliderChange = (value: any) => {
-        setSliders1(value[0])
-        setSliders2(value[1])
+        setSliders1(value[0]);
+        setSliders2(value[1]);
     };
     const inputChange = (value: string) => {
         const slider = Number(value);
@@ -460,9 +458,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs,workers, spans,uni
             <TitleNav>
                 <Title>显存视图</Title>
                 <div className="searchContent">
-                    <div className='select_label'>
-                        设备
-                    </div>
+                    <div className="select_label">设备</div>
                     <div className="select_wrapper">
                         <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
                     </div>

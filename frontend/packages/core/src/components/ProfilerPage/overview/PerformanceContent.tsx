@@ -41,7 +41,7 @@ const PerformanceContent = styled.div`
         width: 100%;
         height: ${rem(315)};
         display: flex;
-        padding: ${rem(0)} ${rem(33)};
+        padding: ${rem(0)} ${rem(24)};
         .chart {
             .Content {
                 height: 100%;
@@ -64,6 +64,8 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
             <p>Content</p>
         </div>
     );
+    console.log('performanceData',performanceData);
+    
     const onChange = (key: string) => {
         console.log(key);
     };
@@ -90,15 +92,15 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                             <TabPane tab={item} key={index}>
                                 <PerformanceContent>
                                     <div className="titles">
-                                        {(performanceData as any).item?.calling_times?.key.map(
-                                            (item: string, index: number) => {
+                                        {(performanceData as any)[item]?.calling_times?.key.map(
+                                            (items: string, index: number) => {
                                                 return (
                                                     <div className="legend">
                                                         <div
                                                             className="labels"
                                                             style={{background: `${color[index]}`}}
                                                         ></div>
-                                                        <div className="legend_name">{item}</div>
+                                                        <div className="legend_name">{items}</div>
                                                     </div>
                                                 );
                                             }

@@ -79,13 +79,20 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 if (params.length) {
                     const n = params.length / 4 - 1;
                     let index = 0;
-                    const datas = [];
-                    const runs = [];
+                    const datas: any = [];
+                    const runs: any = [];
                     while (index < params.length) {
                         const element = params[index];
-                        runs.push({label: element.seriesName, colors: [element.color]});
-                        datas.push(element.value);
-                        index += 1 + n;
+                        if (element) {
+                            console.log('element', element);
+                            runs.push({label: element.seriesName, colors: [element.color]});
+                            datas.push(element.value);
+                        }
+                        if (n >= 0) {
+                            index += 1 + n;
+                        } else {
+                            index += 1
+                        }
                     }
                     const columns = [
                         {label: '时间戳', width: '4em'},
@@ -147,7 +154,6 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     }
                 };
             });
-            console.log('seriesData', seriesData);
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
                 let chartOptions: EChartsOption = defaultsDeep({
@@ -165,8 +171,8 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     ],
                     // backgroundColor: 'rgb(128, 128, 128, .04)',
                     title: {
-                        top: '24',
-                        left: '20',
+                        top: '0',
+                        left: '15',
                         show: true,
                         text: title,
                         textStyle: {
@@ -177,10 +183,10 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     },
                     legend: {
-                        type:'plain',
-                        icon:'rect',
-                        top: 20,
-                        right: 43,
+                        type: 'plain',
+                        icon: 'rect',
+                        top: 0,
+                        right: 0,
                         itemGap: 14,
                         textStyle: {
                             fontSize: 14,
@@ -199,10 +205,11 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         enterable: true
                     },
                     grid: {
-                        top: '84',
-                        left: '78',
-                        right: '51',
-                        bottom: '46'
+                        left: '0',
+                        right: '20',
+                        bottom: '0',
+                        top: '62',
+                        containLabel: true
                     },
                     xAxis: {
                         crossStyle: {
@@ -210,11 +217,18 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                             type: 'dashed'
                         },
                         label: {show: true},
-                        lineStyle: {color: '#2932e1', type: 'dashed'},
-                        type: 'value',
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        borderColor: 'rgba(0, 0, 0, 0.6)',
-                        enterable: true
+                        axisTick: {
+                            show: false
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#CCCCCC'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#666666',
+                            fontSize: 12
+                        }
                     },
                     yAxis: {
                         type: 'value',
@@ -257,7 +271,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 });
 
                 echart?.setOption(chartOptions, {notMerge: true});
-                console.log('chartOptions', chartOptions)
+                console.log('chartOptions', chartOptions);
             }
         }, [options, data, title, theme, i18n.language, echart]);
         return (

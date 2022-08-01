@@ -77,7 +77,7 @@ const Titles = styled.div`
     letter-spacing: 0;
     line-height: ${rem(14)};
     font-weight: 400;
-    margin-bottom: ${rem(20)};
+    // margin-bottom: ${rem(20)};
 `;
 const ButtonsLeft = styled.div`
     border: 1px solid #dddddd;
@@ -293,7 +293,7 @@ const Profiler: FunctionComponent = () => {
             <Aside>
                 <TitleContent>
                     <Titles>性能分析</Titles>
-                    <RadioButtons>
+                    {/* <RadioButtons>
                         <ButtonsLeft
                             className={!isCompared ? 'is_active' : ''}
                             onClick={() => {
@@ -310,7 +310,7 @@ const Profiler: FunctionComponent = () => {
                         >
                             对比模式
                         </ButtonsRight>
-                    </RadioButtons>
+                    </RadioButtons> */}
                 </TitleContent>
                 {!isCompared ? (
                     <Selectlist>

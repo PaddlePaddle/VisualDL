@@ -31,8 +31,8 @@ import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
-import {options,baseColumns} from './tools';
-import {Configure, ButtonsLeft, ButtonsRight,RadioButtons, ArgumentOperation,Wraper} from '../../components';
+import {options, baseColumns} from './tools';
+import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     name: string;
@@ -221,7 +221,7 @@ const PieceContent = styled.div`
     border-radius: 4px;
     width: 100%;
     height: auto;
-    padding-bottom: ${rem(20)};
+    // padding-bottom: ${rem(20)};
     .expendContent {
         display: flex;
         .expendButton {
@@ -238,10 +238,14 @@ const PieceContent = styled.div`
     }
     .tableContent {
         position: relative;
+        padding-top: ${rem(20)};
+        border-top: 1px solid #dddddd;
     }
 `;
 const EchartPie4 = styled(EchartPie)`
     height: ${rem(366)};
+    padding: ${rem(24)};
+    padding-bottom: ${rem(10)};
 `;
 type SelectListItem<T> = {
     value: T;
@@ -249,7 +253,7 @@ type SelectListItem<T> = {
 };
 const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const model = useRef<any>(null);
+    // const model = useRef<any>(null);
     const [cpuData, setCpuData] = useState<any>();
     const [gpuData, setGpuData] = useState<any>();
     const [tableData, setTableData] = useState<any>();
@@ -295,7 +299,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setGpuData(gpuChartData);
             });
         }
-    }, [runs, workers, spans,top,units]);
+    }, [runs, workers, spans, top, units]);
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
@@ -313,10 +317,11 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         ...item
                     };
                 });
+                console.log('TableDatas', TableDatas);
                 setTableData(TableDatas);
             });
         }
-    }, [runs, workers, spans, search, group,units]);
+    }, [runs, workers, spans, search, group, units]);
     useEffect(() => {
         if (runs && workers && spans) {
             const device_type = isCPU ? 'cpu' : 'gpu';
@@ -334,39 +339,41 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 setDistributed(Data);
             });
         }
-    }, [runs, workers, spans, isCPU, top,units]);
+    }, [runs, workers, spans, isCPU, top, units]);
     const columns = useMemo(() => {
-        let columns = baseColumns(units)
+        let columns = baseColumns(units);
         if (group === 'op_name_input_shape') {
             columns.splice(1, 0, {
                 title: '输入形状',
                 dataIndex: 'input_shape',
                 key: 'input_shape',
-                width:100,
-                render: (text: string) => <div>{text}</div>,
+                width: 100,
+                render: (text) => {
+                    console.log('text', text);
+                    if (text) {
+                        return text.map((item: string) => {
+                            return <div>{item}</div>;
+                        });
+                    } else {
+                       return <div>{'-'}</div>;
+                    }
+                }
             });
         }
-        console.log('columns',columns);
+        console.log('columns', columns);
         return columns;
-    }, [group,baseColumns,units]);
-    const onSearch = (value: string) => {
-        console.log(value);
-    };
-    const getTable = useMemo(() => {
-        return (
-            <Table
-                columns={columns}
-                dataSource={tableData}
-                bordered
-                size="middle"
-                // pagination={false}
-                // expandable={{
-                //     expandedRowRender
-                // }}
-                scroll={{x: 'calc(700px + 50%)', y: 240}}
-            ></Table>
-        );
-    }, [columns, tableData]);
+    }, [group, baseColumns, units]);
+    // const getTable = useMemo(() => {
+    //     return (
+    //         <Table
+    //             columns={columns}
+    //             dataSource={tableData}
+    //             bordered
+    //             size="middle"
+    //             scroll={{x: 'calc(700px + 50%)', y: 240}}
+    //         ></Table>
+    //     );
+    // }, [columns, tableData]);
     const color = [
         '#2932E1',
         '#00CC88',
@@ -408,18 +415,28 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </Radio.Group>
                     {radioValue === 2 ? (
                         <div className="AdditionContent">
-                            <div className="Addition " onClick={() => {
+                            <div
+                                className="Addition "
+                                onClick={() => {
                                     const tops = top + 1;
                                     setTop(tops);
-                                }}>+</div>
+                                }}
+                            >
+                                +
+                            </div>
                             <div className="input_wrapper">
                                 {/* <Input placeholder="Basic usage" />; */}
                                 <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
                             </div>
-                            <div className="subtraction" onClick={() => {
+                            <div
+                                className="subtraction"
+                                onClick={() => {
                                     const tops = top - 1;
                                     setTop(tops);
-                                }}>-</div>
+                                }}
+                            >
+                                -
+                            </div>
                         </div>
                     ) : null}
                 </RadioContent>
@@ -434,10 +451,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                            <PieChart className={'Content'} data={gpuData} isCpu={true} color={color} />
+                            <PieChart className={'Content'} data={cpuData} isCpu={true} color={color} />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={cpuData} isCpu={false} color={color} />
+                            <PieChart className={'Content'} data={gpuData} isCpu={false} color={color} />
                         </div>
                     </EchartPie>
                     <div
@@ -500,9 +517,19 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         </div>
                     </div>
                 </div>
-                <Wraper>{tableData && getTable}</Wraper>
+                <Wraper>
+                    {tableData && (
+                        <Table
+                            columns={columns}
+                            dataSource={tableData}
+                            bordered
+                            size="middle"
+                            scroll={{x: 'calc(700px + 50%)', y: 240}}
+                        ></Table>
+                    )}
+                </Wraper>
             </Configures>
-            <Model ref={model} runs={runs} views={views} workers={workers}></Model>
+            {/* <Model ref={model} runs={runs} views={views} workers={workers}></Model> */}
         </ViewWrapper>
     );
 };
