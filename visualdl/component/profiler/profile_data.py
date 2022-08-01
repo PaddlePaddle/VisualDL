@@ -899,7 +899,7 @@ class ProfileData:
                         event.call,
                         "children":
                         get_children_data(event),
-                        "input_shapes":
+                        "input_shape":
                         input_shape,
                         "cpu_total_time":
                         format_time(event.cpu_time, time_unit),
@@ -991,7 +991,7 @@ class ProfileData:
                             event.call,
                             "children":
                             get_children_data(event),
-                            "input_shapes":
+                            "input_shape":
                             input_shape,
                             "cpu_total_time":
                             format_time(event.cpu_time, time_unit),
@@ -1333,8 +1333,7 @@ class ProfileData:
                     print('search_name', search_name, True)
                     return True
             return False
-        if search_name:
-            paired_event_list = filter(filter_func, paired_event_list)
+        paired_event_list = filter(filter_func, paired_event_list)
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
         if not paired_event_list:
             return data
@@ -1485,6 +1484,7 @@ class DistributedProfileData:
     def get_distributed_steps(self):
         for profile_data in self.profile_datas:
             steps = list(profile_data.distributed_time.keys())
+            print(profile_data.span_idx, 'steps:',  steps)
             final_steps = ['All'] + sorted(
                 [int(step) for step in steps if step != 'All'])
             return final_steps
