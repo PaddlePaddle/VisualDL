@@ -22,7 +22,7 @@ import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
 import Model from '~/components/ProfilerPage/model';
-import {asideWidth, rem, em, transitionProps,primaryColor} from '~/utils/style';
+import {asideWidth, rem, em, transitionProps, primaryColor, position, size} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table, Popover} from 'antd';
@@ -276,6 +276,7 @@ const PieceContent = styled.div`
 `;
 const Wraper = styled.div`
     width: 100%;
+    position: relative;
     .ant-table-pagination.ant-pagination {
         margin: ${rem(20)} 0;
         padding-right: ${rem(20)};
@@ -283,6 +284,13 @@ const Wraper = styled.div`
     .ant-table.ant-table-bordered > .ant-table-container {
         border: 1px solid #dddddd;
         border-radius: 8px;
+    }
+    > .loading {
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 `;
 type SelectListItem<T> = {
@@ -358,10 +366,17 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&group_by=${group}`
             ).then((res: any) => {
                 const TableDatas = res.events.map((item: any) => {
-                    return {
-                        key: item.name,
-                        ...item
-                    };
+                    if (group === 'kernel_name_attributes') {
+                        return {
+                            key: item.name + item.calls + item.operator + item.grid,
+                            ...item
+                        };
+                    } else {
+                        return {
+                            key: item.name,
+                            ...item
+                        };
+                    }
                 });
                 setTableData(TableDatas);
                 settableLoading(false);
@@ -449,6 +464,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
         {
             title: '核名称',
             dataIndex: 'name',
+            width: 200,
             key: 'name'
         },
         {
@@ -708,13 +724,13 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                         </div>
                     </div>
                 </div>
-                <Wraper>
-                {tableLoading && (
+                <Wraper style={{minHeight: '410px'}}>
+                    {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />
                         </div>
                     )}
-                    {tableData && !tableLoading &&(
+                    {tableData && !tableLoading && (
                         <Table
                             columns={group === 'kernel_name' ? columns1 : columns2}
                             dataSource={tableData}

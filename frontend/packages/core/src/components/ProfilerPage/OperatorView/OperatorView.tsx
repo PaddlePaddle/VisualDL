@@ -316,10 +316,17 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&group_by=${group}`
             ).then((res: any) => {
                 const TableDatas = res.events.map((item: any) => {
-                    return {
-                        key: item.name,
-                        ...item
-                    };
+                    if (group === 'op_name_input_shape') {
+                        return {
+                            key: item.name + item.input_shape,
+                            ...item
+                        };
+                    } else {
+                        return {
+                            key: item.name,
+                            ...item
+                        };
+                    }
                 });
                 console.log('TableDatas', TableDatas);
                 setTableData(TableDatas);
