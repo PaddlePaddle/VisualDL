@@ -121,6 +121,7 @@ class ProfilerApi(object):
         device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
+
         topk = int(topk)
         return profiler_data.get_operator_pie_expand(topk, device_type,
                                                      time_unit)
@@ -213,6 +214,8 @@ class ProfilerApi(object):
 
     @result()
     def memory_curve(self, run, worker, span, device_type, time_unit='ms'):
+        if device_type == 'undefined':
+            return
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_curve(device_type, time_unit)
@@ -227,10 +230,12 @@ class ProfilerApi(object):
                       max_size=float('inf'),
                       search_name=None,
                       time_unit='ms'):
+        if device_type == 'undefined':
+            return
         min_size = float(min_size)
         max_size = float(max_size)
         if search_name == 'undefined' or not search_name:
-            search_name = None   
+            search_name = None
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_events(device_type, min_size, max_size,
@@ -244,7 +249,9 @@ class ProfilerApi(object):
                          device_type,
                          search_name=None):
         if search_name == 'undefined' or not search_name:
-            search_name = None  
+            search_name = None
+        if device_type == 'undefined':
+            return
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_op_memory_events(device_type, search_name)

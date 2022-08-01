@@ -30,6 +30,7 @@ from .parser.utils import format_ratio
 from .parser.utils import format_time
 from .parser.utils import traverse_tree
 
+
 def filter_type(node_trees):
     nodelists = traverse_tree(node_trees)
     for thread_id, nodelist in nodelists.items():
@@ -91,8 +92,6 @@ class ProfileData:
         self.reserved_items = self.memory_parser.reserved_items
         self.paired_events = self.memory_parser.paired_events
         self.size_ranges = self.memory_parser.size_ranges
-        # cache data
-        self.cache = defaultdict(lambda: defaultdict(list))
 
     def get_views(self):
         '''
@@ -237,7 +236,6 @@ class ProfileData:
                     continue
                 data['order'].append(stage_name)
                 data[stage_name] = []
-                # print(self.model_perspective_items[stage_name].cpu_times.keys())
                 for stage_idx in steps:
                     stage_idx = str(stage_idx)
                     if device_type == 'cpu':
@@ -250,7 +248,6 @@ class ProfileData:
                         else:
                             data[stage_name].append(0)
                     else:
-                        # print(stage_name, self.model_perspective_items[stage_name].gpu_times.keys())
                         if stage_idx in self.model_perspective_items[
                                 stage_name].gpu_times:
                             data[stage_name].append(
@@ -371,7 +368,6 @@ class ProfileData:
                         'GPU']['ALL']:
                     data['order'].append(event_type)
                     data[event_type] = []
-            # print('self.merged_events_per_stage.keys()', self.merged_events_per_stage.keys())
             for stage_name in [
                     'ProfileStep', 'Dataloader', 'Forward', 'Backward',
                     'Optimization', 'Other'
@@ -379,10 +375,7 @@ class ProfileData:
                 if stage_name in self.merged_events_per_stage:
                     data['phase_type'].append(stage_name)
                     for event_type in data['order']:
-                        # print('event_type', event_type)
-                        # print(self.merged_events_per_stage[stage_name]['CPU']['ALL'].keys())
                         if event_type in CPUType:
-                            # print('I am in CPUType', event_type)
                             if event_type in self.merged_events_per_stage[
                                     stage_name]['CPU']['ALL']:
                                 data[event_type].append(
@@ -730,8 +723,14 @@ class ProfileData:
                     key=lambda x: x[1].max_general_gpu_time,
                     reverse=True)
                 for (name, input_shape), event in sorted_items:
-                    shapes = input_shape.split('-')
-                    shape_string = ['{}:{}'.format(shapes[i], shapes[i+1]) for i in range(0, len(shapes), 2)]
+                    if not input_shape:
+                        shape_string = []
+                    else:
+                        shapes = input_shape.split('\t')[:-1]
+                        shape_string = [
+                            '{}:{}'.format(*shape.split('-'))
+                            for shape in shapes
+                        ]
                     data['events'].append({
                         "name":
                         name,
@@ -824,8 +823,14 @@ class ProfileData:
                 for op_name in results:
                     for input_shape, event in self.operator_items_with_input_shape[
                             op_name].items():
-                        shapes = input_shape.split('-')
-                        shape_string = ['{}:{}'.format(shapes[i], shapes[i+1]) for i in range(0, len(shapes), 2)]
+                        if not input_shape:
+                            shape_string = []
+                        else:
+                            shapes = input_shape.split('\t')[:-1]
+                            shape_string = [
+                                '{}:{}'.format(*shape.split('-'))
+                                for shape in shapes
+                            ]
                         data['events'].append({
                             "name":
                             op_name,
@@ -1110,10 +1115,7 @@ class ProfileData:
 
     def get_memory_devices(self):
         data = []
-        print('self.memory_curve.keys()', self.memory_curve.keys())
         for device in self.memory_curve.keys():
-            if device == 'undefined':
-                continue
             data.append({
                 "device":
                 device,
@@ -1122,7 +1124,6 @@ class ProfileData:
                 "max_size":
                 format_memory(self.size_ranges[device][1], 'KB')
             })
-        print(data)
         return data
 
     def get_memory_curve(self, device_type, time_unit='ms'):
@@ -1172,9 +1173,9 @@ class ProfileData:
             else:
                 if size >= min_size and size <= max_size and (
                         search_name in item[1] or search_name in item[3]):
-                    print('search_name', search_name, True)
                     return True
             return False
+
         paired_event_list = filter(filter_func, paired_event_list)
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
         if not paired_event_list:
@@ -1285,16 +1286,6 @@ class DistributedProfileData:
             })
         return data
 
-    ## profiler/overview/get_distributed_table
-    #   {
-    #  "order": ["Communication", "Computation", "Overlap", "Others"],
-    #  "worker_name": ["worker1", "worker2", "worker3",],
-    #  "Communication": [233, 544, 333],
-    #  "Computation": [344, 543, 333],
-    #  "Overlap": [344, 543, 333],
-    #  "Others": [344, 433, 323]
-    # }
-
     def get_distributed_histogram(self, step, time_unit='ms'):
         data = {}
         data['order'] = ["Communication", "Computation", "Overlap", "Others"]
@@ -1325,7 +1316,6 @@ class DistributedProfileData:
     def get_distributed_steps(self):
         for profile_data in self.profile_datas:
             steps = list(profile_data.distributed_time.keys())
-            print(profile_data.span_idx, 'steps:',  steps)
             final_steps = ['All'] + sorted(
                 [int(step) for step in steps if step != 'All'])
             return final_steps

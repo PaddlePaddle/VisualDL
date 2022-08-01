@@ -57,7 +57,7 @@ class MemoryParser:
         self.memory_curve = collections.defaultdict(
             lambda: collections.defaultdict(list)
         )  # device type: Allocated, Reserved, PeakAllocated, PeakReserved : (timestamp, memory_value, hostnodename)
-        
+
         self.paired_events = collections.defaultdict(
             list
         )  # device type: [(Allocated or Reserved, src_event, timestamp_src, dst_event, timestamp_dst, size), (as front)]
@@ -130,6 +130,7 @@ class MemoryParser:
                                     paired_results.pop())
                 self.paired_events[device_type].extend(paired_results)
             self.size_ranges[device_type] = (0, max_size)
+            print(self.paired_events['Place(cpu)'])
 
     def _analyse_node_memory(self, event_name, node):
         # print(event_name)
