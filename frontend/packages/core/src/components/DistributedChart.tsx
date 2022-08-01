@@ -217,11 +217,18 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                             type: 'dashed'
                         },
                         label: {show: true},
-                        lineStyle: {color: '#2932e1', type: 'dashed'},
-                        type: 'value',
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        borderColor: 'rgba(0, 0, 0, 0.6)',
-                        enterable: true
+                        axisTick: {
+                            show: false
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#CCCCCC'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#666666',
+                            fontSize: 12
+                        }
                     },
                     yAxis: {
                         type: 'value',

@@ -409,7 +409,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: '核名称',
                     dataIndex: 'name',
                     key: 'name',
-                    width: 100
+                    width: 200
                 },
                 {
                     title: '调用量',
