@@ -50,7 +50,7 @@ export const options = {
         }
     ]
 };
-export let baseColumns = (units: string) => {
+export let baseColumns1 = (units: string) => {
     const columns: ColumnsType<DataType> = [
         {
             title: '算子名称',
@@ -142,3 +142,112 @@ export let baseColumns = (units: string) => {
     ];
     return columns;
 };
+export let baseColumns2 = (units: string) => {
+    const columns: ColumnsType<DataType> = [
+        {
+            title: '算子名称',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text: string) => <div >{text}</div>,
+            width: 144
+        },
+        {
+            title: '输入形状',
+            dataIndex: 'input_shape',
+            key: 'input_shape',
+            width: 100,
+            render: text => {
+                console.log('text', text);
+                if (text?.length > 0) {
+                    return text.map((item: string) => {
+                        return <div>{item}</div>;
+                    });
+                } else {
+                    return <div>{'-'}</div>;
+                }
+            }
+        },
+        {
+            title: '调用量',
+            dataIndex: 'calls',
+            key: 'calls',
+            sorter: (a, b) => a.calls - b.calls
+        },
+        {
+            title: 'CPU',
+            children: [
+                {
+                    title: `总耗时(${units})`,
+                    dataIndex: 'cpu_total_time',
+                    key: 'cpu_total_time',
+                    sorter: (a, b) => a.cpu_total_time - b.cpu_total_time
+                },
+                {
+                    title: `平均耗时(${units})`,
+                    dataIndex: 'cpu_avg_time',
+                    key: 'cpu_avg_time',
+                    sorter: (a, b) => {
+                        // console.log('a,b',a,b);
+
+                        return a.cpu_avg_time - b.cpu_avg_time;
+                    }
+                },
+                {
+                    title: `最长耗时(${units})`,
+                    dataIndex: 'cpu_max_time',
+                    key: 'cpu_max_time',
+                    sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                },
+                {
+                    title: `最短耗时(${units})`,
+                    dataIndex: 'cpu_min_time',
+                    key: 'cpu_min_time',
+                    sorter: (a, b) => a.cpu_min_time - b.cpu_min_time
+                },
+                {
+                    title: '百分比%',
+                    dataIndex: 'cpu_ratio',
+                    key: 'cpu_ratio',
+                    sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
+                }
+            ]
+        },
+        {
+            title: 'GPU',
+            children: [
+                {
+                    title: `总耗时(${units})`,
+                    dataIndex: 'gpu_total_time',
+                    key: 'gpu_total_time',
+                    sorter: (a, b) => a.gpu_total_time - b.gpu_total_time
+                },
+                {
+                    title: `平均耗时(${units})`,
+                    dataIndex: 'gpu_avg_time',
+                    key: 'gpu_avg_time',
+                    sorter: (a, b) => a.gpu_avg_time - b.gpu_avg_time
+                },
+                {
+                    title: `最长耗时(${units})`,
+                    dataIndex: 'cpu_max_time',
+                    key: 'cpu_max_time',
+                    sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                },
+                {
+                    title: `最短耗时(${units})`,
+                    dataIndex: 'gpu_min_time',
+                    key: 'gpu_min_time',
+                    sorter: (a, b) => a.gpu_min_time - b.gpu_min_time
+                },
+                {
+                    title: '百分比%',
+                    dataIndex: 'gpu_ratio',
+                    key: 'gpu_ratio',
+                    sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
+                }
+            ]
+        }
+    ];
+    return columns;
+};
+

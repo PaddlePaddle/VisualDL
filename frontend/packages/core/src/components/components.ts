@@ -1,4 +1,4 @@
-import {rem, em, transitionProps} from '~/utils/style';
+import {rem, em, transitionProps,position, size} from '~/utils/style';
 import styled from 'styled-components';
 import Icon from '~/components/Icon';
 import logo from '~/assets/images/question-circle.svg';
@@ -77,6 +77,7 @@ export const RadioButtons = styled.div`
 `;
 export const Wraper = styled.div`
     width: 100%;
+    position: relative;
     .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
         background: #f3f8fe;
     }
@@ -103,5 +104,12 @@ export const Wraper = styled.div`
     }
     .whiteWrap {
         margin-left: 25px;
+    }
+    > .loading {
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 `;
