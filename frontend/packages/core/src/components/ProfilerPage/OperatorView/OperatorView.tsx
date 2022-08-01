@@ -22,11 +22,13 @@ import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
 import Model from '~/components/ProfilerPage/model';
+import {WithStyled, primaryColor} from '~/utils/style';
 import {asideWidth, rem, em, transitionProps} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table, Popover} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
+import GridLoader from 'react-spinners/GridLoader';
 import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
@@ -257,6 +259,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const [cpuData, setCpuData] = useState<any>();
     const [gpuData, setGpuData] = useState<any>();
     const [tableData, setTableData] = useState<any>();
+    const [tableLoading, settableLoading] = useState(true);
     const [distributed, setDistributed] = useState<any>();
     const [isCPU, setIsCPU] = useState(true);
     const [search, setSearch] = useState<string>('');
@@ -302,6 +305,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     }, [runs, workers, spans, top, units]);
     useEffect(() => {
         if (runs && workers && spans) {
+            settableLoading(true);
             fetcher(
                 '/profiler/operator/table' +
                     `?run=${runs}` +
@@ -319,6 +323,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 });
                 console.log('TableDatas', TableDatas);
                 setTableData(TableDatas);
+                settableLoading(false);
             });
         }
     }, [runs, workers, spans, search, group, units]);
@@ -485,8 +490,13 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         </div>
                     </div>
                 </div>
-                <Wraper>
-                    {tableData && (
+                <Wraper style={{height:'420px'}}>
+                    {tableLoading && (
+                        <div className="loading">
+                            <GridLoader color={primaryColor} size="10px" />
+                        </div>
+                    )}
+                    {tableData && !tableLoading && (
                         <Table
                             columns={group === 'op_name_input_shape' ? columns2 : columns1}
                             dataSource={tableData}
