@@ -421,7 +421,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: `总耗时(${units})`,
                     dataIndex: 'total_time',
                     key: 'total_time',
-                    width: 150,
                     sorter: (a: any, b: any) => {
                         console.log('a,b', a, b);
                         return a.total_time - b.total_time;
@@ -431,7 +430,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: `平均耗时(${units})`,
                     dataIndex: 'avg_time',
                     key: 'avg_time',
-                    width: 150,
                     sorter: (a: any, b: any) => {
                         return a.avg_time - b.avg_time;
                     }
@@ -440,7 +438,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: `最长耗时(${units})`,
                     dataIndex: 'max_time',
                     key: 'max_time',
-                    width: 150,
                     sorter: (a: any, b: any) => {
                         return a.max_time - b.max_time;
                     }
@@ -449,7 +446,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: `最短耗时(${units})`,
                     dataIndex: 'min_time',
                     key: 'min_time',
-                    width: 150,
                     sorter: (a: any, b: any) => {
                         return a.min_time - b.min_time;
                     }
@@ -458,25 +454,28 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     title: 'sm平均线程块数量',
                     dataIndex: 'mean blocks per sm',
                     key: 'mean blocks per sm',
-                    width: 150
                 },
                 {
                     title: '平均占用率%',
                     dataIndex: 'mean est achieved occupancy',
                     key: 'mean est achieved occupancy',
-                    width: 150
                 },
                 {
                     title: '是否使用tensor core',
                     dataIndex: 'tensor core used',
                     key: 'tensor core used',
-                    width: 150
+                    render: (text:boolean) => {
+                        if (text) {
+                            return <div>是</div>;
+                        } else {
+                            return <div>否</div>;
+                        }
+                    }
                 },
                 {
                     title: `百分比%`,
                     dataIndex: 'ratio',
                     key: 'ratio',
-                    width: 150,
                     sorter: (a: any, b: any) => {
                         return a.ratio - b.ratio;
                     }

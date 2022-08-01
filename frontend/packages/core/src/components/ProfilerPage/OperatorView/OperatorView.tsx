@@ -348,7 +348,16 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 dataIndex: 'input_shape',
                 key: 'input_shape',
                 width: 100,
-                render: (text: string) => <div>{text}</div>
+                render: (text) => {
+                    console.log('text', text);
+                    if (text) {
+                        return text.map((item: string) => {
+                            return <div>{item}</div>;
+                        });
+                    } else {
+                       return <div>{'-'}</div>;
+                    }
+                }
             });
         }
         console.log('columns', columns);
