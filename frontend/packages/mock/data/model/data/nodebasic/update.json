@@ -1,0 +1,258 @@
+{
+    "Node_leaf_1": {
+        "concat_5.tmp_0": [
+            {
+                "delta_num": "9",
+                "avg": "0.09",
+                "var": "1.23",
+                "zero": "0.08",
+                "ab_avg": "0.71"
+            },
+            {
+                "delta_num": "10",
+                "avg": "0.01",
+                "var": "1.31",
+                "zero": "0.08",
+                "ab_avg": "0.70"
+            },
+            {
+                "delta_num": "11",
+                "avg": "0.01",
+                "var": "1.23",
+                "zero": "0.08",
+                "ab_avg": "0.69"
+            },
+            {
+                "delta_num": "12",
+                "avg": "0.07",
+                "var": "1.16",
+                "zero": "0.08",
+                "ab_avg": "0.61"
+            }
+        ],
+        "concat_5.tmp_0@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "6.42",
+                "var": "2.89",
+                "zero": "0.06",
+                "ab_avg": "1.35"
+            },
+            {
+                "delta_num": "10",
+                "avg": "-8.01",
+                "var": "2.15",
+                "zero": "0.05",
+                "ab_avg": "7.64"
+            },
+            {
+                "delta_num": "11",
+                "avg": "5.27",
+                "var": "2.74",
+                "zero": "0.04",
+                "ab_avg": "1.90"
+            },
+            {
+                "delta_num": "12",
+                "avg": "1.20",
+                "var": "1.20",
+                "zero": "0.09",
+                "ab_avg": "3.55"
+            }
+        ]
+    },
+    "Node_leaf_2": {
+        "concat_5.tmp_0@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "6.42",
+                "var": "2.89",
+                "zero": "0.08",
+                "ab_avg": "1.35"
+            },
+            {
+                "delta_num": "10",
+                "avg": "-8.01",
+                "var": "2.15",
+                "zero": "0.02",
+                "ab_avg": "7.64"
+            },
+            {
+                "delta_num": "11",
+                "avg": "5.27",
+                "var": "2.74",
+                "zero": "0.01",
+                "ab_avg": "1.90"
+            },
+            {
+                "delta_num": "12",
+                "avg": "1.20",
+                "var": "1.20",
+                "zero": "0.06",
+                "ab_avg": "3.55"
+            }
+        ],
+        "concat_5.tmp_0@GRAD@GRAD": []
+    },
+    "Node_leaf_3": {
+        "split_0.tmp_0_slice_1@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "5.95",
+                "var": "5.23",
+                "zero": "0.00",
+                "ab_avg": "1.13"
+            },
+            {
+                "delta_num": "10",
+                "avg": "3.68",
+                "var": "2.77",
+                "zero": "0.00",
+                "ab_avg": "6.50"
+            },
+            {
+                "delta_num": "11",
+                "avg": "-1.85",
+                "var": "8.36",
+                "zero": "0.00",
+                "ab_avg": "1.45"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-3.83",
+                "var": "2.25",
+                "zero": "0.07",
+                "ab_avg": "2.80"
+            }
+        ],
+        "split_0.tmp_0_slice_1@GRAD@GRAD": []
+    },
+    "Node_leaf_4": {
+        "scaled_fc_0.tmp_0@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "5.43",
+                "var": "1.94",
+                "zero": "0.36",
+                "ab_avg": "2.87"
+            },
+            {
+                "delta_num": "10",
+                "avg": "3.66",
+                "var": "8.89",
+                "zero": "0.88",
+                "ab_avg": "1.57"
+            },
+            {
+                "delta_num": "11",
+                "avg": "5.20",
+                "var": "3.58",
+                "zero": "0.77",
+                "ab_avg": "3.77"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-7.58",
+                "var": "8.54",
+                "zero": "0.77",
+                "ab_avg": "6.88"
+            }
+        ],
+        "scaled_fc_0.tmp_0@GRAD@GRAD": []
+    },
+    "Node_leaf_5": {
+        "scaled_fc_0.tmp_1": [
+            {
+                "delta_num": "9",
+                "avg": "0.31",
+                "var": "0.35",
+                "zero": "0.00",
+                "ab_avg": "0.38"
+            },
+            {
+                "delta_num": "10",
+                "avg": "0.39",
+                "var": "0.56",
+                "zero": "0.00",
+                "ab_avg": "0.39"
+            },
+            {
+                "delta_num": "11",
+                "avg": "0.72",
+                "var": "0.66",
+                "zero": "0.00",
+                "ab_avg": "0.32"
+            },
+            {
+                "delta_num": "12",
+                "avg": "0.37",
+                "var": "0.14",
+                "zero": "0.00",
+                "ab_avg": "0.37"
+            }
+        ],
+        "scaled_fc_0.tmp_1@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "-5.99",
+                "var": "1.12",
+                "zero": "0.00",
+                "ab_avg": "3.97"
+            },
+            {
+                "delta_num": "10",
+                "avg": "8.24",
+                "var": "5.06",
+                "zero": "0.00",
+                "ab_avg": "1.54"
+            },
+            {
+                "delta_num": "11",
+                "avg": "-1.45",
+                "var": "2.01",
+                "zero": "0.00",
+                "ab_avg": "4.09"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-1.88",
+                "var": "5.55",
+                "zero": "0.08",
+                "ab_avg": "7.48"
+            }
+        ]
+    },
+    "Node_root": {
+        "scaled_fc_0.tmp_1@GRAD": [
+            {
+                "delta_num": "9",
+                "avg": "-5.92",
+                "var": "1.57",
+                "zero": "0.07",
+                "ab_avg": "3.17"
+            },
+            {
+                "delta_num": "10",
+                "avg": "8.24",
+                "var": "5.06",
+                "zero": "0.00",
+                "ab_avg": "1.56"
+            },
+            {
+                "delta_num": "11",
+                "avg": "-1.45",
+                "var": "2.62",
+                "zero": "0.00",
+                "ab_avg": "4.98"
+            },
+            {
+                "delta_num": "12",
+                "avg": "-1.88",
+                "var": "5.52",
+                "zero": "0.00",
+                "ab_avg": "7.47"
+            }
+        ],
+        "scaled_fc_0.tmp_1@GRAD@GRAD": []
+    }
+}

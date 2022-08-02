@@ -35,6 +35,30 @@ function isWorkspace() {
     }
 }
 
+function processGlVec2File(data) {
+    const content = data.toString();
+    if (content.includes('/* snowpack-plugin-files-handler */')) {
+        return content;
+    }
+    let result = '/* snowpack-plugin-files-handler */\n';
+    const lbi = content.indexOf('{');
+    const rbi = content.indexOf('}');
+    const requireTemplates = content
+        .slice(lbi + 1, rbi)
+        .replace(/\s*/g,'')
+        .replace(/:/g,' = ')
+        .split(',')
+        .map(item => `const ${item};`);
+    const exportTemplates = requireTemplates.map(item =>
+        item.slice(item.indexOf('const')+6, item.indexOf('=')-1)
+    );
+    requireTemplates.forEach(item => result += item + '\n');
+    result += 'module.exports = {\n';
+    exportTemplates.forEach(item => result += '    ' + item + ',\n');
+    result += '};';
+    return result;
+}
+
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
@@ -103,6 +127,18 @@ export default {
                     }
                 ]
             }
+        ],
+        [
+            'snowpack-plugin-files-handler',
+            {
+                opts: [
+                    {
+                        target: 'gl-vec2/index.js',
+                        handler: processGlVec2File,
+                        exact: false
+                    }
+                ]
+            }
         ]
     ],
     devOptions: {
@@ -111,7 +147,15 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
+        knownEntrypoints: [
+            'chai',
+            '@testing-library/react',
+            'fetch-mock/esm/client',
+            'react-is',
+            'gl-matrix/vec2',
+            'gl-matrix/vec3',
+            'gl-matrix'
+        ]
     },
     buildOptions: {
         out: 'dist',

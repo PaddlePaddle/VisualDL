@@ -38,7 +38,7 @@ const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 
-const MAX_ITEM_COUNT_IN_NAVBAR = 6;
+const MAX_ITEM_COUNT_IN_NAVBAR = 7;
 
 const flatten = <T extends {children?: T[]}>(routes: T[]) => {
     const result: Omit<T, 'children'>[] = [];

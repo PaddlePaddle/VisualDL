@@ -60,7 +60,7 @@ async function start() {
     const template = await parseTemplate();
     const snowpackEnv = await extendEnv();
 
-    const baseUri = snowpackEnv.SNOWPACK_PUBLIC_BASE_URI;
+    const baseUri = snowpackEnv.SNOWPACK_PUBLIC_BASE_URI ?? '';
     const apiUrl = snowpackEnv.SNOWPACK_PUBLIC_API_URL;
 
     if (backend) {

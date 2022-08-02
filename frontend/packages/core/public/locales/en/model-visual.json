@@ -1,0 +1,35 @@
+{
+    "repaint": "Repaint",
+    "auto-repaint": "Auto Repaint",
+    "node-data": "Node Data",
+    "data-stage": "Stage",
+    "none-data": "none",
+    "node-id": "node id",
+    "node-pos": "node position",
+    "basic": "basic",
+    "avg": "avg",
+    "var": "variance",
+    "ab_avg": "absolute avg",
+    "zero": "zero",
+    "delta_num": "delta value",
+    "from": "From",
+    "to": "To",
+    "neuron": "Neuron",
+    "no-match": "No matching results",
+    "tabs": {
+        "basic": "Basic",
+        "index": "Index(normal)",
+        "indexGrad": "Index(grad)",
+        "num": "Num(normal)",
+        "numGrad": "Num(grad)",
+        "empty-data": "Empty Data"
+    },
+    "tools": {
+        "behavior-controller": "Interactive Control",
+        "display-minimap": "display minimap",
+        "drag-canvas": "drag canvas",
+        "zoom-canvas": "zoom canvas",
+        "drag-node": "drag node",
+        "activate-relations": "show relations"
+    }
+}

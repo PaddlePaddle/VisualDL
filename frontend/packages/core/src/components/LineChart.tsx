@@ -38,7 +38,8 @@ type LineChartProps = {
 export enum XAxisType {
     value = 'value',
     log = 'log',
-    time = 'time'
+    time = 'time',
+    category = 'category'
 }
 
 export enum YAxisType {
@@ -86,6 +87,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
 
             let chartOptions: EChartOption = defaultsDeep(
                 {
+                    color: color,
                     title: {
                         text: title ?? ''
                     },
