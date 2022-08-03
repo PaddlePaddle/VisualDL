@@ -51,10 +51,15 @@ export type LineChartRef = {
     restore(): void;
     saveAsImage(): void;
 };
+interface cpuData {
+    value: number;
+    name: string;
+    proportion: number
+};
 type pieChartProps = {
     option?: EChartsOption;
     title?: string;
-    data?: any;
+    data?: cpuData[];
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];

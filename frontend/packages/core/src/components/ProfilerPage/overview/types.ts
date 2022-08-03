@@ -68,11 +68,7 @@ export interface Gpu {
 export interface trainType {
     order: string[];
     steps: number[];
-    Dataloader: number[];
-    Forward: number[];
-    Backward: number[];
-    Optimization: number[];
-    Other: number[];
+    data: number[][];
 }
 
 export interface perspectiveType {
@@ -100,20 +96,20 @@ export interface performanceType {
     Kernel: Kernel;
     Memcpy: Kernel;
     Memset: Kernel;
-  }
-  
+}
+
 export interface Kernel {
     calling_times: Callingtimes;
     durations: Callingtimes;
     ratios: Callingtimes;
-  }
-  
+}
+
 export interface Callingtimes {
     key: string[];
     value: number[];
-  }
-export  interface distributedData {
+}
+export interface distributedData {
     order: string[];
     phase_type: string[];
     data: number[][];
-  }
+}

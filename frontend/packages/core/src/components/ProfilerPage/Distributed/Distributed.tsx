@@ -15,7 +15,7 @@
  */
 
 import React, {FunctionComponent, useCallback, useMemo, useState, useEffect} from 'react';
-import StackColumnChart from '~/components/StackColumnChart2';
+import StackColumnChart from '~/components/StackColumnChart';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
 import styled from 'styled-components';
@@ -316,7 +316,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                     </div>
                 </div>
                 <EchartPie>
-                    <StackColumnChart className={'Content'} data={computation} color={color}></StackColumnChart>
+                    <StackColumnChart className={'Content'} data={computation} color={color} isWorkerName = {true}></StackColumnChart>
                 </EchartPie>
             </Configure>
         </ViewWrapper>

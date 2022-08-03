@@ -23,13 +23,18 @@ import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {useTranslation} from 'react-i18next';
-
-type LineChartProps = {
+interface trainType {
+    order: string[];
+    steps: number[];
+    data: number[][];
+}
+type trainChartProps = {
     options?: EChartsOption;
     title?: string;
-    data?: EChartsOption['line'];
+    data?: trainType;
     loading?: boolean;
     zoom?: boolean;
+    className?: string;
     onInit?: Options['onInit'];
 };
 
@@ -49,7 +54,7 @@ export type LineChartRef = {
     saveAsImage(): void;
 };
 
-const Trainchart = React.forwardRef<LineChartRef, any>(
+const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
 
@@ -99,10 +104,9 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                 '#00FF9D',
                 '#D50505'
             ];
-            const dataSeries: any = [];
+            const dataSeries = [];
             const titles = data.steps;
             for (let index = 0; index < data.steps.length; index++) {
-                const element = titles[index];
                 // debugger
                 dataSeries.push({
                     name: order[index],
@@ -118,20 +122,6 @@ const Trainchart = React.forwardRef<LineChartRef, any>(
                     data: data.data[index]
                 });
             }
-            // return {
-            //     name: item,
-            //     type: 'bar',
-            //     stack: '数据',
-            //     // barMinWidth: '50%',
-            //     barCategoryGap: '0%',
-            //     itemStyle: {
-            //         color: color[index]
-            //     },
-            //     data: data[item],
-            //     emphasis: {
-            //         focus: 'series'
-            //     }
-            // }
             let chartOptions: EChartsOption = defaultsDeep({
                 tooltip: {
                     trigger: 'axis',

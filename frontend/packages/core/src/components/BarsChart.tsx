@@ -25,14 +25,21 @@ import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
-
-type LineChartProps = {
+interface Callingtimes {
+    key: string[];
+    value: number[];
+}
+type BarsChartProps = {
     options?: EChartsOption;
     title?: string;
-    data?: any
+    data?: Callingtimes
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
+    className?: string;
+    units?: string;
+    isLegend?: boolean;
+    text?: number;
 };
 
 export enum XAxisType {
@@ -46,13 +53,13 @@ export enum YAxisType {
     log = 'log'
 }
 
-export type LineChartRef = {
+export type BarChartRef = {
     restore(): void;
     saveAsImage(): void;
 };
 
-const Charts = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, text, isCpu, isLegend,units}, ref) => {
+const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
+    ({options, data, title, loading, zoom, className, onInit, text, isLegend,units}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -135,7 +142,7 @@ const Charts = React.forwardRef<LineChartRef, any>(
                         },
                         extraCssText:
                             'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
-                        formatter: function (params: any, index: any) {
+                        formatter: function (params: any, index: number) {
                             console.log('StackColumnChart', params, index);
                             var str = ''; //声明一个变量用来存储数据
                             str +=

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import BarsChart from '~/components/BarsChart';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 import {Tabs} from 'antd';
-import type {performanceType} from './types';
+import type {performanceType,Callingtimes} from './types';
 const PerformanceContent = styled.div`
     border: 1px solid #dddddd;
     border-radius: 4px;
@@ -110,7 +110,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         <div className="chart">
                                             <BarsChart
                                                 className={'Content'}
-                                                data={(performanceData as any)[item]?.calling_times}
+                                                data={(performanceData as any)[item]?.calling_times as Callingtimes} 
                                                 text={1}
                                                 isLegend={false}
                                             ></BarsChart>
@@ -118,7 +118,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         <div className="chart">
                                             <BarsChart
                                                 className={'Content'}
-                                                data={(performanceData as any)[item]?.durations}
+                                                data={(performanceData as any)[item]?.durations as Callingtimes}
                                                 text={2}
                                                 isLegend={false}
                                                 units={units}
@@ -127,7 +127,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         <div className="chart" style={{marginRight: `${rem(0)}`}}>
                                             <BarsChart
                                                 className={'Content'}
-                                                data={(performanceData as any)[item]?.ratios}
+                                                data={(performanceData as any)[item]?.ratios as Callingtimes}
                                                 text={3}
                                                 isLegend={true}
                                             ></BarsChart>

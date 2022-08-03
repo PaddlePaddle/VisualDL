@@ -1,6 +1,7 @@
 import type {ColumnsType} from 'antd/lib/table';
 import React from 'react';
 import {Fragment} from 'react';
+import type {EChartsOption} from 'echarts';
 export interface DataType {
     name: string;
     calls: number;
@@ -15,7 +16,14 @@ export interface DataType {
     gpu_min_time: number;
     gpu_ratio: number;
 }
-export const options = {
+export const options:EChartsOption = {
+    grid: {
+        left: '0',
+        right: '0',
+        bottom: '30',
+        top: '62',
+        containLabel: true
+    },
     yAxis: {
         name: ''
     },
@@ -32,12 +40,12 @@ export const options = {
             left: 50, //左边的距离
             right: 40, //右边的距离
             bottom: 10, //右边的距离
-            handleColor: '#ddd', //h滑动图标的颜色
+            // handleColor: '#ddd', //h滑动图标的颜色
             handleStyle: {
                 borderColor: '#cacaca',
-                borderWidth: '1',
+                borderWidth: 1,
                 shadowBlur: 2,
-                background: '#ddd',
+                // background: '#ddd',
                 shadowColor: '#ddd'
             },
             fillerColor: '#2932E1',

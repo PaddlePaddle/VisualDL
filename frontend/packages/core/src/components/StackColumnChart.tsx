@@ -26,14 +26,17 @@ import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
-// type LineChartProps = {
-//     options?: EChartsOption;
-//     title?: string;
-//     data?: Partial<NonNullable<EChartsOption<EChartsOption.SeriesLine>['series']>>;
-//     loading?: boolean;
-//     zoom?: boolean;
-//     onInit?: Options['onInit'];
-// };
+type StackChartProps = {
+    options?: EChartsOption;
+    title?: string;
+    data?: any;
+    loading?: boolean;
+    zoom?: boolean;
+    onInit?: Options['onInit'];
+    isWorkerName?: boolean;
+    className?: string;
+    color?: string[];
+};
 
 export enum XAxisType {
     value = 'value',
@@ -51,8 +54,8 @@ export type LineChartRef = {
     saveAsImage(): void;
 };
 
-const StackColumnChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, color}, ref) => {
+const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
+    ({options, data, title, loading, zoom, className, onInit, color,isWorkerName}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -85,7 +88,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, any>(
             const {colorAlt, series, ...defaults} = chart;
 
             if (data && color) {
-                const titles = data.phase_type;
+                const titles = isWorkerName ? data.worker_name : data.phase_type;
                 const order = data.order;
                 // debugger
                 const series: any = [];
