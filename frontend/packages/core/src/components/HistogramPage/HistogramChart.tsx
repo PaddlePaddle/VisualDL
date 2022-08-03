@@ -142,13 +142,13 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
 
     const formatter = useMemo(
         () => ({
-            [Modes.Overlay]: (params:any) => {
+            [Modes.Overlay]: (params: any) => {
                 if (!data || highlight == null) {
                     return '';
                 }
-                const series = params.find((s:any)=>{
-                    return s.data[1] === (data as OverlayData).data[highlight][0][1]
-                })
+                const series = params.find((s: any) => {
+                    return s.data[1] === (data as OverlayData).data[highlight][0][1];
+                });
                 return series?.seriesName ?? '';
             },
             [Modes.Offset]: (dot: [number, number, number]) => dot[2]
@@ -210,12 +210,12 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
     );
 
     const mousemove = useCallback((echarts: ECharts, {offsetX, offsetY}: {offsetX: number; offsetY: number}) => {
-        const series:any = echarts.getOption().series;
+        const series: any = echarts.getOption().series;
         const pt: [number, number] = [offsetX, offsetY];
         if (series) {
             type Distance = number;
             type Index = number;
-            const npts: [number, number, Distance, Index][] = series.map((s:any, i:number) =>
+            const npts: [number, number, Distance, Index][] = series.map((s: any, i: number) =>
                 (s.data as OverlayDataItem[])?.reduce(
                     (m, [, , x, y]) => {
                         const px = echarts.convertToPixel('grid', [x, y]) as [number, number];

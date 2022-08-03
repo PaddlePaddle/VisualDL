@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -14,16 +15,16 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
 import StackColumnChart from '~/components/StackColumnChart';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
-import Model from '~/components/ProfilerPage/model';
-import {WithStyled, primaryColor} from '~/utils/style';
-import {asideWidth, rem, em, transitionProps} from '~/utils/style';
+// import Model from '~/components/ProfilerPage/model';
+import {primaryColor} from '~/utils/style';
+import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table, Popover} from 'antd';
@@ -34,12 +35,7 @@ import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
 import {options, baseColumns2, baseColumns1} from './tools';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
-import type {
-    operatorPie,
-    tableType,
-    Event,
-    pie_expand
-} from './type'
+import type {operatorPie, tableType, Event, pie_expand} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface tableTypes extends Event {
     key: string;
@@ -244,8 +240,8 @@ type SelectListItem<T> = {
 interface cpuData {
     value: number;
     name: string;
-    proportion: number
-};
+    proportion: number;
+}
 const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     // const model = useRef<any>(null);
@@ -275,9 +271,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&topk=${top}`
             ).then((res: unknown) => {
-                const result = res as operatorPie
-                const cpuChartData:cpuData[] = [];
-                const gpuChartData:cpuData[] = [];
+                const result = res as operatorPie;
+                const cpuChartData: cpuData[] = [];
+                const gpuChartData: cpuData[] = [];
                 for (const item of result.cpu) {
                     cpuChartData.push({
                         value: item.total_time,
@@ -309,8 +305,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: unknown) => {
-                const result = res as tableType
-                const TableDatas:tableTypes[] = result.events.map((item) => {
+                const result = res as tableType;
+                const TableDatas: tableTypes[] = result.events.map(item => {
                     if (group === 'op_name_input_shape') {
                         return {
                             key: item.name + item.input_shape,
@@ -492,7 +488,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         </div>
                     </div>
                 </div>
-                <Wraper style={{height:'420px'}}>
+                <Wraper style={{height: '420px'}}>
                     {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />

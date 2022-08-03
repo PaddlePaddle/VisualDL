@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -14,13 +15,12 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
-import Model from '~/components/ProfilerPage/model';
 import {asideWidth, rem, em, transitionProps, primaryColor, position, size} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
@@ -30,17 +30,9 @@ import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
 import GridLoader from 'react-spinners/GridLoader';
-import Icon from '~/components/Icon';
 import logo from '~/assets/images/question-circle.svg';
 import hover from '~/assets/images/hover.svg';
-import type {
-    tensorcorePie,
-    Event,
-    kernelPie,
-    kernelEvent,
-    tableDataType,
-    tableEvent
-} from './type';
+import type {tensorcorePie, kernelPie, tableDataType, tableEvent} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
@@ -300,10 +292,10 @@ type SelectListItem<T> = {
 interface cpuData {
     value: number;
     name: string;
-    proportion: number
-};
+    proportion: number;
+}
 interface tableType extends tableEvent {
-    key:string
+    key: string;
 }
 
 const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, workers, spans, units}) => {
@@ -331,8 +323,8 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&topk=${top}`
             ).then((res: unknown) => {
-                const result = res as tensorcorePie
-                const chartData:cpuData[] = [];
+                const result = res as tensorcorePie;
+                const chartData: cpuData[] = [];
                 for (const item of result.events) {
                     chartData.push({
                         value: item.calls,
@@ -350,8 +342,8 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&topk=${top}`
             ).then((res: unknown) => {
-                const result = res as kernelPie
-                const chartData:cpuData[] = [];
+                const result = res as kernelPie;
+                const chartData: cpuData[] = [];
                 for (const item of result.events) {
                     chartData.push({
                         value: item.total_time,
@@ -376,7 +368,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&search_name=${search}` +
                     `&group_by=${group}`
             ).then((res: unknown) => {
-                const result = res as tableDataType
+                const result = res as tableDataType;
                 const TableDatas = result.events.map((item: tableEvent) => {
                     if (group === 'kernel_name_attributes') {
                         return {
@@ -639,7 +631,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 <div className="title">
                     <div>耗时概况</div>
                     <Popover content={tooltips} placement="right">
-                        <a className="argument-operation" onClick={() => {}}>
+                        <a
+                            className="argument-operation"
+                            onClick={() => {
+                                console.log(111);
+                            }}
+                        >
                             <img src={PUBLIC_PATH + logo} alt="" />
                         </a>
                     </Popover>
@@ -667,7 +664,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                                 //     color: '#666'
                                                 // },
                                                 formatter: function () {
-                                                    var str = '总耗时'; //声明一个变量用来存储数据
+                                                    const str = '总耗时'; //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },
@@ -700,7 +697,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                                 //     color: '#666'
                                                 // },
                                                 formatter: function () {
-                                                    var str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
+                                                    const str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },

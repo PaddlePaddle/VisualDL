@@ -16,18 +16,12 @@
 
 import Aside from '~/components/Aside';
 import type {SelectProps} from '~/components/Select';
-import type {Indicator, IndicatorData, ListItem, ViewData} from '~/resource/hyper-parameter';
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useState, useRef} from 'react';
+import React, {FunctionComponent, useEffect, useMemo, useState} from 'react';
 import {asideWidth, rem} from '~/utils/style';
-import {filter, format, formatIndicators} from '~/resource/hyper-parameter';
-import queryString from 'query-string';
-import BodyLoading from '~/components/BodyLoading';
-import Button from '~/components/Button';
 import Content from '~/components/Content';
-import Empty from '~/components/ProfilerPage/Empty';
 import OverView from '~/components/ProfilerPage/overview/overview';
 import OperatorView from '~/components/ProfilerPage/OperatorView/OperatorView';
-import DiffView from '~/components/ProfilerPage/DiffView';
+// import DiffView from '~/components/ProfilerPage/DiffView';
 import MemoryView from '~/components/ProfilerPage/MemoryView/MemoryView';
 import TracingView from '~/components/ProfilerPage/TracingView';
 import Distributed from '~/components/ProfilerPage/Distributed/Distributed';
@@ -211,48 +205,37 @@ const Profiler: FunctionComponent = () => {
     const view = useMemo(() => {
         switch (views) {
             case 'Overview':
-                return <OverView runs={runs} views={views} workers={workers}
-                units={units}
-                spans={spans} />;
+                return <OverView runs={runs} views={views} workers={workers} units={units} spans={spans} />;
             case 'Operator':
-                return <OperatorView runs={runs} views={views} workers={workers}
-                units={units}
-                spans={spans} />;
+                return <OperatorView runs={runs} views={views} workers={workers} units={units} spans={spans} />;
             case 'Distributed':
-                return <Distributed runs={runs} views={views} workers={workers}
-                units={units}
-                spans={spans} />;
+                return <Distributed runs={runs} views={views} workers={workers} units={units} spans={spans} />;
             case 'GPU Kernel':
-                return <ComparedView runs={runs} views={views} workers={workers}
-                units={units}
-                spans={spans} />;
+                return <ComparedView runs={runs} views={views} workers={workers} units={units} spans={spans} />;
             case 'Memory':
-                return <MemoryView runs={runs} views={views} workers={workers}
-                units={units}
-                spans={spans} />;
+                return <MemoryView runs={runs} views={views} workers={workers} units={units} spans={spans} />;
             case 'Trace':
-                return <TracingView runs={runs} views={views} workers={workers}
-                spans={spans} />;
+                return <TracingView runs={runs} views={views} workers={workers} spans={spans} />;
             default:
                 return null;
         }
-    }, [views, runs, workers, spans,units]);
-    const diffView = useMemo(() => {
-        if (diffWorker2 && diffSpan1 && diffRuns1 && diffWorker1 && diffSpan2 && diffRuns1) {
-            return (
-                <DiffView
-                    diffRuns1={diffRuns1}
-                    diffWorkers1={diffWorker1}
-                    diffSpans1={diffSpan1}
-                    diffRuns2={diffRuns2}
-                    diffWorkers2={diffWorker2}
-                    diffSpans2={diffSpan2}
-                />
-            );
-        } else {
-            return <Empty></Empty>;
-        }
-    }, [diffWorker2, diffSpan1, diffRuns2, diffWorker1, diffSpan2, diffRuns1]);
+    }, [views, runs, workers, spans, units]);
+    // const diffView = useMemo(() => {
+    //     if (diffWorker2 && diffSpan1 && diffRuns1 && diffWorker1 && diffSpan2 && diffRuns1) {
+    //         return (
+    //             <DiffView
+    //                 diffRuns1={diffRuns1}
+    //                 diffWorkers1={diffWorker1}
+    //                 diffSpans1={diffSpan1}
+    //                 diffRuns2={diffRuns2}
+    //                 diffWorkers2={diffWorker2}
+    //                 diffSpans2={diffSpan2}
+    //             />
+    //         );
+    //     } else {
+    //         return <Empty></Empty>;
+    //     }
+    // }, [diffWorker2, diffSpan1, diffRuns2, diffWorker1, diffSpan2, diffRuns1]);
     // const [importanceDialogVisible, setImportanceDialogVisible] = useState(false);
 
     const aside = useMemo(
@@ -368,7 +351,7 @@ const Profiler: FunctionComponent = () => {
             <Content aside={aside} isProfiler={true}>
                 {/* {loading ? <BodyLoading /> : null} */}
                 <HPWrapper>
-                    <ViewWrapper>{!isCompared ? view : diffView}</ViewWrapper>
+                    <ViewWrapper>{!isCompared ? view : null}</ViewWrapper>
                 </HPWrapper>
             </Content>
         </>

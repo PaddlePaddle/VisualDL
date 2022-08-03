@@ -22,7 +22,7 @@ import styled from 'styled-components';
 
 const Section = styled.section`
     display: flex;
-    aside{
+    aside {
         position: static;
         height: auto;
     }
@@ -48,7 +48,7 @@ const ProfilerAside = styled.aside`
     flex: none;
     background-color: var(--background-color);
     height: auto;
-    position:static;
+    position: static;
     overflow-x: hidden;
     overflow-y: auto;
     ${transitionProps('background-color')}
@@ -61,7 +61,14 @@ type ContentProps = {
     isProfiler?: boolean;
 };
 
-const Content: FunctionComponent<ContentProps & WithStyled> = ({children, aside, leftAside, loading, className,isProfiler}) => (
+const Content: FunctionComponent<ContentProps & WithStyled> = ({
+    children,
+    aside,
+    leftAside,
+    loading,
+    className,
+    isProfiler
+}) => (
     <Section className={className}>
         {leftAside && <Aside>{leftAside}</Aside>}
         <Article>{children}</Article>

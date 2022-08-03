@@ -1,6 +1,5 @@
 import type {ColumnsType} from 'antd/lib/table';
 import React from 'react';
-import {Fragment} from 'react';
 import type {EChartsOption} from 'echarts';
 export interface DataType {
     name: string;
@@ -16,7 +15,7 @@ export interface DataType {
     gpu_min_time: number;
     gpu_ratio: number;
 }
-export const options:EChartsOption = {
+export const options: EChartsOption = {
     grid: {
         left: '0',
         right: '0',
@@ -58,13 +57,13 @@ export const options:EChartsOption = {
         }
     ]
 };
-export let baseColumns1 = (units: string) => {
+export const baseColumns1 = (units: string) => {
     const columns: ColumnsType<DataType> = [
         {
             title: '算子名称',
             dataIndex: 'name',
             key: 'name',
-            render: (text: string) => <div >{text}</div>,
+            render: (text: string) => <div>{text}</div>,
             width: 144
         },
         {
@@ -150,13 +149,13 @@ export let baseColumns1 = (units: string) => {
     ];
     return columns;
 };
-export let baseColumns2 = (units: string) => {
+export const baseColumns2 = (units: string) => {
     const columns: ColumnsType<DataType> = [
         {
             title: '算子名称',
             dataIndex: 'name',
             key: 'name',
-            render: (text: string) => <div >{text}</div>,
+            render: (text: string) => <div>{text}</div>,
             width: 144
         },
         {
@@ -167,8 +166,8 @@ export let baseColumns2 = (units: string) => {
             render: text => {
                 console.log('text', text);
                 if (text?.length > 0) {
-                    return text.map((item: string) => {
-                        return <div>{item}</div>;
+                    return text.map((item: string, index: number) => {
+                        return <div key={item + index}>{item}</div>;
                     });
                 } else {
                     return <div>{'-'}</div>;
@@ -258,4 +257,3 @@ export let baseColumns2 = (units: string) => {
     ];
     return columns;
 };
-

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useMemo, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import StackColumnChart from '~/components/StackColumnChart';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
@@ -22,13 +22,10 @@ import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
 import {Popover} from 'antd';
-import {em, sameBorder, transitionProps,asideWidth, rem} from '~/utils/style';
+import {em, sameBorder, transitionProps, asideWidth, rem} from '~/utils/style';
 import logo from '~/assets/images/question-circle.svg';
 import hover from '~/assets/images/hover.svg';
-import type {
-    infoType,
-    histogramType
-} from './type'
+import type {infoType, histogramType} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
@@ -76,11 +73,11 @@ const Configure = styled.div`
     font-weight: 500;
     padding-left: ${rem(20)};
     padding-right: ${rem(20)};
-    .titles{
+    .titles {
         margin-bottom: ${rem(20)};
     }
     .border {
-        border-top:none
+        border-top: none;
     }
     .titleContent {
         margin-bottom: ${rem(10)};
@@ -113,8 +110,8 @@ const Configure = styled.div`
         justify-content: space-between;
         .searchContent {
             display: flex;
-            align-items:center;
-            .select_label{
+            align-items: center;
+            .select_label {
                 margin-right: ${rem(15)};
             }
             .select_wrapper {
@@ -199,13 +196,12 @@ export type NuclearViewProps = {
     workers: string;
     spans: string;
     units: string;
-
 };
 type SelectListItem<T> = {
     value: T;
     label: string;
 };
-const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans,units}) => {
+const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [computation, setComputation] = useState<histogramType>();
     const [distributedData, setDistributedData] = useState<infoType[]>();
@@ -213,34 +209,41 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     const [steps, setSteps] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher(
-                '/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
-            ).then((res: unknown) => {
-                const result = res as infoType[]
-                console.log('info,', res);
-                setDistributedData(result);
-            });
-            fetcher('/profiler/distributed/steps' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then((res: unknown) => {
-                const stepData = res as string[] | number[];
-                const stepList = stepData.map((item, index) => {
-                    return {label: item + '', value: item + ''};
-                });
-                setStepsList(stepList);
-                setSteps(stepData[0] + '');
-            });
-        }
-    }, [runs, workers, spans,]);
-    useEffect(() => {
-        if (runs && workers && spans && steps && units) {
-            fetcher('/profiler/distributed/histogram' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&step=${steps}`+ `&time_unit=${units}`).then(
+            fetcher('/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
-                    const Data = res as histogramType;
-                    console.log('distributed,', Data);
-                    setComputation(Data);
+                    const result = res as infoType[];
+                    console.log('info,', res);
+                    setDistributedData(result);
+                }
+            );
+            fetcher('/profiler/distributed/steps' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
+                (res: unknown) => {
+                    const stepData = res as string[] | number[];
+                    const stepList = stepData.map(item => {
+                        return {label: item + '', value: item + ''};
+                    });
+                    setStepsList(stepList);
+                    setSteps(stepData[0] + '');
                 }
             );
         }
-    }, [runs, workers, spans, views,steps,units]);
+    }, [runs, workers, spans]);
+    useEffect(() => {
+        if (runs && workers && spans && steps && units) {
+            fetcher(
+                '/profiler/distributed/histogram' +
+                    `?run=${runs}` +
+                    `&worker=${workers}` +
+                    `&span=${spans}` +
+                    `&step=${steps}` +
+                    `&time_unit=${units}`
+            ).then((res: unknown) => {
+                const Data = res as histogramType;
+                console.log('distributed,', Data);
+                setComputation(Data);
+            });
+        }
+    }, [runs, workers, spans, views, steps, units]);
     const color = [
         '#2932E1',
         '#00CC88',
@@ -262,61 +265,70 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     return (
         <ViewWrapper>
             <Title>分布视图</Title>
-            <Configure style={{marginTop:'24px'}}>
+            <Configure style={{marginTop: '24px'}}>
                 <div className="titles">设备信息</div>
                 <div>
-                    {distributedData && distributedData.map((items,index) => {
-                        return (
-                            <Card  className={index === 1 ? 'border' : ''}>
-                                <div className="item_list">
-                                    <div className="items">{items.worker_name}</div>
-                                    <div className="items">{items.process_id}</div>
-                                    <div className="items">{items.device_id}</div>
-                                </div>
-                                <div className="info_list">
-                                    <div className="items">
-                                        <div className="label">Name:</div>
-                                        <div className="info">{items.name}</div>
+                    {distributedData &&
+                        distributedData.map((items, index) => {
+                            return (
+                                <Card className={index === 1 ? 'border' : ''} key={index}>
+                                    <div className="item_list">
+                                        <div className="items">{items.worker_name}</div>
+                                        <div className="items">{items.process_id}</div>
+                                        <div className="items">{items.device_id}</div>
                                     </div>
-                                    <div className="items">
-                                        <div className="label">Memory:</div>
-                                        <div className="info">{items.memory}</div>
+                                    <div className="info_list">
+                                        <div className="items">
+                                            <div className="label">Name:</div>
+                                            <div className="info">{items.name}</div>
+                                        </div>
+                                        <div className="items">
+                                            <div className="label">Memory:</div>
+                                            <div className="info">{items.memory}</div>
+                                        </div>
+                                        <div className="items">
+                                            <div className="label">ComputeCapability:</div>
+                                            <div className="info">{items.computeCapability}</div>
+                                        </div>
+                                        <div className="items">
+                                            <div className="label">utilization:</div>
+                                            <div className="info">{items.utilization}</div>
+                                        </div>
                                     </div>
-                                    <div className="items">
-                                        <div className="label">ComputeCapability:</div>
-                                        <div className="info">{items.computeCapability}</div>
-                                    </div>
-                                    <div className="items">
-                                        <div className="label">utilization:</div>
-                                        <div className="info">{items.utilization}</div>
-                                    </div>
-                                </div>
-                            </Card>
-                        );
-                    })}
+                                </Card>
+                            );
+                        })}
                 </div>
             </Configure>
             <Configure>
-            <div className="titleContent">
+                <div className="titleContent">
                     <div className="title">
                         <div>Computation和communication的耗时对比</div>
                         <Popover content={tooltips} placement="right">
-                        <a className="argument-operation" onClick={() => {}}>
-                            <img src={PUBLIC_PATH + logo} alt="" />
-                        </a>
+                            <a
+                                className="argument-operation"
+                                onClick={() => {
+                                    console.log('111');
+                                }}
+                            >
+                                <img src={PUBLIC_PATH + logo} alt="" />
+                            </a>
                         </Popover>
                     </div>
                     <div className="searchContent">
-                        <div className='select_label'>
-                            训练步数
-                        </div>
+                        <div className="select_label">训练步数</div>
                         <div className="select_wrapper">
                             <FullWidthSelect list={stepsList} value={steps} onChange={setSteps} />
                         </div>
                     </div>
                 </div>
                 <EchartPie>
-                    <StackColumnChart className={'Content'} data={computation} color={color} isWorkerName = {true}></StackColumnChart>
+                    <StackColumnChart
+                        className={'Content'}
+                        data={computation}
+                        color={color}
+                        isWorkerName={true}
+                    ></StackColumnChart>
                 </EchartPie>
             </Configure>
         </ViewWrapper>

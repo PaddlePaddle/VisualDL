@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -54,8 +55,8 @@ export type LineChartRef = {
 interface cpuData {
     value: number;
     name: string;
-    proportion: number
-};
+    proportion: number;
+}
 type pieChartProps = {
     option?: EChartsOption;
     title?: string;
@@ -70,19 +71,19 @@ type pieChartProps = {
 const Content = styled.div`
     height: 100%;
     width: 100%;
-    .echarts{
+    .echarts {
         height: 100%;
     }
     .tooltips {
-        display:flex;
+        display: flex;
         .tooltipName {
-            font-size:14px;
-            color:#FFFFFF;
-            font-weight:500;
-            margin-left:10px;
-            white-space:pre-wrap;
-            hegiht:auto;
-            max-width:800px;
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 500;
+            margin-left: 10px;
+            white-space: pre-wrap;
+            hegiht: auto;
+            max-width: 800px;
         }
     }
 `;
@@ -119,9 +120,9 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
             if (data && color) {
-                console.log('chartData', data,option);
+                console.log('chartData', data, option);
                 // debugger
-                let chartOptions: EChartsOption = defaultsDeep(option,{
+                const chartOptions: EChartsOption = defaultsDeep(option, {
                     grid: {
                         left: 0
                         // top: '23%'
@@ -141,36 +142,32 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                         position: ['50%', '0%'],
                         formatter: function (params: any) {
                             console.log('pieparams', params);
-                            var str = ''; //声明一个变量用来存储数据
-                            str += '<div class="tooltips">'
-                            str +=
-                                '<div class="tooltipName">' +
-                                    params.data.name + ''
-                                '</div>';
-                            str += '<div>'
+                            let str = ''; //声明一个变量用来存储数据
+                            str += '<div class="tooltips">';
+                            str += '<div class="tooltipName">' + params.data.name + '';
+                            ('</div>');
+                            str += '<div>';
                             str +=
                                 '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
-                                    color[0] +
+                                color[0] +
                                 ';"></span>' +
-
                                 '<span style="color: #FFFFFF;">' +
                                 '耗时' +
                                 '</span>' +
-
                                 '</span> : <span style="color: #FFFFFF;">' +
-                                    params.data.value +
+                                params.data.value +
                                 '</br>';
                             str +=
                                 '<span style="display:inline-block;color: #FFFFFF;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
-                                    color[1] +
-                                ';"></span>' +    
+                                color[1] +
+                                ';"></span>' +
                                 '占比' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.proportion +
                                 '%';
                             ('</br>');
-                            str += '</div>'
-                            str += '</div>'
+                            str += '</div>';
+                            str += '</div>';
                             return str;
                         }
                     },
@@ -197,13 +194,11 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             show: true,
                             formatter: function (params: any) {
                                 console.log('legend', params);
-                                var str = ''; //声明一个变量用来存储数据
-                                str += '<div class="tooltips">'
-                                str +=
-                                    '<div class="tooltipName">' +
-                                        params.name + ''
-                                    '</div>';
-                                str += '</div>'
+                                let str = ''; //声明一个变量用来存储数据
+                                str += '<div class="tooltips">';
+                                str += '<div class="tooltipName">' + params.name + '';
+                                ('</div>');
+                                str += '</div>';
                                 return str;
                             }
                         },
@@ -224,7 +219,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                                     color: '#666'
                                 },
                                 formatter: function () {
-                                    var str = isCpu ? 'CPU' : 'GPU'; //声明一个变量用来存储数据
+                                    const str = isCpu ? 'CPU' : 'GPU'; //声明一个变量用来存储数据
                                     return str;
                                 }
                             },
@@ -238,7 +233,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                 // debugger
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [option, data, title, theme, i18n.language, echart]);
+        }, [option, data, title, theme, i18n.language, echart, color, isCpu]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

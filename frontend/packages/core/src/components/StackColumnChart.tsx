@@ -55,7 +55,7 @@ export type LineChartRef = {
 };
 
 const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
-    ({options, data, title, loading, zoom, className, onInit, color,isWorkerName}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, color, isWorkerName}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -125,7 +125,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                                 const element = params[index];
                                 totals += element.data;
                             }
-                            totals = Number(totals.toFixed(2))
+                            totals = Number(totals.toFixed(2));
                             let str = ''; //声明一个变量用来存储数据
                             str +=
                                 '<div style="font-size:16px;color:#FFFFFF;font-weight:500;margin-left:17px;">' +

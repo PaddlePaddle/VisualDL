@@ -91,7 +91,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         if (n >= 0) {
                             index += 1 + n;
                         } else {
-                            index += 1
+                            index += 1;
                         }
                     }
                     const columns = [
@@ -156,7 +156,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             });
             if (chartData) {
                 const title = 'Peak Memory Usage: 0.4MB';
-                let chartOptions: EChartsOption = defaultsDeep({
+                const chartOptions: EChartsOption = defaultsDeep({
                     color: [
                         '#2932E1',
                         '#00CC88',
@@ -273,7 +273,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 echart?.setOption(chartOptions, {notMerge: true});
                 console.log('chartOptions', chartOptions);
             }
-        }, [options, data, title, theme, i18n.language, echart]);
+        }, [options, data, title, theme, i18n.language, echart, formatter]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

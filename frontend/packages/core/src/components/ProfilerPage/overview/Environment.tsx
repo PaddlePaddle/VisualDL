@@ -1,5 +1,6 @@
-import React, {Fragment, FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
-import {asideWidth, rem, em, sameBorder, transitionProps} from '~/utils/style';
+/* eslint-disable sort-imports */
+import React, {Fragment, FunctionComponent} from 'react';
+import {rem} from '~/utils/style';
 import {Configure, ArgumentOperation} from '../../components';
 import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
@@ -152,7 +153,11 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                 <div className="title">
                     <div>设备详情</div>
                     <Popover content={tooltips} placement="right">
-                        <ArgumentOperation onClick={() => {}}>
+                        <ArgumentOperation
+                            onClick={() => {
+                                console.log('1111');
+                            }}
+                        >
                             <img src={PUBLIC_PATH + logo} alt="" />
                         </ArgumentOperation>
                     </Popover>

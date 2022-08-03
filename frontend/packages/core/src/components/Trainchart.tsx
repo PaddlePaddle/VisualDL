@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -122,7 +123,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                     data: data.data[index]
                 });
             }
-            let chartOptions: EChartsOption = defaultsDeep({
+            const chartOptions: EChartsOption = defaultsDeep({
                 tooltip: {
                     trigger: 'axis',
                     extraCssText:

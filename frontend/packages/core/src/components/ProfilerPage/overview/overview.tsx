@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -19,24 +20,24 @@ import PieChart from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
 import Trainchart from '~/components/Trainchart';
 import {fetcher} from '~/utils/fetch';
-import {asideWidth, rem, primaryColor, size, position} from '~/utils/style';
+import {asideWidth, position, primaryColor, rem, size} from '~/utils/style';
 import {consumingColumns, customizeColumns} from './tools';
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
-import {Configure, ButtonsLeft, ButtonsRight, RadioButtons} from '../../components';
+import {ButtonsLeft, ButtonsRight, Configure, RadioButtons} from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
 
 import type {
-    environmentType,
-    consumingType,
-    trainType,
-    tableType,
-    perspectiveType,
     Event,
-    performanceType,
     Gpu,
-    distributedData
+    consumingType,
+    distributedData,
+    environmentType,
+    performanceType,
+    perspectiveType,
+    tableType,
+    trainType
 } from './types';
 import {useTranslation} from 'react-i18next';
 import {Table} from 'antd';
@@ -184,7 +185,7 @@ interface chartDataType {
     gpu: cpuData[];
     cpu: cpuData[];
 }
-const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
+const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
@@ -218,10 +219,10 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const result = res as consumingType;
-                let tableDatas: tableType[] = [];
-                let data: Gpu[] = [];
+                const tableDatas: tableType[] = [];
+                const data: Gpu[] = [];
                 for (const item of result.gpu) {
-                    let DataTypeItem: {[key: string]: any} = {};
+                    const DataTypeItem: {[key: string]: any} = {};
                     for (const key of result.column_name) {
                         if (key !== 'name' && key !== 'calls') {
                             const keys = 'GPU' + key;
@@ -448,4 +449,4 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     );
 };
 
-export default overView;
+export default OverView;

@@ -195,7 +195,7 @@ const EchartPie = styled.div`
 `;
 const Wraper = styled.div`
     width: 100%;
-    min-height:${rem(400)};
+    min-height: ${rem(400)};
     position: relative;
     .ant-table-pagination.ant-pagination {
         margin: ${rem(20)} 0 ${rem(30)} 0;
@@ -245,7 +245,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     const itemsLists = [];
                     for (let index = 0; index < result.length; index++) {
                         const element = result[index];
-                        let regex1 = /\((.+?)\)/g;
+                        const regex1 = /\((.+?)\)/g;
                         const label: string = element.device.match(regex1)![0];
                         const labels = label.substring(1, label.length - 1);
                         itemsLists.push({label: labels, value: element.device});
@@ -336,121 +336,113 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             });
         }
     }, [runs, workers, spans, items, search2]);
-    const columns: ColumnsType<DataType> = [
-        {
-            title: '存储类型',
-            dataIndex: 'MemoryType',
-            width: 150
-        },
-        {
-            title: '分配事件',
-            dataIndex: 'AllocatedEvent',
-            width: 102
-        },
-        {
-            title: '分配时间',
-            dataIndex: 'AllocatedTimestamp',
-            sorter: (a, b) => {
-                return a.AllocatedTimestamp - b.AllocatedTimestamp;
+    const columns = useMemo(() => {
+        const columns: ColumnsType<DataType> = [
+            {
+                title: '存储类型',
+                dataIndex: 'MemoryType',
+                width: 150
             },
-            width: 102
-        },
-        {
-            title: '释放事件',
-            dataIndex: 'FreeEvent',
-            width: 102
-        },
-        {
-            title: '释放时间',
-            dataIndex: 'FreeTimestamp',
-            sorter: (a, b) => {
-                return a.FreeTimestamp - b.FreeTimestamp;
+            {
+                title: '分配事件',
+                dataIndex: 'AllocatedEvent',
+                width: 102
             },
-            width: 102
-        },
-        {
-            title: '持续时间',
-            dataIndex: 'Duration',
-            sorter: (a, b) => {
-                return a.Duration - b.Duration;
+            {
+                title: '分配时间',
+                dataIndex: 'AllocatedTimestamp',
+                sorter: (a, b) => {
+                    return a.AllocatedTimestamp - b.AllocatedTimestamp;
+                },
+                width: 102
             },
-            width: 102
-        },
-        {
-            title: '大小（KB)',
-            dataIndex: 'Size',
-            sorter: (a, b) => {
-                return a.Size - b.Size;
+            {
+                title: '释放事件',
+                dataIndex: 'FreeEvent',
+                width: 102
             },
-            width: 102
-        }
-    ];
-    const op_columns: ColumnsType<op_DataType> = [
-        {
-            title: '事件名',
-            dataIndex: 'EventName',
-            width: 150
-        },
-        {
-            title: '存储类型',
-            dataIndex: 'MemoryType',
-            width: 102
-        },
-        {
-            title: '分配次数',
-            dataIndex: 'AllocationCount',
-            sorter: (a, b) => {
-                return a.AllocationCount - b.AllocationCount;
+            {
+                title: '释放时间',
+                dataIndex: 'FreeTimestamp',
+                sorter: (a, b) => {
+                    return a.FreeTimestamp - b.FreeTimestamp;
+                },
+                width: 102
             },
-            width: 102
-        },
-        {
-            title: '释放次数',
-            dataIndex: 'FreeCount',
-            sorter: (a, b) => {
-                return a.FreeCount - b.FreeCount;
+            {
+                title: '持续时间',
+                dataIndex: 'Duration',
+                sorter: (a, b) => {
+                    return a.Duration - b.Duration;
+                },
+                width: 102
             },
-            width: 102
-        },
-        {
-            title: '分配大小(KB)',
-            dataIndex: 'AllocationSize',
-            sorter: (a, b) => {
-                return a.AllocationSize - b.AllocationSize;
+            {
+                title: '大小（KB)',
+                dataIndex: 'Size',
+                sorter: (a, b) => {
+                    return a.Size - b.Size;
+                },
+                width: 102
+            }
+        ];
+        return columns;
+    }, []);
+    const op_columns = useMemo(() => {
+        const op_columns: ColumnsType<op_DataType> = [
+            {
+                title: '事件名',
+                dataIndex: 'EventName',
+                width: 150
             },
-            width: 102
-        },
-        {
-            title: '释放大小（KB)',
-            dataIndex: 'FreeSize',
-            sorter: (a, b) => {
-                return a.FreeSize - b.FreeSize;
+            {
+                title: '存储类型',
+                dataIndex: 'MemoryType',
+                width: 102
             },
-            width: 102
-        },
-        {
-            title: '净增量（KB)',
-            dataIndex: 'IncreasedSize',
-            sorter: (a, b) => {
-                return a.IncreasedSize - b.IncreasedSize;
+            {
+                title: '分配次数',
+                dataIndex: 'AllocationCount',
+                sorter: (a, b) => {
+                    return a.AllocationCount - b.AllocationCount;
+                },
+                width: 102
             },
-            width: 102
-        }
-    ];
-    const getTable = useMemo(() => {
-        const paginations = {
-            showSizeChanger: true
-        };
-        return <Table columns={columns} dataSource={tableData} bordered size="middle" pagination={paginations}></Table>;
-    }, [columns, tableData]);
-    const getTable2 = useMemo(() => {
-        const paginations = {
-            showSizeChanger: true
-        };
-        return (
-            <Table columns={op_columns} dataSource={tableData2} bordered size="middle" pagination={paginations}></Table>
-        );
-    }, [op_columns, tableData2]);
+            {
+                title: '释放次数',
+                dataIndex: 'FreeCount',
+                sorter: (a, b) => {
+                    return a.FreeCount - b.FreeCount;
+                },
+                width: 102
+            },
+            {
+                title: '分配大小(KB)',
+                dataIndex: 'AllocationSize',
+                sorter: (a, b) => {
+                    return a.AllocationSize - b.AllocationSize;
+                },
+                width: 102
+            },
+            {
+                title: '释放大小（KB)',
+                dataIndex: 'FreeSize',
+                sorter: (a, b) => {
+                    return a.FreeSize - b.FreeSize;
+                },
+                width: 102
+            },
+            {
+                title: '净增量（KB)',
+                dataIndex: 'IncreasedSize',
+                sorter: (a, b) => {
+                    return a.IncreasedSize - b.IncreasedSize;
+                },
+                width: 102
+            }
+        ];
+        return op_columns;
+    }, []);
     const SliderChange = (value: number[]) => {
         setSliders1(value[0]);
         setSliders2(value[1]);
