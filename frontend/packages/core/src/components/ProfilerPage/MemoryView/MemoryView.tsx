@@ -17,7 +17,7 @@
 import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
 import DistributedChart from '~/components/DistributedChart';
 import Inputs from '~/components/Input';
-import {asideWidth, rem} from '~/utils/style';
+import {asideWidth, rem, primaryColor, size, position} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table} from 'antd';
@@ -27,14 +27,8 @@ import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
-import type {
-    devicesType,
-    curveType,
-    memory_events_type,
-    Datum,
-    op_memory_events_type,
-    op_datum
-} from './type'
+import GridLoader from 'react-spinners/GridLoader';
+import type {devicesType, curveType, memory_events_type, Datum, op_memory_events_type, op_datum} from './type';
 import {number} from 'echarts';
 interface DataType {
     key: React.Key;
@@ -47,7 +41,7 @@ interface DataType {
     Size: number;
 }
 interface op_table extends op_datum {
-    key:string
+    key: string;
 }
 interface op_DataType {
     key: React.Key;
@@ -201,6 +195,8 @@ const EchartPie = styled.div`
 `;
 const Wraper = styled.div`
     width: 100%;
+    min-height:${rem(400)};
+    position: relative;
     .ant-table-pagination.ant-pagination {
         margin: ${rem(20)} 0 ${rem(30)} 0;
         padding-right: ${rem(20)};
@@ -212,13 +208,20 @@ const Wraper = styled.div`
     .ant-table-thead > tr > th {
         background: #f3f8fe;
     }
+    > .loading {
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 `;
 type SelectListItem<T> = {
     value: T;
     label: string;
 };
 interface tableType extends Datum {
-    key:string
+    key: string;
 }
 const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
@@ -230,18 +233,20 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
     const [envirements, setEnvirements] = useState<devicesType[]>();
     const [tableData, settableData] = useState<tableType[]>();
+    const [tableLoading, settableLoading] = useState(true);
     const [tableData2, settableData2] = useState<op_table[]>();
+    const [tableLoading2, settableLoading2] = useState(true);
     const [items, setItems] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher('/profiler/memory/devices' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
-                    const result = res as devicesType[]
+                    const result = res as devicesType[];
                     const itemsLists = [];
                     for (let index = 0; index < result.length; index++) {
                         const element = result[index];
                         let regex1 = /\((.+?)\)/g;
-                        const label:string= element.device.match(regex1)![0]
+                        const label: string = element.device.match(regex1)![0];
                         const labels = label.substring(1, label.length - 1);
                         itemsLists.push({label: labels, value: element.device});
                     }
@@ -262,7 +267,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     `&device_type=${items}` +
                     `&time_unit=${units}`
             ).then((res: unknown) => {
-                const result = res as curveType
+                const result = res as curveType;
                 console.log('lineData', res);
                 setLineData(result);
             });
@@ -280,6 +285,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         }
     }, [items, envirements]);
     useEffect(() => {
+        settableLoading(true);
         if (runs && workers && spans && items) {
             fetcher(
                 '/profiler/memory/memory_events' +
@@ -292,19 +298,22 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     `&search_name=${search}` +
                     `&time_unit=${units}`
             ).then((res: unknown) => {
-                const Data = res as memory_events_type
-                const result:tableType[] = Data.data.map((item,indexs) => {
+                const Data = res as memory_events_type;
+                const result: tableType[] = Data.data.map((item, indexs) => {
                     return {
                         key: indexs + '',
                         ...item
                     };
                 });
                 console.log('tableData', result);
+
                 settableData(result);
+                settableLoading(false);
             });
         }
     }, [runs, workers, spans, units, items, Sliders1, Sliders2, search]);
     useEffect(() => {
+        settableLoading2(true);
         if (runs && workers && spans && items) {
             fetcher(
                 '/profiler/memory/op_memory_events' +
@@ -314,15 +323,15 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     `&device_type=${items}` +
                     `&search_name=${search2}`
             ).then((res: unknown) => {
-                const Data = res as op_memory_events_type
-                const result:op_table[] =  Data.data.map((item, indexs) => {
+                const Data = res as op_memory_events_type;
+                const result: op_table[] = Data.data.map((item, indexs) => {
                     return {
                         key: indexs + '',
                         ...item
                     };
                 });
                 console.log('tableData', result);
-
+                settableLoading2(false);
                 settableData2(result);
             });
         }
@@ -342,7 +351,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '分配时间',
             dataIndex: 'AllocatedTimestamp',
             sorter: (a, b) => {
-                return a.AllocatedTimestamp - b.AllocatedTimestamp
+                return a.AllocatedTimestamp - b.AllocatedTimestamp;
             },
             width: 102
         },
@@ -355,7 +364,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '释放时间',
             dataIndex: 'FreeTimestamp',
             sorter: (a, b) => {
-                return a.FreeTimestamp - b.FreeTimestamp
+                return a.FreeTimestamp - b.FreeTimestamp;
             },
             width: 102
         },
@@ -363,7 +372,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '持续时间',
             dataIndex: 'Duration',
             sorter: (a, b) => {
-                return a.Duration - b.Duration
+                return a.Duration - b.Duration;
             },
             width: 102
         },
@@ -371,7 +380,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '大小（KB)',
             dataIndex: 'Size',
             sorter: (a, b) => {
-                return a.Size - b.Size
+                return a.Size - b.Size;
             },
             width: 102
         }
@@ -391,7 +400,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '分配次数',
             dataIndex: 'AllocationCount',
             sorter: (a, b) => {
-                return a.AllocationCount - b.AllocationCount
+                return a.AllocationCount - b.AllocationCount;
             },
             width: 102
         },
@@ -399,7 +408,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '释放次数',
             dataIndex: 'FreeCount',
             sorter: (a, b) => {
-                return a.FreeCount - b.FreeCount
+                return a.FreeCount - b.FreeCount;
             },
             width: 102
         },
@@ -407,7 +416,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '分配大小(KB)',
             dataIndex: 'AllocationSize',
             sorter: (a, b) => {
-                return a.AllocationSize - b.AllocationSize
+                return a.AllocationSize - b.AllocationSize;
             },
             width: 102
         },
@@ -415,7 +424,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '释放大小（KB)',
             dataIndex: 'FreeSize',
             sorter: (a, b) => {
-                return a.FreeSize - b.FreeSize
+                return a.FreeSize - b.FreeSize;
             },
             width: 102
         },
@@ -423,7 +432,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             title: '净增量（KB)',
             dataIndex: 'IncreasedSize',
             sorter: (a, b) => {
-                return  a.IncreasedSize - b.IncreasedSize
+                return a.IncreasedSize - b.IncreasedSize;
             },
             width: 102
         }
@@ -443,7 +452,6 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         );
     }, [op_columns, tableData2]);
     const SliderChange = (value: number[]) => {
-        
         setSliders1(value[0]);
         setSliders2(value[1]);
     };
@@ -509,7 +517,24 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                         </div>
                     </div>
                 </div>
-                <Wraper>{getTable}</Wraper>
+                <Wraper>
+                    {tableLoading && (
+                        <div className="loading">
+                            <GridLoader color={primaryColor} size="10px" />
+                        </div>
+                    )}
+                    {tableData && !tableLoading && (
+                        <Table
+                            columns={columns}
+                            dataSource={tableData}
+                            bordered
+                            size="middle"
+                            pagination={{
+                                showSizeChanger: true
+                            }}
+                        ></Table>
+                    )}
+                </Wraper>
             </Configure>
             <Configure style={{marginTop: '0px'}}>
                 <div className="titleContent">
@@ -523,7 +548,24 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                         />
                     </div>
                 </div>
-                <Wraper>{getTable2}</Wraper>
+                <Wraper>
+                    {tableLoading2 && (
+                        <div className="loading">
+                            <GridLoader color={primaryColor} size="10px" />
+                        </div>
+                    )}
+                    {tableData2 && !tableLoading2 && (
+                        <Table
+                            columns={op_columns}
+                            dataSource={tableData2}
+                            bordered
+                            size="middle"
+                            pagination={{
+                                showSizeChanger: true
+                            }}
+                        ></Table>
+                    )}
+                </Wraper>
             </Configure>
         </ViewWrapper>
     );

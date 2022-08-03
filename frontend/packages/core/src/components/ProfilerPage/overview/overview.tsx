@@ -15,12 +15,13 @@
  */
 
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import PieChart, {LineChartRef} from '~/components/pieChart';
+import PieChart from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
 import Trainchart from '~/components/Trainchart';
 import {fetcher} from '~/utils/fetch';
-import {asideWidth, rem} from '~/utils/style';
+import {asideWidth, rem, primaryColor, size, position} from '~/utils/style';
 import {consumingColumns, customizeColumns} from './tools';
+import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons} from '../../components';
 import Environment from './Environment';
@@ -38,7 +39,7 @@ import type {
     distributedData
 } from './types';
 import {useTranslation} from 'react-i18next';
-import {Table, Tabs, Popover} from 'antd';
+import {Table} from 'antd';
 import Icon from '~/components/Icon';
 
 asideWidth;
@@ -148,12 +149,21 @@ const PieceContent = styled.div`
     }
     .tableContent {
         padding: ${rem(20)};
+        min-height: ${rem(200)};
+        position: relative;
         .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
             background: #f3f8fe;
         }
         .ant-table.ant-table-bordered > .ant-table-container {
             border: 1px solid #dddddd;
             border-radius: 8px;
+        }
+        > .loading {
+            ${size('100%')}
+            ${position('absolute', 0, null, null, 0)}
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     }
 `;
@@ -168,12 +178,12 @@ export type overViewProps = {
 interface cpuData {
     value: number;
     name: string;
-    proportion: number
-};
+    proportion: number;
+}
 interface chartDataType {
-    gpu:cpuData[];
-    cpu:cpuData[];
-};
+    gpu: cpuData[];
+    cpu: cpuData[];
+}
 const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
@@ -183,9 +193,13 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const [performanceData, setPerformanceData] = useState<performanceType>();
     const [isExpend, setIsExpend] = useState(false);
     const [tableData, setTableData] = useState<tableType[]>();
+    const [tableLoading, settableLoading] = useState(true);
     const [tableData2, setTableData2] = useState<Event[]>();
+    const [tableLoading2, settableLoading2] = useState(true);
     const [trainData, setTrainData] = useState<trainType>();
     useEffect(() => {
+        settableLoading(true);
+        settableLoading2(true);
         if (runs && workers && spans && units) {
             // 设备详情
             fetcher('/profiler/overview/environment' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
@@ -205,9 +219,9 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             ).then((res: unknown) => {
                 const result = res as consumingType;
                 let tableDatas: tableType[] = [];
-                let data:Gpu[] = [];
+                let data: Gpu[] = [];
                 for (const item of result.gpu) {
-                    let DataTypeItem:{[key:string]:any} = {};
+                    let DataTypeItem: {[key: string]: any} = {};
                     for (const key of result.column_name) {
                         if (key !== 'name' && key !== 'calls') {
                             const keys = 'GPU' + key;
@@ -226,11 +240,12 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 }
                 console.log('tableData', tableDatas);
                 setTableData(tableDatas);
+                settableLoading(false);
                 result.cpu.shift();
                 result.gpu.shift();
-                const chartData:chartDataType = {
-                    cpu:[],
-                    gpu:[]
+                const chartData: chartDataType = {
+                    cpu: [],
+                    gpu: []
                 };
                 for (const item of result.cpu) {
                     chartData.cpu.push({
@@ -259,13 +274,14 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 const Data = res as perspectiveType;
                 console.log('TableData2,', Data);
                 const events = Data.events;
-                const TableDatas = events.map((item) => {
+                const TableDatas = events.map(item => {
                     return {
                         key: item.name,
                         ...item
                     };
                 });
                 setTableData2(TableDatas);
+                settableLoading2(false);
             });
             // 模型各阶段消耗
             fetcher(
@@ -351,14 +367,21 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     </div>
                     {isExpend && tableData ? (
                         <div className="tableContent">
-                            <Table
-                                columns={consumingColumns(units)}
-                                dataSource={tableData}
-                                bordered
-                                size="middle"
-                                pagination={false}
-                                scroll={{x: 'calc(700px + 50%)', y: 240}}
-                            ></Table>
+                            {tableLoading && (
+                                <div className="loading">
+                                    <GridLoader color={primaryColor} size="10px" />
+                                </div>
+                            )}
+                            {!tableLoading && (
+                                <Table
+                                    columns={consumingColumns(units)}
+                                    dataSource={tableData}
+                                    bordered
+                                    size="middle"
+                                    pagination={false}
+                                    scroll={{x: 'calc(700px + 50%)', y: 240}}
+                                ></Table>
+                            )}
                         </div>
                     ) : null}
                 </PieceContent>
@@ -403,8 +426,13 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             </Configures>
             <Configures style={{marginBottom: `${rem(20)}`}}>
                 <div className="title">自定义事件耗时</div>
-                {tableData2 && (
-                    <div className="tableContent">
+                <div className="tableContent">
+                    {tableLoading2 && (
+                        <div className="loading">
+                            <GridLoader color={primaryColor} size="10px" />
+                        </div>
+                    )}
+                    {!tableLoading2 && (
                         <Table
                             columns={customizeColumns(units)}
                             dataSource={tableData2}
@@ -413,8 +441,8 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             pagination={false}
                             scroll={{x: 'calc(700px + 50%)', y: 240}}
                         ></Table>
-                    </div>
-                )}
+                    )}
+                </div>
             </Configures>
         </ViewWrapper>
     );

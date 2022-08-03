@@ -27,7 +27,6 @@ import {asideWidth, rem, em, transitionProps} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table, Popover} from 'antd';
-import type {ColumnsType} from 'antd/lib/table';
 import GridLoader from 'react-spinners/GridLoader';
 import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
