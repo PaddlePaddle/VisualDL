@@ -28,10 +28,10 @@ import Empty from '~/components/ProfilerPage/Empty';
 import OverView from '~/components/ProfilerPage/overview/overview';
 import OperatorView from '~/components/ProfilerPage/OperatorView/OperatorView';
 import DiffView from '~/components/ProfilerPage/DiffView';
-import MemoryView from '~/components/ProfilerPage/MemoryView';
+import MemoryView from '~/components/ProfilerPage/MemoryView/MemoryView';
 import TracingView from '~/components/ProfilerPage/TracingView';
-import NuclearView from '~/components/ProfilerPage/NuclearView';
-import ComparedView from '~/components/ProfilerPage/ComparedView';
+import Distributed from '~/components/ProfilerPage/Distributed/Distributed';
+import ComparedView from '~/components/ProfilerPage/ComparedView/ComparedView';
 import Select from '~/components/Select';
 import {fetcher} from '~/utils/fetch';
 import Field from '~/components/Field';
@@ -78,39 +78,6 @@ const Titles = styled.div`
     line-height: ${rem(14)};
     font-weight: 400;
     // margin-bottom: ${rem(20)};
-`;
-const ButtonsLeft = styled.div`
-    border: 1px solid #dddddd;
-    border-right: none;
-    width: ${rem(110)};
-    height: ${rem(36)};
-    font-family: PingFangSC-Regular;
-    font-size: ${rem(12)};
-    text-align: center;
-    line-height: ${rem(36)};
-    font-weight: 400;
-    border-radius: 4px 0 0 4px;
-`;
-const ButtonsRight = styled.div`
-    border: 1px solid #dddddd;
-    border-radius: 0 4px 4px 0;
-    width: ${rem(110)};
-    height: ${rem(36)};
-    font-family: PingFangSC-Regular;
-    font-size: ${rem(12)};
-    text-align: center;
-    line-height: ${rem(36)};
-    font-weight: 400;
-`;
-const RadioButtons = styled.div`
-    display: flex;
-    align-items: center;
-    border-radius: 4px;
-    .is_active {
-        color: #FFFFFF;
-        background: #2932E1;
-        border: 1px solid rgba(41,50,225,1);
-    }
 `;
 const Selectlist = styled.div`
     width: 100%;
@@ -252,7 +219,7 @@ const Profiler: FunctionComponent = () => {
                 units={units}
                 spans={spans} />;
             case 'Distributed':
-                return <NuclearView runs={runs} views={views} workers={workers}
+                return <Distributed runs={runs} views={views} workers={workers}
                 units={units}
                 spans={spans} />;
             case 'GPU Kernel':
@@ -293,24 +260,6 @@ const Profiler: FunctionComponent = () => {
             <Aside>
                 <TitleContent>
                     <Titles>性能分析</Titles>
-                    {/* <RadioButtons>
-                        <ButtonsLeft
-                            className={!isCompared ? 'is_active' : ''}
-                            onClick={() => {
-                                setIsCompared(false);
-                            }}
-                        >
-                            正常模式
-                        </ButtonsLeft>
-                        <ButtonsRight
-                            className={isCompared ? 'is_active' : ''}
-                            onClick={() => {
-                                setIsCompared(true);
-                            }}
-                        >
-                            对比模式
-                        </ButtonsRight>
-                    </RadioButtons> */}
                 </TitleContent>
                 {!isCompared ? (
                     <Selectlist>

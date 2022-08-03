@@ -33,7 +33,9 @@ import type {
     tableType,
     perspectiveType,
     Event,
-    performanceType
+    performanceType,
+    Gpu,
+    distributedData
 } from './types';
 import {useTranslation} from 'react-i18next';
 import {Table, Tabs, Popover} from 'antd';
@@ -163,12 +165,21 @@ export type overViewProps = {
     spans: string;
     units: string;
 };
+interface cpuData {
+    value: number;
+    name: string;
+    proportion: number
+};
+interface chartDataType {
+    gpu:cpuData[];
+    cpu:cpuData[];
+};
 const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
-    const [distributed, setDistributed] = useState<any>();
+    const [distributed, setDistributed] = useState<distributedData>();
     const [isCPU, setIsCPU] = useState(true);
-    const [chartData, setChartData] = useState<consumingType>();
+    const [chartData, setChartData] = useState<chartDataType>();
     const [performanceData, setPerformanceData] = useState<performanceType>();
     const [isExpend, setIsExpend] = useState(false);
     const [tableData, setTableData] = useState<tableType[]>();
@@ -194,15 +205,17 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             ).then((res: unknown) => {
                 const result = res as consumingType;
                 let tableDatas: tableType[] = [];
-                let data = [];
+                let data:Gpu[] = [];
                 for (const item of result.gpu) {
-                    let DataTypeItem: any = {};
+                    let DataTypeItem:{[key:string]:any} = {};
                     for (const key of result.column_name) {
-                        const keys = 'GPU' + key;
-                        const items: any = item;
-                        DataTypeItem[keys] = items[key];
+                        if (key !== 'name' && key !== 'calls') {
+                            const keys = 'GPU' + key;
+                            const items = item;
+                            DataTypeItem[keys] = items[key as keyof typeof item];
+                        }
                     }
-                    data.push(DataTypeItem);
+                    data.push(DataTypeItem as Gpu);
                 }
                 for (let index = 0; index < result.cpu.length; index++) {
                     const DataTypeItem: tableType = {
@@ -215,12 +228,11 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 setTableData(tableDatas);
                 result.cpu.shift();
                 result.gpu.shift();
-                const chartData: any = {
-                    cpu: [],
-                    gpu: []
+                const chartData:chartDataType = {
+                    cpu:[],
+                    gpu:[]
                 };
                 for (const item of result.cpu) {
-                    // debugger
                     chartData.cpu.push({
                         value: item.total_time,
                         name: item.name,
@@ -228,14 +240,13 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     });
                 }
                 for (const item of result.gpu) {
-                    // debugger
                     chartData.gpu.push({
                         value: item.total_time,
                         name: item.name,
                         proportion: item.ratio
                     });
                 }
-                setChartData(chartData);
+                setChartData(chartData as chartDataType);
             });
             // 自定义事件耗时
             fetcher(
@@ -248,7 +259,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 const Data = res as perspectiveType;
                 console.log('TableData2,', Data);
                 const events = Data.events;
-                const TableDatas = events.map((item: any) => {
+                const TableDatas = events.map((item) => {
                     return {
                         key: item.name,
                         ...item
@@ -264,7 +275,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&span=${spans}` +
                     `&time_unit=${units}`
             ).then((res: unknown) => {
-                const Data: any = res;
+                const Data = res as distributedData;
                 console.log('distributed,', Data);
                 setDistributed(Data);
             });
@@ -283,7 +294,7 @@ const overView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&device_type=${device_type}` +
                     `&time_unit=${units}`
             ).then((res: unknown) => {
-                const result: any = res as performanceType;
+                const result = res as performanceType;
                 console.log('PerformanceData', result);
                 setPerformanceData(result);
             });

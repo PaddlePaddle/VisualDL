@@ -27,6 +27,14 @@ import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
 import Select from '~/components/Select';
 import type {SelectProps} from '~/components/Select';
+import type {
+    devicesType,
+    curveType,
+    memory_events_type,
+    Datum,
+    op_memory_events_type,
+    op_datum
+} from './type'
 import {number} from 'echarts';
 interface DataType {
     key: React.Key;
@@ -37,6 +45,9 @@ interface DataType {
     FreeTimestamp: number;
     Duration: number;
     Size: number;
+}
+interface op_table extends op_datum {
+    key:string
 }
 interface op_DataType {
     key: React.Key;
@@ -206,33 +217,37 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
+interface tableType extends Datum {
+    key:string
+}
 const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const [lineData, setLineData] = useState<any>();
+    const [lineData, setLineData] = useState<curveType>();
     const [search, setSearch] = useState<string>('');
     const [search2, setSearch2] = useState<string>('');
     const [Sliders1, setSliders1] = useState<number>(0);
     const [Sliders2, setSliders2] = useState<number>(100);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
-    const [envirements, setEnvirements] = useState<any>();
-    const [tableData, settableData] = useState<any>();
-    const [tableData2, settableData2] = useState<any>();
+    const [envirements, setEnvirements] = useState<devicesType[]>();
+    const [tableData, settableData] = useState<tableType[]>();
+    const [tableData2, settableData2] = useState<op_table[]>();
     const [items, setItems] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher('/profiler/memory/devices' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
-                (res: any) => {
+                (res: unknown) => {
+                    const result = res as devicesType[]
                     const itemsLists = [];
-                    for (let index = 0; index < res.length; index++) {
-                        const element = res[index];
+                    for (let index = 0; index < result.length; index++) {
+                        const element = result[index];
                         let regex1 = /\((.+?)\)/g;
-                        const label:string = element.device.match(regex1)[0];
+                        const label:string= element.device.match(regex1)![0]
                         const labels = label.substring(1, label.length - 1);
                         itemsLists.push({label: labels, value: element.device});
                     }
-                    setEnvirements(res);
+                    setEnvirements(result);
                     setItemsList(itemsLists);
-                    setItems(res[0].device);
+                    setItems(result[0].device);
                 }
             );
         }
@@ -246,9 +261,10 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     `&span=${spans}` +
                     `&device_type=${items}` +
                     `&time_unit=${units}`
-            ).then((res: any) => {
+            ).then((res: unknown) => {
+                const result = res as curveType
                 console.log('lineData', res);
-                setLineData(res);
+                setLineData(result);
             });
         }
     }, [runs, workers, spans, units, items]);
@@ -275,10 +291,11 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     `&max_size=${Sliders2}` +
                     `&search_name=${search}` +
                     `&time_unit=${units}`
-            ).then((res: any) => {
-                const result = res.data.map((item: any, indexs: number) => {
+            ).then((res: unknown) => {
+                const Data = res as memory_events_type
+                const result:tableType[] = Data.data.map((item,indexs) => {
                     return {
-                        key: indexs,
+                        key: indexs + '',
                         ...item
                     };
                 });
@@ -296,10 +313,11 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     `&span=${spans}` +
                     `&device_type=${items}` +
                     `&search_name=${search2}`
-            ).then((res: any) => {
-                const result = res.data.map((item: any, indexs: number) => {
+            ).then((res: unknown) => {
+                const Data = res as op_memory_events_type
+                const result:op_table[] =  Data.data.map((item, indexs) => {
                     return {
-                        key: indexs,
+                        key: indexs + '',
                         ...item
                     };
                 });
@@ -323,9 +341,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         {
             title: '分配时间',
             dataIndex: 'AllocatedTimestamp',
-            sorter: {
-                compare: (a, b) => a.AllocatedTimestamp - b.AllocatedTimestamp,
-                multiple: 2
+            sorter: (a, b) => {
+                return a.AllocatedTimestamp - b.AllocatedTimestamp
             },
             width: 102
         },
@@ -337,27 +354,24 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         {
             title: '释放时间',
             dataIndex: 'FreeTimestamp',
-            sorter: {
-                compare: (a, b) => a.FreeTimestamp - b.FreeTimestamp,
-                multiple: 1
+            sorter: (a, b) => {
+                return a.FreeTimestamp - b.FreeTimestamp
             },
             width: 102
         },
         {
             title: '持续时间',
             dataIndex: 'Duration',
-            sorter: {
-                compare: (a, b) => a.Duration - b.Duration,
-                multiple: 1
+            sorter: (a, b) => {
+                return a.Duration - b.Duration
             },
             width: 102
         },
         {
             title: '大小（KB)',
             dataIndex: 'Size',
-            sorter: {
-                compare: (a, b) => a.Size - b.Size,
-                multiple: 1
+            sorter: (a, b) => {
+                return a.Size - b.Size
             },
             width: 102
         }
@@ -376,45 +390,40 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         {
             title: '分配次数',
             dataIndex: 'AllocationCount',
-            sorter: {
-                compare: (a, b) => a.AllocationCount - b.AllocationCount,
-                multiple: 2
+            sorter: (a, b) => {
+                return a.AllocationCount - b.AllocationCount
             },
             width: 102
         },
         {
             title: '释放次数',
             dataIndex: 'FreeCount',
-            sorter: {
-                compare: (a, b) => a.FreeCount - b.FreeCount,
-                multiple: 1
+            sorter: (a, b) => {
+                return a.FreeCount - b.FreeCount
             },
             width: 102
         },
         {
             title: '分配大小(KB)',
             dataIndex: 'AllocationSize',
-            sorter: {
-                compare: (a, b) => a.AllocationSize - b.AllocationSize,
-                multiple: 1
+            sorter: (a, b) => {
+                return a.AllocationSize - b.AllocationSize
             },
             width: 102
         },
         {
             title: '释放大小（KB)',
             dataIndex: 'FreeSize',
-            sorter: {
-                compare: (a, b) => a.FreeSize - b.FreeSize,
-                multiple: 1
+            sorter: (a, b) => {
+                return a.FreeSize - b.FreeSize
             },
             width: 102
         },
         {
             title: '净增量（KB)',
             dataIndex: 'IncreasedSize',
-            sorter: {
-                compare: (a, b) => a.IncreasedSize - b.IncreasedSize,
-                multiple: 1
+            sorter: (a, b) => {
+                return  a.IncreasedSize - b.IncreasedSize
             },
             width: 102
         }
@@ -433,7 +442,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             <Table columns={op_columns} dataSource={tableData2} bordered size="middle" pagination={paginations}></Table>
         );
     }, [op_columns, tableData2]);
-    const SliderChange = (value: any) => {
+    const SliderChange = (value: number[]) => {
+        
         setSliders1(value[0]);
         setSliders2(value[1]);
     };

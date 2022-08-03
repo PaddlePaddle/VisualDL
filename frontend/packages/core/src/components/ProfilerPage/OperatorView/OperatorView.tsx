@@ -35,26 +35,15 @@ import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
 import {options, baseColumns2, baseColumns1} from './tools';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
+import type {
+    operatorPie,
+    tableType,
+    Event,
+    pie_expand
+} from './type'
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
-interface DataType {
-    name: string;
-    calls: number;
-    total_time: number;
-    max_time: number;
-    min_time: number;
-    avg_time: number;
-    ratio: number;
-    GPUtotal_time: number;
-    GPUmax_time: number;
-    GPUmin_time: number;
-    GPUavg_time: number;
-    GPUratio: number;
-}
-interface ExpandedDataType {
-    key: React.Key;
-    date: string;
-    name: string;
-    render: any;
+interface tableTypes extends Event {
+    key: string;
 }
 export type OperatorViewProps = {
     runs: string;
@@ -253,17 +242,22 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
+interface cpuData {
+    value: number;
+    name: string;
+    proportion: number
+};
 const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     // const model = useRef<any>(null);
-    const [cpuData, setCpuData] = useState<any>();
-    const [gpuData, setGpuData] = useState<any>();
-    const [tableData, setTableData] = useState<any>();
+    const [cpuData, setCpuData] = useState<cpuData[]>();
+    const [gpuData, setGpuData] = useState<cpuData[]>();
+    const [tableData, setTableData] = useState<tableTypes[]>();
     const [tableLoading, settableLoading] = useState(true);
-    const [distributed, setDistributed] = useState<any>();
+    const [distributed, setDistributed] = useState<pie_expand>();
     const [isCPU, setIsCPU] = useState(true);
     const [search, setSearch] = useState<string>('');
-    const [isExpend, setIsExpend] = useState<any>(false);
+    const [isExpend, setIsExpend] = useState<boolean>(false);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
         {label: '按算子名称', value: 'op_name'},
         {label: '按算子名称+输入形状', value: 'op_name_input_shape'}
@@ -281,17 +275,18 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&span=${spans}` +
                     `&time_unit=${units}` +
                     `&topk=${top}`
-            ).then((res: any) => {
-                const cpuChartData = [];
-                const gpuChartData = [];
-                for (const item of res.cpu) {
+            ).then((res: unknown) => {
+                const result = res as operatorPie
+                const cpuChartData:cpuData[] = [];
+                const gpuChartData:cpuData[] = [];
+                for (const item of result.cpu) {
                     cpuChartData.push({
                         value: item.total_time,
                         name: item.name,
                         proportion: item.ratio
                     });
                 }
-                for (const item of res.gpu) {
+                for (const item of result.gpu) {
                     gpuChartData.push({
                         value: item.total_time,
                         name: item.name,
@@ -314,8 +309,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&search_name=${search}` +
                     `&group_by=${group}`
-            ).then((res: any) => {
-                const TableDatas = res.events.map((item: any) => {
+            ).then((res: unknown) => {
+                const result = res as tableType
+                const TableDatas:tableTypes[] = result.events.map((item) => {
                     if (group === 'op_name_input_shape') {
                         return {
                             key: item.name + item.input_shape,
@@ -346,7 +342,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&span=${spans}`
             ).then((res: unknown) => {
-                const Data: any = res;
+                const Data = res as pie_expand;
                 console.log('distributed,', Data);
                 setDistributed(Data);
             });

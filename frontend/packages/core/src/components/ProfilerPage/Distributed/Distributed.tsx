@@ -25,6 +25,10 @@ import {Popover} from 'antd';
 import {em, sameBorder, transitionProps,asideWidth, rem} from '~/utils/style';
 import logo from '~/assets/images/question-circle.svg';
 import hover from '~/assets/images/hover.svg';
+import type {
+    infoType,
+    histogramType
+} from './type'
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
@@ -203,17 +207,18 @@ type SelectListItem<T> = {
 };
 const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans,units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const [computation, setComputation] = useState<any>();
-    const [distributedData, setDistributedData] = useState<any>();
+    const [computation, setComputation] = useState<histogramType>();
+    const [distributedData, setDistributedData] = useState<infoType[]>();
     const [stepsList, setStepsList] = useState<SelectListItem<string>[]>();
     const [steps, setSteps] = useState<string>();
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
                 '/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`
-            ).then((res: any) => {
+            ).then((res: unknown) => {
+                const result = res as infoType[]
                 console.log('info,', res);
-                setDistributedData(res);
+                setDistributedData(result);
             });
             fetcher('/profiler/distributed/steps' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then((res: unknown) => {
                 const stepData = res as string[] | number[];
@@ -229,7 +234,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
         if (runs && workers && spans && steps && units) {
             fetcher('/profiler/distributed/histogram' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`+ `&step=${steps}`+ `&time_unit=${units}`).then(
                 (res: unknown) => {
-                    const Data: any = res;
+                    const Data = res as histogramType;
                     console.log('distributed,', Data);
                     setComputation(Data);
                 }
@@ -260,7 +265,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
             <Configure style={{marginTop:'24px'}}>
                 <div className="titles">设备信息</div>
                 <div>
-                    {distributedData && distributedData.map((items: any,index:number) => {
+                    {distributedData && distributedData.map((items,index) => {
                         return (
                             <Card  className={index === 1 ? 'border' : ''}>
                                 <div className="item_list">

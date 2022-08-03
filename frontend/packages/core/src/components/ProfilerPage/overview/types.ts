@@ -48,14 +48,21 @@ export interface tableType {
     GPUavg_time: number;
     GPUratio: number;
 }
-interface Cpu {
+export interface Cpu {
     name: string;
     calls: number;
-    total_time: string;
-    avg_time: string;
-    max_time: string;
-    min_time: string;
-    ratio: string;
+    total_time: number;
+    avg_time: number;
+    max_time: number;
+    min_time: number;
+    ratio: number;
+}
+export interface Gpu {
+    GPUtotal_time: number;
+    GPUmax_time: number;
+    GPUmin_time: number;
+    GPUavg_time: number;
+    GPUratio: number;
 }
 
 export interface trainType {
@@ -104,4 +111,9 @@ export interface Kernel {
 export interface Callingtimes {
     key: string[];
     value: number[];
+  }
+export  interface distributedData {
+    order: string[];
+    phase_type: string[];
+    data: number[][];
   }

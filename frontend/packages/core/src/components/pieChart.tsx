@@ -51,6 +51,17 @@ export type LineChartRef = {
     restore(): void;
     saveAsImage(): void;
 };
+type pieChartProps = {
+    option?: EChartsOption;
+    title?: string;
+    data?: any;
+    loading?: boolean;
+    zoom?: boolean;
+    onInit?: Options['onInit'];
+    className?: string;
+    isCpu?: boolean;
+    color?: string[];
+};
 const Content = styled.div`
     height: 100%;
     width: 100%;
@@ -70,7 +81,7 @@ const Content = styled.div`
         }
     }
 `;
-const PieChart = React.forwardRef<LineChartRef, any>(
+const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
     ({option, data, title, loading, zoom, className, onInit, isCpu, color}, ref) => {
         const {i18n} = useTranslation();
 
