@@ -60,7 +60,7 @@ export type BarChartRef = {
 const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
     ({options, data, title, loading, zoom, className, onInit, text, isLegend, units}, ref) => {
         const {i18n} = useTranslation();
-
+        const {t} = useTranslation(['profiler', 'common']);
         const {
             ref: echartRef,
             echart,
@@ -105,7 +105,12 @@ const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
                     '#00FF9D',
                     '#D50505'
                 ];
-                const title = text === 1 ? '调用量（次)' : text === 2 ? `持续时间（${units})` : '整体占比（%)';
+                const title =
+                    text === 1
+                        ? t('Number-calls')
+                        : text === 2
+                        ? t('duration') + `${units})`
+                        : t('Overall-proportion') + `(%)`;
 
                 const values = [];
                 for (let index = 0; index < chartData.value.length; index++) {

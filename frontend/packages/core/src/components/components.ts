@@ -54,7 +54,6 @@ export const ButtonsRight = styled.div`
 `;
 export const ButtonsLeft = styled.div`
     border: 1px solid #dddddd;
-    border-right: none;
     width: ${rem(110)};
     height: ${rem(36)};
     font-family: PingFangSC-Regular;

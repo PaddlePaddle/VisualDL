@@ -22,6 +22,7 @@ import Content from '~/components/Content';
 import OverView from '~/components/ProfilerPage/overview/overview';
 import OperatorView from '~/components/ProfilerPage/OperatorView/OperatorView';
 // import DiffView from '~/components/ProfilerPage/DiffView';
+import BodyLoading from '~/components/BodyLoading';
 import MemoryView from '~/components/ProfilerPage/MemoryView/MemoryView';
 import TracingView from '~/components/ProfilerPage/TracingView';
 import Distributed from '~/components/ProfilerPage/Distributed/Distributed';
@@ -127,6 +128,7 @@ type SelectListItem<T> = {
 const Profiler: FunctionComponent = () => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [isCompared, setIsCompared] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [runs, setRuns] = useState<string>('');
     const [diffRuns1, setDiffRuns1] = useState<string>('');
     const [diffRuns2, setDiffRuns2] = useState<string>('');
@@ -145,9 +147,10 @@ const Profiler: FunctionComponent = () => {
     const [unitsList, setUnitsList] = useState<SelectListItem<string>[]>();
 
     useEffect(() => {
+        setLoading(true);
         fetcher('/profiler/runs').then((res: unknown) => {
             const runsData = res as string[];
-            const runsList = runsData.map((item, index) => {
+            const runsList = runsData.map(item => {
                 return {label: item, value: item};
             });
             setrunsList(runsList);
@@ -156,15 +159,29 @@ const Profiler: FunctionComponent = () => {
         });
         fetcher('/profiler/timeunits').then((res: unknown) => {
             const runsData = res as string[];
-            const runsList = runsData.map((item, index) => {
+            const runsList = runsData.map(item => {
                 return {label: item, value: item};
             });
             setUnitsList(runsList);
+            setLoading(false);
+            console.log('unitsData', runsData[0]);
+        });
+    }, []);
+    useEffect(() => {
+        setLoading(true);
+        fetcher('/profiler/timeunits').then((res: unknown) => {
+            const runsData = res as string[];
+            const runsList = runsData.map(item => {
+                return {label: item, value: item};
+            });
+            setUnitsList(runsList);
+            setLoading(false);
             console.log('unitsData', runsData[0]);
         });
     }, []);
     useEffect(() => {
         if (runs) {
+            setLoading(true);
             console.log('runs', runs);
             fetcher('/profiler/views' + `?run=${runs}`).then((res: unknown) => {
                 const viewData = res as string[];
@@ -173,10 +190,12 @@ const Profiler: FunctionComponent = () => {
                 });
                 setViewsList(viewList);
                 setViews(viewData[0]);
+                setLoading(false);
             });
         }
     }, [runs]);
     useEffect(() => {
+        setLoading(true);
         if (runs && views) {
             console.log('views', views);
             fetcher('/profiler/workers' + `?run=${runs}` + `&view=${views}`).then((res: unknown) => {
@@ -186,19 +205,22 @@ const Profiler: FunctionComponent = () => {
                 });
                 setWorkersList(workerList);
                 setWorkers(workerData[0]);
+                setLoading(false);
             });
         }
     }, [runs, views]);
     useEffect(() => {
+        setLoading(true);
         if (runs && workers) {
             console.log('workers', workers);
             fetcher('/profiler/spans' + `?run=${runs}` + `&worker=${workers}`).then((res: unknown) => {
                 const spanData = res as string[];
-                const spanList = spanData.map((item, index) => {
+                const spanList = spanData.map(item => {
                     return {label: item, value: item};
                 });
                 setSpansList(spanList);
                 setSpans(spanData[0]);
+                setLoading(false);
             });
         }
     }, [runs, workers]);
@@ -338,10 +360,12 @@ const Profiler: FunctionComponent = () => {
             isCompared,
             diffWorker2,
             diffRuns2,
-            diffRuns2,
             diffWorker1,
             diffRuns1,
-            diffRuns1
+            diffSpan1,
+            diffSpan2,
+            units,
+            unitsList
         ]
     );
 
@@ -349,9 +373,27 @@ const Profiler: FunctionComponent = () => {
         <>
             <Title>{t('common:hyper-parameter')}</Title>
             <Content aside={aside} isProfiler={true}>
-                {/* {loading ? <BodyLoading /> : null} */}
                 <HPWrapper>
-                    <ViewWrapper>{!isCompared ? view : null}</ViewWrapper>
+                    <ViewWrapper>
+                        {views === 'Overview' ? (
+                            <OverView runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                        ) : null}
+                        {views === 'Operator' ? (
+                            <OperatorView runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                        ) : null}
+                        {views === 'Distributed' ? (
+                            <Distributed runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                        ) : null}
+                        {views === 'GPU Kernel' ? (
+                            <ComparedView runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                        ) : null}
+                        {views === 'Memory' ? (
+                            <MemoryView runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                        ) : null}
+                        {views === 'Trace' ? (
+                            <TracingView runs={runs} views={views} workers={workers} spans={spans} />
+                        ) : null}
+                    </ViewWrapper>
                 </HPWrapper>
             </Content>
         </>
