@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -40,18 +41,17 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
 
     useEffect(() => {
         if (inputValue === '' && value !== defaultValue) {
-            debugger
+            debugger;
             onChange?.(defaultValue);
             return;
         }
-        const v = value as number
+        const v = value as number;
         if (!Number.isNaN(v)) {
             onChange?.(v);
             // debugger
             setInputValue(v + '');
         }
-
-    }, [defaultValue, onChange, value]);
+    }, [defaultValue, onChange, value, inputValue]);
     // useEffect(()=>{
 
     // },[inputValue])
@@ -64,7 +64,7 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
             setInputValue(v + '');
             onChange?.(v);
         }
-    }, [inputValue]);
+    }, [inputValue, onChange]);
 
     return (
         <Input

@@ -1,5 +1,6 @@
-import React, {Fragment, FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
-import {asideWidth, rem, em, sameBorder, transitionProps} from '~/utils/style';
+/* eslint-disable sort-imports */
+import React, {Fragment, FunctionComponent} from 'react';
+import {rem} from '~/utils/style';
 import {Configure, ArgumentOperation} from '../../components';
 import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
@@ -9,7 +10,7 @@ import {Popover} from 'antd';
 import type {environmentType} from './types';
 const Processes = styled.div`
     background: #f3f8fe;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     padding-left: ${rem(20)};
     height: ${rem(60)};
     display: flex;
@@ -27,13 +28,13 @@ const Processes_label = styled.div`
     line-height: ${rem(30)};
 `;
 const Processes_content = styled.div`
-    font-size: 18px;
+    font-size: ${rem(18)};
     color: #333333;
     line-height: ${rem(32)};
 `;
 const CPU = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     height: ${rem(150)};
     width: 100%;
     padding-top: ${rem(24)};
@@ -47,10 +48,10 @@ const CPU = styled.div`
     }
     .CPU_title {
         font-family: PingFangSC-Semibold;
-        font-size: 16px;
+        font-size: ${rem(16)};
         color: #333333;
         text-align: left;
-        line-height: 16px;
+        line-height: ${rem(16)};
         font-weight: 600;
         margin-bottom: ${rem(20)};
     }
@@ -61,17 +62,17 @@ const CPU = styled.div`
     }
     .GPU_title {
         font-family: PingFangSC-Semibold;
-        font-size: 16px;
+        font-size: ${rem(16)};
         color: #333333;
         text-align: left;
-        line-height: 16px;
+        line-height: ${rem(16)};
         font-weight: 600;
         margin-bottom: ${rem(20)};
         margin-left: ${rem(49)};
         display: flex;
         justify-content: space-between;
         .title_list {
-            font-size: 12px;
+            font-size: ${rem(12)};
             color: #666666;
             display: flex;
             .list_items {
@@ -84,14 +85,14 @@ const CPU = styled.div`
     .itemlist {
         display: flex;
         .items {
-            margin-right: 82px;
+            margin-right: ${rem(82)};
             .percentage {
                 text-align: center;
-                font-size: 28px;
+                font-size: ${rem(28)};
                 color: #333333;
             }
             .items_label {
-                font-size: 12px;
+                font-size: ${rem(12)};
                 color: #999999;
                 text-align: center;
                 white-space: nowrap;
@@ -152,7 +153,11 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                 <div className="title">
                     <div>设备详情</div>
                     <Popover content={tooltips} placement="right">
-                        <ArgumentOperation onClick={() => {}}>
+                        <ArgumentOperation
+                            onClick={() => {
+                                console.log('1111');
+                            }}
+                        >
                             <img src={PUBLIC_PATH + logo} alt="" />
                         </ArgumentOperation>
                     </Popover>

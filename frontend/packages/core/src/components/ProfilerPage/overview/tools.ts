@@ -27,7 +27,7 @@ export interface DataType2 {
     gpu_min_time: number;
     gpu_ratio: number;
 }
-export const consumingColumns = (units: string) => {
+export const consumingColumns = (units: string, hasGpu: boolean) => {
     const columns: ColumnsType<DataType> = [
         {
             title: '阶段',
@@ -82,8 +82,10 @@ export const consumingColumns = (units: string) => {
                     sorter: (a, b) => a.ratio - b.ratio
                 }
             ]
-        },
-        {
+        }
+    ];
+    if (hasGpu) {
+        columns.push({
             title: 'GPU',
             children: [
                 {
@@ -122,17 +124,17 @@ export const consumingColumns = (units: string) => {
                     sorter: (a, b) => a.GPUratio - b.GPUratio
                 }
             ]
-        }
-    ];
+        });
+    }
     return columns;
 };
-export const customizeColumns = (units: string) => {
+export const customizeColumns = (units: string, hasGpu: boolean) => {
     const columns2: ColumnsType<DataType2> = [
         {
             title: '阶段',
             dataIndex: 'name',
             key: 'name',
-            width: 100,
+            width: 100
         },
         {
             title: '调用次数',
@@ -180,8 +182,10 @@ export const customizeColumns = (units: string) => {
                     sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
                 }
             ]
-        },
-        {
+        }
+    ];
+    if (hasGpu) {
+        columns2.push({
             title: 'GPU',
             children: [
                 {
@@ -220,7 +224,7 @@ export const customizeColumns = (units: string) => {
                     sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
                 }
             ]
-        }
-    ];
+        });
+    }
     return columns2;
 };

@@ -1,14 +1,16 @@
-import React, {Fragment, FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable sort-imports */
+import React, {Fragment, FunctionComponent} from 'react';
 import {rem} from '~/utils/style';
 import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
 import BarsChart from '~/components/BarsChart';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 import {Tabs} from 'antd';
-import type {performanceType} from './types';
+import type {performanceType, Callingtimes} from './types';
 const PerformanceContent = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     width: 100%;
     height: ${rem(378)};
     .titles {
@@ -19,20 +21,20 @@ const PerformanceContent = styled.div`
         .legend {
             display: flex;
             align-items: center;
-            margin-left: 20px;
+            margin-left: ${rem(20)};
             .labels {
-                width: 17px;
-                height: 5px;
+                width: ${rem(17)};
+                height: ${rem(5)};
                 background: yellow;
-                line-height: 22px;
+                line-height: ${rem(22)};
             }
             .legend_name {
-                margin-left: 20px;
+                margin-left: ${rem(20)};
                 font-family: PingFangSC-Regular;
-                font-size: 14px;
+                font-size: ${rem(14)};
                 color: #666666;
                 letter-spacing: 0;
-                line-height: 14px;
+                line-height: ${rem(14)};
                 font-weight: 400;
             }
         }
@@ -58,14 +60,13 @@ export type EnvironmentProps = {
 const {TabPane} = Tabs;
 const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceData, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const tooltips = (
-        <div>
-            <p>Content</p>
-            <p>Content</p>
-        </div>
-    );
-    console.log('performanceData',performanceData);
-    
+    // const tooltips = (
+    //     <div>
+    //         <p>Content</p>
+    //         <p>Content</p>
+    //     </div>
+    // );
+
     const onChange = (key: string) => {
         console.log(key);
     };
@@ -95,7 +96,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         {(performanceData as any)[item]?.calling_times?.key.map(
                                             (items: string, index: number) => {
                                                 return (
-                                                    <div className="legend">
+                                                    <div className="legend" key={index}>
                                                         <div
                                                             className="labels"
                                                             style={{background: `${color[index]}`}}
@@ -110,7 +111,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         <div className="chart">
                                             <BarsChart
                                                 className={'Content'}
-                                                data={(performanceData as any)[item]?.calling_times}
+                                                data={(performanceData as any)[item]?.calling_times as Callingtimes}
                                                 text={1}
                                                 isLegend={false}
                                             ></BarsChart>
@@ -118,7 +119,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         <div className="chart">
                                             <BarsChart
                                                 className={'Content'}
-                                                data={(performanceData as any)[item]?.durations}
+                                                data={(performanceData as any)[item]?.durations as Callingtimes}
                                                 text={2}
                                                 isLegend={false}
                                                 units={units}
@@ -127,7 +128,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
                                         <div className="chart" style={{marginRight: `${rem(0)}`}}>
                                             <BarsChart
                                                 className={'Content'}
-                                                data={(performanceData as any)[item]?.ratios}
+                                                data={(performanceData as any)[item]?.ratios as Callingtimes}
                                                 text={3}
                                                 isLegend={true}
                                             ></BarsChart>

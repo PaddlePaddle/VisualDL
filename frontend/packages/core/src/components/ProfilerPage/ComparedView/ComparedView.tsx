@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -14,14 +16,12 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
-import StackColumnChart from '~/components/StackColumnChart';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
-import Model from '~/components/ProfilerPage/model';
 import {asideWidth, rem, em, transitionProps, primaryColor, position, size} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
@@ -31,26 +31,19 @@ import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
 import GridLoader from 'react-spinners/GridLoader';
-import Icon from '~/components/Icon';
 import logo from '~/assets/images/question-circle.svg';
 import hover from '~/assets/images/hover.svg';
+import type {tensorcorePie, kernelPie, tableDataType, tableEvent} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
     name: string;
-    age: number;
-    street: string;
-    building: string;
-    number: number;
-    companyAddress: string;
-    companyName: string;
-    gender: string;
-}
-interface ExpandedDataType {
-    key: React.Key;
-    date: string;
-    name: string;
-    upgradeNum: string;
+    calls: number;
+    total_time: number;
+    avg_time: number;
+    max_time: number;
+    min_time: number;
+    ratio: number;
 }
 export type ComparedViewProps = {
     runs: string;
@@ -151,7 +144,7 @@ const Configure = styled.div`
         align-items: center;
         margin-bottom: ${rem(20)};
         div {
-            line-height: 18px;
+            line-height: ${rem(18)};
         }
         .argument-operation {
             flex: none;
@@ -165,8 +158,8 @@ const Configure = styled.div`
                 color: #2932e1;
             }
             img {
-                width: 16px;
-                height: 16px;
+                width: ${rem(16)};
+                height: ${rem(16)};
             }
             img:hover {
                 content: url(${hover});
@@ -208,7 +201,7 @@ const Configure = styled.div`
                 height: ${rem(36)};
                 margin-right: ${rem(15)};
                 .ant-select {
-                    border-radius: 4px;
+                    border-radius: ${rem(4)};
                     height: 100%;
                     .ant-select-selector {
                         height: 100%;
@@ -254,7 +247,7 @@ const EchartPie = styled.div`
 `;
 const PieceContent = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     width: 100%;
     height: auto;
     padding-bottom: ${rem(20)};
@@ -283,7 +276,7 @@ const Wraper = styled.div`
     }
     .ant-table.ant-table-bordered > .ant-table-container {
         border: 1px solid #dddddd;
-        border-radius: 8px;
+        border-radius: ${rem(8)};
     }
     > .loading {
         ${size('100%')}
@@ -297,13 +290,22 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
+interface cpuData {
+    value: number;
+    name: string;
+    proportion: number;
+}
+interface tableType extends tableEvent {
+    key: string;
+}
+
 const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    const model = useRef<any>(null);
-    const [pieData, setPieData] = useState<any>();
-    const [tensorcoreData, setTensorcoreData] = useState<any>();
+    // const model = useRef<any>(null);
+    const [pieData, setPieData] = useState<cpuData[]>();
+    const [tensorcoreData, setTensorcoreData] = useState<cpuData[]>();
     const [tableLoading, settableLoading] = useState(true);
-    const [tableData, setTableData] = useState<any>();
+    const [tableData, setTableData] = useState<tableType[]>();
     const [search, setSearch] = useState<string>('');
     const [itemsList] = useState<SelectListItem<string>[]>([
         {label: '按内核分组', value: 'kernel_name'},
@@ -321,9 +323,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&span=${spans}` +
                     `&time_unit=${units}` +
                     `&topk=${top}`
-            ).then((res: any) => {
-                const chartData = [];
-                for (const item of res.events) {
+            ).then((res: unknown) => {
+                const result = res as tensorcorePie;
+                const chartData: cpuData[] = [];
+                for (const item of result.events) {
                     chartData.push({
                         value: item.calls,
                         name: item.name,
@@ -339,9 +342,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&span=${spans}` +
                     `&time_unit=${units}` +
                     `&topk=${top}`
-            ).then((res: any) => {
-                const chartData = [];
-                for (const item of res.events) {
+            ).then((res: unknown) => {
+                const result = res as kernelPie;
+                const chartData: cpuData[] = [];
+                for (const item of result.events) {
                     chartData.push({
                         value: item.total_time,
                         name: item.name,
@@ -364,8 +368,9 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&search_name=${search}` +
                     `&group_by=${group}`
-            ).then((res: any) => {
-                const TableDatas = res.events.map((item: any) => {
+            ).then((res: unknown) => {
+                const result = res as tableDataType;
+                const TableDatas = result.events.map((item: tableEvent) => {
                     if (group === 'kernel_name_attributes') {
                         return {
                             key: item.name + item.calls + item.operator + item.grid,
@@ -400,7 +405,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `总耗时(${units})`,
             dataIndex: 'total_time',
             key: 'total_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 console.log('a,b', a, b);
                 return a.total_time - b.total_time;
             }
@@ -409,7 +414,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `平均耗时(${units})`,
             dataIndex: 'avg_time',
             key: 'avg_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.avg_time - b.avg_time;
             }
         },
@@ -417,7 +422,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `最长耗时(${units})`,
             dataIndex: 'max_time',
             key: 'max_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.max_time - b.max_time;
             }
         },
@@ -425,7 +430,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `最短耗时(${units})`,
             dataIndex: 'min_time',
             key: 'min_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.min_time - b.min_time;
             }
         },
@@ -455,7 +460,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `百分比%`,
             dataIndex: 'ratio',
             key: 'ratio',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.ratio - b.ratio;
             }
         }
@@ -471,7 +476,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: '调用量',
             dataIndex: 'calls',
             key: 'calls',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.calls - b.calls;
             }
         },
@@ -504,7 +509,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `总耗时(${units})`,
             dataIndex: 'total_time',
             key: 'total_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.total_time - b.total_time;
             }
         },
@@ -512,7 +517,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `平均耗时(${units})`,
             dataIndex: 'avg_time',
             key: 'avg_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.avg_time - b.avg_time;
             }
         },
@@ -520,7 +525,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `最长耗时(${units})`,
             dataIndex: 'max_time',
             key: 'max_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.max_time - b.max_time;
             }
         },
@@ -528,7 +533,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: `最短耗时(${units})`,
             dataIndex: 'min_time',
             key: 'min_time',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.min_time - b.min_time;
             }
         },
@@ -551,7 +556,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             title: '百分比%',
             dataIndex: 'ratio',
             key: 'ratio',
-            sorter: (a: any, b: any) => {
+            sorter: (a, b) => {
                 return a.ratio - b.ratio;
             }
         }
@@ -627,7 +632,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 <div className="title">
                     <div>耗时概况</div>
                     <Popover content={tooltips} placement="right">
-                        <a className="argument-operation" onClick={() => {}}>
+                        <a
+                            className="argument-operation"
+                            onClick={() => {
+                                console.log(111);
+                            }}
+                        >
                             <img src={PUBLIC_PATH + logo} alt="" />
                         </a>
                     </Popover>
@@ -650,12 +660,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                             label: {
                                                 show: true,
                                                 position: 'center',
-                                                textStyle: {
-                                                    fontSize: '14',
-                                                    color: '#666'
-                                                },
+                                                // textStyle: {
+                                                //     fontSize: '14',
+                                                //     color: '#666'
+                                                // },
                                                 formatter: function () {
-                                                    var str = '总耗时'; //声明一个变量用来存储数据
+                                                    const str = '总耗时'; //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },
@@ -683,12 +693,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                             label: {
                                                 show: true,
                                                 position: 'center',
-                                                textStyle: {
-                                                    fontSize: '14',
-                                                    color: '#666'
-                                                },
+                                                // textStyle: {
+                                                //     fontSize: '14',
+                                                //     color: '#666'
+                                                // },
                                                 formatter: function () {
-                                                    var str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
+                                                    const str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },
@@ -742,7 +752,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                     )}
                 </Wraper>
             </Configure>
-            <Model ref={model} runs={runs} views={views} workers={workers}></Model>
+            {/* <Model ref={model} runs={runs} views={views} workers={workers}></Model> */}
         </ViewWrapper>
     );
 };

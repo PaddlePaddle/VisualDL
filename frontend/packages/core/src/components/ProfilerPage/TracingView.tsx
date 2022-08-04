@@ -50,7 +50,6 @@ const TracingView: React.FC<IProps> = props => {
         if (runs && workers && spans) {
             fetcher('/profiler/trace' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: any) => {
-                    console.log('res',res);
                     setTraceData(res);
                 }
             );
@@ -73,18 +72,10 @@ const TracingView: React.FC<IProps> = props => {
 
     React.useEffect(() => {
         if (traceData && traceViewReady) {
-            // traceData.then(data => {
-            //     console.log('函数执行了');
-            //     iframeRef.current?.contentWindow?.postMessage({msg: 'data', data}, '*');
-            // });
-            console.log('函数执行了');
-            const data = JSON.stringify(traceData)
+            const data = JSON.stringify(traceData);
             iframeRef.current?.contentWindow?.postMessage({msg: 'data', data}, '*');
         }
     }, [traceData, traceViewReady]);
-    const SetIframeActive = () => {
-        iframeRef.current?.focus();
-    };
 
     return (
         <Content>

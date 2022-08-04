@@ -55,61 +55,61 @@ export default {
             min_time: '3.03',
             ratio: '12.59'
         }
-    ],
-    gpu: [
-        {
-            name: 'ProfileStep',
-            calls: 7,
-            total_time: '31.21',
-            avg_time: '4.46',
-            max_time: '2.75',
-            min_time: '0.00',
-            ratio: '100.00'
-        },
-        {
-            name: 'Dataloader',
-            calls: 7,
-            total_time: '0.11',
-            avg_time: '0.02',
-            max_time: '0.11',
-            min_time: '0.00',
-            ratio: '0.35'
-        },
-        {
-            name: 'Forward',
-            calls: 7,
-            total_time: '4.65',
-            avg_time: '0.66',
-            max_time: '0.38',
-            min_time: '0.00',
-            ratio: '14.89'
-        },
-        {
-            name: 'Backward',
-            calls: 7,
-            total_time: '9.45',
-            avg_time: '1.35',
-            max_time: '0.74',
-            min_time: '0.00',
-            ratio: '30.29'
-        },
-        {
-            name: 'Optimization',
-            calls: 7,
-            total_time: '0.85',
-            avg_time: '0.12',
-            max_time: '0.10',
-            min_time: '0.00',
-            ratio: '2.72'
-        },
-        {
-            name: 'Other',
-            calls: 7,
-            total_time: '0.44',
-            avg_time: '0.06',
-            max_time: '0.05',
-            min_time: '0.00',
-            ratio: '1.40'
-        }
     ]
+    // gpu: [
+    //     {
+    //         name: 'ProfileStep',
+    //         calls: 7,
+    //         total_time: '31.21',
+    //         avg_time: '4.46',
+    //         max_time: '2.75',
+    //         min_time: '0.00',
+    //         ratio: '100.00'
+    //     },
+    //     {
+    //         name: 'Dataloader',
+    //         calls: 7,
+    //         total_time: '0.11',
+    //         avg_time: '0.02',
+    //         max_time: '0.11',
+    //         min_time: '0.00',
+    //         ratio: '0.35'
+    //     },
+    //     {
+    //         name: 'Forward',
+    //         calls: 7,
+    //         total_time: '4.65',
+    //         avg_time: '0.66',
+    //         max_time: '0.38',
+    //         min_time: '0.00',
+    //         ratio: '14.89'
+    //     },
+    //     {
+    //         name: 'Backward',
+    //         calls: 7,
+    //         total_time: '9.45',
+    //         avg_time: '1.35',
+    //         max_time: '0.74',
+    //         min_time: '0.00',
+    //         ratio: '30.29'
+    //     },
+    //     {
+    //         name: 'Optimization',
+    //         calls: 7,
+    //         total_time: '0.85',
+    //         avg_time: '0.12',
+    //         max_time: '0.10',
+    //         min_time: '0.00',
+    //         ratio: '2.72'
+    //     },
+    //     {
+    //         name: 'Other',
+    //         calls: 7,
+    //         total_time: '0.44',
+    //         avg_time: '0.06',
+    //         max_time: '0.05',
+    //         min_time: '0.00',
+    //         ratio: '1.40'
+    //     }
+    // ]
 };

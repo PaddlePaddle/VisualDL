@@ -20,7 +20,7 @@ import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartsOption,RegisteredSeriesOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 
@@ -74,17 +74,17 @@ const BarChart = React.forwardRef<BarChartRef, BarChartProps & WithStyled>(
                     formatter: null
                 }
             };
-            const seriesData = data?.map((item:any, index:number) =>
-            defaultsDeep(
-                item,
-                {
-                    itemStyle: {
-                        color: color[index % color.length]
-                    }
-                },
-                series
-            )
-        )
+            const seriesData = data?.map((item: any, index: number) =>
+                defaultsDeep(
+                    item,
+                    {
+                        itemStyle: {
+                            color: color[index % color.length]
+                        }
+                    },
+                    series
+                )
+            );
             const chartOptions: EChartsOption = defaultsDeep(
                 {
                     title: {

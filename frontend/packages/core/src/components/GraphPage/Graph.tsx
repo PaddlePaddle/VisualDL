@@ -259,8 +259,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
             return null;
         }, [ready, loading, rendered, uploader]);
-        console.log('path',PUBLIC_PATH + '/__snowpack__/link/packages/netron/dist/index.html');
-        
+        console.log('path', PUBLIC_PATH + '/__snowpack__/link/packages/netron/dist/index.html');
+
         return (
             <Wrapper>
                 {content}

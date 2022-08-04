@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -14,20 +16,19 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
-import StackColumnChart from '~/components/StackColumnChart3';
+import StackColumnChart from '~/components/StackColumnChart';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
-import Model from '~/components/ProfilerPage/model';
-import {WithStyled, primaryColor} from '~/utils/style';
-import {asideWidth, rem, em, transitionProps} from '~/utils/style';
+// import Model from '~/components/ProfilerPage/model';
+import {primaryColor} from '~/utils/style';
+import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table, Popover} from 'antd';
-import type {ColumnsType} from 'antd/lib/table';
 import GridLoader from 'react-spinners/GridLoader';
 import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
@@ -35,26 +36,10 @@ import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
 import {options, baseColumns2, baseColumns1} from './tools';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
+import type {operatorPie, tableType, Event, pie_expand} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
-interface DataType {
-    name: string;
-    calls: number;
-    total_time: number;
-    max_time: number;
-    min_time: number;
-    avg_time: number;
-    ratio: number;
-    GPUtotal_time: number;
-    GPUmax_time: number;
-    GPUmin_time: number;
-    GPUavg_time: number;
-    GPUratio: number;
-}
-interface ExpandedDataType {
-    key: React.Key;
-    date: string;
-    name: string;
-    render: any;
+interface tableTypes extends Event {
+    key: string;
 }
 export type OperatorViewProps = {
     runs: string;
@@ -174,7 +159,7 @@ const Configures = styled(Configure)`
                 height: ${rem(36)};
                 margin-right: ${rem(15)};
                 .ant-select {
-                    border-radius: 4px;
+                    border-radius: ${rem(4)};
                     height: 100%;
                     .ant-select-selector {
                         height: 100%;
@@ -220,7 +205,7 @@ const EchartPie = styled.div`
 `;
 const PieceContent = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     width: 100%;
     height: auto;
     // padding-bottom: ${rem(20)};
@@ -253,17 +238,23 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
+interface cpuData {
+    value: number;
+    name: string;
+    proportion: number;
+}
 const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     // const model = useRef<any>(null);
-    const [cpuData, setCpuData] = useState<any>();
-    const [gpuData, setGpuData] = useState<any>();
-    const [tableData, setTableData] = useState<any>();
+    const [cpuData, setCpuData] = useState<cpuData[]>();
+    const [gpuData, setGpuData] = useState<cpuData[]>();
+    const [tableData, setTableData] = useState<tableTypes[]>();
     const [tableLoading, settableLoading] = useState(true);
-    const [distributed, setDistributed] = useState<any>();
+    const [distributed, setDistributed] = useState<pie_expand>();
     const [isCPU, setIsCPU] = useState(true);
+    const [hasGpu, setHasGpu] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
-    const [isExpend, setIsExpend] = useState<any>(false);
+    const [isExpend, setIsExpend] = useState<boolean>(false);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
         {label: '按算子名称', value: 'op_name'},
         {label: '按算子名称+输入形状', value: 'op_name_input_shape'}
@@ -281,22 +272,27 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&span=${spans}` +
                     `&time_unit=${units}` +
                     `&topk=${top}`
-            ).then((res: any) => {
-                const cpuChartData = [];
-                const gpuChartData = [];
-                for (const item of res.cpu) {
+            ).then((res: unknown) => {
+                const result = res as operatorPie;
+                const cpuChartData: cpuData[] = [];
+                const gpuChartData: cpuData[] = [];
+                for (const item of result.cpu) {
                     cpuChartData.push({
                         value: item.total_time,
                         name: item.name,
                         proportion: item.ratio
                     });
                 }
-                for (const item of res.gpu) {
-                    gpuChartData.push({
-                        value: item.total_time,
-                        name: item.name,
-                        proportion: item.ratio
-                    });
+                if (result.gpu) {
+                    for (const item of result.gpu) {
+                        gpuChartData.push({
+                            value: item.total_time,
+                            name: item.name,
+                            proportion: item.ratio
+                        });
+                    }
+                } else {
+                    setHasGpu(false);
                 }
                 setCpuData(cpuChartData);
                 setGpuData(gpuChartData);
@@ -314,8 +310,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&search_name=${search}` +
                     `&group_by=${group}`
-            ).then((res: any) => {
-                const TableDatas = res.events.map((item: any) => {
+            ).then((res: unknown) => {
+                const result = res as tableType;
+                const TableDatas: tableTypes[] = result.events.map(item => {
                     if (group === 'op_name_input_shape') {
                         return {
                             key: item.name + item.input_shape,
@@ -346,7 +343,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     `&time_unit=${units}` +
                     `&span=${spans}`
             ).then((res: unknown) => {
-                const Data: any = res;
+                const Data = res as pie_expand;
                 console.log('distributed,', Data);
                 setDistributed(Data);
             });
@@ -376,8 +373,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onTopchange = (value: number) => {
         setTop(value);
     };
-    const columns2 = baseColumns2(units);
-    const columns1 = baseColumns1(units);
+    const columns2 = baseColumns2(units, hasGpu);
+    const columns1 = baseColumns1(units, hasGpu);
     const tooltips = (
         <div>
             <p>Content</p>
@@ -448,24 +445,26 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </div>
                     {isExpend ? (
                         <div className="tableContent">
-                            <RadioButtons>
-                                <ButtonsLeft
-                                    onClick={() => {
-                                        setIsCPU(true);
-                                    }}
-                                    className={isCPU ? 'is_active' : ''}
-                                >
-                                    CPU耗时
-                                </ButtonsLeft>
-                                <ButtonsRight
-                                    className={!isCPU ? 'is_active' : ''}
-                                    onClick={() => {
-                                        setIsCPU(false);
-                                    }}
-                                >
-                                    GPU耗时
-                                </ButtonsRight>
-                            </RadioButtons>
+                            {hasGpu && (
+                                <RadioButtons>
+                                    <ButtonsLeft
+                                        onClick={() => {
+                                            setIsCPU(true);
+                                        }}
+                                        className={isCPU ? 'is_active' : ''}
+                                    >
+                                        CPU耗时
+                                    </ButtonsLeft>
+                                    <ButtonsRight
+                                        className={!isCPU ? 'is_active' : ''}
+                                        onClick={() => {
+                                            setIsCPU(false);
+                                        }}
+                                    >
+                                        GPU耗时
+                                    </ButtonsRight>
+                                </RadioButtons>
+                            )}
                             <EchartPie4>
                                 <StackColumnChart
                                     className={'Content'}
@@ -497,7 +496,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         </div>
                     </div>
                 </div>
-                <Wraper style={{height:'420px'}}>
+                <Wraper style={{height: '420px'}}>
                     {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />

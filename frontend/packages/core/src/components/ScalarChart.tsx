@@ -117,33 +117,34 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     );
 
     const options: EChartsOption = useMemo(
-        () => ({
-            legend: {
-                data: []
-            },
-            tooltip: {
-                position: ['10%', '100%'],
-                formatter,
-                hideDelay: 300,
-                enterable: true
-            },
-            xAxis: {
-                type: xAxisType ?? XAxisType.value,
-                ...xRange,
-                axisPointer: {
-                    label: {
-                        formatter:
-                            xAxisType === XAxisType.time
-                                ? undefined
-                                : ({value}: {value: number}) => labelFormatter(value)
+        () =>
+            ({
+                legend: {
+                    data: []
+                },
+                tooltip: {
+                    position: ['10%', '100%'],
+                    formatter,
+                    hideDelay: 300,
+                    enterable: true
+                },
+                xAxis: {
+                    type: xAxisType ?? XAxisType.value,
+                    ...xRange,
+                    axisPointer: {
+                        label: {
+                            formatter:
+                                xAxisType === XAxisType.time
+                                    ? undefined
+                                    : ({value}: {value: number}) => labelFormatter(value)
+                        }
                     }
+                },
+                yAxis: {
+                    type: yAxisType,
+                    ...yRange
                 }
-            },
-            yAxis: {
-                type: yAxisType,
-                ...yRange
-            },
-        } as EChartsOption),
+            } as EChartsOption),
         [formatter, xAxisType, xRange, yAxisType, yRange]
     );
 

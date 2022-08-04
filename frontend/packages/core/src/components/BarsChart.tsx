@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -17,22 +18,27 @@
 import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-import {color, colorAlt} from '~/utils/chart';
 import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
-
-type LineChartProps = {
+interface Callingtimes {
+    key: string[];
+    value: number[];
+}
+type BarsChartProps = {
     options?: EChartsOption;
     title?: string;
-    data?: any
+    data?: Callingtimes;
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
+    className?: string;
+    units?: string;
+    isLegend?: boolean;
+    text?: number;
 };
 
 export enum XAxisType {
@@ -46,13 +52,13 @@ export enum YAxisType {
     log = 'log'
 }
 
-export type LineChartRef = {
+export type BarChartRef = {
     restore(): void;
     saveAsImage(): void;
 };
 
-const Charts = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, text, isCpu, isLegend,units}, ref) => {
+const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
+    ({options, data, title, loading, zoom, className, onInit, text, isLegend, units}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -82,9 +88,8 @@ const Charts = React.forwardRef<LineChartRef, any>(
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            console.log('chartData',data);
             if (data) {
-                const {colorAlt, series, ...defaults} = chart;
+                // const {} = chart;
                 const chartData = data;
                 const color = [
                     '#2932E1',
@@ -101,8 +106,7 @@ const Charts = React.forwardRef<LineChartRef, any>(
                     '#D50505'
                 ];
                 const title = text === 1 ? '调用量（次)' : text === 2 ? `持续时间（${units})` : '整体占比（%)';
-                console.log('units',units);
-                
+
                 const values = [];
                 for (let index = 0; index < chartData.value.length; index++) {
                     values.push({
@@ -112,10 +116,8 @@ const Charts = React.forwardRef<LineChartRef, any>(
                         }
                     });
                 }
-                console.log('values', values);
-                console.log('isLegend', isLegend);
 
-                let chartOptions: EChartsOption = defaultsDeep({
+                const chartOptions: EChartsOption = defaultsDeep({
                     title: {
                         bottom: '5%',
                         left: 'center',
@@ -135,9 +137,9 @@ const Charts = React.forwardRef<LineChartRef, any>(
                         },
                         extraCssText:
                             'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
-                        formatter: function (params: any, index: any) {
+                        formatter: function (params: any, index: number) {
                             console.log('StackColumnChart', params, index);
-                            var str = ''; //声明一个变量用来存储数据
+                            let str = ''; //声明一个变量用来存储数据
                             str +=
                                 '<div style="font-size:14px;color:#FFFFFF;font-weight:500;margin-left:17px;">' +
                                 params[0].name +
@@ -226,7 +228,7 @@ const Charts = React.forwardRef<LineChartRef, any>(
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, title, theme, i18n.language, echart, isLegend,units]);
+        }, [options, data, title, theme, i18n.language, echart, isLegend, units, text]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

@@ -18,7 +18,16 @@
 
 import * as chart from '~/utils/chart';
 
-import type {EChartsOption, ECharts, CustomSeriesOption, CustomSeriesRenderItem,AxisPointerComponentOption,TooltipComponentOption,GridComponentOption,Color as ZRColor} from 'echarts';
+import type {
+    EChartsOption,
+    ECharts,
+    CustomSeriesOption,
+    CustomSeriesRenderItem,
+    AxisPointerComponentOption,
+    TooltipComponentOption,
+    GridComponentOption,
+    Color as ZRColor
+} from 'echarts';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {WithStyled, primaryColor, transitionProps} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
@@ -27,7 +36,7 @@ import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import styled from 'styled-components';
 import useThrottleFn from '~/hooks/useThrottleFn';
-import type { LinesSeriesOption } from 'echarts/charts';
+import type {LinesSeriesOption} from 'echarts/charts';
 
 const Tooltip = styled.div`
     position: absolute;
@@ -47,7 +56,7 @@ type GetCoord = (p: [number, number]) => [number, number];
 export type StackChartProps = {
     options?: EChartsOption;
     title?: string;
-    data?: any
+    data?: any;
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -139,7 +148,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
             dotsRef.current = dots;
         }, [dots]);
 
-        const AxisPointer = options?.axisPointer as AxisPointerComponentOption
+        const AxisPointer = options?.axisPointer as AxisPointerComponentOption;
         const pointerLabelFormatter = AxisPointer.label?.formatter;
 
         // formatter change will cause echarts rerender axis pointer label
@@ -231,7 +240,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
         const mouseout = useCallback(() => {
             setHighlight(null);
             setDots([]);
-            const formatters = chartOptions.tooltip as TooltipComponentOption
+            const formatters = chartOptions.tooltip as TooltipComponentOption;
             if (formatters.formatter) {
                 setTooltip('');
                 if (tooltipRef.current) {
@@ -252,11 +261,8 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                         mouseout();
                         return;
                     }
-                    const [x, y] = echarts.convertFromPixel('grid', [offsetX, offsetY]) as [
-                        number,
-                        number
-                    ];
-                    const seriesData = echart?.getOption().series as LinesSeriesOption
+                    const [x, y] = echarts.convertFromPixel('grid', [offsetX, offsetY]) as [number, number];
+                    const seriesData = echart?.getOption().series as LinesSeriesOption;
                     const data = (seriesData.data as number[][]) ?? [];
 
                     // find right on top step
@@ -294,7 +300,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                     }
 
                     // set tooltip
-                    const formatters = chartOptions.tooltip as TooltipComponentOption
+                    const formatters = chartOptions.tooltip as TooltipComponentOption;
                     if (formatters.formatter) {
                         setTooltip(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -378,10 +384,9 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                             }
                         });
                     } else {
-                        const seriesData = echart.getOption().series as LinesSeriesOption
+                        const seriesData = echart.getOption().series as LinesSeriesOption;
                         const data = (seriesData.data as number[][]) ?? [];
-                        const getCoord: GetCoord = pt =>
-                            echart.convertToPixel('grid', pt) as [number, number];
+                        const getCoord: GetCoord = pt => echart.convertToPixel('grid', pt) as [number, number];
                         const getValue: GetValue = i => data[highlight][i];
                         echart.setOption({
                             graphic: {
@@ -425,8 +430,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                             }
                         });
                     } else {
-                        const getCoord: GetCoord = pt =>
-                            echart.convertToPixel('grid', pt) as [number, number];
+                        const getCoord: GetCoord = pt => echart.convertToPixel('grid', pt) as [number, number];
                         echart.setOption({
                             graphic: {
                                 elements: dots.map((dot, i) => {

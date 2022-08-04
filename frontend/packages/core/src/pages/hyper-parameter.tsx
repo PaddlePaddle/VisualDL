@@ -198,9 +198,7 @@ const HyperParameter: FunctionComponent = () => {
                 {loading ? <BodyLoading /> : null}
                 <HPWrapper>
                     <Tab list={tabs} value={tabView} onChange={setTabView} />
-                    <ViewWrapper>
-                        {isEmpty ? <Empty /> : view}
-                    </ViewWrapper>
+                    <ViewWrapper>{isEmpty ? <Empty /> : view}</ViewWrapper>
                 </HPWrapper>
             </Content>
         </>

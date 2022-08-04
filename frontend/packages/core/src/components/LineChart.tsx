@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -20,7 +21,7 @@ import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartsOption, LineSeriesOption, XAXisComponentOption, YAXisComponentOption} from 'echarts';
+import type {EChartsOption, XAXisComponentOption, YAXisComponentOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
@@ -53,7 +54,7 @@ export type LineChartRef = {
 
 const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
-        const [chartOption,setchartOption] = useState<EChartsOption>()
+        const [chartOption, setchartOption] = useState<EChartsOption>();
         const {i18n} = useTranslation();
 
         const {
@@ -80,8 +81,8 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 saveAsImage(title);
             }
         }));
-        useEffect(()=>{
-            const {color, colorAlt, series, ...defaults} = chart;
+        useEffect(() => {
+            const {color, series, ...defaults} = chart;
             let chartOptions: EChartsOption = defaultsDeep(
                 {
                     title: {
@@ -153,9 +154,9 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            setchartOption(chartOptions)
+            setchartOption(chartOptions);
             // debugger
-        },[options,theme,data,chartOption, title, i18n.language, echart])
+        }, [options, theme, data, chartOption, title, i18n.language, echart]);
 
         return (
             <Wrapper ref={wrapper} className={className}>
