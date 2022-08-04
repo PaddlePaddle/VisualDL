@@ -141,7 +141,7 @@ const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
                             type: 'shadow'
                         },
                         extraCssText:
-                            'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;',
+                            'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;border:none;',
                         formatter: function (params: any, index: number) {
                             console.log('StackColumnChart', params, index);
                             let str = ''; //声明一个变量用来存储数据
