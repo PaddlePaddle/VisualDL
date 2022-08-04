@@ -18,6 +18,9 @@
     "Traffic-processor-occupancy": "Traffic processor occupancy",
     "usage-time": "The proportion of tensor core usage time",
     "step": "step",
-    "timeConsuming": "time consuming"
+    "timeConsuming": "time consuming",
+    "Number-calls": "Number of calls (times)",
+    "duration": "duration",
+    "Overall-proportion": "Overall proportion"
 
 }
