@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -27,10 +25,9 @@ import {consumingColumns, customizeColumns} from './tools';
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
 import type {SelectProps} from '~/components/Select';
-import {ButtonsLeft, ButtonsRight, Configure, RadioButtons} from '../../components';
+import {Configure} from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
-
 import type {
     Event,
     Gpu,
@@ -396,7 +393,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     return (
         <ViewWrapper>
             <Title>{t('profiler:Overview-view')}</Title>
-            {environment && <Environment environment={environment}></Environment>}
+            {environment && <Environment environment={environment} hasGpu={hasGpu}></Environment>}
             <Configures>
                 <div className="title">{t('profiler:time-consuming')}</div>
                 <PieceContent>
@@ -452,7 +449,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 </EchartPie3>
             </Configures>
             <Configures>
-                {/* <div className="title tabs_title">性能消耗</div> */}
                 <div className="titleContent">
                     <div className="titles">{t('performance-consumption')}</div>
                     <div className="searchContent">

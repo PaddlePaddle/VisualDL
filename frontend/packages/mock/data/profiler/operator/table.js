@@ -13,7 +13,7 @@ export default {
             gpu_max_time: 0.74,
             gpu_min_time: 0.73,
             gpu_ratio: 35.01,
-            input_shape:['x','y','z']
+            input_shape: ['x', 'y', 'z']
         },
         {
             name: 'conv2d_grad grad_node',

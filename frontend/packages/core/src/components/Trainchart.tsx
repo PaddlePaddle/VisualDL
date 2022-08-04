@@ -59,7 +59,7 @@ export type LineChartRef = {
 const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
-
+        const {t} = useTranslation(['profiler', 'common']);
         const {
             ref: echartRef,
             echart,
@@ -206,7 +206,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                 },
                 xAxis: [
                     {
-                        name: '步',
+                        name: t('step'),
                         nameLocation: 'end',
                         nameTextStyle: {
                             fontSize: 12,
@@ -235,7 +235,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                     }
                 ],
                 yAxis: {
-                    name: '耗时',
+                    name: t('timeConsuming'),
                     nameTextStyle: {
                         fontSize: 12,
                         color: '#999999'
