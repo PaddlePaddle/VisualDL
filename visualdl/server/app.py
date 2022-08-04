@@ -178,7 +178,9 @@ def _run(args):
     os.system('')
     info('\033[1;33mVisualDL %s\033[0m', __version__)
     app = create_app(args)
+    print("I am after create_app")
     threading.Thread(target=wait_until_live, args=(args, )).start()
+    print("I am before run")
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 

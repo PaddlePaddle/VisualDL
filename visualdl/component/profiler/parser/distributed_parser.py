@@ -91,7 +91,6 @@ class DistributedParser:
 
     def _parse_step(self, profile_step_node):
         step = profile_step_node.name.split('#')[1]
-        print("I am in distributed parser step", step)
         self.profile_steps_time[
             step] = profile_step_node.end_ns - profile_step_node.start_ns
         nodes = []

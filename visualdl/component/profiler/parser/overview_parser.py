@@ -171,6 +171,8 @@ class OverviewParser:
 
         self.stage_nums = 0
         self.gpu_ulitization = 0.0
+        self.has_forward = False
+        self.has_device = False
 
     def parse(self, nodetrees):
         r"""
@@ -255,15 +257,16 @@ class OverviewParser:
                             events['Kernel']['total_time'])
                         self.model_perspective_items[stage_name].gpu_times[
                             step_idx] = events['Kernel']['total_time']
-
-        self.gpu_ulitization = self.merged_events_per_stage['ProfileStep'][
-            'GPU']['ALL']['Kernel'][
-                'total_time'] / self.model_perspective_items[
-                    'ProfileStep'].cpu_time
+        if self.has_device:
+            self.gpu_ulitization = self.merged_events_per_stage['ProfileStep'][
+                'GPU']['ALL']['Kernel'][
+                    'total_time'] / self.model_perspective_items[
+                        'ProfileStep'].cpu_time
 
     def _fill_stage_events(self, node, stage_idx):
         if node.type == 'Forward':
             stage_name = 'Forward'
+            self.has_forward = True
         elif node.type == 'Backward':
             stage_name = 'Backward'
         elif node.type == 'Optimization':
@@ -297,6 +300,7 @@ class OverviewParser:
                     runtimenode.thread_id][runtimenode.type]['times'].append(
                         (runtimenode.start_ns, runtimenode.end_ns))
                 for devicenode in runtimenode.device_node:
+                    self.has_device = True
                     self.events_per_stage[stage_name]["GPU"][stage_idx][
                         devicenode.stream_id][
                             devicenode.type]['events'].append(devicenode)

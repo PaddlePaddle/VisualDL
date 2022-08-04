@@ -17,7 +17,12 @@ import os
 import tempfile
 import threading
 
+import multiprocess
+from multiprocess import Process
+from multiprocess import Queue
+
 from .run_manager import RunManager
+from .utils import process_manager
 from visualdl.io import bfile
 
 
@@ -55,7 +60,7 @@ class ProfileReader(object):
         self.displayname2runs = {}
         self.runs2displayname = {}
         self.run_managers = {}
-
+        self.queue_managers = {}
         self.tempfile = None
         self.runs()
 
@@ -71,6 +76,20 @@ class ProfileReader(object):
         return flush_walks
 
     def get_run_manager(self, run):
+        print('get_run_manager:', run)
+        while process_manager.get_process(run):
+            # print('I am in manager_queue')
+            try:
+                run_name, run_manager = self.queue_managers[run].get(10)
+                print('get from queue', run_name, run_manager)
+                print(run_manager.get_views())
+                self.run_managers[run_name] = run_manager
+                process_manager.get_process(run_name).close()
+                process_manager.remove_process(run_name)
+                del self.queue_managers[run]
+            except:
+                break
+        # print('I am in get_run_manager')
         if run in self.run_managers:
             return self.run_managers[run]
         else:
@@ -105,12 +124,17 @@ class ProfileReader(object):
         for run, filenames in self.walks.items():
             if run not in self.run_managers:
                 self.run_managers[run] = RunManager(run)
-            t = threading.Thread(
-                target=self.run_managers[run].parse_files, args=(filenames, ))
-            t.start()
-            threads.append(t)
-        for thread in threads:
-            thread.join()
+                manager_queue = Queue()
+                t = Process(
+                    target=self.run_managers[run].parse_files,
+                    args=(
+                        manager_queue,
+                        filenames,
+                    ))
+                t.start()
+                print(run)
+                process_manager.add_process(run, t)
+                self.queue_managers[run] = manager_queue
         return list(self.walks.keys())
 
     def set_displayname(self, log_reader):

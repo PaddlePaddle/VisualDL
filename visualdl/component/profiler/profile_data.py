@@ -53,62 +53,85 @@ class ProfileData:
         self.extra_infos = profiler_result.get_extra_info()
         self.span_idx = profiler_result.get_span_idx()
         self.device_infos = profiler_result.get_device_infos()
-        # overview parser
-        self.overview_parser = OverviewParser()
-        self.overview_parser.parse(self.node_trees)
-        self.merged_events_per_stage = self.overview_parser.merged_events_per_stage
-        self.model_perspective_items = self.overview_parser.model_perspective_items
-        self.userdefined_items = self.overview_parser.userdefined_items
-        self.gpu_ulitization = self.overview_parser.gpu_ulitization
-        self.process_id = self.overview_parser.process_id
-        # operator parser
-        self.operator_parser = OperatorParser()
-        self.operator_parser.parse(self.node_trees)
-        self.operator_items = self.operator_parser.items
-        self.operator_items_with_input_shape = self.operator_parser.items_with_input_shape
-        # kernel parser
-        self.kernel_parser = KernelParser()
-        self.kernel_parser.parse(traverse_tree(self.node_trees))
-        self.kernel_items = self.kernel_parser.kernel_items
-        self.kernel_items_with_op_name_attributes = self.kernel_parser.kernel_items_with_op_name_attributes
-        self.occupancy = self.kernel_parser.occupancy
-        self.sm_efficiency = self.kernel_parser.sm_efficiency
-        self.tensorcore_ratio = self.kernel_parser.tensor_core_ratio
-        self.gpu_ids = self.kernel_parser.gpu_ids
-        # distributed parser
-        self.distributed_parser = DistributedParser()
-        self.distributed_parser.parse(self.node_trees)
-        self.distributed_time = self.distributed_parser.steps_time
+        self.overview_parser = None
+        self.operator_parser = None
+        self.distributed_parser = None
+        self.memory_parser = None
+        self.kernel_parser = None
+        self.trace_parser = None
+        self.has_gpu = profiler_result.has_device()
+
+        if profiler_result.has_host():
+            # overview parser
+            self.overview_parser = OverviewParser()
+            self.overview_parser.parse(self.node_trees)
+            self.merged_events_per_stage = self.overview_parser.merged_events_per_stage
+            self.model_perspective_items = self.overview_parser.model_perspective_items
+            self.userdefined_items = self.overview_parser.userdefined_items
+            self.gpu_ulitization = self.overview_parser.gpu_ulitization
+            self.process_id = self.overview_parser.process_id
+            # operator parser
+            self.operator_parser = OperatorParser()
+            self.operator_parser.parse(self.node_trees)
+            self.operator_items = self.operator_parser.items
+            self.operator_items_with_input_shape = self.operator_parser.items_with_input_shape
+
+            # distributed parser
+            if profiler_result.has_device():
+                self.distributed_parser = DistributedParser()
+                self.distributed_parser.parse(self.node_trees)
+                self.distributed_time = self.distributed_parser.steps_time
+
+            if profiler_result.has_memory():
+                # memory parser
+                self.memory_parser = MemoryParser()
+                self.memory_parser.parse(self.node_trees)
+                self.memory_curve = self.memory_parser.memory_curve
+                self.allocated_items = self.memory_parser.allocated_items
+                self.reserved_items = self.memory_parser.reserved_items
+                self.paired_events = self.memory_parser.paired_events
+                self.size_ranges = self.memory_parser.size_ranges
+
+        if profiler_result.has_device():
+            # kernel parser
+            self.kernel_parser = KernelParser()
+            self.kernel_parser.parse(traverse_tree(self.node_trees))
+            self.kernel_items = self.kernel_parser.kernel_items
+            self.kernel_items_with_op_name_attributes = self.kernel_parser.kernel_items_with_op_name_attributes
+            self.occupancy = self.kernel_parser.occupancy
+            self.sm_efficiency = self.kernel_parser.sm_efficiency
+            self.tensorcore_ratio = self.kernel_parser.tensor_core_ratio
+            self.gpu_ids = self.kernel_parser.gpu_ids
 
         # trace parser
         self.trace_parser = TraceParser()
         self.trace_parser.parse(profiler_result.content)
 
-        # memory parser
-        self.memory_parser = MemoryParser()
-        self.memory_parser.parse(self.node_trees)
-        self.memory_curve = self.memory_parser.memory_curve
-        self.allocated_items = self.memory_parser.allocated_items
-        self.reserved_items = self.memory_parser.reserved_items
-        self.paired_events = self.memory_parser.paired_events
-        self.size_ranges = self.memory_parser.size_ranges
-
     def get_views(self):
         '''
         Return available views this profile data can provide.
         '''
-        views = ['Overview']
-        if self.operator_items:
-            views.append('Operator')
-        if self.kernel_items:
-            views.append('GPU Kernel')
-        if self.memory_curve:
-            views.append('Memory')
+        views = []
+        if self.overview_parser:
+            if self.overview_parser.has_forward:
+                views.append('Overview')
+        if self.operator_parser:
+            if self.operator_items:
+                views.append('Operator')
+        if self.kernel_parser:
+            if self.kernel_items:
+                views.append('GPU Kernel')
+        if self.memory_parser:
+            if self.memory_curve:
+                views.append('Memory')
+        if self.distributed_parser:
+            if self.distributed_time:
+                views.append('Distributed')
         views.append('Trace')
         return views
 
     def get_device_infos(self):
-        if not self.gpu_ids:
+        if (not self.gpu_ids) and (not self.overview_parser.has_device):
             device_type = 'CPU'
             return {
                 "device_type": device_type,
@@ -166,7 +189,8 @@ class ProfileData:
             "ratio"
         ]
         data['cpu'] = []
-        data['gpu'] = []
+        if self.overview_parser.has_device:
+            data['gpu'] = []
         total_cpu_time = self.model_perspective_items['ProfileStep'].cpu_time
         total_gpu_time = self.model_perspective_items['ProfileStep'].gpu_time
         for stage_name in [
@@ -194,28 +218,30 @@ class ProfileData:
                 cpu_stage_data['ratio'] = format_ratio(
                     self.model_perspective_items[stage_name].cpu_time /
                     total_cpu_time)
-                gpu_stage_data = OrderedDict()
-                gpu_stage_data['name'] = stage_name
-                gpu_stage_data['calls'] = self.model_perspective_items[
-                    stage_name].call
-                gpu_stage_data['total_time'] = format_time(
-                    self.model_perspective_items[stage_name].gpu_time,
-                    time_unit)
-                gpu_stage_data['avg_time'] = format_time(
-                    self.model_perspective_items[stage_name].avg_gpu_time,
-                    time_unit)
-                gpu_stage_data['max_time'] = format_time(
-                    self.model_perspective_items[stage_name].max_gpu_time,
-                    time_unit)
-                gpu_stage_data['min_time'] = format_time(
-                    self.model_perspective_items[stage_name].min_gpu_time,
-                    time_unit,
-                    inf_subs=0)
-                gpu_stage_data['ratio'] = format_ratio(
-                    self.model_perspective_items[stage_name].gpu_time /
-                    total_gpu_time)
+                if self.overview_parser.has_device:
+                    gpu_stage_data = OrderedDict()
+                    gpu_stage_data['name'] = stage_name
+                    gpu_stage_data['calls'] = self.model_perspective_items[
+                        stage_name].call
+                    gpu_stage_data['total_time'] = format_time(
+                        self.model_perspective_items[stage_name].gpu_time,
+                        time_unit)
+                    gpu_stage_data['avg_time'] = format_time(
+                        self.model_perspective_items[stage_name].avg_gpu_time,
+                        time_unit)
+                    gpu_stage_data['max_time'] = format_time(
+                        self.model_perspective_items[stage_name].max_gpu_time,
+                        time_unit)
+                    gpu_stage_data['min_time'] = format_time(
+                        self.model_perspective_items[stage_name].min_gpu_time,
+                        time_unit,
+                        inf_subs=0)
+                    gpu_stage_data['ratio'] = format_ratio(
+                        self.model_perspective_items[stage_name].gpu_time /
+                        total_gpu_time)
                 data['cpu'].append(cpu_stage_data)
-                data['gpu'].append(gpu_stage_data)
+                if self.overview_parser.has_device:
+                    data['gpu'].append(gpu_stage_data)
         return data
 
     def get_model_perspective_perstep(self, device_type, time_unit):
@@ -363,11 +389,12 @@ class ProfileData:
                         'CPU']['ALL']:
                     data['order'].append(event_type)
                     data[event_type] = []
-            for event_type in GPUType:
-                if event_type in self.merged_events_per_stage['ProfileStep'][
-                        'GPU']['ALL']:
-                    data['order'].append(event_type)
-                    data[event_type] = []
+            if self.overview_parser.has_device:
+                for event_type in GPUType:
+                    if event_type in self.merged_events_per_stage[
+                            'ProfileStep']['GPU']['ALL']:
+                        data['order'].append(event_type)
+                        data[event_type] = []
             for stage_name in [
                     'ProfileStep', 'Dataloader', 'Forward', 'Backward',
                     'Optimization', 'Other'
@@ -408,46 +435,74 @@ class ProfileData:
 
     def get_userdefined_perspective(self, time_unit):
         data = OrderedDict()
-        data['column_name'] = [
-            'name', 'calls', 'cpu_total_time', 'cpu_avg_time', 'cpu_max_time',
-            'cpu_min_time', 'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
-            'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
-        ]
+        if self.overview_parser.has_device:
+            data['column_name'] = [
+                'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
+                'cpu_max_time', 'cpu_min_time', 'cpu_ratio', 'gpu_total_time',
+                'gpu_avg_time', 'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+            ]
+            data['has_gpu'] = True
+        else:
+            data['column_name'] = [
+                'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
+                'cpu_max_time', 'cpu_min_time', 'cpu_ratio'
+            ]
+            data['has_gpu'] = False
         data['events'] = []
+
         total_cpu_time = 0
         total_gpu_time = 0
         for name, event in self.userdefined_items.items():
             total_cpu_time += event.cpu_time
             total_gpu_time += event.general_gpu_time
         for name, event in self.userdefined_items.items():
-            data['events'].append({
-                "name":
-                name,
-                "calls":
-                event.call,
-                "cpu_total_time":
-                format_time(event.cpu_time, time_unit),
-                "cpu_avg_time":
-                format_time(event.avg_cpu_time, time_unit),
-                "cpu_max_time":
-                format_time(event.max_cpu_time, time_unit),
-                "cpu_min_time":
-                format_time(event.min_cpu_time, time_unit),
-                "cpu_ratio":
-                format_ratio(event.cpu_time /
-                             total_cpu_time if total_cpu_time != 0 else 0.0),
-                "gpu_total_time":
-                format_time(event.general_gpu_time, time_unit),
-                "gpu_avg_time":
-                format_time(event.avg_general_gpu_time, time_unit),
-                "gpu_max_time":
-                format_time(event.max_general_gpu_time, time_unit),
-                "gpu_min_time":
-                format_time(event.min_general_gpu_time, time_unit),
-                "gpu_ratio":
-                format_ratio(event.general_gpu_time /
-                             total_gpu_time if total_gpu_time != 0 else 0.0)
-            })
+            if self.overview_parser.has_device:
+                data['events'].append({
+                    "name":
+                    name,
+                    "calls":
+                    event.call,
+                    "cpu_total_time":
+                    format_time(event.cpu_time, time_unit),
+                    "cpu_avg_time":
+                    format_time(event.avg_cpu_time, time_unit),
+                    "cpu_max_time":
+                    format_time(event.max_cpu_time, time_unit),
+                    "cpu_min_time":
+                    format_time(event.min_cpu_time, time_unit),
+                    "cpu_ratio":
+                    format_ratio(event.cpu_time / total_cpu_time
+                                 if total_cpu_time != 0 else 0.0),
+                    "gpu_total_time":
+                    format_time(event.general_gpu_time, time_unit),
+                    "gpu_avg_time":
+                    format_time(event.avg_general_gpu_time, time_unit),
+                    "gpu_max_time":
+                    format_time(event.max_general_gpu_time, time_unit),
+                    "gpu_min_time":
+                    format_time(event.min_general_gpu_time, time_unit),
+                    "gpu_ratio":
+                    format_ratio(event.general_gpu_time / total_gpu_time
+                                 if total_gpu_time != 0 else 0.0)
+                })
+            else:
+                data['events'].append({
+                    "name":
+                    name,
+                    "calls":
+                    event.call,
+                    "cpu_total_time":
+                    format_time(event.cpu_time, time_unit),
+                    "cpu_avg_time":
+                    format_time(event.avg_cpu_time, time_unit),
+                    "cpu_max_time":
+                    format_time(event.max_cpu_time, time_unit),
+                    "cpu_min_time":
+                    format_time(event.min_cpu_time, time_unit),
+                    "cpu_ratio":
+                    format_ratio(event.cpu_time / total_cpu_time
+                                 if total_cpu_time != 0 else 0.0),
+                })
         return data
 
     def get_operator_pie(self, topk, sorted_by='GPUTotal', time_unit='ms'):
@@ -457,7 +512,10 @@ class ProfileData:
             "ratio"
         ]
         data['cpu'] = []
-        data['gpu'] = []
+        if self.has_gpu:
+            data['gpu'] = []
+        else:
+            sorted_by = 'CPUTotal'
         if sorted_by == 'CPUTotal':
             sorted_items = sorted(
                 self.operator_items.items(),
@@ -508,7 +566,7 @@ class ProfileData:
         total_gpu_time = 0.0
         for op_name, item in items:
             total_cpu_time += item.cpu_time
-            total_gpu_time += item.gpu_time
+            total_gpu_time += item.general_gpu_time
 
         for op_name, item in items:
             cpu_stage_data = OrderedDict()
@@ -524,21 +582,23 @@ class ProfileData:
                                                      time_unit)
             cpu_stage_data['ratio'] = format_ratio(
                 item.cpu_time / total_cpu_time)
-            gpu_stage_data = OrderedDict()
-            gpu_stage_data['name'] = op_name
-            gpu_stage_data['calls'] = item.call
-            gpu_stage_data['total_time'] = format_time(item.gpu_time,
-                                                       time_unit)
-            gpu_stage_data['avg_time'] = format_time(item.avg_gpu_time,
-                                                     time_unit)
-            gpu_stage_data['max_time'] = format_time(item.max_gpu_time,
-                                                     time_unit)
-            gpu_stage_data['min_time'] = format_time(item.min_gpu_time,
-                                                     time_unit)
-            gpu_stage_data['ratio'] = format_ratio(
-                item.gpu_time / total_gpu_time)
+            if self.has_gpu:
+                gpu_stage_data = OrderedDict()
+                gpu_stage_data['name'] = op_name
+                gpu_stage_data['calls'] = item.call
+                gpu_stage_data['total_time'] = format_time(
+                    item.general_gpu_time, time_unit)
+                gpu_stage_data['avg_time'] = format_time(
+                    item.avg_general_gpu_time, time_unit)
+                gpu_stage_data['max_time'] = format_time(
+                    item.max_general_gpu_time, time_unit)
+                gpu_stage_data['min_time'] = format_time(
+                    item.min_general_gpu_time, time_unit)
+                gpu_stage_data['ratio'] = format_ratio(
+                    item.general_gpu_time / total_gpu_time)
             data['cpu'].append(cpu_stage_data)
-            data['gpu'].append(gpu_stage_data)
+            if self.has_gpu:
+                data['gpu'].append(gpu_stage_data)
         return data
 
     def get_operator_pie_expand(self, topk, device_type, time_unit):
@@ -556,10 +616,12 @@ class ProfileData:
         else:
             items = sorted_items[:topk]
             other_items = []
-        data['order'].extend(['infer_shape', 'compute', 'node_creation'])
+        data['order'].extend(
+            ['infer_shape', 'compute', 'node_creation', 'others'])
         inner_op_data = defaultdict(list)
         for op_name, event in items:
             data['phase_type'].append(op_name)
+            innerop_knownsub_times = 0
             for innerop_name, item in event.operator_inners.items():
                 if 'infer_shape' in innerop_name:
                     innerop_name = 'infer_shape'
@@ -572,9 +634,20 @@ class ProfileData:
                 if device_type == 'cpu':
                     inner_op_data[innerop_name].append(
                         format_time(item.cpu_time, time_unit))
+                    innerop_knownsub_times += item.cpu_time
                 else:
                     inner_op_data[innerop_name].append(
                         format_time(item.general_gpu_time, time_unit))
+                    innerop_knownsub_times += item.general_gpu_time
+            if device_type == 'cpu':
+                inner_op_data['others'].append(
+                    format_time(event.cpu_time - innerop_knownsub_times,
+                                time_unit))
+            else:
+                inner_op_data['others'].append(
+                    format_time(
+                        event.general_gpu_time - innerop_knownsub_times,
+                        time_unit))
             for innerop_name in data['order']:
                 hasfound = False
                 for key in event.operator_inners:
@@ -584,6 +657,8 @@ class ProfileData:
                 if hasfound == False:
                     inner_op_data[innerop_name].append(0)
         if other_items:
+            innerop_knownsub_times = 0
+            total_event_times = 0
             data['phase_type'].append('others')
             others_time = defaultdict(float)
             for op_name, event in other_items:
@@ -598,14 +673,22 @@ class ProfileData:
                         continue
                     if device_type == 'cpu':
                         others_time[innerop_name] += item.cpu_time
+                        innerop_knownsub_times += item.cpu_time
                     else:
                         others_time[innerop_name] += item.general_gpu_time
+                        innerop_knownsub_times += item.general_gpu_time
+                if device_type == 'cpu':
+                    total_event_times += event.cpu_time
+                else:
+                    total_event_times += event.general_gpu_time
+            others_time['others'] = total_event_times - innerop_knownsub_times
             for innerop_name in data['order']:
                 if innerop_name not in others_time:
                     inner_op_data[innerop_name].append(0.0)
                 else:
                     inner_op_data[innerop_name].append(
                         format_time(others_time[innerop_name], time_unit))
+
         for innerop_name in data['order']:
             data['data'].append(inner_op_data[innerop_name])
         return data
@@ -665,54 +748,93 @@ class ProfileData:
             total_gpu_time += event.general_gpu_time
         if not search_name:
             if group_by == 'op_name':
-                data['column_name'] = [
-                    'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
-                    'cpu_max_time', 'cpu_min_time', 'cpu_ratio',
-                    'gpu_total_time', 'gpu_avg_time', 'gpu_max_time',
-                    'gpu_min_time', 'gpu_ratio'
-                ]
+                if self.has_gpu:
+                    data['column_name'] = [
+                        'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
+                        'cpu_max_time', 'cpu_min_time', 'cpu_ratio',
+                        'gpu_total_time', 'gpu_avg_time', 'gpu_max_time',
+                        'gpu_min_time', 'gpu_ratio'
+                    ]
+                    data['has_gpu'] = True
+                else:
+                    data['column_name'] = [
+                        'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
+                        'cpu_max_time', 'cpu_min_time', 'cpu_ratio'
+                    ]
+                    data['has_gpu'] = False
                 sorted_items = sorted(
                     self.operator_items.items(),
                     key=lambda x: x[1].max_general_gpu_time,
                     reverse=True)
                 for name, event in sorted_items:
-                    data['events'].append({
-                        "name":
-                        name,
-                        "calls":
-                        event.call,
-                        "children":
-                        get_children_data(event),
-                        "cpu_total_time":
-                        format_time(event.cpu_time, time_unit),
-                        "cpu_avg_time":
-                        format_time(event.avg_cpu_time, time_unit),
-                        "cpu_max_time":
-                        format_time(event.max_cpu_time, time_unit),
-                        "cpu_min_time":
-                        format_time(event.min_cpu_time, time_unit),
-                        "cpu_ratio":
-                        format_ratio(event.cpu_time / total_cpu_time
-                                     if total_cpu_time != 0 else 0.0),
-                        "gpu_total_time":
-                        format_time(event.general_gpu_time, time_unit),
-                        "gpu_avg_time":
-                        format_time(event.avg_general_gpu_time, time_unit),
-                        "gpu_max_time":
-                        format_time(event.max_general_gpu_time, time_unit),
-                        "gpu_min_time":
-                        format_time(event.min_general_gpu_time, time_unit),
-                        "gpu_ratio":
-                        format_ratio(event.general_gpu_time / total_gpu_time
-                                     if total_gpu_time != 0 else 0.0)
-                    })
+                    if self.has_gpu:
+                        data['events'].append({
+                            "name":
+                            name,
+                            "calls":
+                            event.call,
+                            "children":
+                            get_children_data(event),
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time / total_cpu_time
+                                         if total_cpu_time != 0 else 0.0),
+                            "gpu_total_time":
+                            format_time(event.general_gpu_time, time_unit),
+                            "gpu_avg_time":
+                            format_time(event.avg_general_gpu_time, time_unit),
+                            "gpu_max_time":
+                            format_time(event.max_general_gpu_time, time_unit),
+                            "gpu_min_time":
+                            format_time(event.min_general_gpu_time, time_unit),
+                            "gpu_ratio":
+                            format_ratio(
+                                event.general_gpu_time /
+                                total_gpu_time if total_gpu_time != 0 else 0.0)
+                        })
+                    else:
+                        data['events'].append({
+                            "name":
+                            name,
+                            "calls":
+                            event.call,
+                            "children":
+                            get_children_data(event),
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time / total_cpu_time
+                                         if total_cpu_time != 0 else 0.0)
+                        })
             else:
-                data['column_name'] = [
-                    'name', 'calls', 'input_shape', 'cpu_total_time',
-                    'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
-                    'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
-                    'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
-                ]
+                if self.has_gpu:
+                    data['column_name'] = [
+                        'name', 'calls', 'input_shape', 'cpu_total_time',
+                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
+                        'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                        'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                    ]
+                    data['has_gpu'] = True
+                else:
+                    data['column_name'] = [
+                        'name', 'calls', 'input_shape', 'cpu_total_time',
+                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
+                        'cpu_ratio'
+                    ]
+                    data['has_gpu'] = False
                 new_arrange_data = {}
                 for op_name, items_with_input_shape in self.operator_items_with_input_shape.items(
                 ):
@@ -731,109 +853,10 @@ class ProfileData:
                             '{}:{}'.format(*shape.split('-'))
                             for shape in shapes
                         ]
-                    data['events'].append({
-                        "name":
-                        name,
-                        "calls":
-                        event.call,
-                        "children":
-                        get_children_data(event),
-                        "input_shape":
-                        shape_string,
-                        "cpu_total_time":
-                        format_time(event.cpu_time, time_unit),
-                        "cpu_avg_time":
-                        format_time(event.avg_cpu_time, time_unit),
-                        "cpu_max_time":
-                        format_time(event.max_cpu_time, time_unit),
-                        "cpu_min_time":
-                        format_time(event.min_cpu_time, time_unit),
-                        "cpu_ratio":
-                        format_ratio(event.cpu_time / total_cpu_time
-                                     if total_cpu_time != 0 else 0.0),
-                        "gpu_total_time":
-                        format_time(event.general_gpu_time, time_unit),
-                        "gpu_avg_time":
-                        format_time(event.avg_general_gpu_time, time_unit),
-                        "gpu_max_time":
-                        format_time(event.max_general_gpu_time, time_unit),
-                        "gpu_min_time":
-                        format_time(event.min_general_gpu_time, time_unit),
-                        "gpu_ratio":
-                        format_ratio(event.general_gpu_time / total_gpu_time
-                                     if total_gpu_time != 0 else 0.0)
-                    })
-
-        else:
-            sorted_items = sorted(
-                self.operator_items.items(),
-                key=lambda x: x[1].max_general_gpu_time,
-                reverse=True)
-            results = []
-            for op_name, item in sorted_items:
-                if search_name in op_name:
-                    results.append(op_name)
-
-            if group_by == 'op_name':
-                data['column_name'] = [
-                    'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
-                    'cpu_max_time', 'cpu_min_time', 'cpu_ratio',
-                    'gpu_total_time', 'gpu_avg_time', 'gpu_max_time',
-                    'gpu_min_time', 'gpu_ratio'
-                ]
-                for op_name in results:
-                    event = self.operator_items[op_name]
-                    data['events'].append({
-                        "name":
-                        op_name,
-                        "calls":
-                        event.call,
-                        "children":
-                        get_children_data(event),
-                        "cpu_total_time":
-                        format_time(event.cpu_time, time_unit),
-                        "cpu_avg_time":
-                        format_time(event.avg_cpu_time, time_unit),
-                        "cpu_max_time":
-                        format_time(event.max_cpu_time, time_unit),
-                        "cpu_min_time":
-                        format_time(event.min_cpu_time, time_unit),
-                        "cpu_ratio":
-                        format_ratio(event.cpu_time / total_cpu_time
-                                     if total_cpu_time != 0 else 0.0),
-                        "gpu_total_time":
-                        format_time(event.general_gpu_time, time_unit),
-                        "gpu_avg_time":
-                        format_time(event.avg_general_gpu_time, time_unit),
-                        "gpu_max_time":
-                        format_time(event.max_general_gpu_time, time_unit),
-                        "gpu_min_time":
-                        format_time(event.min_general_gpu_time, time_unit),
-                        "gpu_ratio":
-                        format_ratio(event.general_gpu_time / total_gpu_time
-                                     if total_gpu_time != 0 else 0.0)
-                    })
-            else:
-                data['column_name'] = [
-                    'name', 'calls', 'input_shape', 'cpu_total_time',
-                    'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
-                    'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
-                    'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
-                ]
-                for op_name in results:
-                    for input_shape, event in self.operator_items_with_input_shape[
-                            op_name].items():
-                        if not input_shape:
-                            shape_string = []
-                        else:
-                            shapes = input_shape.split('\t')[:-1]
-                            shape_string = [
-                                '{}:{}'.format(*shape.split('-'))
-                                for shape in shapes
-                            ]
+                    if self.has_gpu:
                         data['events'].append({
                             "name":
-                            op_name,
+                            name,
                             "calls":
                             event.call,
                             "children":
@@ -864,6 +887,195 @@ class ProfileData:
                                 event.general_gpu_time /
                                 total_gpu_time if total_gpu_time != 0 else 0.0)
                         })
+                    else:
+                        data['events'].append({
+                            "name":
+                            name,
+                            "calls":
+                            event.call,
+                            "children":
+                            get_children_data(event),
+                            "input_shape":
+                            shape_string,
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time / total_cpu_time
+                                         if total_cpu_time != 0 else 0.0)
+                        })
+
+        else:
+            sorted_items = sorted(
+                self.operator_items.items(),
+                key=lambda x: x[1].max_general_gpu_time,
+                reverse=True)
+            results = []
+            for op_name, item in sorted_items:
+                if search_name in op_name:
+                    results.append(op_name)
+
+            if group_by == 'op_name':
+                if self.has_gpu:
+                    data['column_name'] = [
+                        'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
+                        'cpu_max_time', 'cpu_min_time', 'cpu_ratio',
+                        'gpu_total_time', 'gpu_avg_time', 'gpu_max_time',
+                        'gpu_min_time', 'gpu_ratio'
+                    ]
+                    data['has_gpu'] = True
+                else:
+                    data['column_name'] = [
+                        'name', 'calls', 'cpu_total_time', 'cpu_avg_time',
+                        'cpu_max_time', 'cpu_min_time', 'cpu_ratio'
+                    ]
+                    data['has_gpu'] = False
+                for op_name in results:
+                    event = self.operator_items[op_name]
+                    if self.has_gpu:
+                        data['events'].append({
+                            "name":
+                            op_name,
+                            "calls":
+                            event.call,
+                            "children":
+                            get_children_data(event),
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time / total_cpu_time
+                                         if total_cpu_time != 0 else 0.0),
+                            "gpu_total_time":
+                            format_time(event.general_gpu_time, time_unit),
+                            "gpu_avg_time":
+                            format_time(event.avg_general_gpu_time, time_unit),
+                            "gpu_max_time":
+                            format_time(event.max_general_gpu_time, time_unit),
+                            "gpu_min_time":
+                            format_time(event.min_general_gpu_time, time_unit),
+                            "gpu_ratio":
+                            format_ratio(
+                                event.general_gpu_time /
+                                total_gpu_time if total_gpu_time != 0 else 0.0)
+                        })
+                    else:
+                        data['events'].append({
+                            "name":
+                            op_name,
+                            "calls":
+                            event.call,
+                            "children":
+                            get_children_data(event),
+                            "cpu_total_time":
+                            format_time(event.cpu_time, time_unit),
+                            "cpu_avg_time":
+                            format_time(event.avg_cpu_time, time_unit),
+                            "cpu_max_time":
+                            format_time(event.max_cpu_time, time_unit),
+                            "cpu_min_time":
+                            format_time(event.min_cpu_time, time_unit),
+                            "cpu_ratio":
+                            format_ratio(event.cpu_time / total_cpu_time
+                                         if total_cpu_time != 0 else 0.0)
+                        })
+
+            else:
+                if self.has_gpu:
+                    data['column_name'] = [
+                        'name', 'calls', 'input_shape', 'cpu_total_time',
+                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
+                        'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                        'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                    ]
+                    data['has_gpu'] = True
+                else:
+                    data['column_name'] = [
+                        'name', 'calls', 'input_shape', 'cpu_total_time',
+                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
+                        'cpu_ratio'
+                    ]
+                    data['has_gpu'] = False
+                for op_name in results:
+                    for input_shape, event in self.operator_items_with_input_shape[
+                            op_name].items():
+                        if not input_shape:
+                            shape_string = []
+                        else:
+                            shapes = input_shape.split('\t')[:-1]
+                            shape_string = [
+                                '{}:{}'.format(*shape.split('-'))
+                                for shape in shapes
+                            ]
+                        if self.has_gpu:
+                            data['events'].append({
+                                "name":
+                                op_name,
+                                "calls":
+                                event.call,
+                                "children":
+                                get_children_data(event),
+                                "input_shape":
+                                shape_string,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0),
+                                "gpu_total_time":
+                                format_time(event.general_gpu_time, time_unit),
+                                "gpu_avg_time":
+                                format_time(event.avg_general_gpu_time,
+                                            time_unit),
+                                "gpu_max_time":
+                                format_time(event.max_general_gpu_time,
+                                            time_unit),
+                                "gpu_min_time":
+                                format_time(event.min_general_gpu_time,
+                                            time_unit),
+                                "gpu_ratio":
+                                format_ratio(event.general_gpu_time /
+                                             total_gpu_time
+                                             if total_gpu_time != 0 else 0.0)
+                            })
+                        else:
+                            data['events'].append({
+                                "name":
+                                op_name,
+                                "calls":
+                                event.call,
+                                "children":
+                                get_children_data(event),
+                                "input_shape":
+                                shape_string,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0)
+                            })
 
         return data
 

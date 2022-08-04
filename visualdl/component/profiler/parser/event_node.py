@@ -182,6 +182,9 @@ class ProfilerResult:
         self.data = None
         self.extra_info = None
         self.schema_version = None
+        self.has_hostnodes = True
+        self.has_devicenodes = True
+        self.has_memnodes = True
         self.parse(json_data)
         self.content = json_data
 
@@ -210,6 +213,13 @@ class ProfilerResult:
                 devicenodes.append(DeviceNode.from_json(event))
             elif event['cat'] in memory_node_event_map:
                 memnodes.append(MemNode.from_json(event))
+        if not hostnodes:
+            self.has_hostnodes = False
+        if not devicenodes:
+            self.has_devicenodes = False
+        if not memnodes:
+            self.has_memnodes = False
+
         self.data = self.build_tree(hostnodes, runtimenodes, devicenodes,
                                     memnodes)
         # #print("I am in event_node parse: self.data", self.data)
@@ -221,14 +231,16 @@ class ProfilerResult:
         thread2mem_event_nodes = collections.defaultdict(list)
         correlation_id2runtime_event_node = {}
         thread_event_trees = {}
-
+        thread_ids = set()
         for hostnode in hostnodes:
             thread2host_event_nodes[hostnode.thread_id].append(hostnode)
+            thread_ids.add(hostnode.thread_id)
         # #print('thread2host_event_nodes',  thread2host_event_nodes)
         # construct thread2runtime_event_nodes and correlation_id2runtime_event_node
         for runtimenode in runtimenodes:
             thread2runtime_event_nodes[runtimenode.thread_id].append(
                 runtimenode)
+            thread_ids.add(runtimenode.thread_id)
             correlation_id2runtime_event_node[
                 runtimenode.correlation_id] = runtimenode
 
@@ -274,14 +286,11 @@ class ProfilerResult:
 
         # construct trees
         # #print('event node thread2host_event_nodes:', thread2host_event_nodes)
-        for threadid, hostnodes in thread2host_event_nodes.items():
+        for threadid in thread_ids:
             thread_event_trees[threadid] = self._build_tree_relationship(
                 thread2host_event_nodes[threadid],
                 thread2runtime_event_nodes[threadid],
                 thread2mem_event_nodes[threadid])
-            #print(threadid, 'nodes:', len(hostnodes))
-            result = traverse_tree(thread_event_trees)
-            #print('after build trees:', len(result[threadid]))
 
         return thread_event_trees
 
@@ -407,6 +416,15 @@ class ProfilerResult:
 
     def get_span_idx(self):
         return self.span_idx
+
+    def has_device(self):
+        return self.has_devicenodes
+
+    def has_host(self):
+        return self.has_hostnodes
+
+    def has_memory(self):
+        return self.has_memnodes
 
     def save(self, path, format):
         pass

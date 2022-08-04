@@ -130,7 +130,6 @@ class MemoryParser:
                                     paired_results.pop())
                 self.paired_events[device_type].extend(paired_results)
             self.size_ranges[device_type] = (0, max_size)
-            print(self.paired_events['Place(cpu)'])
 
     def _analyse_node_memory(self, event_name, node):
         # print(event_name)
