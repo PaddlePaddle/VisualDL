@@ -109,7 +109,7 @@ const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
                     text === 1
                         ? t('Number-calls')
                         : text === 2
-                        ? t('duration') + `${units})`
+                        ? t('duration') + `(${units})`
                         : t('Overall-proportion') + `(%)`;
 
                 const values = [];
