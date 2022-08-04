@@ -447,7 +447,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </Popover>
                 </div>
                 <PieceContent>
-                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
+                    <EchartPie style={{padding: `${rem(0)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
                             <PieChart className={'Content'} data={cpuData} isCpu={true} color={color} />
                         </div>
