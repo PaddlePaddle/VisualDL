@@ -25,11 +25,12 @@ const PerformanceContent = styled.div`
             .labels {
                 width: ${rem(17)};
                 height: ${rem(5)};
+                border-radius: ${rem(2.5)};
                 background: yellow;
                 line-height: ${rem(22)};
             }
             .legend_name {
-                margin-left: ${rem(20)};
+                margin-left: ${rem(8)};
                 font-family: PingFangSC-Regular;
                 font-size: ${rem(14)};
                 color: #666666;

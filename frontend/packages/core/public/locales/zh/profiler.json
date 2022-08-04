@@ -1,0 +1,31 @@
+{
+    "Overview-view": "总览视图",
+    "time-consuming": "运行耗时",
+    "Expand-view": "展开查看耗时详情",
+    "training-step-time": "训练步数耗时",
+    "performance-consumption": "性能消耗",
+    "consumption-distribution": "模型各阶段消耗分布",
+    "custom-events": "自定义事件耗时",
+    "Configuration-details": "配置详情",
+    "number-processes": "进程数",
+    "Equipment-type": "设备类型",
+    "Device-Details": "设备详情",
+    "Process-utilization": "进程利用率",
+    "system-utilization": "系统利用率",
+    "computing-power": "算力",
+    "Utilization": "利用率",
+    "Traffic-Processor-Efficiency": "流量处理器效率",
+    "Traffic-processor-occupancy": "流量处理器占用率",
+    "usage-time": "tensor core使用时间占比"
+
+
+
+
+
+
+
+
+
+
+
+}

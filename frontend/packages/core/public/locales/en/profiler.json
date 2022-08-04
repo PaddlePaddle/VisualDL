@@ -1,0 +1,21 @@
+{
+    "Overview-view": "Overview view",
+    "time-consuming": "time consuming to run",
+    "Expand-view": "Expand to view time-consuming details",
+    "training-step-time": "training step time",
+    "performance-consumption": "performance consumption",
+    "consumption-distribution": "The consumption distribution of each stage of the model",
+    "custom-events": "Time-consuming custom events",
+    "Configuration-details": "Configuration details",
+    "number-processes": "number of processes",
+    "Equipment-type": "Equipment type",
+    "Device-Details": "Device Details",
+    "Process-utilization": "Process utilization",
+    "system-utilization": "system utilization",
+    "computing-power": "computing power",
+    "Utilization": "Utilization",
+    "Traffic-Processor-Efficiency": "Traffic Processor Efficiency",
+    "Traffic-processor-occupancy": "Traffic processor occupancy",
+    "usage-time": "The proportion of tensor core usage time"
+
+}

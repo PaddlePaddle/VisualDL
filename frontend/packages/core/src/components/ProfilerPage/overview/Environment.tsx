@@ -127,7 +127,7 @@ export type EnvironmentProps = {
     environment: environmentType;
 };
 const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     const tooltips = (
         <div>
             <p>Content</p>
@@ -137,21 +137,21 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
     return (
         <Fragment>
             <Configure>
-                <div className="title">配置详情</div>
+                <div className="title">{t('profiler:Configuration-details')}</div>
                 <Processes>
                     <Processes_items>
-                        <Processes_label>进程数</Processes_label>
+                        <Processes_label>{t('number-processes')}</Processes_label>
                         <Processes_content>{environment?.num_workers}</Processes_content>
                     </Processes_items>
                     <Processes_items style={{paddingLeft: `${rem(50)}`, borderRight: 'none'}}>
-                        <Processes_label>设备类型</Processes_label>
+                        <Processes_label>{t('Equipment-type')}</Processes_label>
                         <Processes_content>{environment?.device_type}</Processes_content>
                     </Processes_items>
                 </Processes>
             </Configure>
             <Configure>
                 <div className="title">
-                    <div>设备详情</div>
+                    <div>{t('Device-Details')}</div>
                     <Popover content={tooltips} placement="right">
                         <ArgumentOperation
                             onClick={() => {
@@ -168,11 +168,11 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                         <div className="itemlist">
                             <div className="items">
                                 <div className="percentage">{environment?.CPU.process_utilization}%</div>
-                                <div className="items_label">进程利用率</div>
+                                <div className="items_label">{t('Process-utilization')}</div>
                             </div>
                             <div className="items items_last">
                                 <div className="percentage">{environment?.CPU.system_utilization}%</div>
-                                <div className="items_label">系统利用率</div>
+                                <div className="items_label">{t('system-utilization')}</div>
                             </div>
                         </div>
                     </div>
@@ -185,7 +185,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                                     {environment?.GPU?.memory ? environment?.GPU?.memory : 0}
                                 </div>
                                 <div className="list_items" style={{borderRight: 'none'}}>
-                                    算力
+                                    {t('computing-power')}
                                     {environment?.GPU?.compute_capability ? environment?.GPU?.compute_capability : 0}
                                 </div>
                             </div>
@@ -195,19 +195,19 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                                 <div className="percentage">
                                     {environment?.GPU?.utilization ? environment?.GPU?.utilization : 0}%
                                 </div>
-                                <div className="items_label">利用率</div>
+                                <div className="items_label">{t('Utilization')}</div>
                             </div>
                             <div className="items">
                                 <div className="percentage">
                                     {environment?.GPU?.sm_efficiency ? environment?.GPU?.sm_efficiency : 0}%
                                 </div>
-                                <div className="items_label">流量处理器效率</div>
+                                <div className="items_label">{t('Traffic-Processor-Efficiency')}</div>
                             </div>
                             <div className="items">
                                 <div className="percentage">
                                     {environment?.GPU.achieved_occupancy ? environment?.GPU.achieved_occupancy : 0}%
                                 </div>
-                                <div className="items_label">流量处理器占用率</div>
+                                <div className="items_label">{t('Traffic-processor-occupancy')}</div>
                             </div>
                             <div className="items items_last">
                                 <div className="percentage">
@@ -216,7 +216,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                                         : 0}
                                     %
                                 </div>
-                                <div className="items_label">tensor core使用时间占比</div>
+                                <div className="items_label">{t('usage-time')}</div>
                             </div>
                         </div>
                     </div>
