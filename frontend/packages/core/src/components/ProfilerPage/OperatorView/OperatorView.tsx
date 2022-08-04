@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
@@ -158,7 +159,7 @@ const Configures = styled(Configure)`
                 height: ${rem(36)};
                 margin-right: ${rem(15)};
                 .ant-select {
-                    border-radius: 4px;
+                    border-radius: ${rem(4)};
                     height: 100%;
                     .ant-select-selector {
                         height: 100%;
@@ -204,7 +205,7 @@ const EchartPie = styled.div`
 `;
 const PieceContent = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     width: 100%;
     height: auto;
     // padding-bottom: ${rem(20)};
@@ -251,6 +252,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const [tableLoading, settableLoading] = useState(true);
     const [distributed, setDistributed] = useState<pie_expand>();
     const [isCPU, setIsCPU] = useState(true);
+    const [hasGpu, setHasGpu] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [isExpend, setIsExpend] = useState<boolean>(false);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
@@ -281,12 +283,16 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         proportion: item.ratio
                     });
                 }
-                for (const item of result.gpu) {
-                    gpuChartData.push({
-                        value: item.total_time,
-                        name: item.name,
-                        proportion: item.ratio
-                    });
+                if (result.gpu) {
+                    for (const item of result.gpu) {
+                        gpuChartData.push({
+                            value: item.total_time,
+                            name: item.name,
+                            proportion: item.ratio
+                        });
+                    }
+                } else {
+                    setHasGpu(false);
                 }
                 setCpuData(cpuChartData);
                 setGpuData(gpuChartData);
@@ -367,8 +373,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onTopchange = (value: number) => {
         setTop(value);
     };
-    const columns2 = baseColumns2(units);
-    const columns1 = baseColumns1(units);
+    const columns2 = baseColumns2(units, hasGpu);
+    const columns1 = baseColumns1(units, hasGpu);
     const tooltips = (
         <div>
             <p>Content</p>
@@ -439,24 +445,26 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </div>
                     {isExpend ? (
                         <div className="tableContent">
-                            <RadioButtons>
-                                <ButtonsLeft
-                                    onClick={() => {
-                                        setIsCPU(true);
-                                    }}
-                                    className={isCPU ? 'is_active' : ''}
-                                >
-                                    CPU耗时
-                                </ButtonsLeft>
-                                <ButtonsRight
-                                    className={!isCPU ? 'is_active' : ''}
-                                    onClick={() => {
-                                        setIsCPU(false);
-                                    }}
-                                >
-                                    GPU耗时
-                                </ButtonsRight>
-                            </RadioButtons>
+                            {hasGpu && (
+                                <RadioButtons>
+                                    <ButtonsLeft
+                                        onClick={() => {
+                                            setIsCPU(true);
+                                        }}
+                                        className={isCPU ? 'is_active' : ''}
+                                    >
+                                        CPU耗时
+                                    </ButtonsLeft>
+                                    <ButtonsRight
+                                        className={!isCPU ? 'is_active' : ''}
+                                        onClick={() => {
+                                            setIsCPU(false);
+                                        }}
+                                    >
+                                        GPU耗时
+                                    </ButtonsRight>
+                                </RadioButtons>
+                            )}
                             <EchartPie4>
                                 <StackColumnChart
                                     className={'Content'}

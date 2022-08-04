@@ -57,7 +57,7 @@ export const options: EChartsOption = {
         }
     ]
 };
-export const baseColumns1 = (units: string) => {
+export const baseColumns1 = (units: string, hasGpu: boolean) => {
     const columns: ColumnsType<DataType> = [
         {
             title: '算子名称',
@@ -110,8 +110,10 @@ export const baseColumns1 = (units: string) => {
                     sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
                 }
             ]
-        },
-        {
+        }
+    ];
+    if (hasGpu) {
+        columns.push({
             title: 'GPU',
             children: [
                 {
@@ -145,11 +147,11 @@ export const baseColumns1 = (units: string) => {
                     sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
                 }
             ]
-        }
-    ];
+        });
+    }
     return columns;
 };
-export const baseColumns2 = (units: string) => {
+export const baseColumns2 = (units: string, hasGpu: boolean) => {
     const columns: ColumnsType<DataType> = [
         {
             title: '算子名称',
@@ -218,8 +220,10 @@ export const baseColumns2 = (units: string) => {
                     sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
                 }
             ]
-        },
-        {
+        }
+    ];
+    if (hasGpu) {
+        columns.push({
             title: 'GPU',
             children: [
                 {
@@ -253,7 +257,7 @@ export const baseColumns2 = (units: string) => {
                     sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
                 }
             ]
-        }
-    ];
-    return columns;
+        });
+        return columns;
+    }
 };

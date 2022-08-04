@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
@@ -17,6 +18,7 @@
 
 import React, {FunctionComponent, useEffect, useState} from 'react';
 import PieChart from '~/components/pieChart';
+import Select from '~/components/Select';
 import StackColumnChart from '~/components/StackColumnChart';
 import Trainchart from '~/components/Trainchart';
 import {fetcher} from '~/utils/fetch';
@@ -24,6 +26,7 @@ import {asideWidth, position, primaryColor, rem, size} from '~/utils/style';
 import {consumingColumns, customizeColumns} from './tools';
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
+import type {SelectProps} from '~/components/Select';
 import {ButtonsLeft, ButtonsRight, Configure, RadioButtons} from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
@@ -31,6 +34,7 @@ import PerformanceContent from './PerformanceContent';
 import type {
     Event,
     Gpu,
+    Cpu,
     consumingType,
     distributedData,
     environmentType,
@@ -52,12 +56,17 @@ const ViewWrapper = styled.div`
     position: relative;
     background-color: #fff;
 `;
+const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
+    width: 100%;
+    height: 100%;
+    font-size: ${rem(14)};
+`;
 const Configures = styled(Configure)`
     .tabs_title {
         position: absolute;
         margin-bottom: 0px;
-        height: 46px;
-        line-height: 46px;
+        height: ${rem(46)};
+        line-height: ${rem(46)};
     }
     .ant-tabs-centered > .ant-tabs-nav .ant-tabs-nav-wrap:not([class*='ant-tabs-nav-wrap-ping']) {
         justify-content: flex-end;
@@ -79,6 +88,28 @@ const Configures = styled(Configure)`
         color: #ffffff;
         background: #2932e1;
         border: 1px solid rgba(41, 50, 225, 1);
+    }
+    .titleContent {
+        margin-bottom: ${rem(10)};
+        display: flex;
+        align-items: center;
+        .title {
+            display: flex;
+            align-items: center;
+        }
+        display: flex;
+        justify-content: space-between;
+        .searchContent {
+            display: flex;
+            align-items: center;
+            .select_label {
+                margin-right: ${rem(15)};
+            }
+            .select_wrapper {
+                width: auto;
+                height: ${rem(36)};
+            }
+        }
     }
 `;
 const Title = styled.div`
@@ -157,7 +188,7 @@ const PieceContent = styled.div`
         }
         .ant-table.ant-table-bordered > .ant-table-container {
             border: 1px solid #dddddd;
-            border-radius: 8px;
+            border-radius: ${rem(8)};
         }
         > .loading {
             ${size('100%')}
@@ -185,16 +216,26 @@ interface chartDataType {
     gpu: cpuData[];
     cpu: cpuData[];
 }
+type SelectListItem<T> = {
+    value: T;
+    label: string;
+};
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
-    const [isCPU, setIsCPU] = useState(true);
     const [chartData, setChartData] = useState<chartDataType>();
+    const [hasGpu, setHasGpu] = useState<boolean>(true);
     const [performanceData, setPerformanceData] = useState<performanceType>();
     const [isExpend, setIsExpend] = useState(false);
-    const [tableData, setTableData] = useState<tableType[]>();
+    const [tableData, setTableData] = useState<tableType[] | Cpu[]>();
     const [tableLoading, settableLoading] = useState(true);
+    const [stepsList, setStepsList] = useState<SelectListItem<string>[]>([
+        {label: 'cpu', value: 'cpu'},
+        {label: 'gpu', value: 'gpu'}
+    ]);
+    const [TrainType, setTrainType] = useState<string>('cpu');
+    const [PerformanceType, setPerformanceType] = useState<string>('cpu');
     const [tableData2, setTableData2] = useState<Event[]>();
     const [tableLoading2, settableLoading2] = useState(true);
     const [trainData, setTrainData] = useState<trainType>();
@@ -219,44 +260,50 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const result = res as consumingType;
-                const tableDatas: tableType[] = [];
+                const tableDatas = [];
                 const data: Gpu[] = [];
-                for (const item of result.gpu) {
-                    const DataTypeItem: {[key: string]: any} = {};
-                    for (const key of result.column_name) {
-                        if (key !== 'name' && key !== 'calls') {
-                            const keys = 'GPU' + key;
-                            const items = item;
-                            DataTypeItem[keys] = items[key as keyof typeof item];
+                const chartData: chartDataType = {
+                    cpu: [],
+                    gpu: []
+                };
+                if (result.gpu) {
+                    for (const item of result.gpu) {
+                        const DataTypeItem: {[key: string]: any} = {};
+                        for (const key of result.column_name) {
+                            if (key !== 'name' && key !== 'calls') {
+                                const keys = 'GPU' + key;
+                                const items = item;
+                                DataTypeItem[keys] = items[key as keyof typeof item];
+                            }
                         }
+                        data.push(DataTypeItem as Gpu);
                     }
-                    data.push(DataTypeItem as Gpu);
+                    result.gpu.shift();
+                    for (const item of result.gpu) {
+                        chartData.gpu.push({
+                            value: item.total_time,
+                            name: item.name,
+                            proportion: item.ratio
+                        });
+                    }
+                } else {
+                    setHasGpu(false);
                 }
                 for (let index = 0; index < result.cpu.length; index++) {
-                    const DataTypeItem: tableType = {
-                        ...result.cpu[index],
-                        ...data[index]
-                    };
+                    const DataTypeItem = data[index]
+                        ? {
+                              ...result.cpu[index],
+                              ...data[index]
+                          }
+                        : result.cpu[index];
                     tableDatas.push(DataTypeItem);
                 }
                 console.log('tableData', tableDatas);
                 setTableData(tableDatas);
                 settableLoading(false);
                 result.cpu.shift();
-                result.gpu.shift();
-                const chartData: chartDataType = {
-                    cpu: [],
-                    gpu: []
-                };
                 for (const item of result.cpu) {
                     chartData.cpu.push({
-                        value: item.total_time,
-                        name: item.name,
-                        proportion: item.ratio
-                    });
-                }
-                for (const item of result.gpu) {
-                    chartData.gpu.push({
                         value: item.total_time,
                         name: item.name,
                         proportion: item.ratio
@@ -300,7 +347,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     }, [runs, workers, spans, views, units]);
 
     useEffect(() => {
-        const device_type = isCPU ? 'cpu' : 'gpu';
         if (runs && workers && spans && units) {
             // 性能消耗
             fetcher(
@@ -308,20 +354,24 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `?run=${runs}` +
                     `&worker=${workers}` +
                     `&span=${spans}` +
-                    `&device_type=${device_type}` +
+                    `&device_type=${PerformanceType}` +
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const result = res as performanceType;
                 console.log('PerformanceData', result);
                 setPerformanceData(result);
             });
+        }
+    }, [runs, workers, spans, views, PerformanceType, units]);
+    useEffect(() => {
+        if (runs && workers && spans && units) {
             // 训练步数耗时
             fetcher(
                 '/profiler/overview/model_perspective_perstep' +
                     `?run=${runs}` +
                     `&worker=${workers}` +
                     `&span=${spans}` +
-                    `&device_type=${device_type}` +
+                    `&device_type=${TrainType}` +
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const Data = res as trainType;
@@ -329,7 +379,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 setTrainData(Data);
             });
         }
-    }, [runs, workers, spans, views, isCPU, units]);
+    }, [runs, workers, spans, views, TrainType, units]);
     const color = [
         '#2932E1',
         '#00CC88',
@@ -375,8 +425,8 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             )}
                             {!tableLoading && (
                                 <Table
-                                    columns={consumingColumns(units)}
-                                    dataSource={tableData}
+                                    columns={consumingColumns(units, hasGpu)}
+                                    dataSource={tableData as tableType[]}
                                     bordered
                                     size="middle"
                                     pagination={false}
@@ -388,33 +438,36 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 </PieceContent>
             </Configures>
             <Configures>
-                <div className="title">训练步数耗时</div>
+                <div className="titleContent">
+                    <div className="title">训练步数耗时</div>
+                    {hasGpu && (
+                        <div className="searchContent">
+                            <div className="select_wrapper">
+                                <FullWidthSelect list={stepsList} value={TrainType} onChange={setTrainType} />
+                            </div>
+                        </div>
+                    )}
+                </div>
                 <EchartPie3>
                     <Trainchart className={'Content'} data={trainData}></Trainchart>
                 </EchartPie3>
             </Configures>
             <Configures>
-                <RadioButtons>
-                    <ButtonsLeft
-                        onClick={() => {
-                            setIsCPU(true);
-                        }}
-                        className={isCPU ? 'is_active' : ''}
-                    >
-                        CPU
-                    </ButtonsLeft>
-                    <ButtonsRight
-                        className={!isCPU ? 'is_active' : ''}
-                        onClick={() => {
-                            setIsCPU(false);
-                        }}
-                    >
-                        GPU
-                    </ButtonsRight>
-                </RadioButtons>
-            </Configures>
-            <Configures>
-                <div className="title tabs_title">性能消耗</div>
+                {/* <div className="title tabs_title">性能消耗</div> */}
+                <div className="titleContent">
+                    <div className="title">性能消耗</div>
+                    {hasGpu && (
+                        <div className="searchContent">
+                            <div className="select_wrapper">
+                                <FullWidthSelect
+                                    list={stepsList}
+                                    value={PerformanceType}
+                                    onChange={setPerformanceType}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
                 {performanceData && (
                     <PerformanceContent units={units} performanceData={performanceData}></PerformanceContent>
                 )}
@@ -435,7 +488,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     )}
                     {!tableLoading2 && (
                         <Table
-                            columns={customizeColumns(units)}
+                            columns={customizeColumns(units, hasGpu)}
                             dataSource={tableData2}
                             bordered
                             size="middle"

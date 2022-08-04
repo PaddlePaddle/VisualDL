@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
@@ -143,7 +144,7 @@ const Configure = styled.div`
         align-items: center;
         margin-bottom: ${rem(20)};
         div {
-            line-height: 18px;
+            line-height: ${rem(18)};
         }
         .argument-operation {
             flex: none;
@@ -157,8 +158,8 @@ const Configure = styled.div`
                 color: #2932e1;
             }
             img {
-                width: 16px;
-                height: 16px;
+                width: ${rem(16)};
+                height: ${rem(16)};
             }
             img:hover {
                 content: url(${hover});
@@ -200,7 +201,7 @@ const Configure = styled.div`
                 height: ${rem(36)};
                 margin-right: ${rem(15)};
                 .ant-select {
-                    border-radius: 4px;
+                    border-radius: ${rem(4)};
                     height: 100%;
                     .ant-select-selector {
                         height: 100%;
@@ -246,7 +247,7 @@ const EchartPie = styled.div`
 `;
 const PieceContent = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     width: 100%;
     height: auto;
     padding-bottom: ${rem(20)};
@@ -275,7 +276,7 @@ const Wraper = styled.div`
     }
     .ant-table.ant-table-bordered > .ant-table-container {
         border: 1px solid #dddddd;
-        border-radius: 8px;
+        border-radius: ${rem(8)};
     }
     > .loading {
         ${size('100%')}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
@@ -187,10 +188,14 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                     textStyle: {
                         fontSize: 14,
                         color: '#666666',
-                        padding: [0, 0, 0, 10]
+                        padding: [0, 0, 0, 8]
                     },
                     itemWidth: 17,
-                    itemHeight: 5
+                    itemHeight: 5,
+                    itemStyle: {
+                        borderWidth: 1,
+                        borderRadius: 2.5
+                    }
                 },
                 grid: {
                     left: '0',

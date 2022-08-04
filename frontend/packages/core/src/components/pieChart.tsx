@@ -147,8 +147,9 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             str += '<div class="tooltipName">' + params.data.name + '';
                             ('</div>');
                             str += '<div>';
+                            str += '<div style="display:flex; align-items:center;">';
                             str +=
-                                '<span style="font-size:12px;display:inline-block;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                '<span style="font-size:12px;margin-right:5px;width:12px;height:12px;border-radius:50%;background-color:' +
                                 color[0] +
                                 ';"></span>' +
                                 '<span style="color: #FFFFFF;">' +
@@ -156,22 +157,27 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                                 '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.value +
-                                '</br>';
+                                '</span>';
+                            str += '</div>';
+                            str += '<div style="display:flex; align-items:center;">';
                             str +=
-                                '<span style="display:inline-block;color: #FFFFFF;margin-right:5px;margin-bottom:2px;width:6px;height:6px;border-radius:50%;background-color:' +
+                                '<span style="font-size:12px;margin-right:5px;width:12px;height:12px;border-radius:50%;background-color:' +
                                 color[1] +
                                 ';"></span>' +
                                 '占比' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.proportion +
-                                '%';
-                            ('</br>');
+                                '%' +
+                                '</span>';
+                            str += '</div>';
+                            str += '</div>';
                             str += '</div>';
                             str += '</div>';
                             return str;
                         }
                     },
                     legend: {
+                        show: data.length ? true : false,
                         top: '20',
                         left: '60%',
                         width: '30%',
@@ -183,7 +189,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             width: 20
                         },
                         formatter: function (name: string) {
-                            return name.length > 10 ? name.slice(0, 10) + '...' : name;
+                            return name.length > 20 ? name.slice(0, 18) + '...' : name;
                         },
                         icon: 'circle',
                         type: 'scroll',
@@ -228,7 +234,13 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             },
                             data: data
                         }
-                    ]
+                    ],
+                    title: {
+                        show: data.length ? false : true,
+                        text: data.length ? '' : '暂无GPU数据',
+                        left: '16%',
+                        top: '45%'
+                    }
                 });
                 // debugger
                 echart?.setOption(chartOptions, {notMerge: true});

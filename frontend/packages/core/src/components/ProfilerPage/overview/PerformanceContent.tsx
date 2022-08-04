@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable sort-imports */
 import React, {Fragment, FunctionComponent} from 'react';
 import {rem} from '~/utils/style';
@@ -9,7 +10,7 @@ import {Tabs} from 'antd';
 import type {performanceType, Callingtimes} from './types';
 const PerformanceContent = styled.div`
     border: 1px solid #dddddd;
-    border-radius: 4px;
+    border-radius: ${rem(4)};
     width: 100%;
     height: ${rem(378)};
     .titles {
@@ -20,20 +21,20 @@ const PerformanceContent = styled.div`
         .legend {
             display: flex;
             align-items: center;
-            margin-left: 20px;
+            margin-left: ${rem(20)};
             .labels {
-                width: 17px;
-                height: 5px;
+                width: ${rem(17)};
+                height: ${rem(5)};
                 background: yellow;
-                line-height: 22px;
+                line-height: ${rem(22)};
             }
             .legend_name {
-                margin-left: 20px;
+                margin-left: ${rem(20)};
                 font-family: PingFangSC-Regular;
-                font-size: 14px;
+                font-size: ${rem(14)};
                 color: #666666;
                 letter-spacing: 0;
-                line-height: 14px;
+                line-height: ${rem(14)};
                 font-weight: 400;
             }
         }
