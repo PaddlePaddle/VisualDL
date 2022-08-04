@@ -19,7 +19,7 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
-import StackColumnChart from '~/components/StackColumnChart';
+import StackColumnChart from '~/components/StackColumnChart2';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
@@ -225,8 +225,12 @@ const PieceContent = styled.div`
     }
     .tableContent {
         position: relative;
-        padding-top: ${rem(20)};
+        padding-top: ${rem(0)};
         border-top: 1px solid #dddddd;
+        .postions {
+            position: absolute;
+            top: ${rem(22)};
+        }
     }
 `;
 const EchartPie4 = styled(EchartPie)`
@@ -446,7 +450,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     {isExpend ? (
                         <div className="tableContent">
                             {hasGpu ? (
-                                <RadioButtons>
+                                <RadioButtons className="postions">
                                     <ButtonsLeft
                                         style={{borderRight: 'none'}}
                                         onClick={() => {
@@ -475,7 +479,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                     className={'Content'}
                                     data={distributed}
                                     color={color}
-                                    options={options}
                                 ></StackColumnChart>
                             </EchartPie4>
                         </div>

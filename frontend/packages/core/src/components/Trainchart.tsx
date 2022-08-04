@@ -264,7 +264,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                 series: dataSeries
             });
             echart?.setOption(chartOptions, {notMerge: true});
-        }, [options, data, title, theme, i18n.language, echart]);
+        }, [options, data, title, theme, i18n.language, echart, t]);
 
         return (
             <Wrapper ref={wrapper} className={className}>
