@@ -445,7 +445,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </div>
                     {isExpend ? (
                         <div className="tableContent">
-                            {!hasGpu ? (
+                            {hasGpu ? (
                                 <RadioButtons>
                                     <ButtonsLeft
                                         style={{borderRight: 'none'}}
