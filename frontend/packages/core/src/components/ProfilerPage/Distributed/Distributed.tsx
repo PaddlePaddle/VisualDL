@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -22,22 +23,11 @@ import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
 import {Popover} from 'antd';
-import {em, sameBorder, transitionProps, asideWidth, rem} from '~/utils/style';
+import {em, transitionProps, asideWidth, rem} from '~/utils/style';
 import logo from '~/assets/images/question-circle.svg';
 import hover from '~/assets/images/hover.svg';
 import type {infoType, histogramType} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
-interface DataType {
-    key: React.Key;
-    name: string;
-    age: number;
-    street: string;
-    building: string;
-    number: number;
-    companyAddress: string;
-    companyName: string;
-    gender: string;
-}
 asideWidth;
 
 const ViewWrapper = styled.div`
@@ -300,7 +290,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         })}
                 </div>
             </Configure>
-            <Configure>
+            <Configure style={{marginBottom: `${rem(20)}`}}>
                 <div className="titleContent">
                     <div className="title">
                         <div>Computation和communication的耗时对比</div>

@@ -93,7 +93,7 @@ const Configures = styled(Configure)`
         margin-bottom: ${rem(10)};
         display: flex;
         align-items: center;
-        .title {
+        .titles {
             display: flex;
             align-items: center;
         }
@@ -221,7 +221,7 @@ type SelectListItem<T> = {
     label: string;
 };
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
     const [chartData, setChartData] = useState<chartDataType>();
@@ -288,6 +288,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     }
                 } else {
                     setHasGpu(false);
+                    setStepsList([{label: 'cpu', value: 'cpu'}]);
                 }
                 for (let index = 0; index < result.cpu.length; index++) {
                     const DataTypeItem = data[index]
@@ -394,10 +395,10 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     ];
     return (
         <ViewWrapper>
-            <Title>总览视图</Title>
+            <Title>{t('profiler:Overview-view')}</Title>
             {environment && <Environment environment={environment}></Environment>}
             <Configures>
-                <div className="title">运行耗时</div>
+                <div className="title">{t('profiler:time-consuming')}</div>
                 <PieceContent>
                     <EchartPie style={{paddingRight: `${rem(0)}`, paddingTop: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(10)}`}}>
@@ -413,7 +414,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             setIsExpend(!isExpend);
                         }}
                     >
-                        <div className="expendButton">展开查看耗时详情</div>
+                        <div className="expendButton">{t('Expand-view')}</div>
                         <Icon type={isExpend ? 'chevron-up' : 'chevron-down'} />
                     </div>
                     {isExpend && tableData ? (
@@ -439,14 +440,12 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             </Configures>
             <Configures>
                 <div className="titleContent">
-                    <div className="title">训练步数耗时</div>
-                    {hasGpu && (
-                        <div className="searchContent">
-                            <div className="select_wrapper">
-                                <FullWidthSelect list={stepsList} value={TrainType} onChange={setTrainType} />
-                            </div>
+                    <div className="titles">{t('training-step-time')}</div>
+                    <div className="searchContent">
+                        <div className="select_wrapper">
+                            <FullWidthSelect list={stepsList} value={TrainType} onChange={setTrainType} />
                         </div>
-                    )}
+                    </div>
                 </div>
                 <EchartPie3>
                     <Trainchart className={'Content'} data={trainData}></Trainchart>
@@ -455,31 +454,25 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             <Configures>
                 {/* <div className="title tabs_title">性能消耗</div> */}
                 <div className="titleContent">
-                    <div className="title">性能消耗</div>
-                    {hasGpu && (
-                        <div className="searchContent">
-                            <div className="select_wrapper">
-                                <FullWidthSelect
-                                    list={stepsList}
-                                    value={PerformanceType}
-                                    onChange={setPerformanceType}
-                                />
-                            </div>
+                    <div className="titles">{t('performance-consumption')}</div>
+                    <div className="searchContent">
+                        <div className="select_wrapper">
+                            <FullWidthSelect list={stepsList} value={PerformanceType} onChange={setPerformanceType} />
                         </div>
-                    )}
+                    </div>
                 </div>
                 {performanceData && (
                     <PerformanceContent units={units} performanceData={performanceData}></PerformanceContent>
                 )}
             </Configures>
             <Configures>
-                <div className="title">模型各阶段消耗分布</div>
+                <div className="title">{t('consumption-distribution')}</div>
                 <EchartPie4>
                     <StackColumnChart className={'Content'} data={distributed} color={color}></StackColumnChart>
                 </EchartPie4>
             </Configures>
             <Configures style={{marginBottom: `${rem(20)}`}}>
-                <div className="title">自定义事件耗时</div>
+                <div className="title">{t('custom-events')}</div>
                 <div className="tableContent">
                     {tableLoading2 && (
                         <div className="loading">

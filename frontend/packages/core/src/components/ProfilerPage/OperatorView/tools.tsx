@@ -258,6 +258,6 @@ export const baseColumns2 = (units: string, hasGpu: boolean) => {
                 }
             ]
         });
-        return columns;
     }
+    return columns;
 };

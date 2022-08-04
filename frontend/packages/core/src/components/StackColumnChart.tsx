@@ -109,7 +109,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                         data: data.data[index]
                     });
                 }
-                let chartOptions: EChartsOption = defaultsDeep(options, {
+                const chartOptions: EChartsOption = defaultsDeep(options, {
                     tooltip: {
                         trigger: 'axis',
                         extraCssText:
@@ -173,6 +173,11 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                             fontSize: 14,
                             color: '#666666'
                         },
+                        icon: 'roundRect',
+                        // itemStyle: {
+                        //     borderWidth: 1,
+                        //     borderRadius: 2.5
+                        // },
                         itemWidth: 17,
                         itemHeight: 5
                     },
