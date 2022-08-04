@@ -54,7 +54,7 @@ export type LineChartRef = {
 
 const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
-        const [chartOption, setchartOption] = useState<EChartsOption>();
+        // const [chartOption, setchartOption] = useState<EChartsOption>();
         const {i18n} = useTranslation();
 
         const {
@@ -98,9 +98,9 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                         splitNumber: 4
                     },
                     toolbox: {
-                        // show: true,
-                        // showTitle: false,
-                        // itemSize: 0,
+                        show: true,
+                        showTitle: false,
+                        itemSize: 0,
                         feature: {
                             dataZoom: {
                                 show: true,
@@ -154,9 +154,9 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            setchartOption(chartOptions);
+            echart?.setOption(chartOptions, {notMerge: true});
             // debugger
-        }, [options, theme, data, chartOption, title, i18n.language, echart]);
+        }, [options, theme, data, title, i18n.language, echart]);
 
         return (
             <Wrapper ref={wrapper} className={className}>

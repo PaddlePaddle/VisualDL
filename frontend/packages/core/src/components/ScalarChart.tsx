@@ -198,7 +198,14 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     return (
         <Chart maximized={maximized} {...chartSizeInRem}>
             <Wrapper>
-                <StyledLineChart ref={echart} title={title} options={options} data={data} loading={loading} zoom />
+                <StyledLineChart
+                    ref={echart}
+                    title={title}
+                    options={options}
+                    data={data}
+                    loading={loading}
+                    zoom={true}
+                />
                 <Toolbox items={toolbox} />
             </Wrapper>
         </Chart>

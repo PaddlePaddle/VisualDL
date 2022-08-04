@@ -445,9 +445,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </div>
                     {isExpend ? (
                         <div className="tableContent">
-                            {hasGpu && (
+                            {!hasGpu ? (
                                 <RadioButtons>
                                     <ButtonsLeft
+                                        style={{borderRight: 'none'}}
                                         onClick={() => {
                                             setIsCPU(true);
                                         }}
@@ -463,6 +464,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                     >
                                         GPU耗时
                                     </ButtonsRight>
+                                </RadioButtons>
+                            ) : (
+                                <RadioButtons>
+                                    <ButtonsLeft>CPU耗时</ButtonsLeft>
                                 </RadioButtons>
                             )}
                             <EchartPie4>
