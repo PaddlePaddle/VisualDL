@@ -59,6 +59,12 @@ const CPU = styled.div`
         flex: 2;
         padding-left: ${rem(20)};
         padding-right: ${rem(20)};
+        .Gpudetail {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
     }
     .GPU_title {
         font-family: PingFangSC-Semibold;
@@ -125,8 +131,9 @@ const CPU = styled.div`
 `;
 export type EnvironmentProps = {
     environment: environmentType;
+    hasGpu: boolean;
 };
-const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
+const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu}) => {
     const {t} = useTranslation(['profiler', 'common']);
     const tooltips = (
         <div>
@@ -176,50 +183,65 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment}) => {
                             </div>
                         </div>
                     </div>
-                    <div className="GPU_content">
-                        <div className="GPU_title">
-                            <div>GPU</div>
-                            <div className="title_list">
-                                <div className="list_items">{environment?.GPU?.name ? environment?.GPU?.name : 0}</div>
-                                <div className="list_items">
-                                    {environment?.GPU?.memory ? environment?.GPU?.memory : 0}
+                    {hasGpu ? (
+                        <div className="GPU_content">
+                            <div className="GPU_title">
+                                <div>GPU</div>
+                                <div className="title_list">
+                                    <div className="list_items">
+                                        {environment?.GPU?.name ? environment?.GPU?.name : '--'}
+                                    </div>
+                                    <div className="list_items">
+                                        {environment?.GPU?.memory ? environment?.GPU?.memory : '--'}
+                                    </div>
+                                    <div className="list_items" style={{borderRight: 'none'}}>
+                                        {t('computing-power')}
+                                        {environment?.GPU?.compute_capability
+                                            ? environment?.GPU?.compute_capability
+                                            : '--'}
+                                    </div>
                                 </div>
-                                <div className="list_items" style={{borderRight: 'none'}}>
-                                    {t('computing-power')}
-                                    {environment?.GPU?.compute_capability ? environment?.GPU?.compute_capability : 0}
+                            </div>
+                            <div className="GPU_itemlist">
+                                <div className="items">
+                                    <div className="percentage">
+                                        {environment?.GPU?.utilization ? environment?.GPU?.utilization : '--'}%
+                                    </div>
+                                    <div className="items_label">{t('Utilization')}</div>
+                                </div>
+                                <div className="items">
+                                    <div className="percentage">
+                                        {environment?.GPU?.sm_efficiency ? environment?.GPU?.sm_efficiency : '--'}%
+                                    </div>
+                                    <div className="items_label">{t('Traffic-Processor-Efficiency')}</div>
+                                </div>
+                                <div className="items">
+                                    <div className="percentage">
+                                        {environment?.GPU?.achieved_occupancy
+                                            ? environment?.GPU?.achieved_occupancy
+                                            : '--'}
+                                        %
+                                    </div>
+                                    <div className="items_label">{t('Traffic-processor-occupancy')}</div>
+                                </div>
+                                <div className="items items_last">
+                                    <div className="percentage">
+                                        {environment?.GPU?.tensor_core_percentage
+                                            ? environment?.GPU?.tensor_core_percentage
+                                            : '--'}
+                                        %
+                                    </div>
+                                    <div className="items_label">{t('usage-time')}</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="GPU_itemlist">
-                            <div className="items">
-                                <div className="percentage">
-                                    {environment?.GPU?.utilization ? environment?.GPU?.utilization : 0}%
-                                </div>
-                                <div className="items_label">{t('Utilization')}</div>
-                            </div>
-                            <div className="items">
-                                <div className="percentage">
-                                    {environment?.GPU?.sm_efficiency ? environment?.GPU?.sm_efficiency : 0}%
-                                </div>
-                                <div className="items_label">{t('Traffic-Processor-Efficiency')}</div>
-                            </div>
-                            <div className="items">
-                                <div className="percentage">
-                                    {environment?.GPU.achieved_occupancy ? environment?.GPU.achieved_occupancy : 0}%
-                                </div>
-                                <div className="items_label">{t('Traffic-processor-occupancy')}</div>
-                            </div>
-                            <div className="items items_last">
-                                <div className="percentage">
-                                    {environment?.GPU?.tensor_core_percentage
-                                        ? environment?.GPU?.tensor_core_percentage
-                                        : 0}
-                                    %
-                                </div>
-                                <div className="items_label">{t('usage-time')}</div>
+                    ) : (
+                        <div className="GPU_content">
+                            <div className="Gpudetail">
+                                <div>暂无GPU数据</div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </CPU>
             </Configure>
         </Fragment>
