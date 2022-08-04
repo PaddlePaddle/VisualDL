@@ -21,7 +21,18 @@
     "timeConsuming": "耗时",
     "Number-calls": "调用量（次)",
     "duration": "持续时间",
-    "Overall-proportion": "整体占比"
+    "Overall-proportion": "整体占比",
+    "stage": "阶段",
+    "number-calls": "调用次数",
+    "total-time": "总耗时",
+    "average-time": "平均耗时",
+    "longest-time": "最长耗时",
+    "shortest-time":"最短耗时",
+    "percentage":"百分比"
+
+
+
+
 
 
 }
