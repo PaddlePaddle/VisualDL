@@ -200,7 +200,7 @@ class ProfilerApi(object):
         return distributed_profiler_data.get_distributed_histogram(
             step, time_unit)
 
-    @result()
+    @result(headers={'content-encoding': 'gzip'})
     def trace(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
         profiler_data = run_manager.get_profile_data(worker, span)
@@ -212,7 +212,7 @@ class ProfilerApi(object):
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_devices()
 
-    @result()
+    @result(headers={'content-encoding': 'gzip'})
     def memory_curve(self, run, worker, span, device_type, time_unit='ms'):
         if device_type == 'undefined':
             return
@@ -220,7 +220,7 @@ class ProfilerApi(object):
         profiler_data = run_manager.get_profile_data(worker, span)
         return profiler_data.get_memory_curve(device_type, time_unit)
 
-    @result()
+    @result(headers={'content-encoding': 'gzip'})
     def memory_events(self,
                       run,
                       worker,
@@ -241,7 +241,7 @@ class ProfilerApi(object):
         return profiler_data.get_memory_events(device_type, min_size, max_size,
                                                search_name, time_unit)
 
-    @result()
+    @result(headers={'content-encoding': 'gzip'})
     def op_memory_events(self,
                          run,
                          worker,

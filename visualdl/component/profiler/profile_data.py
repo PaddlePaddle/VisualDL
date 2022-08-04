@@ -131,7 +131,7 @@ class ProfileData:
         return views
 
     def get_device_infos(self):
-        if (not self.gpu_ids) and (not self.overview_parser.has_device):
+        if not self.overview_parser.has_device:
             device_type = 'CPU'
             return {
                 "device_type": device_type,
