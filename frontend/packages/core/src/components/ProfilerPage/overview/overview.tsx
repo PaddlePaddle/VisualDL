@@ -25,7 +25,7 @@ import {asideWidth, position, primaryColor, rem, size} from '~/utils/style';
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
 import type {SelectProps} from '~/components/Select';
-import {Configure} from '../../components';
+import {Configure, EchartPie} from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
 import type {
@@ -124,35 +124,6 @@ const Title = styled.div`
     margin-bottom: ${rem(20)};
 `;
 
-const EchartPie = styled.div`
-    width: 100%;
-    height: ${rem(270)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-    .ant-radio-inner {
-        background-color: #fff;
-        border-color: #ffffff;
-        border-style: solid;
-        border-width: 2px;
-        border-radius: 50%;
-    }
-    .tooltipContent {
-        padding-right: ${rem(30)};
-        .tooltipitems {
-            display: flex;
-            align-items: center;
-        }
-    }
-`;
 const EchartPie3 = styled(EchartPie)`
     border: 1px solid #dddddd;
     height: ${rem(444)};

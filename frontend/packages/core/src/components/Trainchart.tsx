@@ -109,7 +109,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
             ];
             const dataSeries = [];
             const titles = data.steps;
-            for (let index = 0; index < data.steps.length; index++) {
+            for (let index = 0; index < data.order.length; index++) {
                 // debugger
                 dataSeries.push({
                     name: order[index],

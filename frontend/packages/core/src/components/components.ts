@@ -1,4 +1,4 @@
-import {rem, em, transitionProps,position, size} from '~/utils/style';
+import {rem, em, transitionProps, position, size} from '~/utils/style';
 import styled from 'styled-components';
 import Icon from '~/components/Icon';
 import logo from '~/assets/images/question-circle.svg';
@@ -19,7 +19,6 @@ export const Configure = styled.div`
         div {
             line-height: 18px;
         }
-        
     }
 `;
 export const ArgumentOperation = styled.a`
@@ -67,7 +66,7 @@ export const RadioButtons = styled.div`
     display: flex;
     align-items: center;
     border-radius: 4px;
-    margin-left:20px;
+    margin-left: 20px;
     .is_active {
         color: #ffffff;
         background: #2932e1;
@@ -98,7 +97,7 @@ export const Wraper = styled.div`
     }
     .ant-table-row-level-1 {
         div {
-            text-align:right;
+            text-align: right;
         }
     }
     .whiteWrap {
@@ -110,5 +109,34 @@ export const Wraper = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+`;
+export const EchartPie = styled.div`
+    width: 100%;
+    height: ${rem(270)};
+    display: flex;
+    .wraper {
+        flex: 1;
+        .Content {
+            height: 100%;
+        }
+    }
+    .Content {
+        height: 100%;
+        width: 100%;
+    }
+    .ant-radio-inner {
+        background-color: #fff;
+        border-color: #ffffff;
+        border-style: solid;
+        border-width: 2px;
+        border-radius: 50%;
+    }
+    .tooltipContent {
+        padding-right: ${rem(30)};
+        .tooltipitems {
+            display: flex;
+            align-items: center;
+        }
     }
 `;

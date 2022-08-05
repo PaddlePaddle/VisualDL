@@ -33,6 +33,7 @@ import {Table, Popover} from 'antd';
 import GridLoader from 'react-spinners/GridLoader';
 import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
+import {EchartPie} from '../../components';
 import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
@@ -126,18 +127,6 @@ const RadioContent = styled.div`
             border: 1px solid #e0e0e0;
             border-right: none;
         }
-        .subtraction {
-            width: ${rem(32)};
-            height: ${rem(32)};
-            font-size: ${rem(16)};
-            line-height: ${rem(30)};
-            text-align: center;
-            border: 1px solid #e0e0e0;
-            border-left: none;
-        }
-        .subtraction:hover {
-            cursor: not-allowed;
-        }
     }
 `;
 const Subtraction = styled.div<{disable: boolean}>`
@@ -202,35 +191,6 @@ const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select
     width: 100%;
     height: 100%;
     font-size: ${rem(14)};
-`;
-const EchartPie = styled.div`
-    width: 100%;
-    height: ${rem(270)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-    .ant-radio-inner {
-        background-color: #fff;
-        border-color: #ffffff;
-        border-style: solid;
-        border-width: 2px;
-        border-radius: 50%;
-    }
-    .tooltipContent {
-        padding-right: ${rem(30)};
-        .tooltipitems {
-            display: flex;
-            align-items: center;
-        }
-    }
 `;
 const PieceContent = styled.div`
     border: 1px solid #dddddd;
@@ -416,7 +376,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
         </div>
     );
     const baseColumns1 = useCallback(
-        (units: string, hasGpu: boolean) => {
+        (units: string, hasGpu: boolean, group: string) => {
             const columns: ColumnsType<DataType> = [
                 {
                     title: t('operator'),
@@ -471,58 +431,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     ]
                 }
             ];
-            if (hasGpu) {
-                columns.push({
-                    title: 'GPU',
-                    children: [
-                        {
-                            title: t('total-time') + `(${units})`,
-                            dataIndex: 'gpu_total_time',
-                            key: 'gpu_total_time',
-                            sorter: (a, b) => a.gpu_total_time - b.gpu_total_time
-                        },
-                        {
-                            title: t('average-time') + `(${units})`,
-                            dataIndex: 'gpu_avg_time',
-                            key: 'gpu_avg_time',
-                            sorter: (a, b) => a.gpu_avg_time - b.gpu_avg_time
-                        },
-                        {
-                            title: t('longest-time') + `(${units})`,
-                            dataIndex: 'cpu_max_time',
-                            key: 'cpu_max_time',
-                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
-                        },
-                        {
-                            title: t('shortest-time') + `(${units})`,
-                            dataIndex: 'gpu_min_time',
-                            key: 'gpu_min_time',
-                            sorter: (a, b) => a.gpu_min_time - b.gpu_min_time
-                        },
-                        {
-                            title: t('percentage') + `%`,
-                            dataIndex: 'gpu_ratio',
-                            key: 'gpu_ratio',
-                            sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
-                        }
-                    ]
-                });
-            }
-            return columns;
-        },
-        [units, hasGpu, t]
-    );
-    const baseColumns2 = useCallback(
-        (units: string, hasGpu: boolean) => {
-            const columns: ColumnsType<DataType> = [
-                {
-                    title: t('operator'),
-                    dataIndex: 'name',
-                    key: 'name',
-                    render: (text: string) => <div>{text}</div>,
-                    width: 144
-                },
-                {
+            if (group === 'op_name_input_shape') {
+                columns.splice(1, 0, {
                     title: t('input-shape'),
                     dataIndex: 'input_shape',
                     key: 'input_shape',
@@ -537,53 +447,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                             return <div>{'-'}</div>;
                         }
                     }
-                },
-                {
-                    title: t('call-volume'),
-                    dataIndex: 'calls',
-                    key: 'calls',
-                    sorter: (a, b) => a.calls - b.calls
-                },
-                {
-                    title: 'CPU',
-                    children: [
-                        {
-                            title: t('total-time') + `(${units})`,
-                            dataIndex: 'cpu_total_time',
-                            key: 'cpu_total_time',
-                            sorter: (a, b) => a.cpu_total_time - b.cpu_total_time
-                        },
-                        {
-                            title: t('average-time') + `(${units})`,
-                            dataIndex: 'cpu_avg_time',
-                            key: 'cpu_avg_time',
-                            sorter: (a, b) => {
-                                // console.log('a,b',a,b);
-
-                                return a.cpu_avg_time - b.cpu_avg_time;
-                            }
-                        },
-                        {
-                            title: t('longest-time') + `(${units})`,
-                            dataIndex: 'cpu_max_time',
-                            key: 'cpu_max_time',
-                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
-                        },
-                        {
-                            title: t('shortest-time') + `(${units})`,
-                            dataIndex: 'cpu_min_time',
-                            key: 'cpu_min_time',
-                            sorter: (a, b) => a.cpu_min_time - b.cpu_min_time
-                        },
-                        {
-                            title: t('percentage') + `%`,
-                            dataIndex: 'cpu_ratio',
-                            key: 'cpu_ratio',
-                            sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
-                        }
-                    ]
-                }
-            ];
+                });
+            }
             if (hasGpu) {
                 columns.push({
                     title: 'GPU',
@@ -623,8 +488,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             }
             return columns;
         },
-        [units, hasGpu, t]
+        [units, hasGpu, t, group]
     );
+
     return (
         <ViewWrapper>
             <TitleNav>
@@ -636,15 +502,15 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </Radio.Group>
                     {radioValue === 2 ? (
                         <div className="AdditionContent">
-                            <div
-                                className="Addition "
+                            <Subtraction
+                                disable={true}
                                 onClick={() => {
                                     const tops = top + 1;
                                     setTop(tops);
                                 }}
                             >
                                 +
-                            </div>
+                            </Subtraction>
                             <div className="input_wrapper">
                                 {/* <Input placeholder="Basic usage" />; */}
                                 <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
@@ -754,11 +620,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     )}
                     {tableData && !tableLoading && (
                         <Table
-                            columns={
-                                group === 'op_name_input_shape'
-                                    ? baseColumns2(units, hasGpu)
-                                    : baseColumns1(units, hasGpu)
-                            }
+                            columns={baseColumns1(units, hasGpu, group)}
                             dataSource={tableData}
                             bordered
                             size="middle"
