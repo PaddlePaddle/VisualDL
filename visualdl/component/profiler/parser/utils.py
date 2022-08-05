@@ -284,6 +284,11 @@ class HostStatisticNode:
         return self.hostnode.start_ns
 
     def __getattr__(self, name):
+        if name == 'children_node':
+            print('self.children_node:', self.children_node)
+            return self.children_node
+        elif name == 'runtime_node':
+            return self.runtime_node
         return getattr(self.hostnode, name)
 
 
@@ -363,10 +368,10 @@ def rebuild_node_trees(nodetrees):
     for threadid, root in nodetrees.items():
         # print(root)
         has_find_template_root = False
+        template_root = HostStatisticNode(root)
         for children in root.children_node:
             # print(children.type)
             if children.type == 'ProfileStep':
-                template_root = HostStatisticNode(root)
                 profiler_step_node = HostStatisticNode(children)
                 template_root.children_node.append(profiler_step_node)
                 has_find_template_root = True
@@ -407,6 +412,11 @@ def rebuild_node_trees(nodetrees):
                     stage_wrap_node = HostStatisticNode(stage_node.hostnode)
                     profiler_step_wrap_node.children_node.append(
                         stage_wrap_node)
+            # debug code
+            print('has_find_template_root False')
+            for node in root_statistic_node.children_node:
+                print(node.name)
+            #
             # insert nodes in original root into new stage nodes
             # algorithm: post order traversal the tree
             stack = []
@@ -452,6 +462,12 @@ def rebuild_node_trees(nodetrees):
     # recursive calculate node statistic values
     for thread_id, root_wrapped_node in wrapped_tree.items():
         root_wrapped_node.cal_statistic()
+    # debug block
+    for thread_id, root in wrapped_tree.items():
+        print('thread_id', thread_id)
+        for children in root.children_node:
+            print('root children:', children.name)
+    #
     return wrapped_tree
 
 
@@ -488,10 +504,10 @@ def format_float(float_data):
 def format_memory(memory, memory_unit='KB'):
     result = float(memory)
     if memory_unit == 'GB':
-        result /= 1e9
+        result /= (1024 * 1024 * 1024)
     elif memory_unit == 'MB':
-        result /= 1e6
+        result /= (1024 * 1024)
     elif memory_unit == 'KB':
-        result /= 1e3
+        result /= 1024
     # return '{:.2f}'.format(result)
     return round(result, 2)

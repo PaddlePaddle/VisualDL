@@ -128,7 +128,6 @@ class ModelPerspectiveItem:
             self.max_gpu_time = time
         if time < self.min_gpu_time:
             self.min_gpu_time = time
-        self.gpu_time += time
 
     def set_gpu_time(self, time):
         '''
@@ -257,6 +256,18 @@ class OverviewParser:
                             events['Kernel']['total_time'])
                         self.model_perspective_items[stage_name].gpu_times[
                             step_idx] = events['Kernel']['total_time']
+
+        # debug block
+        for stage_name, stage_data in self.merged_events_per_stage.items():
+            for device_name, steps_data in stage_data.items():
+                for step_idx, events in steps_data.items():
+                    for event_type, events_data in events.items():
+                        print(device_name, step_idx, event_type,
+                              events_data['total_time'])
+        for stage_name, stage in self.model_perspective_items.items():
+            print(stage_name, stage.cpu_time, stage.gpu_time)
+            print(stage_name, stage.cpu_times, stage.gpu_times)
+        #
         if self.has_device:
             self.gpu_ulitization = self.merged_events_per_stage['ProfileStep'][
                 'GPU']['ALL']['Kernel'][
@@ -348,6 +359,9 @@ class OverviewParser:
                 wrapped_profiler_step_nodes.append(wrapped_node)
             self.stage_nums = 0
             for wrapped_profiler_step_node in wrapped_profiler_step_nodes:
+                print('wrapped_profiler_step_node name',
+                      wrapped_profiler_step_node.thread_id,
+                      wrapped_profiler_step_node.name)
                 if wrapped_profiler_step_node.type == 'ProfileStep':
                     self.process_id = wrapped_profiler_step_node.process_id
                     stage_idx = wrapped_profiler_step_node.name.split('#')[1]
