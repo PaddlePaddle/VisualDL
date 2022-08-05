@@ -19,7 +19,7 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
-import StackColumnChart from '~/components/StackColumnChart';
+import StackColumnChart from '~/components/StackColumnChart2';
 import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
@@ -121,6 +121,21 @@ const RadioContent = styled.div`
             border: 1px solid #e0e0e0;
             border-left: none;
         }
+        .subtraction:hover {
+            cursor: not-allowed;
+        }
+    }
+`;
+const Subtraction = styled.div<{disable: boolean}>`
+    width: ${rem(32)};
+    height: ${rem(32)};
+    font-size: ${rem(16)};
+    line-height: ${rem(30)};
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-left: none;
+    &:hover {
+        cursor: ${props => (props.disable ? 'auto' : 'not-allowed')};
     }
 `;
 const Configures = styled(Configure)`
@@ -225,8 +240,12 @@ const PieceContent = styled.div`
     }
     .tableContent {
         position: relative;
-        padding-top: ${rem(20)};
+        padding-top: ${rem(0)};
         border-top: 1px solid #dddddd;
+        .postions {
+            position: absolute;
+            top: ${rem(22)};
+        }
     }
 `;
 const EchartPie4 = styled(EchartPie)`
@@ -405,15 +424,17 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                 {/* <Input placeholder="Basic usage" />; */}
                                 <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
                             </div>
-                            <div
-                                className="subtraction"
+                            <Subtraction
+                                disable={top > 1 ? true : false}
                                 onClick={() => {
-                                    const tops = top - 1;
-                                    setTop(tops);
+                                    if (top > 1) {
+                                        const tops = top - 1;
+                                        setTop(tops);
+                                    }
                                 }}
                             >
                                 -
-                            </div>
+                            </Subtraction>
                         </div>
                     ) : null}
                 </RadioContent>
@@ -426,7 +447,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     </Popover>
                 </div>
                 <PieceContent>
-                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
+                    <EchartPie style={{padding: `${rem(0)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
                             <PieChart className={'Content'} data={cpuData} isCpu={true} color={color} />
                         </div>
@@ -446,7 +467,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     {isExpend ? (
                         <div className="tableContent">
                             {hasGpu ? (
-                                <RadioButtons>
+                                <RadioButtons className="postions">
                                     <ButtonsLeft
                                         style={{borderRight: 'none'}}
                                         onClick={() => {
@@ -475,7 +496,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                     className={'Content'}
                                     data={distributed}
                                     color={color}
-                                    options={options}
                                 ></StackColumnChart>
                             </EchartPie4>
                         </div>

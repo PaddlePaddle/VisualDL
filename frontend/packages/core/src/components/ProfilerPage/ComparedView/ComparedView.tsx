@@ -130,6 +130,18 @@ const RadioContent = styled.div`
         }
     }
 `;
+const Subtraction = styled.div<{disable: boolean}>`
+    width: ${rem(32)};
+    height: ${rem(32)};
+    font-size: ${rem(16)};
+    line-height: ${rem(30)};
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-left: none;
+    &:hover {
+        cursor: ${props => (props.disable ? 'auto' : 'not-allowed')};
+    }
+`;
 const Configure = styled.div`
     margin-top: ${rem(30)};
     width: 100%;
@@ -615,15 +627,17 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                 {/* <Input placeholder="Basic usage" />; */}
                                 <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
                             </div>
-                            <div
-                                className="subtraction"
+                            <Subtraction
+                                disable={top > 1 ? true : false}
                                 onClick={() => {
-                                    const tops = top - 1;
-                                    setTop(tops);
+                                    if (top > 1) {
+                                        const tops = top - 1;
+                                        setTop(tops);
+                                    }
                                 }}
                             >
                                 -
-                            </div>
+                            </Subtraction>
                         </div>
                     ) : null}
                 </RadioContent>

@@ -21,6 +21,13 @@
     "timeConsuming": "time consuming",
     "Number-calls": "Number of calls (times)",
     "duration": "duration",
-    "Overall-proportion": "Overall proportion"
+    "Overall-proportion": "Overall proportion",
+    "stage": "stage",
+    "number-calls": "number of calls",
+    "total-time": "total time",
+    "average-time": "average time",
+    "longest-time": "longest time",
+    "shortest-time":"shortest time",
+    "percentage":"percentage"
 
 }
