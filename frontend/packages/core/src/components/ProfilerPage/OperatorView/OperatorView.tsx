@@ -264,7 +264,7 @@ interface cpuData {
     proportion: number;
 }
 const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     // const model = useRef<any>(null);
     const [cpuData, setCpuData] = useState<cpuData[]>();
     const [gpuData, setGpuData] = useState<cpuData[]>();
@@ -276,8 +276,8 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const [search, setSearch] = useState<string>('');
     const [isExpend, setIsExpend] = useState<boolean>(false);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
-        {label: '按算子名称', value: 'op_name'},
-        {label: '按算子名称+输入形状', value: 'op_name_input_shape'}
+        {label: t('By-operator-name'), value: 'op_name'},
+        {label: t('operator-shape'), value: 'op_name_input_shape'}
     ]);
     const [group, setGroup] = useState<string>('op_name');
     const [radioValue, setradioValue] = useState(1);
@@ -404,11 +404,11 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>算子视图</Title>
+                <Title>{t('Operator-view')}</Title>
                 <RadioContent>
                     <Radio.Group onChange={onChange} value={radioValue}>
-                        <Radio value={1}>显示全部算子</Radio>
-                        <Radio value={2}>显示Top算子</Radio>
+                        <Radio value={1}>{t('show-all-operators')}</Radio>
+                        <Radio value={2}>{t('show-Top-operators')}</Radio>
                     </Radio.Group>
                     {radioValue === 2 ? (
                         <div className="AdditionContent">
@@ -442,7 +442,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             </TitleNav>
             <Configures style={{marginTop: `${rem(25)}`}}>
                 <div className="title">
-                    <div>耗时概况</div>
+                    <div>{t('Time-profile')}</div>
                     <Popover content={tooltips} placement="right">
                         <ArgumentOperation></ArgumentOperation>
                     </Popover>
@@ -462,7 +462,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                             setIsExpend(!isExpend);
                         }}
                     >
-                        <div className="expendButton">展开查看耗时详情</div>
+                        <div className="expendButton">{t('Expand-view')}</div>
                         <Icon type={isExpend ? 'chevron-up' : 'chevron-down'} />
                     </div>
                     {isExpend ? (
@@ -476,7 +476,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                         }}
                                         className={isCPU ? 'is_active' : ''}
                                     >
-                                        CPU耗时
+                                        {t('CPU-time')}
                                     </ButtonsLeft>
                                     <ButtonsRight
                                         className={!isCPU ? 'is_active' : ''}
@@ -484,12 +484,12 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                             setIsCPU(false);
                                         }}
                                     >
-                                        GPU耗时
+                                        {t('GPU-time')}
                                     </ButtonsRight>
                                 </RadioButtons>
                             ) : (
                                 <RadioButtons className="postions">
-                                    <ButtonsLeft>CPU耗时</ButtonsLeft>
+                                    <ButtonsLeft>{t('CPU-time')}</ButtonsLeft>
                                 </RadioButtons>
                             )}
                             <EchartPie4>
@@ -505,7 +505,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             </Configures>
             <Configures>
                 <div className="titleContent">
-                    <div className="title">耗时情况</div>
+                    <div className="title">{t('Time-details')}</div>
                     <div className="searchContent">
                         <div className="select_wrapper">
                             <FullWidthSelect list={itemsList} value={group} onChange={setGroup} />
@@ -534,7 +534,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                             dataSource={tableData}
                             bordered
                             size="middle"
-                            scroll={{x: 'calc(700px + 50%)', y: 240}}
+                            scroll={{x: 'calc(700px + 50%)', y: 700}}
                         ></Table>
                     )}
                 </Wraper>

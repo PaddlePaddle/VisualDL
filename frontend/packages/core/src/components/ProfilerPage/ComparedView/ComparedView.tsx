@@ -714,7 +714,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                                 //     color: '#666'
                                                 // },
                                                 formatter: function () {
-                                                    const str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
+                                                    const str = 'Tensor Cores\n\n利用率'; //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },

@@ -16,7 +16,7 @@
     "Utilization": "利用率",
     "Traffic-Processor-Efficiency": "流量处理器效率",
     "Traffic-processor-occupancy": "流量处理器占用率",
-    "usage-time": "tensor core使用时间占比",
+    "usage-time": "Tensor Cores使用时间占比",
     "step": "步",
     "timeConsuming": "耗时",
     "Number-calls": "调用量（次)",
@@ -28,7 +28,22 @@
     "average-time": "平均耗时",
     "longest-time": "最长耗时",
     "shortest-time":"最短耗时",
-    "percentage":"百分比"
+    "percentage":"百分比",
+    "Operator-view":"算子视图",
+    "Time-profile":"耗时概况",
+    "Time-details":"耗时详情",
+    "show-all-operators":"显示全部算子",
+    "show-Top-operators":"显示Top算子",
+    "By-operator-name":"按算子名称",
+    "operator-shape":"按算子名称+输入形状",
+    "input-shape":"输入形状",
+    "call-volume":"调用量",
+    "operator":"算子",
+    "CPU-time":"CPU耗时",
+    "GPU-time":"GPU耗时"
+
+
+
 
 
 
