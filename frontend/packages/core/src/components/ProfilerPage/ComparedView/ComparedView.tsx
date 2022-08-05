@@ -311,21 +311,24 @@ interface tableType extends tableEvent {
     key: string;
 }
 
-const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, workers, spans, units}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, spans, units}) => {
+    const {t} = useTranslation(['profiler', 'common']);
     // const model = useRef<any>(null);
     const [pieData, setPieData] = useState<cpuData[]>();
     const [tensorcoreData, setTensorcoreData] = useState<cpuData[]>();
     const [tableLoading, settableLoading] = useState(true);
     const [tableData, setTableData] = useState<tableType[]>();
     const [search, setSearch] = useState<string>('');
-    const [itemsList] = useState<SelectListItem<string>[]>([
-        {label: '按内核分组', value: 'kernel_name'},
-        {label: '按内核和算子名称分组', value: 'kernel_name_attributes'}
-    ]);
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
     const [group, setGroup] = useState<string>('kernel_name');
     const [radioValue, setradioValue] = useState(1);
     const [top, setTop] = useState(0);
+    useEffect(() => {
+        setItemsList([
+            {label: t('group-by-core'), value: 'kernel_name'},
+            {label: t('Group-operator'), value: 'kernel_name_attributes'}
+        ]);
+    }, [t]);
     useEffect(() => {
         if (runs && workers && spans && units) {
             fetcher(
@@ -402,19 +405,19 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     }, [runs, workers, spans, search, group, units]);
     const columns1: ColumnsType<DataType> = [
         {
-            title: '核名称',
+            title: t('nuclear-name'),
             dataIndex: 'name',
             key: 'name',
             width: 200
         },
         {
-            title: '调用量',
+            title: t('call-volume'),
             dataIndex: 'calls',
             key: 'calls',
             width: 100
         },
         {
-            title: `总耗时(${units})`,
+            title: t('total-time') + `(${units})`,
             dataIndex: 'total_time',
             key: 'total_time',
             sorter: (a, b) => {
@@ -423,7 +426,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             }
         },
         {
-            title: `平均耗时(${units})`,
+            title: t('average-time') + `(${units})`,
             dataIndex: 'avg_time',
             key: 'avg_time',
             sorter: (a, b) => {
@@ -431,7 +434,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             }
         },
         {
-            title: `最长耗时(${units})`,
+            title: t('longest-time') + `(${units})`,
             dataIndex: 'max_time',
             key: 'max_time',
             sorter: (a, b) => {
@@ -439,7 +442,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             }
         },
         {
-            title: `最短耗时(${units})`,
+            title: t('shortest-time') + `(${units})`,
             dataIndex: 'min_time',
             key: 'min_time',
             sorter: (a, b) => {
@@ -447,17 +450,17 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             }
         },
         {
-            title: 'sm平均线程块数量',
+            title: t('sm-average'),
             dataIndex: 'mean blocks per sm',
             key: 'mean blocks per sm'
         },
         {
-            title: '平均占用率%',
+            title: t('average-occupancy') + `%`,
             dataIndex: 'mean est achieved occupancy',
             key: 'mean est achieved occupancy'
         },
         {
-            title: '是否使用tensor core',
+            title: t('use-tensor-core'),
             dataIndex: 'tensor core used',
             key: 'tensor core used',
             render: (text: boolean) => {
@@ -469,7 +472,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             }
         },
         {
-            title: `百分比%`,
+            title: t('percentage') + `%`,
             dataIndex: 'ratio',
             key: 'ratio',
             sorter: (a, b) => {
@@ -606,11 +609,11 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>核视图</Title>
+                <Title>{t('nuclear-view')}</Title>
                 <RadioContent>
                     <Radio.Group onChange={onChange} value={radioValue}>
-                        <Radio value={1}>显示全部内核</Radio>
-                        <Radio value={2}>显示Top内核</Radio>
+                        <Radio value={1}>{t('show-all-kernels')}</Radio>
+                        <Radio value={2}>{t('show-Top-kernels')}</Radio>
                     </Radio.Group>
                     {radioValue === 2 ? (
                         <div className="AdditionContent">
@@ -644,7 +647,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             </TitleNav>
             <Configure style={{marginTop: `${rem(25)}`}}>
                 <div className="title">
-                    <div>耗时概况</div>
+                    <div>{t('Time-profile')}</div>
                     <Popover content={tooltips} placement="right">
                         <a
                             className="argument-operation"
@@ -658,11 +661,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 </div>
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
-                        <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
+                        <div className="wraper" style={{borderRight: '1px solid #dddddd'}}>
                             <PieChart
                                 className={'Content'}
                                 data={pieData}
                                 color={color}
+                                units={units}
                                 option={{
                                     series: [
                                         {
@@ -679,7 +683,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                                 //     color: '#666'
                                                 // },
                                                 formatter: function () {
-                                                    const str = '总耗时'; //声明一个变量用来存储数据
+                                                    const str = t('total-time'); //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },
@@ -696,6 +700,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                             <PieChart
                                 className={'Content'}
                                 data={tensorcoreData}
+                                units={units}
                                 option={{
                                     series: [
                                         {
@@ -712,7 +717,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                                 //     color: '#666'
                                                 // },
                                                 formatter: function () {
-                                                    const str = 'Tensor core\n\n利用率'; //声明一个变量用来存储数据
+                                                    const str = `Tensor Cores\n\n${t('Utilization')}`; //声明一个变量用来存储数据
                                                     return str;
                                                 }
                                             },
@@ -731,7 +736,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
             </Configure>
             <Configure>
                 <div className="titleContent">
-                    <div className="title">耗时情况</div>
+                    <div className="title">{t('Time-details')}</div>
                     <div className="searchContent">
                         <div className="select_wrapper">
                             <FullWidthSelect list={itemsList} value={group} onChange={setGroup} />

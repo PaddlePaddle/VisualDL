@@ -17,7 +17,7 @@
 import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle, useCallback} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import {color, colorAlt} from '~/utils/chart';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -57,7 +57,8 @@ export type LineChartRef = {
 };
 
 const DistributedChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, isCpu}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit}, ref) => {
+        const {t} = useTranslation(['profiler', 'common']);
         const {i18n} = useTranslation();
 
         const {
@@ -71,7 +72,6 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             autoFit: true,
             onInit
         });
-        const {t} = useTranslation('common');
         const theme = useChartTheme();
         const formatter = useCallback(
             (params: any) => {
@@ -95,9 +95,9 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     }
                     const columns = [
-                        {label: '时间戳', width: '4em'},
-                        {label: '内存大小（Kb）', width: '8em'},
-                        {label: '事件名称', width: '4.285714286em'}
+                        {label: t('timestamp'), width: '4em'},
+                        {label: t('memory-size') + '（KB）', width: '8em'},
+                        {label: t('event-name'), width: '4.285714286em'}
                     ];
                     return renderToStaticMarkup(
                         <TooltipTable run={t('common:runs')} runs={runs as Run[]} columns={columns} data={datas} />
@@ -124,10 +124,9 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             }
             console.log('linedata', data);
             // debugger
-            const {colorAlt, series, ...defaults} = chart;
             const chartData = data;
 
-            const seriesData = Object.keys(data.name).map((items, indexs: number) => {
+            const seriesData = Object.keys(data.name).map(items => {
                 return {
                     name: data.name[items],
                     step: 'true',
@@ -232,7 +231,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                     },
                     yAxis: {
                         type: 'value',
-                        name: '内存使用量（kb)',
+                        name: t('memory-usage') + '（kB)',
                         position: 'left',
                         // offset: 0,
                         axisTick: {

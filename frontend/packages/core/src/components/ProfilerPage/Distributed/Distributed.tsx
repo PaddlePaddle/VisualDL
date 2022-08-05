@@ -192,7 +192,7 @@ type SelectListItem<T> = {
     label: string;
 };
 const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans, units}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     const [computation, setComputation] = useState<histogramType>();
     const [distributedData, setDistributedData] = useState<infoType[]>();
     const [stepsList, setStepsList] = useState<SelectListItem<string>[]>();
@@ -254,9 +254,9 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     );
     return (
         <ViewWrapper>
-            <Title>分布视图</Title>
+            <Title>{t('Distribution-view')}</Title>
             <Configure style={{marginTop: '24px'}}>
-                <div className="titles">设备信息</div>
+                <div className="titles">{t('Device-Information')}</div>
                 <div>
                     {distributedData &&
                         distributedData.map((items, index) => {
@@ -293,7 +293,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
             <Configure style={{marginBottom: `${rem(20)}`}}>
                 <div className="titleContent">
                     <div className="title">
-                        <div>Computation和communication的耗时对比</div>
+                        <div>{t('comparisons')}</div>
                         <Popover content={tooltips} placement="right">
                             <a
                                 className="argument-operation"
@@ -306,7 +306,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         </Popover>
                     </div>
                     <div className="searchContent">
-                        <div className="select_label">训练步数</div>
+                        <div className="select_label">{t('training-steps')}</div>
                         <div className="select_wrapper">
                             <FullWidthSelect list={stepsList} value={steps} onChange={setSteps} />
                         </div>
@@ -318,6 +318,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         data={computation}
                         color={color}
                         isWorkerName={true}
+                        units={units}
                     ></StackColumnChart>
                 </EchartPie>
             </Configure>

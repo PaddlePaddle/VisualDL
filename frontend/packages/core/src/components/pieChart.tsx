@@ -67,6 +67,7 @@ type pieChartProps = {
     className?: string;
     isCpu?: boolean;
     color?: string[];
+    units?: string;
 };
 const Content = styled.div`
     height: 100%;
@@ -88,7 +89,7 @@ const Content = styled.div`
     }
 `;
 const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
-    ({option, data, title, loading, zoom, className, onInit, isCpu, color}, ref) => {
+    ({option, data, title, loading, zoom, className, onInit, isCpu, color, units}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -119,7 +120,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
-            if (data && color) {
+            if (data && color && units) {
                 console.log('chartData', data, option);
                 // debugger
                 const chartOptions: EChartsOption = defaultsDeep(option, {
@@ -157,6 +158,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                                 '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.value +
+                                units +
                                 '</span>';
                             str += '</div>';
                             str += '<div style="display:flex; align-items:center;">';
@@ -245,7 +247,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                 // debugger
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [option, data, title, theme, i18n.language, echart, color, isCpu]);
+        }, [option, data, title, theme, i18n.language, echart, color, isCpu, units]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

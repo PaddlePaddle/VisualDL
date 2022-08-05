@@ -38,6 +38,7 @@ type trainChartProps = {
     zoom?: boolean;
     className?: string;
     onInit?: Options['onInit'];
+    units?: string;
 };
 
 export enum XAxisType {
@@ -57,7 +58,7 @@ export type LineChartRef = {
 };
 
 const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
-    ({options, data, title, loading, zoom, className, onInit}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, units}, ref) => {
         const {i18n} = useTranslation();
         const {t} = useTranslation(['profiler', 'common']);
         const {
@@ -158,6 +159,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                             '</span>' +
                             '</span> : <span style="color: #FFFFFF;">' +
                             totals +
+                            units +
                             '</span>';
                         str += '</div>';
                         str += '</div>';
@@ -173,6 +175,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                                 '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 element.data +
+                                units +
                                 '</span>';
                             str += '</div>';
                         }
@@ -264,7 +267,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
                 series: dataSeries
             });
             echart?.setOption(chartOptions, {notMerge: true});
-        }, [options, data, title, theme, i18n.language, echart, t]);
+        }, [options, data, title, theme, i18n.language, echart, t, units]);
 
         return (
             <Wrapper ref={wrapper} className={className}>

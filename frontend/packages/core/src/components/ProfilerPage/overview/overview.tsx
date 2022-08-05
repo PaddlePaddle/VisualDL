@@ -608,10 +608,22 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <PieceContent>
                     <EchartPie style={{paddingRight: `${rem(0)}`, paddingTop: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(10)}`}}>
-                            <PieChart className={'Content'} data={chartData?.cpu} isCpu={true} color={color} />
+                            <PieChart
+                                className={'Content'}
+                                data={chartData?.cpu}
+                                isCpu={true}
+                                color={color}
+                                units={units}
+                            />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={chartData?.gpu} isCpu={false} color={color} />
+                            <PieChart
+                                className={'Content'}
+                                data={chartData?.gpu}
+                                isCpu={false}
+                                color={color}
+                                units={units}
+                            />
                         </div>
                     </EchartPie>
                     <div
@@ -654,7 +666,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     </div>
                 </div>
                 <EchartPie3>
-                    <Trainchart className={'Content'} data={trainData}></Trainchart>
+                    <Trainchart className={'Content'} data={trainData} units={units}></Trainchart>
                 </EchartPie3>
             </Configures>
             <Configures>
@@ -673,7 +685,12 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             <Configures>
                 <div className="title">{t('consumption-distribution')}</div>
                 <EchartPie4>
-                    <StackColumnChart className={'Content'} data={distributed} color={color}></StackColumnChart>
+                    <StackColumnChart
+                        className={'Content'}
+                        data={distributed}
+                        color={color}
+                        units={units}
+                    ></StackColumnChart>
                 </EchartPie4>
             </Configures>
             <Configures style={{marginBottom: `${rem(20)}`}}>
