@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect, useCallback} from 'react';
+import type {ColumnsType} from 'antd/lib/table';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
 import StackColumnChart from '~/components/StackColumnChart2';
@@ -34,7 +35,6 @@ import {fetcher} from '~/utils/fetch';
 import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
 import Icon from '~/components/Icon';
-import {options, baseColumns2, baseColumns1} from './tools';
 import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
 import type {operatorPie, tableType, Event, pie_expand} from './type';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -48,6 +48,20 @@ export type OperatorViewProps = {
     spans: string;
     units: string;
 };
+export interface DataType {
+    name: string;
+    calls: number;
+    cpu_total_time: number;
+    cpu_avg_time: number;
+    cpu_max_time: number;
+    cpu_min_time: number;
+    cpu_ratio: number;
+    gpu_total_time: number;
+    gpu_avg_time: number;
+    gpu_max_time: number;
+    gpu_min_time: number;
+    gpu_ratio: number;
+}
 
 asideWidth;
 
@@ -275,14 +289,16 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const [hasGpu, setHasGpu] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [isExpend, setIsExpend] = useState<boolean>(false);
-    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>([
-        {label: t('By-operator-name'), value: 'op_name'},
-        {label: t('operator-shape'), value: 'op_name_input_shape'}
-    ]);
+    const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
     const [group, setGroup] = useState<string>('op_name');
     const [radioValue, setradioValue] = useState(1);
     const [top, setTop] = useState(0);
-
+    useEffect(() => {
+        setItemsList([
+            {label: t('By-operator-name'), value: 'op_name'},
+            {label: t('operator-shape'), value: 'op_name_input_shape'}
+        ]);
+    }, [t]);
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher(
@@ -393,13 +409,221 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onTopchange = (value: number) => {
         setTop(value);
     };
-    const columns2 = baseColumns2(units, hasGpu);
-    const columns1 = baseColumns1(units, hasGpu);
     const tooltips = (
         <div>
             <p>Content</p>
             <p>Content</p>
         </div>
+    );
+    const baseColumns1 = useCallback(
+        (units: string, hasGpu: boolean) => {
+            const columns: ColumnsType<DataType> = [
+                {
+                    title: t('operator'),
+                    dataIndex: 'name',
+                    key: 'name',
+                    render: (text: string) => <div>{text}</div>,
+                    width: 144
+                },
+                {
+                    title: t('call-volume'),
+                    dataIndex: 'calls',
+                    key: 'calls',
+                    sorter: (a, b) => a.calls - b.calls
+                },
+                {
+                    title: 'CPU',
+                    children: [
+                        {
+                            title: t('total-time') + `(${units})`,
+                            dataIndex: 'cpu_total_time',
+                            key: 'cpu_total_time',
+                            sorter: (a, b) => a.cpu_total_time - b.cpu_total_time
+                        },
+                        {
+                            title: t('average-time') + `(${units})`,
+                            dataIndex: 'cpu_avg_time',
+                            key: 'cpu_avg_time',
+                            sorter: (a, b) => {
+                                // console.log('a,b',a,b);
+
+                                return a.cpu_avg_time - b.cpu_avg_time;
+                            }
+                        },
+                        {
+                            title: t('longest-time') + `(${units})`,
+                            dataIndex: 'cpu_max_time',
+                            key: 'cpu_max_time',
+                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                        },
+                        {
+                            title: t('shortest-time') + `(${units})`,
+                            dataIndex: 'cpu_min_time',
+                            key: 'cpu_min_time',
+                            sorter: (a, b) => a.cpu_min_time - b.cpu_min_time
+                        },
+                        {
+                            title: t('percentage') + `%`,
+                            dataIndex: 'cpu_ratio',
+                            key: 'cpu_ratio',
+                            sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
+                        }
+                    ]
+                }
+            ];
+            if (hasGpu) {
+                columns.push({
+                    title: 'GPU',
+                    children: [
+                        {
+                            title: t('total-time') + `(${units})`,
+                            dataIndex: 'gpu_total_time',
+                            key: 'gpu_total_time',
+                            sorter: (a, b) => a.gpu_total_time - b.gpu_total_time
+                        },
+                        {
+                            title: t('average-time') + `(${units})`,
+                            dataIndex: 'gpu_avg_time',
+                            key: 'gpu_avg_time',
+                            sorter: (a, b) => a.gpu_avg_time - b.gpu_avg_time
+                        },
+                        {
+                            title: t('longest-time') + `(${units})`,
+                            dataIndex: 'cpu_max_time',
+                            key: 'cpu_max_time',
+                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                        },
+                        {
+                            title: t('shortest-time') + `(${units})`,
+                            dataIndex: 'gpu_min_time',
+                            key: 'gpu_min_time',
+                            sorter: (a, b) => a.gpu_min_time - b.gpu_min_time
+                        },
+                        {
+                            title: t('percentage') + `%`,
+                            dataIndex: 'gpu_ratio',
+                            key: 'gpu_ratio',
+                            sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
+                        }
+                    ]
+                });
+            }
+            return columns;
+        },
+        [units, hasGpu]
+    );
+    const baseColumns2 = useCallback(
+        (units: string, hasGpu: boolean) => {
+            const columns: ColumnsType<DataType> = [
+                {
+                    title: t('operator'),
+                    dataIndex: 'name',
+                    key: 'name',
+                    render: (text: string) => <div>{text}</div>,
+                    width: 144
+                },
+                {
+                    title: t('input-shape'),
+                    dataIndex: 'input_shape',
+                    key: 'input_shape',
+                    width: 100,
+                    render: text => {
+                        console.log('text', text);
+                        if (text?.length > 0) {
+                            return text.map((item: string, index: number) => {
+                                return <div key={item + index}>{item}</div>;
+                            });
+                        } else {
+                            return <div>{'-'}</div>;
+                        }
+                    }
+                },
+                {
+                    title: t('call-volume'),
+                    dataIndex: 'calls',
+                    key: 'calls',
+                    sorter: (a, b) => a.calls - b.calls
+                },
+                {
+                    title: 'CPU',
+                    children: [
+                        {
+                            title: t('total-time') + `(${units})`,
+                            dataIndex: 'cpu_total_time',
+                            key: 'cpu_total_time',
+                            sorter: (a, b) => a.cpu_total_time - b.cpu_total_time
+                        },
+                        {
+                            title: t('average-time') + `(${units})`,
+                            dataIndex: 'cpu_avg_time',
+                            key: 'cpu_avg_time',
+                            sorter: (a, b) => {
+                                // console.log('a,b',a,b);
+
+                                return a.cpu_avg_time - b.cpu_avg_time;
+                            }
+                        },
+                        {
+                            title: t('longest-time') + `(${units})`,
+                            dataIndex: 'cpu_max_time',
+                            key: 'cpu_max_time',
+                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                        },
+                        {
+                            title: t('shortest-time') + `(${units})`,
+                            dataIndex: 'cpu_min_time',
+                            key: 'cpu_min_time',
+                            sorter: (a, b) => a.cpu_min_time - b.cpu_min_time
+                        },
+                        {
+                            title: t('percentage') + `%`,
+                            dataIndex: 'cpu_ratio',
+                            key: 'cpu_ratio',
+                            sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
+                        }
+                    ]
+                }
+            ];
+            if (hasGpu) {
+                columns.push({
+                    title: 'GPU',
+                    children: [
+                        {
+                            title: t('total-time') + `(${units})`,
+                            dataIndex: 'gpu_total_time',
+                            key: 'gpu_total_time',
+                            sorter: (a, b) => a.gpu_total_time - b.gpu_total_time
+                        },
+                        {
+                            title: t('average-time') + `(${units})`,
+                            dataIndex: 'gpu_avg_time',
+                            key: 'gpu_avg_time',
+                            sorter: (a, b) => a.gpu_avg_time - b.gpu_avg_time
+                        },
+                        {
+                            title: t('longest-time') + `(${units})`,
+                            dataIndex: 'cpu_max_time',
+                            key: 'cpu_max_time',
+                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                        },
+                        {
+                            title: t('shortest-time') + `(${units})`,
+                            dataIndex: 'gpu_min_time',
+                            key: 'gpu_min_time',
+                            sorter: (a, b) => a.gpu_min_time - b.gpu_min_time
+                        },
+                        {
+                            title: t('percentage') + `%`,
+                            dataIndex: 'gpu_ratio',
+                            key: 'gpu_ratio',
+                            sorter: (a, b) => a.gpu_ratio - b.gpu_ratio
+                        }
+                    ]
+                });
+            }
+            return columns;
+        },
+        [units, hasGpu]
     );
     return (
         <ViewWrapper>
@@ -530,7 +754,11 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     )}
                     {tableData && !tableLoading && (
                         <Table
-                            columns={group === 'op_name_input_shape' ? columns2 : columns1}
+                            columns={
+                                group === 'op_name_input_shape'
+                                    ? baseColumns2(units, hasGpu)
+                                    : baseColumns1(units, hasGpu)
+                            }
                             dataSource={tableData}
                             bordered
                             size="middle"

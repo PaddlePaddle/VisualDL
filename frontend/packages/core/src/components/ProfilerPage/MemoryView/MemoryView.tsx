@@ -151,15 +151,16 @@ const Configure = styled.div`
                 border-radius: 4px;
                 padding-right: ${rem(10)};
                 justify-content: space-between;
-                width: ${rem(88)};
+                // width: ${rem(88)};
 
                 .unit-number {
+                    width: auto;
                     padding: ${rem(5)};
                     line-height: ${rem(36)};
                     display: flex;
                     align-items: center;
                     .wrappers {
-                        width: 100%;
+                        max-width: ${rem(100)};
                         height: 100%;
                         border: none;
                         font-size: 14px;
@@ -224,7 +225,7 @@ interface tableType extends Datum {
     key: string;
 }
 const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, units}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     const [lineData, setLineData] = useState<curveType>();
     const [search, setSearch] = useState<string>('');
     const [search2, setSearch2] = useState<string>('');
@@ -339,51 +340,99 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const columns = useMemo(() => {
         const columns: ColumnsType<DataType> = [
             {
-                title: '存储类型',
+                title: t('storage-type'),
                 dataIndex: 'MemoryType',
                 width: 150
             },
             {
-                title: '分配事件',
+                title: t('AllocatedEvent'),
                 dataIndex: 'AllocatedEvent',
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '分配时间',
+                title: t('AllocatedTimestamp'),
                 dataIndex: 'AllocatedTimestamp',
                 sorter: (a, b) => {
                     return a.AllocatedTimestamp - b.AllocatedTimestamp;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '释放事件',
+                title: t('FreeEvent'),
                 dataIndex: 'FreeEvent',
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '释放时间',
+                title: t('FreeTimestamp'),
                 dataIndex: 'FreeTimestamp',
                 sorter: (a, b) => {
                     return a.FreeTimestamp - b.FreeTimestamp;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '持续时间',
+                title: t('Duration'),
                 dataIndex: 'Duration',
                 sorter: (a, b) => {
                     return a.Duration - b.Duration;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '大小（KB)',
+                title: t('Size') + '（KB)',
                 dataIndex: 'Size',
                 sorter: (a, b) => {
                     return a.Size - b.Size;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             }
         ];
         return columns;
@@ -391,54 +440,102 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const op_columns = useMemo(() => {
         const op_columns: ColumnsType<op_DataType> = [
             {
-                title: '事件名',
+                title: t('EventName'),
                 dataIndex: 'EventName',
                 width: 150
             },
             {
-                title: '存储类型',
+                title: t('storage-type'),
                 dataIndex: 'MemoryType',
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '分配次数',
+                title: t('AllocationCount'),
                 dataIndex: 'AllocationCount',
                 sorter: (a, b) => {
                     return a.AllocationCount - b.AllocationCount;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '释放次数',
+                title: t('FreeCount'),
                 dataIndex: 'FreeCount',
                 sorter: (a, b) => {
                     return a.FreeCount - b.FreeCount;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '分配大小(KB)',
+                title: t('AllocationSize') + '(KB)',
                 dataIndex: 'AllocationSize',
                 sorter: (a, b) => {
                     return a.AllocationSize - b.AllocationSize;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '释放大小（KB)',
+                title: t('FreeSize') + '(KB)',
                 dataIndex: 'FreeSize',
                 sorter: (a, b) => {
                     return a.FreeSize - b.FreeSize;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             },
             {
-                title: '净增量（KB)',
+                title: t('IncreasedSize') + '(KB)',
                 dataIndex: 'IncreasedSize',
                 sorter: (a, b) => {
                     return a.IncreasedSize - b.IncreasedSize;
                 },
-                width: 102
+                width: 102,
+                render: text => {
+                    console.log('text', text);
+                    if (text) {
+                        return <div>{text}</div>;
+                    } else {
+                        return <div>{'-'}</div>;
+                    }
+                }
             }
         ];
         return op_columns;
@@ -466,9 +563,9 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>显存视图</Title>
+                <Title>{t('memory-view')}</Title>
                 <div className="searchContent">
-                    <div className="select_label">设备</div>
+                    <div className="select_label">{t('equipment')}</div>
                     <div className="select_wrapper">
                         <FullWidthSelect list={itemsList} value={items} onChange={setItems} />
                     </div>

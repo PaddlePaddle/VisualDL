@@ -40,14 +40,39 @@
     "call-volume":"调用量",
     "operator":"算子",
     "CPU-time":"CPU耗时",
-    "GPU-time":"GPU耗时"
-
-
-
-
-
-
-
+    "GPU-time":"GPU耗时",
+    "nuclear-view":"核视图",
+    "show-all-kernels":"显示全部内核",
+    "show-Top-kernels":"显示Top内核",
+    "group-by-core":"按内核分组",
+    "Group-operator":"按内核和算子名称分组",
+    "nuclear-name":"核名称",
+    "sm-average":"sm平均线程块数量",
+    "average-occupancy":"平均占用率",
+    "use-tensor-core":"是否使用Tensor Cores",
+    "Distribution-view":"分布视图",
+    "Device-Information":"设备信息",
+    "comparisons":"Computation和communication的耗时对比",
+    "training-steps":"训练步数",
+    "memory-view":"显存视图",
+    "equipment":"设备",
+    "timestamp":"时间戳",
+    "memory-size":"内存大小",
+    "event-name":"时间名称",
+    "memory-usage":"内存使用量",
+    "storage-type":"存储类型",
+    "EventName":"事件名",
+    "AllocationCount":"分配次数",
+    "FreeCount":"释放次数",
+    "AllocationSize":"分配大小",
+    "FreeSize":"释放大小",
+    "IncreasedSize":"净增量",
+    "AllocatedEvent":"分配事件",
+    "AllocatedTimestamp":"分配时间",
+    "FreeEvent":"释放事件",
+    "FreeTimestamp":"释放时间",
+    "Duration":"持续时间",
+    "Size":"大小"
 
 
 }
