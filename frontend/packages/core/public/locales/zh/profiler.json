@@ -81,7 +81,11 @@
     "view":"视图",
     "process":"进程",
     "process-span":"进程跨度",
-    "time-unit":"时间单位"
+    "time-unit":"时间单位",
+    "Allocated":"已分配",
+    "Reserved":"已预留",
+    "PeakAllocated":"最大已分配",
+    "PeakReserved":"最大已预留"
 
 
 

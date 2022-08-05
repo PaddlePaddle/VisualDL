@@ -40,7 +40,7 @@
     "call-volume":"call volume",
     "operator":"operator",
     "CPU-time":"CPU time",
-    "GPU-time":"GPU time consuming",
+    "GPU-time":"GPU time",
     "nuclear-view":"nuclear view",
     "show-all-kernels":"show all kernels",
     "show-Top-kernels":"Show Top Kernels",
@@ -80,6 +80,14 @@
     "view":"view",
     "process":"process",
     "process-span":"process span",
-    "time-unit":"time unit"
+    "time-unit":"time unit",
+    "Allocated":"Assigned",
+    "Reserved":"Reserved",
+    "PeakAllocated":"PeakAllocated",
+    "PeakReserved":"PeakReserved"
+
+
+
+
 
 }

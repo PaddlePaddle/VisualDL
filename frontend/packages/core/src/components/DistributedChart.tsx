@@ -128,7 +128,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
 
             const seriesData = Object.keys(data.name).map(items => {
                 return {
-                    name: data.name[items],
+                    name: t(items),
                     step: 'true',
                     type: 'line',
                     smooth: true,
@@ -272,7 +272,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 echart?.setOption(chartOptions, {notMerge: true});
                 console.log('chartOptions', chartOptions);
             }
-        }, [options, data, title, theme, i18n.language, echart, formatter]);
+        }, [options, data, title, theme, i18n.language, echart, formatter, t]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (
