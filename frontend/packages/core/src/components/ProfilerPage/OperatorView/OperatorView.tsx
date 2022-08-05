@@ -245,6 +245,7 @@ const PieceContent = styled.div`
         .postions {
             position: absolute;
             top: ${rem(22)};
+            z-index: 10;
         }
     }
 `;
@@ -449,10 +450,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(0)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
-                            <PieChart className={'Content'} data={cpuData} isCpu={true} color={color} />
+                            <PieChart className={'Content'} data={cpuData} isCpu={true} color={color} units={units} />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={gpuData} isCpu={false} color={color} />
+                            <PieChart className={'Content'} data={gpuData} isCpu={false} color={color} units={units} />
                         </div>
                     </EchartPie>
                     <div
@@ -487,7 +488,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                     </ButtonsRight>
                                 </RadioButtons>
                             ) : (
-                                <RadioButtons>
+                                <RadioButtons className="postions">
                                     <ButtonsLeft>CPU耗时</ButtonsLeft>
                                 </RadioButtons>
                             )}

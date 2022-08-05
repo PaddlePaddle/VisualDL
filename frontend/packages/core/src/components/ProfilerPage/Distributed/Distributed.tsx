@@ -318,6 +318,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         data={computation}
                         color={color}
                         isWorkerName={true}
+                        units={units}
                     ></StackColumnChart>
                 </EchartPie>
             </Configure>

@@ -36,6 +36,7 @@ type StackChartProps = {
     isWorkerName?: boolean;
     className?: string;
     color?: string[];
+    units?: string;
 };
 
 export enum XAxisType {
@@ -55,7 +56,7 @@ export type LineChartRef = {
 };
 
 const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
-    ({options, data, title, loading, zoom, className, onInit, color, isWorkerName}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, color, isWorkerName, units}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -142,6 +143,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                                 '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 totals +
+                                units +
                                 '</span>';
                             str += '</div>';
                             str += '</div>';
@@ -157,6 +159,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                                     '</span>' +
                                     '</span> : <span style="font-size:12px; color: #FFFFFF;">' +
                                     element.data +
+                                    units +
                                     '</span>';
                                 str += '</div>';
                             }
@@ -245,7 +248,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [options, data, color, title, theme, i18n.language, echart, isWorkerName]);
+        }, [options, data, color, title, theme, i18n.language, echart, isWorkerName, units]);
 
         return (
             <Wrapper ref={wrapper} className={className}>

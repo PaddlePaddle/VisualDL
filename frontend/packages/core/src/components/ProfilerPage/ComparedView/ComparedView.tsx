@@ -663,6 +663,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                                 className={'Content'}
                                 data={pieData}
                                 color={color}
+                                units={units}
                                 option={{
                                     series: [
                                         {
@@ -696,6 +697,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                             <PieChart
                                 className={'Content'}
                                 data={tensorcoreData}
+                                units={units}
                                 option={{
                                     series: [
                                         {

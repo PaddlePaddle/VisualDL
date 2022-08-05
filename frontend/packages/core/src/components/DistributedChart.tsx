@@ -57,7 +57,7 @@ export type LineChartRef = {
 };
 
 const DistributedChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit, isCpu}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
 
         const {
@@ -124,10 +124,9 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             }
             console.log('linedata', data);
             // debugger
-            const {colorAlt, series, ...defaults} = chart;
             const chartData = data;
 
-            const seriesData = Object.keys(data.name).map((items, indexs: number) => {
+            const seriesData = Object.keys(data.name).map(items => {
                 return {
                     name: data.name[items],
                     step: 'true',
