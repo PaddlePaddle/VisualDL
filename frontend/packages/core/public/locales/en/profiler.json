@@ -72,6 +72,14 @@
     "FreeEvent":"release event",
     "FreeTimestamp":"release time",
     "Duration":"duration",
-    "Size":"size"
+    "Size":"size",
+    "search-event-name":"search event name",
+    "Search-storage-type":"Search storage type",
+    "Search-data-labels":"Search data labels",
+    "data-flow":"data flow",
+    "view":"view",
+    "process":"process",
+    "process-span":"process span",
+    "time-unit":"time unit"
 
 }

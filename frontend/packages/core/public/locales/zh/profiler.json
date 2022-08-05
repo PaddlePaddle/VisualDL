@@ -72,7 +72,19 @@
     "FreeEvent":"释放事件",
     "FreeTimestamp":"释放时间",
     "Duration":"持续时间",
-    "Size":"大小"
+    "Size":"大小",
+    "search-event-name":"搜素事件名",
+    "Search-storage-type":"搜索存储类型",
+    "Search-data-labels":"搜索数据标签",
+    "performance-analysis":"性能分析",
+    "data-flow":"数据流",
+    "view":"视图",
+    "process":"进程",
+    "process-span":"进程跨度",
+    "time-unit":"时间单位"
+
+
+
 
 
 }

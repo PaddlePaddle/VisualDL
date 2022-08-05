@@ -164,7 +164,7 @@ const Configures = styled(Configure)`
         .searchContent {
             display: flex;
             .input_wrapper {
-                width: ${rem(160)};
+                width: auto;
                 height: ${rem(36)};
                 .ant-input-group-wrapper {
                     height: 100%;
@@ -510,7 +510,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             }
             return columns;
         },
-        [units, hasGpu]
+        [units, hasGpu, t]
     );
     const baseColumns2 = useCallback(
         (units: string, hasGpu: boolean) => {
@@ -623,7 +623,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             }
             return columns;
         },
-        [units, hasGpu]
+        [units, hasGpu, t]
     );
     return (
         <ViewWrapper>
@@ -740,7 +740,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                                 className="search-input"
                                 value={search}
                                 onChange={setSearch}
-                                placeholder={t('common:search-runs')}
+                                placeholder={t('Search-data-labels')}
                                 rounded
                             />
                         </div>
