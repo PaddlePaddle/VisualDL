@@ -436,7 +436,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             }
         ];
         return columns;
-    }, []);
+    }, [t]);
     const op_columns = useMemo(() => {
         const op_columns: ColumnsType<op_DataType> = [
             {
@@ -539,7 +539,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             }
         ];
         return op_columns;
-    }, []);
+    }, [t]);
     const SliderChange = (value: number[]) => {
         setSliders1(value[0]);
         setSliders2(value[1]);
@@ -583,7 +583,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                             className="search-input"
                             value={search}
                             onChange={setSearch}
-                            placeholder={t('common:search-runs')}
+                            placeholder={t('Search-storage-type')}
                             rounded
                         />
                     </div>
@@ -632,7 +632,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                             className="search-input"
                             value={search2}
                             onChange={setSearch2}
-                            placeholder={t('common:search-runs')}
+                            placeholder={t('search-event-name')}
                             rounded
                         />
                     </div>

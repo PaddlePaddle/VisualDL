@@ -126,7 +126,7 @@ type SelectListItem<T> = {
     label: string;
 };
 const Profiler: FunctionComponent = () => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     const [isCompared, setIsCompared] = useState(false);
     const [loading, setLoading] = useState(false);
     const [runs, setRuns] = useState<string>('');
@@ -264,32 +264,32 @@ const Profiler: FunctionComponent = () => {
         () => (
             <Aside>
                 <TitleContent>
-                    <Titles>性能分析</Titles>
+                    <Titles>{t('performance-analysis')}</Titles>
                 </TitleContent>
                 {!isCompared ? (
                     <Selectlist>
                         <AsideSection>
-                            <Field label={'数据流'}>
+                            <Field label={t('data-flow')}>
                                 <FullWidthSelect list={runsList} value={runs} onChange={setRuns} />
                             </Field>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={'视图'}>
+                            <Field label={t('view')}>
                                 <FullWidthSelect list={viewsList} value={views} onChange={setViews} />
                             </Field>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={'进程'}>
+                            <Field label={t('process')}>
                                 <FullWidthSelect list={workersList} value={workers} onChange={setWorkers} />
                             </Field>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={'进程跨度'}>
+                            <Field label={t('process-span')}>
                                 <FullWidthSelect list={spansList} value={spans} onChange={setSpans} />
                             </Field>
                         </AsideSection>
                         <AsideSection>
-                            <Field label={'时间单位'}>
+                            <Field label={t('time-unit')}>
                                 <FullWidthSelect list={unitsList} value={units} onChange={setUnits} />
                             </Field>
                         </AsideSection>
@@ -365,7 +365,8 @@ const Profiler: FunctionComponent = () => {
             diffSpan1,
             diffSpan2,
             units,
-            unitsList
+            unitsList,
+            t
         ]
     );
 

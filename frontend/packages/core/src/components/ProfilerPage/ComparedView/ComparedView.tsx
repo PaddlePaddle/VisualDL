@@ -189,7 +189,7 @@ const Configure = styled.div`
         .searchContent {
             display: flex;
             .input_wrapper {
-                width: ${rem(160)};
+                width: auto;
                 height: ${rem(36)};
                 .ant-input-group-wrapper {
                     height: 100%;
@@ -747,7 +747,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                                 className="search-input"
                                 value={search}
                                 onChange={setSearch}
-                                placeholder={t('common:search-runs')}
+                                placeholder={t('Search-data-labels')}
                                 rounded
                             />
                         </div>
