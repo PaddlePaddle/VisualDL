@@ -189,10 +189,10 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu})
                                 <div>GPU</div>
                                 <div className="title_list">
                                     <div className="list_items">
-                                        {environment?.GPU?.name ? environment?.GPU?.name + '%' : '--'}
+                                        {environment?.GPU?.name ? environment?.GPU?.name : '--'}
                                     </div>
                                     <div className="list_items">
-                                        {environment?.GPU?.memory ? environment?.GPU?.memory + '%' : '--'}
+                                        {environment?.GPU?.memory ? environment?.GPU?.memory : '--'}
                                     </div>
                                     <div className="list_items" style={{borderRight: 'none'}}>
                                         {t('computing-power')}
@@ -225,7 +225,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu})
                                 </div>
                                 <div className="items items_last">
                                     <div className="percentage">
-                                        {environment?.GPU?.tensor_core_percentage
+                                        {environment?.GPU?.tensor_core_percentage !== undefined
                                             ? environment?.GPU?.tensor_core_percentage + '%'
                                             : '--'}
                                     </div>

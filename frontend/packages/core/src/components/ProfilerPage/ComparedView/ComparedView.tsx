@@ -658,7 +658,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, views, worker
                 </div>
                 <PieceContent>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
-                        <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(50)}`}}>
+                        <div className="wraper" style={{borderRight: '1px solid #dddddd'}}>
                             <PieChart
                                 className={'Content'}
                                 data={pieData}
