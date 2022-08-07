@@ -13,27 +13,15 @@
 # limitations under the License.
 # =======================================================================
 import os
+import re
 import threading
 import traceback
 from collections import defaultdict
 from threading import Thread
 
-import multiprocess
-from multiprocess import Process
-from multiprocess import Queue
-
 from .parser.event_node import load_profiler_json
 from .profile_data import DistributedProfileData
 from .profile_data import ProfileData
-
-try:
-    from paddle.profiler import load_profiler_result
-except:
-    print('Load paddle.profiler error. Please check paddle >= 2.3.0')
-
-import re
-
-_name_pattern = re.compile(r"(.+)_time_(.+)\.paddle_trace\.((pb)|(json))")
 
 
 class RunManager:
@@ -49,10 +37,13 @@ class RunManager:
         #   span:
         #       ProfileData
         self.profile_data = defaultdict(dict)
-        self.filenames = set()
+        self.all_filenames = set()
+        self.handled_filenames = set()
         # span:
         #       DistributedProfileData
         self.distributed_data = {}
+        self.threads = {}
+        self.has_join = False
 
     def get_profile_data(self, worker, span):
         if worker in self.profile_data:
@@ -99,32 +90,18 @@ class RunManager:
         spans = [str(span) for span in spans]
         return spans
 
-    def _parse_file(self, filename):
-        match = _name_pattern.match(filename)
-        if match:
-            #print('parse file', filename)
-            worker_name = match.group(1)
-            if '.pb' in filename:
-                result = load_profiler_result(os.path.join(self.run, filename))
-            else:
-                result = load_profiler_json(os.path.join(self.run, filename))
-            span = result.get_span_idx()
-            self.profile_data[worker_name][span] = ProfileData(
-                self.run, worker_name, span, result)
+    def _parse_file(self, worker_name, result):
+        span = result.get_span_idx()
+        self.profile_data[worker_name][span] = ProfileData(
+            self.run, worker_name, span, result)
         return
 
-    def parse_files(self, filenames):
-        threads = []
-        for filename in filenames:
-            if filename not in self.filenames:
-                self.filenames.add(filename)
-                t = Thread(target=self._parse_file, args=(filename, ))
-                t.start()
-                threads.append(t)
-
-        #("I am in run_manager begin", self.run)
-        for thread in threads:
+    def join(self):
+        if self.has_join:
+            return
+        for thread in self.threads.values():
             thread.join()
+        self.has_join = True
         distributed_profile_data = defaultdict(list)
         for worker_name, span_data in self.profile_data.items():
             for span_idx, profile_data in span_data.items():
@@ -132,4 +109,19 @@ class RunManager:
         for span_idx, profile_datas in distributed_profile_data.items():
             self.distributed_data[span_idx] = DistributedProfileData(
                 self.run, span_idx, profile_datas)
-        #print('I am in run_manager done', self.run, self.get_views())
+
+    def add_profile_result(self, filename, worker_name, profile_result):
+        thread = Thread(
+            target=self._parse_file, args=(worker_name, profile_result))
+        thread.start()
+        self.handled_filenames.add(filename)
+        self.threads[filename] = thread
+
+    def set_all_filenames(self, filenames):
+        self.all_filenames.update(filenames)
+
+    def has_handled(self, filename):
+        if filename in self.handled_filenames:
+            return True
+        else:
+            return False

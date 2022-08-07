@@ -245,7 +245,6 @@ class OverviewParser:
         for stage_name, stage_data in self.merged_events_per_stage.items():
             for device_name, steps_data in stage_data.items():
                 for step_idx, events in steps_data.items():
-                    # print(stage_name, step_idx, events.keys())
                     if 'Kernel' in events:
                         if step_idx == 'ALL':
                             self.model_perspective_items[
@@ -257,17 +256,6 @@ class OverviewParser:
                         self.model_perspective_items[stage_name].gpu_times[
                             step_idx] = events['Kernel']['total_time']
 
-        # debug block
-        for stage_name, stage_data in self.merged_events_per_stage.items():
-            for device_name, steps_data in stage_data.items():
-                for step_idx, events in steps_data.items():
-                    for event_type, events_data in events.items():
-                        print(device_name, step_idx, event_type,
-                              events_data['total_time'])
-        for stage_name, stage in self.model_perspective_items.items():
-            print(stage_name, stage.cpu_time, stage.gpu_time)
-            print(stage_name, stage.cpu_times, stage.gpu_times)
-        #
         if self.has_device:
             self.gpu_ulitization = self.merged_events_per_stage['ProfileStep'][
                 'GPU']['ALL']['Kernel'][
@@ -340,12 +328,10 @@ class OverviewParser:
                     (current_node.start_ns, current_node.end_ns))
 
     def _parse_events(self, nodetrees):
-        # print('I am in parse_events overview', nodetrees)
         node_wrapped_trees = rebuild_node_trees(nodetrees)
         node_wrapped_threadlist = traverse_tree(node_wrapped_trees)
         # analyse user-defined summary
         for threadid, wrapped_nodes in node_wrapped_threadlist.items():
-            # print('threadid', threadid, 'wrapped_nodes[0]', wrapped_nodes[0].name)
             for wrapped_node in wrapped_nodes[1:]:  #skip root node
                 if wrapped_node.type == 'PythonUserDefined':
                     self.add_userdefined_item(wrapped_node)
@@ -359,9 +345,6 @@ class OverviewParser:
                 wrapped_profiler_step_nodes.append(wrapped_node)
             self.stage_nums = 0
             for wrapped_profiler_step_node in wrapped_profiler_step_nodes:
-                print('wrapped_profiler_step_node name',
-                      wrapped_profiler_step_node.thread_id,
-                      wrapped_profiler_step_node.name)
                 if wrapped_profiler_step_node.type == 'ProfileStep':
                     self.process_id = wrapped_profiler_step_node.process_id
                     stage_idx = wrapped_profiler_step_node.name.split('#')[1]
@@ -410,7 +393,6 @@ class OverviewParser:
             memory_manipulation_node)
 
     def add_model_perspective_item(self, model_perspective_node):
-        # print("I am in add_model_perspective_item", model_perspective_node.type)
         if model_perspective_node.type == 'Forward':
             name = 'Forward'
         elif model_perspective_node.type == 'Backward':

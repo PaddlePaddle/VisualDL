@@ -132,9 +132,7 @@ class MemoryParser:
             self.size_ranges[device_type] = (0, max_size)
 
     def _analyse_node_memory(self, event_name, node):
-        # print(event_name)
         for memnode in node.mem_node:  # self mem node
-            # print('memnode', memnode)
             if memnode.type == 'Allocate' or memnode.type == 'Free':
                 if event_name not in self.allocated_items[memnode.place]:
                     self.allocated_items[

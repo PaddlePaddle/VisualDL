@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-# from .parser.distributed_parser import DistributedParser
 from collections import defaultdict
 from collections import OrderedDict
 

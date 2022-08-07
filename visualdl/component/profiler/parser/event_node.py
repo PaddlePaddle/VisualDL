@@ -18,8 +18,6 @@ import json
 import re
 import sys
 
-from .utils import traverse_tree
-
 _show_name_pattern = re.compile(r'(.+)(\[.+\])')
 _show_tid_pattern = re.compile(r'\w+(\(.+\))')
 
@@ -206,8 +204,6 @@ class ProfilerResult:
                 if event['cat'] == 'CudaRuntime':
                     runtimenodes.append(HostNode.from_json(event))
                 else:
-                    # if event['cat'] == 'Forward' or event['cat'] == 'Backward' or event['cat'] == 'Optimization':
-                    #   #print(event)
                     hostnodes.append(HostNode.from_json(event))
             elif event['cat'] in device_node_type_map:
                 devicenodes.append(DeviceNode.from_json(event))
@@ -222,7 +218,6 @@ class ProfilerResult:
 
         self.data = self.build_tree(hostnodes, runtimenodes, devicenodes,
                                     memnodes)
-        # #print("I am in event_node parse: self.data", self.data)
         self.extra_info = json_data['ExtraInfo']
 
     def build_tree(self, hostnodes, runtimenodes, devicenodes, memnodes):
@@ -235,7 +230,6 @@ class ProfilerResult:
         for hostnode in hostnodes:
             thread2host_event_nodes[hostnode.thread_id].append(hostnode)
             thread_ids.add(hostnode.thread_id)
-        # #print('thread2host_event_nodes',  thread2host_event_nodes)
         # construct thread2runtime_event_nodes and correlation_id2runtime_event_node
         for runtimenode in runtimenodes:
             thread2runtime_event_nodes[runtimenode.thread_id].append(
@@ -285,7 +279,6 @@ class ProfilerResult:
                 memnodes, key=functools.cmp_to_key(compare_memnode_func))
 
         # construct trees
-        # #print('event node thread2host_event_nodes:', thread2host_event_nodes)
         for threadid in thread_ids:
             thread_event_trees[threadid] = self._build_tree_relationship(
                 thread2host_event_nodes[threadid],
@@ -303,16 +296,10 @@ class ProfilerResult:
         node_stack = []
         node_stack.append(root_node)
         # handle host_event_nodes
-        # #print([host_node.start_ns for host_node in host_event_nodes])
         for host_node in host_event_nodes:
             while True:
                 stack_top_node = node_stack[-1]
                 if host_node.start_ns < stack_top_node.end_ns:
-                    # if host_node.type == 'Backward' or host_node.type == 'Optimization':
-                    #print(stack_top_node.name, host_node.name)
-                    #print(stack_top_node.start_ns, stack_top_node.end_ns)
-                    #print(host_node.start_ns, host_node.end_ns)
-                    #print(stack_top_node.thread_id, host_node.thread_id)
                     stack_top_node.children_node.append(host_node)
                     node_stack.append(host_node)
                     break
@@ -324,7 +311,6 @@ class ProfilerResult:
                     firstposition = 0
                     lastposition = len(runtime_event_nodes)
                     for i, runtimenode in enumerate(runtime_event_nodes):
-                        # print(i, runtimenode.start_ns, runtimenode.end_ns, len(runtime_event_nodes))
                         if runtimenode.start_ns >= stack_top_node.start_ns and runtimenode.end_ns <= stack_top_node.end_ns:
                             if not hasenter:
                                 firstposition = i
@@ -384,11 +370,8 @@ class ProfilerResult:
             hasenter = False
             firstposition = 0
             lastposition = len(mem_event_nodes)
-            # print('mem_event_nodes length', len(mem_event_nodes))
             for i, mem_node in enumerate(mem_event_nodes):
-                # print(i, mem_node.timestamp_ns, node.start_ns, node.end_ns, len(mem_event_nodes))
                 if mem_node.timestamp_ns >= node.start_ns and mem_node.timestamp_ns <= node.end_ns:
-                    # print('add memory node', node.name, mem_node)
                     node.mem_node.append(mem_node)
                     if not hasenter:
                         firstposition = i

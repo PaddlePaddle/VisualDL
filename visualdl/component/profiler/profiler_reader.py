@@ -14,13 +14,19 @@
 # =======================================================================
 import json
 import os
+import re
 import tempfile
 import threading
 from threading import Thread
 
+from multiprocess import Process
+from multiprocess import Queue
+
+from .parser.event_node import load_profiler_json
 from .run_manager import RunManager
-from .utils import thread_manager
 from visualdl.io import bfile
+
+_name_pattern = re.compile(r"(.+)_time_(.+)\.paddle_trace\.((pb)|(json))")
 
 
 def is_VDLProfile_file(path):
@@ -57,9 +63,10 @@ class ProfileReader(object):
         self.displayname2runs = {}
         self.runs2displayname = {}
         self.run_managers = {}
-        self.queue_managers = {}
+        self.profile_result_queue = Queue()
         self.tempfile = None
         self.runs()
+        Thread(target=self._get_data_from_queue, args=()).start()
 
     @property
     def logdir(self):
@@ -73,15 +80,8 @@ class ProfileReader(object):
         return flush_walks
 
     def get_run_manager(self, run):
-        #print('get_run_manager:', run)
-        thread = thread_manager.get_thread(run)
-        if thread:
-            if thread.is_alive():
-                return None
-            else:
-                thread_manager.remove_thread(run)
-        # print('I am in get_run_manager')
         if run in self.run_managers:
+            self.run_managers[run].join()
             return self.run_managers[run]
         else:
             return None
@@ -92,8 +92,8 @@ class ProfileReader(object):
         Every dir(means `run` in vdl) has may have more than one profiler file.
 
         Returns:
-            walks: A dict like {"exp1": ["1587375595_paddle_trace.pb", "1587375685_paddle_trace.pb"],
-                                "exp2": ["1587375686_paddle_trace.pb"]}
+            walks: A dict like {"exp1": ["1587375595_paddle_trace.json", "1587375685_paddle_trace.json"],
+                                "exp2": ["1587375686_paddle_trace.json"]}
         """
         if not self.walks or update is True:
             flush_walks = self.get_all_walk()
@@ -114,12 +114,11 @@ class ProfileReader(object):
         for run, filenames in self.walks.items():
             if run not in self.run_managers:
                 self.run_managers[run] = RunManager(run)
-                t = Thread(
-                    target=self.run_managers[run].parse_files,
-                    args=(filenames, ))
-                t.start()
-                #print(run)
-                thread_manager.add_thread(run, t)
+            self.run_managers[run].set_all_filenames(filenames)
+            for filename in filenames:
+                if self.run_managers[run].has_handled(filename):
+                    continue
+                self._read_data(run, filename)
         return list(self.walks.keys())
 
     def set_displayname(self, log_reader):
@@ -131,3 +130,42 @@ class ProfileReader(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
+    def _get_data_from_queue(self):
+        while True:
+            try:
+                run, filename, worker_name, profile_result = self.profile_result_queue.get(
+                )
+                self.run_managers[run].add_profile_result(
+                    filename, worker_name, profile_result)
+            except Exception as e:
+                print('Read profiler data error in multiprocess, error: {}'.
+                      format(e))
+
+    def _read_data(self, run, filename):
+        match = _name_pattern.match(filename)
+        if match:
+            worker_name = match.group(1)
+            if '.pb' in filename:
+                try:
+                    from paddle.profiler import load_profiler_result
+                except:
+                    print(
+                        'Load paddle.profiler error. Please check paddle >= 2.3.0'
+                    )
+                    exit(0)
+                profile_result = load_profiler_result(
+                    os.path.join(run, filename))
+                self.run_managers[run].add_profile_result(
+                    filename, worker_name, profile_result)
+            else:
+
+                def _load_profiler_json(run, filename, worker_name):
+                    profile_result = load_profiler_json(
+                        os.path.join(run, filename))
+                    self.profile_result_queue.put((run, filename, worker_name,
+                                                   profile_result))
+
+                Process(
+                    target=_load_profiler_json,
+                    args=(run, filename, worker_name)).start()

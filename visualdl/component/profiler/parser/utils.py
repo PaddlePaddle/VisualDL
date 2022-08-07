@@ -247,9 +247,7 @@ class HostStatisticNode:
         self.is_terminal_operator_node = True
 
     def cal_statistic(self):
-        # print('name: {} , children length: {}'.format(self.name, len(self.children_node)))
         for child in self.children_node:
-            # print(child.name)
             child.cal_statistic()
             if child.is_terminal_operator_node == False:
                 self.is_terminal_operator_node = False
@@ -284,11 +282,6 @@ class HostStatisticNode:
         return self.hostnode.start_ns
 
     def __getattr__(self, name):
-        if name == 'children_node':
-            print('self.children_node:', self.children_node)
-            return self.children_node
-        elif name == 'runtime_node':
-            return self.runtime_node
         return getattr(self.hostnode, name)
 
 
@@ -364,20 +357,16 @@ def wrap_tree(nodetrees):
 def rebuild_node_trees(nodetrees):
     template_root = None
     # First, we find the tree which includes Forward event.
-    # print("I am in overview rebuild node trees", nodetrees)
     for threadid, root in nodetrees.items():
-        # print(root)
         has_find_template_root = False
         template_root = HostStatisticNode(root)
         for children in root.children_node:
-            # print(children.type)
             if children.type == 'ProfileStep':
                 profiler_step_node = HostStatisticNode(children)
                 template_root.children_node.append(profiler_step_node)
                 has_find_template_root = True
                 for stage_node in children.children_node:
                     if stage_node.type in StageType:
-                        # print(stage_node.type)
                         profiler_step_node.children_node.append(
                             HostStatisticNode(stage_node))
             else:
@@ -400,7 +389,6 @@ def rebuild_node_trees(nodetrees):
         warpped_stack = []
 
         root_statistic_node = HostStatisticNode(rootnode)
-        # print('has_find_template_root', has_find_template_root)
         wrapped_tree[thread_id] = root_statistic_node
         if has_find_template_root == False:
             for profiler_step_node in template_root.children_node:
@@ -412,11 +400,6 @@ def rebuild_node_trees(nodetrees):
                     stage_wrap_node = HostStatisticNode(stage_node.hostnode)
                     profiler_step_wrap_node.children_node.append(
                         stage_wrap_node)
-            # debug code
-            print('has_find_template_root False')
-            for node in root_statistic_node.children_node:
-                print(node.name)
-            #
             # insert nodes in original root into new stage nodes
             # algorithm: post order traversal the tree
             stack = []
@@ -462,12 +445,6 @@ def rebuild_node_trees(nodetrees):
     # recursive calculate node statistic values
     for thread_id, root_wrapped_node in wrapped_tree.items():
         root_wrapped_node.cal_statistic()
-    # debug block
-    for thread_id, root in wrapped_tree.items():
-        print('thread_id', thread_id)
-        for children in root.children_node:
-            print('root children:', children.name)
-    #
     return wrapped_tree
 
 
