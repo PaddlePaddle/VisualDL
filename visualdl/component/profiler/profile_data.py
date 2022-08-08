@@ -90,6 +90,7 @@ class ProfileData:
                 self.reserved_items = self.memory_parser.reserved_items
                 self.paired_events = self.memory_parser.paired_events
                 self.size_ranges = self.memory_parser.size_ranges
+                self.peak_allocation_values = self.memory_parser.peak_allocation_values
 
         if profiler_result.has_device():
             # kernel parser
@@ -1316,7 +1317,9 @@ class ProfileData:
                 "min_size":
                 format_memory(self.size_ranges[device][0], 'KB'),
                 "max_size":
-                format_memory(self.size_ranges[device][1], 'KB')
+                format_memory(self.size_ranges[device][1], 'KB'),
+                "max_allocation_size":
+                format_memory(self.peak_allocation_values[device], 'KB'),
             })
         return data
 

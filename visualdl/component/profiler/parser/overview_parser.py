@@ -310,19 +310,22 @@ class OverviewParser:
                     self.events_per_stage[stage_name]["GPU"]['ALL'][
                         devicenode.stream_id][devicenode.type]['times'].append(
                             (devicenode.start_ns, devicenode.end_ns))
-            if current_node.type == 'Forward':
+            if current_node.type == 'Forward' or current_node.type == 'UserDefined':
                 continue
+            node_type = current_node.type
+            if node_type == 'PythonUserDefined':
+                node_type = 'UserDefined'
             self.events_per_stage[stage_name]["CPU"][stage_idx][
-                current_node.thread_id][current_node.type]['events'].append(
+                current_node.thread_id][node_type]['events'].append(
                     current_node)
             self.events_per_stage[stage_name]["CPU"][stage_idx][
-                current_node.thread_id][current_node.type]['times'].append(
+                current_node.thread_id][node_type]['times'].append(
                     (current_node.start_ns, current_node.end_ns))
             self.events_per_stage[stage_name]["CPU"]['ALL'][
-                current_node.thread_id][current_node.type]['events'].append(
+                current_node.thread_id][node_type]['events'].append(
                     current_node)
             self.events_per_stage[stage_name]["CPU"]['ALL'][
-                current_node.thread_id][current_node.type]['times'].append(
+                current_node.thread_id][node_type]['times'].append(
                     (current_node.start_ns, current_node.end_ns))
 
     def _parse_events(self, nodetrees):
