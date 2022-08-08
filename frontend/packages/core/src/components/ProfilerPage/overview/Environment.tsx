@@ -132,26 +132,20 @@ const CPU = styled.div`
 export type EnvironmentProps = {
     environment: environmentType;
     hasGpu: boolean;
+    descriptions: string;
 };
-const string =
-    '\
-"CPU进程利用率：\n"\
-"\t进程所利用到的CPU的时间 / ProfileStep的时间(即性能分析的时间跨度）"\
-"CPU系统利用率\n"\
-"\t整个系统所有进程利用到的CPU时间 / CPU总时间（ProfileStep的时间*CPU核心数）"\
-"GPU利用率\n"\
-"\t进程利用GPU计算的时间 / ProfileStep的时间，进程利用GPU计算的时间即是GPU Kernel计算的时间，越高越好"\
-"流处理器效率\n"\
-"\t对于流处理器处理某个GPU Kernel, 其效率为SM_Eff_i = min(Kernel所用的Blocks数量 / GPU的流处理器数量, 100%)。"\
-"流处理器效率为SM_Eff_i关于每个Kernel的执行时间加权和 / ProfileStep的时间"\
-"流处理器占用率\n"\
-"\t对于流处理器处理某个GPU Kernel, 其占用率Occu_i = 为活跃的warp数 / 能支持的最大warp数。流处理器占用率为Occu_i关于每个Kernel执行时间的加权平均"\
-"Tensor cores使用时间占比\n"\
-"\t使用Tensor Cores的GPU Kernel的计算时间 / 所有Kernel的计算时间"';
-const strings = string.replace(/\n/g, '<br>');
-const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu}) => {
+const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, descriptions}) => {
     const {t} = useTranslation(['profiler', 'common']);
-    const tooltips = <div dangerouslySetInnerHTML={{__html: strings}}></div>;
+    const tooltips = (
+        <div
+            style={{
+                width: rem(400),
+                background: '#000000',
+                color: '#ffffff'
+            }}
+            dangerouslySetInnerHTML={{__html: descriptions ? descriptions : ''}}
+        ></div>
+    );
     return (
         <Fragment>
             <Configure>

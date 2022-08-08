@@ -115,22 +115,11 @@ type SelectListItem<T> = {
     label: string;
 };
 const string =
-    'CPU进程利用率：\n\t进程所利用到的CPU的时间 / ProfileStep的时间(即性能分析的时间跨度）\nCPU系统利用率\n\t整个系统所有进程利用到的CPU时间 / CPU总时间（ProfileStep的时间*CPU核心数）GPU利用率\n\t进程利用GPU计算的时间 / ProfileStep的时间，进程利用GPU计算的时间即是GPU Kernel计算的时间，越高越好流处理器效率\n\t对于流处理器处理某个GPU Kernel, 其效率为SM_Eff_i = min(Kernel所用的Blocks数量 / GPU的流处理器数量, 100%)。流处理器效率为SM_Eff_i关于每个Kernel的执行时间加权和 / ProfileStep的时间流处理器占用率\n\t对于流处理器处理某个GPU Kernel, 其占用率Occu_i = 为活跃的warp数 / 能支持的最大warp数。流处理器占用率为Occu_i关于每个Kernel执行时间的加权平均Tensor cores使用时间占比\n\t使用Tensor Cores的GPU Kernel的计算时间 / 所有Kernel的计算时间';
-const strings1 = string.replace(/\n/g, '<br>');
-const strings2 = strings1.replace(/\s/g, ' ');
-console.log('strings2', strings2);
+    '<div class="blod">CPU进程利用率：</div><div class="indent">进程所利用到的CPU的时间 / ProfileStep的时间(即性能分析的时间跨度）</div><div class="blod">CPU系统利用率</div><div class="indent">整个系统所有进程利用到的CPU时间 / CPU总时间（ProfileStep的时间*CPU核心数）</div><div class="blod">GPU利用率</div><div class="indent">进程利用GPU计算的时间 / ProfileStep的时间，进程利用GPU计算的时间即是GPU Kernel计算的时间，越高越好流处理器效率</div><div class="indent">对于流处理器处理某个GPU Kernel, 其效率为SM_Eff_i = min(Kernel所用的Blocks数量 / GPU的流处理器数量, 100%)。流处理器效率为SM_Eff_i关于每个Kernel的执行时间加权和 / ProfileStep的时间流处理器占用率</div><div class="indent">对于流处理器处理某个GPU Kernel, 其占用率Occu_i = 为活跃的warp数 / 能支持的最大warp数。流处理器占用率为Occu_i关于每个Kernel执行时间的加权平均Tensor cores使用时间占比</div><div class="indent">使用Tensor Cores的GPU Kernel的计算时间 / 所有Kernel的计算时间</div>';
+
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
-    const {t} = useTranslation(['profiler', 'common']);
-    const tooltips = (
-        <div
-            style={{
-                width: rem(400),
-                background: '#000000'
-            }}
-            dangerouslySetInnerHTML={{__html: strings2}}
-        ></div>
-    );
-    // const tooltips = <div className="preline">{string}</div>;
+    const {t, i18n} = useTranslation(['profiler', 'common']);
+    const tooltips = <div className="preline">{string}</div>;
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
     const [chartData, setChartData] = useState<chartDataType>();
@@ -148,6 +137,8 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const [tableData2, setTableData2] = useState<Event[]>();
     const [tableLoading2, settableLoading2] = useState(true);
     const [trainData, setTrainData] = useState<trainType>();
+    const [descriptions, setDescriptions] = useState<any>();
+    console.log('i18n.language', i18n.language);
     useEffect(() => {
         settableLoading(true);
         settableLoading2(true);
@@ -290,6 +281,16 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             });
         }
     }, [runs, workers, spans, views, TrainType, units]);
+    useEffect(() => {
+        if (i18n.language) {
+            // 训练步数耗时
+            fetcher('/profiler/descriptions' + `?lang=${i18n.language}`).then((res: unknown) => {
+                const Data = res;
+                console.log('Descriptions', Data);
+                setDescriptions(Data);
+            });
+        }
+    }, [i18n]);
     const ConsumingColumns = useCallback(
         (units: string, hasGpu: boolean) => {
             const columns: ColumnsType<DataType> = [
@@ -497,15 +498,45 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
         },
         [t]
     );
+    const gettTooltip = useCallback(
+        name => {
+            const tooltips = (
+                <div
+                    style={{
+                        width: rem(400),
+                        background: '#000000',
+                        color: '#ffffff'
+                    }}
+                    dangerouslySetInnerHTML={{__html: descriptions ? descriptions[name] : ''}}
+                ></div>
+            );
+            return tooltips;
+        },
+        [descriptions]
+    );
+    const getPopupContainers = (trigger: any) => {
+        return trigger.parentElement;
+    };
     return (
         <ViewWrapper>
             <Title>{t('profiler:Overview-view')}</Title>
-            {environment && <Environment environment={environment} hasGpu={hasGpu}></Environment>}
+            {environment && (
+                <Environment
+                    environment={environment}
+                    hasGpu={hasGpu}
+                    descriptions={descriptions['overview_environment']}
+                ></Environment>
+            )}
             <Configure>
                 <div className="titleContent">
                     <div className="titles">
                         <div>{t('profiler:time-consuming')}</div>
-                        <Popover content={tooltips} color={'#000000'} placement="right">
+                        <Popover
+                            content={gettTooltip('overview_model_perspective')}
+                            color={'#000000'}
+                            getPopupContainer={getPopupContainers}
+                            placement="right"
+                        >
                             <ArgumentOperation
                                 onClick={() => {
                                     console.log('1111');
@@ -571,7 +602,12 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <div className="titleContent">
                     <div className="title">
                         <div>{t('training-step-time')}</div>
-                        <Popover content={tooltips} placement="right">
+                        <Popover
+                            content={gettTooltip('overview_model_perspective_perstep')}
+                            color={'#000000'}
+                            getPopupContainer={getPopupContainers}
+                            placement="right"
+                        >
                             <ArgumentOperation
                                 onClick={() => {
                                     console.log('1111');
@@ -596,7 +632,12 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <div className="titleContent">
                     <div className="title">
                         <div>{t('performance-consumption')}</div>
-                        <Popover content={tooltips} placement="right">
+                        <Popover
+                            content={gettTooltip('overview_event_type_perspective')}
+                            placement="right"
+                            getPopupContainer={getPopupContainers}
+                            color={'#000000'}
+                        >
                             <ArgumentOperation
                                 onClick={() => {
                                     console.log('1111');
@@ -620,7 +661,12 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <div className="titleContent">
                     <div className="titles">
                         <div>{t('consumption-distribution')}</div>
-                        <Popover content={tooltips} placement="right">
+                        <Popover
+                            content={gettTooltip('overview_event_type_model_perspective')}
+                            placement="right"
+                            getPopupContainer={getPopupContainers}
+                            color={'#000000'}
+                        >
                             <ArgumentOperation
                                 onClick={() => {
                                     console.log('1111');

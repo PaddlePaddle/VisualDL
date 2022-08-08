@@ -81,6 +81,14 @@ export const Configure = styled.div`
                 }
             }
         }
+        .blod {
+            font-size: ${rem(16)};
+            margin-bottom: ${rem(10)};
+        }
+        .indent {
+            text-indent: 2em;
+            margin-bottom: ${rem(10)};
+        }
         .tooltipsContent {
             width: ${rem(500)};
         }
