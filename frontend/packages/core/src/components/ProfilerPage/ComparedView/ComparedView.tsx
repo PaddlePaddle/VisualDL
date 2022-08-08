@@ -19,22 +19,29 @@
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
-import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
-import {asideWidth, rem, em, transitionProps, primaryColor, position, size} from '~/utils/style';
+import {asideWidth, rem, primaryColor} from '~/utils/style';
+import {
+    Configure,
+    EchartPie,
+    Wraper,
+    color,
+    Title,
+    Subtraction,
+    ViewWrapper,
+    RadioContent,
+    PieceContent,
+    FullWidthSelect
+} from '../../components';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import {Table, Popover} from 'antd';
+import {Table} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
 import {fetcher} from '~/utils/fetch';
-import Select from '~/components/Select';
 import SearchInput from '~/components/searchInput2';
 import GridLoader from 'react-spinners/GridLoader';
-import logo from '~/assets/images/question-circle.svg';
-import hover from '~/assets/images/hover.svg';
 import type {tensorcorePie, kernelPie, tableDataType, tableEvent} from './type';
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface DataType {
     key: React.Key;
     name: string;
@@ -55,247 +62,30 @@ export type ComparedViewProps = {
 
 asideWidth;
 
-const ViewWrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    position: relative;
-    background-color: #fff;
-    .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
-        background: #f3f8fe;
-    }
-`;
 const Input = styled(NumberInput)`
     width: 100%;
     height: 100%;
     border: 1px solid #e0e0e0;
     border-radius: 0;
 `;
-const Title = styled.div`
-    width: 100%;
-    height: ${rem(50)};
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    line-height: ${rem(50)};
-    font-weight: 500;
-    padding-left: ${rem(20)};
+const Titles = styled(Title)`
+    border-bottom: none;
+    margin-bottom: ${rem(0)};
 `;
 const TitleNav = styled.div`
     display: flex;
     border-bottom: 1px solid #dddddd;
 `;
-const RadioContent = styled.div`
-    display: flex;
-    align-items: center;
-    padding-right: ${rem(20)};
-    .ant-radio-group {
-        display: flex;
-    }
-    .ant-radio-wrapper {
-        span {
-            white-space: nowrap;
-        }
-        .ant-radio-checked .ant-radio-inner {
-            border-color: #2932e1;
-        }
-        .ant-radio-inner::after {
-            background-color: #2932e1;
-        }
-    }
-    .AdditionContent {
-        display: flex;
-        align-items: center;
-        .input_wrapper {
-            width: ${rem(50)};
-            height: ${rem(32)};
-        }
-        .Addition {
-            width: ${rem(32)};
-            height: ${rem(32)};
-            line-height: ${rem(30)};
-            font-size: ${rem(16)};
-            text-align: center;
-            border: 1px solid #e0e0e0;
-            border-right: none;
-        }
-        .subtraction {
-            width: ${rem(32)};
-            height: ${rem(32)};
-            font-size: ${rem(16)};
-            line-height: ${rem(30)};
-            text-align: center;
-            border: 1px solid #e0e0e0;
-            border-left: none;
-        }
-    }
-`;
-const Subtraction = styled.div<{disable: boolean}>`
-    width: ${rem(32)};
-    height: ${rem(32)};
-    font-size: ${rem(16)};
-    line-height: ${rem(30)};
-    text-align: center;
-    border: 1px solid #e0e0e0;
-    border-left: none;
-    &:hover {
-        cursor: ${props => (props.disable ? 'auto' : 'not-allowed')};
-    }
-`;
-const Configure = styled.div`
-    margin-top: ${rem(30)};
-    width: 100%;
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    font-weight: 500;
-    padding-left: ${rem(20)};
-    padding-right: ${rem(20)};
-    .title {
-        display: flex;
-        align-items: center;
-        margin-bottom: ${rem(20)};
-        div {
-            line-height: ${rem(18)};
-        }
-        .argument-operation {
-            flex: none;
-            cursor: pointer;
-            font-size: ${em(14)};
-            margin-left: ${em(10)};
-            color: var(--text-lighter-color);
-            ${transitionProps('color')}
-            &:hover,
-              &:active {
-                color: #2932e1;
-            }
-            img {
-                width: ${rem(16)};
-                height: ${rem(16)};
-            }
-            img:hover {
-                content: url(${hover});
-            }
-        }
-    }
-    .titleContent {
-        margin-bottom: ${rem(10)};
-        .title {
-            margin-bottom: ${rem(0)};
-            line-height: ${rem(36)};
-        }
-        display: flex;
-        justify-content: space-between;
-        .searchContent {
-            display: flex;
-            .input_wrapper {
-                width: auto;
-                height: ${rem(36)};
-                .ant-input-group-wrapper {
-                    height: 100%;
-                    width: 100%;
-                    .ant-input-wrapper {
-                        height: 100%;
-                        .ant-input {
-                            height: 100%;
-                        }
-                        .ant-btn {
-                            height: 100%;
-                        }
-                    }
-                    .ant-btn {
-                        border-left: none;
-                    }
-                }
-            }
-            .select_wrapper {
-                width: ${rem(160)};
-                height: ${rem(36)};
-                margin-right: ${rem(15)};
-                .ant-select {
-                    border-radius: ${rem(4)};
-                    height: 100%;
-                    .ant-select-selector {
-                        height: 100%;
-                    }
-                }
-            }
-        }
-    }
-`;
-const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
-    width: 100%;
-    height: 100%;
-    font-size: ${rem(14)};
-`;
-const EchartPie = styled.div`
-    width: 100%;
-    height: ${rem(270)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-    .ant-radio-inner {
-        background-color: #fff;
-        border-color: #ffffff;
-        border-style: solid;
-        border-width: 2px;
-        border-radius: 50%;
-    }
-    .tooltipContent {
-        padding-right: ${rem(30)};
-        .tooltipitems {
-            display: flex;
-            align-items: center;
-        }
-    }
-`;
-const PieceContent = styled.div`
-    border: 1px solid #dddddd;
-    border-radius: ${rem(4)};
-    width: 100%;
-    height: auto;
-    padding-bottom: ${rem(20)};
-    .expendContent {
-        display: flex;
-        margin-bottom: ${rem(20)};
-        .expendButton {
-            color: #a3a3a3;
-            margin-left: ${rem(20)};
-            margin-right: ${rem(10)};
-        }
-        i {
-            line-height: ${rem(30)};
-        }
-    }
+const PieceContents = styled(PieceContent)`
     .tableContent {
         position: relative;
-    }
-`;
-const Wraper = styled.div`
-    width: 100%;
-    position: relative;
-    .ant-table-pagination.ant-pagination {
-        margin: ${rem(20)} 0;
-        padding-right: ${rem(20)};
-    }
-    .ant-table.ant-table-bordered > .ant-table-container {
-        border: 1px solid #dddddd;
-        border-radius: ${rem(8)};
-    }
-    > .loading {
-        ${size('100%')}
-        ${position('absolute', 0, null, null, 0)}
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        padding-top: ${rem(0)};
+        border-top: 1px solid #dddddd;
+        .postions {
+            position: absolute;
+            top: ${rem(22)};
+            z-index: 10;
+        }
     }
 `;
 type SelectListItem<T> = {
@@ -576,18 +366,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             }
         }
     ];
-    const color = [
-        '#2932E1',
-        '#00CC88',
-        '#981EFF',
-        '#066BFF',
-        '#00E2FF',
-        '#FFAA00',
-        '#E71ED5',
-        '#FF6600',
-        '#0DEBB0',
-        '#D50505'
-    ];
     const onChange = (e: RadioChangeEvent) => {
         console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
@@ -600,16 +378,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
     const onTopchange = (value: number) => {
         setTop(value);
     };
-    const tooltips = (
-        <div>
-            <p>Content</p>
-            <p>Content</p>
-        </div>
-    );
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>{t('nuclear-view')}</Title>
+                <Titles>{t('nuclear-view')}</Titles>
                 <RadioContent>
                     <Radio.Group onChange={onChange} value={radioValue}>
                         <Radio value={1}>{t('show-all-kernels')}</Radio>
@@ -646,20 +418,12 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                 </RadioContent>
             </TitleNav>
             <Configure style={{marginTop: `${rem(25)}`}}>
-                <div className="title">
-                    <div>{t('Time-profile')}</div>
-                    <Popover content={tooltips} placement="right">
-                        <a
-                            className="argument-operation"
-                            onClick={() => {
-                                console.log(111);
-                            }}
-                        >
-                            <img src={PUBLIC_PATH + logo} alt="" />
-                        </a>
-                    </Popover>
+                <div className="titleContent">
+                    <div className="titles">
+                        <div>{t('Time-profile')}</div>
+                    </div>
                 </div>
-                <PieceContent>
+                <PieceContents>
                     <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd'}}>
                             <PieChart
@@ -732,10 +496,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                             />
                         </div>
                     </EchartPie>
-                </PieceContent>
+                </PieceContents>
             </Configure>
             <Configure>
-                <div className="titleContent">
+                <div className="titleContent" style={{marginBottom: rem(15)}}>
                     <div className="title">{t('Time-details')}</div>
                     <div className="searchContent">
                         <div className="select_wrapper">

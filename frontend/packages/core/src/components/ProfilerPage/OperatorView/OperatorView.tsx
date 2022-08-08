@@ -21,24 +21,34 @@ import type {ColumnsType} from 'antd/lib/table';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
 import StackColumnChart from '~/components/StackColumnChart2';
-import type {SelectProps} from '~/components/Select';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
 // import Model from '~/components/ProfilerPage/model';
+import Icon from '~/components/Icon';
 import {primaryColor} from '~/utils/style';
 import {asideWidth, rem} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-import {Table, Popover} from 'antd';
+import {Table} from 'antd';
 import GridLoader from 'react-spinners/GridLoader';
 import {fetcher} from '~/utils/fetch';
-import Select from '~/components/Select';
-import {EchartPie} from '../../components';
 import SearchInput from '~/components/searchInput2';
-import Icon from '~/components/Icon';
-import {Configure, ButtonsLeft, ButtonsRight, RadioButtons, ArgumentOperation, Wraper} from '../../components';
+import {
+    Configure,
+    EchartPie,
+    ButtonsLeft,
+    ButtonsRight,
+    RadioButtons,
+    Wraper,
+    color,
+    Title,
+    Subtraction,
+    ViewWrapper,
+    RadioContent,
+    PieceContent,
+    FullWidthSelect
+} from '../../components';
 import type {operatorPie, tableType, Event, pie_expand} from './type';
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 interface tableTypes extends Event {
     key: string;
 }
@@ -66,152 +76,21 @@ export interface DataType {
 
 asideWidth;
 
-const ViewWrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    position: relative;
-    background-color: #fff;
-`;
 const Input = styled(NumberInput)`
     width: 100%;
     height: 100%;
     border: 1px solid #e0e0e0;
     border-radius: 0;
 `;
-const Title = styled.div`
-    width: 100%;
-    height: ${rem(50)};
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    line-height: ${rem(50)};
-    font-weight: 500;
-    padding-left: ${rem(20)};
+const Titles = styled(Title)`
+    border-bottom: none;
+    margin-bottom: ${rem(0)};
 `;
 const TitleNav = styled.div`
     display: flex;
     border-bottom: 1px solid #dddddd;
 `;
-const RadioContent = styled.div`
-    display: flex;
-    align-items: center;
-    padding-right: ${rem(20)};
-    .ant-radio-group {
-        display: flex;
-    }
-    .ant-radio-wrapper {
-        span {
-            white-space: nowrap;
-        }
-        .ant-radio-checked .ant-radio-inner {
-            border-color: #2932e1;
-        }
-        .ant-radio-inner::after {
-            background-color: #2932e1;
-        }
-    }
-    .AdditionContent {
-        display: flex;
-        align-items: center;
-        .input_wrapper {
-            width: ${rem(50)};
-            height: ${rem(32)};
-        }
-        .Addition {
-            width: ${rem(32)};
-            height: ${rem(32)};
-            line-height: ${rem(30)};
-            font-size: ${rem(16)};
-            text-align: center;
-            border: 1px solid #e0e0e0;
-            border-right: none;
-        }
-    }
-`;
-const Subtraction = styled.div<{disable: boolean}>`
-    width: ${rem(32)};
-    height: ${rem(32)};
-    font-size: ${rem(16)};
-    line-height: ${rem(30)};
-    text-align: center;
-    border: 1px solid #e0e0e0;
-    border-left: none;
-    &:hover {
-        cursor: ${props => (props.disable ? 'auto' : 'not-allowed')};
-    }
-`;
-const Configures = styled(Configure)`
-    .titleContent {
-        margin-bottom: ${rem(10)};
-        .title {
-            margin-bottom: ${rem(0)};
-            line-height: ${rem(36)};
-        }
-        display: flex;
-        justify-content: space-between;
-        .searchContent {
-            display: flex;
-            .input_wrapper {
-                width: auto;
-                height: ${rem(36)};
-                .ant-input-group-wrapper {
-                    height: 100%;
-                    width: 100%;
-                    .ant-input-wrapper {
-                        height: 100%;
-                        .ant-input {
-                            height: 100%;
-                        }
-                        .ant-btn {
-                            height: 100%;
-                        }
-                    }
-                    .ant-btn {
-                        border-left: none;
-                    }
-                }
-            }
-            .select_wrapper {
-                width: ${rem(160)};
-                height: ${rem(36)};
-                margin-right: ${rem(15)};
-                .ant-select {
-                    border-radius: ${rem(4)};
-                    height: 100%;
-                    .ant-select-selector {
-                        height: 100%;
-                    }
-                }
-            }
-        }
-    }
-`;
-const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
-    width: 100%;
-    height: 100%;
-    font-size: ${rem(14)};
-`;
-const PieceContent = styled.div`
-    border: 1px solid #dddddd;
-    border-radius: ${rem(4)};
-    width: 100%;
-    height: auto;
-    // padding-bottom: ${rem(20)};
-    .expendContent {
-        display: flex;
-        .expendButton {
-            color: #a3a3a3;
-            margin-left: ${rem(20)};
-            margin-right: ${rem(10)};
-        }
-        i {
-            line-height: ${rem(30)};
-        }
-    }
-    .is_expend {
-        margin-bottom: ${rem(20)};
-    }
+const PieceContents = styled(PieceContent)`
     .tableContent {
         position: relative;
         padding-top: ${rem(0)};
@@ -237,7 +116,7 @@ interface cpuData {
     name: string;
     proportion: number;
 }
-const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, workers, spans, units}) => {
+const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, spans, units}) => {
     const {t} = useTranslation(['profiler', 'common']);
     // const model = useRef<any>(null);
     const [cpuData, setCpuData] = useState<cpuData[]>();
@@ -345,18 +224,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             });
         }
     }, [runs, workers, spans, isCPU, top, units]);
-    const color = [
-        '#2932E1',
-        '#00CC88',
-        '#981EFF',
-        '#066BFF',
-        '#00E2FF',
-        '#FFAA00',
-        '#E71ED5',
-        '#FF6600',
-        '#0DEBB0',
-        '#D50505'
-    ];
     const onChange = (e: RadioChangeEvent) => {
         console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
@@ -369,12 +236,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
     const onTopchange = (value: number) => {
         setTop(value);
     };
-    const tooltips = (
-        <div>
-            <p>Content</p>
-            <p>Content</p>
-        </div>
-    );
     const baseColumns1 = useCallback(
         (units: string, hasGpu: boolean, group: string) => {
             const columns: ColumnsType<DataType> = [
@@ -488,13 +349,13 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
             }
             return columns;
         },
-        [units, hasGpu, t, group]
+        [t]
     );
 
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>{t('Operator-view')}</Title>
+                <Titles>{t('Operator-view')}</Titles>
                 <RadioContent>
                     <Radio.Group onChange={onChange} value={radioValue}>
                         <Radio value={1}>{t('show-all-operators')}</Radio>
@@ -504,6 +365,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         <div className="AdditionContent">
                             <Subtraction
                                 disable={true}
+                                className="Addition"
                                 onClick={() => {
                                     const tops = top + 1;
                                     setTop(tops);
@@ -530,14 +392,13 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                     ) : null}
                 </RadioContent>
             </TitleNav>
-            <Configures style={{marginTop: `${rem(25)}`}}>
-                <div className="title">
-                    <div>{t('Time-profile')}</div>
-                    <Popover content={tooltips} placement="right">
-                        <ArgumentOperation></ArgumentOperation>
-                    </Popover>
+            <Configure style={{marginTop: `${rem(25)}`}}>
+                <div className="titleContent">
+                    <div className="titles">
+                        <div>{t('Time-profile')}</div>
+                    </div>
                 </div>
-                <PieceContent>
+                <PieceContents>
                     <EchartPie style={{padding: `${rem(0)}`, paddingLeft: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd'}}>
                             <PieChart className={'Content'} data={cpuData} isCpu={true} color={color} units={units} />
@@ -591,10 +452,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                             </EchartPie4>
                         </div>
                     ) : null}
-                </PieceContent>
-            </Configures>
-            <Configures>
-                <div className="titleContent">
+                </PieceContents>
+            </Configure>
+            <Configure>
+                <div className="titleContent" style={{marginBottom: rem(15)}}>
                     <div className="title">{t('Time-details')}</div>
                     <div className="searchContent">
                         <div className="select_wrapper">
@@ -628,7 +489,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, views, worker
                         ></Table>
                     )}
                 </Wraper>
-            </Configures>
+            </Configure>
             {/* <Model ref={model} runs={runs} views={views} workers={workers}></Model> */}
         </ViewWrapper>
     );

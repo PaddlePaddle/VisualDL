@@ -17,118 +17,13 @@
 
 import React, {FunctionComponent, useState, useEffect} from 'react';
 import StackColumnChart from '~/components/StackColumnChart';
-import Select from '~/components/Select';
-import type {SelectProps} from '~/components/Select';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
-import {Popover} from 'antd';
-import {em, transitionProps, asideWidth, rem} from '~/utils/style';
-import logo from '~/assets/images/question-circle.svg';
-import hover from '~/assets/images/hover.svg';
+import {Configure, EchartPie, color, Title, ViewWrapper, FullWidthSelect} from '../../components';
+import {asideWidth, rem} from '~/utils/style';
 import type {infoType, histogramType} from './type';
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 asideWidth;
-
-const ViewWrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    position: relative;
-    background-color: #fff;
-`;
-const Title = styled.div`
-    width: 100%;
-    height: ${rem(50)};
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    line-height: ${rem(50)};
-    font-weight: 500;
-    padding-left: ${rem(20)};
-    border-bottom: 1px solid #dddddd;
-    margin-bottom: ${rem(20)};
-`;
-const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
-    width: 100%;
-    height: 100%;
-    font-size: ${rem(14)};
-`;
-const Configure = styled.div`
-    margin-top: ${rem(30)};
-    width: 100%;
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    font-weight: 500;
-    padding-left: ${rem(20)};
-    padding-right: ${rem(20)};
-    .titles {
-        margin-bottom: ${rem(20)};
-    }
-    .border {
-        border-top: none;
-    }
-    .titleContent {
-        margin-bottom: ${rem(10)};
-        display: flex;
-        align-items: center;
-        .title {
-            display: flex;
-            align-items: center;
-            .argument-operation {
-                flex: none;
-                cursor: pointer;
-                font-size: ${em(14)};
-                margin-left: ${em(10)};
-                color: var(--text-lighter-color);
-                ${transitionProps('color')}
-                &:hover,
-                &:active {
-                    color: #2932e1;
-                }
-                img {
-                    width: 16px;
-                    height: 16px;
-                }
-                img:hover {
-                    content: url(${hover});
-                }
-            }
-        }
-        display: flex;
-        justify-content: space-between;
-        .searchContent {
-            display: flex;
-            align-items: center;
-            .select_label {
-                margin-right: ${rem(15)};
-            }
-            .select_wrapper {
-                width: ${rem(64)};
-                height: ${rem(36)};
-            }
-        }
-    }
-`;
-const EchartPie = styled.div`
-    width: 100%;
-    padding: ${rem(24)};
-    border: 1px solid #dddddd;
-    border-radius: 4px;
-    height: ${rem(366)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-`;
 const Card = styled.div`
     width: 100%;
     height: ${rem(142)};
@@ -179,7 +74,10 @@ const Card = styled.div`
         }
     }
 `;
-
+const EchartPies = styled(EchartPie)`
+    padding: ${rem(24)};
+    border: 1px solid #dddddd;
+`;
 export type NuclearViewProps = {
     runs: string;
     views: string;
@@ -234,29 +132,15 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
             });
         }
     }, [runs, workers, spans, views, steps, units]);
-    const color = [
-        '#2932E1',
-        '#00CC88',
-        '#981EFF',
-        '#066BFF',
-        '#00E2FF',
-        '#FFAA00',
-        '#E71ED5',
-        '#FF6600',
-        '#0DEBB0',
-        '#D50505'
-    ];
-    const tooltips = (
-        <div>
-            <p>Content</p>
-            <p>Content</p>
-        </div>
-    );
     return (
         <ViewWrapper>
             <Title>{t('Distribution-view')}</Title>
             <Configure style={{marginTop: '24px'}}>
-                <div className="titles">{t('Device-Information')}</div>
+                <div className="titleContent">
+                    <div className="titles">
+                        <div>{t('Device-Information')}</div>
+                    </div>
+                </div>
                 <div>
                     {distributedData &&
                         distributedData.map((items, index) => {
@@ -291,19 +175,9 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                 </div>
             </Configure>
             <Configure style={{marginBottom: `${rem(20)}`}}>
-                <div className="titleContent">
+                <div className="titleContent" style={{marginBottom: rem(15)}}>
                     <div className="title">
                         <div>{t('comparisons')}</div>
-                        <Popover content={tooltips} placement="right">
-                            <a
-                                className="argument-operation"
-                                onClick={() => {
-                                    console.log('111');
-                                }}
-                            >
-                                <img src={PUBLIC_PATH + logo} alt="" />
-                            </a>
-                        </Popover>
                     </div>
                     <div className="searchContent">
                         <div className="select_label">{t('training-steps')}</div>
@@ -312,7 +186,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         </div>
                     </div>
                 </div>
-                <EchartPie>
+                <EchartPies>
                     <StackColumnChart
                         className={'Content'}
                         data={computation}
@@ -320,7 +194,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         isWorkerName={true}
                         units={units}
                     ></StackColumnChart>
-                </EchartPie>
+                </EchartPies>
             </Configure>
         </ViewWrapper>
     );

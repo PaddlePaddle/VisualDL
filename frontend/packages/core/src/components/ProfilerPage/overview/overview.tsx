@@ -17,17 +17,28 @@
 import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import type {ColumnsType} from 'antd/lib/table';
 import PieChart from '~/components/pieChart';
-import Select from '~/components/Select';
 import StackColumnChart from '~/components/StackColumnChart';
 import Trainchart from '~/components/Trainchart';
 import {fetcher} from '~/utils/fetch';
-import {asideWidth, position, primaryColor, rem, size} from '~/utils/style';
+import {asideWidth, primaryColor, rem} from '~/utils/style';
 import GridLoader from 'react-spinners/GridLoader';
 import styled from 'styled-components';
-import type {SelectProps} from '~/components/Select';
-import {Configure, EchartPie} from '../../components';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
+import {
+    Configure,
+    EchartPie,
+    ArgumentOperation,
+    FullWidthSelect,
+    ViewWrapper,
+    TableContent,
+    Title,
+    PieceContent,
+    color
+} from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
+import logo from '~/assets/images/question-circle.svg';
+import {Popover} from 'antd';
 import type {
     Event,
     Gpu,
@@ -48,24 +59,9 @@ import Icon from '~/components/Icon';
 
 asideWidth;
 
-const ViewWrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    flex-grow: 1;
-    position: relative;
-    background-color: #fff;
-`;
-const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
-    width: 100%;
-    height: 100%;
-    font-size: ${rem(14)};
-`;
 const Configures = styled(Configure)`
-    .tabs_title {
-        position: absolute;
-        margin-bottom: 0px;
-        height: ${rem(46)};
-        line-height: ${rem(46)};
+    .titleContent {
+        margin-bottom: ${rem(10)};
     }
     .ant-tabs-centered > .ant-tabs-nav .ant-tabs-nav-wrap:not([class*='ant-tabs-nav-wrap-ping']) {
         justify-content: flex-end;
@@ -88,40 +84,6 @@ const Configures = styled(Configure)`
         background: #2932e1;
         border: 1px solid rgba(41, 50, 225, 1);
     }
-    .titleContent {
-        margin-bottom: ${rem(10)};
-        display: flex;
-        align-items: center;
-        .titles {
-            display: flex;
-            align-items: center;
-        }
-        display: flex;
-        justify-content: space-between;
-        .searchContent {
-            display: flex;
-            align-items: center;
-            .select_label {
-                margin-right: ${rem(15)};
-            }
-            .select_wrapper {
-                width: auto;
-                height: ${rem(36)};
-            }
-        }
-    }
-`;
-const Title = styled.div`
-    width: 100%;
-    height: ${rem(50)};
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    line-height: ${rem(50)};
-    font-weight: 500;
-    padding-left: ${rem(20)};
-    border-bottom: 1px solid #dddddd;
-    margin-bottom: ${rem(20)};
 `;
 
 const EchartPie3 = styled(EchartPie)`
@@ -132,44 +94,6 @@ const EchartPie3 = styled(EchartPie)`
 const EchartPie4 = styled(EchartPie3)`
     height: ${rem(366)};
 `;
-const PieceContent = styled.div`
-    border: 1px solid #dddddd;
-    border-radius: 4px;
-    width: 100%;
-    height: auto;
-    padding-bottom: ${rem(20)};
-    .expendContent {
-        display: flex;
-        .expendButton {
-            color: #a3a3a3;
-            margin-left: ${rem(20)};
-            margin-right: ${rem(10)};
-        }
-        i {
-            line-height: ${rem(30)};
-        }
-    }
-    .tableContent {
-        padding: ${rem(20)};
-        min-height: ${rem(200)};
-        position: relative;
-        .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
-            background: #f3f8fe;
-        }
-        .ant-table.ant-table-bordered > .ant-table-container {
-            border: 1px solid #dddddd;
-            border-radius: ${rem(8)};
-        }
-        > .loading {
-            ${size('100%')}
-            ${position('absolute', 0, null, null, 0)}
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    }
-`;
-
 export type overViewProps = {
     runs: string;
     views: string;
@@ -190,8 +114,25 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
+const string =
+    '\
+"CPU进程利用率：\n"\
+"\t进程所利用到的CPU的时间 / ProfileStep的时间(即性能分析的时间跨度）"\
+"CPU系统利用率\n"\
+"\t整个系统所有进程利用到的CPU时间 / CPU总时间（ProfileStep的时间*CPU核心数）"\
+"GPU利用率\n"\
+"\t进程利用GPU计算的时间 / ProfileStep的时间，进程利用GPU计算的时间即是GPU Kernel计算的时间，越高越好"\
+"流处理器效率\n"\
+"\t对于流处理器处理某个GPU Kernel, 其效率为SM_Eff_i = min(Kernel所用的Blocks数量 / GPU的流处理器数量, 100%)。"\
+"流处理器效率为SM_Eff_i关于每个Kernel的执行时间加权和 / ProfileStep的时间"\
+"流处理器占用率\n"\
+"\t对于流处理器处理某个GPU Kernel, 其占用率Occu_i = 为活跃的warp数 / 能支持的最大warp数。流处理器占用率为Occu_i关于每个Kernel执行时间的加权平均"\
+"Tensor cores使用时间占比\n"\
+"\t使用Tensor Cores的GPU Kernel的计算时间 / 所有Kernel的计算时间"';
+const strings = string.replace(/\n/g, '<br>');
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t} = useTranslation(['profiler', 'common']);
+    const tooltips = <div dangerouslySetInnerHTML={{__html: strings}}></div>;
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
     const [chartData, setChartData] = useState<chartDataType>();
@@ -351,18 +292,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             });
         }
     }, [runs, workers, spans, views, TrainType, units]);
-    const color = [
-        '#2932E1',
-        '#00CC88',
-        '#981EFF',
-        '#066BFF',
-        '#00E2FF',
-        '#FFAA00',
-        '#E71ED5',
-        '#FF6600',
-        '#0DEBB0',
-        '#D50505'
-    ];
     const ConsumingColumns = useCallback(
         (units: string, hasGpu: boolean) => {
             const columns: ColumnsType<DataType> = [
@@ -465,7 +394,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             }
             return columns;
         },
-        [units, hasGpu, t]
+        [t]
     );
     const customizeColumns = useCallback(
         (units: string, hasGpu: boolean) => {
@@ -568,14 +497,27 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             }
             return columns2;
         },
-        [units, hasGpu, t]
+        [t]
     );
     return (
         <ViewWrapper>
             <Title>{t('profiler:Overview-view')}</Title>
             {environment && <Environment environment={environment} hasGpu={hasGpu}></Environment>}
-            <Configures>
-                <div className="title">{t('profiler:time-consuming')}</div>
+            <Configure>
+                <div className="titleContent">
+                    <div className="titles">
+                        <div>{t('profiler:time-consuming')}</div>
+                        <Popover content={tooltips} placement="right">
+                            <ArgumentOperation
+                                onClick={() => {
+                                    console.log('1111');
+                                }}
+                            >
+                                <img src={PUBLIC_PATH + logo} alt="" />
+                            </ArgumentOperation>
+                        </Popover>
+                    </div>
+                </div>
                 <PieceContent>
                     <EchartPie style={{paddingRight: `${rem(0)}`, paddingTop: `${rem(0)}`}}>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd', marginRight: `${rem(10)}`}}>
@@ -607,7 +549,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         <Icon type={isExpend ? 'chevron-up' : 'chevron-down'} />
                     </div>
                     {isExpend && tableData ? (
-                        <div className="tableContent">
+                        <TableContent>
                             {tableLoading && (
                                 <div className="loading">
                                     <GridLoader color={primaryColor} size="10px" />
@@ -623,13 +565,25 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                                     scroll={{x: 'calc(700px + 50%)', y: 240}}
                                 ></Table>
                             )}
-                        </div>
+                        </TableContent>
                     ) : null}
                 </PieceContent>
-            </Configures>
+            </Configure>
             <Configures>
                 <div className="titleContent">
-                    <div className="titles">{t('training-step-time')}</div>
+                    <div className="title">
+                        <div>{t('training-step-time')}</div>
+                        <Popover content={tooltips} placement="right">
+                            <ArgumentOperation
+                                onClick={() => {
+                                    console.log('1111');
+                                }}
+                            >
+                                <img src={PUBLIC_PATH + logo} alt="" />
+                            </ArgumentOperation>
+                        </Popover>
+                    </div>
+
                     <div className="searchContent">
                         <div className="select_wrapper">
                             <FullWidthSelect list={stepsList} value={TrainType} onChange={setTrainType} />
@@ -642,7 +596,18 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             </Configures>
             <Configures>
                 <div className="titleContent">
-                    <div className="titles">{t('performance-consumption')}</div>
+                    <div className="title">
+                        <div>{t('performance-consumption')}</div>
+                        <Popover content={tooltips} placement="right">
+                            <ArgumentOperation
+                                onClick={() => {
+                                    console.log('1111');
+                                }}
+                            >
+                                <img src={PUBLIC_PATH + logo} alt="" />
+                            </ArgumentOperation>
+                        </Popover>
+                    </div>
                     <div className="searchContent">
                         <div className="select_wrapper">
                             <FullWidthSelect list={stepsList} value={PerformanceType} onChange={setPerformanceType} />
@@ -653,8 +618,21 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     <PerformanceContent units={units} performanceData={performanceData}></PerformanceContent>
                 )}
             </Configures>
-            <Configures>
-                <div className="title">{t('consumption-distribution')}</div>
+            <Configure>
+                <div className="titleContent">
+                    <div className="titles">
+                        <div>{t('consumption-distribution')}</div>
+                        <Popover content={tooltips} placement="right">
+                            <ArgumentOperation
+                                onClick={() => {
+                                    console.log('1111');
+                                }}
+                            >
+                                <img src={PUBLIC_PATH + logo} alt="" />
+                            </ArgumentOperation>
+                        </Popover>
+                    </div>
+                </div>
                 <EchartPie4>
                     <StackColumnChart
                         className={'Content'}
@@ -663,10 +641,12 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         units={units}
                     ></StackColumnChart>
                 </EchartPie4>
-            </Configures>
+            </Configure>
             <Configures style={{marginBottom: `${rem(20)}`}}>
-                <div className="title">{t('custom-events')}</div>
-                <div className="tableContent">
+                <div className="titleContent">
+                    <div className="title">{t('custom-events')}</div>
+                </div>
+                <TableContent>
                     {tableLoading2 && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />
@@ -682,7 +662,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             scroll={{x: 'calc(700px + 50%)', y: 240}}
                         ></Table>
                     )}
-                </div>
+                </TableContent>
             </Configures>
         </ViewWrapper>
     );

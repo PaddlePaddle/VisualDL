@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import React, {FunctionComponent, useMemo, useState, useEffect} from 'react';
 import DistributedChart from '~/components/DistributedChart';
 import Inputs from '~/components/Input';
-import {asideWidth, rem, primaryColor, size, position} from '~/utils/style';
+import {asideWidth, rem, primaryColor} from '~/utils/style';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Table} from 'antd';
@@ -25,9 +25,8 @@ import {Slider} from 'antd';
 import type {ColumnsType} from 'antd/lib/table';
 import {fetcher} from '~/utils/fetch';
 import SearchInput from '~/components/searchInput2';
-import Select from '~/components/Select';
-import type {SelectProps} from '~/components/Select';
 import GridLoader from 'react-spinners/GridLoader';
+import {Wraper, Title, FullWidthSelect, Configure, EchartPie} from '../../components';
 import type {devicesType, curveType, memory_events_type, Datum, op_memory_events_type, op_datum} from './type';
 import {number} from 'echarts';
 interface DataType {
@@ -91,41 +90,13 @@ const TitleNav = styled.div`
         }
     }
 `;
-const Title = styled.div`
-    width: 100%;
-    height: ${rem(50)};
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    line-height: ${rem(50)};
-    font-weight: 500;
-    padding-left: ${rem(20)};
+const Titles = styled(Title)`
+    border-bottom: none;
+    margin-bottom: ${rem(0)};
 `;
-const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
-    width: 100%;
-    height: 100%;
-    font-size: ${rem(14)};
-`;
-const Configure = styled.div`
-    margin-top: ${rem(30)};
-    width: 100%;
-    font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
-    color: #333333;
-    font-weight: 500;
-    padding-left: ${rem(20)};
-    padding-right: ${rem(20)};
-    .title {
-        margin-bottom: ${rem(20)};
-    }
+const Configures = styled(Configure)`
     .titleContent {
         margin-bottom: ${rem(15)};
-        .title {
-            margin-bottom: ${rem(0)};
-            line-height: ${rem(36)};
-        }
-        display: flex;
-        justify-content: space-between;
         .SliderContent {
             display: flex;
             .Slider_wrapper {
@@ -173,48 +144,6 @@ const Configure = styled.div`
                 }
             }
         }
-    }
-`;
-const EchartPie = styled.div`
-    width: 100%;
-    border: 1px solid #dddddd;
-    padding: ${rem(24)};
-    border-radius: 4px;
-    height: ${rem(366)};
-    // padding: ${rem(24)};
-    display: flex;
-    .wraper {
-        flex: 1;
-        .Content {
-            height: 100%;
-        }
-    }
-    .Content {
-        height: 100%;
-        width: 100%;
-    }
-`;
-const Wraper = styled.div`
-    width: 100%;
-    min-height: ${rem(400)};
-    position: relative;
-    .ant-table-pagination.ant-pagination {
-        margin: ${rem(20)} 0 ${rem(30)} 0;
-        padding-right: ${rem(20)};
-    }
-    .ant-table.ant-table-bordered > .ant-table-container {
-        border: 1px solid #dddddd;
-        border-radius: 8px;
-    }
-    .ant-table-thead > tr > th {
-        background: #f3f8fe;
-    }
-    > .loading {
-        ${size('100%')}
-        ${position('absolute', 0, null, null, 0)}
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 `;
 type SelectListItem<T> = {
@@ -563,7 +492,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     return (
         <ViewWrapper>
             <TitleNav>
-                <Title>{t('memory-view')}</Title>
+                <Titles>{t('memory-view')}</Titles>
                 <div className="searchContent">
                     <div className="select_label">{t('equipment')}</div>
                     <div className="select_wrapper">
@@ -576,7 +505,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     <DistributedChart className={'Content'} data={lineData} zoom={true}></DistributedChart>
                 </EchartPie>
             </Configure>
-            <Configure>
+            <Configures>
                 <div className="titleContent">
                     <div className="input_wrapper">
                         <SearchInput
@@ -624,9 +553,9 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                         ></Table>
                     )}
                 </Wraper>
-            </Configure>
+            </Configures>
             <Configure style={{marginTop: '0px'}}>
-                <div className="titleContent">
+                <div className="titleContent" style={{marginBottom: rem(15)}}>
                     <div className="input_wrapper">
                         <SearchInput
                             className="search-input"

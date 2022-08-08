@@ -5,7 +5,6 @@ import {rem} from '~/utils/style';
 import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
 import BarsChart from '~/components/BarsChart';
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 import {Tabs} from 'antd';
 import type {performanceType, Callingtimes} from './types';
 const PerformanceContent = styled.div`
@@ -61,12 +60,6 @@ export type EnvironmentProps = {
 const {TabPane} = Tabs;
 const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceData, units}) => {
     const {t} = useTranslation(['hyper-parameter', 'common']);
-    // const tooltips = (
-    //     <div>
-    //         <p>Content</p>
-    //         <p>Content</p>
-    //     </div>
-    // );
 
     const onChange = (key: string) => {
         console.log(key);

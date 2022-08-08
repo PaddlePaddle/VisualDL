@@ -1,8 +1,22 @@
 import {rem, em, transitionProps, position, size} from '~/utils/style';
 import styled from 'styled-components';
+import type {SelectProps} from '~/components/Select';
+import Select from '~/components/Select';
 import Icon from '~/components/Icon';
 import logo from '~/assets/images/question-circle.svg';
 import hover from '~/assets/images/hover.svg';
+export const color = [
+    '#2932E1',
+    '#00CC88',
+    '#981EFF',
+    '#066BFF',
+    '#00E2FF',
+    '#FFAA00',
+    '#E71ED5',
+    '#FF6600',
+    '#0DEBB0',
+    '#D50505'
+];
 export const Configure = styled.div`
     margin-top: ${rem(30)};
     width: 100%;
@@ -12,20 +26,71 @@ export const Configure = styled.div`
     font-weight: 500;
     padding-left: ${rem(20)};
     padding-right: ${rem(20)};
-    .title {
+    .titleContent {
         display: flex;
-        align-items: center;
-        margin-bottom: ${rem(20)};
-        div {
-            line-height: 18px;
+        justify-content: space-between;
+        .title {
+            display: flex;
+            align-items: center;
+            div {
+                line-height: 16px;
+            }
         }
+        .titles {
+            display: flex;
+            align-items: center;
+            margin-bottom: ${rem(15)};
+        }
+        .searchContent {
+            display: flex;
+            .input_wrapper {
+                width: auto;
+                height: ${rem(36)};
+                .ant-input-group-wrapper {
+                    height: 100%;
+                    width: 100%;
+                    .ant-input-wrapper {
+                        height: 100%;
+                        .ant-input {
+                            height: 100%;
+                        }
+                        .ant-btn {
+                            height: 100%;
+                        }
+                    }
+                    .ant-btn {
+                        border-left: none;
+                    }
+                }
+            }
+            .select_label {
+                margin-right: ${rem(15)};
+                line-height: ${rem(36)};
+            }
+            .select_wrapper {
+                width: auto;
+                height: ${rem(36)};
+                align-items: center;
+                margin-right: ${rem(15)};
+                .ant-select {
+                    border-radius: ${rem(4)};
+                    height: 100%;
+                    .ant-select-selector {
+                        height: 100%;
+                    }
+                }
+            }
+        }
+    }
+    .preline {
+        white-space: pre-line;
     }
 `;
 export const ArgumentOperation = styled.a`
     flex: none;
     cursor: pointer;
-    font-size: ${em(14)};
-    margin-left: ${em(10)};
+    font-size: ${rem(14)};
+    margin-left: ${rem(8)};
     color: var(--text-lighter-color);
     ${transitionProps('color')}
     &:hover,
@@ -33,12 +98,14 @@ export const ArgumentOperation = styled.a`
         color: #2932e1;
     }
     img {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
     img:hover {
         content: url(${hover});
     }
+    display: flex;
+    align-items: center;
 `;
 export const ButtonsRight = styled.div`
     border: 1px solid #dddddd;
@@ -75,6 +142,7 @@ export const RadioButtons = styled.div`
 `;
 export const Wraper = styled.div`
     width: 100%;
+    min-height: ${rem(400)};
     position: relative;
     .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
         background: #f3f8fe;
@@ -139,4 +207,115 @@ export const EchartPie = styled.div`
             align-items: center;
         }
     }
+`;
+export const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
+    width: 100%;
+    height: 100%;
+    font-size: ${rem(14)};
+`;
+export const ViewWrapper = styled.div`
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    position: relative;
+    background-color: #fff;
+`;
+export const TableContent = styled.div`
+    min-height: ${rem(200)};
+    position: relative;
+    .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
+        background: #f3f8fe;
+    }
+    .ant-table.ant-table-bordered > .ant-table-container {
+        border: 1px solid #dddddd;
+        border-radius: ${rem(8)};
+    }
+    > .loading {
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
+    display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+`;
+export const PieceContent = styled.div`
+    border: 1px solid #dddddd;
+    border-radius: ${rem(4)};
+    width: 100%;
+    height: auto;
+    // padding-bottom: ${rem(20)};
+    .expendContent {
+        display: flex;
+        .expendButton {
+            color: #a3a3a3;
+            margin-left: ${rem(20)};
+            margin-right: ${rem(10)};
+        }
+        i {
+            line-height: ${rem(30)};
+        }
+    }
+    .is_expend {
+        margin-bottom: ${rem(20)};
+    }
+`;
+export const Subtraction = styled.div<{disable: boolean}>`
+    width: ${rem(32)};
+    height: ${rem(32)};
+    font-size: ${rem(16)};
+    line-height: ${rem(30)};
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-left: none;
+    &:hover {
+        cursor: ${props => (props.disable ? 'auto' : 'not-allowed')};
+    }
+`;
+export const RadioContent = styled.div`
+    display: flex;
+    align-items: center;
+    padding-right: ${rem(20)};
+    .ant-radio-group {
+        display: flex;
+    }
+    .ant-radio-wrapper {
+        span {
+            white-space: nowrap;
+        }
+        .ant-radio-checked .ant-radio-inner {
+            border-color: #2932e1;
+        }
+        .ant-radio-inner::after {
+            background-color: #2932e1;
+        }
+    }
+    .AdditionContent {
+        display: flex;
+        align-items: center;
+        .input_wrapper {
+            width: ${rem(50)};
+            height: ${rem(32)};
+        }
+        .Addition {
+            width: ${rem(32)};
+            height: ${rem(32)};
+            line-height: ${rem(30)};
+            font-size: ${rem(16)};
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-right: none;
+        }
+    }
+`;
+export const Title = styled.div`
+    width: 100%;
+    height: ${rem(50)};
+    font-family: PingFangSC-Medium;
+    font-size: ${rem(16)};
+    color: #333333;
+    line-height: ${rem(50)};
+    font-weight: 500;
+    padding-left: ${rem(20)};
+    border-bottom: 1px solid #dddddd;
+    margin-bottom: ${rem(20)};
 `;
