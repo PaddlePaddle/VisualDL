@@ -42,7 +42,7 @@ def merge_self_ranges(src_ranges, is_sorted=False):
     return merged_ranges
 
 
-def merge_ranges(range_list1, range_list2, is_sorted=False):  # noqa: C901
+def merge_ranges(range_list1, range_list2, is_sorted=False):  # noqa:C901
     merged_ranges = []
     if not is_sorted:
         range_list1 = merge_self_ranges(range_list1)
@@ -247,9 +247,7 @@ class HostStatisticNode:
         self.is_terminal_operator_node = True
 
     def cal_statistic(self):
-        # print('name: {} , children length: {}'.format(self.name, len(self.children_node)))
         for child in self.children_node:
-            # print(child.name)
             child.cal_statistic()
             if child.is_terminal_operator_node is False:
                 self.is_terminal_operator_node = False
@@ -356,23 +354,19 @@ def wrap_tree(nodetrees):
     return node_statistic_tree, newresults
 
 
-def rebuild_node_trees(nodetrees):  # noqa: C901
+def rebuild_node_trees(nodetrees):  # noqa:C901
     template_root = None
     # First, we find the tree which includes Forward event.
-    # print("I am in overview rebuild node trees", nodetrees)
     for threadid, root in nodetrees.items():
-        # print(root)
         has_find_template_root = False
+        template_root = HostStatisticNode(root)
         for children in root.children_node:
-            # print(children.type)
             if children.type == 'ProfileStep':
-                template_root = HostStatisticNode(root)
                 profiler_step_node = HostStatisticNode(children)
                 template_root.children_node.append(profiler_step_node)
                 has_find_template_root = True
                 for stage_node in children.children_node:
                     if stage_node.type in StageType:
-                        # print(stage_node.type)
                         profiler_step_node.children_node.append(
                             HostStatisticNode(stage_node))
             else:
@@ -395,7 +389,6 @@ def rebuild_node_trees(nodetrees):  # noqa: C901
         warpped_stack = []
 
         root_statistic_node = HostStatisticNode(rootnode)
-        # print('has_find_template_root', has_find_template_root)
         wrapped_tree[thread_id] = root_statistic_node
         if has_find_template_root is False:
             for profiler_step_node in template_root.children_node:
@@ -455,12 +448,12 @@ def rebuild_node_trees(nodetrees):  # noqa: C901
     return wrapped_tree
 
 
-def format_time(time, unit='ms'):
+def format_time(time, unit='ms', inf_subs='-'):
     r"""
     Transform time in ns to time in unit.
     """
     if time == float('inf'):
-        return '-'
+        return inf_subs
     else:
         result = float(time)
         if unit == 's':
@@ -485,13 +478,13 @@ def format_float(float_data):
     return round(float_data, 2)
 
 
-def format_memory(memory, memory_unit):
+def format_memory(memory, memory_unit='KB'):
     result = float(memory)
     if memory_unit == 'GB':
-        result /= 1e9
+        result /= (1024 * 1024 * 1024)
     elif memory_unit == 'MB':
-        result /= 1e6
+        result /= (1024 * 1024)
     elif memory_unit == 'KB':
-        result /= 1e3
+        result /= 1024
     # return '{:.2f}'.format(result)
     return round(result, 2)
