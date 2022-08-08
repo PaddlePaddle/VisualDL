@@ -16,26 +16,27 @@
 
 import * as chart from '~/utils/chart';
 
-import React, {useEffect, useImperativeHandle, useCallback} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
-import {color, colorAlt} from '~/utils/chart';
+import {color} from '~/utils/chart';
 import {renderToStaticMarkup} from 'react-dom/server';
 import TooltipTable from '~/components/TooltipTable';
-import type {EChartsOption, RegisteredSeriesOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
-
-type LineChartProps = {
+import type {curveType} from '~/components/ProfilerPage/MemoryView/type';
+type DistributedChartProps = {
     options?: EChartsOption;
-    title?: string;
-    data?: Partial<RegisteredSeriesOption['line']>;
+    titles?: string;
+    data?: curveType;
     loading?: boolean;
     zoom?: boolean;
+    className?: string;
     onInit?: Options['onInit'];
 };
+type lineData = (number | string)[][];
 export interface Run {
     label: string;
     colors: [string, string];
@@ -56,16 +57,15 @@ export type LineChartRef = {
     saveAsImage(): void;
 };
 
-const DistributedChart = React.forwardRef<LineChartRef, any>(
-    ({options, data, title, loading, zoom, className, onInit}, ref) => {
+const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
+    ({options, data, titles, loading, zoom, className, onInit}, ref) => {
         const {t} = useTranslation(['profiler', 'common']);
         const {i18n} = useTranslation();
 
         const {
             ref: echartRef,
             echart,
-            wrapper,
-            saveAsImage
+            wrapper
         } = useECharts<HTMLDivElement>({
             loading: !!loading,
             zoom,
@@ -106,16 +106,6 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             },
             [t]
         );
-        useImperativeHandle(ref, () => ({
-            restore: () => {
-                echart?.dispatchAction({
-                    type: 'restore'
-                });
-            },
-            saveAsImage: () => {
-                saveAsImage(title);
-            }
-        }));
 
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -127,6 +117,8 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
             const chartData = data;
 
             const seriesData = Object.keys(data.name).map(items => {
+                const Data: any = data;
+                const series = Data[items] as lineData;
                 return {
                     name: t(items),
                     step: 'true',
@@ -146,7 +138,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                         }
                     },
                     animationDuration: 100,
-                    data: data[items],
+                    data: series,
                     encode: {
                         x: [0],
                         y: [1]
@@ -154,7 +146,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 };
             });
             if (chartData) {
-                const title = 'Peak Memory Usage: 0.4MB';
+                const title = `Peak Memory Usage: ${titles}KB`;
                 const chartOptions: EChartsOption = defaultsDeep({
                     color: [
                         '#2932E1',
@@ -272,7 +264,7 @@ const DistributedChart = React.forwardRef<LineChartRef, any>(
                 echart?.setOption(chartOptions, {notMerge: true});
                 console.log('chartOptions', chartOptions);
             }
-        }, [options, data, title, theme, i18n.language, echart, formatter, t]);
+        }, [options, data, titles, theme, i18n.language, echart, formatter, t]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

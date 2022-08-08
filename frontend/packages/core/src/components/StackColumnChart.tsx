@@ -176,11 +176,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                             fontSize: 14,
                             color: '#666666'
                         },
-                        icon: 'roundRect',
-                        // itemStyle: {
-                        //     borderWidth: 1,
-                        //     borderRadius: 2.5
-                        // },
+                        icon: 'path://M14.5,0h-12C1.1,0,0,1.1,0,2.5S1.1,5,2.5,5h12C15.9,5,17,3.9,17,2.5S15.9,0,14.5,0z',
                         itemWidth: 17,
                         itemHeight: 5
                     },

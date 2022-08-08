@@ -58,7 +58,7 @@
     "equipment":"设备",
     "timestamp":"时间戳",
     "memory-size":"内存大小",
-    "event-name":"时间名称",
+    "event-name":"事件名称",
     "memory-usage":"内存使用量",
     "storage-type":"存储类型",
     "EventName":"事件名",

@@ -81,9 +81,13 @@ export const Configure = styled.div`
                 }
             }
         }
+        .tooltipsContent {
+            width: ${rem(500)};
+        }
     }
     .preline {
         white-space: pre-line;
+        white-space: pre-wrap;
     }
 `;
 export const ArgumentOperation = styled.a`

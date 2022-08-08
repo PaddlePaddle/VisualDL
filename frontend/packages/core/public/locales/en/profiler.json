@@ -58,7 +58,7 @@
     "equipment":"equipment",
     "timestamp":"timestamp",
     "memory-size":"memory size",
-    "event-name":"time name",
+    "event-name":"event name",
     "memory-usage":"memory usage",
     "storage-type":"storage type",
     "EventName":"event name",

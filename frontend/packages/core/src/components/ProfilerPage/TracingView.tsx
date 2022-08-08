@@ -2,9 +2,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
 
-import React, {FunctionComponent, useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import React, {useRef, useEffect} from 'react';
 import {fetcher} from '~/utils/fetch';
-import {contentHeight, position, primaryColor, rem, size, transitionProps} from '~/utils/style';
+import {position, rem, size} from '~/utils/style';
 import styled from 'styled-components';
 // import tracing from '/__snowpack__/link/packages/netron/dist/index.html';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -48,11 +48,9 @@ const TracingView: React.FC<IProps> = props => {
 
     useEffect(() => {
         if (runs && workers && spans) {
-            fetcher('/profiler/trace' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
-                (res: any) => {
-                    setTraceData(res);
-                }
-            );
+            fetcher('/profiler/trace' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then((res: any) => {
+                setTraceData(res);
+            });
         }
     }, [runs, workers, spans, views]);
 

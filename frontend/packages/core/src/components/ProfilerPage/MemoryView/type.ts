@@ -2,6 +2,7 @@ export interface devicesType {
     device: string;
     min_size: number;
     max_size: number;
+    max_allocation_size: string;
 }
 export interface curveType {
     name: Name;

@@ -167,6 +167,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const [tableData2, settableData2] = useState<op_table[]>();
     const [tableLoading2, settableLoading2] = useState(true);
     const [items, setItems] = useState<string>();
+    const [allocation, setAllocation] = useState<string>();
+
     useEffect(() => {
         if (runs && workers && spans) {
             fetcher('/profiler/memory/devices' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
@@ -183,6 +185,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     setEnvirements(result);
                     setItemsList(itemsLists);
                     setItems(result[0].device);
+                    setAllocation(result[0].max_allocation_size);
                 }
             );
         }
@@ -210,6 +213,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 if (items === element.device) {
                     setSliders1(element.min_size);
                     setSliders2(element.max_size);
+                    setAllocation(element.max_allocation_size);
                 }
             }
         }
@@ -502,7 +506,12 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             </TitleNav>
             <Configure>
                 <EchartPie>
-                    <DistributedChart className={'Content'} data={lineData} zoom={true}></DistributedChart>
+                    <DistributedChart
+                        className={'Content'}
+                        data={lineData}
+                        zoom={true}
+                        titles={allocation}
+                    ></DistributedChart>
                 </EchartPie>
             </Configure>
             <Configures>
