@@ -81,8 +81,9 @@ export const Configure = styled.div`
                 }
             }
         }
-        .blod {
+        .bold {
             font-size: ${rem(16)};
+            font-weight: bolder;
             margin-bottom: ${rem(10)};
         }
         .indent {

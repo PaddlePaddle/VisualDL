@@ -119,7 +119,6 @@ const string =
 
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t, i18n} = useTranslation(['profiler', 'common']);
-    const tooltips = <div className="preline">{string}</div>;
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
     const [chartData, setChartData] = useState<chartDataType>();
@@ -503,7 +502,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             const tooltips = (
                 <div
                     style={{
-                        width: rem(400),
+                        width: rem(700),
                         background: '#000000',
                         color: '#ffffff'
                     }}
@@ -524,7 +523,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <Environment
                     environment={environment}
                     hasGpu={hasGpu}
-                    descriptions={descriptions['overview_environment']}
+                    descriptions={descriptions ? descriptions['overview_environment'] : ''}
                 ></Environment>
             )}
             <Configure>

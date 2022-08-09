@@ -139,13 +139,16 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
     const tooltips = (
         <div
             style={{
-                width: rem(400),
+                width: rem(700),
                 background: '#000000',
                 color: '#ffffff'
             }}
             dangerouslySetInnerHTML={{__html: descriptions ? descriptions : ''}}
         ></div>
     );
+    const getPopupContainers = (trigger: any) => {
+        return trigger.parentElement;
+    };
     return (
         <Fragment>
             <Configure>
@@ -169,7 +172,12 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                 <div className="titleContent">
                     <div className="titles">
                         <div>{t('Device-Details')}</div>
-                        <Popover content={tooltips} placement="right">
+                        <Popover
+                            content={tooltips}
+                            color={'#000000'}
+                            getPopupContainer={getPopupContainers}
+                            placement="right"
+                        >
                             <ArgumentOperation
                                 onClick={() => {
                                     console.log('1111');
