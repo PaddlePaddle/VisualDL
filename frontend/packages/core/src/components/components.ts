@@ -1,6 +1,7 @@
 import {rem, em, transitionProps, position, size} from '~/utils/style';
 import styled from 'styled-components';
 import type {SelectProps} from '~/components/Select';
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 import Select from '~/components/Select';
 import Icon from '~/components/Icon';
 import logo from '~/assets/images/question-circle.svg';
@@ -115,7 +116,7 @@ export const ArgumentOperation = styled.a`
         height: 14px;
     }
     img:hover {
-        content: url(${hover});
+        content: url(${`${PUBLIC_PATH}/images/hover.svg`});
     }
     display: flex;
     align-items: center;
