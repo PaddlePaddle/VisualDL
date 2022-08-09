@@ -136,8 +136,6 @@ export type EnvironmentProps = {
 };
 const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, descriptions}) => {
     const {t} = useTranslation(['profiler', 'common']);
-    const string =
-        '<div>展示每一个ProfileStep内模型各阶段DataLoader, Forward, Backward, Optimization以及Other的CPU和GPU时间。</div><div>CPU时间即是各阶段代码执行的时间，GPU时间是各阶段所调用的GPU Kernel在GPU上的计算时间。</div><div class="indent"><div class="bold">DataLoader:</div>表示使用paddle.io.DataLoader从数据集中取数据的阶段</div><div class="indent"><div class="bold">Forward: </div>表示模型前向计算的阶段</div><div class="indent"><div class="bold">Backward: </div>表示模型反向梯度计算的阶段</div><div class="indent"><div class="bold">Optimization: </div>表示模型优化更新参数的阶段</div><div class="indent"><div class="bold">Other: </div>其它时间</div>';
     const tooltips = (
         <div
             style={{
@@ -145,7 +143,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                 background: '#000000',
                 color: '#ffffff'
             }}
-            dangerouslySetInnerHTML={{__html: string}}
+            dangerouslySetInnerHTML={{__html: descriptions ? descriptions : ''}}
         ></div>
     );
     const getPopupContainers = (trigger: any) => {
