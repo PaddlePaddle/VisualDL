@@ -255,7 +255,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                     ) : (
                         <div className="GPU_content">
                             <div className="Gpudetail">
-                                <div>暂无GPU数据</div>
+                                <div>{t('NoGPUdata')}</div>
                             </div>
                         </div>
                     )}

@@ -84,7 +84,8 @@
     "Allocated":"Assigned",
     "Reserved":"Reserved",
     "PeakAllocated":"PeakAllocated",
-    "PeakReserved":"PeakReserved"
+    "PeakReserved":"PeakReserved",
+    "NoGPUdata":"No GPU data yet"
 
 
 

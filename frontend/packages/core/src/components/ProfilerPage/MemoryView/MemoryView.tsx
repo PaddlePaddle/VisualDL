@@ -283,7 +283,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -299,7 +299,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -312,7 +312,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -328,7 +328,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -344,7 +344,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -360,11 +360,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
-                        return <div>{text}</div>;
-                    } else {
-                        return <div>{'-'}</div>;
-                    }
+                    return <div>{text}</div>;
                 }
             }
         ];
@@ -383,7 +379,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -399,7 +395,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -415,7 +411,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -431,7 +427,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -447,7 +443,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;
@@ -463,7 +459,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 width: 102,
                 render: text => {
                     console.log('text', text);
-                    if (text) {
+                    if (text === 0 || text) {
                         return <div>{text}</div>;
                     } else {
                         return <div>{'-'}</div>;

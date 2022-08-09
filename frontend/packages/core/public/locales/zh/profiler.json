@@ -85,7 +85,8 @@
     "Allocated":"已分配",
     "Reserved":"已预留",
     "PeakAllocated":"最大已分配",
-    "PeakReserved":"最大已预留"
+    "PeakReserved":"最大已预留",
+    "NoGPUdata":"暂无GPU数据"
 
 
 
