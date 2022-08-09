@@ -91,7 +91,7 @@ const Content = styled.div`
 const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
     ({option, data, title, loading, zoom, className, onInit, isCpu, color, units}, ref) => {
         const {i18n} = useTranslation();
-
+        const {t} = useTranslation(['profiler', 'common']);
         const {
             ref: echartRef,
             echart,
@@ -239,7 +239,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                     ],
                     title: {
                         show: data.length ? false : true,
-                        text: data.length ? '' : '暂无GPU数据',
+                        text: data.length ? '' : t('NoGPUdata'),
                         left: '19.8%',
                         top: '46%',
                         textStyle: {

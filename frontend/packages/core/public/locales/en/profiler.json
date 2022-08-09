@@ -85,7 +85,14 @@
     "Reserved":"Reserved",
     "PeakAllocated":"PeakAllocated",
     "PeakReserved":"PeakReserved",
-    "NoGPUdata":"No GPU data yet"
+    "NoGPUdata":"No GPU data yet",
+    "Cor-operator":"Correspondence operator",
+    "thread-grid":"thread grid",
+    "thread-block":"thread block",
+    "Thread-registers":"Thread average number of registers",
+    "Shared-memory":"shared video memory",
+    "Yes":"Yes",
+    "No":"no"
 
 
 
