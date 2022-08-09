@@ -195,7 +195,6 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                     <StackColumnChart
                         className={'Content'}
                         data={computation}
-                        color={color}
                         isWorkerName={true}
                         units={units}
                     ></StackColumnChart>
