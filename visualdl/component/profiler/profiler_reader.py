@@ -120,7 +120,7 @@ class ProfileReader(object):
         return list(self.walks.keys())
 
     def get_descriptions(self, lang):
-        if lang == 'ch':
+        if lang == 'zh':
             return {
                 "overview_environment":
                 TOOLTIP_DEVICE_INFO_CN,  # noqa: F405

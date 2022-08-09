@@ -58,7 +58,7 @@ class ProfilerApi(object):
     @result()
     def descriptions(self, lang):
         if lang == 'undefined' or lang is None:
-            lang = 'ch'
+            lang = 'zh'
         lang = lang.lower()
         return self._reader.get_descriptions(lang)
 

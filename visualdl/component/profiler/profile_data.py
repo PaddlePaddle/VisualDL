@@ -747,7 +747,7 @@ class ProfileData:
                     data['has_gpu'] = False
                 sorted_items = sorted(
                     self.operator_items.items(),
-                    key=lambda x: x[1].max_general_gpu_time,
+                    key=lambda x: x[1].general_gpu_time,
                     reverse=True)
                 for name, event in sorted_items:
                     if self.has_gpu:
@@ -825,7 +825,7 @@ class ProfileData:
                         new_arrange_data[(op_name, input_shape)] = item
                 sorted_items = sorted(
                     new_arrange_data.items(),
-                    key=lambda x: x[1].max_general_gpu_time,
+                    key=lambda x: x[1].general_gpu_time,
                     reverse=True)
                 for (name, input_shape), event in sorted_items:
                     if not input_shape:
@@ -896,7 +896,7 @@ class ProfileData:
         else:
             sorted_items = sorted(
                 self.operator_items.items(),
-                key=lambda x: x[1].max_general_gpu_time,
+                key=lambda x: x[1].general_gpu_time,
                 reverse=True)
             results = []
             for op_name, item in sorted_items:
