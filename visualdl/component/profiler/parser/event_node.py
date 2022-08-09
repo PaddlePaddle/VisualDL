@@ -57,8 +57,10 @@ class HostNode:
         self.name = json_obj['name'].replace(
             _show_name_pattern.match(json_obj['name']).group(2), "")
         self.type = json_obj['cat']
-        self.start_ns = json_obj['ts'] * 1000
-        self.end_ns = self.start_ns + json_obj['dur'] * 1000
+        self.start_ns = int(
+            float(json_obj['args']['start_time'].split(' ')[0]) * 1000)
+        self.end_ns = int(
+            float(json_obj['args']['end_time'].split(' ')[0]) * 1000)
         self.process_id = json_obj['pid']
         self.thread_id = json_obj['tid'].replace(
             _show_tid_pattern.match(json_obj['tid']).group(1), "")
@@ -143,8 +145,10 @@ class DeviceNode:
         self.name = json_obj['name'].replace(
             _show_name_pattern.match(json_obj['name']).group(2), "")
         self.type = json_obj['cat']
-        self.start_ns = json_obj['ts'] * 1000
-        self.end_ns = self.start_ns + json_obj['dur'] * 1000
+        self.start_ns = int(
+            float(json_obj['args']['start_time'].split(' ')[0]) * 1000)
+        self.end_ns = int(
+            float(json_obj['args']['end_time'].split(' ')[0]) * 1000)
         self.device_id = json_obj['pid']
         self.stream_id = json_obj['tid']
         self.context_id = json_obj['args']['context'] if 'context' in json_obj[
@@ -185,6 +189,7 @@ class ProfilerResult:
         self.has_memnodes = True
         self.parse(json_data)
         self.content = json_data
+        self.start_in_timeline_ns = None
 
     def parse(self, json_data):
         self.schema_version = json_data['schemaVersion']
@@ -205,10 +210,16 @@ class ProfilerResult:
                     runtimenodes.append(HostNode.from_json(event))
                 else:
                     hostnodes.append(HostNode.from_json(event))
+                    if hostnodes[-1].start_ns == 0:
+                        self.start_in_timeline_ns = int(event['ts'])
             elif event['cat'] in device_node_type_map:
                 devicenodes.append(DeviceNode.from_json(event))
             elif event['cat'] in memory_node_event_map:
                 memnodes.append(MemNode.from_json(event))
+        assert self.start_in_timeline_ns is not None
+        if memnodes:
+            for memnode in memnodes:
+                memnode.timestamp_ns = memnode.timestamp_ns - self.start_in_timeline_ns
         if not hostnodes:
             self.has_hostnodes = False
         if not devicenodes:

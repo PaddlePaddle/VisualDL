@@ -254,6 +254,7 @@ class HostStatisticNode:
         for rt in self.runtime_node:
             rt.cal_statistic()
         self.cpu_time = self.hostnode.end_ns - self.hostnode.start_ns
+        self.self_cpu_time = self.cpu_time
         for child in self.children_node:
             if child.type == 'Operator':
                 self.is_terminal_operator_node = False
@@ -419,6 +420,9 @@ def rebuild_node_trees(nodetrees):  # noqa:C901
                 else:
                     post_order_nodes.append(current_node)
             # traverse post_order_nodes and insert right position
+            for runtimenode in rootnode.runtime_node:
+                runtime_wrapped_node = HostStatisticNode(runtimenode)
+                root_statistic_node.runtime_node.append(runtime_wrapped_node)
             for node in rootnode.children_node:
                 unwrapped_stack.append(node)
                 for wrapped_node in post_order_nodes:

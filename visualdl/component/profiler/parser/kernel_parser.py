@@ -103,6 +103,21 @@ class KernelParser:
                                             device_node.
                                             name][op_attribute_name].add_item(
                                                 device_node)
+                    for runtime_node in node.runtime_node:
+                        for device_node in runtime_node.device_node:
+                            if device_node.type == 'Kernel':
+                                op_attribute_name = self._translate_op_name_attributes_to_string(
+                                    op_name, device_node)
+                                if op_attribute_name not in self.kernel_items_with_op_name_attributes[
+                                        device_node.name]:
+                                    self.kernel_items_with_op_name_attributes[
+                                        device_node.
+                                        name][op_attribute_name] = DeviceItem(
+                                            device_node.name)
+                                self.kernel_items_with_op_name_attributes[
+                                    device_node.
+                                    name][op_attribute_name].add_item(
+                                        device_node)
                 elif node.type == 'OperatorInner':
                     continue
                 op_name = node.name
