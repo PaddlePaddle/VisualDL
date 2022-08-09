@@ -259,7 +259,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
             return null;
         }, [ready, loading, rendered, uploader]);
-        console.log('path', PUBLIC_PATH + '/__snowpack__/link/packages/netron/dist/index.html');
 
         return (
             <Wrapper>
@@ -289,7 +288,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Content>
                         <iframe
                             ref={iframe}
-                            src={PUBLIC_PATH + '/__snowpack__/link/packages/netron/dist/index.html'}
+                            src={PUBLIC_PATH + netron}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}

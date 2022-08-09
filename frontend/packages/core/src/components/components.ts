@@ -83,6 +83,8 @@ export const Configure = styled.div`
             }
         }
         .bold {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+                'Fira Sans', 'Droid Sans', 'Helvetica Neue';
             font-size: ${rem(16)};
             font-weight: bolder;
             margin-bottom: ${rem(10)};

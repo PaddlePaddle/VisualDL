@@ -448,6 +448,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                                     className={'Content'}
                                     data={distributed}
                                     color={color}
+                                    units={units}
                                 ></StackColumnChart>
                             </EchartPie4>
                         </div>
