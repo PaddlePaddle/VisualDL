@@ -93,20 +93,7 @@ const Trainchart = React.forwardRef<LineChartRef, trainChartProps>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
             const order = data.order;
-            const color = [
-                '#2932E1',
-                '#00CC88',
-                '#981EFF',
-                '#066BFF',
-                '#3AEB0D',
-                '#E71ED5',
-                '#25C9FF',
-                '#0DEBB0',
-                '#FF0287',
-                '#00E2FF',
-                '#00FF9D',
-                '#D50505'
-            ];
+            const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
             const dataSeries = [];
             const titles = data.steps;
             for (let index = 0; index < data.order.length; index++) {

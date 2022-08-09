@@ -18,6 +18,7 @@ export const color = [
     '#0DEBB0',
     '#D50505'
 ];
+export const color2 = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
 export const Configure = styled.div`
     margin-top: ${rem(30)};
     width: 100%;
@@ -85,8 +86,9 @@ export const Configure = styled.div`
         .bold {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
                 'Fira Sans', 'Droid Sans', 'Helvetica Neue';
-            font-size: ${rem(16)};
-            font-weight: bolder;
+            font-size: ${rem(14)};
+            font-weight: 500;
+            color: #333333;
             margin-bottom: ${rem(10)};
         }
         .indent {

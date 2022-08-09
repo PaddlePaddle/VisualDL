@@ -240,8 +240,14 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                     title: {
                         show: data.length ? false : true,
                         text: data.length ? '' : '暂无GPU数据',
-                        left: '16%',
-                        top: '45%'
+                        left: '19.8%',
+                        top: '46%',
+                        textStyle: {
+                            fontFamily: 'PingFangSC-Regular',
+                            fontSize: 12,
+                            color: '#999999',
+                            fontWeight: 400
+                        }
                     }
                 });
                 // debugger

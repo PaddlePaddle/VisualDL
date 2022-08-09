@@ -328,9 +328,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         },
                         {
                             title: t('longest-time') + `(${units})`,
-                            dataIndex: 'cpu_max_time',
-                            key: 'cpu_max_time',
-                            sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
+                            dataIndex: 'gpu_max_time',
+                            key: 'gpu_max_time',
+                            sorter: (a, b) => a.gpu_max_time - b.gpu_max_time
                         },
                         {
                             title: t('shortest-time') + `(${units})`,
@@ -447,7 +447,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                                 <StackColumnChart
                                     className={'Content'}
                                     data={distributed}
-                                    color={color}
                                     units={units}
                                 ></StackColumnChart>
                             </EchartPie4>

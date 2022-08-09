@@ -91,20 +91,7 @@ const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
             if (data) {
                 // const {} = chart;
                 const chartData = data;
-                const color = [
-                    '#2932E1',
-                    '#00CC88',
-                    '#981EFF',
-                    '#066BFF',
-                    '#3AEB0D',
-                    '#E71ED5',
-                    '#25C9FF',
-                    '#0DEBB0',
-                    '#FF0287',
-                    '#00E2FF',
-                    '#00FF9D',
-                    '#D50505'
-                ];
+                const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
                 const title =
                     text === 1
                         ? t('Number-calls')

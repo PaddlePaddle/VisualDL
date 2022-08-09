@@ -30,10 +30,13 @@ import {
     ArgumentOperation,
     FullWidthSelect,
     ViewWrapper,
+    ButtonsLeft,
+    ButtonsRight,
+    RadioButtons,
     TableContent,
     Title,
     PieceContent,
-    color
+    color2
 } from '../../components';
 import Environment from './Environment';
 import PerformanceContent from './PerformanceContent';
@@ -62,9 +65,10 @@ asideWidth;
 const Configures = styled(Configure)`
     .titleContent {
         margin-bottom: ${rem(10)};
+        position: relative;
     }
     .ant-tabs-centered > .ant-tabs-nav .ant-tabs-nav-wrap:not([class*='ant-tabs-nav-wrap-ping']) {
-        justify-content: flex-end;
+        justify-content: flex-start;
     }
     .ant-tabs-ink-bar {
         display: none;
@@ -79,10 +83,24 @@ const Configures = styled(Configure)`
     .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
         color: #1527c2;
     }
+    .ant-tabs-tab {
+        padding: ${rem(12)} 0px ${rem(23)} 0;
+    }
     .is_active {
         color: #ffffff;
         background: #2932e1;
         border: 1px solid rgba(41, 50, 225, 1);
+    }
+    .noGpu {
+        border: 1px solid rgba(221, 221, 221, 1);
+        border-radius: 0px 4px 4px 0px;
+        color: #cccccc;
+    }
+    .postions {
+        position: absolute;
+        left: ${rem(774)};
+        top: ${rem(23)};
+        z-index: 10;
     }
 `;
 
@@ -501,8 +519,8 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 <div
                     style={{
                         width: rem(700),
-                        background: '#000000',
-                        color: '#ffffff'
+                        color: '#333333',
+                        fontWeight: 400
                     }}
                     dangerouslySetInnerHTML={{__html: descriptions ? descriptions[name] : ''}}
                 ></div>
@@ -530,7 +548,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         <div>{t('profiler:time-consuming')}</div>
                         <Popover
                             content={gettTooltip('overview_model_perspective')}
-                            color={'#000000'}
                             getPopupContainer={getPopupContainers}
                             placement="right"
                         >
@@ -551,7 +568,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                                 className={'Content'}
                                 data={chartData?.cpu}
                                 isCpu={true}
-                                color={color}
+                                color={color2}
                                 units={units}
                             />
                         </div>
@@ -560,7 +577,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                                 className={'Content'}
                                 data={chartData?.gpu}
                                 isCpu={false}
-                                color={color}
+                                color={color2}
                                 units={units}
                             />
                         </div>
@@ -601,7 +618,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         <div>{t('training-step-time')}</div>
                         <Popover
                             content={gettTooltip('overview_model_perspective_perstep')}
-                            color={'#000000'}
                             getPopupContainer={getPopupContainers}
                             placement="right"
                         >
@@ -615,11 +631,27 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         </Popover>
                     </div>
 
-                    <div className="searchContent">
-                        <div className="select_wrapper">
-                            <FullWidthSelect list={stepsList} value={TrainType} onChange={setTrainType} />
-                        </div>
-                    </div>
+                    <RadioButtons>
+                        <ButtonsLeft
+                            style={{borderRight: 'none'}}
+                            onClick={() => {
+                                setTrainType('cpu');
+                            }}
+                            className={TrainType === 'cpu' ? 'is_active' : ''}
+                        >
+                            {t('CPU-time')}
+                        </ButtonsLeft>
+                        <ButtonsRight
+                            className={hasGpu ? (TrainType === 'gpu' ? 'is_active' : '') : 'noGpu'}
+                            onClick={() => {
+                                if (hasGpu) {
+                                    setTrainType('gpu');
+                                }
+                            }}
+                        >
+                            {t('GPU-time')}
+                        </ButtonsRight>
+                    </RadioButtons>
                 </div>
                 <EchartPie3>
                     <Trainchart className={'Content'} data={trainData} units={units}></Trainchart>
@@ -633,7 +665,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             content={gettTooltip('overview_event_type_perspective')}
                             placement="right"
                             getPopupContainer={getPopupContainers}
-                            color={'#000000'}
                         >
                             <ArgumentOperation
                                 onClick={() => {
@@ -644,11 +675,27 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             </ArgumentOperation>
                         </Popover>
                     </div>
-                    <div className="searchContent">
-                        <div className="select_wrapper">
-                            <FullWidthSelect list={stepsList} value={PerformanceType} onChange={setPerformanceType} />
-                        </div>
-                    </div>
+                    <RadioButtons className="postions">
+                        <ButtonsLeft
+                            style={{borderRight: 'none'}}
+                            onClick={() => {
+                                setPerformanceType('cpu');
+                            }}
+                            className={PerformanceType === 'cpu' ? 'is_active' : ''}
+                        >
+                            {t('CPU-time')}
+                        </ButtonsLeft>
+                        <ButtonsRight
+                            className={hasGpu ? (PerformanceType === 'gpu' ? 'is_active' : '') : 'noGpu'}
+                            onClick={() => {
+                                if (hasGpu) {
+                                    setPerformanceType('gpu');
+                                }
+                            }}
+                        >
+                            {t('GPU-time')}
+                        </ButtonsRight>
+                    </RadioButtons>
                 </div>
                 {performanceData && (
                     <PerformanceContent units={units} performanceData={performanceData}></PerformanceContent>
@@ -662,7 +709,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             content={gettTooltip('overview_event_type_model_perspective')}
                             placement="right"
                             getPopupContainer={getPopupContainers}
-                            color={'#000000'}
                         >
                             <ArgumentOperation
                                 onClick={() => {
@@ -675,12 +721,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     </div>
                 </div>
                 <EchartPie4>
-                    <StackColumnChart
-                        className={'Content'}
-                        data={distributed}
-                        color={color}
-                        units={units}
-                    ></StackColumnChart>
+                    <StackColumnChart className={'Content'} data={distributed} units={units}></StackColumnChart>
                 </EchartPie4>
             </Configure>
             <Configures style={{marginBottom: `${rem(20)}`}}>

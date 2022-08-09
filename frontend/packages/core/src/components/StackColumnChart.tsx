@@ -34,7 +34,6 @@ type StackChartProps = {
     onInit?: Options['onInit'];
     isWorkerName?: boolean;
     className?: string;
-    color?: string[];
     units?: string;
 };
 
@@ -55,9 +54,9 @@ export type LineChartRef = {
 };
 
 const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
-    ({options, data, title, loading, zoom, className, onInit, color, isWorkerName, units}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, isWorkerName, units}, ref) => {
         const {i18n} = useTranslation();
-
+        const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
         const {
             ref: echartRef,
             echart,
@@ -87,7 +86,7 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
 
-            if (data && color) {
+            if (data) {
                 const titles = isWorkerName ? data.worker_name : data.phase_type;
                 const order = data.order;
                 // debugger

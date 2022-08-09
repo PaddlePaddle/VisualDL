@@ -64,6 +64,12 @@ const CPU = styled.div`
             align-items: center;
             justify-content: center;
             height: 100%;
+            font-family: PingFangSC-Medium;
+            font-size: 16px;
+            color: #999999;
+            text-align: left;
+            line-height: 24px;
+            font-weight: 500;
         }
     }
     .GPU_title {
@@ -140,8 +146,8 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
         <div
             style={{
                 width: rem(700),
-                background: '#000000',
-                color: '#ffffff'
+                color: '#333333',
+                fontWeight: 400
             }}
             dangerouslySetInnerHTML={{__html: descriptions ? descriptions : ''}}
         ></div>
@@ -174,7 +180,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                         <div>{t('Device-Details')}</div>
                         <Popover
                             content={tooltips}
-                            color={'#000000'}
+                            overlayClassName={'newTooltip'}
                             getPopupContainer={getPopupContainers}
                             placement="right"
                         >
