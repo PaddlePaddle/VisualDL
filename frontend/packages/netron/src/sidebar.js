@@ -547,7 +547,7 @@ sidebar.ModelSidebar = class {
             }
         }
 
-        if (this._model._graphs.length > 1) {
+        if (this._model) {
             // let graphSelector = new sidebar.SelectView(
             //     this._host,
             //     this._model.graphs.map(g => g.name),
@@ -683,23 +683,98 @@ sidebar.FindSidebar = class {
         const id = item.id;
 
         const nodesElement = graphElement.getElementById('nodes');
-        let nodeElement = nodesElement.firstChild;
-        while (nodeElement) {
-            if (nodeElement.id == id) {
-                selection.push(nodeElement);
+        if (nodesElement) {
+            let nodeElement = nodesElement.firstChild;
+            while (nodeElement) {
+                if (nodeElement.id == id) {
+                    selection.push(nodeElement);
+                }
+                nodeElement = nodeElement.nextSibling;
             }
-            nodeElement = nodeElement.nextSibling;
         }
-
+        const clustersElement = graphElement.getElementById('clusters');
+        if (clustersElement) {
+            let clusterElement = clustersElement.firstChild;
+            while (clusterElement) {
+                if (clusterElement.id == id) {
+                    selection.push(clusterElement);
+                }
+                clusterElement = clusterElement.nextSibling;
+            }
+        }
         const edgePathsElement = graphElement.getElementById('edge-paths');
-        let edgePathElement = edgePathsElement.firstChild;
-        while (edgePathElement) {
-            if (edgePathElement.id == id) {
-                selection.push(edgePathElement);
+        if (edgePathsElement) {
+            let edgePathElement = edgePathsElement.firstChild;
+            while (edgePathElement) {
+                if (edgePathElement.id === id) {
+                    // console.log('edgePathElement',edgePathElement.getAttribute("fromnode"),item);
+                    // if (item.fromnode && edgePathElement.getAttribute("fromnode") === item.fromnode) {
+                    //     selection.push(edgePathElement);
+                    // }
+                    // if (item.tonode && edgePathElement.getAttribute("tonode") === item.tonode) {
+                    //     selection.push(edgePathElement);
+                    // }
+                    selection.push(edgePathElement);
+                }
+                edgePathElement = edgePathElement.nextSibling;
             }
-            edgePathElement = edgePathElement.nextSibling;
+        }
+        let initializerElement = graphElement.getElementById(id);
+        if (initializerElement) {
+            while (initializerElement.parentElement) {
+                initializerElement = initializerElement.parentElement;
+                if (initializerElement.id && initializerElement.id.startsWith('node-')) {
+                    selection.push(initializerElement);
+                    break;
+                }
+            }
         }
 
+        if (selection.length > 0) {
+            return selection;
+        }
+
+        return null;
+    }
+    static selection2(item, graphElement) {
+        const selection = [];
+        const id = item.id;
+
+        const nodesElement = graphElement.getElementById('nodes');
+        if (nodesElement) {
+            let nodeElement = nodesElement.firstChild;
+            while (nodeElement) {
+                if (nodeElement.id == id) {
+                    selection.push(nodeElement);
+                }
+                nodeElement = nodeElement.nextSibling;
+            }
+        }
+        const clustersElement = graphElement.getElementById('clusters');
+        if (clustersElement) {
+            let clusterElement = clustersElement.firstChild;
+            while (clusterElement) {
+                if (clusterElement.id == id) {
+                    selection.push(clusterElement);
+                }
+                clusterElement = clusterElement.nextSibling;
+            }
+        }
+        const edgePathsElement = graphElement.getElementById('edge-paths');
+        if (edgePathsElement) {
+            let edgePathElement = edgePathsElement.firstChild;
+            while (edgePathElement) {
+                if (edgePathElement.id === id) {
+                    if (item.fromnode && edgePathElement.getAttribute('fromnode') === item.fromnode) {
+                        selection.push(edgePathElement);
+                    }
+                    if (item.tonode && edgePathElement.getAttribute('tonode') === item.tonode) {
+                        selection.push(edgePathElement);
+                    }
+                }
+                edgePathElement = edgePathElement.nextSibling;
+            }
+        }
         let initializerElement = graphElement.getElementById(id);
         if (initializerElement) {
             while (initializerElement.parentElement) {
@@ -725,7 +800,6 @@ sidebar.FindSidebar = class {
         const edgeMatches = new Set();
 
         const result = [];
-
         for (const node of this._graph.nodes) {
             const initializers = [];
 
@@ -744,13 +818,14 @@ sidebar.FindSidebar = class {
                             });
                             edgeMatches.add(argument.name);
                         } else {
-                            initializers.push(argument.initializer);
+                            // initializers.push(argument.initializer);
                         }
                     }
                 }
             }
 
             const name = node.name;
+            console.log('name', node);
             const operator = node.type;
             if (
                 !nodeMatches.has(name) &&
@@ -759,12 +834,55 @@ sidebar.FindSidebar = class {
             ) {
                 result.push({
                     type: 'node',
-                    name: node.name,
-                    id: 'node-' + node.name
+                    name: name,
+                    id: 'node-' + name
                 });
-                nodeMatches.add(node.name);
+                nodeMatches.add(name);
             }
-
+            // let path = node.name.split('/');
+            // path.pop();
+            // let groupName = path.join('/');
+            // console.log('groupName', groupName);
+            // const clusterNode = name => {
+            //     if (
+            //         !nodeMatches.has(name) &&
+            //         name &&
+            //         (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
+            //     ) {
+            //         result.push({
+            //             type: 'node',
+            //             name: name,
+            //             id: 'node-' + name
+            //         });
+            //         nodeMatches.add(name);
+            //         let path = name.split('/');
+            //         while (path.length > 0) {
+            //             const name = path.join('/');
+            //             path.pop();
+            //             if (name) {
+            //                 clusterNode(name);
+            //             }
+            //         }
+            //     }
+            // };
+            // if (groupName) {
+            //     clusterNode(groupName);
+            //     // g.setParent(nodeId, groupName);
+            // }
+            // clusterNode(node.show_name);
+            // if (
+            //     !nodeMatches.has(name) &&
+            //     name &&
+            //     (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
+            // ) {
+            //     result.push({
+            //         type: 'node',
+            //         name: node.name,
+            //         id: 'node-' + node.name
+            //     });
+            //     //
+            //     nodeMatches.add(node.name);
+            // }
             for (const initializer of initializers) {
                 result.push({
                     type: 'initializer',
@@ -792,7 +910,6 @@ sidebar.FindSidebar = class {
                 }
             }
         }
-
         return {
             text: searchText,
             result: result

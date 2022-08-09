@@ -16,7 +16,7 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
-import GraphComponent, {GraphRef} from '~/components/GraphPage/Graph';
+import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions, selectors} from '~/store';
@@ -117,7 +117,7 @@ const Graph: FunctionComponent = () => {
         [setModelFile]
     );
 
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
+    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/static_graph');
 
     useEffect(() => {
         if (data?.data?.size) {
@@ -311,7 +311,9 @@ const Graph: FunctionComponent = () => {
                         horizontal={horizontal}
                         onRendered={() => setRendered(true)}
                         onOpened={setOpenedModel}
-                        onSearch={data => setSearchResult(data)}
+                        onSearch={data => {
+                            setSearchResult(data);
+                        }}
                         onShowModelProperties={data => setModelData(data)}
                         onShowNodeProperties={data => {
                             setNodeData(data);

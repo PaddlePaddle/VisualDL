@@ -26,6 +26,7 @@
         "dev": "snowpack dev",
         "dev:reload": "yarn dev --reload",
         "build": "snowpack build && node builder/post-build.js",
+        "lint": "eslint --ext .tsx,.jsx.ts,.js,.mjs",
         "snowpack": "snowpack",
         "test": "web-test-runner \"test/**/*.tsx\""
     },
@@ -48,8 +49,14 @@
         "classnames": "2.3.1",
         "d3": "7.0.1",
         "d3-format": "3.0.1",
+<<<<<<< HEAD
         "echarts": "^5.3.3",
         "echarts-gl": "^2.0.9",
+=======
+        "echarts": "4.9.0",
+        "echarts-gl": "1.1.2",
+        "eslint-plugin-simple-import-sort": "^7.0.0",
+>>>>>>> b279127db188612aad4779a0480263eb01fbed07
         "eventemitter3": "4.0.7",
         "file-saver": "2.0.5",
         "i18next": "20.6.0",
