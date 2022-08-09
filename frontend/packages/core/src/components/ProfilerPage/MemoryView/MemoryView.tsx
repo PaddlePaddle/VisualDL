@@ -174,14 +174,12 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             fetcher('/profiler/memory/devices' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
                     const result = res as devicesType[];
-                    const itemsLists = [];
-                    for (let index = 0; index < result.length; index++) {
-                        const element = result[index];
+                    const itemsLists = result.map(element => {
                         const regex1 = /\((.+?)\)/g;
                         const label: string = element.device.match(regex1)![0];
                         const labels = label.substring(1, label.length - 1);
-                        itemsLists.push({label: labels, value: element.device});
-                    }
+                        return {label: labels, value: element.device};
+                    });
                     setEnvirements(result);
                     setItemsList(itemsLists);
                     setItems(result[0].device);
@@ -270,7 +268,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             });
         }
     }, [runs, workers, spans, items, search2]);
-    const columns = useMemo(() => {
+    const columns: ColumnsType<DataType> = useMemo(() => {
         const columns: ColumnsType<DataType> = [
             {
                 title: t('storage-type'),

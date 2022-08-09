@@ -114,8 +114,6 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
-const string =
-    '<div class="blod">CPU进程利用率：</div><div class="indent">进程所利用到的CPU的时间 / ProfileStep的时间(即性能分析的时间跨度）</div><div class="blod">CPU系统利用率</div><div class="indent">整个系统所有进程利用到的CPU时间 / CPU总时间（ProfileStep的时间*CPU核心数）</div><div class="blod">GPU利用率</div><div class="indent">进程利用GPU计算的时间 / ProfileStep的时间，进程利用GPU计算的时间即是GPU Kernel计算的时间，越高越好流处理器效率</div><div class="indent">对于流处理器处理某个GPU Kernel, 其效率为SM_Eff_i = min(Kernel所用的Blocks数量 / GPU的流处理器数量, 100%)。流处理器效率为SM_Eff_i关于每个Kernel的执行时间加权和 / ProfileStep的时间流处理器占用率</div><div class="indent">对于流处理器处理某个GPU Kernel, 其占用率Occu_i = 为活跃的warp数 / 能支持的最大warp数。流处理器占用率为Occu_i关于每个Kernel执行时间的加权平均Tensor cores使用时间占比</div><div class="indent">使用Tensor Cores的GPU Kernel的计算时间 / 所有Kernel的计算时间</div>';
 
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
     const {t, i18n} = useTranslation(['profiler', 'common']);
@@ -159,7 +157,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const result = res as consumingType;
-                const tableDatas = [];
+                const tableDatas: tableType[] = [];
                 const data: Gpu[] = [];
                 const chartData: chartDataType = {
                     cpu: [],
@@ -189,15 +187,15 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     setHasGpu(false);
                     setStepsList([{label: 'cpu', value: 'cpu'}]);
                 }
-                for (let index = 0; index < result.cpu.length; index++) {
-                    const DataTypeItem = data[index]
+                result.cpu.forEach((item: Cpu, index: number) => {
+                    const DataTypeItem: tableType = item
                         ? {
-                              ...result.cpu[index],
+                              ...item,
                               ...data[index]
                           }
-                        : result.cpu[index];
+                        : item;
                     tableDatas.push(DataTypeItem);
-                }
+                });
                 console.log('tableData', tableDatas);
                 setTableData(tableDatas);
                 settableLoading(false);
@@ -290,7 +288,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             });
         }
     }, [i18n]);
-    const ConsumingColumns = useCallback(
+    const ConsumingColumns: (units: string, hasGpu: boolean) => ColumnsType<DataType> = useCallback(
         (units: string, hasGpu: boolean) => {
             const columns: ColumnsType<DataType> = [
                 {
@@ -394,7 +392,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
         },
         [t]
     );
-    const customizeColumns = useCallback(
+    const customizeColumns: (units: string, hasGpu: boolean) => ColumnsType<DataType2> = useCallback(
         (units: string, hasGpu: boolean) => {
             const columns2: ColumnsType<DataType2> = [
                 {
@@ -497,8 +495,8 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
         },
         [t]
     );
-    const gettTooltip = useCallback(
-        name => {
+    const gettTooltip: (name: string) => JSX.Element = useCallback(
+        (name: string) => {
             const tooltips = (
                 <div
                     style={{

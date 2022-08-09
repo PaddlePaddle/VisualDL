@@ -86,7 +86,15 @@
     "Reserved":"已预留",
     "PeakAllocated":"最大已分配",
     "PeakReserved":"最大已预留",
-    "NoGPUdata":"暂无GPU数据"
+    "NoGPUdata":"暂无GPU数据",
+    "Cor-operator":"对应算子",
+    "thread-grid":"线程网格",
+    "thread-block":"线程块",
+    "Thread-registers":"线程平均寄存器数量",
+    "Shared-memory":"共享显存量",
+    "Yes":"是",
+    "No":"否"
+
 
 
 

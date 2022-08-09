@@ -24,6 +24,11 @@ import {Configure, EchartPie, color, Title, ViewWrapper, FullWidthSelect} from '
 import {asideWidth, rem} from '~/utils/style';
 import type {infoType, histogramType} from './type';
 asideWidth;
+const Configures = styled(Configure)`
+    .border {
+        border-top: none;
+    }
+`;
 const Card = styled.div`
     width: 100%;
     height: ${rem(142)};
@@ -135,7 +140,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     return (
         <ViewWrapper>
             <Title>{t('Distribution-view')}</Title>
-            <Configure style={{marginTop: '24px'}}>
+            <Configures style={{marginTop: '24px'}}>
                 <div className="titleContent">
                     <div className="titles">
                         <div>{t('Device-Information')}</div>
@@ -173,7 +178,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                             );
                         })}
                 </div>
-            </Configure>
+            </Configures>
             <Configure style={{marginBottom: `${rem(20)}`}}>
                 <div className="titleContent" style={{marginBottom: rem(15)}}>
                     <div className="title">

@@ -224,7 +224,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
             });
         }
     }, [runs, workers, spans, isCPU, top, units]);
-    const onChange = (e: RadioChangeEvent) => {
+    const onChange: (e: RadioChangeEvent) => void = (e: RadioChangeEvent) => {
         console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
         if (e.target.value === 1) {
@@ -233,10 +233,10 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
             setTop(10);
         }
     };
-    const onTopchange = (value: number) => {
+    const onTopchange: (value: number) => void = (value: number) => {
         setTop(value);
     };
-    const baseColumns1 = useCallback(
+    const baseColumns1: (units: string, hasGpu: boolean, group: string) => ColumnsType<DataType> = useCallback(
         (units: string, hasGpu: boolean, group: string) => {
             const columns: ColumnsType<DataType> = [
                 {

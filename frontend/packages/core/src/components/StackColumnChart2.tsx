@@ -17,13 +17,12 @@
 import * as chart from '~/utils/chart';
 
 import React, {useEffect, useImperativeHandle} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
 import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
-import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
 type StackChartProps = {
@@ -94,7 +93,6 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                 // debugger
                 const series: any = [];
                 for (let index = 0; index < data.order.length; index++) {
-                    const element = titles[index];
                     // debugger
                     series.push({
                         name: order[index],

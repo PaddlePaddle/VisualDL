@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect, useMemo} from 'react';
 import type {RadioChangeEvent} from 'antd';
 import NumberInput from '~/components/ProfilerPage/NumberInput';
 import PieChart from '~/components/pieChart';
@@ -193,180 +193,186 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             });
         }
     }, [runs, workers, spans, search, group, units]);
-    const columns1: ColumnsType<DataType> = [
-        {
-            title: t('nuclear-name'),
-            dataIndex: 'name',
-            key: 'name',
-            width: 200
-        },
-        {
-            title: t('call-volume'),
-            dataIndex: 'calls',
-            key: 'calls',
-            width: 100
-        },
-        {
-            title: t('total-time') + `(${units})`,
-            dataIndex: 'total_time',
-            key: 'total_time',
-            sorter: (a, b) => {
-                console.log('a,b', a, b);
-                return a.total_time - b.total_time;
-            }
-        },
-        {
-            title: t('average-time') + `(${units})`,
-            dataIndex: 'avg_time',
-            key: 'avg_time',
-            sorter: (a, b) => {
-                return a.avg_time - b.avg_time;
-            }
-        },
-        {
-            title: t('longest-time') + `(${units})`,
-            dataIndex: 'max_time',
-            key: 'max_time',
-            sorter: (a, b) => {
-                return a.max_time - b.max_time;
-            }
-        },
-        {
-            title: t('shortest-time') + `(${units})`,
-            dataIndex: 'min_time',
-            key: 'min_time',
-            sorter: (a, b) => {
-                return a.min_time - b.min_time;
-            }
-        },
-        {
-            title: t('sm-average'),
-            dataIndex: 'mean blocks per sm',
-            key: 'mean blocks per sm'
-        },
-        {
-            title: t('average-occupancy') + `%`,
-            dataIndex: 'mean est achieved occupancy',
-            key: 'mean est achieved occupancy'
-        },
-        {
-            title: t('use-tensor-core'),
-            dataIndex: 'tensor core used',
-            key: 'tensor core used',
-            render: (text: boolean) => {
-                if (text) {
-                    return <div>是</div>;
-                } else {
-                    return <div>否</div>;
+    const columns1 = useMemo(() => {
+        const columns: ColumnsType<DataType> = [
+            {
+                title: t('nuclear-name'),
+                dataIndex: 'name',
+                key: 'name',
+                width: 200
+            },
+            {
+                title: t('call-volume'),
+                dataIndex: 'calls',
+                key: 'calls',
+                width: 100
+            },
+            {
+                title: t('total-time') + `(${units})`,
+                dataIndex: 'total_time',
+                key: 'total_time',
+                sorter: (a, b) => {
+                    console.log('a,b', a, b);
+                    return a.total_time - b.total_time;
+                }
+            },
+            {
+                title: t('average-time') + `(${units})`,
+                dataIndex: 'avg_time',
+                key: 'avg_time',
+                sorter: (a, b) => {
+                    return a.avg_time - b.avg_time;
+                }
+            },
+            {
+                title: t('longest-time') + `(${units})`,
+                dataIndex: 'max_time',
+                key: 'max_time',
+                sorter: (a, b) => {
+                    return a.max_time - b.max_time;
+                }
+            },
+            {
+                title: t('shortest-time') + `(${units})`,
+                dataIndex: 'min_time',
+                key: 'min_time',
+                sorter: (a, b) => {
+                    return a.min_time - b.min_time;
+                }
+            },
+            {
+                title: t('sm-average'),
+                dataIndex: 'mean blocks per sm',
+                key: 'mean blocks per sm'
+            },
+            {
+                title: t('average-occupancy') + `%`,
+                dataIndex: 'mean est achieved occupancy',
+                key: 'mean est achieved occupancy'
+            },
+            {
+                title: t('use-tensor-core'),
+                dataIndex: 'tensor core used',
+                key: 'tensor core used',
+                render: (text: boolean) => {
+                    if (text) {
+                        return <div>{t('Yes')}</div>;
+                    } else {
+                        return <div>{t('No')}</div>;
+                    }
+                }
+            },
+            {
+                title: t('percentage') + `%`,
+                dataIndex: 'ratio',
+                key: 'ratio',
+                sorter: (a, b) => {
+                    return a.ratio - b.ratio;
                 }
             }
-        },
-        {
-            title: t('percentage') + `%`,
-            dataIndex: 'ratio',
-            key: 'ratio',
-            sorter: (a, b) => {
-                return a.ratio - b.ratio;
+        ];
+        return columns;
+    }, [t, units]);
+    const columns2: ColumnsType<DataType> = useMemo(() => {
+        const columns: ColumnsType<DataType> = [
+            {
+                title: t('nuclear-name'),
+                dataIndex: 'name',
+                width: 200,
+                key: 'name'
+            },
+            {
+                title: t('call-volume'),
+                dataIndex: 'calls',
+                key: 'calls',
+                sorter: (a, b) => {
+                    return a.calls - b.calls;
+                }
+            },
+            {
+                title: t('Cor-operator'),
+                dataIndex: 'operator',
+                key: 'operator'
+            },
+            {
+                title: t('thread-grid'),
+                dataIndex: 'grid',
+                key: 'grid'
+            },
+            {
+                title: t('thread-block'),
+                dataIndex: 'block',
+                key: 'block'
+            },
+            {
+                title: t('Thread-registers'),
+                dataIndex: 'register per thread',
+                key: 'register per thread'
+            },
+            {
+                title: t('Shared-memory'),
+                dataIndex: 'shared memory',
+                key: 'shared memory'
+            },
+            {
+                title: t('total-time') + `(${units})`,
+                dataIndex: 'total_time',
+                key: 'total_time',
+                sorter: (a, b) => {
+                    return a.total_time - b.total_time;
+                }
+            },
+            {
+                title: t('average-time') + `(${units})`,
+                dataIndex: 'avg_time',
+                key: 'avg_time',
+                sorter: (a, b) => {
+                    return a.avg_time - b.avg_time;
+                }
+            },
+            {
+                title: t('longest-time') + `(${units})`,
+                dataIndex: 'max_time',
+                key: 'max_time',
+                sorter: (a, b) => {
+                    return a.max_time - b.max_time;
+                }
+            },
+            {
+                title: t('shortest-time') + `(${units})`,
+                dataIndex: 'min_time',
+                key: 'min_time',
+                sorter: (a, b) => {
+                    return a.min_time - b.min_time;
+                }
+            },
+            {
+                title: t('sm-average'),
+                dataIndex: 'mean blocks per sm',
+                key: 'mean blocks per sm'
+            },
+            {
+                title: t('average-occupancy') + `%`,
+                dataIndex: 'mean est achieved occupancy',
+                key: 'mean est achieved occupancy'
+            },
+            {
+                title: t('use-tensor-core'),
+                dataIndex: 'tensor core used',
+                key: 'tensor core used'
+            },
+            {
+                title: t('percentage') + `%`,
+                dataIndex: 'ratio',
+                key: 'ratio',
+                sorter: (a, b) => {
+                    return a.ratio - b.ratio;
+                }
             }
-        }
-    ];
-    const columns2: ColumnsType<DataType> = [
-        {
-            title: '核名称',
-            dataIndex: 'name',
-            width: 200,
-            key: 'name'
-        },
-        {
-            title: '调用量',
-            dataIndex: 'calls',
-            key: 'calls',
-            sorter: (a, b) => {
-                return a.calls - b.calls;
-            }
-        },
-        {
-            title: '对应算子',
-            dataIndex: 'operator',
-            key: 'operator'
-        },
-        {
-            title: '线程网格',
-            dataIndex: 'grid',
-            key: 'grid'
-        },
-        {
-            title: '线程块',
-            dataIndex: 'block',
-            key: 'block'
-        },
-        {
-            title: '线程平均寄存器数量',
-            dataIndex: 'register per thread',
-            key: 'register per thread'
-        },
-        {
-            title: '共享显存量',
-            dataIndex: 'shared memory',
-            key: 'shared memory'
-        },
-        {
-            title: `总耗时(${units})`,
-            dataIndex: 'total_time',
-            key: 'total_time',
-            sorter: (a, b) => {
-                return a.total_time - b.total_time;
-            }
-        },
-        {
-            title: `平均耗时(${units})`,
-            dataIndex: 'avg_time',
-            key: 'avg_time',
-            sorter: (a, b) => {
-                return a.avg_time - b.avg_time;
-            }
-        },
-        {
-            title: `最长耗时(${units})`,
-            dataIndex: 'max_time',
-            key: 'max_time',
-            sorter: (a, b) => {
-                return a.max_time - b.max_time;
-            }
-        },
-        {
-            title: `最短耗时(${units})`,
-            dataIndex: 'min_time',
-            key: 'min_time',
-            sorter: (a, b) => {
-                return a.min_time - b.min_time;
-            }
-        },
-        {
-            title: 'sm平均线程块数量',
-            dataIndex: 'mean blocks per sm',
-            key: 'mean blocks per sm'
-        },
-        {
-            title: '平均占用率%',
-            dataIndex: 'mean est achieved occupancy',
-            key: 'mean est achieved occupancy'
-        },
-        {
-            title: '是否使用tensor core',
-            dataIndex: 'tensor core used',
-            key: 'tensor core used'
-        },
-        {
-            title: '百分比%',
-            dataIndex: 'ratio',
-            key: 'ratio',
-            sorter: (a, b) => {
-                return a.ratio - b.ratio;
-            }
-        }
-    ];
-    const onChange = (e: RadioChangeEvent) => {
+        ];
+        return columns;
+    }, [t]);
+    const onChange: (e: RadioChangeEvent) => void = (e: RadioChangeEvent) => {
         console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
         if (e.target.value === 1) {
