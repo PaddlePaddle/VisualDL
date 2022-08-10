@@ -560,7 +560,13 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             />
                         </div>
                         <div className="wraper">
-                            <PieChart className={'Content'} data={[]} isCpu={false} color={color2} units={units} />
+                            <PieChart
+                                className={'Content'}
+                                data={chartData?.gpu}
+                                isCpu={false}
+                                color={color2}
+                                units={units}
+                            />
                         </div>
                     </EchartPie>
                     <div
