@@ -751,57 +751,116 @@ class ProfileData:
                     reverse=True)
                 for name, event in sorted_items:
                     if self.has_gpu:
-                        data['events'].append({
-                            "name":
-                            name,
-                            "calls":
-                            event.call,
-                            "children":
-                            get_children_data(event),
-                            "cpu_total_time":
-                            format_time(event.cpu_time, time_unit),
-                            "cpu_avg_time":
-                            format_time(event.avg_cpu_time, time_unit),
-                            "cpu_max_time":
-                            format_time(event.max_cpu_time, time_unit),
-                            "cpu_min_time":
-                            format_time(event.min_cpu_time, time_unit),
-                            "cpu_ratio":
-                            format_ratio(event.cpu_time / total_cpu_time
-                                         if total_cpu_time != 0 else 0.0),
-                            "gpu_total_time":
-                            format_time(event.general_gpu_time, time_unit),
-                            "gpu_avg_time":
-                            format_time(event.avg_general_gpu_time, time_unit),
-                            "gpu_max_time":
-                            format_time(event.max_general_gpu_time, time_unit),
-                            "gpu_min_time":
-                            format_time(event.min_general_gpu_time, time_unit),
-                            "gpu_ratio":
-                            format_ratio(
-                                event.general_gpu_time /
-                                total_gpu_time if total_gpu_time != 0 else 0.0)
-                        })
+                        children_events = get_children_data(event)
+                        if children_events:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "children":
+                                children_events,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0),
+                                "gpu_total_time":
+                                format_time(event.general_gpu_time, time_unit),
+                                "gpu_avg_time":
+                                format_time(event.avg_general_gpu_time,
+                                            time_unit),
+                                "gpu_max_time":
+                                format_time(event.max_general_gpu_time,
+                                            time_unit),
+                                "gpu_min_time":
+                                format_time(event.min_general_gpu_time,
+                                            time_unit),
+                                "gpu_ratio":
+                                format_ratio(event.general_gpu_time /
+                                             total_gpu_time
+                                             if total_gpu_time != 0 else 0.0)
+                            })
+                        else:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0),
+                                "gpu_total_time":
+                                format_time(event.general_gpu_time, time_unit),
+                                "gpu_avg_time":
+                                format_time(event.avg_general_gpu_time,
+                                            time_unit),
+                                "gpu_max_time":
+                                format_time(event.max_general_gpu_time,
+                                            time_unit),
+                                "gpu_min_time":
+                                format_time(event.min_general_gpu_time,
+                                            time_unit),
+                                "gpu_ratio":
+                                format_ratio(event.general_gpu_time /
+                                             total_gpu_time
+                                             if total_gpu_time != 0 else 0.0)
+                            })
                     else:
-                        data['events'].append({
-                            "name":
-                            name,
-                            "calls":
-                            event.call,
-                            "children":
-                            get_children_data(event),
-                            "cpu_total_time":
-                            format_time(event.cpu_time, time_unit),
-                            "cpu_avg_time":
-                            format_time(event.avg_cpu_time, time_unit),
-                            "cpu_max_time":
-                            format_time(event.max_cpu_time, time_unit),
-                            "cpu_min_time":
-                            format_time(event.min_cpu_time, time_unit),
-                            "cpu_ratio":
-                            format_ratio(event.cpu_time / total_cpu_time
-                                         if total_cpu_time != 0 else 0.0)
-                        })
+                        children_events = get_children_data(event)
+                        if children_events:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "children":
+                                children_events,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0)
+                            })
+                        else:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0)
+                            })
+
             else:
                 if self.has_gpu:
                     data['column_name'] = [
@@ -837,61 +896,123 @@ class ProfileData:
                             for shape in shapes
                         ]
                     if self.has_gpu:
-                        data['events'].append({
-                            "name":
-                            name,
-                            "calls":
-                            event.call,
-                            "children":
-                            get_children_data(event),
-                            "input_shape":
-                            shape_string,
-                            "cpu_total_time":
-                            format_time(event.cpu_time, time_unit),
-                            "cpu_avg_time":
-                            format_time(event.avg_cpu_time, time_unit),
-                            "cpu_max_time":
-                            format_time(event.max_cpu_time, time_unit),
-                            "cpu_min_time":
-                            format_time(event.min_cpu_time, time_unit),
-                            "cpu_ratio":
-                            format_ratio(event.cpu_time / total_cpu_time
-                                         if total_cpu_time != 0 else 0.0),
-                            "gpu_total_time":
-                            format_time(event.general_gpu_time, time_unit),
-                            "gpu_avg_time":
-                            format_time(event.avg_general_gpu_time, time_unit),
-                            "gpu_max_time":
-                            format_time(event.max_general_gpu_time, time_unit),
-                            "gpu_min_time":
-                            format_time(event.min_general_gpu_time, time_unit),
-                            "gpu_ratio":
-                            format_ratio(
-                                event.general_gpu_time /
-                                total_gpu_time if total_gpu_time != 0 else 0.0)
-                        })
+                        children_events = get_children_data(event)
+                        if children_events:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "children":
+                                children_events,
+                                "input_shape":
+                                shape_string,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0),
+                                "gpu_total_time":
+                                format_time(event.general_gpu_time, time_unit),
+                                "gpu_avg_time":
+                                format_time(event.avg_general_gpu_time,
+                                            time_unit),
+                                "gpu_max_time":
+                                format_time(event.max_general_gpu_time,
+                                            time_unit),
+                                "gpu_min_time":
+                                format_time(event.min_general_gpu_time,
+                                            time_unit),
+                                "gpu_ratio":
+                                format_ratio(event.general_gpu_time /
+                                             total_gpu_time
+                                             if total_gpu_time != 0 else 0.0)
+                            })
+                        else:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "input_shape":
+                                shape_string,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0),
+                                "gpu_total_time":
+                                format_time(event.general_gpu_time, time_unit),
+                                "gpu_avg_time":
+                                format_time(event.avg_general_gpu_time,
+                                            time_unit),
+                                "gpu_max_time":
+                                format_time(event.max_general_gpu_time,
+                                            time_unit),
+                                "gpu_min_time":
+                                format_time(event.min_general_gpu_time,
+                                            time_unit),
+                                "gpu_ratio":
+                                format_ratio(event.general_gpu_time /
+                                             total_gpu_time
+                                             if total_gpu_time != 0 else 0.0)
+                            })
                     else:
-                        data['events'].append({
-                            "name":
-                            name,
-                            "calls":
-                            event.call,
-                            "children":
-                            get_children_data(event),
-                            "input_shape":
-                            shape_string,
-                            "cpu_total_time":
-                            format_time(event.cpu_time, time_unit),
-                            "cpu_avg_time":
-                            format_time(event.avg_cpu_time, time_unit),
-                            "cpu_max_time":
-                            format_time(event.max_cpu_time, time_unit),
-                            "cpu_min_time":
-                            format_time(event.min_cpu_time, time_unit),
-                            "cpu_ratio":
-                            format_ratio(event.cpu_time / total_cpu_time
-                                         if total_cpu_time != 0 else 0.0)
-                        })
+                        children_events = get_children_data(event)
+                        if children_events:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "children":
+                                children_events,
+                                "input_shape":
+                                shape_string,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0)
+                            })
+                        else:
+                            data['events'].append({
+                                "name":
+                                name,
+                                "calls":
+                                event.call,
+                                "input_shape":
+                                shape_string,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0)
+                            })
 
         else:
             sorted_items = sorted(
@@ -921,95 +1042,15 @@ class ProfileData:
                 for op_name in results:
                     event = self.operator_items[op_name]
                     if self.has_gpu:
-                        data['events'].append({
-                            "name":
-                            op_name,
-                            "calls":
-                            event.call,
-                            "children":
-                            get_children_data(event),
-                            "cpu_total_time":
-                            format_time(event.cpu_time, time_unit),
-                            "cpu_avg_time":
-                            format_time(event.avg_cpu_time, time_unit),
-                            "cpu_max_time":
-                            format_time(event.max_cpu_time, time_unit),
-                            "cpu_min_time":
-                            format_time(event.min_cpu_time, time_unit),
-                            "cpu_ratio":
-                            format_ratio(event.cpu_time / total_cpu_time
-                                         if total_cpu_time != 0 else 0.0),
-                            "gpu_total_time":
-                            format_time(event.general_gpu_time, time_unit),
-                            "gpu_avg_time":
-                            format_time(event.avg_general_gpu_time, time_unit),
-                            "gpu_max_time":
-                            format_time(event.max_general_gpu_time, time_unit),
-                            "gpu_min_time":
-                            format_time(event.min_general_gpu_time, time_unit),
-                            "gpu_ratio":
-                            format_ratio(
-                                event.general_gpu_time /
-                                total_gpu_time if total_gpu_time != 0 else 0.0)
-                        })
-                    else:
-                        data['events'].append({
-                            "name":
-                            op_name,
-                            "calls":
-                            event.call,
-                            "children":
-                            get_children_data(event),
-                            "cpu_total_time":
-                            format_time(event.cpu_time, time_unit),
-                            "cpu_avg_time":
-                            format_time(event.avg_cpu_time, time_unit),
-                            "cpu_max_time":
-                            format_time(event.max_cpu_time, time_unit),
-                            "cpu_min_time":
-                            format_time(event.min_cpu_time, time_unit),
-                            "cpu_ratio":
-                            format_ratio(event.cpu_time / total_cpu_time
-                                         if total_cpu_time != 0 else 0.0)
-                        })
-
-            else:
-                if self.has_gpu:
-                    data['column_name'] = [
-                        'name', 'calls', 'input_shape', 'cpu_total_time',
-                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
-                        'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
-                        'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
-                    ]
-                    data['has_gpu'] = True
-                else:
-                    data['column_name'] = [
-                        'name', 'calls', 'input_shape', 'cpu_total_time',
-                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
-                        'cpu_ratio'
-                    ]
-                    data['has_gpu'] = False
-                for op_name in results:
-                    for input_shape, event in self.operator_items_with_input_shape[
-                            op_name].items():
-                        if not input_shape:
-                            shape_string = []
-                        else:
-                            shapes = input_shape.split('\t')[:-1]
-                            shape_string = [
-                                '{}:{}'.format(*shape.split('-'))
-                                for shape in shapes
-                            ]
-                        if self.has_gpu:
+                        children_events = get_children_data(event)
+                        if children_events:
                             data['events'].append({
                                 "name":
                                 op_name,
                                 "calls":
                                 event.call,
                                 "children":
-                                get_children_data(event),
-                                "input_shape":
-                                shape_string,
+                                children_events,
                                 "cpu_total_time":
                                 format_time(event.cpu_time, time_unit),
                                 "cpu_avg_time":
@@ -1043,10 +1084,62 @@ class ProfileData:
                                 op_name,
                                 "calls":
                                 event.call,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0),
+                                "gpu_total_time":
+                                format_time(event.general_gpu_time, time_unit),
+                                "gpu_avg_time":
+                                format_time(event.avg_general_gpu_time,
+                                            time_unit),
+                                "gpu_max_time":
+                                format_time(event.max_general_gpu_time,
+                                            time_unit),
+                                "gpu_min_time":
+                                format_time(event.min_general_gpu_time,
+                                            time_unit),
+                                "gpu_ratio":
+                                format_ratio(event.general_gpu_time /
+                                             total_gpu_time
+                                             if total_gpu_time != 0 else 0.0)
+                            })
+
+                    else:
+                        children_events = get_children_data(event)
+                        if children_events:
+                            data['events'].append({
+                                "name":
+                                op_name,
+                                "calls":
+                                event.call,
                                 "children":
-                                get_children_data(event),
-                                "input_shape":
-                                shape_string,
+                                children_events,
+                                "cpu_total_time":
+                                format_time(event.cpu_time, time_unit),
+                                "cpu_avg_time":
+                                format_time(event.avg_cpu_time, time_unit),
+                                "cpu_max_time":
+                                format_time(event.max_cpu_time, time_unit),
+                                "cpu_min_time":
+                                format_time(event.min_cpu_time, time_unit),
+                                "cpu_ratio":
+                                format_ratio(event.cpu_time / total_cpu_time
+                                             if total_cpu_time != 0 else 0.0)
+                            })
+                        else:
+                            data['events'].append({
+                                "name":
+                                op_name,
+                                "calls":
+                                event.call,
                                 "cpu_total_time":
                                 format_time(event.cpu_time, time_unit),
                                 "cpu_avg_time":
@@ -1060,6 +1153,157 @@ class ProfileData:
                                              if total_cpu_time != 0 else 0.0)
                             })
 
+            else:
+                if self.has_gpu:
+                    data['column_name'] = [
+                        'name', 'calls', 'input_shape', 'cpu_total_time',
+                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
+                        'cpu_ratio', 'gpu_total_time', 'gpu_avg_time',
+                        'gpu_max_time', 'gpu_min_time', 'gpu_ratio'
+                    ]
+                    data['has_gpu'] = True
+                else:
+                    data['column_name'] = [
+                        'name', 'calls', 'input_shape', 'cpu_total_time',
+                        'cpu_avg_time', 'cpu_max_time', 'cpu_min_time',
+                        'cpu_ratio'
+                    ]
+                    data['has_gpu'] = False
+                for op_name in results:
+                    for input_shape, event in self.operator_items_with_input_shape[
+                            op_name].items():
+                        if not input_shape:
+                            shape_string = []
+                        else:
+                            shapes = input_shape.split('\t')[:-1]
+                            shape_string = [
+                                '{}:{}'.format(*shape.split('-'))
+                                for shape in shapes
+                            ]
+                        if self.has_gpu:
+                            children_events = get_children_data(event)
+                            if children_events:
+                                data['events'].append({
+                                    "name":
+                                    op_name,
+                                    "calls":
+                                    event.call,
+                                    "children":
+                                    children_events,
+                                    "input_shape":
+                                    shape_string,
+                                    "cpu_total_time":
+                                    format_time(event.cpu_time, time_unit),
+                                    "cpu_avg_time":
+                                    format_time(event.avg_cpu_time, time_unit),
+                                    "cpu_max_time":
+                                    format_time(event.max_cpu_time, time_unit),
+                                    "cpu_min_time":
+                                    format_time(event.min_cpu_time, time_unit),
+                                    "cpu_ratio":
+                                    format_ratio(event.cpu_time /
+                                                 total_cpu_time if
+                                                 total_cpu_time != 0 else 0.0),
+                                    "gpu_total_time":
+                                    format_time(event.general_gpu_time,
+                                                time_unit),
+                                    "gpu_avg_time":
+                                    format_time(event.avg_general_gpu_time,
+                                                time_unit),
+                                    "gpu_max_time":
+                                    format_time(event.max_general_gpu_time,
+                                                time_unit),
+                                    "gpu_min_time":
+                                    format_time(event.min_general_gpu_time,
+                                                time_unit),
+                                    "gpu_ratio":
+                                    format_ratio(event.general_gpu_time /
+                                                 total_gpu_time if
+                                                 total_gpu_time != 0 else 0.0)
+                                })
+                            else:
+                                data['events'].append({
+                                    "name":
+                                    op_name,
+                                    "calls":
+                                    event.call,
+                                    "input_shape":
+                                    shape_string,
+                                    "cpu_total_time":
+                                    format_time(event.cpu_time, time_unit),
+                                    "cpu_avg_time":
+                                    format_time(event.avg_cpu_time, time_unit),
+                                    "cpu_max_time":
+                                    format_time(event.max_cpu_time, time_unit),
+                                    "cpu_min_time":
+                                    format_time(event.min_cpu_time, time_unit),
+                                    "cpu_ratio":
+                                    format_ratio(event.cpu_time /
+                                                 total_cpu_time if
+                                                 total_cpu_time != 0 else 0.0),
+                                    "gpu_total_time":
+                                    format_time(event.general_gpu_time,
+                                                time_unit),
+                                    "gpu_avg_time":
+                                    format_time(event.avg_general_gpu_time,
+                                                time_unit),
+                                    "gpu_max_time":
+                                    format_time(event.max_general_gpu_time,
+                                                time_unit),
+                                    "gpu_min_time":
+                                    format_time(event.min_general_gpu_time,
+                                                time_unit),
+                                    "gpu_ratio":
+                                    format_ratio(event.general_gpu_time /
+                                                 total_gpu_time if
+                                                 total_gpu_time != 0 else 0.0)
+                                })
+                        else:
+                            children_events = get_children_data(event)
+                            if children_events:
+                                data['events'].append({
+                                    "name":
+                                    op_name,
+                                    "calls":
+                                    event.call,
+                                    "children":
+                                    get_children_data(event),
+                                    "input_shape":
+                                    shape_string,
+                                    "cpu_total_time":
+                                    format_time(event.cpu_time, time_unit),
+                                    "cpu_avg_time":
+                                    format_time(event.avg_cpu_time, time_unit),
+                                    "cpu_max_time":
+                                    format_time(event.max_cpu_time, time_unit),
+                                    "cpu_min_time":
+                                    format_time(event.min_cpu_time, time_unit),
+                                    "cpu_ratio":
+                                    format_ratio(event.cpu_time /
+                                                 total_cpu_time if
+                                                 total_cpu_time != 0 else 0.0)
+                                })
+                            else:
+                                data['events'].append({
+                                    "name":
+                                    op_name,
+                                    "calls":
+                                    event.call,
+                                    "input_shape":
+                                    shape_string,
+                                    "cpu_total_time":
+                                    format_time(event.cpu_time, time_unit),
+                                    "cpu_avg_time":
+                                    format_time(event.avg_cpu_time, time_unit),
+                                    "cpu_max_time":
+                                    format_time(event.max_cpu_time, time_unit),
+                                    "cpu_min_time":
+                                    format_time(event.min_cpu_time, time_unit),
+                                    "cpu_ratio":
+                                    format_ratio(event.cpu_time /
+                                                 total_cpu_time if
+                                                 total_cpu_time != 0 else 0.0)
+                                })
         return data
 
     def get_kernel_pie(self, topk, time_unit='ms'):

@@ -206,7 +206,8 @@ class ProfilerResult:
             if not event or (event['ph'] != 'X' and event['ph'] != 'i'):
                 continue
             if event['cat'] in host_node_type_map:
-                if event['cat'] == 'CudaRuntime':
+                if event['cat'] == 'CudaRuntime' or event[
+                        'cat'] == 'MluRuntime':
                     runtimenodes.append(HostNode.from_json(event))
                 else:
                     hostnodes.append(HostNode.from_json(event))

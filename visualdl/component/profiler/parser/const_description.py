@@ -56,10 +56,26 @@ TOOLTIP_MODEL_PERSPECTIVE_PERSTEP_CN = \
   '<b class="bold">Other:</b> 其它时间<br>'
 
 TOOLTIP_EVENT_TYPE_PERSPECTIVE_CN = \
-  '展示不同类型的事件在模型各阶段DataLoader, Forward, Backward, Optimization以及Other的分布。'
+  '展示不同类型的事件在模型各阶段DataLoader, Forward, Backward, Optimization以及Other的分布。<br>'\
+  '<b class="bold">Operator:</b> 表示框架内的算子执行<br>'\
+  '<b class="bold">CudaRuntime:</b> 表示cuda runtime的函数执行<br>'\
+  '<b class="bold">Kernel:</b> 表示GPU上计算的Kernel函数执行<br>'\
+  '<b class="bold">Memcpy:</b> 表示CPU和GPU之间的数据传输<br>'\
+  '<b class="bold">Memset:</b> 表示GPU的显存值设置<br>'\
+  '<b class="bold">UserDefined:</b> 表示用户在python脚本中自定义的事件<br>'\
+  '<b class="bold">OperatorInner:</b> 表示框架内算子的执行子过程<br>'\
+  '<b class="bold">Communication:</b> 表示分布式通信有关的事件<br>'
 
 TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_CN = \
-  '展示在模型各阶段DataLoader, Forward, Backward, Optimization以及Other所包含的各种事件的时间。'
+  '展示在模型各阶段DataLoader, Forward, Backward, Optimization以及Other所包含的各种事件的时间。'\
+  '<b class="bold">Operator:</b> 表示框架内的算子执行<br>'\
+  '<b class="bold">CudaRuntime:</b> 表示cuda runtime的函数执行<br>'\
+  '<b class="bold">Kernel:</b> 表示GPU上计算的Kernel函数执行<br>'\
+  '<b class="bold">Memcpy:</b> 表示CPU和GPU之间的数据传输<br>'\
+  '<b class="bold">Memset:</b> 表示GPU的显存值设置<br>'\
+  '<b class="bold">UserDefined:</b> 表示用户在python脚本中自定义的事件<br>'\
+  '<b class="bold">OperatorInner:</b> 表示框架内算子的执行子过程<br>'\
+  '<b class="bold">Communication:</b> 表示分布式通信有关的数据通信和计算事件<br>'
 
 TOOLTIP_DEVICE_INFO_EN = \
   '<b class="bold">CPU Process Utilization:</b><br>'\
@@ -101,7 +117,23 @@ TOOLTIP_MODEL_PERSPECTIVE_PERSTEP_EN = \
 
 TOOLTIP_EVENT_TYPE_PERSPECTIVE_EN = \
   'Present the distribution of each kind of events across DataLoader,\
-  Forward, Backward, Optimization and Other stage.'
+  Forward, Backward, Optimization and Other stage.'\
+  '<b class="bold">Operator:</b> denote operator execution<br>'\
+  '<b class="bold">CudaRuntime:</b> denote cuda runtime function execution<br>'\
+  '<b class="bold">Kernel:</b> denote kernel execution on GPU<br>'\
+  '<b class="bold">Memcpy:</b> denote data transfer between CPU and GPU<br>'\
+  '<b class="bold">Memset:</b> denote memory data set on GPU<br>'\
+  '<b class="bold">UserDefined:</b> denote events defined by users in python script<br>'\
+  '<b class="bold">OperatorInner:</b> denote operator\'s subprocess execution<br>'\
+  '<b class="bold">Communication:</b> denote events associated with distributed data transfer and computation.<br>'
 
 TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_EN = \
-  'Present the time of each kind of events included in DataLoader, Forward, Backward, Optimization and Other stage.'
+  'Present the time of each kind of events included in DataLoader, Forward, Backward, Optimization and Other stage.'\
+  '<b class="bold">Operator:</b> denote operator execution<br>'\
+  '<b class="bold">CudaRuntime:</b> denote cuda runtime function execution<br>'\
+  '<b class="bold">Kernel:</b> denote kernel execution on GPU<br>'\
+  '<b class="bold">Memcpy:</b> denote data transfer between CPU and GPU<br>'\
+  '<b class="bold">Memset:</b> denote memory data set on GPU<br>'\
+  '<b class="bold">UserDefined:</b> denote events defined by users in python script<br>'\
+  '<b class="bold">OperatorInner:</b> denote operator\'s subprocess execution<br>'\
+  '<b class="bold">Communication:</b> denote events associated with distributed data transfer and computation.<br>'
