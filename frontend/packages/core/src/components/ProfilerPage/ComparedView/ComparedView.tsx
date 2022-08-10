@@ -533,7 +533,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                             bordered
                             size="middle"
                             // pagination={false}
-                            scroll={{x: 'calc(700px + 50%)', y: 900}}
+                            scroll={{x: group === 'kernel_name' ? 'calc(700px + 50%)' : 'calc(700px + 100%)', y: 900}}
                         ></Table>
                     )}
                 </Wraper>
