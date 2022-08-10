@@ -82,6 +82,7 @@ const Card = styled.div`
 const EchartPies = styled(EchartPie)`
     padding: ${rem(24)};
     border: 1px solid #dddddd;
+    height: ${rem(366)};
 `;
 export type NuclearViewProps = {
     runs: string;
