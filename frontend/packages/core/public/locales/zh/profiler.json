@@ -31,6 +31,7 @@
     "percentage":"百分比",
     "Operator-view":"算子视图",
     "Time-profile":"耗时概况",
+    "Kernel-profile":"耗时概况",
     "Time-details":"耗时详情",
     "Kernel-details":"耗时详情",
     "show-all-operators":"显示全部算子",

@@ -357,7 +357,14 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('use-tensor-core'),
                 dataIndex: 'tensor core used',
-                key: 'tensor core used'
+                key: 'tensor core used',
+                render: (text: boolean) => {
+                    if (text) {
+                        return <div>{t('Yes')}</div>;
+                    } else {
+                        return <div>{t('No')}</div>;
+                    }
+                }
             },
             {
                 title: t('percentage') + `%`,
@@ -423,7 +430,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             <Configure style={{marginTop: `${rem(25)}`}}>
                 <div className="titleContent">
                     <div className="titles">
-                        <div>{t('Time-profile')}</div>
+                        <div>{t('Kernel-profile')}</div>
                     </div>
                 </div>
                 <PieceContents>
