@@ -95,7 +95,8 @@
     "Shared-memory":"共享显存量",
     "Yes":"是",
     "No":"否",
-    "Tensorcore-usage":"Tensor core利用率"
+    "Tensorcore-usage":"Tensor core利用率",
+    "proportion":"占比"
 
 
 

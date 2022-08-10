@@ -93,9 +93,9 @@ const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
                         }
                     }
                     const columns = [
-                        {label: t('timestamp'), width: '4em'},
-                        {label: t('memory-size') + '（KB）', width: '8em'},
-                        {label: t('event-name'), width: '4.285714286em'}
+                        {label: t('timestamp')},
+                        {label: t('memory-size') + '（KB）'},
+                        {label: t('event-name')}
                     ];
                     return renderToStaticMarkup(
                         <TooltipTable run={t('common:runs')} runs={runs as Run[]} columns={columns} data={datas} />

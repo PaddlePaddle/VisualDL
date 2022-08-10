@@ -296,7 +296,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                 setDescriptions(Data);
             });
         }
-    }, [i18n]);
+    }, [i18n.language]);
     const ConsumingColumns: (units: string, hasGpu: boolean) => ColumnsType<DataType> = useCallback(
         (units: string, hasGpu: boolean) => {
             const columns: ColumnsType<DataType> = [

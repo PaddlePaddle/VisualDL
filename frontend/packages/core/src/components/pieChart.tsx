@@ -152,7 +152,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                                 color[0] +
                                 ';"></span>' +
                                 '<span style="color: #FFFFFF;">' +
-                                '耗时' +
+                                `${t('timeConsuming')}` +
                                 '</span>' +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.value +
@@ -164,7 +164,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                                 '<span style="font-size:12px;margin-right:5px;width:12px;height:12px;border-radius:50%;background-color:' +
                                 color[1] +
                                 ';"></span>' +
-                                '占比' +
+                                `${t('proportion')}` +
                                 '</span> : <span style="color: #FFFFFF;">' +
                                 params.data.proportion +
                                 '%' +
@@ -250,7 +250,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                 // debugger
                 echart?.setOption(chartOptions, {notMerge: true});
             }
-        }, [option, data, title, theme, i18n.language, echart, color, isCpu, units]);
+        }, [option, data, title, theme, echart, color, isCpu, units, t]);
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

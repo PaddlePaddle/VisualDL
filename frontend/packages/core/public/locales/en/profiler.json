@@ -95,7 +95,8 @@
     "No":"no",
     "performance-analysis":"Profiler",
     "Tensorcore-usage":"Tensor Cores Utilization",
-    "Kernel-details":"Kernel Table"
+    "Kernel-details":"Kernel Table",
+    "proportion":"proportion"
 
 
 
