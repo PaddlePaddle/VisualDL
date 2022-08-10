@@ -239,8 +239,14 @@ class ProfilerApi(object):
                       time_unit='ms'):
         if device_type == 'undefined':
             return
-        min_size = float(min_size)
-        max_size = float(max_size)
+        try:
+            min_size = float(min_size)
+        except Exception:
+            min_size = 0
+        try:
+            max_size = float(max_size)
+        except Exception:
+            max_size = float('inf')
         if search_name == 'undefined' or not search_name:
             search_name = None
         run_manager = self._reader.get_run_manager(run)
