@@ -480,7 +480,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                             bordered
                             size="middle"
                             scroll={{
-                                x: group === 'op_name_input_shape' ? 'calc(700px + 70%)' : 'calc(700px + 55%)',
+                                x: group === 'op_name_input_shape' ? 'calc(700px + 80%)' : 'calc(700px + 70%)',
                                 y: 700
                             }}
                         ></Table>

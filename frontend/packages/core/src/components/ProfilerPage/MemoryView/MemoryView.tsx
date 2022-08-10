@@ -158,8 +158,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const [lineData, setLineData] = useState<curveType>();
     const [search, setSearch] = useState<string>('');
     const [search2, setSearch2] = useState<string>('');
-    const [Sliders1, setSliders1] = useState<number>(0);
-    const [Sliders2, setSliders2] = useState<number>(100);
+    const [Sliders1, setSliders1] = useState<number | string>(0);
+    const [Sliders2, setSliders2] = useState<number | string>(100);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
     const [envirements, setEnvirements] = useState<devicesType[]>();
     const [tableData, settableData] = useState<tableType[]>();
@@ -457,15 +457,19 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         setSliders2(value[1]);
     };
     const inputChange = (value: string) => {
-        const slider = Number(value);
-        if (slider) {
-            setSliders1(slider);
+        // const slider = Number(value);
+        if (value) {
+            setSliders1(value);
+        } else {
+            setSliders2(0);
         }
     };
     const inputChange2 = (value: string) => {
-        const slider = Number(value);
-        if (slider) {
-            setSliders2(slider);
+        // const value = Number(value);
+        if (value) {
+            setSliders2(value);
+        } else {
+            setSliders2(0);
         }
     };
 
