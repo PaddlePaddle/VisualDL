@@ -67,7 +67,7 @@ TOOLTIP_EVENT_TYPE_PERSPECTIVE_CN = \
   '<b class="bold">Communication:</b> 表示分布式通信有关的事件<br>'
 
 TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_CN = \
-  '展示在模型各阶段DataLoader, Forward, Backward, Optimization以及Other所包含的各种事件的时间。'\
+  '展示在模型各阶段DataLoader, Forward, Backward, Optimization以及Other所包含的各种事件的时间。<br>'\
   '<b class="bold">Operator:</b> 表示框架内的算子执行<br>'\
   '<b class="bold">CudaRuntime:</b> 表示cuda runtime的函数执行<br>'\
   '<b class="bold">Kernel:</b> 表示GPU上计算的Kernel函数执行<br>'\
@@ -117,7 +117,7 @@ TOOLTIP_MODEL_PERSPECTIVE_PERSTEP_EN = \
 
 TOOLTIP_EVENT_TYPE_PERSPECTIVE_EN = \
   'Present the distribution of each kind of events across DataLoader,\
-  Forward, Backward, Optimization and Other stage.'\
+  Forward, Backward, Optimization and Other stage.<br>'\
   '<b class="bold">Operator:</b> denote operator execution<br>'\
   '<b class="bold">CudaRuntime:</b> denote cuda runtime function execution<br>'\
   '<b class="bold">Kernel:</b> denote kernel execution on GPU<br>'\
@@ -128,7 +128,8 @@ TOOLTIP_EVENT_TYPE_PERSPECTIVE_EN = \
   '<b class="bold">Communication:</b> denote events associated with distributed data transfer and computation.<br>'
 
 TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_EN = \
-  'Present the time of each kind of events included in DataLoader, Forward, Backward, Optimization and Other stage.'\
+  'Present the time of each kind of events included in DataLoader, Forward, Backward, Optimization \
+    and Other stage.<br>'\
   '<b class="bold">Operator:</b> denote operator execution<br>'\
   '<b class="bold">CudaRuntime:</b> denote cuda runtime function execution<br>'\
   '<b class="bold">Kernel:</b> denote kernel execution on GPU<br>'\

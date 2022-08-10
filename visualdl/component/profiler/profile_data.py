@@ -1621,9 +1621,12 @@ class ProfileData:
         paired_event_list = sorted(paired_event_list, key=lambda x: x[-1])
         if not paired_event_list:
             return data
+        duration = None
         for item in paired_event_list:
             if item[2] and item[4]:
                 duration = item[4] - item[2]
+            else:
+                duration = None
             data['data'].append({
                 "MemoryType":
                 item[0],
@@ -1636,7 +1639,8 @@ class ProfileData:
                 "FreeTimestamp":
                 format_time(item[4], time_unit) if item[4] else None,
                 "Duration":
-                format_time(duration, time_unit),
+                format_time(duration, time_unit)
+                if duration is not None else None,
                 "Size":
                 format_memory(item[5], 'KB')
             })
