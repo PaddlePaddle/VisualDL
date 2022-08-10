@@ -1,1 +1,0 @@
-export default   ['All', '0', '1']
