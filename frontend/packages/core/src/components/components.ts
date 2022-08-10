@@ -34,9 +34,9 @@ export const Configure = styled.div`
         .title {
             display: flex;
             align-items: center;
-            div {
-                line-height: 16px;
-            }
+            // div {
+            //     line-height: 16px;
+            // }
         }
         .titles {
             display: flex;
@@ -272,10 +272,11 @@ export const PieceContent = styled.div`
         i {
             line-height: ${rem(30)};
         }
-    }
-    .is_expend {
         margin-bottom: ${rem(20)};
     }
+    // .is_expend {
+    //     margin-bottom: ${rem(24)};
+    // }
 `;
 export const Subtraction = styled.div<{disable: boolean}>`
     width: ${rem(32)};

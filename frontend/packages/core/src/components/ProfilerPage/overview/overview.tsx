@@ -28,7 +28,6 @@ import {
     Configure,
     EchartPie,
     ArgumentOperation,
-    FullWidthSelect,
     ViewWrapper,
     ButtonsLeft,
     ButtonsRight,
@@ -99,7 +98,7 @@ const Configures = styled(Configure)`
     .postions {
         position: absolute;
         left: ${rem(774)};
-        top: ${rem(23)};
+        top: ${rem(28)};
         z-index: 10;
     }
 `;
@@ -602,7 +601,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             </Configure>
             <Configures>
                 <div className="titleContent">
-                    <div className="title">
+                    <div className="titles" style={{marginBottom: `${rem(0)}`}}>
                         <div>{t('training-step-time')}</div>
                         <Popover
                             content={gettTooltip('overview_model_perspective_perstep')}
