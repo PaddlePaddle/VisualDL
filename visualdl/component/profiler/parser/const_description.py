@@ -23,18 +23,18 @@ __ALL__ = [
 ]
 
 TOOLTIP_DEVICE_INFO_CN = \
-  '<b class="bold">CPU进程利用率：</b><br>'\
+  '<b class="bold">CPU进程利用率:</b><br>'\
   '进程所利用到的CPU的时间 / ProfileStep的时间(即性能分析的时间跨度）<br>'\
-  '<b class="bold">CPU系统利用率</b><br>'\
+  '<b class="bold">CPU系统利用率:</b><br>'\
   '整个系统所有进程利用到的CPU时间 / CPU总时间（ProfileStep的时间*CPU核心数）<br>'\
-  '<b class="bold">GPU利用率：</b><br>'\
+  '<b class="bold">GPU利用率:</b><br>'\
   '进程利用GPU计算的时间 / ProfileStep的时间，进程利用GPU计算的时间即是GPU Kernel计算的时间，越高越好<br>'\
-  '<b class="bold">流处理器效率：</b><br>'\
+  '<b class="bold">流处理器效率:</b><br>'\
   '对于流处理器处理某个GPU Kernel, 其效率为SM_Eff_i = min(Kernel所用的Blocks数量 / GPU的流处理器数量, 100%)。'\
   '流处理器效率为SM_Eff_i关于每个Kernel的执行时间加权和 / ProfileStep的时间<br>'\
-  '<b class="bold">流处理器占用率：</b><br>'\
+  '<b class="bold">流处理器占用率:</b><br>'\
   '对于流处理器处理某个GPU Kernel, 其占用率Occu_i = 为活跃的warp数 / 能支持的最大warp数。流处理器占用率为Occu_i关于每个Kernel执行时间的加权平均<br>'\
-  '<b class="bold">Tensor cores使用时间占比：</b><br>'\
+  '<b class="bold">Tensor cores使用时间占比:</b><br>'\
   '使用Tensor Cores的GPU Kernel的计算时间 / 所有Kernel的计算时间<br>'
 
 TOOLTIP_MODEL_PERSPECTIVE_CN = \
@@ -62,22 +62,22 @@ TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_CN = \
   '展示在模型各阶段DataLoader, Forward, Backward, Optimization以及Other所包含的各种事件的时间。'
 
 TOOLTIP_DEVICE_INFO_EN = \
-  '<b class="bold">CPU Process Utilization：</b><br>'\
+  '<b class="bold">CPU Process Utilization:</b><br>'\
   'Process CPU time / ProfileStep time(total time of profiling）<br>'\
-  '<b class="bold">CPU System Utilization：</b><br>'\
+  '<b class="bold">CPU System Utilization:</b><br>'\
   'Sum of system\'s all processes CPU time/ CPU total time（ProfileStep time* #CPU Core)<br>'\
-  '<b class="bold">GPU Utilization</b><br>'\
+  '<b class="bold">GPU Utilization:</b><br>'\
   'GPU busy time / ProfileStep time，GPU busy time is the time during in which at least one GPU kernel is\
   running on it.<br>'\
-  '<b class="bold">Est. SM Efficiency</b><br>'\
+  '<b class="bold">Est. SM Efficiency:</b><br>'\
   'The SM efficiency for one kernel can be denoted as SM_Eff_i = min(blocks of this kernel / SM number \
   of this GPU, 100%).'\
   'Est. SM efficiency of GPU is the weighted sum of SM_Eff_i across all kernels / ProfileStep time<br>'\
-  '<b class="bold">Est. Achieved Occupancy</b><br>'\
+  '<b class="bold">Est. Achieved Occupancy:</b><br>'\
   'The SM occupancy for one kernel can be denoted as Occu_i = active warps on an SM / maximum number \
     of active warps supported by the SM. \
   Est. SM occupancy of GPU is the weighted average of Occu_i across all kernels<br>'\
-  '<b class="bold">Tensor cores ratio</b><br>'\
+  '<b class="bold">Tensor cores ratio:</b><br>'\
   'Sum of kernel time using Tensor Cores / Sum of total kernel time<br>'
 
 TOOLTIP_MODEL_PERSPECTIVE_EN = \
