@@ -260,7 +260,8 @@ class OverviewParser:
                     'total_time'] / self.model_perspective_items[
                         'ProfileStep'].cpu_time
 
-    def _fill_stage_events(self, node, stage_idx):
+    def _fill_stage_events(  # noqa: C901
+            self, node, stage_idx, should_recursive=True):
         if node.type == 'Forward':
             stage_name = 'Forward'
             self.has_forward = True
@@ -273,17 +274,68 @@ class OverviewParser:
         else:
             stage_name = 'Other'
 
-        stack = []
-        if node.type in StageType:
-            for children in node.children_node:
-                stack.append(children)
+        if should_recursive:
+            stack = []
+            if node.type in StageType:
+                for children in node.children_node:
+                    stack.append(children)
+            else:
+                stack.append(node)
+            while stack:
+                current_node = stack.pop()
+                for childnode in current_node.children_node:
+                    stack.append(childnode)
+                for runtimenode in current_node.runtime_node:
+                    self.events_per_stage[stage_name]["CPU"][stage_idx][
+                        runtimenode.thread_id][
+                            runtimenode.type]['events'].append(runtimenode)
+                    self.events_per_stage[stage_name]["CPU"][stage_idx][
+                        runtimenode.thread_id][
+                            runtimenode.type]['times'].append(
+                                (runtimenode.start_ns, runtimenode.end_ns))
+                    self.events_per_stage[stage_name]["CPU"]['ALL'][
+                        runtimenode.thread_id][
+                            runtimenode.type]['events'].append(runtimenode)
+                    self.events_per_stage[stage_name]["CPU"]['ALL'][
+                        runtimenode.thread_id][
+                            runtimenode.type]['times'].append(
+                                (runtimenode.start_ns, runtimenode.end_ns))
+                    for devicenode in runtimenode.device_node:
+                        self.has_device = True
+                        self.events_per_stage[stage_name]["GPU"][stage_idx][
+                            devicenode.stream_id][
+                                devicenode.type]['events'].append(devicenode)
+                        self.events_per_stage[stage_name]["GPU"][stage_idx][
+                            devicenode.stream_id][
+                                devicenode.type]['times'].append(
+                                    (devicenode.start_ns, devicenode.end_ns))
+                        self.events_per_stage[stage_name]["GPU"]['ALL'][
+                            devicenode.stream_id][
+                                devicenode.type]['events'].append(devicenode)
+                        self.events_per_stage[stage_name]["GPU"]['ALL'][
+                            devicenode.stream_id][
+                                devicenode.type]['times'].append(
+                                    (devicenode.start_ns, devicenode.end_ns))
+                if current_node.type == 'Forward' or current_node.type == 'UserDefined':
+                    continue
+                node_type = current_node.type
+                if node_type == 'PythonUserDefined':
+                    node_type = 'UserDefined'
+                self.events_per_stage[stage_name]["CPU"][stage_idx][
+                    current_node.thread_id][node_type]['events'].append(
+                        current_node)
+                self.events_per_stage[stage_name]["CPU"][stage_idx][
+                    current_node.thread_id][node_type]['times'].append(
+                        (current_node.start_ns, current_node.end_ns))
+                self.events_per_stage[stage_name]["CPU"]['ALL'][
+                    current_node.thread_id][node_type]['events'].append(
+                        current_node)
+                self.events_per_stage[stage_name]["CPU"]['ALL'][
+                    current_node.thread_id][node_type]['times'].append(
+                        (current_node.start_ns, current_node.end_ns))
+
         else:
-            stack.append(node)
-        while stack:
-            current_node = stack.pop()
-            for childnode in current_node.children_node:
-                stack.append(childnode)
-            for runtimenode in current_node.runtime_node:
+            for runtimenode in node.runtime_node:
                 self.events_per_stage[stage_name]["CPU"][stage_idx][
                     runtimenode.thread_id][runtimenode.type]['events'].append(
                         runtimenode)
@@ -310,23 +362,6 @@ class OverviewParser:
                     self.events_per_stage[stage_name]["GPU"]['ALL'][
                         devicenode.stream_id][devicenode.type]['times'].append(
                             (devicenode.start_ns, devicenode.end_ns))
-            if current_node.type == 'Forward' or current_node.type == 'UserDefined':
-                continue
-            node_type = current_node.type
-            if node_type == 'PythonUserDefined':
-                node_type = 'UserDefined'
-            self.events_per_stage[stage_name]["CPU"][stage_idx][
-                current_node.thread_id][node_type]['events'].append(
-                    current_node)
-            self.events_per_stage[stage_name]["CPU"][stage_idx][
-                current_node.thread_id][node_type]['times'].append(
-                    (current_node.start_ns, current_node.end_ns))
-            self.events_per_stage[stage_name]["CPU"]['ALL'][
-                current_node.thread_id][node_type]['events'].append(
-                    current_node)
-            self.events_per_stage[stage_name]["CPU"]['ALL'][
-                current_node.thread_id][node_type]['times'].append(
-                    (current_node.start_ns, current_node.end_ns))
 
     def _parse_events(self, nodetrees):
         node_wrapped_trees = rebuild_node_trees(nodetrees)
@@ -345,6 +380,7 @@ class OverviewParser:
             for wrapped_node in root_wrapped_node.children_node:
                 wrapped_profiler_step_nodes.append(wrapped_node)
             self.stage_nums = 0
+            current_stage_idx = None
             for wrapped_profiler_step_node in wrapped_profiler_step_nodes:
                 if wrapped_profiler_step_node.type == 'ProfileStep':
                     self.process_id = wrapped_profiler_step_node.process_id
@@ -376,12 +412,20 @@ class OverviewParser:
                             total_time - accumulated_stage_time)
                         self.model_perspective_items['Other'].cpu_times[
                             stage_idx] = total_time - accumulated_stage_time
+                    self._fill_stage_events(
+                        wrapped_profiler_step_node,
+                        stage_idx,
+                        should_recursive=False)
+                else:
+                    self._fill_stage_events(wrapped_profiler_step_node,
+                                            current_stage_idx)
+            self._fill_stage_events(
+                root_wrapped_node, current_stage_idx, should_recursive=False)
 
     def add_userdefined_item(self, userdefined_node):
         if userdefined_node.name not in self.userdefined_items:
             self.userdefined_items[userdefined_node.name] = GeneralItem(
                 userdefined_node.name)
-
         self.userdefined_items[userdefined_node.name].add_item(
             userdefined_node)
 
