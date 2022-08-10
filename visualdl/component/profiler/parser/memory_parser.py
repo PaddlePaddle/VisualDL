@@ -44,7 +44,6 @@ class MemoryItem:
 
 class MemoryParser:
     def __init__(self):
-        self.start_time = float('inf')
         self.allocated_items = collections.defaultdict(
             dict)  # for memory summary, device type: event
         self.reserved_items = collections.defaultdict(
@@ -65,13 +64,6 @@ class MemoryParser:
         thread2hostnodes = traverse_tree(nodetrees)
         for threadid, host_nodes in thread2hostnodes.items():
             for host_node in host_nodes[1:]:  # skip root node
-                if host_node.start_ns < self.start_time:
-                    self.start_time = host_node.start_ns
-
-        for threadid, host_nodes in thread2hostnodes.items():
-            for host_node in host_nodes[1:]:  # skip root node
-                if host_node.start_ns < self.start_time:
-                    self.start_time = host_node.start_ns
                 if host_node.type == 'OperatorInner':
                     continue
                 if host_node.type == 'Operator':
@@ -122,6 +114,20 @@ class MemoryParser:
                                     ])
                                 self.paired_events[device_type].append(
                                     paired_results.pop())
+                        else:
+                            if memory_type == 'Free':
+                                paired_results.append([
+                                    'Allocated', None, None, hostnodename,
+                                    timestamp, -size
+                                ])
+                            else:
+                                paired_results.append([
+                                    'ReservedAllocate', None, None,
+                                    hostnodename, timestamp, -size
+                                ])
+                            self.paired_events[device_type].append(
+                                paired_results.pop())
+
                 self.paired_events[device_type].extend(paired_results)
             self.size_ranges[device_type] = (0, max_size)
 
@@ -135,11 +141,13 @@ class MemoryParser:
                 self.allocated_items[
                     memnode.place][event_name].add_memory_record(
                         memnode.increase_bytes, memnode.type)
-                self.memory_events[memnode.place][(
-                    memnode.addr, 'Allocated')].append([
-                        memnode.timestamp_ns - self.start_time, memnode.type,
-                        event_name, memnode.increase_bytes
-                    ])
+                self.memory_events[memnode.place][(memnode.addr,
+                                                   'Allocated')].append([
+                                                       memnode.timestamp_ns,
+                                                       memnode.type,
+                                                       event_name,
+                                                       memnode.increase_bytes
+                                                   ])
 
             elif memnode.type == 'ReservedAllocate' or memnode.type == 'ReservedFree':
                 if event_name not in self.reserved_items[memnode.place]:
@@ -149,23 +157,21 @@ class MemoryParser:
                 self.reserved_items[
                     memnode.place][event_name].add_memory_record(
                         memnode.increase_bytes, memnode.type)
-                self.memory_events[memnode.place][(
-                    memnode.addr, "Reserved")].append([
-                        memnode.timestamp_ns - self.start_time, memnode.type,
-                        event_name, memnode.increase_bytes
-                    ])
+                self.memory_events[memnode.place][(memnode.addr,
+                                                   "Reserved")].append([
+                                                       memnode.timestamp_ns,
+                                                       memnode.type,
+                                                       event_name,
+                                                       memnode.increase_bytes
+                                                   ])
             self.memory_curve[memnode.place]['Allocated'].append(
-                (memnode.timestamp_ns - self.start_time,
-                 memnode.current_allocated, event_name))
+                (memnode.timestamp_ns, memnode.current_allocated, event_name))
             self.memory_curve[memnode.place]['Reserved'].append(
-                (memnode.timestamp_ns - self.start_time,
-                 memnode.current_reserved, event_name))
+                (memnode.timestamp_ns, memnode.current_reserved, event_name))
             self.memory_curve[memnode.place]['PeakAllocated'].append(
-                (memnode.timestamp_ns - self.start_time,
-                 memnode.peak_allocated, event_name))
+                (memnode.timestamp_ns, memnode.peak_allocated, event_name))
             self.memory_curve[memnode.place]['PeakReserved'].append(
-                (memnode.timestamp_ns - self.start_time, memnode.peak_reserved,
-                 event_name))
+                (memnode.timestamp_ns, memnode.peak_reserved, event_name))
             self.peak_allocation_values[memnode.place] = max(
                 self.peak_allocation_values[memnode.place],
                 memnode.peak_allocated)
