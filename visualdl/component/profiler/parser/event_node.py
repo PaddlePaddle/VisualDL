@@ -211,7 +211,7 @@ class ProfilerResult:
                 else:
                     hostnodes.append(HostNode.from_json(event))
                     if hostnodes[-1].start_ns == 0:
-                        self.start_in_timeline_ns = int(event['ts'])
+                        self.start_in_timeline_ns = int(event['ts']) * 1000
             elif event['cat'] in device_node_type_map:
                 devicenodes.append(DeviceNode.from_json(event))
             elif event['cat'] in memory_node_event_map:
