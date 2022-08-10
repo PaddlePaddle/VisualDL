@@ -168,7 +168,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                                             <div className="info">{items.computeCapability}</div>
                                         </div>
                                         <div className="items">
-                                            <div className="label">utilization:</div>
+                                            <div className="label">Utilization:</div>
                                             <div className="info">{items.utilization}</div>
                                         </div>
                                     </div>

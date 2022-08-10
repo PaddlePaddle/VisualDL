@@ -503,7 +503,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             </Configure>
             <Configure>
                 <div className="titleContent" style={{marginBottom: rem(15)}}>
-                    <div className="title">{t('Time-details')}</div>
+                    <div className="title">{t('Kernel-details')}</div>
                     <div className="searchContent">
                         <div className="select_wrapper">
                             <FullWidthSelect list={itemsList} value={group} onChange={setGroup} />
