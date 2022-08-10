@@ -122,13 +122,13 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
             const {colorAlt, series, ...defaults} = chart;
             if (data && color && units) {
                 // debugger
+                console.log('data', data);
+                const noData = [{value: '0', name: 'noData', proportion: '0'}];
                 const chartOptions: EChartsOption = defaultsDeep(option, {
-                    grid: {
-                        left: 0
-                        // top: '23%'
-                    },
-                    color: color,
+                    center: [0, 0],
+                    color: data.length ? color : ['#CCCCCC'],
                     tooltip: {
+                        show: data.length ? true : false,
                         trigger: 'item',
                         extraCssText:
                             'padding:15px;padding-right:41px;line-height:30px;width:auto;height:auto;background:rgba(0,0,0,0.75);box-shadow:1px 5px 20px 0px rgba(1,11,19,0.2);border-radius:6px;border:none;',
@@ -189,6 +189,8 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             width: 20
                         },
                         formatter: function (name: string) {
+                            console.log('name', name);
+
                             return name.length > 20 ? name.slice(0, 18) + '...' : name;
                         },
                         icon: 'circle',
@@ -215,37 +217,34 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             name: 'Access From',
                             type: 'pie',
                             radius: ['63%', '90%'],
+                            center: ['55%', '50%'],
                             avoidLabelOverlap: false,
+                            emphasis: {
+                                disabled: data.length ? false : true
+                            },
                             label: {
                                 show: true,
                                 position: 'center',
                                 textStyle: {
                                     fontSize: '14',
-                                    color: '#666'
+                                    color: data.length ? '#666' : '#999999'
                                 },
                                 formatter: function () {
-                                    const str = isCpu ? 'CPU' : 'GPU'; //声明一个变量用来存储数据
-                                    return str;
+                                    if (data.length) {
+                                        const str = isCpu ? 'CPU' : 'GPU'; //声明一个变量用来存储数据
+                                        return str;
+                                    } else {
+                                        const str = t('NoGPUdata');
+                                        return str;
+                                    }
                                 }
                             },
                             labelLine: {
                                 show: false
                             },
-                            data: data
+                            data: data.length ? data : noData
                         }
-                    ],
-                    title: {
-                        show: data.length ? false : true,
-                        text: data.length ? '' : t('NoGPUdata'),
-                        left: '19.8%',
-                        top: '46%',
-                        textStyle: {
-                            fontFamily: 'PingFangSC-Regular',
-                            fontSize: 12,
-                            color: '#999999',
-                            fontWeight: 400
-                        }
-                    }
+                    ]
                 });
                 // debugger
                 echart?.setOption(chartOptions, {notMerge: true});

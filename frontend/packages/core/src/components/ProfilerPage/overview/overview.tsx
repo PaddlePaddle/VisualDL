@@ -179,6 +179,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     gpu: []
                 };
                 if (result.gpu) {
+                    setHasGpu(true);
                     for (const item of result.gpu) {
                         const DataTypeItem: {[key: string]: any} = {};
                         for (const key of result.column_name) {
@@ -200,7 +201,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     }
                 } else {
                     setHasGpu(false);
-                    setStepsList([{label: 'cpu', value: 'cpu'}]);
                 }
                 result.cpu.forEach((item: Cpu, index: number) => {
                     const DataTypeItem: tableType = item
@@ -560,13 +560,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             />
                         </div>
                         <div className="wraper">
-                            <PieChart
-                                className={'Content'}
-                                data={chartData?.gpu}
-                                isCpu={false}
-                                color={color2}
-                                units={units}
-                            />
+                            <PieChart className={'Content'} data={[]} isCpu={false} color={color2} units={units} />
                         </div>
                     </EchartPie>
                     <div
