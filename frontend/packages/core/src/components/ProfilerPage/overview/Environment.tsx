@@ -107,7 +107,6 @@ const CPU = styled.div`
                 font-size: ${rem(12)};
                 color: #999999;
                 text-align: center;
-                white-space: nowrap;
             }
         }
         .items_last {

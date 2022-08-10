@@ -29,6 +29,7 @@ import GridLoader from 'react-spinners/GridLoader';
 import {Wraper, Title, FullWidthSelect, Configure, EchartPie} from '../../components';
 import type {devicesType, curveType, memory_events_type, Datum, op_memory_events_type, op_datum} from './type';
 import {number} from 'echarts';
+import NumberInput from '../NumberInput';
 interface DataType {
     key: React.Key;
     MemoryType: string;
@@ -158,8 +159,8 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const [lineData, setLineData] = useState<curveType>();
     const [search, setSearch] = useState<string>('');
     const [search2, setSearch2] = useState<string>('');
-    const [Sliders1, setSliders1] = useState<number | string>(0);
-    const [Sliders2, setSliders2] = useState<number | string>(100);
+    const [Sliders1, setSliders1] = useState<number>(0);
+    const [Sliders2, setSliders2] = useState<number>(10000);
     const [itemsList, setItemsList] = useState<SelectListItem<string>[]>();
     const [envirements, setEnvirements] = useState<devicesType[]>();
     const [tableData, settableData] = useState<tableType[]>();
@@ -167,6 +168,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const [tableData2, settableData2] = useState<op_table[]>();
     const [tableLoading2, settableLoading2] = useState(true);
     const [items, setItems] = useState<string>();
+    const [range, setRange] = useState<number[]>([]);
     const [allocation, setAllocation] = useState<string>();
 
     useEffect(() => {
@@ -210,6 +212,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 if (items === element.device) {
                     setSliders1(element.min_size);
                     setSliders2(element.max_size);
+                    setRange([element.min_size, element.max_size]);
                     setAllocation(element.max_allocation_size);
                 }
             }
@@ -456,22 +459,43 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
         setSliders1(value[0]);
         setSliders2(value[1]);
     };
+    const getNAN = (val: any) => {
+        const t = val.charAt(0);
+        // 转化为数字形式--包含小数，负数
+        // 先把非数字的都替换掉，除了数字和.
+        let vals = val;
+        vals = vals.replace(/[^\d.]/g, '');
+        // 必须保证第一个为数字而不是.
+        vals = vals.replace(/^\./g, '');
+        // 保证只有出现一个.而没有多个.
+        vals = vals.replace(/\.{2,}/g, '.');
+        // 保证.只出现一次，而不能出现两次以上
+        vals = vals.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+        // 如果第一位是负号，则允许添加
+        if (t === '-') {
+            vals = '-' + vals;
+        }
+        return vals;
+    };
     const inputChange = (value: string) => {
-        // const slider = Number(value);
-        if (value) {
-            setSliders1(value);
+        const slider = getNAN(value);
+        console.log('slider', slider);
+        if (slider) {
+            setSliders1(slider);
         } else {
-            setSliders2(0);
+            setSliders1(0);
         }
     };
     const inputChange2 = (value: string) => {
-        // const value = Number(value);
-        if (value) {
-            setSliders2(value);
+        const slider = getNAN(value);
+        console.log('slider', slider);
+        if (slider) {
+            setSliders2(slider);
         } else {
             setSliders2(0);
         }
     };
+    console.log('max', Sliders1, Sliders2);
 
     return (
         <ViewWrapper>
@@ -513,7 +537,13 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                             <div className="unit">KB</div>
                         </div>
                         <div className="Slider_wrapper">
-                            <Slider range value={[Sliders1, Sliders2]} onChange={SliderChange} />
+                            <Slider
+                                range
+                                max={range.length && range[1]}
+                                min={range.length && range[0]}
+                                value={[Sliders1, Sliders2]}
+                                onChange={SliderChange}
+                            />
                         </div>
                         <div className="Slider_input_content">
                             <div className="unit-number">
