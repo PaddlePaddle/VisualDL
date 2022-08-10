@@ -151,7 +151,7 @@ export const RadioButtons = styled.div`
     display: flex;
     align-items: center;
     border-radius: 4px;
-    margin-left: 20px;
+    margin-left: ${rem(20)};
     .is_active {
         color: #ffffff;
         background: #2932e1;

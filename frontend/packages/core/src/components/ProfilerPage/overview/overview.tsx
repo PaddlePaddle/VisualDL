@@ -97,8 +97,8 @@ const Configures = styled(Configure)`
     }
     .postions {
         position: absolute;
-        left: ${rem(774)};
-        top: ${rem(28)};
+        left: 77.8%;
+        top: 160%;
         z-index: 10;
     }
 `;
