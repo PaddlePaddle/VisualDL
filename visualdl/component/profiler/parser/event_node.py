@@ -217,9 +217,9 @@ class ProfilerResult:
                 devicenodes.append(DeviceNode.from_json(event))
             elif event['cat'] in memory_node_event_map:
                 memnodes.append(MemNode.from_json(event))
-        assert self.start_in_timeline_ns is not None
         if memnodes:
             for memnode in memnodes:
+                assert self.start_in_timeline_ns is not None
                 memnode.timestamp_ns = memnode.timestamp_ns - self.start_in_timeline_ns
         if not hostnodes:
             self.has_hostnodes = False
