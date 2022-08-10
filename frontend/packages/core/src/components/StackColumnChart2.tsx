@@ -117,7 +117,6 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                             type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
                         },
                         formatter: function (params: any) {
-                            console.log('Trainchart', params);
                             let totals = 0;
                             for (let index = 0; index < params.length; index++) {
                                 const element = params[index];

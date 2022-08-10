@@ -200,7 +200,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         };
                     }
                 });
-                console.log('TableDatas', TableDatas);
                 setTableData(TableDatas);
                 settableLoading(false);
             });
@@ -219,13 +218,11 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                     `&span=${spans}`
             ).then((res: unknown) => {
                 const Data = res as pie_expand;
-                console.log('distributed,', Data);
                 setDistributed(Data);
             });
         }
     }, [runs, workers, spans, isCPU, top, units]);
     const onChange: (e: RadioChangeEvent) => void = (e: RadioChangeEvent) => {
-        console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
         if (e.target.value === 1) {
             setTop(0);
@@ -266,8 +263,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                             dataIndex: 'cpu_avg_time',
                             key: 'cpu_avg_time',
                             sorter: (a, b) => {
-                                // console.log('a,b',a,b);
-
                                 return a.cpu_avg_time - b.cpu_avg_time;
                             }
                         },
@@ -299,7 +294,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                     key: 'input_shape',
                     width: 100,
                     render: text => {
-                        console.log('text', text);
                         if (text?.length > 0) {
                             return text.map((item: string, index: number) => {
                                 return <div key={item + index}>{item}</div>;

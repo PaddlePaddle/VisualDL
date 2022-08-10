@@ -184,11 +184,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                             getPopupContainer={getPopupContainers}
                             placement="right"
                         >
-                            <ArgumentOperation
-                                onClick={() => {
-                                    console.log('1111');
-                                }}
-                            >
+                            <ArgumentOperation>
                                 <img src={PUBLIC_PATH + logo} alt="" />
                             </ArgumentOperation>
                         </Popover>

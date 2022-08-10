@@ -59,11 +59,6 @@ export type EnvironmentProps = {
 };
 const {TabPane} = Tabs;
 const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceData, units}) => {
-    const {t} = useTranslation(['hyper-parameter', 'common']);
-
-    const onChange = (key: string) => {
-        console.log(key);
-    };
     const color = [
         '#2932E1',
         '#00CC88',
@@ -80,7 +75,7 @@ const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceDa
     ];
     return (
         <Fragment>
-            <Tabs defaultActiveKey="1" onChange={onChange} centered>
+            <Tabs defaultActiveKey="1" centered>
                 {performanceData &&
                     performanceData.order.map((item: string, index: number) => {
                         return (

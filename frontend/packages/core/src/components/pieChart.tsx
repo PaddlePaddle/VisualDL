@@ -121,7 +121,6 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {colorAlt, series, ...defaults} = chart;
             if (data && color && units) {
-                console.log('chartData', data, option);
                 // debugger
                 const chartOptions: EChartsOption = defaultsDeep(option, {
                     grid: {
@@ -142,7 +141,6 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                         },
                         position: ['50%', '0%'],
                         formatter: function (params: any) {
-                            console.log('pieparams', params);
                             let str = ''; //声明一个变量用来存储数据
                             str += '<div class="tooltips">';
                             str += '<div class="tooltipName">' + params.data.name + '';
@@ -201,7 +199,6 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                         tooltip: {
                             show: true,
                             formatter: function (params: any) {
-                                console.log('legend', params);
                                 let str = ''; //声明一个变量用来存储数据
                                 str += '<div class="tooltips">';
                                 str += '<div class="tooltipName">' + params.name + '';

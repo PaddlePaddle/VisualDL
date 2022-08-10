@@ -153,7 +153,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const [tableLoading2, settableLoading2] = useState(true);
     const [trainData, setTrainData] = useState<trainType>();
     const [descriptions, setDescriptions] = useState<any>();
-    console.log('i18n.language', i18n.language);
     useEffect(() => {
         settableLoading(true);
         settableLoading2(true);
@@ -162,7 +161,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             fetcher('/profiler/overview/environment' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
                     const Data = res as environmentType;
-                    console.log('environment', Data);
                     setEnvironment(Data);
                 }
             );
@@ -214,7 +212,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                         : item;
                     tableDatas.push(DataTypeItem);
                 });
-                console.log('tableData', tableDatas);
                 setTableData(tableDatas);
                 settableLoading(false);
                 result.cpu.shift();
@@ -236,7 +233,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const Data = res as perspectiveType;
-                console.log('TableData2,', Data);
                 const events = Data.events;
                 const TableDatas = events.map(item => {
                     return {
@@ -256,7 +252,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const Data = res as distributedData;
-                console.log('distributed,', Data);
                 setDistributed(Data);
             });
         }
@@ -274,7 +269,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const result = res as performanceType;
-                console.log('PerformanceData', result);
                 setPerformanceData(result);
             });
         }
@@ -291,7 +285,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const Data = res as trainType;
-                console.log('TrainData,', Data);
                 setTrainData(Data);
             });
         }
@@ -301,7 +294,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             // 训练步数耗时
             fetcher('/profiler/descriptions' + `?lang=${i18n.language}`).then((res: unknown) => {
                 const Data = res;
-                console.log('Descriptions', Data);
                 setDescriptions(Data);
             });
         }
@@ -551,11 +543,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             getPopupContainer={getPopupContainers}
                             placement="right"
                         >
-                            <ArgumentOperation
-                                onClick={() => {
-                                    console.log('1111');
-                                }}
-                            >
+                            <ArgumentOperation>
                                 <img src={PUBLIC_PATH + logo} alt="" />
                             </ArgumentOperation>
                         </Popover>
@@ -621,11 +609,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             getPopupContainer={getPopupContainers}
                             placement="right"
                         >
-                            <ArgumentOperation
-                                onClick={() => {
-                                    console.log('1111');
-                                }}
-                            >
+                            <ArgumentOperation>
                                 <img src={PUBLIC_PATH + logo} alt="" />
                             </ArgumentOperation>
                         </Popover>
@@ -666,11 +650,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             placement="right"
                             getPopupContainer={getPopupContainers}
                         >
-                            <ArgumentOperation
-                                onClick={() => {
-                                    console.log('1111');
-                                }}
-                            >
+                            <ArgumentOperation>
                                 <img src={PUBLIC_PATH + logo} alt="" />
                             </ArgumentOperation>
                         </Popover>
@@ -710,11 +690,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                             placement="right"
                             getPopupContainer={getPopupContainers}
                         >
-                            <ArgumentOperation
-                                onClick={() => {
-                                    console.log('1111');
-                                }}
-                            >
+                            <ArgumentOperation>
                                 <img src={PUBLIC_PATH + logo} alt="" />
                             </ArgumentOperation>
                         </Popover>

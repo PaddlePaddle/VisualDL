@@ -83,6 +83,9 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
         }));
         useEffect(() => {
             const {color, series, ...defaults} = chart;
+            if (!echart) {
+                return;
+            }
             let chartOptions: EChartsOption = defaultsDeep(
                 {
                     title: {
@@ -103,8 +106,8 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                         itemSize: 0,
                         feature: {
                             dataZoom: {
-                                show: true,
-                                xAxisIndex: 0
+                                show: true
+                                // xAxisIndex: 0
                             }
                         }
                     },
@@ -155,7 +158,13 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 );
             }
             echart?.setOption(chartOptions, {notMerge: true});
+            echart?.dispatchAction({
+                type: 'takeGlobalCursor',
+                key: 'dataZoomSelect',
+                dataZoomSelectActive: true
+            });
             // debugger
+            console.log('chartOptions', chartOptions);
         }, [options, theme, data, title, i18n.language, echart]);
 
         return (

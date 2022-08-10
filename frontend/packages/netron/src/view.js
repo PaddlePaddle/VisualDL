@@ -396,14 +396,11 @@ view.View = class {
         });
     }
     jumpRoute(node) {
-        console.log('node', node);
         if (node.is_leaf) {
-            console.log('isCtrl', this.isCtrl);
             if (this.isCtrl) {
                 for (const nodes of this._allGraph.nodes) {
                     if (nodes.name === node.name) {
                         for (const type of this.non_graphMetadatas) {
-                            console.log('type', type.name.toLowerCase(), node.type);
                             if (type.name.toLowerCase() === node.type) {
                                 if (this.Language === 'zh') {
                                     window.open(

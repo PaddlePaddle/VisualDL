@@ -48,7 +48,6 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
     const [echart, setEchart] = useState<ECharts | null>(null);
     const theme = useTheme();
 
-
     const onInit = useRef(options.onInit);
     const onDispose = useRef(options.onDispose);
 

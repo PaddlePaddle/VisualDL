@@ -75,7 +75,6 @@ const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
         const theme = useChartTheme();
         const formatter = useCallback(
             (params: any) => {
-                console.log('params', params);
                 if (params.length) {
                     const n = params.length / 4 - 1;
                     let index = 0;
@@ -84,7 +83,6 @@ const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
                     while (index < params.length) {
                         const element = params[index];
                         if (element) {
-                            console.log('element', element);
                             runs.push({label: element.seriesName, colors: [element.color]});
                             datas.push(element.value);
                         }
@@ -112,7 +110,6 @@ const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
             if (!data) {
                 return;
             }
-            console.log('linedata', data);
             // debugger
             const chartData = data;
 
@@ -262,7 +259,6 @@ const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
                 });
 
                 echart?.setOption(chartOptions, {notMerge: true});
-                console.log('chartOptions', chartOptions);
             }
         }, [options, data, titles, theme, i18n.language, echart, formatter, t]);
         return (

@@ -157,7 +157,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                         proportion: item.ratio
                     });
                 }
-                console.log('piedata', chartData);
                 setPieData(chartData);
             });
         }
@@ -212,7 +211,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                 dataIndex: 'total_time',
                 key: 'total_time',
                 sorter: (a, b) => {
-                    console.log('a,b', a, b);
                     return a.total_time - b.total_time;
                 }
             },
@@ -371,9 +369,8 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             }
         ];
         return columns;
-    }, [t]);
+    }, [t, units]);
     const onChange: (e: RadioChangeEvent) => void = (e: RadioChangeEvent) => {
-        console.log('radio checked', e.target.value);
         setradioValue(e.target.value);
         if (e.target.value === 1) {
             setTop(0);

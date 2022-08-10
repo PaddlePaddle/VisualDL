@@ -105,7 +105,6 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
             fetcher('/profiler/distributed/info' + `?run=${runs}` + `&worker=${workers}` + `&span=${spans}`).then(
                 (res: unknown) => {
                     const result = res as infoType[];
-                    console.log('info,', res);
                     setDistributedData(result);
                 }
             );
@@ -132,7 +131,6 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                     `&time_unit=${units}`
             ).then((res: unknown) => {
                 const Data = res as histogramType;
-                console.log('distributed,', Data);
                 setComputation(Data);
             });
         }
