@@ -434,7 +434,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                     </div>
                 </div>
                 <PieceContents>
-                    <EchartPie style={{padding: `${rem(20)}`, paddingLeft: `${rem(0)}`}}>
+                    <EchartPie>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd'}}>
                             <PieChart
                                 className={'Content'}
@@ -447,7 +447,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                                             right: '220',
                                             name: 'Access From',
                                             type: 'pie',
-                                            radius: ['63%', '90%'],
+                                            radius: ['63%', '88%'],
                                             avoidLabelOverlap: false,
                                             label: {
                                                 show: true,

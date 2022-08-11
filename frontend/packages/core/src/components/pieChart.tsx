@@ -179,7 +179,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                     legend: {
                         show: data.length ? true : false,
                         top: '20',
-                        left: '60%',
+                        left: '62%',
                         width: '30%',
                         orient: 'vertical',
                         height: 165,
@@ -216,8 +216,8 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                             right: '220',
                             name: 'Access From',
                             type: 'pie',
-                            radius: ['63%', '90%'],
-                            center: ['55%', '50%'],
+                            radius: ['63%', '88%'],
+                            center: ['52%', '50%'],
                             avoidLabelOverlap: false,
                             emphasis: {
                                 disabled: data.length ? false : true

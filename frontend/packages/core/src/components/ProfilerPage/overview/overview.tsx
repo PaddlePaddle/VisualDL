@@ -97,8 +97,8 @@ const Configures = styled(Configure)`
     }
     .postions {
         position: absolute;
-        left: 40rem;
-        top: 2.6rem;
+        left: 50.9rem;
+        top: 2.7rem;
         z-index: 10;
     }
 `;

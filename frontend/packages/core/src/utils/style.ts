@@ -43,7 +43,7 @@ export const fontSize = '14px';
 export const setRem = () => {
     //  PC端
     // 基准大小
-    const baseSize = 16;
+    const baseSize = 14;
     const scale = document.documentElement.clientWidth / 1220;
     document.documentElement.style.fontSize = baseSize * scale + 'px';
 };
