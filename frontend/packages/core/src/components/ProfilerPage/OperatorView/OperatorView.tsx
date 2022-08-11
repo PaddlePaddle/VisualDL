@@ -245,6 +245,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                     title: t('call-volume'),
                     dataIndex: 'calls',
                     key: 'calls',
+                    width: 80,
                     sorter: (a, b) => a.calls - b.calls
                 },
                 {
@@ -290,7 +291,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                     title: t('input-shape'),
                     dataIndex: 'input_shape',
                     key: 'input_shape',
-                    width: 100,
+                    width: 150,
                     render: text => {
                         if (text?.length > 0) {
                             return text.map((item: string, index: number) => {
