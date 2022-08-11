@@ -605,7 +605,7 @@ class ProfileData:
             data['phase_type'].append(op_name)
             innerop_knownsub_times = 0
             for innerop_name, item in event.operator_inners.items():
-                if 'infer_shape' in innerop_name:
+                if 'infer_shape' in innerop_name or 'infer_meta' in innerop_name:
                     innerop_name = 'infer_shape'
                 elif 'compute' in innerop_name:
                     innerop_name = 'compute'
