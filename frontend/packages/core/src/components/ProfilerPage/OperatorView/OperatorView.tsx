@@ -467,7 +467,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         </div>
                     </div>
                 </div>
-                <Wraper style={{height: '420px'}}>
+                <Wraper style={{height: `${rem(420)}`}}>
                     {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />

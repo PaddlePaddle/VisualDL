@@ -527,7 +527,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                         </div>
                     </div>
                 </div>
-                <Wraper style={{minHeight: '410px'}}>
+                <Wraper style={{minHeight: `${rem(410)}`}}>
                     {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />

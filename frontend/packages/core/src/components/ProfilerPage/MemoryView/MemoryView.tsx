@@ -81,7 +81,7 @@ const TitleNav = styled.div`
         .select_label {
             margin-right: ${rem(15)};
             color: #000000;
-            font-size: 14px;
+            font-size: ${rem(14)};
             white-space: nowrap;
         }
         .select_wrapper {
@@ -112,7 +112,7 @@ const Configures = styled(Configure)`
                     background: #2932e1;
                 }
                 .ant-slider-handle {
-                    border: solid 4px #2932e1;
+                    border: solid ${rem(4)} #2932e1;
                 }
                 margin: ${rem(0)} ${rem(20)};
             }
@@ -120,7 +120,7 @@ const Configures = styled(Configure)`
                 height: ${rem(36)};
                 display: flex;
                 border: 1px solid #dddddd;
-                border-radius: 4px;
+                border-radius: ${rem(4)};
                 padding-right: ${rem(10)};
                 justify-content: space-between;
                 // width: ${rem(88)};
@@ -135,11 +135,11 @@ const Configures = styled(Configure)`
                         max-width: ${rem(100)};
                         height: 100%;
                         border: none;
-                        font-size: 14px;
+                        font-size: ${rem(14)};
                     }
                 }
                 .unit {
-                    font-size: 14px;
+                    font-size: ${rem(14)};
                     color: #999999;
                     line-height: ${rem(36)};
                 }

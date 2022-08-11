@@ -34,7 +34,7 @@ const Card = styled.div`
     height: ${rem(142)};
     border: 1px solid #dddddd;
     font-family: PingFangSC-Regular;
-    font-size: 14px;
+    font-size: ${rem(14)};
     font-weight: 400;
     display: flex;
     .item_list {
@@ -42,14 +42,14 @@ const Card = styled.div`
         display: flex;
         align-items: center;
         div:nth-of-type(1) {
-            padding-left: 20px;
+            padding-left: ${rem(20)};
         }
         div:nth-of-type(3) {
             border-right: none;
         }
         .items {
-            padding-left: 30px;
-            padding-right: 30px;
+            padding-left: ${rem(30)};
+            padding-right: ${rem(30)};
         }
         .items:nth-of-type(2) {
             border-right: 1px solid #dddddd;
@@ -59,20 +59,20 @@ const Card = styled.div`
     .info_list {
         flex: 1;
         .items:nth-of-type(1) {
-            margin-top: 14px;
+            margin-top: ${rem(14)};
         }
         .items {
             display: flex;
-            margin-top: 8px;
+            margin-top: ${rem(8)};
             justify-content: center;
             .label {
-                width: 220px;
-                padding-right: 30px;
+                width: ${rem(220)};
+                padding-right: ${rem(30)};
                 text-align: right;
                 color: #666666;
             }
             .info {
-                width: 220px;
+                width: ${rem(220)};
                 text-align: left;
                 color: #000000;
             }
@@ -139,7 +139,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
     return (
         <ViewWrapper>
             <Title>{t('Distribution-view')}</Title>
-            <Configures style={{marginTop: '24px'}}>
+            <Configures style={{marginTop: `${rem(24)}`}}>
                 <div className="titleContent">
                     <div className="titles">
                         <div>{t('Device-Information')}</div>

@@ -65,10 +65,10 @@ const CPU = styled.div`
             justify-content: center;
             height: 100%;
             font-family: PingFangSC-Medium;
-            font-size: 16px;
+            font-size: ${rem(16)};
             color: #999999;
             text-align: left;
-            line-height: 24px;
+            line-height: ${rem(24)};
             font-weight: 500;
         }
     }

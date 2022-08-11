@@ -92,7 +92,7 @@ const Configures = styled(Configure)`
     }
     .noGpu {
         border: 1px solid rgba(221, 221, 221, 1);
-        border-radius: 0px 4px 4px 0px;
+        border-radius: 0px ${rem(4)} ${rem(4)} 0px;
         color: #cccccc;
     }
     .postions {
