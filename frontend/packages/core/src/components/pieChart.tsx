@@ -182,7 +182,7 @@ const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
                         left: '62%',
                         width: '30%',
                         orient: 'vertical',
-                        height: 165,
+                        height: 238,
                         itemHeight: '8',
                         textStyle: {
                             fontSize: 14,

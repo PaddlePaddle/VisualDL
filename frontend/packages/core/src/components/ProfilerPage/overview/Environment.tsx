@@ -25,12 +25,12 @@ const Processes_label = styled.div`
     margin-right: ${rem(20)};
     color: #666666;
     font-size: 14px;
-    line-height: 30px;
+    line-height: ${rem(30)};
 `;
 const Processes_content = styled.div`
     font-size: 18px;
     color: #333333;
-    line-height: 32px;
+    line-height: ${rem(32)};
 `;
 const CPU = styled.div`
     border: 1px solid #dddddd;
@@ -51,7 +51,7 @@ const CPU = styled.div`
         font-size: 16px;
         color: #333333;
         text-align: left;
-        line-height: 16px;
+        line-height: ${rem(16)};
         font-weight: 600;
         margin-bottom: ${rem(20)};
     }
@@ -68,7 +68,7 @@ const CPU = styled.div`
             font-size: 16px;
             color: #999999;
             text-align: left;
-            line-height: 24px;
+            line-height: ${rem(24)};
             font-weight: 500;
         }
     }
@@ -77,7 +77,7 @@ const CPU = styled.div`
         font-size: 16px;
         color: #333333;
         text-align: left;
-        line-height: 16px;
+        line-height: ${rem(16)};
         font-weight: 600;
         margin-bottom: ${rem(20)};
         margin-left: ${rem(49)};

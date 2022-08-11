@@ -133,7 +133,7 @@ export const ButtonsRight = styled.div`
     font-family: PingFangSC-Regular;
     font-size: 14px;
     text-align: center;
-    line-height: 36px;
+    line-height: ${rem(36)};
     font-weight: 400;
 `;
 export const ButtonsLeft = styled.div`
@@ -141,9 +141,9 @@ export const ButtonsLeft = styled.div`
     width: ${rem(110)};
     height: ${rem(36)};
     font-family: PingFangSC-Regular;
-    font-size: 12px;
+    font-size: 14px;
     text-align: center;
-    line-height: 36px;
+    line-height: ${rem(36)};
     font-weight: 400;
     border-radius: 4px 0 0 4px;
 `;
@@ -282,7 +282,7 @@ export const Subtraction = styled.div<{disable: boolean}>`
     width: ${rem(32)};
     height: ${rem(32)};
     font-size: 16px;
-    line-height: 30px;
+    line-height: ${rem(32)};
     text-align: center;
     border: 1px solid #e0e0e0;
     border-left: none;
@@ -318,7 +318,7 @@ export const RadioContent = styled.div`
         .Addition {
             width: ${rem(32)};
             height: ${rem(32)};
-            line-height: ${rem(30)};
+            line-height: ${rem(32)};
             font-size: 16px;
             text-align: center;
             border: 1px solid #e0e0e0;

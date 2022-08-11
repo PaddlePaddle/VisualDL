@@ -69,6 +69,9 @@ const Input = styled(Inputs)`
     border-radius: 0;
     text-align: center;
 `;
+const EchartPies = styled(EchartPie)`
+    height: ${rem(287)};
+`;
 const Titles = styled(Title)`
     border-bottom: none;
     margin-bottom: ${rem(0)};
@@ -462,7 +465,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                     </div>
                 </div>
                 <PieceContents>
-                    <EchartPie>
+                    <EchartPies>
                         <div className="wraper" style={{borderRight: '1px solid #dddddd'}}>
                             <PieChart
                                 className={'Content'}
@@ -533,7 +536,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                                 color={color}
                             />
                         </div>
-                    </EchartPie>
+                    </EchartPies>
                 </PieceContents>
             </Configure>
             <Configure>
