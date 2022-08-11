@@ -17,8 +17,8 @@
  */
 
 import React, {FunctionComponent, useState, useEffect, useMemo} from 'react';
+import Inputs from '~/components/Input';
 import type {RadioChangeEvent} from 'antd';
-import NumberInput from '~/components/ProfilerPage/NumberInput';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
 import {asideWidth, rem, primaryColor} from '~/utils/style';
@@ -62,11 +62,12 @@ export type ComparedViewProps = {
 
 asideWidth;
 
-const Input = styled(NumberInput)`
+const Input = styled(Inputs)`
     width: 100%;
     height: 100%;
     border: 1px solid #e0e0e0;
     border-radius: 0;
+    text-align: center;
 `;
 const Titles = styled(Title)`
     border-bottom: none;
@@ -388,6 +389,33 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
     const onTopchange = (value: number) => {
         setTop(value);
     };
+    const getNAN = (val: any) => {
+        const t = val.charAt(0);
+        // 转化为数字形式--包含小数，负数
+        // 先把非数字的都替换掉，除了数字和.
+        let vals = val;
+        vals = vals.replace(/[^\d.]/g, '');
+        // 必须保证第一个为数字而不是.
+        vals = vals.replace(/^\./g, '');
+        // 保证只有出现一个.而没有多个.
+        vals = vals.replace(/\.{2,}/g, '.');
+        // 保证.只出现一次，而不能出现两次以上
+        vals = vals.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+        // 如果第一位是负号，则允许添加
+        if (t === '-') {
+            vals = '-' + vals;
+        }
+        return vals;
+    };
+    const inputChange = (value: string) => {
+        const tops = getNAN(value);
+        console.log('tops', tops);
+        if (tops) {
+            setTop(tops);
+        } else {
+            setTop(0);
+        }
+    };
     return (
         <ViewWrapper>
             <TitleNav>
@@ -410,7 +438,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                             </div>
                             <div className="input_wrapper">
                                 {/* <Input placeholder="Basic usage" />; */}
-                                <Input value={top} defaultValue={Number.NEGATIVE_INFINITY} onChange={onTopchange} />
+                                <Input onChange={inputChange} value={top + ''} />
                             </div>
                             <Subtraction
                                 disable={top > 1 ? true : false}

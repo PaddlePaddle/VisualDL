@@ -20,7 +20,6 @@ import React, {FunctionComponent, useState, useEffect, useCallback} from 'react'
 import type {ColumnsType} from 'antd/lib/table';
 import type {RadioChangeEvent} from 'antd';
 import Inputs from '~/components/Input';
-import NumberInput from '~/components/ProfilerPage/NumberInput';
 import StackColumnChart from '~/components/StackColumnChart2';
 import PieChart from '~/components/pieChart';
 import {Radio} from 'antd';
@@ -231,9 +230,6 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
         } else if (e.target.value === 2) {
             setTop(10);
         }
-    };
-    const onTopchange: (value: number) => void = (value: number) => {
-        setTop(value);
     };
     const baseColumns1: (units: string, hasGpu: boolean, group: string) => ColumnsType<DataType> = useCallback(
         (units: string, hasGpu: boolean, group: string) => {
