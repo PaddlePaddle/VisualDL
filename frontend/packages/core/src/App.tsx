@@ -20,7 +20,7 @@ import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo} fro
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';
 import {actions, selectors} from '~/store';
-import {headerHeight, position, size, zIndexes} from '~/utils/style';
+import {headerHeight, position, size, zIndexes, setRem, fontSize} from '~/utils/style';
 import {useDispatch, useSelector} from 'react-redux';
 
 import ErrorBoundary from '~/components/ErrorBoundary';
@@ -93,7 +93,12 @@ const App: FunctionComponent = () => {
         },
         [dispatch, selectedTheme]
     );
-
+    useEffect(() => {
+        setRem();
+        window.onresize = function () {
+            setRem();
+        };
+    }, []);
     useEffect(() => {
         if (!THEME) {
             matchMedia.addEventListener('change', toggleTheme);
