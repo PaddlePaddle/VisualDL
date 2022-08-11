@@ -31,7 +31,7 @@ const PerformanceContent = styled.div`
             .legend_name {
                 margin-left: ${rem(8)};
                 font-family: PingFangSC-Regular;
-                font-size: ${rem(14)};
+                font-size: 14px;
                 color: #666666;
                 letter-spacing: 0;
                 line-height: ${rem(14)};
@@ -59,20 +59,7 @@ export type EnvironmentProps = {
 };
 const {TabPane} = Tabs;
 const PerformanceContents: FunctionComponent<EnvironmentProps> = ({performanceData, units}) => {
-    const color = [
-        '#2932E1',
-        '#00CC88',
-        '#981EFF',
-        '#066BFF',
-        '#3AEB0D',
-        '#E71ED5',
-        '#25C9FF',
-        '#0DEBB0',
-        '#FF0287',
-        '#00E2FF',
-        '#00FF9D',
-        '#D50505'
-    ];
+    const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
     return (
         <Fragment>
             <Tabs defaultActiveKey="1" centered>

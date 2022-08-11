@@ -252,11 +252,13 @@ const Profiler: FunctionComponent = () => {
                                 <FullWidthSelect list={spansList} value={spans} onChange={setSpans} />
                             </Field>
                         </AsideSection>
-                        <AsideSection>
-                            <Field label={t('time-unit')}>
-                                <FullWidthSelect list={unitsList} value={units} onChange={setUnits} />
-                            </Field>
-                        </AsideSection>
+                        {views !== 'Trace' ? (
+                            <AsideSection>
+                                <Field label={t('time-unit')}>
+                                    <FullWidthSelect list={unitsList} value={units} onChange={setUnits} />
+                                </Field>
+                            </AsideSection>
+                        ) : null}
                     </Selectlist>
                 ) : (
                     <CompareContent>

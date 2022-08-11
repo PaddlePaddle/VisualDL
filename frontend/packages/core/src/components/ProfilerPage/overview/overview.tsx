@@ -592,7 +592,7 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
                                     bordered
                                     size="middle"
                                     pagination={false}
-                                    scroll={{x: 'calc(700px + 50%)', y: 240}}
+                                    scroll={{x: 'calc(700px + 50%)', y: 440}}
                                 ></Table>
                             )}
                         </TableContent>

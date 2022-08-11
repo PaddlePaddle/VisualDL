@@ -4,15 +4,22 @@
 
 import React, {useRef, useEffect} from 'react';
 import {fetcher} from '~/utils/fetch';
-import {position, rem, size} from '~/utils/style';
+import {position, rem, size, primaryColor} from '~/utils/style';
 import styled from 'styled-components';
+import GridLoader from 'react-spinners/GridLoader';
 // import tracing from '/__snowpack__/link/packages/netron/dist/index.html';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const toolboxHeight = rem(40);
 const Content = styled.div`
     position: relative;
     height: calc(100% - ${toolboxHeight});
-
+    > .loading {
+        ${size('100%')}
+        ${position('absolute', 0, null, null, 0)}
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     > iframe {
         ${size('100%', '100%')}
         border: none;
@@ -72,11 +79,23 @@ const TracingView: React.FC<IProps> = props => {
         if (traceData && traceViewReady) {
             const data = JSON.stringify(traceData);
             iframeRef.current?.contentWindow?.postMessage({msg: 'data', data}, '*');
+            iframeRef.current?.focus();
         }
     }, [traceData, traceViewReady]);
-
+    const SetIframeActive = () => {
+        iframeRef.current?.focus();
+    };
     return (
-        <Content>
+        <Content
+            onClick={() => {
+                SetIframeActive();
+            }}
+        >
+            {!traceViewReady && (
+                <div className="loading">
+                    <GridLoader color={primaryColor} size="10px" />
+                </div>
+            )}
             <iframe
                 ref={iframeRef}
                 src={PUBLIC_PATH + '/__snowpack__/link/packages/trace/dist/trace_embedding.html'}
