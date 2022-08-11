@@ -745,10 +745,16 @@ class ProfileData:
                         'cpu_max_time', 'cpu_min_time', 'cpu_ratio'
                     ]
                     data['has_gpu'] = False
-                sorted_items = sorted(
-                    self.operator_items.items(),
-                    key=lambda x: x[1].general_gpu_time,
-                    reverse=True)
+                if self.has_gpu:
+                    sorted_items = sorted(
+                        self.operator_items.items(),
+                        key=lambda x: x[1].general_gpu_time,
+                        reverse=True)
+                else:
+                    sorted_items = sorted(
+                        self.operator_items.items(),
+                        key=lambda x: x[1].cpu_time,
+                        reverse=True)
                 for name, event in sorted_items:
                     if self.has_gpu:
                         children_events = get_children_data(event)
@@ -882,10 +888,16 @@ class ProfileData:
                 ):
                     for input_shape, item in items_with_input_shape.items():
                         new_arrange_data[(op_name, input_shape)] = item
-                sorted_items = sorted(
-                    new_arrange_data.items(),
-                    key=lambda x: x[1].general_gpu_time,
-                    reverse=True)
+                if self.has_gpu:
+                    sorted_items = sorted(
+                        new_arrange_data.items(),
+                        key=lambda x: x[1].general_gpu_time,
+                        reverse=True)
+                else:
+                    sorted_items = sorted(
+                        new_arrange_data.items(),
+                        key=lambda x: x[1].cpu_time,
+                        reverse=True)
                 for (name, input_shape), event in sorted_items:
                     if not input_shape:
                         shape_string = []
@@ -1015,10 +1027,17 @@ class ProfileData:
                             })
 
         else:
-            sorted_items = sorted(
-                self.operator_items.items(),
-                key=lambda x: x[1].general_gpu_time,
-                reverse=True)
+            if self.has_gpu:
+                sorted_items = sorted(
+                    self.operator_items.items(),
+                    key=lambda x: x[1].general_gpu_time,
+                    reverse=True)
+            else:
+                sorted_items = sorted(
+                    self.operator_items.items(),
+                    key=lambda x: x[1].cpu_time,
+                    reverse=True)
+
             results = []
             for op_name, item in sorted_items:
                 if search_name in op_name:
