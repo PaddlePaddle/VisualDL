@@ -24,13 +24,13 @@ const Processes_items = styled.div`
 const Processes_label = styled.div`
     margin-right: ${rem(20)};
     color: #666666;
-    font-size: ${rem(14)};
-    line-height: ${rem(30)};
+    font-size: 14px;
+    line-height: 30px;
 `;
 const Processes_content = styled.div`
-    font-size: ${rem(18)};
+    font-size: 18px;
     color: #333333;
-    line-height: ${rem(32)};
+    line-height: 32px;
 `;
 const CPU = styled.div`
     border: 1px solid #dddddd;
@@ -48,10 +48,10 @@ const CPU = styled.div`
     }
     .CPU_title {
         font-family: PingFangSC-Semibold;
-        font-size: ${rem(16)};
+        font-size: 16px;
         color: #333333;
         text-align: left;
-        line-height: ${rem(16)};
+        line-height: 16px;
         font-weight: 600;
         margin-bottom: ${rem(20)};
     }
@@ -65,26 +65,26 @@ const CPU = styled.div`
             justify-content: center;
             height: 100%;
             font-family: PingFangSC-Medium;
-            font-size: ${rem(16)};
+            font-size: 16px;
             color: #999999;
             text-align: left;
-            line-height: ${rem(24)};
+            line-height: 24px;
             font-weight: 500;
         }
     }
     .GPU_title {
         font-family: PingFangSC-Semibold;
-        font-size: ${rem(16)};
+        font-size: 16px;
         color: #333333;
         text-align: left;
-        line-height: ${rem(16)};
+        line-height: 16px;
         font-weight: 600;
         margin-bottom: ${rem(20)};
         margin-left: ${rem(49)};
         display: flex;
         justify-content: space-between;
         .title_list {
-            font-size: ${rem(12)};
+            font-size: 12px;
             color: #666666;
             display: flex;
             .list_items {
@@ -100,11 +100,11 @@ const CPU = styled.div`
             margin-right: ${rem(82)};
             .percentage {
                 text-align: center;
-                font-size: ${rem(28)};
+                font-size: 28px;
                 color: #333333;
             }
             .items_label {
-                font-size: ${rem(12)};
+                font-size: 12px;
                 color: #999999;
                 text-align: center;
             }
@@ -119,7 +119,7 @@ const CPU = styled.div`
             flex: 1;
             .percentage {
                 text-align: center;
-                font-size: ${rem(28)};
+                font-size: 28px;
                 color: #333333;
             }
             .items_label {

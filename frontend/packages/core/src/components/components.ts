@@ -23,7 +23,7 @@ export const Configure = styled.div`
     margin-top: ${rem(30)};
     width: 100%;
     font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
+    font-size: 16px;
     color: #333333;
     font-weight: 500;
     padding-left: ${rem(20)};
@@ -86,7 +86,7 @@ export const Configure = styled.div`
         .bold {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
                 'Fira Sans', 'Droid Sans', 'Helvetica Neue';
-            font-size: ${rem(14)};
+            font-size: 14px;
             font-weight: 500;
             color: #333333;
             margin-bottom: ${rem(10)};
@@ -107,7 +107,7 @@ export const Configure = styled.div`
 export const ArgumentOperation = styled.a`
     flex: none;
     cursor: pointer;
-    font-size: ${rem(14)};
+    font-size: 14px;
     margin-left: ${rem(8)};
     color: var(--text-lighter-color);
     ${transitionProps('color')}
@@ -131,9 +131,9 @@ export const ButtonsRight = styled.div`
     width: ${rem(110)};
     height: ${rem(36)};
     font-family: PingFangSC-Regular;
-    font-size: ${rem(12)};
+    font-size: 14px;
     text-align: center;
-    line-height: ${rem(36)};
+    line-height: 36px;
     font-weight: 400;
 `;
 export const ButtonsLeft = styled.div`
@@ -141,9 +141,9 @@ export const ButtonsLeft = styled.div`
     width: ${rem(110)};
     height: ${rem(36)};
     font-family: PingFangSC-Regular;
-    font-size: ${rem(12)};
+    font-size: 12px;
     text-align: center;
-    line-height: ${rem(36)};
+    line-height: 36px;
     font-weight: 400;
     border-radius: 4px 0 0 4px;
 `;
@@ -229,7 +229,7 @@ export const EchartPie = styled.div`
 export const FullWidthSelect = styled<React.FunctionComponent<SelectProps<any>>>(Select)`
     width: 100%;
     height: 100%;
-    font-size: ${rem(14)};
+    font-size: 14px;
 `;
 export const ViewWrapper = styled.div`
     width: 100%;
@@ -281,8 +281,8 @@ export const PieceContent = styled.div`
 export const Subtraction = styled.div<{disable: boolean}>`
     width: ${rem(32)};
     height: ${rem(32)};
-    font-size: ${rem(16)};
-    line-height: ${rem(30)};
+    font-size: 16px;
+    line-height: 30px;
     text-align: center;
     border: 1px solid #e0e0e0;
     border-left: none;
@@ -319,7 +319,7 @@ export const RadioContent = styled.div`
             width: ${rem(32)};
             height: ${rem(32)};
             line-height: ${rem(30)};
-            font-size: ${rem(16)};
+            font-size: 16px;
             text-align: center;
             border: 1px solid #e0e0e0;
             border-right: none;
@@ -330,7 +330,7 @@ export const Title = styled.div`
     width: 100%;
     height: ${rem(50)};
     font-family: PingFangSC-Medium;
-    font-size: ${rem(16)};
+    font-size: 16px;
     color: #333333;
     line-height: ${rem(50)};
     font-weight: 500;
