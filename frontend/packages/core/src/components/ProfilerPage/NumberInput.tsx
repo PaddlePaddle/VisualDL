@@ -36,7 +36,7 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
     disabled,
     onChange
 }) => {
-    const [inputValue, setInputValue] = useState(Number.isFinite(value) ? value + '' : '');
+    const [inputValue, setInputValue] = useState(Number.isFinite(defaultValue) ? defaultValue + '' : '');
     useEffect(() => setInputValue(Number.isFinite(value) ? value + '' : ''), [value]);
 
     useEffect(() => {
@@ -45,10 +45,11 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
             onChange?.(defaultValue);
             return;
         }
-        const v = value as number;
+        const v = inputValue;
+
         if (!Number.isNaN(v)) {
-            onChange?.(v);
-            // debugger
+            onChange?.(Number(v));
+            debugger;
             setInputValue(v + '');
         }
     }, [defaultValue, onChange, value, inputValue]);
