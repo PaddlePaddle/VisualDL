@@ -631,12 +631,9 @@ class ProfileData:
                         event.general_gpu_time - innerop_knownsub_times,
                         time_unit))
             for innerop_name in data['order']:
-                hasfound = False
-                for key in event.operator_inners:
-                    if innerop_name in key:
-                        hasfound = True
-                        break
-                if hasfound is False:
+                if innerop_name in inner_op_data:
+                    continue
+                else:
                     inner_op_data[innerop_name].append(0)
         if other_items:
             innerop_knownsub_times = 0
@@ -666,10 +663,9 @@ class ProfileData:
             others_time['others'] = total_event_times - innerop_knownsub_times
             for innerop_name in data['order']:
                 if innerop_name not in others_time:
-                    inner_op_data[innerop_name].append(0.0)
-                else:
-                    inner_op_data[innerop_name].append(
-                        format_time(others_time[innerop_name], time_unit))
+                    others_time[innerop_name].append(0)
+                inner_op_data[innerop_name].append(
+                    format_time(others_time[innerop_name], time_unit))
 
         for innerop_name in data['order']:
             data['data'].append(inner_op_data[innerop_name])
