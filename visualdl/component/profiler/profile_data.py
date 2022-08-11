@@ -604,6 +604,7 @@ class ProfileData:
         for op_name, event in items:
             data['phase_type'].append(op_name)
             innerop_knownsub_times = 0
+            have_innerop_name = set()
             for innerop_name, item in event.operator_inners.items():
                 if 'infer_shape' in innerop_name or 'infer_meta' in innerop_name:
                     innerop_name = 'infer_shape'
@@ -613,6 +614,7 @@ class ProfileData:
                     innerop_name = 'node_creation'
                 else:
                     continue
+                have_innerop_name.add(innerop_name)
                 if device_type == 'cpu':
                     inner_op_data[innerop_name].append(
                         format_time(item.cpu_time, time_unit))
@@ -630,8 +632,9 @@ class ProfileData:
                     format_time(
                         event.general_gpu_time - innerop_knownsub_times,
                         time_unit))
+            have_innerop_name.add('others')
             for innerop_name in data['order']:
-                if innerop_name in inner_op_data:
+                if innerop_name in have_innerop_name:
                     continue
                 else:
                     inner_op_data[innerop_name].append(0)
