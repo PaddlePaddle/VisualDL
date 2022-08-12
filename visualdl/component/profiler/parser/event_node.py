@@ -98,8 +98,8 @@ class MemNode:
         self = cls()
         self.type = json_obj['cat']
         self.timestamp_ns = json_obj['ts'] * 1000
-        self.addr = json_obj['args']['addr'] if 'addr' in json_obj[
-            'args'] else 0
+        self.addr = hex(int(
+            json_obj['args']['addr'])) if 'addr' in json_obj['args'] else 0
         self.process_id = json_obj['pid']
         self.thread_id = json_obj['tid'].replace(
             _show_tid_pattern.match(json_obj['tid']).group(1), "")
