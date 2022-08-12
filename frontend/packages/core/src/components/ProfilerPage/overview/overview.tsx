@@ -117,6 +117,7 @@ export type overViewProps = {
     workers: string;
     spans: string;
     units: string;
+    descriptions: any;
 };
 interface cpuData {
     value: number;
@@ -133,7 +134,7 @@ type SelectListItem<T> = {
 };
 
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
-    const {t, i18n} = useTranslation(['profiler', 'common']);
+    const {t} = useTranslation(['profiler', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
     const [chartData, setChartData] = useState<chartDataType>();
@@ -288,15 +289,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
             });
         }
     }, [runs, workers, spans, views, TrainType, units]);
-    useEffect(() => {
-        if (i18n.language) {
-            // 训练步数耗时
-            fetcher('/profiler/descriptions' + `?lang=${i18n.language}`).then((res: unknown) => {
-                const Data = res;
-                setDescriptions(Data);
-            });
-        }
-    }, [i18n.language]);
     const ConsumingColumns: (units: string, hasGpu: boolean) => ColumnsType<DataType> = useCallback(
         (units: string, hasGpu: boolean) => {
             const columns: ColumnsType<DataType> = [

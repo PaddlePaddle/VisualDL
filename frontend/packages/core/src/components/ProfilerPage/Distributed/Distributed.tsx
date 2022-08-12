@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useState, useEffect} from 'react';
+import React, {FunctionComponent, useState, useEffect, useCallback} from 'react';
 import StackColumnChart from '~/components/StackColumnChart';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
-import {Configure, EchartPie, color, Title, ViewWrapper, FullWidthSelect} from '../../components';
+import {Configure, EchartPie, ArgumentOperation, Title, ViewWrapper, FullWidthSelect} from '../../components';
 import {asideWidth, rem} from '~/utils/style';
 import type {infoType, histogramType} from './type';
+import {Popover} from 'antd';
+import logo from '~/assets/images/question-circle.svg';
 asideWidth;
 const Configures = styled(Configure)`
     .border {
@@ -90,12 +92,14 @@ export type NuclearViewProps = {
     workers: string;
     spans: string;
     units: string;
+    descriptions: any;
 };
 type SelectListItem<T> = {
     value: T;
     label: string;
 };
-const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans, units}) => {
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
+const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers, spans, units, descriptions}) => {
     const {t} = useTranslation(['profiler', 'common']);
     const [computation, setComputation] = useState<histogramType>();
     const [distributedData, setDistributedData] = useState<infoType[]>();
@@ -136,6 +140,25 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
             });
         }
     }, [runs, workers, spans, views, steps, units]);
+    const gettTooltip: (name: string) => JSX.Element = useCallback(
+        (name: string) => {
+            const tooltips = (
+                <div
+                    style={{
+                        width: rem(700),
+                        color: '#333333',
+                        fontWeight: 400
+                    }}
+                    dangerouslySetInnerHTML={{__html: descriptions ? descriptions[name] : ''}}
+                ></div>
+            );
+            return tooltips;
+        },
+        [descriptions]
+    );
+    const getPopupContainers = (trigger: any) => {
+        return trigger.parentElement;
+    };
     return (
         <ViewWrapper>
             <Title>{t('Distribution-view')}</Title>
@@ -180,8 +203,17 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
             </Configures>
             <Configure style={{marginBottom: `${rem(20)}`}}>
                 <div className="titleContent" style={{marginBottom: rem(15)}}>
-                    <div className="title">
+                    <div className="titles" style={{marginBottom: `${rem(0)}`}}>
                         <div>{t('comparisons')}</div>
+                        <Popover
+                            content={gettTooltip('distributed_histogram')}
+                            getPopupContainer={getPopupContainers}
+                            placement="right"
+                        >
+                            <ArgumentOperation>
+                                <img src={PUBLIC_PATH + logo} alt="" />
+                            </ArgumentOperation>
+                        </Popover>
                     </div>
                     <div className="searchContent">
                         <div className="select_label">{t('training-steps')}</div>
@@ -196,6 +228,7 @@ const NuclearView: FunctionComponent<NuclearViewProps> = ({runs, views, workers,
                         data={computation}
                         isWorkerName={true}
                         units={units}
+                        istotal={true}
                     ></StackColumnChart>
                 </EchartPies>
             </Configure>

@@ -35,6 +35,7 @@ type StackChartProps = {
     isWorkerName?: boolean;
     className?: string;
     units?: string;
+    istotal?: boolean;
 };
 
 export enum XAxisType {
@@ -54,7 +55,7 @@ export type LineChartRef = {
 };
 
 const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
-    ({options, data, title, loading, zoom, className, onInit, isWorkerName, units}, ref) => {
+    ({options, data, title, loading, zoom, className, onInit, isWorkerName, units, istotal}, ref) => {
         const {i18n} = useTranslation();
         const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
         const {
@@ -130,17 +131,19 @@ const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
                                 '</div>';
                             str += '<div class="tooltipContent">';
                             str += '<div class="tooltipitems" style=" display: flex;align-items:center;">';
-                            str +=
-                                '<span style="display:inline-block;margin-right:5px;width:12px;height:12px;border-width:2px;background-color:' +
-                                '#2932E1' +
-                                ';" class="ant-radio-inner ant-radio-checked"></span>' +
-                                '<span style="color: #FFFFFF;">' +
-                                'total' +
-                                '</span>' +
-                                '</span> : <span style="color: #FFFFFF;">' +
-                                totals +
-                                units +
-                                '</span>';
+                            if (!istotal) {
+                                str +=
+                                    '<span style="display:inline-block;margin-right:5px;width:12px;height:12px;border-width:2px;background-color:' +
+                                    '#2932E1' +
+                                    ';" class="ant-radio-inner ant-radio-checked"></span>' +
+                                    '<span style="color: #FFFFFF;">' +
+                                    'total' +
+                                    '</span>' +
+                                    '</span> : <span style="color: #FFFFFF;">' +
+                                    totals +
+                                    units +
+                                    '</span>';
+                            }
                             str += '</div>';
                             str += '</div>';
                             for (let index = 0; index < params.length; index++) {

@@ -215,7 +215,7 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                                     </div>
                                     <div className="list_items" style={{borderRight: 'none'}}>
                                         {t('computing-power')}
-                                        {environment?.GPU?.compute_capability
+                                        {environment?.GPU?.compute_capability !== undefined
                                             ? environment?.GPU?.compute_capability
                                             : '--'}
                                     </div>
@@ -224,19 +224,23 @@ const Environment: FunctionComponent<EnvironmentProps> = ({environment, hasGpu, 
                             <div className="GPU_itemlist">
                                 <div className="items">
                                     <div className="percentage">
-                                        {environment?.GPU?.utilization ? environment?.GPU?.utilization + '%' : '--'}
+                                        {environment?.GPU?.utilization !== undefined
+                                            ? environment?.GPU?.utilization + '%'
+                                            : '--'}
                                     </div>
                                     <div className="items_label">{t('Utilization')}</div>
                                 </div>
                                 <div className="items">
                                     <div className="percentage">
-                                        {environment?.GPU?.sm_efficiency ? environment?.GPU?.sm_efficiency + '%' : '--'}
+                                        {environment?.GPU?.sm_efficiency !== undefined
+                                            ? environment?.GPU?.sm_efficiency + '%'
+                                            : '--'}
                                     </div>
                                     <div className="items_label">{t('Traffic-Processor-Efficiency')}</div>
                                 </div>
                                 <div className="items">
                                     <div className="percentage">
-                                        {environment?.GPU?.achieved_occupancy
+                                        {environment?.GPU?.achieved_occupancy !== undefined
                                             ? environment?.GPU?.achieved_occupancy + '%'
                                             : '--'}
                                     </div>

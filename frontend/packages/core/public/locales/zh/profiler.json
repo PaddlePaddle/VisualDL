@@ -16,7 +16,7 @@
     "computing-power": "算力",
     "Utilization": "利用率",
     "Traffic-Processor-Efficiency": "流处理器效率",
-    "Traffic-processor-occupancy": "流处理器利用率",
+    "Traffic-processor-occupancy": "流处理器占用率",
     "usage-time": "Tensor Cores使用时间占比",
     "step": "步",
     "timeConsuming": "耗时",

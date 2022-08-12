@@ -125,7 +125,7 @@ type SelectListItem<T> = {
     label: string;
 };
 const Profiler: FunctionComponent = () => {
-    const {t} = useTranslation(['profiler', 'common']);
+    const {t, i18n} = useTranslation(['profiler', 'common']);
     const [isCompared, setIsCompared] = useState(false);
     const [runs, setRuns] = useState<string>('');
     const [diffRuns1, setDiffRuns1] = useState<string>('');
@@ -143,7 +143,16 @@ const Profiler: FunctionComponent = () => {
     const [workersList, setWorkersList] = useState<SelectListItem<string>[]>();
     const [spansList, setSpansList] = useState<SelectListItem<string>[]>();
     const [unitsList, setUnitsList] = useState<SelectListItem<string>[]>();
-
+    const [descriptions, setDescriptions] = useState<any>();
+    useEffect(() => {
+        if (i18n.language) {
+            // 训练步数耗时
+            fetcher('/profiler/descriptions' + `?lang=${i18n.language}`).then((res: unknown) => {
+                const Data = res;
+                setDescriptions(Data);
+            });
+        }
+    }, [i18n.language]);
     useEffect(() => {
         fetcher('/profiler/runs').then((res: unknown) => {
             const runsData = res as string[];
@@ -343,13 +352,27 @@ const Profiler: FunctionComponent = () => {
                 <HPWrapper>
                     <ViewWrapper>
                         {views === 'Overview' ? (
-                            <OverView runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                            <OverView
+                                runs={runs}
+                                views={views}
+                                workers={workers}
+                                units={units}
+                                spans={spans}
+                                descriptions={descriptions}
+                            />
                         ) : null}
                         {views === 'Operator' ? (
                             <OperatorView runs={runs} views={views} workers={workers} units={units} spans={spans} />
                         ) : null}
                         {views === 'Distributed' ? (
-                            <Distributed runs={runs} views={views} workers={workers} units={units} spans={spans} />
+                            <Distributed
+                                runs={runs}
+                                views={views}
+                                workers={workers}
+                                units={units}
+                                spans={spans}
+                                descriptions={descriptions}
+                            />
                         ) : null}
                         {views === 'GPU Kernel' ? (
                             <ComparedView runs={runs} views={views} workers={workers} units={units} spans={spans} />
