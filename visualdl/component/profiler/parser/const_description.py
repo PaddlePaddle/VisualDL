@@ -77,6 +77,14 @@ TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_CN = \
   '<b class="bold">OperatorInner:</b> 表示框架内算子的执行子过程<br>'\
   '<b class="bold">Communication:</b> 表示分布式通信有关的数据通信和计算事件<br>'
 
+TOOLTIP_EVENT_DISTRIBUTED_HISTOGRAM_CN = \
+  '展示模型在每个迭代过程中通信、计算以及两者重叠部分的时间。<br>'\
+  '<b class="bold">ProfileStep:</b> 表示某一步迭代的总时间<br>'\
+  '<b class="bold">Communication:</b> 表示和通信相关的时间，包括框架内打的Communication事件、和通信有关的算子和Kernel（nccl)执行的时间<br>'\
+  '<b class="bold">Computation:</b> 表示GPU Kernel计算的时间，但是去除了和通信有关的Kernel(nccl)<br>'\
+  '<b class="bold">Overlap:</b> 表示通信和计算过程并行执行时候时间相互重叠的部分<br>'\
+  '<b class="bold">Others:</b> 表示通信和计算之外的时间<br>'
+
 TOOLTIP_DEVICE_INFO_EN = \
   '<b class="bold">CPU Process Utilization:</b><br>'\
   'Process CPU time / ProfileStep time(total time of profiling）<br>'\
@@ -138,3 +146,14 @@ TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_EN = \
   '<b class="bold">UserDefined:</b> denote events defined by users in python script<br>'\
   '<b class="bold">OperatorInner:</b> denote operator\'s subprocess execution<br>'\
   '<b class="bold">Communication:</b> denote events associated with distributed data transfer and computation.<br>'
+
+TOOLTIP_EVENT_DISTRIBUTED_HISTOGRAM_EN = \
+  'Present the time of communication, computation and their overlap in program.<br>'\
+  '<b class="bold">ProfileStep:</b> denote an iteration step of training process<br>'\
+  '<b class="bold">Communication:</b> denote the time related to communication, including events of communication type\
+     in paddle framework、communication-related operators and GPU Kernels(nccl)<br>'\
+  '<b class="bold">Computation:</b> denote the computation \
+    time of GPU Kernels，except communication-related Kernels(nccl)<br>'\
+  '<b class="bold">Overlap:</b> denote the overlap time between Communication and \
+    Computation when they are executed parallelly.<br>'\
+  '<b class="bold">Others:</b> denote the time out of Communication and Computation<br>'

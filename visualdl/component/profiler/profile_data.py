@@ -666,7 +666,7 @@ class ProfileData:
             others_time['others'] = total_event_times - innerop_knownsub_times
             for innerop_name in data['order']:
                 if innerop_name not in others_time:
-                    others_time[innerop_name].append(0)
+                    others_time[innerop_name] = 0.0
                 inner_op_data[innerop_name].append(
                     format_time(others_time[innerop_name], time_unit))
 
@@ -1751,12 +1751,24 @@ class DistributedProfileData:
 
     def get_distributed_histogram(self, step, time_unit='ms'):
         data = {}
-        data['order'] = ["Communication", "Computation", "Overlap", "Others"]
+        data['order'] = [
+            "ProfileStep", "Communication", "Computation", "Overlap", "Others"
+        ]
         data['worker_name'] = []
         data['data'] = []
         new_data = defaultdict(list)
         for profile_data in self.profile_datas:
             data['worker_name'].append(profile_data.worker_name)
+            if step != 'All':
+                new_data['ProfileStep'].append(
+                    format_time(
+                        profile_data.model_perspective_items['ProfileStep'].
+                        cpu_times[step], time_unit))
+            else:
+                new_data['ProfileStep'].append(
+                    format_time(
+                        profile_data.model_perspective_items['ProfileStep'].
+                        cpu_time, time_unit))
             new_data['Communication'].append(
                 format_time(
                     profile_data.distributed_time[step]['communication_time'],

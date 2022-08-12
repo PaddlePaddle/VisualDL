@@ -122,8 +122,7 @@ class ProfileReader(object):
     def get_descriptions(self, lang):
         if lang == 'zh':
             return {
-                "overview_environment":
-                TOOLTIP_DEVICE_INFO_CN,  # noqa: F405
+                "overview_environment": TOOLTIP_DEVICE_INFO_CN,  # noqa: F405
                 "overview_model_perspective":
                 TOOLTIP_MODEL_PERSPECTIVE_CN,  # noqa: F405
                 "overview_model_perspective_perstep":
@@ -131,12 +130,13 @@ class ProfileReader(object):
                 "overview_event_type_perspective":
                 TOOLTIP_EVENT_TYPE_PERSPECTIVE_CN,  # noqa: F405
                 "overview_event_type_model_perspective":
-                TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_CN  # noqa: F405
+                TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_CN,  # noqa: F405
+                "distributed_histogram":
+                TOOLTIP_EVENT_DISTRIBUTED_HISTOGRAM_CN  # noqa: F405
             }
         else:
             return {
-                "overview_environment":
-                TOOLTIP_DEVICE_INFO_EN,  # noqa: F405
+                "overview_environment": TOOLTIP_DEVICE_INFO_EN,  # noqa: F405
                 "overview_model_perspective":
                 TOOLTIP_MODEL_PERSPECTIVE_EN,  # noqa: F405
                 "overview_model_perspective_perstep":
@@ -144,7 +144,9 @@ class ProfileReader(object):
                 "overview_event_type_perspective":
                 TOOLTIP_EVENT_TYPE_PERSPECTIVE_EN,  # noqa: F405
                 "overview_event_type_model_perspective":
-                TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_EN  # noqa: F405
+                TOOLTIP_EVENT_TYPE_MODEL_PERSPECTIVE_EN,  # noqa: F405
+                "distributed_histogram":
+                TOOLTIP_EVENT_DISTRIBUTED_HISTOGRAM_EN  # noqa: F405
             }
 
     def set_displayname(self, log_reader):
