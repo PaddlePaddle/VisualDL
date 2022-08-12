@@ -1630,9 +1630,13 @@ class ProfileData:
                 if size >= min_size and size <= max_size:
                     return True
             else:
-                if size >= min_size and size <= max_size and (
-                        search_name in item[1] or search_name in item[3]):
-                    return True
+                if size >= min_size and size <= max_size:
+                    if item[1]:
+                        if search_name in item[1]:
+                            return True
+                    if item[3]:
+                        if search_name in item[3]:
+                            return True
             return False
 
         paired_event_list = filter(filter_func, paired_event_list)
