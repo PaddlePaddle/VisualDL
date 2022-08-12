@@ -1615,8 +1615,8 @@ class ProfileData:
                           time_unit='ms'):
         data = {}
         data['column_name'] = [
-            'MemoryType', 'AllocatedEvent', 'AllocatedTimestamp', 'FreeEvent',
-            'FreeTimestamp', 'Duration', 'Size'
+            'MemoryAddr', 'MemoryType', 'AllocatedEvent', 'AllocatedTimestamp',
+            'FreeEvent', 'FreeTimestamp', 'Duration', 'Size'
         ]
         data['data'] = []
         paired_event_list = self.paired_events[device_type]
@@ -1631,11 +1631,11 @@ class ProfileData:
                     return True
             else:
                 if size >= min_size and size <= max_size:
-                    if item[1]:
-                        if search_name in item[1]:
+                    if item[2]:
+                        if search_name in item[2]:
                             return True
-                    if item[3]:
-                        if search_name in item[3]:
+                    if item[4]:
+                        if search_name in item[4]:
                             return True
             return False
 
@@ -1645,26 +1645,28 @@ class ProfileData:
             return data
         duration = None
         for item in paired_event_list:
-            if item[2] and item[4]:
-                duration = item[4] - item[2]
+            if item[3] and item[5]:
+                duration = item[5] - item[3]
             else:
                 duration = None
             data['data'].append({
-                "MemoryType":
+                "MemoryAddr":
                 item[0],
-                "AllocatedEvent":
+                "MemoryType":
                 item[1],
+                "AllocatedEvent":
+                item[2],
                 "AllocatedTimestamp":
-                format_time(item[2], time_unit) if item[2] else None,
+                format_time(item[3], time_unit) if item[3] else None,
                 "FreeEvent":
-                item[3],
+                item[4],
                 "FreeTimestamp":
-                format_time(item[4], time_unit) if item[4] else None,
+                format_time(item[5], time_unit) if item[5] else None,
                 "Duration":
                 format_time(duration, time_unit)
                 if duration is not None else None,
                 "Size":
-                format_memory(item[5], 'KB')
+                format_memory(item[6], 'KB')
             })
         return data
 

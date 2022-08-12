@@ -84,13 +84,13 @@ class MemoryParser:
                             max_size = size
                         if memory_type == 'Allocate':
                             paired_results.append([
-                                'Allocated', hostnodename, timestamp, None,
-                                None, size
+                                addr, 'Allocated', hostnodename, timestamp,
+                                None, None, size
                             ])
                         else:
                             paired_results.append([
-                                'ReservedAllocate', hostnodename, timestamp,
-                                None, None, size
+                                addr, 'ReservedAllocate', hostnodename,
+                                timestamp, None, None, size
                             ])
                     elif memory_type == 'Free' or memory_type == 'ReservedFree':
                         if -size > max_size:
@@ -104,12 +104,12 @@ class MemoryParser:
                             else:
                                 if memory_type == 'Free':
                                     paired_results.append([
-                                        'Allocated', None, None, hostnodename,
-                                        timestamp, -size
+                                        addr, 'Allocated', None, None,
+                                        hostnodename, timestamp, -size
                                     ])
                                 else:
                                     paired_results.append([
-                                        'ReservedAllocate', None, None,
+                                        addr, 'ReservedAllocate', None, None,
                                         hostnodename, timestamp, -size
                                     ])
                                 self.paired_events[device_type].append(
@@ -117,12 +117,12 @@ class MemoryParser:
                         else:
                             if memory_type == 'Free':
                                 paired_results.append([
-                                    'Allocated', None, None, hostnodename,
-                                    timestamp, -size
+                                    addr, 'Allocated', None, None,
+                                    hostnodename, timestamp, -size
                                 ])
                             else:
                                 paired_results.append([
-                                    'ReservedAllocate', None, None,
+                                    addr, 'ReservedAllocate', None, None,
                                     hostnodename, timestamp, -size
                                 ])
                             self.paired_events[device_type].append(
