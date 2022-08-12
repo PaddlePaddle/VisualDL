@@ -495,7 +495,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                                 className="search-input"
                                 value={search}
                                 onChange={setSearch}
-                                placeholder={t('Search-data-labels')}
+                                placeholder={t('Search-operator')}
                                 rounded
                             />
                         </div>

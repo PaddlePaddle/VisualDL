@@ -569,7 +569,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                                 className="search-input"
                                 value={search}
                                 onChange={setSearch}
-                                placeholder={t('Search-data-labels')}
+                                placeholder={t('Search-Kernal')}
                                 rounded
                             />
                         </div>

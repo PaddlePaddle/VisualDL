@@ -271,6 +271,11 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
     const columns: ColumnsType<DataType> = useMemo(() => {
         const columns: ColumnsType<DataType> = [
             {
+                title: t('MemorAddr'),
+                dataIndex: 'MemoryAddr',
+                width: 150
+            },
+            {
                 title: t('storage-type'),
                 dataIndex: 'MemoryType',
                 width: 150
@@ -288,7 +293,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 }
             },
             {
-                title: t('AllocatedTimestamp'),
+                title: t('AllocatedTimestamp') + `(${units})`,
                 dataIndex: 'AllocatedTimestamp',
                 sorter: (a, b) => {
                     return a.AllocatedTimestamp - b.AllocatedTimestamp;
@@ -315,7 +320,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 }
             },
             {
-                title: t('FreeTimestamp'),
+                title: t('FreeTimestamp') + `(${units})`,
                 dataIndex: 'FreeTimestamp',
                 sorter: (a, b) => {
                     return a.FreeTimestamp - b.FreeTimestamp;
@@ -330,7 +335,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                 }
             },
             {
-                title: t('Duration'),
+                title: t('Duration') + `(${units})`,
                 dataIndex: 'Duration',
                 sorter: (a, b) => {
                     return a.Duration - b.Duration;
@@ -357,7 +362,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
             }
         ];
         return columns;
-    }, [t]);
+    }, [t, units]);
     const op_columns = useMemo(() => {
         const op_columns: ColumnsType<op_DataType> = [
             {
@@ -525,7 +530,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                             className="search-input"
                             value={search}
                             onChange={setSearch}
-                            placeholder={t('Search-storage-type')}
+                            placeholder={t('search-event-name')}
                             rounded
                         />
                     </div>
