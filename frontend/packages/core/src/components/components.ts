@@ -243,6 +243,21 @@ export const TableContent = styled.div`
     position: relative;
     .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table > thead > tr > th {
         background: #f3f8fe;
+        border-right: 1px solid #dddddd;
+        border-bottom: 1px solid #dddddd;
+    }
+    .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table > thead > tr > th {
+        background: #f3f8fe;
+        border-right: 1px solid #dddddd;
+        border-bottom: 1px solid #dddddd;
+    }
+    .ant-table.ant-table-bordered > .ant-table-container > .ant-table-body > table > tbody > tr > td {
+        border-right: 1px solid #dddddd;
+        border-bottom: 1px solid #dddddd;
+    }
+    .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table > tbody > tr > td {
+        border-right: 1px solid #dddddd;
+        border-bottom: 1px solid #dddddd;
     }
     .ant-table.ant-table-bordered > .ant-table-container {
         border: 1px solid #dddddd;
@@ -264,19 +279,14 @@ export const PieceContent = styled.div`
     // padding-bottom: ${rem(20)};
     .expendContent {
         display: flex;
+        align-items: center;
         .expendButton {
             color: #a3a3a3;
             margin-left: ${rem(20)};
             margin-right: ${rem(10)};
         }
-        i {
-            line-height: ${rem(30)};
-        }
         margin-bottom: ${rem(20)};
     }
-    // .is_expend {
-    //     margin-bottom: ${rem(24)};
-    // }
 `;
 export const Subtraction = styled.div<{disable: boolean}>`
     width: ${rem(32)};

@@ -7,6 +7,7 @@ import {fetcher} from '~/utils/fetch';
 import {position, rem, size, primaryColor} from '~/utils/style';
 import styled from 'styled-components';
 import GridLoader from 'react-spinners/GridLoader';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 // import tracing from '/__snowpack__/link/packages/netron/dist/index.html';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 const toolboxHeight = rem(40);
@@ -86,24 +87,22 @@ const TracingView: React.FC<IProps> = props => {
         iframeRef.current?.focus();
     };
     return (
-        <Content
-            onClick={() => {
-                SetIframeActive();
-            }}
-        >
+        <Content>
             {!traceViewReady && (
                 <div className="loading">
                     <GridLoader color={primaryColor} size="10px" />
                 </div>
             )}
-            <iframe
-                ref={iframeRef}
-                src={PUBLIC_PATH + '/__snowpack__/link/packages/trace/dist/trace_embedding.html'}
-                frameBorder={0}
-                scrolling="no"
-                marginWidth={0}
-                marginHeight={0}
-            ></iframe>
+            <ClickAwayListener onClickAway={SetIframeActive}>
+                <iframe
+                    ref={iframeRef}
+                    src={PUBLIC_PATH + '/__snowpack__/link/packages/trace/dist/trace_embedding.html'}
+                    frameBorder={0}
+                    scrolling="no"
+                    marginWidth={0}
+                    marginHeight={0}
+                ></iframe>
+            </ClickAwayListener>
         </Content>
     );
 };

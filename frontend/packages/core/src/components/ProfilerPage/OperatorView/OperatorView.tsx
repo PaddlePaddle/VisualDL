@@ -39,12 +39,12 @@ import {
     ButtonsLeft,
     ButtonsRight,
     RadioButtons,
-    Wraper,
     color,
     Title,
     Subtraction,
     ViewWrapper,
     RadioContent,
+    TableContent,
     PieceContent,
     FullWidthSelect
 } from '../../components';
@@ -92,7 +92,7 @@ const TitleNav = styled.div`
     border-bottom: 1px solid #dddddd;
 `;
 const PieceContents = styled(PieceContent)`
-    .tableContent {
+    .expandChart {
         position: relative;
         padding-top: ${rem(0)};
         border-top: 1px solid #dddddd;
@@ -254,12 +254,14 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         {
                             title: t('total-time') + `(${units})`,
                             dataIndex: 'cpu_total_time',
+                            width: 130,
                             key: 'cpu_total_time',
                             sorter: (a, b) => a.cpu_total_time - b.cpu_total_time
                         },
                         {
                             title: t('average-time') + `(${units})`,
                             dataIndex: 'cpu_avg_time',
+                            width: 130,
                             key: 'cpu_avg_time',
                             sorter: (a, b) => {
                                 return a.cpu_avg_time - b.cpu_avg_time;
@@ -268,12 +270,14 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         {
                             title: t('longest-time') + `(${units})`,
                             dataIndex: 'cpu_max_time',
+                            width: 130,
                             key: 'cpu_max_time',
                             sorter: (a, b) => a.cpu_max_time - b.cpu_max_time
                         },
                         {
                             title: t('shortest-time') + `(${units})`,
                             dataIndex: 'cpu_min_time',
+                            width: 130,
                             key: 'cpu_min_time',
                             sorter: (a, b) => a.cpu_min_time - b.cpu_min_time
                         },
@@ -281,6 +285,7 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                             title: t('percentage') + `%`,
                             dataIndex: 'cpu_ratio',
                             key: 'cpu_ratio',
+                            width: 130,
                             sorter: (a, b) => a.cpu_ratio - b.cpu_ratio
                         }
                     ]
@@ -290,8 +295,9 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                 columns.splice(1, 0, {
                     title: t('input-shape'),
                     dataIndex: 'input_shape',
+                    width: 130,
                     key: 'input_shape',
-                    width: 150,
+                    // width: 150,
                     render: text => {
                         if (text?.length > 0) {
                             return text.map((item: string, index: number) => {
@@ -310,24 +316,28 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         {
                             title: t('total-time') + `(${units})`,
                             dataIndex: 'gpu_total_time',
+                            width: 130,
                             key: 'gpu_total_time',
                             sorter: (a, b) => a.gpu_total_time - b.gpu_total_time
                         },
                         {
                             title: t('average-time') + `(${units})`,
                             dataIndex: 'gpu_avg_time',
+                            width: 130,
                             key: 'gpu_avg_time',
                             sorter: (a, b) => a.gpu_avg_time - b.gpu_avg_time
                         },
                         {
                             title: t('longest-time') + `(${units})`,
                             dataIndex: 'gpu_max_time',
+                            width: 130,
                             key: 'gpu_max_time',
                             sorter: (a, b) => a.gpu_max_time - b.gpu_max_time
                         },
                         {
                             title: t('shortest-time') + `(${units})`,
                             dataIndex: 'gpu_min_time',
+                            width: 130,
                             key: 'gpu_min_time',
                             sorter: (a, b) => a.gpu_min_time - b.gpu_min_time
                         },
@@ -431,11 +441,11 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                             setIsExpend(!isExpend);
                         }}
                     >
-                        <div className="expendButton">{t('Expand-view')}</div>
+                        <div className="expendButton">{t('stage-view')}</div>
                         <Icon type={isExpend ? 'chevron-up' : 'chevron-down'} />
                     </div>
                     {isExpend ? (
-                        <div className="tableContent">
+                        <div className="expandChart">
                             {hasGpu ? (
                                 <RadioButtons className="postions">
                                     <ButtonsLeft
@@ -491,25 +501,24 @@ const OperatorView: FunctionComponent<OperatorViewProps> = ({runs, workers, span
                         </div>
                     </div>
                 </div>
-                <Wraper style={{height: `${rem(420)}`}}>
+                <TableContent>
                     {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />
                         </div>
                     )}
-                    {tableData && !tableLoading && (
+                    {!tableLoading && (
                         <Table
                             columns={baseColumns1(units, hasGpu, group)}
                             dataSource={tableData}
                             bordered
                             size="middle"
                             scroll={{
-                                x: group === 'op_name_input_shape' ? 'calc(700px + 80%)' : 'calc(700px + 70%)',
-                                y: 700
+                                x: group === 'op_name_input_shape' ? 'calc(700px + 63%)' : 'calc(700px + 35%)'
                             }}
                         ></Table>
                     )}
-                </Wraper>
+                </TableContent>
             </Configure>
             {/* <Model ref={model} runs={runs} views={views} workers={workers}></Model> */}
         </ViewWrapper>

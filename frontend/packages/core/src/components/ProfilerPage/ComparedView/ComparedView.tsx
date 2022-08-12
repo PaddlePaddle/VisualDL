@@ -25,7 +25,7 @@ import {asideWidth, rem, primaryColor} from '~/utils/style';
 import {
     Configure,
     EchartPie,
-    Wraper,
+    TableContent,
     color,
     Title,
     Subtraction,
@@ -213,6 +213,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('total-time') + `(${units})`,
                 dataIndex: 'total_time',
+                width: 130,
                 key: 'total_time',
                 sorter: (a, b) => {
                     return a.total_time - b.total_time;
@@ -221,6 +222,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('average-time') + `(${units})`,
                 dataIndex: 'avg_time',
+                width: 100,
                 key: 'avg_time',
                 sorter: (a, b) => {
                     return a.avg_time - b.avg_time;
@@ -229,6 +231,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('longest-time') + `(${units})`,
                 dataIndex: 'max_time',
+                width: 100,
                 key: 'max_time',
                 sorter: (a, b) => {
                     return a.max_time - b.max_time;
@@ -237,6 +240,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('shortest-time') + `(${units})`,
                 dataIndex: 'min_time',
+                width: 100,
                 key: 'min_time',
                 sorter: (a, b) => {
                     return a.min_time - b.min_time;
@@ -245,16 +249,19 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('sm-average'),
                 dataIndex: 'mean blocks per sm',
+                width: 100,
                 key: 'mean blocks per sm'
             },
             {
                 title: t('average-occupancy') + `%`,
                 dataIndex: 'mean est achieved occupancy',
+                width: 100,
                 key: 'mean est achieved occupancy'
             },
             {
                 title: t('use-tensor-core'),
                 dataIndex: 'tensor core used',
+                width: 100,
                 key: 'tensor core used',
                 render: (text: boolean) => {
                     if (text) {
@@ -286,6 +293,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('call-volume'),
                 dataIndex: 'calls',
+                width: 80,
                 key: 'calls',
                 sorter: (a, b) => {
                     return a.calls - b.calls;
@@ -294,31 +302,37 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('Cor-operator'),
                 dataIndex: 'operator',
+                width: 130,
                 key: 'operator'
             },
             {
                 title: t('thread-grid'),
                 dataIndex: 'grid',
+                width: 130,
                 key: 'grid'
             },
             {
                 title: t('thread-block'),
                 dataIndex: 'block',
+                width: 130,
                 key: 'block'
             },
             {
                 title: t('Thread-registers'),
                 dataIndex: 'register per thread',
+                width: 130,
                 key: 'register per thread'
             },
             {
                 title: t('Shared-memory'),
                 dataIndex: 'shared memory',
+                width: 130,
                 key: 'shared memory'
             },
             {
                 title: t('total-time') + `(${units})`,
                 dataIndex: 'total_time',
+                width: 130,
                 key: 'total_time',
                 sorter: (a, b) => {
                     return a.total_time - b.total_time;
@@ -327,6 +341,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('average-time') + `(${units})`,
                 dataIndex: 'avg_time',
+                width: 100,
                 key: 'avg_time',
                 sorter: (a, b) => {
                     return a.avg_time - b.avg_time;
@@ -335,6 +350,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('longest-time') + `(${units})`,
                 dataIndex: 'max_time',
+                width: 100,
                 key: 'max_time',
                 sorter: (a, b) => {
                     return a.max_time - b.max_time;
@@ -343,6 +359,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('shortest-time') + `(${units})`,
                 dataIndex: 'min_time',
+                width: 100,
                 key: 'min_time',
                 sorter: (a, b) => {
                     return a.min_time - b.min_time;
@@ -351,16 +368,19 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
             {
                 title: t('sm-average'),
                 dataIndex: 'mean blocks per sm',
+                width: 130,
                 key: 'mean blocks per sm'
             },
             {
                 title: t('average-occupancy') + `%`,
                 dataIndex: 'mean est achieved occupancy',
+                width: 100,
                 key: 'mean est achieved occupancy'
             },
             {
                 title: t('use-tensor-core'),
                 dataIndex: 'tensor core used',
+                width: 100,
                 key: 'tensor core used',
                 render: (text: boolean) => {
                     if (text) {
@@ -388,9 +408,6 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
         } else if (e.target.value === 2) {
             setTop(10);
         }
-    };
-    const onTopchange = (value: number) => {
-        setTop(value);
     };
     const getNAN = (val: any) => {
         const t = val.charAt(0);
@@ -558,7 +575,7 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                         </div>
                     </div>
                 </div>
-                <Wraper style={{minHeight: `${rem(410)}`}}>
+                <TableContent>
                     {tableLoading && (
                         <div className="loading">
                             <GridLoader color={primaryColor} size="10px" />
@@ -571,10 +588,10 @@ const ComparedView: FunctionComponent<ComparedViewProps> = ({runs, workers, span
                             bordered
                             size="middle"
                             // pagination={false}
-                            scroll={{x: group === 'kernel_name' ? 'calc(700px + 50%)' : 'calc(700px + 100%)', y: 900}}
+                            scroll={{x: group === 'kernel_name' ? 'calc(1200px)' : 'calc(1800px)', y: 900}}
                         ></Table>
                     )}
-                </Wraper>
+                </TableContent>
             </Configure>
             {/* <Model ref={model} runs={runs} views={views} workers={workers}></Model> */}
         </ViewWrapper>

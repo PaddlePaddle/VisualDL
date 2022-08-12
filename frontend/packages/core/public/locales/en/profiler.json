@@ -2,6 +2,7 @@
     "Overview-view": "Overview",
     "time-consuming": "Execution Summary",
     "Expand-view": "Details",
+    "stage-view": "Details",
     "training-step-time": "Execution Time Breakdown",
     "performance-consumption": "Event Summary",
     "consumption-distribution": "Event Time Breakdown",

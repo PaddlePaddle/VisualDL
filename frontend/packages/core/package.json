@@ -39,6 +39,7 @@
         "dist"
     ],
     "dependencies": {
+        "@material-ui/core": "^4.12.4",
         "@snowpack/plugin-sass": "^1.4.0",
         "@tippyjs/react": "4.2.5",
         "@visualdl/icons": "2.2.1",

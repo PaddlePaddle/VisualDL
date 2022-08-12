@@ -2,6 +2,7 @@
     "Overview-view": "总览视图",
     "time-consuming": "运行耗时",
     "Expand-view": "展开查看耗时详情",
+    "stage-view": "各阶段耗时详情",
     "training-step-time": "训练步数耗时",
     "performance-consumption": "性能消耗",
     "consumption-distribution": "模型各阶段消耗分布",
