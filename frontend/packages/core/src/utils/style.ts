@@ -53,7 +53,7 @@ export const setRem = () => {
 // window.onresize = function () {
 //     setRem(fontSize);
 // };
-export const rem = (pxval: string | number): string => polished.rem(pxval);
+export const rem = (pxval: string | number): string => polished.rem(pxval, fontSize);
 export const em = (pxval: string | number, base?: string | number): string => polished.em(pxval, base || fontSize);
 export const half = (value: string | number): string => math(`(${value}) / 2`);
 export const headerHeight = rem(60);

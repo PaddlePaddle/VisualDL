@@ -98,7 +98,7 @@ const PieceContents = styled(PieceContent)`
         border-top: 1px solid #dddddd;
         .postions {
             position: absolute;
-            top: ${rem(22)};
+            top: 18px;
             z-index: 10;
         }
     }
