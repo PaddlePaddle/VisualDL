@@ -94,6 +94,7 @@ const Configures = styled(Configure)`
         border: 1px solid rgba(221, 221, 221, 1);
         border-radius: 0px ${rem(4)} ${rem(4)} 0px;
         color: #cccccc;
+        cursor: not-allowed;
     }
     .postions {
         position: absolute;

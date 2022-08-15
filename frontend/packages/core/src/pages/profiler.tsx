@@ -43,20 +43,6 @@ import {useTranslation} from 'react-i18next';
 // `;
 // NOTICE: remove it!!!
 asideWidth;
-
-const DownloadButtons = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    > * {
-        flex-grow: 1;
-
-        &:not(:last-child) {
-            margin-right: ${rem(16)};
-        }
-    }
-`;
 const TitleContent = styled.div`
     padding: ${rem(20)};
     border-bottom: 1px solid #dddddd;

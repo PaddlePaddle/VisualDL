@@ -22,6 +22,7 @@ import styled from 'styled-components';
 
 const Section = styled.section`
     display: flex;
+    font-family: PingFangSC-Regular;
     aside {
         position: static;
         height: auto;
