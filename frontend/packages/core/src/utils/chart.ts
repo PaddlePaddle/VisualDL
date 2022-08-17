@@ -101,10 +101,11 @@ export const toolbox = {
         saveAsImage: {
             show: true,
             type: 'png',
-            pixelRatio: 2
+            pixelRatio: 2,
         },
         dataZoom: {
-            show: true
+            show: false,
+            xAxisIndex: 0,
         },
         restore: {
             show: true
@@ -185,6 +186,6 @@ export const yAxis = {
 };
 
 export const series = {
-    hoverAnimation: false,
+    // hoverAnimation: false,
     animationDuration: 100
 };

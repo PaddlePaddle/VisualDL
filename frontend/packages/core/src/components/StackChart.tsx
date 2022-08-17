@@ -18,7 +18,16 @@
 
 import * as chart from '~/utils/chart';
 
-import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';
+import type {
+    EChartsOption,
+    ECharts,
+    CustomSeriesOption,
+    CustomSeriesRenderItem,
+    AxisPointerComponentOption,
+    TooltipComponentOption,
+    GridComponentOption,
+    Color as ZRColor
+} from 'echarts';
 import React, {useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import {WithStyled, primaryColor, transitionProps} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
@@ -27,6 +36,7 @@ import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import styled from 'styled-components';
 import useThrottleFn from '~/hooks/useThrottleFn';
+import type {LinesSeriesOption} from 'echarts/charts';
 
 const Tooltip = styled.div`
     position: absolute;
@@ -39,22 +49,14 @@ const Tooltip = styled.div`
     ${transitionProps(['color', 'background-color'])}
 `;
 
-type RenderItem = EChartOption.SeriesCustom.RenderItem;
+type RenderItem = CustomSeriesRenderItem;
 type GetValue = (i: number) => number;
 type GetCoord = (p: [number, number]) => [number, number];
 
 export type StackChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
-    data?: Partial<Omit<NonNullable<EChartOption<EChartOption.SeriesCustom>['series']>[number], 'data'>> & {
-        minZ: number;
-        maxZ: number;
-        minX: number;
-        maxX: number;
-        minY: number;
-        maxY: number;
-        data: number[][];
-    };
+    data?: any;
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -114,11 +116,11 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
             [getPoint, rawData]
         );
 
-        const renderItem = useCallback<RenderItem>(
+        const renderItem = useCallback(
             (params, api) => {
                 const points = makePolyPoints(params.dataIndex as number, api.value as GetValue, api.coord as GetCoord);
                 return {
-                    type: 'polygon',
+                    type: 'path',
                     silent: true,
                     z: api.value?.(1),
                     shape: {
@@ -146,7 +148,8 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
             dotsRef.current = dots;
         }, [dots]);
 
-        const pointerLabelFormatter = options?.axisPointer?.label?.formatter;
+        const AxisPointer = options?.axisPointer as AxisPointerComponentOption;
+        const pointerLabelFormatter = AxisPointer.label?.formatter;
 
         // formatter change will cause echarts rerender axis pointer label
         // so we need to use 2 refs instead of dots and highlight to get rid of dependencies of these two variables
@@ -158,14 +161,15 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                 if ('string' === typeof pointerLabelFormatter) {
                     return pointerLabelFormatter;
                 }
-                return pointerLabelFormatter(params, dotsRef.current[highLightRef.current]);
+                // return pointerLabelFormatter(params, dotsRef.current[highLightRef.current]);
+                return pointerLabelFormatter(params);
             },
             [pointerLabelFormatter]
         );
 
         const theme = useChartTheme();
 
-        const chartOptions = useMemo<EChartOption>(() => {
+        const chartOptions = useMemo<EChartsOption>(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, toolbox, series, ...defaults} = chart;
 
@@ -236,7 +240,8 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
         const mouseout = useCallback(() => {
             setHighlight(null);
             setDots([]);
-            if (chartOptions.tooltip?.formatter) {
+            const formatters = chartOptions.tooltip as TooltipComponentOption;
+            if (formatters.formatter) {
                 setTooltip('');
                 if (tooltipRef.current) {
                     tooltipRef.current.style.display = 'none';
@@ -252,15 +257,13 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                     }
 
                     const {offsetX, offsetY} = e;
-                    if (offsetY < negativeY + ((chartOptions.grid as EChartOption.Grid).top as number) ?? 0) {
+                    if (offsetY < negativeY + ((chartOptions['grid'] as GridComponentOption)?.top as number) ?? 0) {
                         mouseout();
                         return;
                     }
-                    const [x, y] = echarts.convertFromPixel('grid' as EChartsConvertFinder, [offsetX, offsetY]) as [
-                        number,
-                        number
-                    ];
-                    const data = (echarts.getOption().series?.[0].data as number[][]) ?? [];
+                    const [x, y] = echarts.convertFromPixel('grid', [offsetX, offsetY]) as [number, number];
+                    const seriesData = echart?.getOption().series as LinesSeriesOption;
+                    const data = (seriesData.data as number[][]) ?? [];
 
                     // find right on top step
                     const steps = data.map(row => row[1]).sort((a, b) => a - b);
@@ -297,10 +300,11 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                     }
 
                     // set tooltip
-                    if (chartOptions.tooltip?.formatter) {
+                    const formatters = chartOptions.tooltip as TooltipComponentOption;
+                    if (formatters.formatter) {
                         setTooltip(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            highlight == null ? '' : (chartOptions.tooltip?.formatter as any)?.(dots[highlight])
+                            highlight == null ? '' : (formatters.formatter as any)?.(dots[highlight])
                         );
                         if (tooltipRef.current) {
                             if (step == null) {
@@ -380,9 +384,9 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                             }
                         });
                     } else {
-                        const data = (echart.getOption().series?.[0].data as number[][]) ?? [];
-                        const getCoord: GetCoord = pt =>
-                            echart.convertToPixel('grid' as EChartsConvertFinder, pt) as [number, number];
+                        const seriesData = echart.getOption().series as LinesSeriesOption;
+                        const data = (seriesData.data as number[][]) ?? [];
+                        const getCoord: GetCoord = pt => echart.convertToPixel('grid', pt) as [number, number];
                         const getValue: GetValue = i => data[highlight][i];
                         echart.setOption({
                             graphic: {
@@ -426,8 +430,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                             }
                         });
                     } else {
-                        const getCoord: GetCoord = pt =>
-                            echart.convertToPixel('grid' as EChartsConvertFinder, pt) as [number, number];
+                        const getCoord: GetCoord = pt => echart.convertToPixel('grid', pt) as [number, number];
                         echart.setOption({
                             graphic: {
                                 elements: dots.map((dot, i) => {
@@ -446,7 +449,7 @@ const StackChart = React.forwardRef<StackChartRef, StackChartProps & WithStyled>
                                         },
                                         style: {
                                             fill: '#fff',
-                                            stroke: chartOptions.color?.[0],
+                                            stroke: (chartOptions.color as ZRColor[])?.[0],
                                             lineWidth: 2
                                         }
                                     };

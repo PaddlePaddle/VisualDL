@@ -19,7 +19,7 @@
 import type {Dataset, InvalidValue, Range, ScalarDataset, Step, TooltipData, Value, XAxis} from './types';
 import {formatTime, humanizeDuration} from '~/utils';
 
-import type {EChartOption} from 'echarts';
+import type {EChartsOption,LineSeriesOption} from 'echarts';
 import type I18n from 'i18next';
 import type {Run} from '~/types';
 import {format} from 'd3-format';
@@ -53,7 +53,7 @@ export const chartData = ({
     runs: Run[];
     xAxis: XAxis;
     smoothedOnly?: boolean;
-}): EChartOption.SeriesLine[] =>
+}): EChartsOption['line'] =>
     data
         .map((dataset, i) => {
             // smoothed data:
