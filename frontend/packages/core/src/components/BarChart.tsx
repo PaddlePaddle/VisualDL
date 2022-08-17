@@ -20,16 +20,16 @@ import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 
 type BarChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
     direction?: 'vertical' | 'horizontal';
     categories?: string[];
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesBar>['series']>>;
+    data?: any;
     loading?: boolean;
     onInit?: Options['onInit'];
 };
@@ -74,25 +74,25 @@ const BarChart = React.forwardRef<BarChartRef, BarChartProps & WithStyled>(
                     formatter: null
                 }
             };
-
-            const chartOptions: EChartOption = defaultsDeep(
+            const seriesData = data?.map((item: any, index: number) =>
+                defaultsDeep(
+                    item,
+                    {
+                        itemStyle: {
+                            color: color[index % color.length]
+                        }
+                    },
+                    series
+                )
+            );
+            const chartOptions: EChartsOption = defaultsDeep(
                 {
                     title: {
                         text: title ?? ''
                     },
                     xAxis: isHorizontal ? valueAxis : categoryAxis,
                     yAxis: isHorizontal ? categoryAxis : valueAxis,
-                    series: data?.map((item, index) =>
-                        defaultsDeep(
-                            item,
-                            {
-                                itemStyle: {
-                                    color: color[index % color.length]
-                                }
-                            },
-                            series
-                        )
-                    )
+                    series: seriesData
                 },
                 options,
                 theme,
