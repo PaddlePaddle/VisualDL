@@ -25,16 +25,13 @@ class ProfilerApi(object):
 
     @result()
     def runs(self):
-        # print("I am here")
         return self._reader.runs()
 
     @result()
     def views(self, run):
-        # print("I am here1")
         run_manager = self._reader.get_run_manager(run)
         if run_manager is None:
             return []
-        # print(run_manager.get_views())
         return list(run_manager.get_views())
 
     @result()
@@ -395,7 +392,6 @@ def create_profiler_api_call(logdir):
                 status=1, msg='api not found')), 'application/json', None
         method, call_arg_names = route
         call_args = [args.get(name) for name in call_arg_names]
-        # print(method, call_arg_names)
         return method(*call_args)
 
     return call

@@ -21,10 +21,10 @@ from .profile_data import ProfileData
 
 class RunManager:
     '''
-  Manage profile data for each run, each run may have multiple workers and spans.
-  We should manage profile data of each (worker, span) unit.
-  Besides, a special worker "all" is created to merge all profile data for distributed view.
-  '''
+    Manage profile data for each run, each run may have multiple workers and spans.
+    We should manage profile data of each (worker, span) unit.
+    Besides, a special worker "all" is created to merge all profile data for distributed view.
+    '''
 
     def __init__(self, run):
         self.run = run
@@ -50,6 +50,9 @@ class RunManager:
             return self.distributed_data[span]
 
     def get_views(self):
+        '''
+        Return all views supported in current run data.
+        '''
         all_views = set()
         for worker, span_data in self.profile_data.items():
             for span, profiler_data in span_data.items():
@@ -65,6 +68,9 @@ class RunManager:
         return final_views
 
     def get_workers(self, view_name):
+        '''
+        Return all workers(processes) in current run data.
+        '''
         workers = []
         for worker, span_data in self.profile_data.items():
             for span, profiler_data in span_data.items():
@@ -74,6 +80,12 @@ class RunManager:
         return workers
 
     def get_spans(self, worker_name):
+        '''
+        Return all spans in current run data.
+        spans: Collecting profile data when training your model can be divided into several parts supported by\
+            paddle.profiler api, for example,  you may profile steps 2-4, 6-8. Each range is called a span here. \
+            And We index each span by orders.
+        '''
         spans = list(self.profile_data[worker_name].keys())
         spans = sorted([int(span) for span in spans])
         spans = [str(span) for span in spans]

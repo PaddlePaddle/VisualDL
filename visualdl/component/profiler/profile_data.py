@@ -674,7 +674,7 @@ class ProfileData:
             data['data'].append(inner_op_data[innerop_name])
         return data
 
-    def get_operator_table(  # noqa: C901
+    def get_operator_table(  # noqa: C901  Todo: Optimize code
             self,
             group_by='op_name',
             search_name=None,
