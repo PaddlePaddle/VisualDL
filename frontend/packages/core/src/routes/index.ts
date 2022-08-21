@@ -28,6 +28,7 @@ export enum Pages {
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
+    Profiler = 'profiler',
     HyperParameter = 'hyper-parameter'
 }
 
@@ -97,6 +98,11 @@ const routes: Route[] = [
         id: Pages.HyperParameter,
         path: '/hyper-parameter',
         component: React.lazy(() => import('~/pages/hyper-parameter'))
+    },
+    {
+        id: Pages.Profiler,
+        path: '/profiler',
+        component: React.lazy(() => import('~/pages/profiler'))
     },
     {
         id: Pages.HighDimensional,

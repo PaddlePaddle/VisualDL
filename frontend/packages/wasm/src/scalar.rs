@@ -9,6 +9,15 @@ pub struct Range {
     min: f64,
     max: f64,
 }
+
+extern crate web_sys;
+
+// 一个 macro(宏) 提供 `println!(..)`-形式 语法，给到 `console.log` 日志功能.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 impl Range {
     pub fn new(min: f64, max: f64) -> Self {
         Range { min, max }
@@ -17,6 +26,7 @@ impl Range {
 
 fn quantile(values: &Vec<f64>, p: f64) -> f64 {
     let n: usize = values.len();
+    log!("n is {}", n);
     if n == 0 {
         return std::f64::NAN;
     }
