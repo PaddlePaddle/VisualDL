@@ -46,7 +46,7 @@ view.View = class {
                 this._selectItem = null;
                 this._host.start();
                 this._showAttributes = false;
-                this._showInitializers = true;
+                this._showInitializers = false;
                 this._showNames = false;
                 this._KeepData = false;
                 this._showHorizontal = false;
@@ -199,7 +199,7 @@ view.View = class {
     select(item) {
         this.clearSelection();
         if (item.type === 'node') {
-            for (const nodes of this._allGraph.nodes) {
+            for (const nodes of this._allGraph?.nodes) {
                 if (nodes.name === item.name) {
                     this.showNodeProperties(nodes);
                     break;
@@ -400,7 +400,7 @@ view.View = class {
         if (node.is_leaf) {
             console.log('isCtrl', this.isCtrl);
             if (this.isCtrl) {
-                for (const nodes of this._allGraph.nodes) {
+                for (const nodes of this._allGraph?.nodes) {
                     if (nodes.name === node.name) {
                         for (const type of this.non_graphMetadatas) {
                             console.log('type', type.name.toLowerCase(), node.type);
@@ -453,6 +453,7 @@ view.View = class {
             if (!graph) {
                 return Promise.resolve();
             } else {
+                console.log('model, graph', model, graph);
                 this._zoom = null;
                 graphElement.style.position = 'absolute';
                 graphElement.style.margin = '0';
@@ -492,10 +493,8 @@ view.View = class {
                 }
                 for (const node of nodes) {
                     let element = null;
-                    if (!document.getElementById(`node-${node.name}`)) {
-                        element = new grapher.NodeElement(this._host.document);
-                    }
-                    const addNode = (element, node, edges) => {
+                    const addNode = (element, node) => {
+                        console.log('node', node);
                         if (!document.getElementById(`node-${node.name}`)) {
                             const header = element.block('header');
                             const styles = ['node-item-type'];
@@ -535,15 +534,17 @@ view.View = class {
                                     type: 'node'
                                 });
                                 const inputs = node.inputs;
-                                for (const input of inputs) {
-                                    for (const argument of input.arguments) {
-                                        if (argument.name != '' && !argument.initializer) {
-                                            this.select2({
-                                                id: `edge-${argument.name}`,
-                                                name: argument.name,
-                                                type: 'input',
-                                                tonode: node.name
-                                            });
+                                if (inputs) {
+                                    for (const input of inputs) {
+                                        for (const argument of input.arguments) {
+                                            if (argument.name != '' && !argument.initializer) {
+                                                this.select2({
+                                                    id: `edge-${argument.name}`,
+                                                    name: argument.name,
+                                                    type: 'input',
+                                                    tonode: node.name
+                                                });
+                                            }
                                         }
                                     }
                                 }
@@ -555,15 +556,17 @@ view.View = class {
                                         outputs = chainOutputs;
                                     }
                                 }
-                                for (const output of outputs) {
-                                    for (const argument of output.arguments) {
-                                        if (argument.name != '') {
-                                            this.select2({
-                                                id: `edge-${argument.name}`,
-                                                name: argument.name,
-                                                type: 'input',
-                                                fromnode: node.name
-                                            });
+                                if (outputs) {
+                                    for (const output of outputs) {
+                                        for (const argument of output.arguments) {
+                                            if (argument.name != '') {
+                                                this.select2({
+                                                    id: `edge-${argument.name}`,
+                                                    name: argument.name,
+                                                    type: 'input',
+                                                    fromnode: node.name
+                                                });
+                                            }
                                         }
                                     }
                                 }
@@ -587,19 +590,22 @@ view.View = class {
                             let hiddenInitializers = false;
                             if (this._showInitializers) {
                                 // 是否显示初始化参数
-                                for (const input of node.inputs) {
-                                    if (
-                                        input.visible &&
-                                        input.arguments.length == 1 &&
-                                        input.arguments[0].initializer != null
-                                    ) {
-                                        initializers.push(input);
-                                    }
-                                    if (
-                                        (!input.visible || input.arguments.length > 1) &&
-                                        input.arguments.some(argument => argument.initializer != null)
-                                    ) {
-                                        hiddenInitializers = true;
+                                console.log('node.inputs', node.inputs);
+                                if (node.inputs) {
+                                    for (const input of node.inputs) {
+                                        if (
+                                            input.visible &&
+                                            input.arguments.length == 1 &&
+                                            input.arguments[0].initializer != null
+                                        ) {
+                                            initializers.push(input);
+                                        }
+                                        if (
+                                            (!input.visible || input.arguments.length > 1) &&
+                                            input.arguments.some(argument => argument.initializer != null)
+                                        ) {
+                                            hiddenInitializers = true;
+                                        }
                                     }
                                 }
                             }
@@ -626,15 +632,17 @@ view.View = class {
                                         type: 'node'
                                     });
                                     const inputs = node.inputs;
-                                    for (const input of inputs) {
-                                        for (const argument of input.arguments) {
-                                            if (argument.name != '' && !argument.initializer) {
-                                                this.select2({
-                                                    id: `edge-${argument.name}`,
-                                                    name: argument.name,
-                                                    type: 'input',
-                                                    tonode: node.name
-                                                });
+                                    if (inputs) {
+                                        for (const input of inputs) {
+                                            for (const argument of input.arguments) {
+                                                if (argument.name != '' && !argument.initializer) {
+                                                    this.select2({
+                                                        id: `edge-${argument.name}`,
+                                                        name: argument.name,
+                                                        type: 'input',
+                                                        tonode: node.name
+                                                    });
+                                                }
                                             }
                                         }
                                     }
@@ -646,15 +654,17 @@ view.View = class {
                                             outputs = chainOutputs;
                                         }
                                     }
-                                    for (const output of outputs) {
-                                        for (const argument of output.arguments) {
-                                            if (argument.name != '') {
-                                                this.select2({
-                                                    id: `edge-${argument.name}`,
-                                                    name: argument.name,
-                                                    type: 'input',
-                                                    fromnode: node.name
-                                                });
+                                    if (outputs) {
+                                        for (const output of outputs) {
+                                            for (const argument of output.arguments) {
+                                                if (argument.name != '') {
+                                                    this.select2({
+                                                        id: `edge-${argument.name}`,
+                                                        name: argument.name,
+                                                        type: 'input',
+                                                        fromnode: node.name
+                                                    });
+                                                }
                                             }
                                         }
                                     }
@@ -712,33 +722,44 @@ view.View = class {
                                 }
                             }
                         }
-                        if (edges) {
-                            const inputs = node.inputs;
-                            for (const input of inputs) {
-                                for (const argument of input.arguments) {
-                                    if (argument.name != '' && !argument.initializer) {
-                                        let tuple = edgeMap[argument.name];
-                                        if (!tuple) {
-                                            tuple = {from: null, to: []};
-                                            edgeMap[argument.name] = tuple;
-                                        }
-                                        tuple.to.push({
-                                            // 这个节点的id
-                                            node: nodeId,
-                                            name: input.name,
-                                            nodename: node.name
-                                        });
-                                    }
-                                }
+                        if (node.chain && node.chain.length > 0) {
+                            for (const innerNode of node.chain) {
+                                addNode(element, innerNode, false);
                             }
+                        }
 
-                            let outputs = node.outputs;
-                            if (node.chain && node.chain.length > 0) {
-                                const chainOutputs = node.chain[node.chain.length - 1].outputs;
-                                if (chainOutputs.length > 0) {
-                                    outputs = chainOutputs;
+                        if (node.inner) {
+                            addNode(element, node.inner, false);
+                        }
+                    };
+                    const addEdges = node => {
+                        const inputs = node.inputs;
+                        for (const input of inputs) {
+                            for (const argument of input.arguments) {
+                                if (argument.name != '' && !argument.initializer) {
+                                    let tuple = edgeMap[argument.name];
+                                    if (!tuple) {
+                                        tuple = {from: null, to: []};
+                                        edgeMap[argument.name] = tuple;
+                                    }
+                                    tuple.to.push({
+                                        // 这个节点的id
+                                        node: nodeId,
+                                        name: input.name,
+                                        nodename: node.name
+                                    });
                                 }
                             }
+                        }
+
+                        let outputs = node.outputs;
+                        if (node.chain && node.chain.length > 0) {
+                            const chainOutputs = node.chain[node.chain.length - 1].outputs;
+                            if (chainOutputs.length > 0) {
+                                outputs = chainOutputs;
+                            }
+                        }
+                        if (outputs) {
                             for (const output of outputs) {
                                 for (const argument of output.arguments) {
                                     if (argument.name != '') {
@@ -757,19 +778,16 @@ view.View = class {
                                 }
                             }
                         }
-                        if (node.chain && node.chain.length > 0) {
-                            for (const innerNode of node.chain) {
-                                addNode(element, innerNode, false);
-                            }
-                        }
-
-                        if (node.inner) {
-                            addNode(element, node.inner, false);
-                        }
                     };
 
-                    addNode(element, node, true);
-
+                    if (!Object.keys(this._nodes).includes(node.name)) {
+                        element = new grapher.NodeElement(this._host.document);
+                        addNode(element, node);
+                        this._nodes[node.name] = element;
+                    } else {
+                        element = this._nodes[node.name];
+                    }
+                    addEdges(node);
                     if (node.controlDependencies && node.controlDependencies.length > 0) {
                         for (const controlDependency of node.controlDependencies) {
                             let tuple = edgeMap[controlDependency];
@@ -787,17 +805,20 @@ view.View = class {
                     }
 
                     const nodeName = node.name;
-                    if (!document.getElementById(`node-${node.name}`)) {
-                        // 此时图上没有
-                        if (nodeName) {
-                            g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
-                        } else {
-                            g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
-                            id++;
-                        }
-                    } else {
-                        g.setNode(nodeId, {label: 'node-' + nodeName, id: 'node-' + nodeName});
-                    }
+                    // g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
+                    g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
+                    id++;
+                    // if (!) {
+                    //     // 此时图上没有
+                    //     if (nodeName) {
+                    //         g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
+                    //     } else {
+                    //         g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
+                    //         id++;
+                    //     }
+                    // } else {
+                    //     g.setNode(nodeId, {label: 'node-' + nodeName, id: 'node-' + nodeName});
+                    // }
                     const isKeepData = this._KeepData;
                     const createCluster = (name, node) => {
                         const non_leaf_nodes = graphMetadata.default.non_leaf_nodes;
@@ -858,52 +879,59 @@ view.View = class {
                     this._graphNodes[node.name] = element;
                     nodeId++;
                 }
-                for (const input of graph.inputs) {
-                    for (const argument of input.arguments) {
-                        let tuple = edgeMap[argument.name];
-                        if (!tuple) {
-                            tuple = {from: null, to: []};
-                            edgeMap[argument.name] = tuple;
+                if (graph.inputs) {
+                    console.log('graph.inputs', graph.inputs);
+                    for (const input of graph.inputs) {
+                        for (const argument of input.arguments) {
+                            let tuple = edgeMap[argument.name];
+                            if (!tuple) {
+                                tuple = {from: null, to: []};
+                                edgeMap[argument.name] = tuple;
+                            }
+                            tuple.from = {
+                                node: nodeId,
+                                type: argument.type
+                            };
                         }
-                        tuple.from = {
-                            node: nodeId,
-                            type: argument.type
-                        };
-                    }
-                    const types = input.arguments.map(argument => argument.type || '').join('\n');
-                    let inputName = input.name || '';
-                    if (inputName.length > 16) {
-                        inputName = inputName.split('/').pop();
-                    }
+                        const types = input.arguments.map(argument => argument.type || '').join('\n');
+                        let inputName = input.name || '';
+                        if (inputName.length > 16) {
+                            inputName = inputName.split('/').pop();
+                        }
 
-                    const inputElement = new grapher.NodeElement(this._host.document);
-                    const inputHeader = inputElement.block('header');
-                    inputHeader.add(null, ['graph-item-input'], inputName, types, () => {
-                        this.showModelProperties();
-                    });
-                    g.setNode(nodeId++, {label: inputElement.format(graphElement), class: 'graph-input'});
+                        const inputElement = new grapher.NodeElement(this._host.document);
+                        const inputHeader = inputElement.block('header');
+                        inputHeader.add(null, ['graph-item-input'], inputName, types, () => {
+                            this.showModelProperties();
+                        });
+                        g.setNode(nodeId++, {label: inputElement.format(graphElement), class: 'graph-input'});
+                    }
                 }
-                for (const output of graph.outputs) {
-                    for (const argument of output.arguments) {
-                        let tuple = edgeMap[argument.name];
-                        if (!tuple) {
-                            tuple = {from: null, to: []};
-                            edgeMap[argument.name] = tuple;
-                        }
-                        tuple.to.push({node: nodeId});
-                    }
-                    const outputTypes = output.arguments.map(argument => argument.type || '').join('\n');
-                    let outputName = output.name || '';
-                    if (outputName.length > 16) {
-                        outputName = outputName.split('/').pop();
-                    }
+                if (graph.outputs) {
+                    console.log('graph.outputs', graph.outputs);
 
-                    const outputElement = new grapher.NodeElement(this._host.document);
-                    const outputHeader = outputElement.block('header');
-                    outputHeader.add(null, ['graph-item-output'], outputName, outputTypes, () => {
-                        this.showModelProperties();
-                    });
-                    g.setNode(nodeId++, {label: outputElement.format(graphElement)});
+                    for (const output of graph.outputs) {
+                        for (const argument of output.arguments) {
+                            let tuple = edgeMap[argument.name];
+                            if (!tuple) {
+                                tuple = {from: null, to: []};
+                                edgeMap[argument.name] = tuple;
+                            }
+                            tuple.to.push({node: nodeId});
+                        }
+                        const outputTypes = output.arguments.map(argument => argument.type || '').join('\n');
+                        let outputName = output.name || '';
+                        if (outputName.length > 16) {
+                            outputName = outputName.split('/').pop();
+                        }
+
+                        const outputElement = new grapher.NodeElement(this._host.document);
+                        const outputHeader = outputElement.block('header');
+                        outputHeader.add(null, ['graph-item-output'], outputName, outputTypes, () => {
+                            this.showModelProperties();
+                        });
+                        g.setNode(nodeId++, {label: outputElement.format(graphElement)});
+                    }
                 }
                 for (const edge of Object.keys(edgeMap)) {
                     const tuple = edgeMap[edge];
@@ -970,13 +998,14 @@ view.View = class {
                 return this._timeout(200).then(() => {
                     const graphRenderer = new grapher.Renderer(this._host, originElement, this);
                     graphRenderer.render(g);
-                    for (const cluster of document.getElementById('clusters').children) {
-                        this._clusters[cluster.getAttribute('id')] = cluster;
-                    }
-
-                    for (const node of document.getElementById('nodes').children) {
-                        this._nodes[node.getAttribute('id')] = node;
-                    }
+                    // for (const cluster of document.getElementById('clusters').children) {
+                    //     this._clusters[cluster.getAttribute('id')] = cluster;
+                    // }
+                    // // 每次重新渲染之之后获取当前图上的所有节点id
+                    // console.log('children', document.getElementById('nodes').children);
+                    // for (const node of document.getElementById('nodes').children) {
+                    //     this._nodes[node.getAttribute('id')] = node;
+                    // }
                     const inputElements = graphElement.getElementsByClassName('graph-input');
                     const svgSize = graphElement.getBoundingClientRect();
                     if (inputElements && inputElements.length > 0) {

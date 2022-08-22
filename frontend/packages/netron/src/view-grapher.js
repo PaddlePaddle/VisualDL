@@ -58,41 +58,33 @@ grapher.Renderer = class {
 
         for (const nodeId of graph.nodes()) {
             if (graph.children(nodeId).length == 0) {
+                // 子节点
                 const node = graph.node(nodeId);
                 // 在这里进行缓存的判断
                 // console.log('this._document', this._document);
                 // const nodeDom = this._document.getElementById(node.id);
                 // console.log('nodeDom', nodeDom);
-                if (this._view._nodes.hasOwnProperty(node.id)) {
-                    // 这个节点存在过
-                    svgNodeGroup.appendChild(this._view._nodes[node.id]);
-                    const nodeBox = this._view._nodes[node.id].getBBox();
-                    node.width = nodeBox.width;
-                    node.height = nodeBox.height;
-                    node.element = this._view._nodes[node.id];
-                } else {
-                    const element = this.createElement('g');
-                    if (node.id) {
-                        element.setAttribute('id', node.id);
-                    }
-                    element.setAttribute(
-                        'class',
-                        Object.prototype.hasOwnProperty.call(node, 'class') ? 'node ' + node.class : 'node'
-                    );
-                    element.style.opacity = 0;
-                    const container = this.createElement('g');
-                    container.appendChild(node.label);
-                    // node.label 就是fromat 之后的节点
-                    element.appendChild(container);
-                    svgNodeGroup.appendChild(element);
-                    const nodeBox = node.label.getBBox();
-                    const nodeX = -nodeBox.width / 2;
-                    const nodeY = -nodeBox.height / 2;
-                    container.setAttribute('transform', 'translate(' + nodeX + ',' + nodeY + ')');
-                    node.width = nodeBox.width;
-                    node.height = nodeBox.height;
-                    node.element = element;
+                const element = this.createElement('g');
+                if (node.id) {
+                    element.setAttribute('id', node.id);
                 }
+                element.setAttribute(
+                    'class',
+                    Object.prototype.hasOwnProperty.call(node, 'class') ? 'node ' + node.class : 'node'
+                );
+                element.style.opacity = 0;
+                const container = this.createElement('g');
+                container.appendChild(node.label);
+                // node.label 就是fromat 之后的节点
+                element.appendChild(container);
+                svgNodeGroup.appendChild(element);
+                const nodeBox = node.label.getBBox();
+                const nodeX = -nodeBox.width / 2;
+                const nodeY = -nodeBox.height / 2;
+                container.setAttribute('transform', 'translate(' + nodeX + ',' + nodeY + ')');
+                node.width = nodeBox.width;
+                node.height = nodeBox.height;
+                node.element = element;
             }
         }
 

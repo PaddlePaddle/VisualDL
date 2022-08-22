@@ -258,7 +258,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 const refresh = true;
                 const expand_all = false;
                 fetcher(
-                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                    '/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
                 ).then((res: Theobj) => {
                     setSelectItem(null);
                     setModelDatas(res);
@@ -415,7 +415,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             const refresh = true;
             const expand_all = false;
             const result = await fetcher(
-                '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
+                '/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
             );
             const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
             // const allResult = await fetcher('/graph/graph' + `?run=${selectedRuns}`);
