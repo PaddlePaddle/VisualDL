@@ -134,7 +134,7 @@ type SelectListItem<T> = {
     label: string;
 };
 
-const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units}) => {
+const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units, descriptions}) => {
     const {t} = useTranslation(['profiler', 'common']);
     const [environment, setEnvironment] = useState<environmentType>();
     const [distributed, setDistributed] = useState<distributedData>();
@@ -153,7 +153,6 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const [tableData2, setTableData2] = useState<Event[]>();
     const [tableLoading2, settableLoading2] = useState(true);
     const [trainData, setTrainData] = useState<trainType>();
-    const [descriptions, setDescriptions] = useState<any>();
     useEffect(() => {
         settableLoading(true);
         settableLoading2(true);
