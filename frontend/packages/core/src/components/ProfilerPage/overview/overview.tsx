@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import type {ColumnsType} from 'antd/lib/table';
 import PieChart from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
@@ -496,22 +496,21 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
         },
         [t]
     );
-    const gettTooltip: (name: string) => JSX.Element = useCallback(
-        (name: string) => {
-            const tooltips = (
-                <div
-                    style={{
-                        width: rem(700),
-                        color: '#333333',
-                        fontWeight: 400
-                    }}
-                    dangerouslySetInnerHTML={{__html: descriptions ? descriptions[name] : ''}}
-                ></div>
-            );
-            return tooltips;
-        },
-        [descriptions]
-    );
+    const gettTooltip: (name: string) => JSX.Element = (name: string) => {
+        console.log('descriptions', descriptions);
+
+        const tooltips = (
+            <div
+                style={{
+                    width: rem(700),
+                    color: '#333333',
+                    fontWeight: 400
+                }}
+                dangerouslySetInnerHTML={{__html: descriptions ? descriptions[name] : ''}}
+            ></div>
+        );
+        return tooltips;
+    };
     const getPopupContainers = (trigger: any) => {
         return trigger.parentElement;
     };
