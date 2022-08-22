@@ -28,6 +28,7 @@ export enum Pages {
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
+    Profiler = 'profiler',
     HyperParameter = 'hyper-parameter'
 }
 
@@ -75,8 +76,18 @@ const routes: Route[] = [
     },
     {
         id: Pages.Graph,
-        path: '/graph',
-        component: React.lazy(() => import('~/pages/graph'))
+        children: [
+            {
+                id: 'graphDynamic',
+                path: '/graphDynamic',
+                component: React.lazy(() => import('~/pages/graphDynamic'))
+            },
+            {
+                id: 'graphStatic',
+                path: '/graphStatic',
+                component: React.lazy(() => import('~/pages/graphStatic'))
+            }
+        ]
     },
     {
         id: Pages.Histogram,
@@ -87,6 +98,11 @@ const routes: Route[] = [
         id: Pages.HyperParameter,
         path: '/hyper-parameter',
         component: React.lazy(() => import('~/pages/hyper-parameter'))
+    },
+    {
+        id: Pages.Profiler,
+        path: '/profiler',
+        component: React.lazy(() => import('~/pages/profiler'))
     },
     {
         id: Pages.HighDimensional,

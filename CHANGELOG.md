@@ -4,6 +4,85 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.3.0 - 2022-06-30
+
+**ZH**
+
+- 功能新增
+  - **BE**:  增加add_graph接口支持动态图模型可视化 （#1077 #1093）
+  - **FE**:  增加动态图可视化页面 （#1091 #1096 #1097）
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175808777-5bc24d7a-9115-44d0-8709-a82a3e341b3d.gif" width="80%"/>
+    </p>
+    
+    - 展开和折叠指定节点
+    
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810790-a35f83bf-a23c-4a28-afb7-2e0cf7711b9c.png" width="80%"/>
+        </p>
+
+    - 一键全展开和全折叠
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809551-67f67552-59b7-4aca-a1cc-fe5606e7e512.png" width="80%"/>
+        </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809610-d07c0b15-d1bd-4542-aacd-29b4d2ba8fcb.png" width="80%"/>
+    </p>
+
+    - 飞桨API链接功能
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809570-241db056-0b41-4e3a-828d-376a011a4645.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809574-8c173b88-ed27-4c29-a3e1-a3887d2d3107.png" width="80%"/>
+    </p>
+    
+
+- 问题修复
+  - **FE**:  修复图像数据放大后比例失调的问题 （##1090）
+
+- 其他改进
+  - **FE**:  优化文本数据显示的用户体验 （##1090）
+
+**EN**
+
+- Features
+  - **BE**:  Add add_graph interface for dynamic model of paddle（#1077 #1093）
+  - **FE**:  Add dynamic graph page （#1091 #1096 #1097）
+  <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175811156-a80ca0c4-207d-44d7-bd5a-9701a7875722.gif" width="80%"/>
+    </p>
+
+    - Fold and unfold one node
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810800-4823b9f1-3d59-44e8-aaa5-a80577624452.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810790-a35f83bf-a23c-4a28-afb7-2e0cf7711b9c.png" width="80%"/>
+    </p>
+
+    - Fold and unfold all nodes
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810856-ff98a1ed-2a4f-4cc1-bc9b-3085857c0b81.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810837-a0953956-7320-4e78-9c52-72ad13962216.png" width="80%"/>
+    </p>
+
+    - Link api specification of paddle
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810992-b86e9aef-e700-4c2d-bcd0-21fc96fc2564.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810997-0672d836-4d7c-432d-b5de-187f97c421ae.png" width="80%"/>
+    </p>
+- Bug Fixes
+  - **FE**:  Fix unbalance ratio of upscaled image when zoom in. （##1090）
+
+- Enhancement
+  - **FE**:  Refine user experience for text presentation. （##1090）
+
+
 ## v2.2.1 - 2021-09-02
 
 **ZH**

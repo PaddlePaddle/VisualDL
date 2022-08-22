@@ -22,6 +22,11 @@ import styled from 'styled-components';
 
 const Section = styled.section`
     display: flex;
+    font-family: PingFangSC-Regular;
+    aside {
+        position: static;
+        height: auto;
+    }
 `;
 
 const Article = styled.article`
@@ -40,18 +45,35 @@ const Aside = styled.aside`
     overflow-y: auto;
     ${transitionProps('background-color')}
 `;
+const ProfilerAside = styled.aside`
+    flex: none;
+    background-color: var(--background-color);
+    height: auto;
+    position: static;
+    overflow-x: hidden;
+    overflow-y: auto;
+    ${transitionProps('background-color')}
+`;
 
 type ContentProps = {
     aside?: React.ReactNode;
     leftAside?: React.ReactNode;
     loading?: boolean;
+    isProfiler?: boolean;
 };
 
-const Content: FunctionComponent<ContentProps & WithStyled> = ({children, aside, leftAside, loading, className}) => (
+const Content: FunctionComponent<ContentProps & WithStyled> = ({
+    children,
+    aside,
+    leftAside,
+    loading,
+    className,
+    isProfiler
+}) => (
     <Section className={className}>
         {leftAside && <Aside>{leftAside}</Aside>}
         <Article>{children}</Article>
-        {aside && <Aside>{aside}</Aside>}
+        {aside && isProfiler ? <ProfilerAside>{aside}</ProfilerAside> : aside ? <Aside>{aside}</Aside> : null}
         {loading && <BodyLoading />}
     </Section>
 );

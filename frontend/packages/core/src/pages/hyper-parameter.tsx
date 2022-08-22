@@ -198,13 +198,7 @@ const HyperParameter: FunctionComponent = () => {
                 {loading ? <BodyLoading /> : null}
                 <HPWrapper>
                     <Tab list={tabs} value={tabView} onChange={setTabView} />
-                    <ViewWrapper>
-                        {isEmpty ? <Empty /> : view}
-                        {/* <HParamsImportanceDialog
-                            visible={importanceDialogVisible}
-                            onClickClose={() => setImportanceDialogVisible(false)}
-                        /> */}
-                    </ViewWrapper>
+                    <ViewWrapper>{isEmpty ? <Empty /> : view}</ViewWrapper>
                 </HPWrapper>
             </Content>
         </>
