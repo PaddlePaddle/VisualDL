@@ -14,14 +14,14 @@
 # =======================================================================
 import json
 
-from .profiler_reader import ProfileReader
+from .profiler_reader import ProfilerReader
 from visualdl.server.api import gen_result
 from visualdl.server.api import result
 
 
 class ProfilerApi(object):
     def __init__(self, logdir):
-        self._reader = ProfileReader(logdir)
+        self._reader = ProfilerReader(logdir)
 
     @result()
     def runs(self):
@@ -63,7 +63,7 @@ class ProfilerApi(object):
     def overview_environment(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
         span = str(span)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         result = profiler_data.get_device_infos()
         num_workers = len(run_manager.get_workers('Overview'))
         result['num_workers'] = num_workers
@@ -72,7 +72,7 @@ class ProfilerApi(object):
     @result()
     def model_perspective(self, run, worker, span, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_model_perspective(time_unit)
 
     @result()
@@ -84,7 +84,7 @@ class ProfilerApi(object):
                                   time_unit='ms'):
         device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_model_perspective_perstep(
             device_type, time_unit)
 
@@ -97,25 +97,25 @@ class ProfilerApi(object):
                                time_unit='ms'):
         device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_event_type_perspective(device_type, time_unit)
 
     @result()
     def event_type_model_perspective(self, run, worker, span, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_event_type_model_perspective(time_unit)
 
     @result()
     def userdefined_perspective(self, run, worker, span, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_userdefined_perspective(time_unit)
 
     @result()
     def operator_pie(self, run, worker, span, topk, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         topk = int(topk)
         return profiler_data.get_operator_pie(topk, time_unit)
 
@@ -124,7 +124,7 @@ class ProfilerApi(object):
                             time_unit):
         device_type = device_type.lower()
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
 
         topk = int(topk)
         return profiler_data.get_operator_pie_expand(topk, device_type,
@@ -139,7 +139,7 @@ class ProfilerApi(object):
                        search_name,
                        time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_operator_table(group_by, search_name,
                                                 time_unit)
 
@@ -157,7 +157,7 @@ class ProfilerApi(object):
     @result()
     def kernel_pie(self, run, worker, span, topk, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         topk = int(topk)
         return profiler_data.get_kernel_pie(topk, time_unit)
 
@@ -170,20 +170,20 @@ class ProfilerApi(object):
                      search_name,
                      time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_kernel_table(group_by, search_name, time_unit)
 
     @result()
     def kernel_tc_pie(self, run, worker, span, topk, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         topk = int(topk)
         return profiler_data.get_kernel_tc_pie(topk, time_unit)
 
     @result()
     def distributed_info(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
-        distributed_profiler_data = run_manager.get_distributed_profile_data(
+        distributed_profiler_data = run_manager.get_distributed_profiler_data(
             span)
         if distributed_profiler_data is None:
             return
@@ -192,14 +192,14 @@ class ProfilerApi(object):
     @result()
     def distributed_steps(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
-        distributed_profiler_data = run_manager.get_distributed_profile_data(
+        distributed_profiler_data = run_manager.get_distributed_profiler_data(
             span)
         return distributed_profiler_data.get_distributed_steps()
 
     @result()
     def distributed_histogram(self, run, worker, span, step, time_unit='ms'):
         run_manager = self._reader.get_run_manager(run)
-        distributed_profiler_data = run_manager.get_distributed_profile_data(
+        distributed_profiler_data = run_manager.get_distributed_profiler_data(
             span)
         return distributed_profiler_data.get_distributed_histogram(
             step, time_unit)
@@ -207,13 +207,13 @@ class ProfilerApi(object):
     @result(headers={'content-encoding': 'gzip'})
     def trace(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_trace_data()
 
     @result()
     def memory_devices(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_memory_devices()
 
     @result(headers={'content-encoding': 'gzip'})
@@ -221,7 +221,7 @@ class ProfilerApi(object):
         if device_type == 'undefined':
             return
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_memory_curve(device_type, time_unit)
 
     @result(headers={'content-encoding': 'gzip'})
@@ -247,7 +247,7 @@ class ProfilerApi(object):
         if search_name == 'undefined' or not search_name:
             search_name = None
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_memory_events(device_type, min_size, max_size,
                                                search_name, time_unit)
 
@@ -263,7 +263,7 @@ class ProfilerApi(object):
         if device_type == 'undefined':
             return
         run_manager = self._reader.get_run_manager(run)
-        profiler_data = run_manager.get_profile_data(worker, span)
+        profiler_data = run_manager.get_profiler_data(worker, span)
         return profiler_data.get_op_memory_events(device_type, search_name)
 
     @result()

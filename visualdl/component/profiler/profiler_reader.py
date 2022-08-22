@@ -27,7 +27,7 @@ from visualdl.io import bfile
 _name_pattern = re.compile(r"(.+)_time_(.+)\.paddle_trace\.((pb)|(json))")
 
 
-def is_VDLProfile_file(path):
+def is_VDLProfiler_file(path):
     """Determine whether it is a paddle profile file that can be read by vdl according to the file name.
 
     File name of a paddle profile file must contain `paddle_trace`.
@@ -42,7 +42,7 @@ def is_VDLProfile_file(path):
     return True
 
 
-class ProfileReader(object):
+class ProfilerReader(object):
     """Profile reader to read paddle profile files, support for frontend api in lib.py.
     """
 
@@ -100,7 +100,7 @@ class ProfileReader(object):
             for run, filenames in flush_walks.items():
                 tags_temp = [
                     filename for filename in filenames
-                    if is_VDLProfile_file(filename)
+                    if is_VDLProfiler_file(filename)
                 ]
                 if len(tags_temp) > 0:
                     walks_temp.update({run: tags_temp})
