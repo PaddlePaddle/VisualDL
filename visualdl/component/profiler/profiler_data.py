@@ -38,7 +38,7 @@ def filter_type(node_trees):
                 node.type = str(node.type).split('.')[1]
 
 
-class ProfileData:
+class ProfilerData:
     '''
   Hold all parsed data to serve for user requests.
   '''

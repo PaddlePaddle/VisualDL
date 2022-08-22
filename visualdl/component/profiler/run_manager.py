@@ -15,8 +15,8 @@
 from collections import defaultdict
 from threading import Thread
 
-from .profile_data import DistributedProfileData
-from .profile_data import ProfileData
+from .profiler_data import DistributedProfileData
+from .profiler_data import ProfilerData
 
 
 class RunManager:
@@ -31,7 +31,7 @@ class RunManager:
         # worker:
         #   span:
         #       ProfileData
-        self.profile_data = defaultdict(dict)
+        self.profiler_data = defaultdict(dict)
         self.all_filenames = set()
         self.handled_filenames = set()
         # span:
@@ -40,12 +40,12 @@ class RunManager:
         self.threads = {}
         self.has_join = False
 
-    def get_profile_data(self, worker, span):
-        if worker in self.profile_data:
-            if span in self.profile_data[worker]:
-                return self.profile_data[worker][span]
+    def get_profiler_data(self, worker, span):
+        if worker in self.profiler_data:
+            if span in self.profiler_data[worker]:
+                return self.profiler_data[worker][span]
 
-    def get_distributed_profile_data(self, span):
+    def get_distributed_profiler_data(self, span):
         if span in self.distributed_data:
             return self.distributed_data[span]
 
@@ -54,7 +54,7 @@ class RunManager:
         Return all views supported in current run data.
         '''
         all_views = set()
-        for worker, span_data in self.profile_data.items():
+        for worker, span_data in self.profiler_data.items():
             for span, profiler_data in span_data.items():
                 all_views.update(profiler_data.get_views())
         ordered_views = [
@@ -72,7 +72,7 @@ class RunManager:
         Return all workers(processes) in current run data.
         '''
         workers = []
-        for worker, span_data in self.profile_data.items():
+        for worker, span_data in self.profiler_data.items():
             for span, profiler_data in span_data.items():
                 if view_name in profiler_data.get_views():
                     workers.append(worker)
@@ -86,7 +86,7 @@ class RunManager:
             paddle.profiler api, for example,  you may profile steps 2-4, 6-8. Each range is called a span here. \
             And We index each span by orders.
         '''
-        spans = list(self.profile_data[worker_name].keys())
+        spans = list(self.profiler_data[worker_name].keys())
         spans = sorted([int(span) for span in spans])
         spans = [str(span) for span in spans]
         return spans
@@ -99,7 +99,7 @@ class RunManager:
 
     def _parse_file(self, worker_name, result):
         span = result.get_span_idx()
-        self.profile_data[worker_name][span] = ProfileData(
+        self.profiler_data[worker_name][span] = ProfilerData(
             self.run, worker_name, span, result)
         return
 
@@ -109,13 +109,13 @@ class RunManager:
         for thread in self.threads.values():
             thread.join()
         self.has_join = True
-        distributed_profile_data = defaultdict(list)
-        for worker_name, span_data in self.profile_data.items():
-            for span_idx, profile_data in span_data.items():
-                distributed_profile_data[span_idx].append(profile_data)
-        for span_idx, profile_datas in distributed_profile_data.items():
+        distributed_profiler_data = defaultdict(list)
+        for worker_name, span_data in self.profiler_data.items():
+            for span_idx, profiler_data in span_data.items():
+                distributed_profiler_data[span_idx].append(profiler_data)
+        for span_idx, profiler_datas in distributed_profiler_data.items():
             self.distributed_data[span_idx] = DistributedProfileData(
-                self.run, span_idx, profile_datas)
+                self.run, span_idx, profiler_datas)
 
     def add_profile_result(self, filename, worker_name, profile_result):
         thread = Thread(
