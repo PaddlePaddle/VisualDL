@@ -1718,7 +1718,7 @@ class ProfilerData:
         return data
 
 
-class DistributedProfileData:
+class DistributedProfilerData:
     '''
     Hold data for distributed view.
     Aggregate all data for distributed in ProfileData object.

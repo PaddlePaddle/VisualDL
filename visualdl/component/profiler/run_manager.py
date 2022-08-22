@@ -15,7 +15,7 @@
 from collections import defaultdict
 from threading import Thread
 
-from .profiler_data import DistributedProfileData
+from .profiler_data import DistributedProfilerData
 from .profiler_data import ProfilerData
 
 
@@ -114,7 +114,7 @@ class RunManager:
             for span_idx, profiler_data in span_data.items():
                 distributed_profiler_data[span_idx].append(profiler_data)
         for span_idx, profiler_datas in distributed_profiler_data.items():
-            self.distributed_data[span_idx] = DistributedProfileData(
+            self.distributed_data[span_idx] = DistributedProfilerData(
                 self.run, span_idx, profiler_datas)
 
     def add_profile_result(self, filename, worker_name, profile_result):
