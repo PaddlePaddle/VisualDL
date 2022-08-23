@@ -1,4 +1,4 @@
-# Copyright (c) 2020 VisualDL Authors. All Rights Reserve.
+# Copyright (c) 2022 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,5 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+class TraceParser:
+    def __init__(self):
+        pass
 
-vdl_version = '2.4.0'
+    def parse(self, content):
+        self.content = content

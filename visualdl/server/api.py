@@ -14,8 +14,10 @@
 # limitations under the License.
 # =======================================================================
 import functools
+import gzip
 import json
 import os
+from io import BytesIO
 
 from flask import request
 
@@ -52,6 +54,13 @@ def result(mimetype='application/json', headers=None):
                 headers_output = headers(self)
             else:
                 headers_output = headers
+                if headers is not None:
+                    if 'content-encoding' in headers:
+                        buf = BytesIO()
+                        with gzip.GzipFile(mode='wb', fileobj=buf) as fp:
+                            gzip_value = data.encode()
+                            fp.write(gzip_value)
+                        data = buf.getvalue()
             return data, mimetype, headers_output
 
         return wrapper
