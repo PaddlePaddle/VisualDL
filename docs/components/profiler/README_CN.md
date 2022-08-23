@@ -7,7 +7,10 @@
 ### 使用方式
 
 1. 收集并导出性能数据。
+
 示例代码:
+
+
 ```python
 import paddle
 import paddle.profiler as profiler

@@ -6,7 +6,10 @@ Profiling tools is introduced in paddlepaddle since version 2.3.0. Users can col
 ### How to launch
 
 1. Collect and export profiling data.
+
 Demo:
+
+
 ```python
 import paddle
 import paddle.profiler as profiler
