@@ -4,6 +4,89 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.4.0 - 2022-08-22
+
+**ZH**
+
+- 功能新增
+  - 增加性能数据可视化功能，提供Overview、Operator、GPU Kernel、Distributed、Trace、Memory共六个视图的分析。(#1112 #1114 #1118)
+    - Overview视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="80%"/>
+    </p>
+
+    - Operator视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893218-bff646f1-3d9f-448b-99c8-39f2309db65d.gif" width="80%"/>
+    </p>
+
+    - GPU Kernel视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893227-64837816-e6a5-41ad-b8f4-d1dfef3fd40b.gif" width="80%"/>
+    </p>
+
+    - Distributed视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893682-e9330b99-e344-423a-8935-dc050a4cab45.gif" width="80%"/>
+    </p>
+
+    - Trace视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893687-1788586e-4371-4136-baf7-f3edcbc19003.gif" width="80%"/>
+    </p>
+
+    - Memory视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893743-43643f2d-0c5a-46ad-8ad8-b04ae48ecc97.gif" width="80%"/>
+    </p>
+
+**EN**
+
+- Features
+  - Add visualization for profiling data, support six viewers for analysis, i.e. Overview, Operator, GPU Kernel, Distributed, Trace and Memory. (#1112 #1114 #1118)
+    - Overview
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894151-53ffc60b-7203-4cb8-a289-5d97332d0691.gif" width="80%"/>
+    </p>
+
+    - Operator
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894180-546c7012-6623-4163-b1d4-e7607b1ed72d.gif" width="80%"/>
+    </p>
+
+    - GPU Kernel
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894242-ec382146-56aa-42bc-ae81-ed7221b72bb4.gif" width="80%"/>
+    </p>
+
+    - Distributed
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894274-fc9aae45-0faf-429c-8c5e-54ea0a45cbf2.gif" width="80%"/>
+    </p>
+
+    - Trace
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894306-05eb72ca-33b9-4b49-a036-2f4b3b1e7e65.gif" width="80%"/>
+    </p>
+
+    - Memory
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894209-fec56d3c-65ef-4240-a957-0965521d36f7.gif" width="80%"/>
+    </p>
+
+
 ## v2.3.0 - 2022-06-30
 
 **ZH**
