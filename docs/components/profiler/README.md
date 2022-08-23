@@ -1,7 +1,7 @@
 # VisualDL Profiler Guide
 
 ### Introduction
-Profiling tools is introduced in paddlepaddle since version 2.3.0. Users can collect and export profiling data of both hosts(cpu) and devices(gpu, mlu). VisualDL supports to visualize profiling data and helps you recognize the bottleneck of your program and optimize the performance. As for how to start the profiler, you can refer to [doc](https://www.paddlepaddle.org.cn/documentation/docs/zh/develop/guides/performance_improving/profiling_model.html).
+Profiling tools is introduced in paddlepaddle since version 2.3.0. Users can collect and export profiling data of both hosts(cpu) and devices(gpu, mlu). VisualDL supports to visualize profiling data and helps you identify program bottlenecks and optimize performance. As for how to start the profiler, you can refer to [doc](https://www.paddlepaddle.org.cn/documentation/docs/zh/develop/guides/performance_improving/profiling_model.html).
 
 ### How to launch
 
@@ -152,6 +152,7 @@ Overview viewer illustrates a summary of model performance, consists of run conf
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/185894151-53ffc60b-7203-4cb8-a289-5d97332d0691.gif" width="100%"/>
 </p>
+
 - Configuration: Present all processes and their devices in current profiling data(runs).
 - Device summary: Present device details, such as utilization and occupancy.
 - Execution summary: Present CPU and GPU time for each stage of a model, i.e. DataLoader, Forward, Backward, Optimization and Other.
@@ -161,28 +162,47 @@ Overview viewer illustrates a summary of model performance, consists of run conf
 - UserDefined summary: Present CPU and GPU time of events defined by users in python scripts.
 
 ### Operator
-Operator viewer shows CPU and GPU time for operators in paddle framework.
+Operator viewer shows CPU and GPU time for operators in paddle framework. When you choose Operator Name + Input Shape to present the operator table, you can see operator's input shapes of tensors.
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/185894180-546c7012-6623-4163-b1d4-e7607b1ed72d.gif" width="100%"/>
 </p>
 
 ### GPU Kernel
-GPU Kernel viewer shows execution(GPU) time of kernels launched by operators.
+GPU Kernel viewer shows execution(GPU) time of kernels launched by operators.  When you choose Kernel Name + Attibutes to present the kernel table, you can see kernel's corresponding operator, grid, etc.
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/185894242-ec382146-56aa-42bc-ae81-ed7221b72bb4.gif" width="100%"/>
 </p>
+
 ### Distributed
 Distributed viewer shows communication time, computation time and their overlap in distributed program.
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/185894274-fc9aae45-0faf-429c-8c5e-54ea0a45cbf2.gif" width="100%"/>
 </p>
+
+- Communication: denote the time related to communication, including events of communication type in paddle framework、communication-related operators and GPU Kernels(nccl).
+- Computation: denote the computation time of GPU Kernels，except communication-related Kernels(nccl).
+- Overlap: denote the overlap time between Communication and Computation when they are executed parallelly.
+- Others: denote the time out of Communication and Computation.
+
 ### Trace
 Trace viewer shows the timeline of all events collected in profiling data.
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/185894306-05eb72ca-33b9-4b49-a036-2f4b3b1e7e65.gif" width="100%"/>
 </p>
+
+- Events are listed in different threads or streams by time order, and split into Python and C++ group according to where they are recorded, so it's convenient to fold or unfold a event group. Besides, we mark the thread name if it has a name.
+- Details of events are listed in the status panel. The keyboard 'w' and 's' can zoom in and zoom out the timeline, 'a' and 'd' move the timeline left and right.
+- For events on GPU, you can click `launch` link to find its correlated events on CPU.
+
+
 ### Memory
 Memory viewer shows the events of memory allocation and release.
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/185894209-fec56d3c-65ef-4240-a957-0965521d36f7.gif" width="100%"/>
 </p>
+
+Memory management is scheduled by paddle. First, paddle will apply for a large memory region as cache, this is called reserved memory. Then paddle allocates some memory for tensor creation when needed, and this is called allocated memory. 
+
+- Present the memory curve of allocated and reserved memory.
+- Present the allocation and release time and events for each memory address.
+- Present the allocation and release count and size for each event, and the increased memory size at the end of profiling period.
