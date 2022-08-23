@@ -401,6 +401,12 @@ value: 3.1297709941864014
 <img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
+### Profiler
+通过多个视图可视化性能分析的数据，辅助用户定位性能瓶颈并进行优化。可参考[使用VisualDL做性能分析](./profiler/README_CN.md)。
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="85%"/>
+</p>
+
 
 ### VDL.service
 
