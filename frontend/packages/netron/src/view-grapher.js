@@ -544,6 +544,7 @@ grapher.NodeElement = class {
     }
 
     format(contextElement) {
+        console.log('contextElement', contextElement);
         const rootElement = this.createElement('g');
 
         contextElement.appendChild(rootElement);
@@ -561,11 +562,11 @@ grapher.NodeElement = class {
             }
             height = height + block.height;
         }
-
+        console.log('this._blocks.length', this._blocks);
         for (let i = 0; i < this._blocks.length; i++) {
             // push 进来的header 或者 list
             const top = tops.shift();
-
+            console.log('update');
             this._blocks[i].update(rootElement, top, width, i == 0, i == this._blocks.length - 1);
         }
         const borderElement = this.createElement('path');
@@ -860,13 +861,12 @@ grapher.NodeElement.Header = class {
         }
 
         let lineElement;
-
+        console.log('this._elements', this._elements);
         for (i = 0; i < this._elements.length; i++) {
             element = this._elements[i];
 
             if (i != 0) {
                 lineElement = this.createElement('line');
-
                 lineElement.setAttribute('class', 'node');
 
                 lineElement.setAttribute('x1', element.x);
@@ -876,7 +876,7 @@ grapher.NodeElement.Header = class {
                 lineElement.setAttribute('y1', top);
 
                 lineElement.setAttribute('y2', top + this._height);
-
+                console.log('函数执行了', lineElement);
                 parentElement.appendChild(lineElement);
             }
         }
@@ -893,7 +893,7 @@ grapher.NodeElement.Header = class {
             lineElement.setAttribute('y1', top);
 
             lineElement.setAttribute('y2', top);
-
+            console.log('函数执行了2', lineElement);
             parentElement.appendChild(lineElement);
         }
     }
