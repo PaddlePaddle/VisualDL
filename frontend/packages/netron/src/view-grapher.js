@@ -16,7 +16,9 @@
 
 var grapher = grapher || {};
 var dagre = dagre || require('dagre');
-
+function isObjectEmpty(value) {
+    return Object.prototype.toString.call(value) === '[object Object]' && JSON.stringify(value) === '{}';
+}
 grapher.Renderer = class {
     constructor(host, svgElement, view) {
         this._document = host.document;
@@ -30,61 +32,69 @@ grapher.Renderer = class {
         let svgEdgePathGroup = null;
         let svgEdgeLabelGroup = null;
         let svgNodeGroup = null;
-        svgClusterGroup = this.createElement('g');
-        svgClusterGroup.setAttribute('id', 'clusters');
-        svgClusterGroup.setAttribute('class', 'clusters');
-        this._svgElement.appendChild(svgClusterGroup);
+        if (isObjectEmpty(this._view._nodes)) {
+            svgClusterGroup = this.createElement('g');
+            svgClusterGroup.setAttribute('id', 'clusters');
+            svgClusterGroup.setAttribute('class', 'clusters');
+            this._svgElement.appendChild(svgClusterGroup);
 
-        svgEdgePathGroup = this.createElement('g');
-        svgEdgePathGroup.setAttribute('id', 'edge-paths');
-        svgEdgePathGroup.setAttribute('class', 'edge-paths');
-        this._svgElement.appendChild(svgEdgePathGroup);
+            svgEdgePathGroup = this.createElement('g');
+            svgEdgePathGroup.setAttribute('id', 'edge-paths');
+            svgEdgePathGroup.setAttribute('class', 'edge-paths');
+            this._svgElement.appendChild(svgEdgePathGroup);
 
-        svgEdgeLabelGroup = this.createElement('g');
-        svgEdgeLabelGroup.setAttribute('id', 'edge-labels');
-        svgEdgeLabelGroup.setAttribute('class', 'edge-labels');
-        this._svgElement.appendChild(svgEdgeLabelGroup);
+            svgEdgeLabelGroup = this.createElement('g');
+            svgEdgeLabelGroup.setAttribute('id', 'edge-labels');
+            svgEdgeLabelGroup.setAttribute('class', 'edge-labels');
+            this._svgElement.appendChild(svgEdgeLabelGroup);
 
-        svgNodeGroup = this.createElement('g');
-        svgNodeGroup.setAttribute('id', 'nodes');
-        svgNodeGroup.setAttribute('class', 'nodes');
-        this._svgElement.appendChild(svgNodeGroup);
-        // } else {
-        //     svgClusterGroup = this._document.getElementById('clusters')
-        //     svgEdgePathGroup = this._document.getElementById('edge-paths')
-        //     svgEdgeLabelGroup = this._document.getElementById('edge-labels')
-        //     svgNodeGroup = this._document.getElementById('nodes')
-        // }
-
+            svgNodeGroup = this.createElement('g');
+            svgNodeGroup.setAttribute('id', 'nodes');
+            svgNodeGroup.setAttribute('class', 'nodes');
+            this._svgElement.appendChild(svgNodeGroup);
+        } else {
+            svgClusterGroup = this._document.getElementById('clusters');
+            svgEdgePathGroup = this._document.getElementById('edge-paths');
+            svgEdgeLabelGroup = this._document.getElementById('edge-labels');
+            svgNodeGroup = this._document.getElementById('nodes');
+        }
+        console.log('graphs', graph);
         for (const nodeId of graph.nodes()) {
+            // 这里的nodes 是经过format 之后产生的
+            // 这里可以做出改变如果页面上直接存在则获取不需要重新创建
+
             if (graph.children(nodeId).length == 0) {
-                // 子节点
                 const node = graph.node(nodeId);
-                // 在这里进行缓存的判断
-                // console.log('this._document', this._document);
-                // const nodeDom = this._document.getElementById(node.id);
-                // console.log('nodeDom', nodeDom);
-                const element = this.createElement('g');
-                if (node.id) {
-                    element.setAttribute('id', node.id);
+                const graphNode = this._view._nodes[node.id];
+                if (graphNode?.element) {
+                    const nodeBox = graphNode.label.getBBox();
+                    node.width = nodeBox.width;
+                    node.height = nodeBox.height;
+                    node.element = graphNode.element;
+                    svgNodeGroup.appendChild(graphNode.element);
+                } else {
+                    const element = this.createElement('g');
+                    if (node.id) {
+                        element.setAttribute('id', node.id);
+                    }
+                    element.setAttribute(
+                        'class',
+                        Object.prototype.hasOwnProperty.call(node, 'class') ? 'node ' + node.class : 'node'
+                    );
+                    element.style.opacity = 0;
+                    const container = this.createElement('g');
+                    container.appendChild(node.label);
+                    // node.label 就是fromat 之后的节点
+                    element.appendChild(container);
+                    svgNodeGroup.appendChild(element);
+                    const nodeBox = node.label.getBBox();
+                    const nodeX = -nodeBox.width / 2;
+                    const nodeY = -nodeBox.height / 2;
+                    container.setAttribute('transform', 'translate(' + nodeX + ',' + nodeY + ')');
+                    node.width = nodeBox.width;
+                    node.height = nodeBox.height;
+                    node.element = element;
                 }
-                element.setAttribute(
-                    'class',
-                    Object.prototype.hasOwnProperty.call(node, 'class') ? 'node ' + node.class : 'node'
-                );
-                element.style.opacity = 0;
-                const container = this.createElement('g');
-                container.appendChild(node.label);
-                // node.label 就是fromat 之后的节点
-                element.appendChild(container);
-                svgNodeGroup.appendChild(element);
-                const nodeBox = node.label.getBBox();
-                const nodeX = -nodeBox.width / 2;
-                const nodeY = -nodeBox.height / 2;
-                container.setAttribute('transform', 'translate(' + nodeX + ',' + nodeY + ')');
-                node.width = nodeBox.width;
-                node.height = nodeBox.height;
-                node.element = element;
             }
         }
 
@@ -120,9 +130,11 @@ grapher.Renderer = class {
         for (const nodeId of graph.nodes()) {
             if (graph.children(nodeId).length == 0) {
                 const node = graph.node(nodeId);
-                node.element.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
-                node.element.style.opacity = 1;
-                delete node.element;
+                if (node.element) {
+                    node.element.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
+                    node.element.style.opacity = 1;
+                }
+                // delete node.element;
             }
         }
 
@@ -131,7 +143,7 @@ grapher.Renderer = class {
             if (edge.labelElement) {
                 edge.labelElement.setAttribute('transform', 'translate(' + edge.x + ',' + edge.y + ')');
                 edge.labelElement.style.opacity = 1;
-                delete edge.labelElement;
+                // delete edge.labelElement;
             }
         }
 
@@ -188,21 +200,17 @@ grapher.Renderer = class {
         for (const nodeId of newGroupArray) {
             if (graph.children(nodeId).length > 0) {
                 const node = graph.node(nodeId);
-                // const nodeDom = this._document.getElementById(`node-${nodeId}`)
-                // if (this._view._nodes.hasOwnProperty(node.id)) {
-                //     // 这个节点存在过
-                //     svgNodeGroup.appendChild(this._view._nodes[node.id]);
-                //     const nodeBox = this._view._nodes[node.id].getBBox();
-                //     node.width = nodeBox.width;
-                //     node.height = nodeBox.height;
-                //     node.element = this._view._nodes[node.id]
-                if (this._view._clusters.hasOwnProperty(node.id)) {
-                    const nodeDom = this._view._clusters.hasOwnProperty(node.id);
+                // console.log('node.id', node.nodeId, this._view._nodes);
+                if (this._view._nodes.hasOwnProperty(node.nodeId)) {
+                    const nodeDom = this._view._nodes[nodeId].element;
+                    // const nodeDom = document.getElementById(node.id);
+                    // console.log('nodeDom.children[0]', nodeDom);
                     nodeDom.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
+                    nodeDom.firstChild.setAttribute('width', node.width + 10);
+                    nodeDom.firstChild.setAttribute('height', node.width + 10);
                     nodeDom.firstChild.setAttribute('x', -node.width / 2);
                     nodeDom.firstChild.setAttribute('y', -node.height / 2);
-                    nodeDom.firstChild.setAttribute('width', node.width + 10);
-                    nodeDom.firstChild.setAttribute('height', node.height + 10);
+                    svgClusterGroup.appendChild(nodeDom);
                 } else {
                     const nodeElement = this.createElement('g');
                     nodeElement.setAttribute('class', 'cluster');
@@ -267,16 +275,65 @@ grapher.Renderer = class {
                         });
                     });
                     text2.addEventListener('click', () => {
-                        this._host.selectNodeId({
-                            nodeId: node.nodeId,
-                            expand: node.expand,
-                            isKeepData: node.isKeepData
+                        // this._host.selectNodeId({
+                        //     nodeId: node.nodeId,
+                        //     expand: node.expand,
+                        //     isKeepData: node.isKeepData
+                        // });
+                        // this._host.selectItems({
+                        //     id: `node-${node.nodeId}`,
+                        //     name: node.nodeId,
+                        //     type: 'node'
+                        // });
+                        console.log('node.data', node.data);
+                        const nodes = this._view._model.nodes;
+                        console.log('1nodes', nodes);
+                        const isKeepData = true;
+                        const KeepData = [];
+                        let parentName = '';
+                        let indexs = [];
+                        for (let index = 0; index < nodes.length; index++) {
+                            const Node = nodes[index];
+                            const array = Node.name.split('/');
+                            array.pop();
+                            parentName = array.join('/');
+                            console.log('parentName === node.nodeId', parentName, node.nodeId);
+                            if (parentName === node.nodeId) {
+                                nodes.splice(index, 1, '');
+                                indexs.push(index);
+                            } else {
+                                const length1 = Node.name.split('/').length;
+                                const length2 = node.nodeId.split('/').length;
+                                console.log('length1,length2', Node.name, node.nodeId, length1 - length2);
+                                if (isKeepData && length1 - length2 > 1) {
+                                    // 跨层级保持
+                                    nodes.splice(index, 1, '');
+                                    KeepData.push(Node);
+                                } else if (length1 - length2 > 1) {
+                                    // 跨层级不保持
+                                    nodes.splice(index, 1, '');
+                                }
+                            }
+                        }
+                        const min = indexs.sort()[0];
+
+                        nodes.splice(min, 1, this._view.graphNodes.get(node.nodeId));
+                        let newNodes = nodes.filter(node => {
+                            return node !== '';
                         });
-                        this._host.selectItems({
-                            id: `node-${node.nodeId}`,
-                            name: node.nodeId,
-                            type: 'node'
-                        });
+                        // 点击展开缓存的节点
+                        // newNodes.push(this._view.graphNodes.get(node.nodeId));
+                        console.log('node.nodeId', node.nodeId);
+                        this._view.graphNodes.delete(node.nodeId);
+                        this._view._model.nodes = newNodes;
+                        if (isKeepData) {
+                            this._view.KeepDatas[nodeId] = KeepData;
+                        } else {
+                            this._view.KeepDatas = {};
+                        }
+                        console.log('this._view.KeepDatas', this._view.KeepDatas[nodeId]);
+                        console.log('this._view._model.nodes', this._view._model.nodes);
+                        this._view.renderGraph(this._view._model, this._view._model);
                     });
                     rect.addEventListener('click', () => {
                         if (this._view.isCtrl) {
@@ -320,10 +377,13 @@ grapher.Renderer = class {
                     nodeElement.appendChild(button);
                     nodeElement.appendChild(text2);
                     nodeElement.appendChild(borderElement);
+                    node.element = nodeElement;
                     svgClusterGroup.appendChild(nodeElement);
                 }
             }
         }
+        // this._view._nodes = graph._nodes;
+        console.log('renderw', this._view._nodes);
     }
 
     createElement(name) {
@@ -378,9 +438,10 @@ grapher.Renderer = class {
 };
 
 grapher.NodeElement = class {
-    constructor(document) {
+    constructor(document, view) {
         this._document = document;
         this._blocks = [];
+        this._view = view;
     }
 
     block(type) {
@@ -397,33 +458,41 @@ grapher.NodeElement = class {
         return this._block;
     }
 
-    format(contextElement) {
-        const rootElement = this.createElement('g');
-        contextElement.appendChild(rootElement);
-        let width = 0;
-        let height = 0;
-        const tops = [];
+    format(contextElement, id) {
+        const graphNode = this._view._nodes[id];
+        if (graphNode) {
+            return graphNode.label;
+        } else {
+            const rootElement = this.createElement('g');
+            contextElement.appendChild(rootElement);
+            let width = 0;
+            let height = 0;
+            const tops = [];
 
-        for (const block of this._blocks) {
-            tops.push(height);
-            block.layout(rootElement);
-            if (width < block.width) {
-                width = block.width;
+            for (const block of this._blocks) {
+                tops.push(height);
+                block.layout(rootElement);
+                if (width < block.width) {
+                    width = block.width;
+                }
+                height = height + block.height;
             }
-            height = height + block.height;
-        }
 
-        for (let i = 0; i < this._blocks.length; i++) {
-            // push 进来的header 或者 list
-            const top = tops.shift();
-            this._blocks[i].update(rootElement, top, width, i == 0, i == this._blocks.length - 1);
+            for (let i = 0; i < this._blocks.length; i++) {
+                // push 进来的header 或者 list
+                const top = tops.shift();
+                this._blocks[i].update(rootElement, top, width, i == 0, i == this._blocks.length - 1);
+            }
+            const borderElement = this.createElement('path');
+            borderElement.setAttribute('class', ['node', 'border'].join(' '));
+            borderElement.setAttribute(
+                'd',
+                grapher.NodeElement.roundedRect(0, 0, width, height, true, true, true, true)
+            );
+            rootElement.appendChild(borderElement);
+            contextElement.innerHTML = '';
+            return rootElement;
         }
-        const borderElement = this.createElement('path');
-        borderElement.setAttribute('class', ['node', 'border'].join(' '));
-        borderElement.setAttribute('d', grapher.NodeElement.roundedRect(0, 0, width, height, true, true, true, true));
-        rootElement.appendChild(borderElement);
-        contextElement.innerHTML = '';
-        return rootElement;
     }
 
     static roundedRect(x, y, width, height, r1, r2, r3, r4) {

@@ -130,6 +130,11 @@ host.BrowserHost = class {
         // 反传回去
         this.message('status', status);
     }
+    graphs(graph) {
+        // 反传回去
+        console.log('getGraph', graph);
+        this.message('getGraph', graph._nodes);
+    }
     selectNodeId(nodeInfo) {
         // 反传回去
         console.log('节点点击事件触发了', nodeInfo);
