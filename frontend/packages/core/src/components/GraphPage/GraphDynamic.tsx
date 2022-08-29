@@ -159,12 +159,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         const [rendered, setRendered] = useState(false);
         const [loading, setLoading] = useState(true);
         const [item, setSelectItem] = useState<Theobj | null>();
-        const [isExpend, setIsExpend] = useState(0);
-        const [isRetract, setIsretract] = useState(0);
         const [modelDatas, setModelDatas] = useState<Theobj>();
-        const [allModelDatas, setAllModelDatas] = useState<Theobj>();
-        const [selectNodeId, setSelectNodeId] = useState();
-        const [searchNodeId, setSearchNodeId] = useState<Theobj>();
         const iframe = useRef<HTMLIFrameElement>(null);
         const handler = useCallback(
             (event: MessageEvent) => {
@@ -202,8 +197,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                             return onShowNodeProperties?.(data);
                         case 'show-node-documentation':
                             return onShowNodeDocumentation?.(data);
-                        case 'nodeId':
-                            return setSelectNodeId?.(data);
+                        // case 'nodeId':
+                        //     return setSelectNodeId?.(data);
                         case 'selectItem':
                             return setSelectItem?.(data);
                     }
@@ -238,46 +233,18 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
         }, [selectedRuns]);
         useEffect(() => {
-            if (isExpend) {
-                // debugger
-                setLoading(true);
-                const refresh = false;
-                const expand_all = true;
-                fetcher(
-                    '/graph/graph' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                ).then((res: Theobj) => {
-                    setSelectItem(null);
-                    setModelDatas(res);
-                });
-            }
-        }, [isExpend]);
-        useEffect(() => {
-            if (isRetract) {
-                // debugger
-                setLoading(true);
-                const refresh = true;
-                const expand_all = false;
-                fetcher(
-                    '/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
-                ).then((res: Theobj) => {
-                    setSelectItem(null);
-                    setModelDatas(res);
-                });
-            }
-        }, [isRetract]);
-        useEffect(() => {
             if (ready) {
                 dispatch('change-select', item);
             }
         }, [dispatch, item, ready]);
-        useEffect(() => {
-            if (!allModelDatas) {
-                return;
-            }
-            if (ready) {
-                dispatch('change-allGraph', allModelDatas);
-            }
-        }, [dispatch, allModelDatas, ready]);
+        // useEffect(() => {
+        //     if (!allModelDatas) {
+        //         return;
+        //     }
+        //     if (ready) {
+        //         dispatch('change-allGraph', allModelDatas);
+        //     }
+        // }, [dispatch, allModelDatas, ready]);
         useEffect(() => {
             if (!modelDatas) {
                 return;
@@ -286,41 +253,10 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 dispatch('change-graph', modelDatas);
             }
         }, [dispatch, modelDatas, ready]);
-        useEffect(() => {
-            if (!selectNodeId) {
-                return;
-            }
-            // debugger;
-            setLoading(true);
-            const selectNodeIds: Theobj = selectNodeId;
-            fetcher(
-                '/graph/manipulate' +
-                    `?run=${selectedRuns}` +
-                    `&nodeid=${selectNodeIds.nodeId}` +
-                    `&expand=${selectNodeIds.expand}` +
-                    `&keep_state=${isKeepData}`
-            ).then((res: Theobj) => {
-                setModelDatas(res);
-            });
-        }, [selectNodeId]);
-        useEffect(() => {
-            if (!searchNodeId) {
-                return;
-            }
-            // debugger
-            setLoading(true);
-            const searchNodeIds: Theobj = searchNodeId;
-            const is_node = searchNodeIds.type === 'node' ? true : false;
-            fetcher(
-                '/graph/search' +
-                    `?run=${selectedRuns}` +
-                    `&nodeid=${searchNodeIds.name}` +
-                    `&keep_state=${isKeepData}` +
-                    `&is_node=${is_node}`
-            ).then((res: Theobj) => {
-                setModelDatas(res);
-            });
-        }, [searchNodeId]);
+        useEffect(
+            () => (ready && dispatch('toggle-isKeepData', isKeepData)) || undefined,
+            [dispatch, isKeepData, ready]
+        );
         useEffect(
             () => (ready && dispatch('toggle-attributes', showAttributes)) || undefined,
             [dispatch, showAttributes, ready]
@@ -354,31 +290,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 setLoading(data);
             },
             select(item) {
-                const a = document.querySelector('iframe') as HTMLIFrameElement;
-                const documents = a.contentWindow?.document as Document;
-                if (item.type === 'node') {
-                    for (const node of documents.getElementsByClassName('cluster')) {
-                        if (node.getAttribute('id') === `node-${item.name}`) {
-                            dispatch('select', item);
-                            return;
-                        }
-                    }
-                    for (const node of documents.getElementsByClassName('node')) {
-                        if (node.getAttribute('id') === `node-${item.name}`) {
-                            dispatch('select', item);
-                            return;
-                        }
-                    }
-                } else if (item.type === 'input') {
-                    for (const node of documents.getElementsByClassName('edge-path')) {
-                        if (node.getAttribute('id') === `edge-${item.name}`) {
-                            dispatch('select', item);
-                            return;
-                        }
-                    }
-                }
-                setSelectItem(item);
-                setSearchNodeId(item);
+                dispatch('select', item);
             },
             showModelProperties() {
                 dispatch('show-model-properties');
@@ -417,11 +329,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             const result = await fetcher(
                 '/graph/graph2' + `?run=${selectedRuns}` + `&refresh=${refresh}` + `&expand_all=${expand_all}`
             );
-            const allResult = await fetcher('/graph/get_all_nodes' + `?run=${selectedRuns}`);
-            // const allResult = await fetcher('/graph/graph' + `?run=${selectedRuns}`);
-            setSelectItem(null);
             if (result) setModelDatas(result);
-            if (allResult) setAllModelDatas(allResult);
         };
         const content = useMemo(() => {
             if (loading) {
@@ -481,16 +389,14 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 icon: 'restore-size',
                                 tooltip: t('expend-size'),
                                 onClick: () => {
-                                    const id = isExpend + 1;
-                                    setIsExpend(id);
+                                    dispatch('expend-size');
                                 }
                             },
                             {
                                 icon: 'shrink',
                                 tooltip: t('restore-size'),
                                 onClick: () => {
-                                    const id = isRetract + 1;
-                                    setIsretract(id);
+                                    dispatch('restore-size');
                                 }
                             }
                         ]}
