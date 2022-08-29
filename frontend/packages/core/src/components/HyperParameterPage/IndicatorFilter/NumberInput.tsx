@@ -54,6 +54,7 @@ const NumberInput: FunctionComponent<NumberInputProps & WithStyled> = ({
         if (Number.isNaN(v)) {
             setInputValue(Number.isFinite(value) ? value + '' : '');
         } else {
+            debugger;
             setInputValue(v + '');
         }
     }, [inputValue, value]);

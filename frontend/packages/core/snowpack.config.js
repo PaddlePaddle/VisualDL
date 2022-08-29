@@ -37,6 +37,7 @@ function isWorkspace() {
 
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
+const TracePath = path.dirname(resolve.sync(cwd, './public/static'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
@@ -65,6 +66,8 @@ export default {
     plugins: [
         '@snowpack/plugin-react-refresh',
         '@snowpack/plugin-dotenv',
+        'snowpack-plugin-less',
+        '@snowpack/plugin-sass',
         [
             '@snowpack/plugin-typescript',
             {
@@ -98,6 +101,10 @@ export default {
                         destination: path.join(dest, 'netron/dist')
                     },
                     {
+                        source: [path.join(TracePath, '**/*')],
+                        destination: path.join(dest, 'trace/dist')
+                    },
+                    {
                         source: [path.join(wasmPath, '*.{js,wasm}')],
                         destination: path.join(dest, 'wasm/dist')
                     }
@@ -111,7 +118,8 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
+        // knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is','rc-util/es/hooks/useId','rc-util/es/Portal','rc-util/es/Dom/contains','rc-util/es/Dom/css','rc-util/es/getScrollBarSize','rc-util/es/PortalWrapper','rc-select/es/hooks/useId','rc-util/es/Dom/isVisible','rc-util/es/Dom/focus','rc-util/es/Dom/focus']
+        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is', 'antd']
     },
     buildOptions: {
         out: 'dist',

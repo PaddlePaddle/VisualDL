@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type {EChartOption, VisualMap} from 'echarts';
+import type {EChartsOption,VisualMapComponentOption} from 'echarts';
 
 import type {Modes} from './types';
 
-const baseOptions: EChartOption = {
+const baseOptions: EChartsOption = {
     legend: {
         data: []
     }
 };
 
-export const options: Record<Modes, EChartOption> = {
+export const options: Record<Modes, EChartsOption> = {
     overlay: {
         ...baseOptions,
         axisPointer: {
@@ -53,7 +53,8 @@ export const options: Record<Modes, EChartOption> = {
                 colorLightness: [0.5, 0.8],
                 colorSaturation: [0.5, 0.8]
             }
-        } as unknown as VisualMap.Continuous[], // Fix echarts type bug
+        } as unknown as VisualMapComponentOption, // Fix echarts type bug
+        //['Continuous'][]
         xAxis: {
             axisLine: {
                 onZero: false

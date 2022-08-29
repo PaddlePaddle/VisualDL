@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type {EChartOption} from 'echarts';
+import type {EChartsOption,LineSeriesOption} from 'echarts';
 import type {MetricData} from './types';
 import type {Run} from '~/types';
 
@@ -30,7 +30,7 @@ export function calculateRelativeTime(data: MetricData[]) {
     });
 }
 
-export function chartData(data: number[][], run: Run): EChartOption.SeriesLine[] {
+export function chartData(data: number[][], run: Run): EChartsOption['line'] {
     const name = run.label;
     const color = run.colors[0];
     return [

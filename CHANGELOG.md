@@ -4,6 +4,168 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.4.0 - 2022-08-22
+
+**ZH**
+
+- 功能新增
+  - 增加性能数据可视化功能，提供Overview、Operator、GPU Kernel、Distributed、Trace、Memory共六个视图的分析。(#1112 #1114 #1118)
+    - Overview视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="80%"/>
+    </p>
+
+    - Operator视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893218-bff646f1-3d9f-448b-99c8-39f2309db65d.gif" width="80%"/>
+    </p>
+
+    - GPU Kernel视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893227-64837816-e6a5-41ad-b8f4-d1dfef3fd40b.gif" width="80%"/>
+    </p>
+
+    - Distributed视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893682-e9330b99-e344-423a-8935-dc050a4cab45.gif" width="80%"/>
+    </p>
+
+    - Trace视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893687-1788586e-4371-4136-baf7-f3edcbc19003.gif" width="80%"/>
+    </p>
+
+    - Memory视图
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185893743-43643f2d-0c5a-46ad-8ad8-b04ae48ecc97.gif" width="80%"/>
+    </p>
+
+**EN**
+
+- Features
+  - Add visualization for profiling data, support six viewers for analysis, i.e. Overview, Operator, GPU Kernel, Distributed, Trace and Memory. (#1112 #1114 #1118)
+    - Overview
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894151-53ffc60b-7203-4cb8-a289-5d97332d0691.gif" width="80%"/>
+    </p>
+
+    - Operator
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894180-546c7012-6623-4163-b1d4-e7607b1ed72d.gif" width="80%"/>
+    </p>
+
+    - GPU Kernel
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894242-ec382146-56aa-42bc-ae81-ed7221b72bb4.gif" width="80%"/>
+    </p>
+
+    - Distributed
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894274-fc9aae45-0faf-429c-8c5e-54ea0a45cbf2.gif" width="80%"/>
+    </p>
+
+    - Trace
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894306-05eb72ca-33b9-4b49-a036-2f4b3b1e7e65.gif" width="80%"/>
+    </p>
+
+    - Memory
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/185894209-fec56d3c-65ef-4240-a957-0965521d36f7.gif" width="80%"/>
+    </p>
+
+
+## v2.3.0 - 2022-06-30
+
+**ZH**
+
+- 功能新增
+  - **BE**:  增加add_graph接口支持动态图模型可视化 （#1077 #1093）
+  - **FE**:  增加动态图可视化页面 （#1091 #1096 #1097）
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175808777-5bc24d7a-9115-44d0-8709-a82a3e341b3d.gif" width="80%"/>
+    </p>
+    
+    - 展开和折叠指定节点
+    
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810790-a35f83bf-a23c-4a28-afb7-2e0cf7711b9c.png" width="80%"/>
+        </p>
+
+    - 一键全展开和全折叠
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809551-67f67552-59b7-4aca-a1cc-fe5606e7e512.png" width="80%"/>
+        </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809610-d07c0b15-d1bd-4542-aacd-29b4d2ba8fcb.png" width="80%"/>
+    </p>
+
+    - 飞桨API链接功能
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809570-241db056-0b41-4e3a-828d-376a011a4645.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175809574-8c173b88-ed27-4c29-a3e1-a3887d2d3107.png" width="80%"/>
+    </p>
+    
+
+- 问题修复
+  - **FE**:  修复图像数据放大后比例失调的问题 （##1090）
+
+- 其他改进
+  - **FE**:  优化文本数据显示的用户体验 （##1090）
+
+**EN**
+
+- Features
+  - **BE**:  Add add_graph interface for dynamic model of paddle（#1077 #1093）
+  - **FE**:  Add dynamic graph page （#1091 #1096 #1097）
+  <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175811156-a80ca0c4-207d-44d7-bd5a-9701a7875722.gif" width="80%"/>
+    </p>
+
+    - Fold and unfold one node
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810800-4823b9f1-3d59-44e8-aaa5-a80577624452.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810790-a35f83bf-a23c-4a28-afb7-2e0cf7711b9c.png" width="80%"/>
+    </p>
+
+    - Fold and unfold all nodes
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810856-ff98a1ed-2a4f-4cc1-bc9b-3085857c0b81.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810837-a0953956-7320-4e78-9c52-72ad13962216.png" width="80%"/>
+    </p>
+
+    - Link api specification of paddle
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810992-b86e9aef-e700-4c2d-bcd0-21fc96fc2564.png" width="80%"/>
+    </p>
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/175810997-0672d836-4d7c-432d-b5de-187f97c421ae.png" width="80%"/>
+    </p>
+- Bug Fixes
+  - **FE**:  Fix unbalance ratio of upscaled image when zoom in. （##1090）
+
+- Enhancement
+  - **FE**:  Refine user experience for text presentation. （##1090）
+
+
 ## v2.2.1 - 2021-09-02
 
 **ZH**
