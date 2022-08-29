@@ -348,8 +348,8 @@ view.View = class {
                                 "Unknown node type '" + JSON.stringify(type) + "' in '" + model.format + "'."
                             );
                         }
-                        const content = this.showNames && node.name ? node.name : type.split('.').pop();
-                        const tooltip = this.showNames && node.name ? type : node.name;
+                        const content = this.showNames() && node.name ? node.name : type.split('.').pop();
+                        const tooltip = this.showNames() && node.name ? type : node.name;
                         header.add(null, styles, content, tooltip, () => {
                             this.showNodeProperties(node);
                         });

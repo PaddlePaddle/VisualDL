@@ -89,6 +89,8 @@ host.BrowserHost = class {
                             return this._view.toggleDirection(data);
                         case 'toggle-theme':
                             return this._view.toggleTheme(data);
+                        case 'toggle-isKeepData':
+                            return this._view.changeKeepData(data);
                         case 'export':
                             return this._view.export(`${document.title}.${data}`);
                         case 'change-graph':
@@ -100,11 +102,15 @@ host.BrowserHost = class {
                         case 'search':
                             return this._view.find(data);
                         case 'select':
-                            return this._view.select(data);
+                            return this._view.select3(data);
                         case 'show-model-properties':
                             return this._view.showModelProperties();
                         case 'show-node-documentation':
                             return this._view.showNodeDocumentation(data);
+                        case 'expend-size':
+                            return this._view.expend_size(data);
+                        case 'restore-size':
+                            return this._view.restore_size(data);
                         case 'ready':
                             if (this._ready) {
                                 return this.status('ready');
@@ -132,17 +138,14 @@ host.BrowserHost = class {
     }
     graphs(graph) {
         // 反传回去
-        console.log('getGraph', graph);
         this.message('getGraph', graph._nodes);
     }
     selectNodeId(nodeInfo) {
         // 反传回去
-        console.log('节点点击事件触发了', nodeInfo);
         this.message('nodeId', nodeInfo);
     }
     selectItems(item) {
         // 反传回去
-        console.log('节点点击事件触发了', item);
         this.message('selectItem', item);
     }
 
@@ -203,7 +206,6 @@ host.BrowserHost = class {
     }
 
     _changeFiles(files) {
-        console.log('files', files);
         if (files && files.length) {
             files = Array.from(files);
             const file = files.find(file => this._view.accept(file.name));
@@ -532,7 +534,6 @@ function getCaption(obj) {
     return newObj;
 }
 const hash = getCaption(document.referrer);
-console.log('hash', hash);
 if (hash === 'graphStatic') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {

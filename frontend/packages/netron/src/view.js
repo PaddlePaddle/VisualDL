@@ -53,13 +53,13 @@ view.View = class {
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
                 this._graphNodes = {};
                 this.KeepDatas = {};
+                this.isKeepData = false;
                 this.graphNodes = new Map();
             })
             .catch(err => {
                 this.error(err.message, err);
             });
     }
-
     cut() {
         this._host.document.execCommand('cut');
     }
@@ -80,13 +80,15 @@ view.View = class {
         if (this._activeGraph) {
             this.clearSelection();
             const graphElement = document.getElementById('canvas');
-            if (this._allGraph) {
-                const view = new sidebar.FindSidebar(this._host, graphElement, this._allGraph);
-                this._host.message('search', view.update(value));
-            } else {
-                const view = new sidebar.FindSidebar(this._host, graphElement, this._activeGraph);
-                this._host.message('search', view.update(value));
-            }
+            // if (this._allGraph) {
+            //     const view = new sidebar.FindSidebar(this._host, graphElement, this._allGraph);
+            //     this._host.message('search', view.update(value));
+            // } else {
+            //     const view = new sidebar.FindSidebar(this._host, graphElement, this._activeGraph);
+            //     this._host.message('search', view.update(value));
+            // }
+            const view = new sidebar.FindSidebar(this._host, graphElement, this._allGraph);
+            this._host.message('search', view.update(value));
         }
     }
     toggleAttributes(toggle) {
@@ -177,7 +179,9 @@ view.View = class {
             }, time);
         });
     }
-
+    changeKeepData(flag) {
+        this.isKeepData = flag;
+    }
     zoomIn() {
         if (this._zoom) {
             this._zoom.scaleBy(d3.select(this._host.document.getElementById('canvas')), 1.2);
@@ -198,6 +202,62 @@ view.View = class {
         }
     }
 
+    select3(item) {
+        this.clearSelection();
+        const name = item.nodeName ? item.nodeName : item.name;
+        const node = this._host.document.getElementById(`node-${name}`);
+        if (!node) {
+            this.node_expand(this._model.nodes, name);
+            const newArray = [];
+            this.treeNode(this._model.nodes, newArray);
+            this._activeGraph.nodes = newArray;
+            this.renderGraph(this._model, this._activeGraph);
+        }
+        setTimeout(() => {
+            if (item.type === 'node') {
+                for (const nodes of this._allGraph?.nodes) {
+                    if (nodes.name === item.name) {
+                        this.showNodeProperties(nodes);
+                        break;
+                    }
+                }
+            }
+            const graphElement = document.getElementById('canvas');
+            const selection = sidebar.FindSidebar.selection(item, graphElement);
+            if (selection && selection.length > 0) {
+                const graphElement = this._host.document.getElementById('canvas');
+                const graphRect = graphElement.getBoundingClientRect();
+                let x = 0;
+                let y = 0;
+                for (const element of selection) {
+                    element.classList.add('select');
+                    this._selection.push(element);
+                    const transform = element.transform.baseVal.consolidate();
+                    const box = element.getBBox();
+                    const ex = transform ? transform.matrix.e : box.x + box.width / 2;
+                    const ey = transform ? transform.matrix.f : box.y + box.height / 2;
+                    x += ex;
+                    y += ey;
+                }
+                x = x / selection.length;
+                y = y / selection.length;
+                this._zoom.transform(
+                    d3.select(graphElement),
+                    d3.zoomIdentity.translate(graphRect.width / 2 - x, graphRect.height / 2 - y)
+                );
+            }
+        }, 200);
+    }
+    select2(item) {
+        const graphElement = document.getElementById('canvas');
+        const selection = sidebar.FindSidebar.selection2(item, graphElement);
+        if (selection && selection.length > 0) {
+            for (const element of selection) {
+                this._selection.push(element);
+                element.classList.add('select');
+            }
+        }
+    }
     select(item) {
         this.clearSelection();
         if (item.type === 'node') {
@@ -233,17 +293,6 @@ view.View = class {
             );
         }
     }
-    select2(item) {
-        const graphElement = document.getElementById('canvas');
-        const selection = sidebar.FindSidebar.selection2(item, graphElement);
-        if (selection && selection.length > 0) {
-            for (const element of selection) {
-                this._selection.push(element);
-                element.classList.add('select');
-            }
-        }
-    }
-
     clearSelection() {
         while (this._selection.length > 0) {
             const element = this._selection.pop();
@@ -329,8 +378,8 @@ view.View = class {
     _updateGraph(data) {
         return this._timeout(100).then(() => {
             // 直接在此处传入模型数据的数据
-            if (data && data != this._activeGraph) {
-                const nodes = data.nodes;
+            if (data && data[0] != this._activeGraph) {
+                const nodes = data[0].nodes;
                 if (nodes.length > 1400) {
                     if (
                         !this._host.confirm(
@@ -342,25 +391,19 @@ view.View = class {
                     }
                 }
             }
-            // this._host.status('rendered');
-            return this.renderGraph(data, data)
-                .then(g => {
-                    console.log('dagre3', g);
+            const cloneData = JSON.parse(JSON.stringify(data));
+            return this.renderGraph(data, cloneData)
+                .then(() => {
                     this._model = data;
-                    this._activeGraph = data;
+                    this._activeGraph = cloneData;
+                    const graphs = {};
+                    graphs.inputs = this._model.inputs;
+                    graphs.outputs = this._model.outputs;
+                    const nodes = [];
+                    this.all_nodes(this._model.nodes, nodes);
+                    graphs.nodes = nodes;
+                    this._allGraph = graphs;
                     this._host.status('rendered');
-                    // this._host.graphs(g);
-                    // const nodes = {};
-                    // for (const node of Object.values(this._nodes)) {
-                    //     if (node.id) {
-                    //         nodes[node.id] = node;
-                    //     } else {
-                    //         console.log('nodeId', node);
-                    //         nodes[node.nodeId] = node;
-                    //     }
-                    // }
-                    // this._nodes = nodes;
-                    // console.log('this._nodes', this._nodes);
                     return this._model;
                 })
                 .catch(error => {
@@ -391,17 +434,17 @@ view.View = class {
                     }
                 }
             }
-            return this.renderGraph(graph, graph)
+            const cloneData = this._activeGraph;
+            return this.renderGraph(graph, cloneData)
                 .then(() => {
                     this._model = graph;
-                    this._activeGraph = graph;
+                    this._activeGraph = cloneData;
                     this._host.status('rendered');
                     return this._model;
                 })
                 .catch(error => {
                     return this.renderGraph(this._model, this._activeGraph)
                         .then(g => {
-                            console.log('darge2', g);
                             this._host.status('rendered');
                         })
                         .finally(() => {
@@ -409,10 +452,11 @@ view.View = class {
                         });
                 });
         });
-
+    }
+    jumpRoute(node) {
         if (node.is_leaf) {
             if (this.isCtrl) {
-                for (const nodes of this._allGraph?.nodes) {
+                for (const nodes of this._allGraph.nodes) {
                     if (nodes.name === node.name) {
                         for (const type of this.non_graphMetadatas) {
                             if (type.name.toLowerCase() === node.type) {
@@ -446,460 +490,74 @@ view.View = class {
             }
         }
     }
-    treeNode(nodes) {
-        nodes.forEach((node, index) => {
-            let element = null;
-            const addNode = (element, node) => {
-                const header = element.block('header');
-                // 这个替换为一个header 组件
-                const styles = ['node-item-type'];
-                const type = node.type;
-                if (node.is_leaf) {
-                    for (const metadatas of this.graphMetadatas) {
-                        if (node.type === metadatas.name) {
-                            if (metadatas.schema.category) {
-                                styles.push('node-item-type-' + metadatas.schema.category.toLowerCase());
-                            }
-                        }
-                    }
-                } else {
-                    for (const metadatas of this.non_graphMetadatas) {
-                        if (node.type === metadatas.name) {
-                            if (metadatas.schema.category) {
-                                styles.push('node-item-type-' + metadatas.schema.category.toLowerCase());
-                            }
-                        }
-                    }
-                }
-                // 这里useeffect 作为styles 获取
-                if (typeof type !== 'string' || !type.split) {
-                    // #416
-                    throw new ModelError("Unknown node type '" + JSON.stringify(type) + "' in '" + model.format + "'.");
-                }
-                const nodeName = node.name.split('/')[node.name.split('/').length - 1];
-                const content = this.showNames && node.name ? nodeName : type.split('.').pop();
-                const tooltip = this.showNames && node.name ? type : nodeName;
-                // 此处直接在header里面书写内容
-                header.add(null, styles, content, tooltip, () => {
-                    this.jumpRoute(node);
-                    this.showNodeProperties(node);
-                    this.select({
-                        id: `node-${node.name}`,
-                        name: node.name,
-                        type: 'node'
-                    });
-                    const inputs = node.inputs;
-                    if (inputs) {
-                        for (const input of inputs) {
-                            for (const argument of input.arguments) {
-                                if (argument.name != '' && !argument.initializer) {
-                                    this.select2({
-                                        id: `edge-${argument.name}`,
-                                        name: argument.name,
-                                        type: 'input',
-                                        tonode: node.name
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    let outputs = node.outputs;
-                    if (node.chain && node.chain.length > 0) {
-                        const chainOutputs = node.chain[node.chain.length - 1].outputs;
-                        if (chainOutputs.length > 0) {
-                            outputs = chainOutputs;
-                        }
-                    }
-                    if (outputs) {
-                        for (const output of outputs) {
-                            for (const argument of output.arguments) {
-                                if (argument.name != '') {
-                                    this.select2({
-                                        id: `edge-${argument.name}`,
-                                        name: argument.name,
-                                        type: 'input',
-                                        fromnode: node.name
-                                    });
-                                }
-                            }
-                        }
-                    }
-                });
-                const buttons = ['node-item-buttons'];
-                if (!node.is_leaf) {
-                    header.add(null, buttons, '+', null, () => {
-                        // debugger;
-                        // this._host.selectNodeId({
-                        //     nodeId: node.name,
-                        //     expand: true
-                        // });
-                        // this._host.selectItems({
-                        //     id: `node-${node.name}`,
-                        //     name: node.name,
-                        //     type: 'node'
-                        // });
-
-                        const model = this._model;
-                        console.log('node.nodes', node, this.KeepDatas[node.name], model.nodes);
-                        if (this.KeepDatas.hasOwnProperty(node.name) && this.KeepDatas[node.name].length) {
-                            console.log('保持函数执行了', this.KeepDatas[node.name]);
-                            model.nodes.splice(index, 1, ...node.nodes);
-                            if (this.graphNodes.length) {
-                            }
-                            model.nodes = [...model.nodes, ...this.KeepDatas[node.name]];
-                        } else {
-                            model.nodes.splice(index, 1, ...node.nodes);
-                        }
-                        // model.nodes.splice(index, 1, ...node.nodes);
-                        console.log('model.nodes', model.nodes);
-                        this.graphNodes.set(node.name, node);
-                        console.log('this.graphNodess', this.graphNodes);
-                        this.renderGraph(model, model);
-                    });
-                }
-                const initializers = [];
-                let hiddenInitializers = false;
-                if (this._showInitializers) {
-                    // 是否显示初始化参数
-                    if (node.inputs) {
-                        for (const input of node.inputs) {
-                            if (
-                                input.visible &&
-                                input.arguments.length == 1 &&
-                                input.arguments[0].initializer != null
-                            ) {
-                                initializers.push(input);
-                            }
-                            if (
-                                (!input.visible || input.arguments.length > 1) &&
-                                input.arguments.some(argument => argument.initializer != null)
-                            ) {
-                                hiddenInitializers = true;
-                            }
-                        }
-                    }
-                }
-                let sortedAttributes = [];
-                const attributes = node.attributes;
-                if (this.showAttributes && attributes) {
-                    // 是否显示属性参数
-                    sortedAttributes = attributes.filter(attribute => attribute.visible).slice();
-                    sortedAttributes.sort((a, b) => {
-                        const au = a.name.toUpperCase();
-                        const bu = b.name.toUpperCase();
-                        return au < bu ? -1 : au > bu ? 1 : 0;
-                    });
-                }
-                if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
-                    const block = element.block('list');
-                    block.handler = () => {
-                        // 侧边栏点击事件
-                        this.jumpRoute(node);
-                        this.showNodeProperties(node);
-                        this.select({
-                            id: `node-${node.name}`,
-                            name: node.name,
-                            type: 'node'
-                        });
-                        const inputs = node.inputs;
-                        if (inputs) {
-                            for (const input of inputs) {
-                                for (const argument of input.arguments) {
-                                    if (argument.name != '' && !argument.initializer) {
-                                        this.select2({
-                                            id: `edge-${argument.name}`,
-                                            name: argument.name,
-                                            type: 'input',
-                                            tonode: node.name
-                                        });
-                                    }
-                                }
-                            }
-                        }
-
-                        let outputs = node.outputs;
-                        if (node.chain && node.chain.length > 0) {
-                            const chainOutputs = node.chain[node.chain.length - 1].outputs;
-                            if (chainOutputs.length > 0) {
-                                outputs = chainOutputs;
-                            }
-                        }
-                        if (outputs) {
-                            for (const output of outputs) {
-                                for (const argument of output.arguments) {
-                                    if (argument.name != '') {
-                                        this.select2({
-                                            id: `edge-${argument.name}`,
-                                            name: argument.name,
-                                            type: 'input',
-                                            fromnode: node.name
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    for (const initializer of initializers) {
-                        const argument = initializer.arguments[0];
-                        const type = argument.type;
-                        let shape = '';
-                        let separator = '';
-                        if (
-                            type &&
-                            type.shape &&
-                            type.shape.dimensions &&
-                            Object.prototype.hasOwnProperty.call(type.shape.dimensions, 'length')
-                        ) {
-                            shape = '\u3008' + type.shape.dimensions.map(d => (d ? d : '?')).join('\u00D7') + '\u3009';
-                            if (
-                                type.shape.dimensions.length == 0 &&
-                                argument.initializer &&
-                                !argument.initializer.state
-                            ) {
-                                shape = argument.initializer.toString();
-                                if (shape && shape.length > 10) {
-                                    shape = shape.substring(0, 10) + '\u2026';
-                                }
-                                separator = ' = ';
-                            }
-                        }
-                        block.add(
-                            'initializer-' + argument.name,
-                            initializer.name,
-                            shape,
-                            type ? type.toString() : '',
-                            separator
-                        );
-                    }
-                    if (hiddenInitializers) {
-                        block.add(null, '\u3008' + '\u2026' + '\u3009', '', null, '');
-                    }
-
-                    for (const attribute of sortedAttributes) {
-                        if (attribute.visible) {
-                            let attributeValue = sidebar.NodeSidebar.formatAttributeValue(
-                                attribute.value,
-                                attribute.type
-                            );
-                            if (attributeValue && attributeValue.length > 25) {
-                                attributeValue = attributeValue.substring(0, 25) + '\u2026';
-                            }
-                            block.add(null, attribute.name, attributeValue, attribute.type, ' = ');
-                        }
-                    }
-                }
-
-                if (node.chain && node.chain.length > 0) {
-                    for (const innerNode of node.chain) {
-                        addNode(element, innerNode, false);
-                    }
-                }
-
-                if (node.inner) {
-                    addNode(element, node.inner, false);
-                }
-            };
-            const addEdges = node => {
-                const inputs = node.inputs;
-                for (const input of inputs) {
-                    for (const argument of input.arguments) {
-                        if (argument.name != '' && !argument.initializer) {
-                            let tuple = edgeMap[argument.name];
-                            if (!tuple) {
-                                tuple = {from: null, to: []};
-                                edgeMap[argument.name] = tuple;
-                            }
-                            tuple.to.push({
-                                // 这个节点的id
-                                node: nodeId,
-                                name: input.name,
-                                nodename: node.name
-                            });
-                        }
-                    }
-                }
-
-                let outputs = node.outputs;
-                if (node.chain && node.chain.length > 0) {
-                    const chainOutputs = node.chain[node.chain.length - 1].outputs;
-                    if (chainOutputs.length > 0) {
-                        outputs = chainOutputs;
-                    }
-                }
-                if (outputs) {
-                    for (const output of outputs) {
-                        for (const argument of output.arguments) {
-                            if (argument.name != '') {
-                                let tuple = edgeMap[argument.name];
-                                if (!tuple) {
-                                    tuple = {from: null, to: []};
-                                    edgeMap[argument.name] = tuple;
-                                }
-                                tuple.from = {
-                                    node: nodeId,
-                                    name: output.name,
-                                    type: argument.type,
-                                    nodename: node.name
-                                };
-                            }
-                        }
-                    }
-                }
-            };
-            if (!this._elements.hasOwnProperty(node.name)) {
-                element = new grapher.NodeElement(this._host.document, this);
-                addNode(element, node);
-                this._elements[node.name] = element;
+    treeNode(nodes, newArray) {
+        for (const node of nodes) {
+            if (node.nodes && node.is_expend) {
+                // newArray.push(node);
+                this.treeNode(node.nodes, newArray);
             } else {
-                element = this._elements[node.name];
-            }
-            addEdges(node);
-            if (node.controlDependencies && node.controlDependencies.length > 0) {
-                for (const controlDependency of node.controlDependencies) {
-                    let tuple = edgeMap[controlDependency];
-                    if (!tuple) {
-                        tuple = {from: null, to: []};
-                        edgeMap[controlDependency] = tuple;
-                    }
-                    tuple.to.push({
-                        node: nodeId,
-                        name: controlDependency,
-                        controlDependency: true,
-                        nodename: node.name
-                    });
-                }
-            }
-
-            const nodeName = node.name;
-            const nodeid = 'node-' + nodeName;
-            // g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
-            g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
-            id++;
-            // if (!) {
-            //     // 此时图上没有
-            //     if (nodeName) {
-            //         g.setNode(nodeId, {label: element.format(graphElement,nodeid), id: 'node-' + nodeName});
-            //     } else {
-            //         g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
-            //         id++;
-            //     }
-            // } else {
-            //     g.setNode(nodeId, {label: 'node-' + nodeName, id: 'node-' + nodeName});
-            // }
-            const isKeepData = this._KeepData;
-            const createCluster = (name, node) => {
-                this._clusters[name] = true;
-                const non_leaf_nodes = graphMetadata.default.non_leaf_nodes;
-                const styles = ['clusterGroup'];
-                const showName = node.show_name.split('/')[node.show_name.split('/').length - 1];
-                if (this._nodeName[name]) {
-                    for (const non_leaf_node of non_leaf_nodes) {
-                        if (this._nodeName[name].type === non_leaf_node.name) {
-                            styles.push(`clusterGroup-${non_leaf_node.schema.category.toLowerCase()}`);
-                            break;
-                        }
-                    }
-                }
-                let newStyle = ['clusterGroup'];
-                if (styles.length > 1) {
-                    newStyle = ['clusterGroup', styles[1]];
-                }
-                if (!clusterMap[name]) {
-                    g.setNode(name, {
-                        rx: 10,
-                        ry: 10,
-                        nodeId: name,
-                        showName: showName,
-                        expand: false,
-                        classList: newStyle,
-                        isKeepData: isKeepData,
-                        data: node
-                    });
-                    clusterMap[name] = true;
-                    const parent = clusterParentMap[name]; // 父节点的父节点
-                    if (parent) {
-                        createCluster(parent, node);
-                        g.setParent(name, parent);
-                    }
-                }
-            };
-            if (groups) {
-                let path = node.name.split('/');
-                path.pop();
-                let groupName = path.join('/');
-                if (groupName && groupName.length > 0) {
-                    if (!Object.prototype.hasOwnProperty.call(clusterParentMap, groupName)) {
-                        const lastIndex = groupName.lastIndexOf('/');
-                        if (lastIndex != -1) {
-                            groupName = groupName.substring(0, lastIndex);
-                            if (!Object.prototype.hasOwnProperty.call(clusterParentMap, groupName)) {
-                                groupName = null;
-                            }
-                        } else {
-                            groupName = null;
-                        }
-                    }
-                    if (groupName) {
-                        createCluster(groupName, node);
-                        g.setParent(nodeId, groupName);
-                    }
-                }
-            }
-            // this._graphNodes[node.name] = element;
-            nodeId++;
-        });
-        if (graph.inputs) {
-            for (const input of graph.inputs) {
-                for (const argument of input.arguments) {
-                    let tuple = edgeMap[argument.name];
-                    if (!tuple) {
-                        tuple = {from: null, to: []};
-                        edgeMap[argument.name] = tuple;
-                    }
-                    tuple.from = {
-                        node: nodeId,
-                        type: argument.type
-                    };
-                }
-                const types = input.arguments.map(argument => argument.type || '').join('\n');
-                let inputName = input.name || '';
-                if (inputName.length > 16) {
-                    inputName = inputName.split('/').pop();
-                }
-
-                const inputElement = new grapher.NodeElement(this._host.document, this);
-                const inputHeader = inputElement.block('header');
-                inputHeader.add(null, ['graph-item-input'], inputName, types, () => {
-                    this.showModelProperties();
-                });
-                g.setNode(nodeId++, {label: inputElement.format(graphElement), class: 'graph-input'});
+                newArray.push(node);
             }
         }
-        if (graph.outputs) {
-            for (const output of graph.outputs) {
-                for (const argument of output.arguments) {
-                    let tuple = edgeMap[argument.name];
-                    if (!tuple) {
-                        tuple = {from: null, to: []};
-                        edgeMap[argument.name] = tuple;
-                    }
-                    tuple.to.push({node: nodeId});
+        return newArray;
+    }
+    node_expand(nodes, nodeId) {
+        for (const node of nodes) {
+            const level1 = nodeId.split('/').length;
+            const level2 = node.name.split('/').length;
+            if (level1 > level2) {
+                const parentName = nodeId.split('/').slice(0, node.name.split('/').length).join('/');
+                if (parentName === node.name) {
+                    node.is_expend = true;
+                    this.node_expand(node.nodes, nodeId);
                 }
-                const outputTypes = output.arguments.map(argument => argument.type || '').join('\n');
-                let outputName = output.name || '';
-                if (outputName.length > 16) {
-                    outputName = outputName.split('/').pop();
+            } else if (level1 === level2) {
+                if (node.name === nodeId) {
+                    node.is_expend = true;
                 }
-
-                const outputElement = new grapher.NodeElement(this._host.document, this);
-                const outputHeader = outputElement.block('header');
-                outputHeader.add(null, ['graph-item-output'], outputName, outputTypes, () => {
-                    this.showModelProperties();
-                });
-                g.setNode(nodeId++, {label: outputElement.format(graphElement)});
             }
         }
+    }
+    all_nodes(nodes, array) {
+        for (const node of nodes) {
+            array.push(node);
+            this._nodeName[node.name] = node;
+            if (node.nodes) {
+                this.all_nodes(node.nodes, array);
+            }
+        }
+    }
+    expand_node(nodes, newArray, flag) {
+        for (const node of nodes) {
+            if (node.nodes.length > 0) {
+                node.is_expend = flag;
+                this.expand_node(node.nodes, newArray);
+            } else {
+                newArray.push(node);
+            }
+        }
+    }
+    restore_node(nodes, flag) {
+        for (const node of nodes) {
+            if (node.nodes) {
+                node.is_expend = flag;
+                this.restore_node(node.nodes, flag);
+            }
+        }
+    }
+    expend_size() {
+        const newArray = [];
+        this.expand_node(this._model.nodes, newArray, true);
+        this._activeGraph.nodes = newArray;
+        this._selectItem = null;
+        this.renderGraph(this._model, this._activeGraph);
+    }
+    restore_size() {
+        const newArray = [];
+        this.expand_node(this._model.nodes, newArray, false);
+        this._activeGraph.nodes = this._model.nodes;
+        this._selectItem = null;
+        this.renderGraph(this._model, this._activeGraph);
     }
     renderGraph(model, graph) {
         try {
@@ -912,14 +570,13 @@ view.View = class {
             }
             this.typeLayer = typeLayer;
             const graphElement = this._host.document.getElementById('canvas');
-            // while (graphElement.lastChild) {
-            //     // 做上一次渲染的的清理动作
-            //     graphElement.removeChild(graphElement.lastChild);
-            // }
+            while (graphElement.lastChild) {
+                // 做上一次渲染的的清理动作
+                graphElement.removeChild(graphElement.lastChild);
+            }
             if (!graph) {
                 return Promise.resolve();
             } else {
-                console.log('model, graph', model, graph);
                 this._zoom = null;
                 graphElement.style.position = 'absolute';
                 graphElement.style.margin = '0';
@@ -957,8 +614,450 @@ view.View = class {
                         }
                     }
                 }
+                nodes.forEach((node, index) => {
+                    let element = null;
+                    const addNode = (element, node) => {
+                        const header = element.block('header');
+                        // 这个替换为一个header 组件
+                        const styles = ['node-item-type'];
+                        const type = node.type;
+                        if (node.is_leaf) {
+                            for (const metadatas of this.graphMetadatas) {
+                                if (node.type === metadatas.name) {
+                                    if (metadatas.schema.category) {
+                                        styles.push('node-item-type-' + metadatas.schema.category.toLowerCase());
+                                    }
+                                }
+                            }
+                        } else {
+                            for (const metadatas of this.non_graphMetadatas) {
+                                if (node.type === metadatas.name) {
+                                    if (metadatas.schema.category) {
+                                        styles.push('node-item-type-' + metadatas.schema.category.toLowerCase());
+                                    }
+                                }
+                            }
+                        }
+                        // 这里useeffect 作为styles 获取
+                        if (typeof type !== 'string' || !type.split) {
+                            // #416
+                            throw new ModelError(
+                                "Unknown node type '" + JSON.stringify(type) + "' in '" + model.format + "'."
+                            );
+                        }
+                        const nodeName = node.name.split('/')[node.name.split('/').length - 1];
+                        const content = this._showNames && node.name ? nodeName : type.split('.').pop();
+                        const tooltip = this._showNames && node.name ? type : nodeName;
+                        // 此处直接在header里面书写内容
+                        header.add(null, styles, content, tooltip, () => {
+                            this.jumpRoute(node);
+                            this.showNodeProperties(node);
+                            this.select({
+                                id: `node-${node.name}`,
+                                name: node.name,
+                                type: 'node'
+                            });
+                            const inputs = node.inputs;
+                            if (inputs) {
+                                for (const input of inputs) {
+                                    for (const argument of input.arguments) {
+                                        if (argument.name != '' && !argument.initializer) {
+                                            this.select2({
+                                                id: `edge-${argument.name}`,
+                                                name: argument.name,
+                                                type: 'input',
+                                                tonode: node.name
+                                            });
+                                        }
+                                    }
+                                }
+                            }
 
-                this.treeNode(model.nodes);
+                            let outputs = node.outputs;
+                            if (node.chain && node.chain.length > 0) {
+                                const chainOutputs = node.chain[node.chain.length - 1].outputs;
+                                if (chainOutputs.length > 0) {
+                                    outputs = chainOutputs;
+                                }
+                            }
+                            if (outputs) {
+                                for (const output of outputs) {
+                                    for (const argument of output.arguments) {
+                                        if (argument.name != '') {
+                                            this.select2({
+                                                id: `edge-${argument.name}`,
+                                                name: argument.name,
+                                                type: 'input',
+                                                fromnode: node.name
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        const buttons = ['node-item-buttons'];
+                        if (!node.is_leaf) {
+                            header.add(null, buttons, '+', null, () => {
+                                this.changeSelect({
+                                    id: `node-${node.name}`,
+                                    name: node.name,
+                                    type: 'node'
+                                });
+                                this.node_expand(this._model.nodes, node.name);
+                                const newArray = [];
+                                this.treeNode(this._model.nodes, newArray);
+                                this._activeGraph.nodes = newArray;
+                                this.renderGraph(this._model, this._activeGraph);
+                            });
+                        }
+                        const initializers = [];
+                        let hiddenInitializers = false;
+                        if (this._showInitializers) {
+                            // 是否显示初始化参数
+                            if (node.inputs) {
+                                for (const input of node.inputs) {
+                                    if (
+                                        input.visible &&
+                                        input.arguments.length == 1 &&
+                                        input.arguments[0].initializer != null
+                                    ) {
+                                        initializers.push(input);
+                                    }
+                                    if (
+                                        (!input.visible || input.arguments.length > 1) &&
+                                        input.arguments.some(argument => argument.initializer != null)
+                                    ) {
+                                        hiddenInitializers = true;
+                                    }
+                                }
+                            }
+                        }
+                        let sortedAttributes = [];
+                        const attributes = node.attributes;
+                        if (this.showAttributes && attributes) {
+                            // 是否显示属性参数
+                            sortedAttributes = attributes.filter(attribute => attribute.visible).slice();
+                            sortedAttributes.sort((a, b) => {
+                                const au = a.name.toUpperCase();
+                                const bu = b.name.toUpperCase();
+                                return au < bu ? -1 : au > bu ? 1 : 0;
+                            });
+                        }
+                        if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
+                            const block = element.block('list');
+                            block.handler = () => {
+                                // 侧边栏点击事件
+                                this.jumpRoute(node);
+                                this.showNodeProperties(node);
+                                this.select({
+                                    id: `node-${node.name}`,
+                                    name: node.name,
+                                    type: 'node'
+                                });
+                                const inputs = node.inputs;
+                                if (inputs) {
+                                    for (const input of inputs) {
+                                        for (const argument of input.arguments) {
+                                            if (argument.name != '' && !argument.initializer) {
+                                                this.select2({
+                                                    id: `edge-${argument.name}`,
+                                                    name: argument.name,
+                                                    type: 'input',
+                                                    tonode: node.name
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                let outputs = node.outputs;
+                                if (node.chain && node.chain.length > 0) {
+                                    const chainOutputs = node.chain[node.chain.length - 1].outputs;
+                                    if (chainOutputs.length > 0) {
+                                        outputs = chainOutputs;
+                                    }
+                                }
+                                if (outputs) {
+                                    for (const output of outputs) {
+                                        for (const argument of output.arguments) {
+                                            if (argument.name != '') {
+                                                this.select2({
+                                                    id: `edge-${argument.name}`,
+                                                    name: argument.name,
+                                                    type: 'input',
+                                                    fromnode: node.name
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            };
+                            for (const initializer of initializers) {
+                                const argument = initializer.arguments[0];
+                                const type = argument.type;
+                                let shape = '';
+                                let separator = '';
+                                if (
+                                    type &&
+                                    type.shape &&
+                                    type.shape.dimensions &&
+                                    Object.prototype.hasOwnProperty.call(type.shape.dimensions, 'length')
+                                ) {
+                                    shape =
+                                        '\u3008' +
+                                        type.shape.dimensions.map(d => (d ? d : '?')).join('\u00D7') +
+                                        '\u3009';
+                                    if (
+                                        type.shape.dimensions.length == 0 &&
+                                        argument.initializer &&
+                                        !argument.initializer.state
+                                    ) {
+                                        shape = argument.initializer.toString();
+                                        if (shape && shape.length > 10) {
+                                            shape = shape.substring(0, 10) + '\u2026';
+                                        }
+                                        separator = ' = ';
+                                    }
+                                }
+                                block.add(
+                                    'initializer-' + argument.name,
+                                    initializer.name,
+                                    shape,
+                                    type ? type.toString() : '',
+                                    separator
+                                );
+                            }
+                            if (hiddenInitializers) {
+                                block.add(null, '\u3008' + '\u2026' + '\u3009', '', null, '');
+                            }
+
+                            for (const attribute of sortedAttributes) {
+                                if (attribute.visible) {
+                                    let attributeValue = sidebar.NodeSidebar.formatAttributeValue(
+                                        attribute.value,
+                                        attribute.type
+                                    );
+                                    if (attributeValue && attributeValue.length > 25) {
+                                        attributeValue = attributeValue.substring(0, 25) + '\u2026';
+                                    }
+                                    block.add(null, attribute.name, attributeValue, attribute.type, ' = ');
+                                }
+                            }
+                        }
+
+                        if (node.chain && node.chain.length > 0) {
+                            for (const innerNode of node.chain) {
+                                addNode(element, innerNode, false);
+                            }
+                        }
+
+                        if (node.inner) {
+                            addNode(element, node.inner, false);
+                        }
+                    };
+                    const addEdges = node => {
+                        const inputs = node.inputs;
+                        for (const input of inputs) {
+                            for (const argument of input.arguments) {
+                                if (argument.name != '' && !argument.initializer) {
+                                    let tuple = edgeMap[argument.name];
+                                    if (!tuple) {
+                                        tuple = {from: null, to: []};
+                                        edgeMap[argument.name] = tuple;
+                                    }
+                                    tuple.to.push({
+                                        // 这个节点的id
+                                        node: nodeId,
+                                        name: input.name,
+                                        nodename: node.name
+                                    });
+                                }
+                            }
+                        }
+
+                        let outputs = node.outputs;
+                        if (node.chain && node.chain.length > 0) {
+                            const chainOutputs = node.chain[node.chain.length - 1].outputs;
+                            if (chainOutputs.length > 0) {
+                                outputs = chainOutputs;
+                            }
+                        }
+                        if (outputs) {
+                            for (const output of outputs) {
+                                for (const argument of output.arguments) {
+                                    if (argument.name != '') {
+                                        let tuple = edgeMap[argument.name];
+                                        if (!tuple) {
+                                            tuple = {from: null, to: []};
+                                            edgeMap[argument.name] = tuple;
+                                        }
+                                        tuple.from = {
+                                            node: nodeId,
+                                            name: output.name,
+                                            type: argument.type,
+                                            nodename: node.name
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    // if (!this._elements.hasOwnProperty(node.name)) {
+                    //     element = new grapher.NodeElement(this._host.document, this);
+                    //     addNode(element, node);
+                    //     this._elements[node.name] = element;
+                    // } else {
+                    //     element = this._elements[node.name];
+                    // }
+                    element = new grapher.NodeElement(this._host.document, this);
+                    addNode(element, node);
+                    this._elements[node.name] = element;
+                    addEdges(node);
+                    if (node.controlDependencies && node.controlDependencies.length > 0) {
+                        for (const controlDependency of node.controlDependencies) {
+                            let tuple = edgeMap[controlDependency];
+                            if (!tuple) {
+                                tuple = {from: null, to: []};
+                                edgeMap[controlDependency] = tuple;
+                            }
+                            tuple.to.push({
+                                node: nodeId,
+                                name: controlDependency,
+                                controlDependency: true,
+                                nodename: node.name
+                            });
+                        }
+                    }
+
+                    const nodeName = node.name;
+                    const nodeid = 'node-' + nodeName;
+                    // g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
+                    g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
+                    id++;
+                    // if (!) {
+                    //     // 此时图上没有
+                    //     if (nodeName) {
+                    //         g.setNode(nodeId, {label: element.format(graphElement,nodeid), id: 'node-' + nodeName});
+                    //     } else {
+                    //         g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
+                    //         id++;
+                    //     }
+                    // } else {
+                    //     g.setNode(nodeId, {label: 'node-' + nodeName, id: 'node-' + nodeName});
+                    // }
+                    const isKeepData = this._KeepData;
+                    const createCluster = (name, node) => {
+                        this._clusters[name] = true;
+                        const non_leaf_nodes = graphMetadata.default.non_leaf_nodes;
+                        const styles = ['clusterGroup'];
+                        const showName = node.show_name.split('/')[node.show_name.split('/').length - 1];
+                        if (this._nodeName[name]) {
+                            for (const non_leaf_node of non_leaf_nodes) {
+                                if (this._nodeName[name].type === non_leaf_node.name) {
+                                    styles.push(`clusterGroup-${non_leaf_node.schema.category.toLowerCase()}`);
+                                    break;
+                                }
+                            }
+                        }
+                        let newStyle = ['clusterGroup'];
+                        if (styles.length > 1) {
+                            newStyle = ['clusterGroup', styles[1]];
+                        }
+                        if (!clusterMap[name]) {
+                            g.setNode(name, {
+                                rx: 10,
+                                ry: 10,
+                                nodeId: name,
+                                showName: showName,
+                                expand: false,
+                                classList: newStyle,
+                                isKeepData: isKeepData,
+                                data: node
+                            });
+                            clusterMap[name] = true;
+                            const parent = clusterParentMap[name]; // 父节点的父节点
+                            if (parent) {
+                                createCluster(parent, node);
+                                g.setParent(name, parent);
+                            }
+                        }
+                    };
+                    if (groups) {
+                        let path = node.name.split('/');
+                        path.pop();
+                        let groupName = path.join('/');
+                        if (groupName && groupName.length > 0) {
+                            if (!Object.prototype.hasOwnProperty.call(clusterParentMap, groupName)) {
+                                const lastIndex = groupName.lastIndexOf('/');
+                                if (lastIndex != -1) {
+                                    groupName = groupName.substring(0, lastIndex);
+                                    if (!Object.prototype.hasOwnProperty.call(clusterParentMap, groupName)) {
+                                        groupName = null;
+                                    }
+                                } else {
+                                    groupName = null;
+                                }
+                            }
+                            if (groupName) {
+                                createCluster(groupName, node);
+                                g.setParent(nodeId, groupName);
+                            }
+                        }
+                    }
+                    // this._graphNodes[node.name] = element;
+                    nodeId++;
+                });
+                if (graph.inputs) {
+                    for (const input of graph.inputs) {
+                        for (const argument of input.arguments) {
+                            let tuple = edgeMap[argument.name];
+                            if (!tuple) {
+                                tuple = {from: null, to: []};
+                                edgeMap[argument.name] = tuple;
+                            }
+                            tuple.from = {
+                                node: nodeId,
+                                type: argument.type
+                            };
+                        }
+                        const types = input.arguments.map(argument => argument.type || '').join('\n');
+                        let inputName = input.name || '';
+                        if (inputName.length > 16) {
+                            inputName = inputName.split('/').pop();
+                        }
+
+                        const inputElement = new grapher.NodeElement(this._host.document, this);
+                        const inputHeader = inputElement.block('header');
+                        inputHeader.add(null, ['graph-item-input'], inputName, types, () => {
+                            this.showModelProperties();
+                        });
+                        g.setNode(nodeId++, {label: inputElement.format(graphElement), class: 'graph-input'});
+                    }
+                }
+                if (graph.outputs) {
+                    for (const output of graph.outputs) {
+                        for (const argument of output.arguments) {
+                            let tuple = edgeMap[argument.name];
+                            if (!tuple) {
+                                tuple = {from: null, to: []};
+                                edgeMap[argument.name] = tuple;
+                            }
+                            tuple.to.push({node: nodeId});
+                        }
+                        const outputTypes = output.arguments.map(argument => argument.type || '').join('\n');
+                        let outputName = output.name || '';
+                        if (outputName.length > 16) {
+                            outputName = outputName.split('/').pop();
+                        }
+
+                        const outputElement = new grapher.NodeElement(this._host.document, this);
+                        const outputHeader = outputElement.block('header');
+                        outputHeader.add(null, ['graph-item-output'], outputName, outputTypes, () => {
+                            this.showModelProperties();
+                        });
+                        g.setNode(nodeId++, {label: outputElement.format(graphElement)});
+                    }
+                }
                 for (const edge of Object.keys(edgeMap)) {
                     const tuple = edgeMap[edge];
                     if (tuple.from != null) {
@@ -1021,14 +1120,9 @@ view.View = class {
                 });
                 this._zoom.transform(svg, d3.zoomIdentity);
 
-                return this._timeout(200).then(() => {
-                    // g 此时已经sheng hao
-                    // dagre.layout(g);
-                    // console.log('dagre', g);
-
+                return this._timeout(100).then(() => {
                     const graphRenderer = new grapher.Renderer(this._host, originElement, this);
                     graphRenderer.render(g);
-                    console.log('函数执行了');
                     const inputElements = graphElement.getElementsByClassName('graph-input');
                     const svgSize = graphElement.getBoundingClientRect();
                     if (inputElements && inputElements.length > 0) {
@@ -1050,24 +1144,13 @@ view.View = class {
                             }
                             const sx = svgSize.width / (this._showHorizontal ? 4 : 2) - x;
                             const sy = svgSize.height / (this._showHorizontal ? 2 : 4) - y;
-                            console.log('zoom函数执行了');
                             this._zoom.transform(svg, d3.zoomIdentity.translate(sx, sy));
-                            // for (const cluster of document.getElementById('clusters').children) {
-                            //     this._clusters[cluster.getAttribute('id')] = cluster;
-                            // }
-                            // // // 每次重新渲染之之后获取当前图上的所有节点id
-                            // // console.log('children', document.getElementById('nodes').children);
-                            // for (const node of document.getElementById('nodes').children) {
-                            //     this._nodes[node.getAttribute('id')] = node;
-                            // }
                         }
                         // 这里应该触发一次小地图重定位
                     } else {
                         if (this._selectItem) {
-                            console.log('zoom2函数执行了');
                             this.select(this._selectItem);
                         } else {
-                            console.log('zoom3函数执行了');
                             this._zoom.transform(
                                 svg,
                                 d3.zoomIdentity.translate(

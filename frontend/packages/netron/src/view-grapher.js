@@ -19,6 +19,33 @@ var dagre = dagre || require('dagre');
 function isObjectEmpty(value) {
     return Object.prototype.toString.call(value) === '[object Object]' && JSON.stringify(value) === '{}';
 }
+const no_expand = (nodes, isKeepData, nodeId) => {
+    for (const node of nodes) {
+        const level1 = nodeId.split('/').length;
+        const level2 = node.name.split('/').length;
+        if (level1 > level2) {
+            const parentName = nodeId.split('/').slice(0, node.name.split('/').length).join('/');
+            if (parentName === node.name) {
+                no_expand(node.nodes, isKeepData, nodeId);
+            }
+        } else if (level1 === level2) {
+            if (node.name === nodeId) {
+                node.is_expend = false;
+                if (node.nodes && !isKeepData) {
+                    no_expand(node.nodes, isKeepData, nodeId);
+                }
+            }
+        } else if (level1 < level2) {
+            const parentName = node.name.split('/').slice(0, nodeId.split('/').length).join('/');
+            if (parentName === nodeId) {
+                node.is_expend = false;
+                if (node.nodes && !isKeepData) {
+                    no_expand(node.nodes, isKeepData, nodeId);
+                }
+            }
+        }
+    }
+};
 grapher.Renderer = class {
     constructor(host, svgElement, view) {
         this._document = host.document;
@@ -58,7 +85,6 @@ grapher.Renderer = class {
             svgEdgeLabelGroup = this._document.getElementById('edge-labels');
             svgNodeGroup = this._document.getElementById('nodes');
         }
-        console.log('graphs', graph);
         for (const nodeId of graph.nodes()) {
             // 这里的nodes 是经过format 之后产生的
             // 这里可以做出改变如果页面上直接存在则获取不需要重新创建
@@ -200,11 +226,8 @@ grapher.Renderer = class {
         for (const nodeId of newGroupArray) {
             if (graph.children(nodeId).length > 0) {
                 const node = graph.node(nodeId);
-                // console.log('node.id', node.nodeId, this._view._nodes);
                 if (this._view._nodes.hasOwnProperty(node.nodeId)) {
                     const nodeDom = this._view._nodes[nodeId].element;
-                    // const nodeDom = document.getElementById(node.id);
-                    // console.log('nodeDom.children[0]', nodeDom);
                     nodeDom.setAttribute('transform', 'translate(' + node.x + ',' + node.y + ')');
                     nodeDom.firstChild.setAttribute('width', node.width + 10);
                     nodeDom.firstChild.setAttribute('height', node.width + 10);
@@ -235,12 +258,12 @@ grapher.Renderer = class {
                     tspan.setAttribute('x', 0);
                     tspan.setAttribute('y', -(node.height / 2) + 5);
                     tspan.setAttribute('text-anchor', 'middle');
-                    let name = '';
-                    for (const nodes of this._host._view._allGraph.nodes) {
-                        if (nodes.name === node.nodeId) {
-                            name = nodes.show_name.split('/')[nodes.show_name.split('/').length - 1];
-                        }
-                    }
+                    let name = node.showName;
+                    // for (const nodes of this._host._view._allGraph.nodes) {
+                    //     if (nodes.name === node.nodeId) {
+                    //         name = nodes.show_name.split('/')[nodes.show_name.split('/').length - 1];
+                    //     }
+                    // }
                     tspan.appendChild(this._document.createTextNode(name));
                     buttonSign.appendChild(this._document.createTextNode('-'));
                     const text = this.createElement('text');
@@ -275,65 +298,19 @@ grapher.Renderer = class {
                         });
                     });
                     text2.addEventListener('click', () => {
-                        // this._host.selectNodeId({
-                        //     nodeId: node.nodeId,
-                        //     expand: node.expand,
-                        //     isKeepData: node.isKeepData
-                        // });
-                        // this._host.selectItems({
-                        //     id: `node-${node.nodeId}`,
-                        //     name: node.nodeId,
-                        //     type: 'node'
-                        // });
-                        console.log('node.data', node.data);
-                        const nodes = this._view._model.nodes;
-                        console.log('1nodes', nodes);
-                        const isKeepData = true;
-                        const KeepData = [];
-                        let parentName = '';
-                        let indexs = [];
-                        for (let index = 0; index < nodes.length; index++) {
-                            const Node = nodes[index];
-                            const array = Node.name.split('/');
-                            array.pop();
-                            parentName = array.join('/');
-                            console.log('parentName === node.nodeId', parentName, node.nodeId);
-                            if (parentName === node.nodeId) {
-                                nodes.splice(index, 1, '');
-                                indexs.push(index);
-                            } else {
-                                const length1 = Node.name.split('/').length;
-                                const length2 = node.nodeId.split('/').length;
-                                console.log('length1,length2', Node.name, node.nodeId, length1 - length2);
-                                if (isKeepData && length1 - length2 > 1) {
-                                    // 跨层级保持
-                                    nodes.splice(index, 1, '');
-                                    KeepData.push(Node);
-                                } else if (length1 - length2 > 1) {
-                                    // 跨层级不保持
-                                    nodes.splice(index, 1, '');
-                                }
-                            }
-                        }
-                        const min = indexs.sort()[0];
-
-                        nodes.splice(min, 1, this._view.graphNodes.get(node.nodeId));
-                        let newNodes = nodes.filter(node => {
-                            return node !== '';
+                        this._view.changeSelect({
+                            id: `node-${nodeId}`,
+                            name: node.name,
+                            type: 'node'
                         });
-                        // 点击展开缓存的节点
-                        // newNodes.push(this._view.graphNodes.get(node.nodeId));
-                        console.log('node.nodeId', node.nodeId);
-                        this._view.graphNodes.delete(node.nodeId);
-                        this._view._model.nodes = newNodes;
-                        if (isKeepData) {
-                            this._view.KeepDatas[nodeId] = KeepData;
-                        } else {
-                            this._view.KeepDatas = {};
-                        }
-                        console.log('this._view.KeepDatas', this._view.KeepDatas[nodeId]);
-                        console.log('this._view._model.nodes', this._view._model.nodes);
-                        this._view.renderGraph(this._view._model, this._view._model);
+                        const isKeepData = this._view.isKeepData;
+                        const model = this._view._model;
+                        // const nodeId = nodeId
+                        no_expand(model.nodes, isKeepData, node.nodeId);
+                        const newArray = [];
+                        this._view.treeNode(model.nodes, newArray);
+                        this._view._activeGraph.nodes = newArray;
+                        this._view.renderGraph(this._view._model, this._view._activeGraph);
                     });
                     rect.addEventListener('click', () => {
                         if (this._view.isCtrl) {
@@ -382,8 +359,6 @@ grapher.Renderer = class {
                 }
             }
         }
-        // this._view._nodes = graph._nodes;
-        console.log('renderw', this._view._nodes);
     }
 
     createElement(name) {

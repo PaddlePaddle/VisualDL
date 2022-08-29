@@ -813,7 +813,8 @@ sidebar.FindSidebar = class {
                         if (!argument.initializer) {
                             result.push({
                                 type: 'input',
-                                name: argument.name.split('\n').shift(), // custom argument id
+                                name: argument.name.split('\n').shift(),
+                                nodeName: node.name, // custom argument id
                                 id: 'edge-' + argument.name
                             });
                             edgeMatches.add(argument.name);
@@ -839,50 +840,6 @@ sidebar.FindSidebar = class {
                 });
                 nodeMatches.add(name);
             }
-            // let path = node.name.split('/');
-            // path.pop();
-            // let groupName = path.join('/');
-            // console.log('groupName', groupName);
-            // const clusterNode = name => {
-            //     if (
-            //         !nodeMatches.has(name) &&
-            //         name &&
-            //         (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
-            //     ) {
-            //         result.push({
-            //             type: 'node',
-            //             name: name,
-            //             id: 'node-' + name
-            //         });
-            //         nodeMatches.add(name);
-            //         let path = name.split('/');
-            //         while (path.length > 0) {
-            //             const name = path.join('/');
-            //             path.pop();
-            //             if (name) {
-            //                 clusterNode(name);
-            //             }
-            //         }
-            //     }
-            // };
-            // if (groupName) {
-            //     clusterNode(groupName);
-            //     // g.setParent(nodeId, groupName);
-            // }
-            // clusterNode(node.show_name);
-            // if (
-            //     !nodeMatches.has(name) &&
-            //     name &&
-            //     (name.toLowerCase().indexOf(text) != -1 || (operator && operator.toLowerCase().indexOf(text) != -1))
-            // ) {
-            //     result.push({
-            //         type: 'node',
-            //         name: node.name,
-            //         id: 'node-' + node.name
-            //     });
-            //     //
-            //     nodeMatches.add(node.name);
-            // }
             for (const initializer of initializers) {
                 result.push({
                     type: 'initializer',
@@ -903,6 +860,7 @@ sidebar.FindSidebar = class {
                         result.push({
                             type: 'output',
                             name: argument.name.split('\n').shift(), // custom argument id
+                            nodeName: node.name,
                             id: 'edge-' + argument.name
                         });
                         edgeMatches.add(argument.name);
