@@ -21,6 +21,7 @@ from multiprocess import Queue
 
 from .parser.const_description import *  # noqa: F403
 from .parser.event_node import load_profiler_json
+from .parser.event_node import ProfilerResult
 from .run_manager import RunManager
 from visualdl.io import bfile
 
@@ -177,13 +178,13 @@ class ProfilerReader(object):
             if '.pb' in filename:
                 try:
                     from paddle.profiler import load_profiler_result
+                    profile_result = ProfilerResult(
+                        load_profiler_result(os.path.join(run, filename)))
                 except Exception:
                     print(
-                        'Load paddle.profiler error. Please check paddle >= 2.3.0'
+                        'Load protobuf file error. Please check paddle >= 2.4.0'
                     )
                     exit(0)
-                profile_result = load_profiler_result(
-                    os.path.join(run, filename))
                 self.run_managers[run].add_profile_result(
                     filename, worker_name, profile_result)
             else:
