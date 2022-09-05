@@ -176,17 +176,23 @@ class ProfilerReader(object):
         if match:
             worker_name = match.group(1)
             if '.pb' in filename:
-                try:
-                    from paddle.profiler import load_profiler_result
-                    profile_result = ProfilerResult(
-                        load_profiler_result(os.path.join(run, filename)))
-                except Exception:
-                    print(
-                        'Load protobuf file error. Please check paddle >= 2.4.0'
-                    )
-                    exit(0)
-                self.run_managers[run].add_profile_result(
-                    filename, worker_name, profile_result)
+
+                def _load_profiler_protobuf(run, filename, worker_name):
+                    try:
+                        from paddle.profiler import load_profiler_result
+                        profile_result = ProfilerResult(
+                            load_profiler_result(os.path.join(run, filename)))
+                    except Exception:
+                        print(
+                            'Load protobuf file error. Please check paddle >= 2.4.0'
+                        )
+                        exit(0)
+                    self.profile_result_queue.put((run, filename, worker_name,
+                                                   profile_result))
+
+                Process(
+                    target=_load_profiler_protobuf,
+                    args=(run, filename, worker_name)).start()
             else:
 
                 def _load_profiler_json(run, filename, worker_name):

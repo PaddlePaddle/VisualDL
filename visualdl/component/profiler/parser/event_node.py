@@ -306,16 +306,22 @@ class ProfilerResult:
     def parse_protobuf(self, protobuf_data):  # noqa: C901
         self.schema_version = protobuf_data.get_version()
         self.span_idx = str(protobuf_data.get_span_indx())
-        self.device_infos = {
-            device_id: {
-                'name': device_property.name,
-                'totalGlobalMem': device_property.total_memory,
-                'computeMajor': device_property.major,
-                'computeMinor': device_property.minor
+        try:
+            self.device_infos = {
+                device_id: {
+                    'name': device_property.name,
+                    'totalGlobalMem': device_property.total_memory,
+                    'computeMajor': device_property.major,
+                    'computeMinor': device_property.minor
+                }
+                for device_id, device_property in
+                protobuf_data.get_device_property().items()
             }
-            for device_id, device_property in
-            protobuf_data.get_device_property().items()
-        }
+        except Exception:
+            print(
+                "paddlepaddle-gpu version is needed to get GPU device informations."
+            )
+            self.device_infos = {}
         self.extra_info = protobuf_data.get_extra_info()
         self.start_in_timeline_ns = float('inf')
         self.has_hostnodes = False
