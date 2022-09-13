@@ -206,8 +206,8 @@ class ProfilerReader(object):
                             profile_result = ProfilerResult(content)
                         except Exception as e:
                             raise RuntimeError(
-                                "An error occurred while loading the protobuf file, which may be caused by the outdated version\
-                                     of paddle that generated the profile file. \
+                                "An error occurred while loading the protobuf file, which may be caused\
+                                     by the outdated version of paddle that generated the profile file. \
                                 Please make sure protobuf file is exported by paddlepaddle version >= 2.4.0. \
                                     Error message: {}".format(e))
                         self.profile_result_queue.put(
