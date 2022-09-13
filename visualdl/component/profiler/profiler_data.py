@@ -147,39 +147,73 @@ class ProfilerData:
         else:
             device_type = 'GPU'
             gpu_id = int(next(iter(self.gpu_ids)))
-            return {
-                "device_type": device_type,
-                "CPU": {
-                    "process_utilization":
-                    format_ratio(
-                        float(self.extra_infos["Process Cpu Utilization"])),
-                    "system_utilization":
-                    format_ratio(
-                        float(self.extra_infos["System Cpu Utilization"]))
-                },
-                "GPU": {
-                    "name":
-                    self.device_infos[gpu_id]['name'],
-                    "memory":
-                    "{} GB".format(
-                        format_memory(
-                            self.device_infos[gpu_id]['totalGlobalMem'],
-                            'GB')),
-                    "compute_capability":
-                    '{}.{}'.format(self.device_infos[gpu_id]['computeMajor'],
-                                   self.device_infos[gpu_id]['computeMinor']),
-                    "utilization":
-                    format_ratio(self.gpu_ulitization),
-                    "sm_efficiency":
-                    format_ratio(
-                        self.sm_efficiency /
-                        self.model_perspective_items['ProfileStep'].cpu_time),
-                    "achieved_occupancy":
-                    format_ratio(self.occupancy),
-                    "tensor_core_percentage":
-                    format_ratio(self.tensorcore_ratio)
+            if gpu_id in self.device_infos:
+                return {
+                    "device_type": device_type,
+                    "CPU": {
+                        "process_utilization":
+                        format_ratio(
+                            float(
+                                self.extra_infos["Process Cpu Utilization"])),
+                        "system_utilization":
+                        format_ratio(
+                            float(self.extra_infos["System Cpu Utilization"]))
+                    },
+                    "GPU": {
+                        "name":
+                        self.device_infos[gpu_id]['name'],
+                        "memory":
+                        "{} GB".format(
+                            format_memory(
+                                self.device_infos[gpu_id]['totalGlobalMem'],
+                                'GB')),
+                        "compute_capability":
+                        '{}.{}'.format(
+                            self.device_infos[gpu_id]['computeMajor'],
+                            self.device_infos[gpu_id]['computeMinor']),
+                        "utilization":
+                        format_ratio(self.gpu_ulitization),
+                        "sm_efficiency":
+                        format_ratio(
+                            self.sm_efficiency / self.
+                            model_perspective_items['ProfileStep'].cpu_time),
+                        "achieved_occupancy":
+                        format_ratio(self.occupancy),
+                        "tensor_core_percentage":
+                        format_ratio(self.tensorcore_ratio)
+                    }
                 }
-            }
+            else:
+                return {
+                    "device_type": device_type,
+                    "CPU": {
+                        "process_utilization":
+                        format_ratio(
+                            float(
+                                self.extra_infos["Process Cpu Utilization"])),
+                        "system_utilization":
+                        format_ratio(
+                            float(self.extra_infos["System Cpu Utilization"]))
+                    },
+                    "GPU": {
+                        "name":
+                        "-",
+                        "memory":
+                        "-",
+                        "compute_capability":
+                        '-',
+                        "utilization":
+                        format_ratio(self.gpu_ulitization),
+                        "sm_efficiency":
+                        format_ratio(
+                            self.sm_efficiency / self.
+                            model_perspective_items['ProfileStep'].cpu_time),
+                        "achieved_occupancy":
+                        format_ratio(self.occupancy),
+                        "tensor_core_percentage":
+                        format_ratio(self.tensorcore_ratio)
+                    }
+                }
 
     def get_model_perspective(self, time_unit):
         '''

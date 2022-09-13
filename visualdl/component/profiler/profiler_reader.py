@@ -16,11 +16,14 @@ import os
 import re
 from threading import Thread
 
+import packaging.version
 from multiprocess import Process
 from multiprocess import Queue
 
 from .parser.const_description import *  # noqa: F403
 from .parser.event_node import load_profiler_json
+from .parser.event_node import ProfilerResult
+from .parser.utils import RedirectStdStreams
 from .run_manager import RunManager
 from visualdl.io import bfile
 
@@ -175,17 +178,44 @@ class ProfilerReader(object):
         if match:
             worker_name = match.group(1)
             if '.pb' in filename:
-                try:
-                    from paddle.profiler import load_profiler_result
-                except Exception:
-                    print(
-                        'Load paddle.profiler error. Please check paddle >= 2.3.0'
-                    )
-                    exit(0)
-                profile_result = load_profiler_result(
-                    os.path.join(run, filename))
-                self.run_managers[run].add_profile_result(
-                    filename, worker_name, profile_result)
+
+                def _load_profiler_protobuf(run, filename, worker_name):
+                    devnull = open(os.devnull, 'w+')
+                    with RedirectStdStreams(stdout=devnull, stderr=devnull):
+                        try:
+                            import paddle
+                        except Exception as e:
+                            print('Paddle is required to read protobuf file.\
+                                Please install [paddlepaddle](https://www.paddlepaddle.org.cn/install/quick?\
+                                    docurl=/documentation/docs/zh/develop/install/pip/linux-pip.html) first.'
+                                  )
+                            raise RuntimeError(str(e))
+                        if packaging.version.parse(
+                                '2.4.0') > packaging.version.parse(
+                                    paddle.__version__):
+                            raise RuntimeError(
+                                "Please make sure paddlepaddle version >= 2.4.0"
+                            )
+                        from paddle.profiler import load_profiler_result
+                        try:
+
+                            content = load_profiler_result(
+                                os.path.join(run, filename))
+                            if content is None:
+                                raise RuntimeError("Missing required fields.")
+                            profile_result = ProfilerResult(content)
+                        except Exception as e:
+                            raise RuntimeError(
+                                "An error occurred while loading the protobuf file, which may be caused\
+                                     by the outdated version of paddle that generated the profile file. \
+                                Please make sure protobuf file is exported by paddlepaddle version >= 2.4.0. \
+                                    Error message: {}".format(e))
+                        self.profile_result_queue.put(
+                            (run, filename, worker_name, profile_result))
+
+                Process(
+                    target=_load_profiler_protobuf,
+                    args=(run, filename, worker_name)).start()
             else:
 
                 def _load_profiler_json(run, filename, worker_name):

@@ -17,6 +17,9 @@ import functools
 import json
 import re
 import sys
+import tempfile
+
+from .utils import traverse_tree
 
 _show_name_pattern = re.compile(r'(.+)(\[.+\])')
 _show_tid_pattern = re.compile(r'\w+(\(.+\))')
@@ -78,6 +81,25 @@ class HostNode:
         self.mem_node = []
         return self
 
+    @classmethod
+    def from_protobuf(cls, obj):
+        self = cls()
+        self.name = obj.name
+        self.type = str(obj.type).split('.')[1]
+        self.start_ns = obj.start_ns
+        self.end_ns = obj.end_ns
+        self.process_id = obj.process_id
+        self.thread_id = obj.thread_id
+        self.correlation_id = obj.correlation_id
+        self.input_shapes = obj.input_shapes
+        self.dtypes = obj.dtypes
+        self.callstack = obj.callstack
+        self.children_node = []
+        self.runtime_node = []
+        self.device_node = []
+        self.mem_node = []
+        return self
+
 
 class MemNode:
     def __init__(self):
@@ -116,6 +138,22 @@ class MemNode:
             'peak_allocated'] if 'peak_allocated' in json_obj['args'] else 0
         self.peak_reserved = json_obj['args'][
             'peak_reserved'] if 'peak_reserved' in json_obj['args'] else 0
+        return self
+
+    @classmethod
+    def from_protobuf(cls, obj):
+        self = cls()
+        self.type = str(obj.type).split('.')[1]
+        self.timestamp_ns = obj.timestamp_ns
+        self.addr = hex(int(obj.addr))
+        self.process_id = obj.process_id
+        self.thread_id = obj.thread_id
+        self.increase_bytes = obj.increase_bytes
+        self.place = obj.place
+        self.current_allocated = obj.current_allocated
+        self.current_reserved = obj.current_reserved
+        self.peak_allocated = obj.peak_allocated
+        self.peak_reserved = obj.peak_reserved
         return self
 
 
@@ -176,9 +214,35 @@ class DeviceNode:
             "warps per SM"] if "warps per SM" in json_obj['args'] else 0
         return self
 
+    @classmethod
+    def from_protobuf(cls, obj):
+        self = cls()
+        self.name = obj.name
+        self.type = str(obj.type).split('.')[1]
+        self.start_ns = obj.start_ns
+        self.end_ns = obj.end_ns
+        self.device_id = obj.device_id
+        self.stream_id = obj.stream_id
+        self.context_id = obj.context_id
+        self.correlation_id = obj.correlation_id
+        self.block_x, self.block_y, self.block_z = [
+            obj.block_x, obj.block_y, obj.block_z
+        ]
+        self.grid_x, self.grid_y, self.grid_z = [
+            obj.grid_x, obj.grid_y, obj.grid_z
+        ]
+        self.shared_memory = obj.shared_memory
+        self.registers_per_thread = obj.registers_per_thread
+        self.num_bytes = obj.num_bytes
+        self.value = obj.value
+        self.occupancy = obj.occupancy * 100
+        self.blocks_per_sm = obj.blocks_per_sm
+        self.warps_per_sm = obj.warps_per_sm
+        return self
+
 
 class ProfilerResult:
-    def __init__(self, json_data):
+    def __init__(self, data):
         self.device_infos = None
         self.span_idx = None
         self.data = None
@@ -187,11 +251,18 @@ class ProfilerResult:
         self.has_hostnodes = True
         self.has_devicenodes = True
         self.has_memnodes = True
-        self.parse(json_data)
-        self.content = json_data
         self.start_in_timeline_ns = None
+        if isinstance(data, dict):
+            self.parse_json(data)
+            self.content = data
+        else:
+            self.parse_protobuf(data)
+            with tempfile.NamedTemporaryFile("r") as fp:
+                data.save(fp.name, "json")
+                fp.seek(0)
+                self.content = json.loads(fp.read())
 
-    def parse(self, json_data):
+    def parse_json(self, json_data):
         self.schema_version = json_data['schemaVersion']
         self.span_idx = json_data['span_indx']
         self.device_infos = {
@@ -231,6 +302,82 @@ class ProfilerResult:
         self.data = self.build_tree(hostnodes, runtimenodes, devicenodes,
                                     memnodes)
         self.extra_info = json_data['ExtraInfo']
+
+    def parse_protobuf(self, protobuf_data):  # noqa: C901
+        self.schema_version = protobuf_data.get_version()
+        self.span_idx = str(protobuf_data.get_span_indx())
+        try:
+            self.device_infos = {
+                device_id: {
+                    'name': device_property.name,
+                    'totalGlobalMem': device_property.total_memory,
+                    'computeMajor': device_property.major,
+                    'computeMinor': device_property.minor
+                }
+                for device_id, device_property in
+                protobuf_data.get_device_property().items()
+            }
+        except Exception:
+            print(
+                "paddlepaddle-gpu version is needed to get GPU device informations."
+            )
+            self.device_infos = {}
+        self.extra_info = protobuf_data.get_extra_info()
+        self.start_in_timeline_ns = float('inf')
+        self.has_hostnodes = False
+        self.has_devicenodes = False
+        self.has_memnodes = False
+        node_trees = protobuf_data.get_data()
+        new_node_trees = {}
+        for threadid, root in node_trees.items():
+            stack = []
+            new_stack = []
+            new_root = HostNode.from_protobuf(root)
+            new_node_trees[threadid] = new_root
+            stack.append(root)
+            new_stack.append(new_root)
+            while stack:
+                current_node = stack.pop()
+                new_current_node = new_stack.pop()
+                for child_node in current_node.children_node:
+                    if self.has_hostnodes is False:
+                        self.has_hostnodes = True
+                    new_child_node = HostNode.from_protobuf(child_node)
+                    new_current_node.children_node.append(new_child_node)
+                    stack.append(child_node)
+                    new_stack.append(new_child_node)
+                for runtime_node in current_node.runtime_node:
+                    new_runtime_node = HostNode.from_protobuf(runtime_node)
+                    new_current_node.runtime_node.append(new_runtime_node)
+                    for device_node in runtime_node.device_node:
+                        new_device_node = DeviceNode.from_protobuf(device_node)
+                        new_runtime_node.device_node.append(new_device_node)
+                for mem_node in current_node.mem_node:
+                    new_mem_node = MemNode.from_protobuf(mem_node)
+                    new_current_node.mem_node.append(new_mem_node)
+        new_node_tree_list = traverse_tree(new_node_trees)
+        for threadid, node_tree_list in new_node_tree_list.items():
+            for node in node_tree_list[1:]:  # skip root
+                if node.start_ns < self.start_in_timeline_ns:
+                    self.start_in_timeline_ns = node.start_ns
+        for threadid, node_tree_list in new_node_tree_list.items():
+            for node in node_tree_list:
+                if node != node_tree_list[0]:  # skip root
+                    node.start_ns -= self.start_in_timeline_ns
+                    node.end_ns -= self.start_in_timeline_ns
+                for runtimenode in node.runtime_node:
+                    runtimenode.end_ns -= self.start_in_timeline_ns
+                    runtimenode.start_ns -= self.start_in_timeline_ns
+                    for device_node in runtimenode.device_node:
+                        if self.has_devicenodes is False:
+                            self.has_devicenodes = True
+                        device_node.start_ns -= self.start_in_timeline_ns
+                        device_node.end_ns -= self.start_in_timeline_ns
+                for mem_node in node.mem_node:
+                    if self.has_memnodes is False:
+                        self.has_memnodes = True
+                    mem_node.timestamp_ns -= self.start_in_timeline_ns
+        self.data = new_node_trees
 
     def build_tree(  # noqa: C901
             self, hostnodes, runtimenodes, devicenodes, memnodes):

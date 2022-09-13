@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import collections
+import os
+import sys
 
 StageType = ['Dataloader', 'Forward', 'Backward', 'Optimization']
 
@@ -466,7 +468,6 @@ def format_time(time, unit='ms', inf_subs='-'):
             result /= 1e6
         elif unit == 'us':
             result /= 1e3
-        # return '{:.2f}'.format(result)
         return round(result, 2)
 
 
@@ -474,7 +475,6 @@ def format_ratio(ratio):
     r"""
     Transform ratio within [0, 1] to percentage presentation.
     """
-    # return '{:.2f}'.format(ratio * 100)
     return round(ratio * 100, 2)
 
 
@@ -490,5 +490,27 @@ def format_memory(memory, memory_unit='KB'):
         result /= (1024 * 1024)
     elif memory_unit == 'KB':
         result /= 1024
-    # return '{:.2f}'.format(result)
     return round(result, 2)
+
+
+class RedirectStdStreams(object):
+    def __init__(self, stdout=None, stderr=None):
+        self._stdout = stdout or sys.stdout
+        self._stderr = stderr or sys.stderr
+
+    def __enter__(self):
+        '''
+        Replace stdout and stderr to specified stream.
+        '''
+        sys.stdout.flush()
+        sys.stderr.flush()
+        self.old_stdout_fileno, self.old_stderr_fileno = os.dup(
+            sys.stdout.fileno()), os.dup(sys.stderr.fileno())
+        os.dup2(self._stdout.fileno(), sys.stdout.fileno())
+        os.dup2(self._stderr.fileno(), sys.stderr.fileno())
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        os.dup2(self.old_stdout_fileno, sys.stdout.fileno())
+        os.dup2(self.old_stderr_fileno, sys.stderr.fileno())
+        os.close(self.old_stdout_fileno)
+        os.close(self.old_stderr_fileno)
