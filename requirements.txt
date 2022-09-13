@@ -8,3 +8,4 @@ requests
 six >= 1.14.0
 matplotlib
 pandas
+packaging
