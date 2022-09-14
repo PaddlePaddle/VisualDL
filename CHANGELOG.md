@@ -19,7 +19,7 @@ This is the Changelog for the VisualDL 2.0 project.
 **EN**
 
 - Bug Fixes
-    - **FE**: Remove Chinese characters in resource filenames (#1122)
+    - **FE**: Remove resource files with Chinese characters in filenames (#1122)
     - **BE**: Add multiprocess dependency in requirements (#1123)
 
 - Enhancement
