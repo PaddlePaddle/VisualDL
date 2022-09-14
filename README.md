@@ -382,6 +382,11 @@ Developers can compare multiple experiments by specifying and uploading the path
 <img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
 </p>
 
+### Performance Analysis
+**Performance Analysis**(Profiler) visualize the profiling data collected during your program runs, helping you identify program bottlenecks and optimize performance. Please refer to [VisualDL Profiler Guide](./profiler/README.md)。
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/185894151-53ffc60b-7203-4cb8-a289-5d97332d0691.gif" width="85%"/>
+</p>
 
 ### VDL.service
 
