@@ -4,6 +4,30 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.4.1 - 2022-09-14
+
+**ZH**
+
+**ZH**
+
+- 问题修复
+    - **FE**: 删除中文文件名 (#1122)
+    - **BE**: requirements增加multiprocess依赖 (#1123)
+
+- 其他改进
+    - **BE**: 新增对框架导出性能数据的protobuf格式支持 (#1128)
+
+
+**EN**
+
+- Bug Fixes
+    - **FE**: Remove Chinese characters in filenames (#1122)
+    - **BE**: Add multiprocess dependency in requirements (#1123)
+
+- Enhancement
+    - **BE**: Support protobuf format of profiler data exported by paddlepaddle. (#1128)
+
+
 ## v2.4.0 - 2022-08-22
 
 **ZH**
