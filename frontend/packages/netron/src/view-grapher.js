@@ -561,11 +561,9 @@ grapher.NodeElement = class {
             }
             height = height + block.height;
         }
-
         for (let i = 0; i < this._blocks.length; i++) {
             // push 进来的header 或者 list
             const top = tops.shift();
-
             this._blocks[i].update(rootElement, top, width, i == 0, i == this._blocks.length - 1);
         }
         const borderElement = this.createElement('path');
@@ -860,13 +858,11 @@ grapher.NodeElement.Header = class {
         }
 
         let lineElement;
-
         for (i = 0; i < this._elements.length; i++) {
             element = this._elements[i];
 
             if (i != 0) {
                 lineElement = this.createElement('line');
-
                 lineElement.setAttribute('class', 'node');
 
                 lineElement.setAttribute('x1', element.x);
@@ -876,7 +872,6 @@ grapher.NodeElement.Header = class {
                 lineElement.setAttribute('y1', top);
 
                 lineElement.setAttribute('y2', top + this._height);
-
                 parentElement.appendChild(lineElement);
             }
         }
@@ -893,7 +888,6 @@ grapher.NodeElement.Header = class {
             lineElement.setAttribute('y1', top);
 
             lineElement.setAttribute('y2', top);
-
             parentElement.appendChild(lineElement);
         }
     }
