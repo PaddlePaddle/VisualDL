@@ -8,8 +8,6 @@ This is the Changelog for the VisualDL 2.0 project.
 
 **ZH**
 
-**ZH**
-
 - 问题修复
     - **FE**: 删除中文文件名 (#1122)
     - **BE**: requirements增加multiprocess依赖 (#1123)
