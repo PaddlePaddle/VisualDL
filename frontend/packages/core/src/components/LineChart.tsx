@@ -16,7 +16,7 @@
 
 import * as chart from '~/utils/chart';
 
-import React, {useEffect, useImperativeHandle} from 'react';
+import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
@@ -54,7 +54,6 @@ export type LineChartRef = {
 const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
         const {i18n} = useTranslation();
-
         const {
             ref: echartRef,
             echart,
@@ -66,7 +65,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             autoFit: true,
             onInit
         });
-
+        const [isCtrol, setIsCtrol] = useState<boolean>(false);
         const theme = useChartTheme();
 
         useImperativeHandle(ref, () => ({
@@ -79,7 +78,14 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 saveAsImage(title);
             }
         }));
-
+        useEffect(() => {
+            window.addEventListener('keydown', keydown); // 添加全局事件
+            window.addEventListener('keyup', keyUp); // 添加全局事件
+            return () => {
+                window.removeEventListener('keydown', keydown); // 销毁
+                window.removeEventListener('keyup', keyUp); // 销毁
+            };
+        }, []);
         useEffect(() => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const {color, colorAlt, series, ...defaults} = chart;
@@ -98,6 +104,13 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     yAxis: {
                         splitNumber: 4
                     },
+                    dataZoom: [
+                        {
+                            type: 'inside',
+                            start: 0,
+                            end: 25
+                        }
+                    ],
                     series: data?.map((item, index) =>
                         defaultsDeep(
                             {
@@ -144,9 +157,41 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            echart?.setOption(chartOptions, {notMerge: true});
-        }, [options, data, title, theme, i18n.language, echart]);
+            console.log('!options?.isCtrol', isCtrol);
+            setTimeout(() => {
+                if (!isCtrol && echart) {
+                    echart.dispatchAction({
+                        type: 'takeGlobalCursor',
+                        key: 'dataZoomSelect',
+                        dataZoomSelectActive: true
+                    });
+                }
+                if (isCtrol && echart) {
+                    echart.dispatchAction({
+                        type: 'takeGlobalCursor',
+                        key: 'dataZoomInside',
+                        dataZoomSelectActive: false
+                    });
+                }
 
+                // if (echartInstance) {
+                //     onInit.current?.(echartInstance);
+                // }
+            }, 0);
+            echart?.setOption(chartOptions, {notMerge: true});
+        }, [options, data, title, theme, i18n.language, echart, isCtrol]);
+        const keydown = (e: any) => {
+            if (e.key === 'Control') {
+                console.log('e.tagert keydown', e.key);
+                setIsCtrol(true);
+            }
+        };
+        const keyUp = (e: any) => {
+            console.log('e.tagert keyUp', e.key);
+            if (e.key === 'Control') {
+                setIsCtrol(false);
+            }
+        };
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

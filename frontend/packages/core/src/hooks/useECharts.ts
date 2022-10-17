@@ -25,6 +25,7 @@ import {saveFile} from '~/utils/saveFile';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
+import {options} from '../resource/scalar/chart';
 
 export type Options = {
     loading?: boolean;
@@ -68,13 +69,13 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
             ref.current.addEventListener('mouseleave', hideTip);
 
             setTimeout(() => {
-                if (options.zoom) {
-                    echartInstance.dispatchAction({
-                        type: 'takeGlobalCursor',
-                        key: 'dataZoomSelect',
-                        dataZoomSelectActive: true
-                    });
-                }
+                // if (options.zoom && !options?.isCtrol) {
+                //     // echartInstance.dispatchAction({
+                //     //     type: 'takeGlobalCursor',
+                //     //     key: 'dataZoomSelect',
+                //     //     dataZoomSelectActive: true
+                //     // });
+                // }
 
                 if (echartInstance) {
                     onInit.current?.(echartInstance);

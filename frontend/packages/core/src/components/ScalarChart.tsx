@@ -16,7 +16,7 @@
 
 import LineChart, {LineChartRef, XAxisType, YAxisType} from '~/components/LineChart';
 import type {Range, Run} from '~/types';
-import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {rem, size} from '~/utils/style';
 
 import Chart from '~/components/Chart';
@@ -98,7 +98,6 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const echart = useRef<LineChartRef>(null);
 
     const [maximized, setMaximized] = useState<boolean>(false);
-
     const [yAxisType, setYAxisType] = useState<YAxisType>(YAxisType.value);
     const toggleYAxisType = useCallback(() => {
         setYAxisType(t => (t === YAxisType.log ? YAxisType.value : YAxisType.log));
@@ -126,6 +125,13 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                 hideDelay: 300,
                 enterable: true
             },
+            // dataZoom: [
+            //     {
+            //         type: 'inside',
+            //         start: 0,
+            //         end: 25
+            //     }
+            // ],
             xAxis: {
                 type: xAxisType ?? XAxisType.value,
                 ...xRange,
@@ -192,7 +198,6 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         ],
         [downloadData, t, toggleYAxisType]
     );
-
     return (
         <Chart maximized={maximized} {...chartSizeInRem}>
             <Wrapper>

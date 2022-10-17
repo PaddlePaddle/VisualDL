@@ -66,9 +66,7 @@ const Scalar: FunctionComponent = () => {
     }, [query.smoothing, smoothingFromLocalStorage]);
     const [smoothing, setSmoothing] = useState(parsedSmoothing);
     useEffect(() => setSmoothingFromLocalStorage(String(smoothing)), [smoothing, setSmoothingFromLocalStorage]);
-
     const [xAxis, setXAxis] = useState<XAxis>(XAxis.Step);
-
     const [tooltipSorting, setTooltipSorting] = useState<SortingMethod>(toolTipSortingValues[0]);
 
     const [ignoreOutliers, setIgnoreOutliers] = useState(false);
@@ -159,7 +157,6 @@ const Scalar: FunctionComponent = () => {
         ),
         [smoothing, xAxis, tooltipSorting, ignoreOutliers, showMostValue, smoothedDataOnly, running]
     );
-
     return (
         <>
             <Title>{t('common:scalar')}</Title>
