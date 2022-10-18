@@ -434,8 +434,10 @@ def get_scalars(log_reader, run, tag, sub_tag):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("scalars").get_items(
         run, add_sub_tag(decode_tag(tag), decode_tag(sub_tag)))
-    results = [[s2ms(item.timestamp), item.id, item.tag_value.value]
-               for item in records]
+    results = [[
+        s2ms(item.timestamp), item.id,
+        transfer_abnomal_scalar_value(item.tag_value.value)
+    ] for item in records]
     return results
 
 
