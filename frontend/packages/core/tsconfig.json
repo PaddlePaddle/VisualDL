@@ -3,7 +3,7 @@
         "src",
         "test",
         "types"
-    ],
+, "public/static"    ],
     "exclude": [
         "node_modules"
     ],

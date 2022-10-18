@@ -20,30 +20,38 @@ const zip = require('netron/src/zip');
 const gzip = require('netron/src/gzip');
 const tar = require('netron/src/tar');
 const protobuf = require('netron/src/protobuf');
-
 const d3 = require('d3');
 const dagre = require('dagre');
-
-const grapher = require('netron/src/view-grapher');
-
+const grapher = require('./view-grapher');
 const sidebar = require('./sidebar');
-
 const view = {};
-
+const graphMetadata = require('./paddle-metadata');
+const {style} = require('d3');
 view.View = class {
     constructor(host) {
         this._host = host;
         this._host
             .initialize(this)
             .then(() => {
+                this.typeLayer = {};
+                this.Language = 'zh';
+                this.graphMetadatas = [];
+                this.non_graphMetadatas = [];
+                this.isCtrl = false;
+                this._clusters = {};
+                this._nodeName = {};
+                this._nodes = {};
                 this._model = null;
                 this._selection = [];
+                this._selectItem = null;
                 this._host.start();
                 this._showAttributes = false;
                 this._showInitializers = true;
                 this._showNames = false;
+                this._KeepData = false;
                 this._showHorizontal = false;
                 this._modelFactoryService = new view.ModelFactoryService(this._host);
+                this._graphNodes = {};
             })
             .catch(err => {
                 this.error(err.message, err);
@@ -70,16 +78,22 @@ view.View = class {
         if (this._activeGraph) {
             this.clearSelection();
             const graphElement = document.getElementById('canvas');
-            const view = new sidebar.FindSidebar(this._host, graphElement, this._activeGraph);
-            this._host.message('search', view.update(value));
+            if (this._allGraph) {
+                const view = new sidebar.FindSidebar(this._host, graphElement, this._allGraph);
+                this._host.message('search', view.update(value));
+            } else {
+                const view = new sidebar.FindSidebar(this._host, graphElement, this._activeGraph);
+                this._host.message('search', view.update(value));
+            }
         }
     }
-
     toggleAttributes(toggle) {
         if (toggle != null && !(toggle ^ this._showAttributes)) {
             return;
         }
         this._showAttributes = toggle == null ? !this._showAttributes : toggle;
+        this._nodes = {};
+        this._clusters = {};
         this._reload();
     }
 
@@ -92,6 +106,8 @@ view.View = class {
             return;
         }
         this._showInitializers = toggle == null ? !this._showInitializers : toggle;
+        this._nodes = {};
+        this._clusters = {};
         this._reload();
     }
 
@@ -104,11 +120,25 @@ view.View = class {
             return;
         }
         this._showNames = toggle == null ? !this._showNames : toggle;
+        this._nodes = {};
+        this._clusters = {};
         this._reload();
     }
-
+    toggleKeepData(toggle) {
+        if (toggle != null && !(toggle ^ this._KeepData)) {
+            return;
+        }
+        this._KeepData = toggle == null ? !this._KeepData : toggle;
+        // this._reload();
+    }
+    toggleLanguage(data) {
+        this.Language = data;
+    }
     get showNames() {
         return this._showNames;
+    }
+    get KeepData() {
+        return this._KeepData;
     }
 
     toggleDirection(toggle) {
@@ -130,7 +160,7 @@ view.View = class {
     _reload() {
         this._host.status('loading');
         if (this._model && this._activeGraph) {
-            this._updateGraph(this._model, this._activeGraph).catch(error => {
+            this._updateGraph2(this._model, this._activeGraph).catch(error => {
                 if (error) {
                     this.error('Graph update failed.', error);
                 }
@@ -157,7 +187,9 @@ view.View = class {
             this._zoom.scaleBy(d3.select(this._host.document.getElementById('canvas')), 0.8);
         }
     }
-
+    selectItem(data) {
+        this._selectItem = data;
+    }
     resetZoom() {
         if (this._zoom) {
             this._zoom.scaleTo(d3.select(this._host.document.getElementById('canvas')), 1);
@@ -166,6 +198,14 @@ view.View = class {
 
     select(item) {
         this.clearSelection();
+        if (item.type === 'node') {
+            for (const nodes of this._allGraph.nodes) {
+                if (nodes.name === item.name) {
+                    this.showNodeProperties(nodes);
+                    break;
+                }
+            }
+        }
         const graphElement = document.getElementById('canvas');
         const selection = sidebar.FindSidebar.selection(item, graphElement);
         if (selection && selection.length > 0) {
@@ -189,6 +229,16 @@ view.View = class {
                 d3.select(graphElement),
                 d3.zoomIdentity.translate(graphRect.width / 2 - x, graphRect.height / 2 - y)
             );
+        }
+    }
+    select2(item) {
+        const graphElement = document.getElementById('canvas');
+        const selection = sidebar.FindSidebar.selection2(item, graphElement);
+        if (selection && selection.length > 0) {
+            for (const element of selection) {
+                this._selection.push(element);
+                element.classList.add('select');
+            }
         }
     }
 
@@ -216,36 +266,105 @@ view.View = class {
                         graphs: model.graphs.map(g => g.name || ''),
                         selected: graph && (graph.name || '')
                     });
-                    return this._updateGraph(model, graph);
+                    return this._updateGraph2(model, graph);
                 });
             });
         });
     }
-
+    changeAlt(data) {
+        this.isCtrl = data;
+        console.log('isCtrl', this.isCtrl);
+    }
+    keydown() {
+        // 用户按下ctrl后变量isCtrl为true
+        this._host.document.onkeydown = e => {
+            if (
+                e.code === 'MetaLeft' ||
+                e.code === 'MetaRight' ||
+                e.code === 'ControlLeft' ||
+                e.code === 'AltLeft' ||
+                e.code === 'AltRight'
+            ) {
+                this.isCtrl = true;
+            }
+        };
+        // 用户松开ctrl后变量isCtrl为false
+        this._host.document.onkeyup = e => {
+            if (
+                e.code === 'MetaLeft' ||
+                e.code === 'MetaRight' ||
+                e.code === 'ControlLeft' ||
+                e.code === 'AltLeft' ||
+                e.code === 'AltRight'
+            ) {
+                this.isCtrl = false;
+            }
+        };
+    }
     changeGraph(name) {
         this._updateActiveGraph(name);
     }
-
-    _updateActiveGraph(name) {
-        if (this._model) {
-            const model = this._model;
-            const graph = model.graphs.filter(graph => name == graph.name).shift();
-            if (graph) {
-                this._host.status('loading');
-                this._timeout(200).then(() => {
-                    return this._updateGraph(model, graph).catch(error => {
-                        if (error) {
-                            this.error('Graph update failed.', error);
-                        }
-                    });
+    changeAllGrap(graph) {
+        this._allGraph = graph;
+        for (const node of graph.nodes) {
+            this._nodeName[node.name] = node;
+        }
+        // console.log('this._nodeName',this._nodeName);
+    }
+    changeSelect(selectItem) {
+        this._selectItem = selectItem;
+    }
+    _updateActiveGraph(data) {
+        if (data) {
+            this._host.status('loading');
+            this._timeout(200).then(() => {
+                return this._updateGraph(data).catch(error => {
+                    if (error) {
+                        this.error('Graph update failed.', error);
+                    }
                 });
-            }
+            });
         }
     }
-
-    _updateGraph(model, graph) {
+    _updateGraph(data) {
         return this._timeout(100).then(() => {
+            // 直接在此处传入模型数据的数据
+            if (data && data != this._activeGraph) {
+                const nodes = data.nodes;
+                if (nodes.length > 1400) {
+                    if (
+                        !this._host.confirm(
+                            'Large model detected.',
+                            'This graph contains a large number of nodes and might take a long time to render. Do you want to continue?'
+                        )
+                    ) {
+                        return null;
+                    }
+                }
+            }
+            return this.renderGraph(data, data)
+                .then(() => {
+                    this._model = data;
+                    this._activeGraph = data;
+                    this._host.status('rendered');
+                    return this._model;
+                })
+                .catch(error => {
+                    return this.renderGraph(this._model, this._activeGraph)
+                        .then(() => {
+                            this._host.status('rendered');
+                        })
+                        .finally(() => {
+                            throw error;
+                        });
+                });
+        });
+    }
+    _updateGraph2(graph) {
+        return this._timeout(100).then(() => {
+            // 直接在此处传入模型数据的数据
             if (graph && graph != this._activeGraph) {
+                this._selectItem = null;
                 const nodes = graph.nodes;
                 if (nodes.length > 1400) {
                     if (
@@ -258,9 +377,9 @@ view.View = class {
                     }
                 }
             }
-            return this.renderGraph(model, graph)
+            return this.renderGraph(graph, graph)
                 .then(() => {
-                    this._model = model;
+                    this._model = graph;
                     this._activeGraph = graph;
                     this._host.status('rendered');
                     return this._model;
@@ -269,19 +388,63 @@ view.View = class {
                     return this.renderGraph(this._model, this._activeGraph)
                         .then(() => {
                             this._host.status('rendered');
-                            throw error;
                         })
-                        .catch(() => {
+                        .finally(() => {
                             throw error;
                         });
                 });
         });
     }
-
+    jumpRoute(node) {
+        if (node.is_leaf) {
+            if (this.isCtrl) {
+                for (const nodes of this._allGraph.nodes) {
+                    if (nodes.name === node.name) {
+                        for (const type of this.non_graphMetadatas) {
+                            if (type.name.toLowerCase() === node.type) {
+                                if (this.Language === 'zh') {
+                                    window.open(
+                                        `https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`
+                                    );
+                                } else {
+                                    window.open(
+                                        `https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/nn/${type.name}_en.html`
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (this.isCtrl) {
+                for (const nodes of this._allGraph.nodes) {
+                    if (nodes.name === node.name) {
+                        for (const type of this.non_graphMetadatas) {
+                            if (type.name === node.type) {
+                                window.open(
+                                    `https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/nn/${type.name}_cn.html`
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     renderGraph(model, graph) {
         try {
+            this.keydown();
+            this.graphMetadatas = graphMetadata.default.leaf_nodes;
+            this.non_graphMetadatas = graphMetadata.default.non_leaf_nodes;
+            const typeLayer = {};
+            for (const type of graphMetadata.default.non_leaf_nodes) {
+                typeLayer[type.name] = true;
+            }
+            this.typeLayer = typeLayer;
             const graphElement = this._host.document.getElementById('canvas');
             while (graphElement.lastChild) {
+                // 做上一次渲染的的清理动作
                 graphElement.removeChild(graphElement.lastChild);
             }
             if (!graph) {
@@ -290,163 +453,262 @@ view.View = class {
                 this._zoom = null;
                 graphElement.style.position = 'absolute';
                 graphElement.style.margin = '0';
-
-                const groups = graph.groups;
-
+                const groups = true;
                 const graphOptions = {};
-                graphOptions.nodesep = 25;
-                graphOptions.ranksep = 20;
+                graphOptions.nodesep = 65;
+                graphOptions.ranksep = 60;
                 if (this._showHorizontal) {
                     graphOptions.rankdir = 'LR';
                 }
-
                 const g = new dagre.graphlib.Graph({compound: groups});
                 g.setGraph(graphOptions);
                 g.setDefaultEdgeLabel(() => {
                     return {};
                 });
-
                 let nodeId = 0;
                 const edgeMap = {};
                 const clusterMap = {};
                 const clusterParentMap = {};
                 let id = new Date().getTime();
-                const nodes = graph.nodes;
-
+                let nodes = graph.nodes;
                 if (nodes.length > 1500) {
                     graphOptions.ranker = 'longest-path';
                 }
-
                 if (groups) {
                     for (const node of nodes) {
-                        if (node.group) {
-                            const path = node.group.split('/');
-                            while (path.length > 0) {
-                                const name = path.join('/');
-                                path.pop();
+                        let path = node.name.split('/');
+                        path.pop();
+                        while (path.length > 0) {
+                            const name = path.join('/');
+                            path.pop();
+                            if (name) {
                                 clusterParentMap[name] = path.join('/');
                             }
                         }
                     }
                 }
-
                 for (const node of nodes) {
-                    const element = new grapher.NodeElement(this._host.document);
-
+                    let element = null;
+                    if (!document.getElementById(`node-${node.name}`)) {
+                        element = new grapher.NodeElement(this._host.document);
+                    }
                     const addNode = (element, node, edges) => {
-                        const header = element.block('header');
-                        const styles = ['node-item-type'];
-                        const metadata = node.metadata;
-                        const category = metadata && metadata.category ? metadata.category : '';
-                        if (category) {
-                            styles.push('node-item-type-' + category.toLowerCase());
-                        }
-                        const type = node.type;
-                        if (typeof type !== 'string' || !type.split) {
-                            // #416
-                            throw new ModelError(
-                                "Unknown node type '" + JSON.stringify(type) + "' in '" + model.format + "'."
-                            );
-                        }
-                        const content = this.showNames && node.name ? node.name : type.split('.').pop();
-                        const tooltip = this.showNames && node.name ? type : node.name;
-                        header.add(null, styles, content, tooltip, () => {
-                            this.showNodeProperties(node);
-                        });
-
-                        if (node.function) {
-                            header.add(null, ['node-item-function'], '+', null, () => {
-                                // debugger;
-                            });
-                        }
-
-                        const initializers = [];
-                        let hiddenInitializers = false;
-                        if (this._showInitializers) {
-                            for (const input of node.inputs) {
-                                if (
-                                    input.visible &&
-                                    input.arguments.length == 1 &&
-                                    input.arguments[0].initializer != null
-                                ) {
-                                    initializers.push(input);
-                                }
-                                if (
-                                    (!input.visible || input.arguments.length > 1) &&
-                                    input.arguments.some(argument => argument.initializer != null)
-                                ) {
-                                    hiddenInitializers = true;
-                                }
-                            }
-                        }
-                        let sortedAttributes = [];
-                        const attributes = node.attributes;
-                        if (this.showAttributes && attributes) {
-                            sortedAttributes = attributes.filter(attribute => attribute.visible).slice();
-                            sortedAttributes.sort((a, b) => {
-                                const au = a.name.toUpperCase();
-                                const bu = b.name.toUpperCase();
-                                return au < bu ? -1 : au > bu ? 1 : 0;
-                            });
-                        }
-                        if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
-                            const block = element.block('list');
-                            block.handler = () => {
-                                this.showNodeProperties(node);
-                            };
-                            for (const initializer of initializers) {
-                                const argument = initializer.arguments[0];
-                                const type = argument.type;
-                                let shape = '';
-                                let separator = '';
-                                if (
-                                    type &&
-                                    type.shape &&
-                                    type.shape.dimensions &&
-                                    Object.prototype.hasOwnProperty.call(type.shape.dimensions, 'length')
-                                ) {
-                                    shape =
-                                        '\u3008' +
-                                        type.shape.dimensions.map(d => (d ? d : '?')).join('\u00D7') +
-                                        '\u3009';
-                                    if (
-                                        type.shape.dimensions.length == 0 &&
-                                        argument.initializer &&
-                                        !argument.initializer.state
-                                    ) {
-                                        shape = argument.initializer.toString();
-                                        if (shape && shape.length > 10) {
-                                            shape = shape.substring(0, 10) + '\u2026';
+                        if (!document.getElementById(`node-${node.name}`)) {
+                            const header = element.block('header');
+                            const styles = ['node-item-type'];
+                            const type = node.type;
+                            if (node.is_leaf) {
+                                for (const metadatas of this.graphMetadatas) {
+                                    if (node.type === metadatas.name) {
+                                        if (metadatas.schema.category) {
+                                            styles.push('node-item-type-' + metadatas.schema.category.toLowerCase());
                                         }
-                                        separator = ' = ';
                                     }
                                 }
-                                block.add(
-                                    'initializer-' + argument.name,
-                                    initializer.name,
-                                    shape,
-                                    type ? type.toString() : '',
-                                    separator
+                            } else {
+                                for (const metadatas of this.non_graphMetadatas) {
+                                    if (node.type === metadatas.name) {
+                                        if (metadatas.schema.category) {
+                                            styles.push('node-item-type-' + metadatas.schema.category.toLowerCase());
+                                        }
+                                    }
+                                }
+                            }
+                            if (typeof type !== 'string' || !type.split) {
+                                // #416
+                                throw new ModelError(
+                                    "Unknown node type '" + JSON.stringify(type) + "' in '" + model.format + "'."
                                 );
                             }
-                            if (hiddenInitializers) {
-                                block.add(null, '\u3008' + '\u2026' + '\u3009', '', null, '');
-                            }
-
-                            for (const attribute of sortedAttributes) {
-                                if (attribute.visible) {
-                                    let attributeValue = sidebar.NodeSidebar.formatAttributeValue(
-                                        attribute.value,
-                                        attribute.type
-                                    );
-                                    if (attributeValue && attributeValue.length > 25) {
-                                        attributeValue = attributeValue.substring(0, 25) + '\u2026';
+                            const nodeName = node.name.split('/')[node.name.split('/').length - 1];
+                            const content = this.showNames && node.name ? nodeName : type.split('.').pop();
+                            const tooltip = this.showNames && node.name ? type : nodeName;
+                            header.add(null, styles, content, tooltip, () => {
+                                this.jumpRoute(node);
+                                this.showNodeProperties(node);
+                                this.select({
+                                    id: `node-${node.name}`,
+                                    name: node.name,
+                                    type: 'node'
+                                });
+                                const inputs = node.inputs;
+                                for (const input of inputs) {
+                                    for (const argument of input.arguments) {
+                                        if (argument.name != '' && !argument.initializer) {
+                                            this.select2({
+                                                id: `edge-${argument.name}`,
+                                                name: argument.name,
+                                                type: 'input',
+                                                tonode: node.name
+                                            });
+                                        }
                                     }
-                                    block.add(null, attribute.name, attributeValue, attribute.type, ' = ');
+                                }
+
+                                let outputs = node.outputs;
+                                if (node.chain && node.chain.length > 0) {
+                                    const chainOutputs = node.chain[node.chain.length - 1].outputs;
+                                    if (chainOutputs.length > 0) {
+                                        outputs = chainOutputs;
+                                    }
+                                }
+                                for (const output of outputs) {
+                                    for (const argument of output.arguments) {
+                                        if (argument.name != '') {
+                                            this.select2({
+                                                id: `edge-${argument.name}`,
+                                                name: argument.name,
+                                                type: 'input',
+                                                fromnode: node.name
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                            const buttons = ['node-item-buttons'];
+                            if (!node.is_leaf) {
+                                header.add(null, buttons, '+', null, () => {
+                                    // debugger;
+                                    this._host.selectNodeId({
+                                        nodeId: node.name,
+                                        expand: true
+                                    });
+                                    this._host.selectItems({
+                                        id: `node-${node.name}`,
+                                        name: node.name,
+                                        type: 'node'
+                                    });
+                                });
+                            }
+                            const initializers = [];
+                            let hiddenInitializers = false;
+                            if (this._showInitializers) {
+                                // 是否显示初始化参数
+                                for (const input of node.inputs) {
+                                    if (
+                                        input.visible &&
+                                        input.arguments.length == 1 &&
+                                        input.arguments[0].initializer != null
+                                    ) {
+                                        initializers.push(input);
+                                    }
+                                    if (
+                                        (!input.visible || input.arguments.length > 1) &&
+                                        input.arguments.some(argument => argument.initializer != null)
+                                    ) {
+                                        hiddenInitializers = true;
+                                    }
+                                }
+                            }
+                            let sortedAttributes = [];
+                            const attributes = node.attributes;
+                            if (this.showAttributes && attributes) {
+                                // 是否显示属性参数
+                                sortedAttributes = attributes.filter(attribute => attribute.visible).slice();
+                                sortedAttributes.sort((a, b) => {
+                                    const au = a.name.toUpperCase();
+                                    const bu = b.name.toUpperCase();
+                                    return au < bu ? -1 : au > bu ? 1 : 0;
+                                });
+                            }
+                            if (initializers.length > 0 || hiddenInitializers || sortedAttributes.length > 0) {
+                                const block = element.block('list');
+                                block.handler = () => {
+                                    // 侧边栏点击事件
+                                    this.jumpRoute(node);
+                                    this.showNodeProperties(node);
+                                    this.select({
+                                        id: `node-${node.name}`,
+                                        name: node.name,
+                                        type: 'node'
+                                    });
+                                    const inputs = node.inputs;
+                                    for (const input of inputs) {
+                                        for (const argument of input.arguments) {
+                                            if (argument.name != '' && !argument.initializer) {
+                                                this.select2({
+                                                    id: `edge-${argument.name}`,
+                                                    name: argument.name,
+                                                    type: 'input',
+                                                    tonode: node.name
+                                                });
+                                            }
+                                        }
+                                    }
+
+                                    let outputs = node.outputs;
+                                    if (node.chain && node.chain.length > 0) {
+                                        const chainOutputs = node.chain[node.chain.length - 1].outputs;
+                                        if (chainOutputs.length > 0) {
+                                            outputs = chainOutputs;
+                                        }
+                                    }
+                                    for (const output of outputs) {
+                                        for (const argument of output.arguments) {
+                                            if (argument.name != '') {
+                                                this.select2({
+                                                    id: `edge-${argument.name}`,
+                                                    name: argument.name,
+                                                    type: 'input',
+                                                    fromnode: node.name
+                                                });
+                                            }
+                                        }
+                                    }
+                                };
+                                for (const initializer of initializers) {
+                                    const argument = initializer.arguments[0];
+                                    const type = argument.type;
+                                    let shape = '';
+                                    let separator = '';
+                                    if (
+                                        type &&
+                                        type.shape &&
+                                        type.shape.dimensions &&
+                                        Object.prototype.hasOwnProperty.call(type.shape.dimensions, 'length')
+                                    ) {
+                                        shape =
+                                            '\u3008' +
+                                            type.shape.dimensions.map(d => (d ? d : '?')).join('\u00D7') +
+                                            '\u3009';
+                                        if (
+                                            type.shape.dimensions.length == 0 &&
+                                            argument.initializer &&
+                                            !argument.initializer.state
+                                        ) {
+                                            shape = argument.initializer.toString();
+                                            if (shape && shape.length > 10) {
+                                                shape = shape.substring(0, 10) + '\u2026';
+                                            }
+                                            separator = ' = ';
+                                        }
+                                    }
+                                    block.add(
+                                        'initializer-' + argument.name,
+                                        initializer.name,
+                                        shape,
+                                        type ? type.toString() : '',
+                                        separator
+                                    );
+                                }
+                                if (hiddenInitializers) {
+                                    block.add(null, '\u3008' + '\u2026' + '\u3009', '', null, '');
+                                }
+
+                                for (const attribute of sortedAttributes) {
+                                    if (attribute.visible) {
+                                        let attributeValue = sidebar.NodeSidebar.formatAttributeValue(
+                                            attribute.value,
+                                            attribute.type
+                                        );
+                                        if (attributeValue && attributeValue.length > 25) {
+                                            attributeValue = attributeValue.substring(0, 25) + '\u2026';
+                                        }
+                                        block.add(null, attribute.name, attributeValue, attribute.type, ' = ');
+                                    }
                                 }
                             }
                         }
-
                         if (edges) {
                             const inputs = node.inputs;
                             for (const input of inputs) {
@@ -458,12 +720,15 @@ view.View = class {
                                             edgeMap[argument.name] = tuple;
                                         }
                                         tuple.to.push({
+                                            // 这个节点的id
                                             node: nodeId,
-                                            name: input.name
+                                            name: input.name,
+                                            nodename: node.name
                                         });
                                     }
                                 }
                             }
+
                             let outputs = node.outputs;
                             if (node.chain && node.chain.length > 0) {
                                 const chainOutputs = node.chain[node.chain.length - 1].outputs;
@@ -482,13 +747,13 @@ view.View = class {
                                         tuple.from = {
                                             node: nodeId,
                                             name: output.name,
-                                            type: argument.type
+                                            type: argument.type,
+                                            nodename: node.name
                                         };
                                     }
                                 }
                             }
                         }
-
                         if (node.chain && node.chain.length > 0) {
                             for (const innerNode of node.chain) {
                                 addNode(element, innerNode, false);
@@ -512,33 +777,63 @@ view.View = class {
                             tuple.to.push({
                                 node: nodeId,
                                 name: controlDependency,
-                                controlDependency: true
+                                controlDependency: true,
+                                nodename: node.name
                             });
                         }
                     }
 
                     const nodeName = node.name;
-                    if (nodeName) {
-                        g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
+                    if (!document.getElementById(`node-${node.name}`)) {
+                        // 此时图上没有
+                        if (nodeName) {
+                            g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + nodeName});
+                        } else {
+                            g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
+                            id++;
+                        }
                     } else {
-                        g.setNode(nodeId, {label: element.format(graphElement), id: 'node-' + id.toString()});
-                        id++;
+                        g.setNode(nodeId, {label: 'node-' + nodeName, id: 'node-' + nodeName});
                     }
-
-                    const createCluster = function (name) {
+                    const isKeepData = this._KeepData;
+                    const createCluster = (name, node) => {
+                        const non_leaf_nodes = graphMetadata.default.non_leaf_nodes;
+                        const styles = ['clusterGroup'];
+                        const showName = node.show_name.split('/')[node.show_name.split('/').length - 1];
+                        if (this._nodeName[name]) {
+                            for (const non_leaf_node of non_leaf_nodes) {
+                                if (this._nodeName[name].type === non_leaf_node.name) {
+                                    styles.push(`clusterGroup-${non_leaf_node.schema.category.toLowerCase()}`);
+                                    break;
+                                }
+                            }
+                        }
+                        let newStyle = ['clusterGroup'];
+                        if (styles.length > 1) {
+                            newStyle = ['clusterGroup', styles[1]];
+                        }
                         if (!clusterMap[name]) {
-                            g.setNode(name, {rx: 5, ry: 5});
+                            g.setNode(name, {
+                                rx: 10,
+                                ry: 10,
+                                nodeId: name,
+                                showName: showName,
+                                expand: false,
+                                classList: newStyle,
+                                isKeepData: isKeepData
+                            });
                             clusterMap[name] = true;
-                            const parent = clusterParentMap[name];
+                            const parent = clusterParentMap[name]; // 父节点的父节点
                             if (parent) {
-                                createCluster(parent);
+                                createCluster(parent, node);
                                 g.setParent(name, parent);
                             }
                         }
                     };
-
                     if (groups) {
-                        let groupName = node.group;
+                        let path = node.name.split('/');
+                        path.pop();
+                        let groupName = path.join('/');
                         if (groupName && groupName.length > 0) {
                             if (!Object.prototype.hasOwnProperty.call(clusterParentMap, groupName)) {
                                 const lastIndex = groupName.lastIndexOf('/');
@@ -552,15 +847,14 @@ view.View = class {
                                 }
                             }
                             if (groupName) {
-                                createCluster(groupName);
+                                createCluster(groupName, node);
                                 g.setParent(nodeId, groupName);
                             }
                         }
                     }
-
+                    this._graphNodes[node.name] = element;
                     nodeId++;
                 }
-
                 for (const input of graph.inputs) {
                     for (const argument of input.arguments) {
                         let tuple = edgeMap[argument.name];
@@ -586,7 +880,6 @@ view.View = class {
                     });
                     g.setNode(nodeId++, {label: inputElement.format(graphElement), class: 'graph-input'});
                 }
-
                 for (const output of graph.outputs) {
                     for (const argument of output.arguments) {
                         let tuple = edgeMap[argument.name];
@@ -609,7 +902,6 @@ view.View = class {
                     });
                     g.setNode(nodeId++, {label: outputElement.format(graphElement)});
                 }
-
                 for (const edge of Object.keys(edgeMap)) {
                     const tuple = edgeMap[edge];
                     if (tuple.from != null) {
@@ -629,21 +921,25 @@ view.View = class {
                                     label: text,
                                     id: 'edge-' + edge,
                                     arrowhead: 'vee',
-                                    class: 'edge-path-control-dependency'
+                                    class: 'edge-path-control-dependency',
+                                    fromnode: tuple.from.nodename,
+                                    tonode: to.nodename
                                 });
                             } else {
                                 g.setEdge(tuple.from.node, to.node, {
                                     label: text,
                                     id: 'edge-' + edge,
-                                    arrowhead: 'vee'
+                                    arrowhead: 'vee',
+                                    fromnode: tuple.from.nodename,
+                                    tonode: to.nodename
                                 });
                             }
                         }
                     }
                 }
-
                 // Workaround for Safari background drag/zoom issue:
                 // https://stackoverflow.com/questions/40887193/d3-js-zoom-is-not-working-with-mousewheel-in-safari
+                // if (!this.secondChange) {
                 const backgroundElement = this._host.document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                 backgroundElement.setAttribute('id', 'background');
                 backgroundElement.setAttribute('width', '100%');
@@ -651,52 +947,69 @@ view.View = class {
                 backgroundElement.setAttribute('fill', 'none');
                 backgroundElement.setAttribute('pointer-events', 'all');
                 graphElement.appendChild(backgroundElement);
-
                 const originElement = this._host.document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 originElement.setAttribute('id', 'origin');
                 graphElement.appendChild(originElement);
 
                 let svg = null;
                 svg = d3.select(graphElement);
+                backgroundElement.addEventListener('click', () => {
+                    this.clearSelection();
+                });
                 this._zoom = d3.zoom();
                 this._zoom(svg);
-                this._zoom.scaleExtent([0.1, 2]);
+                this._zoom.scaleExtent([0.01, 2]); // 缩放的范围
                 this._zoom.on('zoom', () => {
                     originElement.setAttribute('transform', d3.event.transform.toString());
                 });
                 this._zoom.transform(svg, d3.zoomIdentity);
 
-                return this._timeout(20).then(() => {
-                    const graphRenderer = new grapher.Renderer(this._host.document, originElement);
+                return this._timeout(200).then(() => {
+                    const graphRenderer = new grapher.Renderer(this._host, originElement, this);
                     graphRenderer.render(g);
+                    for (const cluster of document.getElementById('clusters').children) {
+                        this._clusters[cluster.getAttribute('id')] = cluster;
+                    }
 
+                    for (const node of document.getElementById('nodes').children) {
+                        this._nodes[node.getAttribute('id')] = node;
+                    }
                     const inputElements = graphElement.getElementsByClassName('graph-input');
                     const svgSize = graphElement.getBoundingClientRect();
                     if (inputElements && inputElements.length > 0) {
                         // Center view based on input elements
-                        const xs = [];
-                        const ys = [];
-                        for (let i = 0; i < inputElements.length; i++) {
-                            const inputTransform = inputElements[i].transform.baseVal.consolidate().matrix;
-                            xs.push(inputTransform.e);
-                            ys.push(inputTransform.f);
+                        if (this._selectItem) {
+                            this.select(this._selectItem);
+                        } else {
+                            const xs = [];
+                            const ys = [];
+                            for (let i = 0; i < inputElements.length; i++) {
+                                const inputTransform = inputElements[i].transform.baseVal.consolidate().matrix;
+                                xs.push(inputTransform.e);
+                                ys.push(inputTransform.f);
+                            }
+                            let x = xs[0];
+                            const y = ys[0];
+                            if (ys.every(y => y == ys[0])) {
+                                x = xs.reduce((a, b) => a + b) / xs.length;
+                            }
+                            const sx = svgSize.width / (this._showHorizontal ? 4 : 2) - x;
+                            const sy = svgSize.height / (this._showHorizontal ? 2 : 4) - y;
+                            this._zoom.transform(svg, d3.zoomIdentity.translate(sx, sy));
                         }
-                        let x = xs[0];
-                        const y = ys[0];
-                        if (ys.every(y => y == ys[0])) {
-                            x = xs.reduce((a, b) => a + b) / xs.length;
-                        }
-                        const sx = svgSize.width / (this._showHorizontal ? 4 : 2) - x;
-                        const sy = svgSize.height / (this._showHorizontal ? 2 : 4) - y;
-                        this._zoom.transform(svg, d3.zoomIdentity.translate(sx, sy));
+                        // 这里应该触发一次小地图重定位
                     } else {
-                        this._zoom.transform(
-                            svg,
-                            d3.zoomIdentity.translate(
-                                (svgSize.width - g.graph().width) / 2,
-                                (svgSize.height - g.graph().height) / 2
-                            )
-                        );
+                        if (this._selectItem) {
+                            this.select(this._selectItem);
+                        } else {
+                            this._zoom.transform(
+                                svg,
+                                d3.zoomIdentity.translate(
+                                    (svgSize.width - g.graph().width) / 2,
+                                    (svgSize.height - g.graph().height) / 2
+                                )
+                            );
+                        }
                     }
                     return;
                 });
@@ -705,7 +1018,6 @@ view.View = class {
             return Promise.reject(error);
         }
     }
-
     applyStyleSheet(element, name) {
         let rules = [];
         for (let i = 0; i < this._host.document.styleSheets.length; i++) {
@@ -807,6 +1119,7 @@ view.View = class {
         if (this._model) {
             const modelSidebar = new sidebar.ModelSidebar(this._host, this._model, this._activeGraph);
             this._host.message('show-model-properties', modelSidebar.render());
+            // 通信函数
         }
     }
 

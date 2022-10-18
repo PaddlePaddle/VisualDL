@@ -36,7 +36,7 @@ import useClickOutside from '~/hooks/useClickOutside';
 import {useTranslation} from 'react-i18next';
 import without from 'lodash/without';
 
-export const padding = em(10);
+export const padding = em(8);
 export const height = em(36);
 
 const Wrapper = styled.div<{opened?: boolean}>`
@@ -78,9 +78,10 @@ const TriggerIcon = styled(Icon)<{opened?: boolean}>`
 `;
 
 const Label = styled.span`
+    height:100%
     flex-grow: 1;
     padding-right: ${em(10)};
-    line-height: 1;
+    line-height: ${em(18)};
     ${ellipsis()}
 `;
 

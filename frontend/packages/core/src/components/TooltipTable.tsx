@@ -50,10 +50,9 @@ const Wrapper = styled.div`
             font-weight: bold;
             padding: 0 0.285714286em;
         }
-
         td {
-            padding: 0 0.333333333em;
-
+            padding: 0 0.633333333em;
+            padding-bottom: ${rem(8)};
             &.run-indicator > span {
                 ${size(12, 12)}
                 border-radius: 6px;
@@ -84,7 +83,6 @@ const TooltipTable: FunctionComponent<TooltipTableProps> = ({run, runs, columns,
     // because we use `ReactDOMServer.renderToStaticMarkup` to render this component into echarts tooltip
     // `ReactDOMServer.renderToStaticMarkup` WILL NOT call hydrate so translation will never be initialized
     // const {t} = useTranslation('common');
-
     return (
         <Wrapper>
             <table>

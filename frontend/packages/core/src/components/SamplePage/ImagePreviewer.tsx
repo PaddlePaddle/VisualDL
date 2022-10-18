@@ -191,7 +191,7 @@ const ImagePreviewer: FunctionComponent<ImagePreviewerProps> = ({
                         setWidth(ir * rect.height * 0.9);
                     } else if (ir >= r && img.naturalWidth > rect.width * 0.9) {
                         setWidth(rect.width * 0.9);
-                        setHeight(ir * rect.width * 0.9);
+                        setHeight((rect.width / ir) * 0.9);
                     } else {
                         setWidth(img.naturalWidth);
                         setHeight(img.naturalHeight);

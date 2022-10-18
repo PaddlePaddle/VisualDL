@@ -66,7 +66,7 @@ const Title = styled.h4<{color: string; opened?: boolean}>`
         color: var(--text-lighter-color);
         ${transitionProps('color')}
         ${ellipsis()}
-        max-width: 50%;
+         max-width: 50%;
 
         &::before {
             content: '';
@@ -104,54 +104,56 @@ const TextWrapper = styled.div`
     ${sameBorder(true)}
     ${transitionProps('border-color')}
 `;
-
+// display: grid;
+// grid-template-columns: fit-content(25%) auto;
+// grid-row-gap: ${rem(12)};
+// justify-items: stretch;
+// align-items: stretch;
+// ${transitionProps('border-color')}
 const TextGrid = styled.div`
-    margin-top: ${rem(12)};
-    display: grid;
-    grid-template-columns: fit-content(25%) auto;
-    grid-row-gap: ${rem(12)};
-    justify-items: stretch;
-    align-items: stretch;
-    ${transitionProps('border-color')}
-
-    > span {
-        height: ${rem(40)};
-        line-height: 1.857142857;
-        padding: ${rem(7)} 0;
-    }
-
-    .step {
-        ${sameBorder()}
-        border-right: none;
-        border-top-left-radius: ${borderRadius};
-        border-bottom-left-radius: ${borderRadius};
-        padding-left: ${rem(8)};
-        padding-right: ${rem(14)};
-
-        > span {
-            display: block;
-            width: 100%;
-            color: var(--text-light-color);
-            background-color: var(--text-chart-tag-background-color);
-            padding: 0 ${rem(8)};
-            border-radius: ${borderRadius};
-            ${transitionProps(['background-color', 'color'])}
-        }
-    }
-
-    .text {
-        ${sameBorder()}
-        border-left: none;
-        border-top-right-radius: ${borderRadius};
-        border-bottom-right-radius: ${borderRadius};
-        padding-right: ${rem(20)};
-        ${ellipsis()}
-
-        > * {
-            vertical-align: middle;
-        }
-    }
-`;
+     margin-top: ${rem(12)};
+     >div {
+         ${sameBorder()}
+         border-radius: ${borderRadius};
+         margin-bottom: ${rem(20)};
+         > span {
+             display:block;
+             height: ${rem(40)};
+             line-height: 1.857142857;
+             padding: ${rem(7)} 0;
+         }
+     
+         .step {
+             padding-left: ${rem(8)};
+             padding-right: ${rem(14)};
+     
+             > span {
+                 display: inline-block;
+                 width: atuo;
+                 clear:both
+                 color: var(--text-light-color);
+                 background-color: var(--text-chart-tag-background-color);
+                 padding: 0 ${rem(8)};
+                 border-radius: ${borderRadius};
+                 ${transitionProps(['background-color', 'color'])}
+             }
+         }
+     
+         .text {
+             padding-left: 1rem;
+             padding-right: ${rem(20)};
+             display: block;
+             overflow: hidden;
+             white-space: normal;
+             word-wrap: normal;
+             height:auto;
+     
+             > * {
+                 vertical-align: middle;
+             }
+         }
+     }
+ `;
 
 type TextProps = {
     index: number;
@@ -171,7 +173,7 @@ const Text: FunctionComponent<TextProps> = ({run, tag, step, wallTime, index}) =
     });
 
     return (
-        <>
+        <div>
             <span className="step">
                 <span>
                     {t('common:time-mode.step')} {step}
@@ -186,7 +188,7 @@ const Text: FunctionComponent<TextProps> = ({run, tag, step, wallTime, index}) =
                     error ?? text
                 )}
             </span>
-        </>
+        </div>
     );
 };
 

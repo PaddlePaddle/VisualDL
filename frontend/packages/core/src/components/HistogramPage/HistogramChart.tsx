@@ -16,7 +16,7 @@
 
 // cSpell:words npts
 
-import type {EChartOption, ECharts, EChartsConvertFinder} from 'echarts';
+import type {EChartsOption, ECharts} from 'echarts';
 import type {HistogramData, OffsetData, OverlayData, OverlayDataItem} from '~/resource/histogram';
 import LineChart, {LineChartRef} from '~/components/LineChart';
 import {Modes, options as chartOptions} from '~/resource/histogram';
@@ -142,13 +142,13 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
 
     const formatter = useMemo(
         () => ({
-            [Modes.Overlay]: (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
+            [Modes.Overlay]: (params: any) => {
                 if (!data || highlight == null) {
                     return '';
                 }
-                const series = (params as EChartOption.Tooltip.Format[]).find(
-                    s => s.data[1] === (data as OverlayData).data[highlight][0][1]
-                );
+                const series = params.find((s: any) => {
+                    return s.data[1] === (data as OverlayData).data[highlight][0][1];
+                });
                 return series?.seriesName ?? '';
             },
             [Modes.Offset]: (dot: [number, number, number]) => dot[2]
@@ -210,15 +210,15 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
     );
 
     const mousemove = useCallback((echarts: ECharts, {offsetX, offsetY}: {offsetX: number; offsetY: number}) => {
-        const series = echarts.getOption().series;
+        const series: any = echarts.getOption().series;
         const pt: [number, number] = [offsetX, offsetY];
         if (series) {
             type Distance = number;
             type Index = number;
-            const npts: [number, number, Distance, Index][] = series.map((s, i) =>
+            const npts: [number, number, Distance, Index][] = series.map((s: any, i: number) =>
                 (s.data as OverlayDataItem[])?.reduce(
                     (m, [, , x, y]) => {
-                        const px = echarts.convertToPixel('grid' as EChartsConvertFinder, [x, y]) as [number, number];
+                        const px = echarts.convertToPixel('grid', [x, y]) as [number, number];
                         const d = distance(px, pt);
                         if (d < m[2]) {
                             return [x, y, d, i];
@@ -257,8 +257,8 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
                 <StyledLineChart
                     ref={echart as React.RefObject<LineChartRef>}
                     title={title}
-                    data={chartData as EChartOption<EChartOption.SeriesLine>['series']}
-                    options={options as EChartOption}
+                    data={chartData}
+                    options={options as EChartsOption}
                     loading={loading}
                     onInit={onInit}
                 />
@@ -270,7 +270,7 @@ const HistogramChart: FunctionComponent<HistogramChartProps> = ({run, tag, mode,
                     ref={echart as React.RefObject<StackChartRef>}
                     title={title}
                     data={chartData as StackChartProps['data']}
-                    options={options as EChartOption}
+                    options={options as EChartsOption}
                     loading={loading}
                 />
             );

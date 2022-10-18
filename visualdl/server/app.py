@@ -1,5 +1,4 @@
 #!/user/bin/env python
-
 # Copyright (c) 2017 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,28 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
-import os
-import time
-import sys
 import multiprocessing
-import threading
+import os
 import re
+import sys
+import threading
+import time
 import webbrowser
+
 import requests
-
-from visualdl import __version__
-from visualdl.utils import update_util
-
-from flask import (Flask, Response, redirect, request, send_file, make_response)
+from flask import Flask
+from flask import make_response
+from flask import redirect
+from flask import request
+from flask import Response
+from flask import send_file
 from flask_babel import Babel
 
 import visualdl.server
+from visualdl import __version__
+from visualdl.component.profiler.profiler_server import create_profiler_api_call
 from visualdl.server.api import create_api_call
-from visualdl.server.serve import upload_to_dev
-from visualdl.server.args import (ParseArgs, parse_args)
+from visualdl.server.args import parse_args
+from visualdl.server.args import ParseArgs
 from visualdl.server.log import info
+from visualdl.server.serve import upload_to_dev
 from visualdl.server.template import Template
+from visualdl.utils import update_util
 
 SERVER_DIR = os.path.join(visualdl.ROOT, 'server')
 
@@ -49,7 +53,7 @@ mock_data_path = os.path.join(SERVER_DIR, "./mock_data/")
 check_live_path = '/alive'
 
 
-def create_app(args):
+def create_app(args):  # noqa: C901
     # disable warning from flask
     cli = sys.modules['flask.cli']
     cli.show_server_banner = lambda *x: None
@@ -63,7 +67,7 @@ def create_app(args):
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
     babel = Babel(app)
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
-
+    profiler_api_call = create_profiler_api_call(args.logdir)
     if args.telemetry:
         update_util.PbUpdater(args.product).start()
 
@@ -90,9 +94,9 @@ def create_app(args):
             PUBLIC_PATH=public_path,
             BASE_URI=public_path,
             API_URL=api_path,
-            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b' if args.telemetry else '',
-            THEME='' if args.theme is None else args.theme
-        )
+            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b'
+            if args.telemetry else '',
+            THEME='' if args.theme is None else args.theme)
 
         @app.route('/')
         def base():
@@ -107,20 +111,35 @@ def create_app(args):
 
         @app.route(public_path + '/')
         def index():
-            return redirect(append_query_string(public_path + '/index'), code=302)
+            return redirect(
+                append_query_string(public_path + '/index'), code=302)
 
         @app.route(public_path + '/<path:filename>')
         def serve_static(filename):
             is_not_page_request = re.search(r'\..+$', filename)
-            response = template.render(filename if is_not_page_request else 'index.html')
+            response = template.render(
+                filename if is_not_page_request else 'index.html')
             if not is_not_page_request:
-                response.set_cookie('vdl_lng', get_locale(), path='/', samesite='Strict', secure=False, httponly=False)
+                response.set_cookie(
+                    'vdl_lng',
+                    get_locale(),
+                    path='/',
+                    samesite='Strict',
+                    secure=False,
+                    httponly=False)
             return response
 
-    @app.route(api_path + '/<path:method>')
+    @app.route(api_path + '/<path:method>', methods=["GET", "POST"])
     def serve_api(method):
         data, mimetype, headers = api_call(method, request.args)
-        return make_response(Response(data, mimetype=mimetype, headers=headers))
+        return make_response(
+            Response(data, mimetype=mimetype, headers=headers))
+
+    @app.route(api_path + '/profiler/<path:method>', methods=["GET", "POST"])
+    def serve_profiler_api(method):
+        data, mimetype, headers = profiler_api_call(method, request.args)
+        return make_response(
+            Response(data, mimetype=mimetype, headers=headers))
 
     @app.route(check_live_path)
     def check_live():
@@ -134,13 +153,17 @@ def wait_until_live(args: ParseArgs):
     while True:
         try:
             requests.get(url + check_live_path)
-            info('Running VisualDL at http://%s:%s/ (Press CTRL+C to quit)', args.host, args.port)
+            info('Running VisualDL at http://%s:%s/ (Press CTRL+C to quit)',
+                 args.host, args.port)
 
             if args.host == 'localhost':
-                info('Serving VisualDL on localhost; to expose to the network, use a proxy or pass --host 0.0.0.0')
+                info(
+                    'Serving VisualDL on localhost; to expose to the network, use a proxy or pass --host 0.0.0.0'
+                )
 
             if args.api_only:
-                info('Running in API mode, only %s/* will be served.', args.public_path + '/api')
+                info('Running in API mode, only %s/* will be served.',
+                     args.public_path + '/api')
 
             break
         except Exception:
@@ -154,16 +177,14 @@ def _run(args):
     os.system('')
     info('\033[1;33mVisualDL %s\033[0m', __version__)
     app = create_app(args)
-    threading.Thread(target=wait_until_live, args=(args,)).start()
+    threading.Thread(target=wait_until_live, args=(args, )).start()
     app.run(debug=False, host=args.host, port=args.port, threaded=False)
 
 
 def run(logdir=None, **options):
-    args = {
-        'logdir': logdir
-    }
+    args = {'logdir': logdir}
     args.update(options)
-    p = multiprocessing.Process(target=_run, args=(args,))
+    p = multiprocessing.Process(target=_run, args=(args, ))
     p.start()
     return p.pid
 

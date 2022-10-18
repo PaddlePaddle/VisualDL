@@ -27,9 +27,9 @@ module.exports = {
     },
     plugins: ['license-header'],
     rules: {
-        'no-console': 'warn',
-        'sort-imports': 'error',
-        'license-header/header': ['error', './license-header.js']
+        // 'sort-imports': 'warn',
+        // 'no-console': 'warn'
+        // 'license-header/header': ['error', './license-header.js']
     },
     overrides: [
         {
@@ -39,7 +39,7 @@ module.exports = {
             rules: {
                 '@typescript-eslint/explicit-function-return-type': 'off',
                 '@typescript-eslint/explicit-module-boundary-types': 'off',
-                '@typescript-eslint/no-explicit-any': 'error'
+                '@typescript-eslint/no-explicit-any': 'off'
             }
         },
         {
@@ -66,7 +66,7 @@ module.exports = {
             rules: {
                 '@typescript-eslint/explicit-function-return-type': 'off',
                 '@typescript-eslint/explicit-module-boundary-types': 'off',
-                '@typescript-eslint/no-explicit-any': 'error',
+                '@typescript-eslint/no-explicit-any': 'off',
                 'react/prop-types': 'off',
                 'react/react-in-jsx-scope': 'off'
             }

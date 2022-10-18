@@ -21,8 +21,8 @@ if __name__ == '__main__':
     # 记录第一次实验数据
     with LogWriter('./log/hparams_test/train/run1') as writer:
         # 记录hparams数值和metrics名称
-        writer.add_hparams(hparam_dict={'lr': 0.1, 'bsize': 1, 'opt': 'sgd'},
-                           metric_list=['hparam/accuracy', 'hparam/loss'])
+        writer.add_hparams(hparams_dict={'lr': 0.1, 'bsize': 1, 'opt': 'sgd'},
+                           metrics_list=['hparam/accuracy', 'hparam/loss'])
         # 通过将add_scalar接口中的tag与metrics名称对应，记录一次实验中不同step的metrics数值
         for i in range(10):
             writer.add_scalar(tag='hparam/accuracy', value=i, step=i)
@@ -31,8 +31,8 @@ if __name__ == '__main__':
     # 记录第二次实验数据
     with LogWriter('./log/hparams_test/train/run2') as writer:
         # 记录hparams数值和metrics名称
-        writer.add_hparams(hparam_dict={'lr': 0.2, 'bsize': 2, 'opt': 'relu'},
-                           metric_list=['hparam/accuracy', 'hparam/loss'])
+        writer.add_hparams(hparams_dict={'lr': 0.2, 'bsize': 2, 'opt': 'relu'},
+                           metrics_list=['hparam/accuracy', 'hparam/loss'])
         # 通过将add_scalar接口中的tag与metrics名称对应，记录一次实验中不同step的metrics数值
         for i in range(10):
             writer.add_scalar(tag='hparam/accuracy', value=1.0/(i+1), step=i)
