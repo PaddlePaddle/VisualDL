@@ -29,11 +29,11 @@ if __name__ == '__main__':
                 },
                 step=step)
             writer.add_scalars(
-                main_tag='math/formula12',
+                main_tag='math/formula2',
                 tag_scalar_dict={
                     'sqrtx': math.sqrt(value[step]),
                     'squarex': value[step]**2
                 },
                 step=step)
             writer.add_scalar(
-                tag='math/formula12', step=step, value=value[step])
+                tag='math/formula2', step=step, value=value[step])
