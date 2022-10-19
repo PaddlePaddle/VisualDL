@@ -422,22 +422,15 @@ def get_scalar(log_reader, run, tag):
     log_reader.load_new_data()
     records = log_reader.data_manager.get_reservoir("scalar").get_items(
         run, decode_tag(tag))
+
     results = [[
         s2ms(item.timestamp), item.id,
         transfer_abnomal_scalar_value(item.value)
-    ] for item in records]
-    return results
-
-
-def get_scalars(log_reader, run, tag, sub_tag):
-    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
-    log_reader.load_new_data()
-    records = log_reader.data_manager.get_reservoir("scalars").get_items(
-        run, add_sub_tag(decode_tag(tag), decode_tag(sub_tag)))
-    results = [[
+    ] if item.WhichOneof("one_value") == "value" else [
         s2ms(item.timestamp), item.id,
         transfer_abnomal_scalar_value(item.tag_value.value)
     ] for item in records]
+
     return results
 
 
@@ -449,20 +442,6 @@ def get_scalar_data(log_reader, run, tag, type='tsv'):
     with io.StringIO() as fp:
         csv_writer = csv.writer(fp, delimiter=delimeter)
         csv_writer.writerow(['id', 'tag', 'timestamp', 'value'])
-        csv_writer.writerows(result)
-        result = fp.getvalue()
-        return result
-
-
-def get_scalars_data(log_reader, run, tag, sub_tag, type='tsv'):
-    run = log_reader.name2tags[run] if run in log_reader.name2tags else run
-    log_reader.load_new_data()
-    result = log_reader.get_log_data('scalars', run, decode_tag(tag))
-    result = [row for row in result if row[2] == sub_tag]
-    delimeter = '\t' if 'tsv' == type else ','
-    with io.StringIO() as fp:
-        csv_writer = csv.writer(fp, delimiter=delimeter)
-        csv_writer.writerow(['id', 'tag', 'sub_tag', 'timestamp', 'value'])
         csv_writer.writerows(result)
         result = fp.getvalue()
         return result

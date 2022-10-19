@@ -22,16 +22,18 @@ if __name__ == '__main__':
     with LogWriter(logdir="./log/scalars_test/") as writer:
         for step in range(1000):
             writer.add_scalars(
-                main_tag='math1',
+                main_tag='math/formula1',
                 tag_scalar_dict={
                     'sinx': math.sin(value[step]),
                     'cosx': math.cos(value[step])
                 },
                 step=step)
             writer.add_scalars(
-                main_tag='math2',
+                main_tag='math/formula12',
                 tag_scalar_dict={
                     'sqrtx': math.sqrt(value[step]),
                     'squarex': value[step]**2
                 },
                 step=step)
+            writer.add_scalar(
+                tag='math/formula12', step=step, value=value[step])

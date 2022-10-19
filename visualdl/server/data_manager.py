@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
-import threading
-import random
 import collections
+import random
+import threading
 
 DEFAULT_PLUGIN_MAXSIZE = {
     "scalar": 1000,
@@ -33,7 +32,7 @@ DEFAULT_PLUGIN_MAXSIZE = {
 
 
 def add_sub_tag(tag, sub_tag):
-    return tag + '/' + sub_tag
+    return tag.replace('%', '_') + '_' + sub_tag
 
 
 class Reservoir(object):
@@ -58,10 +57,8 @@ class Reservoir(object):
         if max_size < 0 or max_size != round(max_size):
             raise ValueError("Max_size must be nonnegative integer.")
         self._max_size = max_size
-        self._buckets = collections.defaultdict(
-            lambda: _ReservoirBucket(max_size=self._max_size,
-                                     random_instance=random.Random(seed))
-        )
+        self._buckets = collections.defaultdict(lambda: _ReservoirBucket(
+            max_size=self._max_size, random_instance=random.Random(seed)))
         self._mutex = threading.Lock()
 
     @property
@@ -223,25 +220,12 @@ class Reservoir(object):
         """
         if item.WhichOneof("one_value") == "value":
             key = run + "/" + tag
+            self._add_scalar_item(key, item)
+        elif item.WhichOneof("one_value") == "tag_value":
+            key = run + "/" + add_sub_tag(tag, item.tag_value.tag) + "/" + tag
+            self._add_scalars_item(key, item)
         else:
-            raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
-        self._add_scalar_item(key, item)
-
-    def add_scalars_item(self, run, tag, item):
-        """Add a new scalar item to reservoir buckets with given tag as key.
-
-        For usage habits of VisualDL, actually call self._add_items()
-
-        Args:
-            run: Identity of one tablet.
-            tag: Identity of one record in tablet.
-            item: New item to add to bucket.
-        """
-        if item.WhichOneof("one_value") == "tag_value":
-            key = run + "/" + add_sub_tag(tag, item.tag_value.tag)
-        else:
-            raise ValueError("Not scalar type:"+item.WhichOneof("one_value"))
-        self._add_scalars_item(key, item)
+            raise ValueError("Not scalar type:" + item.WhichOneof("one_value"))
 
     def _cut_tail(self, key):
         with self._mutex:
@@ -337,7 +321,8 @@ class _ReservoirBucket(object):
                 self._items.append(item)
             else:
                 if self._last_special:
-                    if self._items[-1].id == self.min_scalar.id or self._items[-1].id == self.max_scalar.id:
+                    if self._items[-1].id == self.min_scalar.id or self._items[
+                            -1].id == self.max_scalar.id:
                         # data is not monotonous, set special to False
                         self._last_special = False
                     else:
@@ -357,7 +342,8 @@ class _ReservoirBucket(object):
                     r = self._random.randint(1, self._num_items_index)
                     self._last_special = False
                 if r < self._max_size:
-                    if self._items[r].id == self.min_scalar.id or self._items[r].id == self.max_scalar.id:
+                    if self._items[r].id == self.min_scalar.id or self._items[
+                            r].id == self.max_scalar.id:
                         # reserve max and min point
                         if r - 1 > 0:
                             r = r - 1
@@ -389,7 +375,8 @@ class _ReservoirBucket(object):
                 self._items.append(item)
             else:
                 if self._last_special:
-                    if self._items[-1].id == self.min_scalar.id or self._items[-1].id == self.max_scalar.id:
+                    if self._items[-1].id == self.min_scalar.id or self._items[
+                            -1].id == self.max_scalar.id:
                         # data is not monotic, set special to False
                         self._last_special = False
                     else:
@@ -409,7 +396,8 @@ class _ReservoirBucket(object):
                     r = self._random.randint(1, self._num_items_index)
                     self._last_special = False
                 if r < self._max_size:
-                    if self._items[r].id == self.min_scalar.id or self._items[r].id == self.max_scalar.id:
+                    if self._items[r].id == self.min_scalar.id or self._items[
+                            r].id == self.max_scalar.id:
                         # reserve max and min point
                         if r - 1 > 0:
                             r = r - 1
@@ -528,8 +516,6 @@ class DataManager(object):
         with self._mutex:
             if 'scalar' == plugin:
                 self._reservoirs[plugin].add_scalar_item(run, tag, item)
-            elif 'scalars' == plugin:
-                self._reservoirs[plugin].add_scalars_item(run, tag, item)
             else:
                 self._reservoirs[plugin].add_item(run, tag, item)
 
