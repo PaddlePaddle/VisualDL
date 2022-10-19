@@ -24,7 +24,6 @@ import numpy as np
 
 from visualdl.component import components
 from visualdl.io import bfile
-from visualdl.server.data_manager import add_sub_tag
 from visualdl.server.log import logger
 from visualdl.utils.importance import calc_all_hyper_param_importance
 from visualdl.utils.list_util import duplicate_removal
@@ -74,91 +73,6 @@ def get_graph_runs(graph_reader):
 
 def get_tags(log_reader):
     return log_reader.tags()
-
-
-def get_scalars_tags(log_reader):
-    component = "scalars"
-    all_tag = log_reader.data_manager.get_reservoir(component).keys
-    tags = {}
-    subruns = {}
-    for item in all_tag:
-        # remove sub tags
-        index = item.rfind('/')
-        sub_run = encode_tag(item[index + 1:])
-        item = item[0:index]
-        index = item.rfind('/')
-        run = item[0:index]
-        tag = encode_tag(item[index + 1:])
-        if run in tags.keys():
-            if tag not in tags[run]:
-                tags[run].append(tag)
-        else:
-            tags[run] = [tag]
-        if tag in subruns:
-            if run in subruns[tag]:
-                subruns[tag][run].append(sub_run)
-            else:
-                subruns[tag][run] = [sub_run]
-        else:
-            subruns[tag] = {run: [sub_run]}
-        if run not in log_reader.tags2name.keys():
-            log_reader.tags2name[run] = run
-            log_reader.name2tags[run] = run
-    fake_tags = {}
-    for key, value in tags.items():
-        if key in log_reader.tags2name:
-            fake_tags[log_reader.tags2name[key]] = value
-        else:
-            fake_tags[key] = value
-    fake_subruns = {}
-    for key, value in subruns.items():
-        fake_subruns[key] = {}
-        for run, subrun_list in value.items():
-            if run in log_reader.tags2name:
-                fake_subruns[key][log_reader.tags2name[run]] = subrun_list
-            else:
-                fake_subruns[key][run] = subrun_list
-
-    run2tag = {'runs': [], 'tags': [], 'sub_tags': fake_subruns}
-    for run, tags in fake_tags.items():
-        run2tag['runs'].append(run)
-        run2tag['tags'].append(tags)
-
-    runname_sub_map = {}
-    run_prefix = os.getenv('VISUALDL_RUN_PREFIX')
-    global MODIFY_PREFIX, MODIFIED_RUNS
-    if component not in MODIFY_PREFIX:
-        MODIFY_PREFIX.update({component: False})
-    if run_prefix and not MODIFY_PREFIX[component]:
-        MODIFY_PREFIX[component] = True
-        temp_name2tags = log_reader.name2tags.copy()
-        for key, value in temp_name2tags.items():
-            if key in MODIFIED_RUNS:
-                continue
-            index = key.find(run_prefix)
-            if index != -1:
-                temp_key = key[index + len(run_prefix):]
-
-                log_reader.name2tags.pop(key)
-                log_reader.name2tags.update({temp_key: value})
-
-                log_reader.tags2name.pop(value)
-                log_reader.tags2name.update({value: temp_key})
-
-                run2tag['runs'][run2tag['runs'].index(key)] = temp_key
-                runname_sub_map[key] = temp_key
-            else:
-                temp_key = key
-
-            MODIFIED_RUNS.append(temp_key)
-    # modify according run names in run2tag['sub_tags']
-    for key, value in run2tag['sub_tags'].items():
-        for run, subrun_list in value.items():
-            if run in runname_sub_map:
-                run2tag['sub_tags'][key].pop(run)
-                run2tag['sub_tags'][key][runname_sub_map[run]] = subrun_list
-
-    return run2tag
 
 
 def get_logs(log_reader, component):
@@ -217,8 +131,7 @@ def get_logs(log_reader, component):
 
 
 for name in components.keys():
-    if name != "scalars":
-        exec("get_%s_tags=partial(get_logs, component='%s')" % (name, name))
+    exec("get_%s_tags=partial(get_logs, component='%s')" % (name, name))
 
 
 def get_hparam_data(log_reader, type='tsv'):

@@ -18,7 +18,6 @@ import threading
 
 DEFAULT_PLUGIN_MAXSIZE = {
     "scalar": 1000,
-    "scalars": 1000,
     "image": 10,
     "histogram": 100,
     "embeddings": 50000000,
@@ -450,8 +449,6 @@ class DataManager(object):
         self._reservoirs = {
             "scalar":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["scalar"]),
-            "scalars":
-            Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["scalars"]),
             "histogram":
             Reservoir(max_size=DEFAULT_PLUGIN_MAXSIZE["histogram"]),
             "image":
