@@ -511,8 +511,8 @@ class DataManager(object):
             item: The item to add to reservoir bucket.
         """
         with self._mutex:
-            if 'scalar' == plugin:
-                self._reservoirs[plugin].add_scalar_item(run, tag, item)
+            if 'scalar' == plugin or 'scalars' == plugin:  # We adapt scalars data to be saved in scalar reservoir.
+                self._reservoirs['scalar'].add_scalar_item(run, tag, item)
             else:
                 self._reservoirs[plugin].add_item(run, tag, item)
 

@@ -35,5 +35,7 @@ if __name__ == '__main__':
                     'squarex': value[step]**2
                 },
                 step=step)
+    with LogWriter(logdir="./log/scalar_test1/") as writer:
+        for step in range(1000):
             writer.add_scalar(
-                tag='math/formula2', step=step, value=value[step])
+                tag='math/formula2', value=value[step], step=step)

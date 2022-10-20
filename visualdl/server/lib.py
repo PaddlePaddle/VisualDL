@@ -348,13 +348,25 @@ def get_scalar(log_reader, run, tag):
 
 
 def get_scalar_data(log_reader, run, tag, type='tsv'):
+    is_scalars = False
+    if os.path.basename(run).startswith(decode_tag(tag).replace('%', '_')) and \
+        log_reader.tags().get(bfile.join(os.path.dirname(run), decode_tag(tag)), None) == 'scalars':
+        run = os.path.dirname(run)
+        is_scalars = True
     run = log_reader.name2tags[run] if run in log_reader.name2tags else run
     log_reader.load_new_data()
-    result = log_reader.get_log_data('scalar', run, decode_tag(tag))
+    if is_scalars:
+        result = log_reader.get_log_data('scalars', run, decode_tag(tag))
+    else:
+        result = log_reader.get_log_data('scalar', run, decode_tag(tag))
+        print('scalar', result, 'run', run, 'tag', decode_tag(tag))
     delimeter = '\t' if 'tsv' == type else ','
     with io.StringIO() as fp:
         csv_writer = csv.writer(fp, delimiter=delimeter)
-        csv_writer.writerow(['id', 'tag', 'timestamp', 'value'])
+        if is_scalars:
+            csv_writer.writerow(['id', 'tag', 'sub_tag', 'timestamp', 'value'])
+        else:
+            csv_writer.writerow(['id', 'tag', 'timestamp', 'value'])
         csv_writer.writerows(result)
         result = fp.getvalue()
         return result
