@@ -16,12 +16,12 @@
 
 import LineChart, {LineChartRef, XAxisType, YAxisType} from '~/components/LineChart';
 import type {Range, Run} from '~/types';
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {FunctionComponent, useCallback, useMemo, useRef, useState} from 'react';
 import {rem, size} from '~/utils/style';
 
 import Chart from '~/components/Chart';
 import ChartToolbox from '~/components/ChartToolbox';
-import type {EChartOption} from 'echarts';
+import type {EChartsOption, LineSeriesOption} from 'echarts';
 import TooltipTable from '~/components/TooltipTable';
 import {format} from 'd3-format';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -74,7 +74,7 @@ interface TooltipTableData {
 
 interface ScalarChartProps {
     title: string;
-    data: EChartOption.SeriesLine[];
+    data: any;
     loading: boolean;
     xAxisType?: XAxisType;
     xRange?: Range;
@@ -98,13 +98,15 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
     const echart = useRef<LineChartRef>(null);
 
     const [maximized, setMaximized] = useState<boolean>(false);
+
     const [yAxisType, setYAxisType] = useState<YAxisType>(YAxisType.value);
     const toggleYAxisType = useCallback(() => {
         setYAxisType(t => (t === YAxisType.log ? YAxisType.value : YAxisType.log));
     }, [setYAxisType]);
 
     const formatter = useCallback(
-        (params: EChartOption.Tooltip.Format | EChartOption.Tooltip.Format[]) => {
+        (params: any) => {
+            console.log('params', params);
             const series: number[] = Array.isArray(params) ? params[0].data : params.data;
             const value: number = (Array.isArray(params) ? params[0].axisValue : params.axisValue) as number;
             return renderToStaticMarkup(
@@ -114,41 +116,35 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [getTooltipTableData, t]
     );
 
-    const options = useMemo(
-        () => ({
-            legend: {
-                data: []
-            },
-            tooltip: {
-                position: ['10%', '100%'],
-                formatter,
-                hideDelay: 300,
-                enterable: true
-            },
-            // dataZoom: [
-            //     {
-            //         type: 'inside',
-            //         start: 0,
-            //         end: 25
-            //     }
-            // ],
-            xAxis: {
-                type: xAxisType ?? XAxisType.value,
-                ...xRange,
-                axisPointer: {
-                    label: {
-                        formatter:
-                            xAxisType === XAxisType.time
-                                ? undefined
-                                : ({value}: {value: number}) => labelFormatter(value)
+    const options: EChartsOption = useMemo(
+        () =>
+            ({
+                legend: {
+                    data: []
+                },
+                tooltip: {
+                    position: ['10%', '100%'],
+                    formatter,
+                    hideDelay: 300,
+                    enterable: true
+                },
+                xAxis: {
+                    type: xAxisType ?? XAxisType.value,
+                    ...xRange,
+                    axisPointer: {
+                        label: {
+                            formatter:
+                                xAxisType === XAxisType.time
+                                    ? undefined
+                                    : ({value}: {value: number}) => labelFormatter(value)
+                        }
                     }
+                },
+                yAxis: {
+                    type: yAxisType,
+                    ...yRange
                 }
-            },
-            yAxis: {
-                type: yAxisType,
-                ...yRange
-            }
-        }),
+            } as EChartsOption),
         [formatter, xAxisType, xRange, yAxisType, yRange]
     );
 
@@ -198,10 +194,18 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         ],
         [downloadData, t, toggleYAxisType]
     );
+
     return (
         <Chart maximized={maximized} {...chartSizeInRem}>
             <Wrapper>
-                <StyledLineChart ref={echart} title={title} options={options} data={data} loading={loading} zoom />
+                <StyledLineChart
+                    ref={echart}
+                    title={title}
+                    options={options}
+                    data={data}
+                    loading={loading}
+                    zoom={true}
+                />
                 <Toolbox items={toolbox} />
             </Wrapper>
         </Chart>
