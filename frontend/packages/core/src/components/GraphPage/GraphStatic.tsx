@@ -209,8 +209,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         }, [handler, dispatch]);
 
         useEffect(() => {
-            debugger;
-
             (ready && dispatch('change-files', files)) || undefined;
         }, [dispatch, files, ready]);
         useEffect(

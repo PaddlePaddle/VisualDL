@@ -90,6 +90,7 @@ type GraphProps = {
 };
 type pageRef = {
     setModelFiles: (f: FileList | File[]) => void;
+    rendered: boolean;
 };
 const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
@@ -187,7 +188,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     useImperativeHandle(ref, () => ({
         setModelFiles: file => {
             setModelFile(file);
-        }
+        },
+        rendered: rendered
     }));
     const aside = useMemo(() => {
         if (!rendered || loading) {

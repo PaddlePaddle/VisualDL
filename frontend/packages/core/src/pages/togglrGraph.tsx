@@ -75,7 +75,9 @@ function App() {
         // 将文件转二进制
         formData.append('file', files[0]);
         formData.append('filename', files[0].name);
-        fetcher(`/deploy/convert?format=${formats}`, {
+        debugger;
+        // fetcher(`/deploy/convert?format=${formats}`, {
+        fetcher(`/deploy/convert`, {
             method: 'POST',
             body: formData
         }).then(
@@ -84,8 +86,9 @@ function App() {
                 // const newFilesId = filesId + 1;
                 // setFilesId(newFilesId);
                 // setshowData(res);
-                // const file = base64ToFile(res.pdmodel);
-                // Graph2?.current?.setModelFile(file);
+                debugger;
+                const file = base64ToFile(res.pdmodel);
+                Graph2?.current?.setModelFile(file);
             },
             res => {
                 // debugger
@@ -110,9 +113,8 @@ function App() {
             return;
         }
         if (name === 'pb' || name === 'onnx') {
-            // fileUploader(files, name);
-            setshowData(true);
-            setShow2(true);
+            fileUploader(files, name);
+            // setshowData(true);
             return;
         }
         alert('该页面暂只能转换pb,onnx,prototxt,模型，请见谅');
@@ -139,15 +141,14 @@ function App() {
         }
     }, []);
     useEffect(() => {
-        if (showData) {
+        if (showData && Graph?.current?.files) {
             console.log('Graph2', Graph2);
-            debugger;
             Graph2?.current?.setModelFiles(Graph?.current?.files);
-            // setTimeout(() => {
-            //     setShow(false);
-            // }, 1000);
+            setShow(false);
+            setShow2(true);
         }
     }, [showData]);
+
     return (
         <>
             <div

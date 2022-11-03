@@ -209,8 +209,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         }, [handler, dispatch]);
 
         useEffect(() => {
-            debugger;
-
+            console.log('GraphStatic2');
             (ready && dispatch('change-files', files)) || undefined;
         }, [dispatch, files, ready]);
         useEffect(
@@ -251,6 +250,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         }));
 
         const content = useMemo(() => {
+            debugger;
             if (!ready || loading) {
                 return (
                     <Loading>
@@ -259,7 +259,12 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 );
             }
             if (ready && !rendered) {
-                return uploader;
+                // return uploader;
+                return (
+                    <Loading>
+                        <HashLoader size="60px" color={primaryColor} />
+                    </Loading>
+                );
             }
             return null;
         }, [ready, loading, rendered, uploader]);
