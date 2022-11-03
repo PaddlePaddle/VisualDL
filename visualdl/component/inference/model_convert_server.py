@@ -20,7 +20,6 @@ import tempfile
 from flask import request
 from x2paddle.convert import caffe2paddle
 from x2paddle.convert import onnx2paddle
-from x2paddle.convert import tf2paddle
 
 from .xarfile import archive
 from .xarfile import unarchive
@@ -30,7 +29,7 @@ from visualdl.server.api import result
 
 class ModelConvertApi(object):
     def __init__(self):
-        self.supported_formats = {'tf', 'onnx', 'caffe'}
+        self.supported_formats = {'onnx', 'caffe'}
 
     @result()
     def convert_model(self, format):
@@ -41,7 +40,7 @@ class ModelConvertApi(object):
           Only tensorflow, onnx and caffe models are supported now.'.format(
                 format))
         result = {}
-        result['from'] = 'format'
+        result['from'] = format
         result['to'] = 'paddle'
         # call x2paddle to convert models
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -49,28 +48,28 @@ class ModelConvertApi(object):
                 fp.write(data)
                 fp.flush()
                 try:
-                    if format == 'tf':
-                        tf2paddle(fp.name, tmpdirname)
-                    elif format == 'onnx':
+                    if format == 'onnx':
                         onnx2paddle(fp.name, tmpdirname)
                     elif format == 'caffe':
                         with tempfile.TemporaryDirectory() as unarchivedir:
                             unarchive(fp.name, unarchivedir)
                             prototxt_path = None
                             weight_path = None
-                            for name in os.listdir(unarchivedir):
-                                if '.prototxt' in name:
-                                    prototxt_path = os.path.join(
-                                        unarchivedir, name)
-                                if '.caffemodel' in name:
-                                    weight_path = os.path.join(
-                                        unarchivedir, name)
+                            for dirname, subdirs, filenames in os.walk(
+                                    unarchivedir):
+                                for filename in filenames:
+                                    if '.prototxt' in filename:
+                                        prototxt_path = os.path.join(
+                                            dirname, filename)
+                                    if '.caffemodel' in filename:
+                                        weight_path = os.path.join(
+                                            dirname, filename)
                             if prototxt_path is None or weight_path is None:
                                 raise RuntimeError(
                                     ".prototxt or .caffemodel file is missing in your archive file, \
                     please check files uploaded.")
                             caffe2paddle(prototxt_path, weight_path,
-                                         tmpdirname)
+                                         tmpdirname, None)
                 except Exception as e:
                     raise RuntimeError("Convertion error: {}".format(e))
 
