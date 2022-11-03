@@ -35,11 +35,11 @@ def padding_image(img, height, width):
 
 def merge_images(imgs, dataformats, scale=1.0, rows=-1):
     assert rows <= len(imgs), "rows should not greater than numbers of pictures"
-    channel = imgs[0].shape[2]
     # convert format of each image to `hwc`
     for i, img in enumerate(imgs):
         imgs[i] = convert_to_HWC(img, dataformats)
 
+    channel = imgs[0].shape[2]
     height = -1
     width = -1
 

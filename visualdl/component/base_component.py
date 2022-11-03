@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
-from visualdl.proto.record_pb2 import Record
 import numpy as np
 from PIL import Image
+
+from visualdl.proto.record_pb2 import Record
 
 
 def scalar(tag, value, step, walltime=None):
     """Package data to one scalar.
-
     Args:
         tag (string): Data identifier
         value (float): Value of scalar
@@ -52,8 +51,7 @@ def meta_data(tag='meta_data_tag', display_name="", step=0, walltime=None):
     """
     meta = Record.MetaData(display_name=display_name)
     return Record(values=[
-        Record.Value(id=step, tag=tag, timestamp=walltime,
-                     meta_data=meta)
+        Record.Value(id=step, tag=tag, timestamp=walltime, meta_data=meta)
     ])
 
 
@@ -82,8 +80,8 @@ def imgarray2bytes(np_array):
 
 
 def make_grid(I, ncols=8):  # noqa: E741
-    assert isinstance(
-        I, np.ndarray), 'plugin error, should pass numpy array here'
+    assert isinstance(I,
+                      np.ndarray), 'plugin error, should pass numpy array here'
     if I.shape[1] == 1:
         I = np.concatenate([I, I, I], 1)  # noqa: E741
     assert I.ndim == 4 and I.shape[1] == 3 or I.shape[1] == 4
@@ -113,9 +111,11 @@ def convert_to_HWC(tensor, input_format):
     Return:
         Image of format `HWC`.
     """
-    assert(len(set(input_format)) == len(input_format)), "You can not use the same dimension shordhand twice. \
+    assert (len(set(input_format)) == len(input_format)
+            ), "You can not use the same dimension shordhand twice. \
         input_format: {}".format(input_format)
-    assert(len(tensor.shape) == len(input_format)), "size of input tensor and input format are different. \
+    assert (len(tensor.shape) == len(input_format)
+            ), "size of input tensor and input format are different. \
         tensor shape: {}, input_format: {}".format(tensor.shape, input_format)
     input_format = input_format.upper()
 
@@ -129,7 +129,8 @@ def convert_to_HWC(tensor, input_format):
         index = [input_format.find(c) for c in 'HWC']
         tensor_HWC = tensor.transpose(index)
         if tensor_HWC.shape[2] == 1:
-            tensor_HWC = np.concatenate([tensor_HWC, tensor_HWC, tensor_HWC], 2)
+            tensor_HWC = np.concatenate([tensor_HWC, tensor_HWC, tensor_HWC],
+                                        2)
         return tensor_HWC
 
     if len(input_format) == 2:
@@ -202,7 +203,8 @@ def embedding(tag, labels, hot_vectors, step, labels_meta=None, walltime=None):
     for label, hot_vector in zip(labels, hot_vectors):
         if not isinstance(label, list):
             label = [label]
-        embeddings.embeddings.append(Record.Embedding(label=label, vectors=hot_vector))
+        embeddings.embeddings.append(
+            Record.Embedding(label=label, vectors=hot_vector))
 
     return Record(values=[
         Record.Value(
@@ -325,7 +327,8 @@ def hparam(name, hparam_dict, metric_list, walltime):
             hparamInfo.string_value = v
             hm.hparamInfos.append(hparamInfo)
         else:
-            print("The value of %s must be int, float or str, not %s" % (k, str(type(v))))
+            print("The value of %s must be int, float or str, not %s" %
+                  (k, str(type(v))))
     for metric in metric_list:
         metricInfo = Record.HParam.HparamInfo()
         metricInfo.name = metric
@@ -333,8 +336,7 @@ def hparam(name, hparam_dict, metric_list, walltime):
         hm.metricInfos.append(metricInfo)
 
     return Record(values=[
-        Record.Value(
-            id=1, tag="hparam", timestamp=walltime, hparam=hm)
+        Record.Value(id=1, tag="hparam", timestamp=walltime, hparam=hm)
     ])
 
 
@@ -389,7 +391,12 @@ def compute_curve(labels, predictions, num_thresholds=None, weights=None):
     return data
 
 
-def pr_curve(tag, labels, predictions, step, walltime, num_thresholds=127,
+def pr_curve(tag,
+             labels,
+             predictions,
+             step,
+             walltime,
+             num_thresholds=127,
              weights=None):
     """Package data to one pr_curve.
 
@@ -409,15 +416,16 @@ def pr_curve(tag, labels, predictions, step, walltime, num_thresholds=127,
     num_thresholds = min(num_thresholds, 127)
     prcurve_map = compute_curve(labels, predictions, num_thresholds, weights)
 
-    return pr_curve_raw(tag=tag,
-                        tp=prcurve_map['tp'],
-                        fp=prcurve_map['fp'],
-                        tn=prcurve_map['tn'],
-                        fn=prcurve_map['fn'],
-                        precision=prcurve_map['precision'],
-                        recall=prcurve_map['recall'],
-                        step=step,
-                        walltime=walltime)
+    return pr_curve_raw(
+        tag=tag,
+        tp=prcurve_map['tp'],
+        fp=prcurve_map['fp'],
+        tn=prcurve_map['tn'],
+        fn=prcurve_map['fn'],
+        precision=prcurve_map['precision'],
+        recall=prcurve_map['recall'],
+        step=step,
+        walltime=walltime)
 
 
 def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, step, walltime):
@@ -441,7 +449,6 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, step, walltime):
     Return:
         Package with format of record_pb2.Record
     """
-
     """
     if isinstance(tp, np.ndarray):
         tp = tp.astype(int).tolist()
@@ -456,15 +463,10 @@ def pr_curve_raw(tag, tp, fp, tn, fn, precision, recall, step, walltime):
     if isinstance(recall, np.ndarray):
         recall = recall.astype(int).tolist()
     """
-    prcurve = Record.PRCurve(TP=tp,
-                             FP=fp,
-                             TN=tn,
-                             FN=fn,
-                             precision=precision,
-                             recall=recall)
+    prcurve = Record.PRCurve(
+        TP=tp, FP=fp, TN=tn, FN=fn, precision=precision, recall=recall)
     return Record(values=[
-        Record.Value(
-            id=step, tag=tag, timestamp=walltime, pr_curve=prcurve)
+        Record.Value(id=step, tag=tag, timestamp=walltime, pr_curve=prcurve)
     ])
 
 
@@ -518,7 +520,13 @@ def compute_roc_curve(labels, predictions, num_thresholds=None, weights=None):
     return data
 
 
-def roc_curve(tag, labels, predictions, step, walltime, num_thresholds=127, weights=None):
+def roc_curve(tag,
+              labels,
+              predictions,
+              step,
+              walltime,
+              num_thresholds=127,
+              weights=None):
     """Package data to one roc_curve.
     Args:
         tag (string): Data identifier
@@ -533,17 +541,19 @@ def roc_curve(tag, labels, predictions, step, walltime, num_thresholds=127, weig
         Package with format of record_pb2.Record
     """
     num_thresholds = min(num_thresholds, 127)
-    roc_curve_map = compute_roc_curve(labels, predictions, num_thresholds, weights)
+    roc_curve_map = compute_roc_curve(labels, predictions, num_thresholds,
+                                      weights)
 
-    return roc_curve_raw(tag=tag,
-                         tp=roc_curve_map['tp'],
-                         fp=roc_curve_map['fp'],
-                         tn=roc_curve_map['tn'],
-                         fn=roc_curve_map['fn'],
-                         tpr=roc_curve_map['tpr'],
-                         fpr=roc_curve_map['fpr'],
-                         step=step,
-                         walltime=walltime)
+    return roc_curve_raw(
+        tag=tag,
+        tp=roc_curve_map['tp'],
+        fp=roc_curve_map['fp'],
+        tn=roc_curve_map['tn'],
+        fn=roc_curve_map['fn'],
+        tpr=roc_curve_map['tpr'],
+        fpr=roc_curve_map['fpr'],
+        step=step,
+        walltime=walltime)
 
 
 def roc_curve_raw(tag, tp, fp, tn, fn, tpr, fpr, step, walltime):
@@ -563,7 +573,6 @@ def roc_curve_raw(tag, tp, fp, tn, fn, tpr, fpr, step, walltime):
     Return:
         Package with format of record_pb2.Record
     """
-
     """
     if isinstance(tp, np.ndarray):
         tp = tp.astype(int).tolist()
@@ -578,12 +587,7 @@ def roc_curve_raw(tag, tp, fp, tn, fn, tpr, fpr, step, walltime):
     if isinstance(fpr, np.ndarray):
         fpr = fpr.astype(int).tolist()
     """
-    roc_curve = Record.ROC_Curve(TP=tp,
-                                 FP=fp,
-                                 TN=tn,
-                                 FN=fn,
-                                 tpr=tpr,
-                                 fpr=fpr)
+    roc_curve = Record.ROC_Curve(TP=tp, FP=fp, TN=tn, FN=fn, tpr=tpr, fpr=fpr)
     return Record(values=[
         Record.Value(
             id=step, tag=tag, timestamp=walltime, roc_curve=roc_curve)

@@ -454,43 +454,113 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 Graph can visualize the network structure of the model by one click. It enables developers to view the model attributes, node information, searching node and so on. These functions help developers analyze model structures and understand the directions of data flow quickly.
 
+### Record Interface
+
+The interface of the Graph is shown as follows:
+
+```python
+add_graph(model, input_spec, verbose=False):
+```
+
+The interface parameters are described as follows:
+
+| parameter          | format                  | meaning                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| model          | paddle.nn.Layer              | Dynamic model of paddle |
+| input_spec     | list\[paddle.static.InputSpec\|Tensor\]   | Describes the input of the saved model's [forward arguments](https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/static/InputSpec_cn.html)        |
+| verbose           | bool             | Whether to print graph statistic information in console.       |
+
+**Note**
+
+If you want to use add_graph interface, paddle package is required. Please refer to website of [PaddlePaddle](https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/en/install/pip/linux-pip_en.html)。
+
 ### Demo
+The following shows an example of how to use Graph component, and script can be found in [Graph Demo](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/graph_test.py)
 There are two methods to launch this component:
 
-- By the front end:
+```python
+import paddle
+import paddle.nn as nn
+import paddle.nn.functional as F
 
-  - If developers only need to use Graph, developers can launch VisualDL (Graph) by executing `visualdl`on the command line.
-  - If developers need to use Graph and other functions at the same time, they need to specify the log file path (using `./log` as an example):
-
-  ```shell
-  visualdl --logdir ./log --port 8080
-  ```
+from visualdl import LogWriter
 
 
-- By the backend:
+class MyNet(nn.Layer):
+    def __init__(self):
+        super(MyNet, self).__init__()
+        self.conv1 = nn.Conv2D(
+            in_channels=1, out_channels=20, kernel_size=5, stride=1, padding=2)
+        self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
+        self.conv2 = nn.Conv2D(
+            in_channels=20,
+            out_channels=20,
+            kernel_size=5,
+            stride=1,
+            padding=2)
+        self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
+        self.fc = nn.Linear(in_features=980, out_features=10)
 
-  - Add the parameter `--model` and specify the **model file** path (not the folder path) to launch the panel:
+    def forward(self, inputs):
+        x = self.conv1(inputs)
+        x = F.relu(x)
+        x = self.max_pool1(x)
+        x = self.conv2(x)
+        x = F.relu(x)
+        x = self.max_pool2(x)
+        x = paddle.reshape(x, [x.shape[0], -1])
+        x = self.fc(x)
+        return x
 
-  ```shell
-  visualdl --model ./log/model --port 8080
-  ```
+
+net = MyNet()
+with LogWriter(logdir="./log/graph_test/") as writer:
+    writer.add_graph(
+        model=net,
+        input_spec=[paddle.static.InputSpec([-1, 1, 28, 28], 'float32')],
+        verbose=True)
+```
 
 
-After the launch, developers can view the network structure:
+
+After running the above program, developers can launch the panel by:
+
+```shell
+visualdl --logdir ./log/graph_test/ --port 8080
+```
+
+Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/90877274-6548d580-e3d6-11ea-9804-74a1ead47b30.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/22424850/175811156-a80ca0c4-207d-44d7-bd5a-9701a7875722.gif" width="80%"/>
 </p>
+
+**Note**
+
+We provide option --model to specify model structure file in previous versions, and this option is still supported now. You can specify model exported by `add_graph` interface ("vdlgraph" contained in filename), which will be shown in dynamic graph page, and we use string "manual_input_model" in the page to denote the model you specify by this option. Other supported file formats are presented in static graph page.
+
+For example
+```shell
+visualdl --model ./log/model.pdmodel --port 8080
+```
+which will be shown in static graph page. And
+```shell
+visualdl --model ./log/vdlgraph.1655783158.log --port 8080
+```
+shown in dynamic graph page.
 
 ### Functional Instructions
 
-- Upload the model file by one-click
-  - Supported model：PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite
-  - Experimental supported model：TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow
+Graph page is divided into dynamic and static version currently. Dynamic version is used to visualize dynamic model of paddle, which is exported by add_graph interface.
+The other is used to visualize static model of paddle, which is exported by [paddle.jit.save](https://www.paddlepaddle.org.cn/documentation/docs/en/api/paddle/jit/save_en.html) interface and other supported formats.
+
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/90877449-a80aad80-e3d6-11ea-8016-0a2f3afe6f5e.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/22424850/175810574-d3526ef5-859f-4ea9-b705-f55bfc8ed5af.png" width="80%"/>
 </p>
+
+**Common functions**
+
 
 - Developers are allowed to drag the model up and down，left and right，zoom in and zoom out.
 
@@ -532,6 +602,44 @@ After the launch, developers can view the network structure:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/90879247-34b66b00-e3d9-11ea-94ef-a26b1ba07dd0.png" width="25%"/>
+</p>
+
+**Specific feature in dynamic version**
+
+- Fold and unfold one node
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175810800-4823b9f1-3d59-44e8-aaa5-a80577624452.png" width="80%"/>
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175810790-a35f83bf-a23c-4a28-afb7-2e0cf7711b9c.png" width="80%"/>
+</p>
+
+- Fold and unfold all nodes
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175810856-ff98a1ed-2a4f-4cc1-bc9b-3085857c0b81.png" width="80%"/>
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175810837-a0953956-7320-4e78-9c52-72ad13962216.png" width="80%"/>
+</p>
+
+- Link api specification of paddle
+
+  If you use paddle.nn components to construct your network model, you can use alt+click mouse to direct to corresponding api specification.
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175810992-b86e9aef-e700-4c2d-bcd0-21fc96fc2564.png" width="80%"/>
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175810997-0672d836-4d7c-432d-b5de-187f97c421ae.png" width="80%"/>
+</p>
+
+**Specific feature in static version**
+
+- Upload the model file by one-click
+  - Supported model：PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite
+  - Experimental supported model：TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/90877449-a80aad80-e3d6-11ea-8016-0a2f3afe6f5e.png" width="80%"/>
 </p>
 
 ## Histogram--Distribution of Tensors 

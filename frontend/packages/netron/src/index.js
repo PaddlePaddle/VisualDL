@@ -133,12 +133,10 @@ host.BrowserHost = class {
     }
     selectNodeId(nodeInfo) {
         // 反传回去
-        console.log('节点点击事件触发了', nodeInfo);
         this.message('nodeId', nodeInfo);
     }
     selectItems(item) {
         // 反传回去
-        console.log('节点点击事件触发了', item);
         this.message('selectItem', item);
     }
 
@@ -529,7 +527,6 @@ function getCaption(obj) {
     return newObj;
 }
 const hash = getCaption(document.referrer);
-console.log('hash', hash);
 if (hash === 'graphStatic') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {

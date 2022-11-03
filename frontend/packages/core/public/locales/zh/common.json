@@ -14,6 +14,7 @@
     "ToggleGraph": "X2Paddle",
     "graphStatic": "静态",
     "high-dimensional": "数据降维",
+    "profiler": "性能分析",
     "histogram": "直方图",
     "hyper-parameter": "超参可视化",
     "image": "图像",

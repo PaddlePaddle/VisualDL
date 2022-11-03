@@ -332,7 +332,6 @@ view.View = class {
 
                 for (const node of nodes) {
                     const element = new grapher.NodeElement(this._host.document);
-
                     const addNode = (element, node, edges) => {
                         const header = element.block('header');
                         const styles = ['node-item-type'];

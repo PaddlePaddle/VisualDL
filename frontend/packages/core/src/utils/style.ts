@@ -39,7 +39,20 @@ export {
 const {math, size, normalize, transitions, border, position} = polished;
 
 // sizes
-const fontSize = '14px';
+export const fontSize = '14px';
+export const setRem = () => {
+    //  PC端
+    // 基准大小
+    const baseSize = 14;
+    const scale = document.documentElement.clientWidth / 1220;
+    document.documentElement.style.fontSize = baseSize * scale + 'px';
+};
+// 初始化
+// setRem(fontSize);
+// 改变窗口大小时重新设置 rem
+// window.onresize = function () {
+//     setRem(fontSize);
+// };
 export const rem = (pxval: string | number): string => polished.rem(pxval, fontSize);
 export const em = (pxval: string | number, base?: string | number): string => polished.em(pxval, base || fontSize);
 export const half = (value: string | number): string => math(`(${value}) / 2`);

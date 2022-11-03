@@ -20,7 +20,7 @@ import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphDynamic';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions, selectors} from '~/store';
-import {primaryColor, rem, size} from '~/utils/style';
+import {rem} from '~/utils/style';
 import {useDispatch, useSelector} from 'react-redux';
 import Check from '~/components/Check';
 import Button from '~/components/Button';
@@ -186,11 +186,6 @@ const Graph: FunctionComponent = () => {
 
     const [rendered, setRendered] = useState(false);
 
-    const content = (runs: string) => {
-        return <div>{runs}</div>;
-        // return (<p>Content</p>)
-    };
-
     const aside = useMemo(() => {
         if (!rendered) {
             return null;
@@ -318,6 +313,7 @@ const Graph: FunctionComponent = () => {
         t,
         bottom,
         search,
+        runs,
         searching,
         searchResult,
         selectedRuns,

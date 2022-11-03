@@ -21,7 +21,7 @@ import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartOption} from 'echarts';
+import type {EChartOption, XAXisComponentOption, YAXisComponentOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
@@ -145,7 +145,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            if ((chartOptions?.yAxis as EChartOption.YAxis).type === 'time') {
+            if ((chartOptions?.yAxis as YAXisComponentOption).type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         yAxis: {
