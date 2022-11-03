@@ -21,7 +21,7 @@ import {contentHeight, position, primaryColor, rem, size, transitionProps} from 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
-import netron from '@visualdl/netron';
+import netron from '@visualdl/netron2';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import useTheme from '~/hooks/useTheme';

@@ -21,14 +21,14 @@ import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartsOption, XAXisComponentOption, YAXisComponentOption} from 'echarts';
+import type {EChartOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
 type LineChartProps = {
-    options?: EChartsOption;
+    options?: EChartOption;
     title?: string;
     data?: any;
     loading?: boolean;
@@ -86,7 +86,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             if (!echart) {
                 return;
             }
-            let chartOptions: EChartsOption = defaultsDeep(
+            let chartOptions: EChartOption = defaultsDeep(
                 {
                     title: {
                         text: title ?? ''
@@ -133,7 +133,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 theme,
                 defaults
             );
-            if ((chartOptions?.xAxis as XAXisComponentOption)?.type === 'time') {
+            if ((chartOptions?.xAxis as EChartOption.XAxis)?.type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         xAxis: {
@@ -145,7 +145,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            if ((chartOptions?.yAxis as YAXisComponentOption).type === 'time') {
+            if ((chartOptions?.yAxis as EChartOption.YAxis).type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         yAxis: {

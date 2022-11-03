@@ -11,6 +11,7 @@
     "error": "Error occurred",
     "graph": "Graphs",
     "graphDynamic": "dynamic",
+    "ToggleGraph": "X2Paddle",
     "graphStatic": "static",
     "high-dimensional": "High Dimensional",
     "histogram": "Histogram",

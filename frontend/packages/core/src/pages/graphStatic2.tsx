@@ -16,18 +16,8 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
-import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
-import React, {
-    FunctionComponent,
-    ForwardRefRenderFunction,
-    useImperativeHandle,
-    forwardRef,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from 'react';
+import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic2';
+import React, {FunctionComponent, useImperativeHandle, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions, selectors} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
@@ -95,11 +85,11 @@ const Loading = styled.div`
     line-height: ${rem(60)};
 `;
 type GraphProps = {
-    files: FileList | File[] | null;
-    changeName: () => void;
+    files?: FileList | File[] | null;
+    changeName?: () => void;
 };
 type pageRef = {
-    files: FileList | File[] | null;
+    setModelFiles: (f: FileList | File[]) => void;
 };
 const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
@@ -110,11 +100,10 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
     const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
+
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
-            const name = f[0].name.split('.')[1];
-            changeName(name);
             setFiles(f);
         },
         [storeDispatch]
@@ -125,6 +114,17 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
             file.current.click();
         }
     }, []);
+    // const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const target = e.target as EventTarget & HTMLInputElement;
+    //     const file: FileList | null = target.files as FileList;
+    //     if (file[0].name.split('.')[1] === 'pdmodel') {
+    //         alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面');
+    //         return;
+    //     }
+    //     if (target && target.files && target.files.length) {
+    //         fileUploader(target.files);
+    //     }
+    // };
     const onChangeFile = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
@@ -134,16 +134,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         },
         [setModelFile]
     );
-    useImperativeHandle(ref, () => ({
-        files
-    }));
     const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
-
-    // useEffect(() => {
-    //     if (data?.data?.size) {
-    //         setFiles([new File([data.data], data.filename || 'unknown_model')]);
-    //     }
-    // }, [data]);
 
     const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
     const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
@@ -181,6 +172,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         setSearch('');
         setSearchResult({text: '', result: []});
     }, [files, showAttributes, showInitializers, showNames]);
+
     const bottom = useMemo(
         () =>
             searching ? null : (
@@ -192,7 +184,11 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     );
 
     const [rendered, setRendered] = useState(false);
-
+    useImperativeHandle(ref, () => ({
+        setModelFiles: file => {
+            setModelFile(file);
+        }
+    }));
     const aside = useMemo(() => {
         if (!rendered || loading) {
             return null;
@@ -304,10 +300,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         nodeData,
         nodeDocumentation
     ]);
+
     const uploader = useMemo(
         () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,
         [onClickFile, setModelFile]
     );
+
     return (
         <>
             <Title>{t('common:graph')}</Title>

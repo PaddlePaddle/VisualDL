@@ -25,6 +25,7 @@ export enum Pages {
     Audio = 'audio',
     Text = 'text',
     Graph = 'graph',
+    ToggleGraph = 'ToggleGraph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
@@ -87,6 +88,11 @@ const routes: Route[] = [
                 component: React.lazy(() => import('~/pages/graphStatic'))
             }
         ]
+    },
+    {
+        id: Pages.ToggleGraph,
+        path: '/togglrGraph',
+        component: React.lazy(() => import('~/pages/togglrGraph'))
     },
     {
         id: Pages.Histogram,

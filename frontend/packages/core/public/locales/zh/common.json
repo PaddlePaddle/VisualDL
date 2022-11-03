@@ -11,6 +11,7 @@
     "error": "发生错误",
     "graph": "网络结构",
     "graphDynamic": "动态",
+    "ToggleGraph": "X2Paddle",
     "graphStatic": "静态",
     "high-dimensional": "数据降维",
     "histogram": "直方图",

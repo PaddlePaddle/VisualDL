@@ -21,7 +21,7 @@ import {rem, size} from '~/utils/style';
 
 import Chart from '~/components/Chart';
 import ChartToolbox from '~/components/ChartToolbox';
-import type {EChartsOption, LineSeriesOption} from 'echarts';
+import type {EChartOption} from 'echarts';
 import TooltipTable from '~/components/TooltipTable';
 import {format} from 'd3-format';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -116,7 +116,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
         [getTooltipTableData, t]
     );
 
-    const options: EChartsOption = useMemo(
+    const options: EChartOption = useMemo(
         () =>
             ({
                 legend: {
@@ -144,7 +144,7 @@ const ScalarChart: FunctionComponent<ScalarChartProps> = ({
                     type: yAxisType,
                     ...yRange
                 }
-            } as EChartsOption),
+            } as EChartOption),
         [formatter, xAxisType, xRange, yAxisType, yRange]
     );
 
