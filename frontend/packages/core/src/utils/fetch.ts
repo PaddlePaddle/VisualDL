@@ -20,6 +20,7 @@ import queryString from 'query-string';
 
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL;
+console.log('API_URL', API_TOKEN_KEY);
 
 const API_TOKEN_HEADER = 'X-VisualDL-Instance-ID';
 
@@ -85,7 +86,10 @@ export function fetcher<T = unknown>(url: string, options?: RequestInit): Promis
 export async function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<BlobResponse | string | T> {
     let res: Response;
     try {
+        // res = await fetch('http://10.181.196.14:8040/app/api/deploy/convert?format=onnx', addApiToken(options));
+
         res = await fetch(API_URL + url, addApiToken(options));
+        debugger;
     } catch (e) {
         const t = await logErrorAndReturnT(e);
         throw new Error(t('errors:network-error'));

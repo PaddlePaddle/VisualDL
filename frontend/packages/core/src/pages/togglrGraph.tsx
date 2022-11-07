@@ -1,7 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import ReactDOM from 'react-dom';
-import {KeepAlive, AliveScope} from 'react-activation';
-import {WithStyled, contentHeight, contentMargin, rem, headerHeight, position, transitionProps} from '~/utils/style';
+import {rem} from '~/utils/style';
 import {fetcher} from '~/utils/fetch';
 import GraphStatic from '~/pages/graphStatic';
 import GraphStatic2 from '~/pages/graphStatic2';
@@ -9,7 +7,17 @@ import styled from 'styled-components';
 const ButtonContent = styled.section`
     display: flex;
 `;
+type Fn = (data: FcResponse<any>) => unknown;
 
+interface IAnyObj {
+    [index: string]: unknown;
+}
+
+interface FcResponse<T> {
+    errno: string;
+    errmsg: string;
+    data: T;
+}
 const Article = styled.article`
     flex: auto;
     display: flex;
@@ -34,7 +42,7 @@ const Aside = styled.aside`
 function App() {
     const [show, setShow] = useState(true);
     const [show2, setShow2] = useState(false);
-    const [showData, setshowData] = useState(false);
+    const [showData, setshowData] = useState<any>(false);
     // const [data, setData] = useState();
     const [names, setNames] = useState('');
 
@@ -45,21 +53,21 @@ function App() {
     // useEffect(() => {
     //     setShow2(false);
     // }, []);
-    const base64ToFile = base64Str => {
+    const base64ToFile = (base64Str: any) => {
         //将base64转换为blob
-        const dataURLtoBlob = function (dataurl) {
+        const dataURLtoBlob = function (dataurl: any) {
             const arr = dataurl.split(','),
                 mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]),
-                u8arr = new Uint8Array(n);
+                bstr = atob(arr[1]);
             let n = bstr.length;
+            const u8arr = new Uint8Array(n);
             while (n--) {
                 u8arr[n] = bstr.charCodeAt(n);
             }
             return new Blob([u8arr], {type: mime});
         };
         //将blob转换为file
-        const blobToFile = function (theBlob, fileName) {
+        const blobToFile = function (theBlob: any, fileName: any) {
             theBlob.lastModifiedDate = new Date();
             theBlob.name = fileName;
             return new window.File([theBlob], theBlob.name, {type: theBlob.type});
@@ -70,25 +78,31 @@ function App() {
 
         return file;
     };
+    // const Post = <T,>(url: string, , params: IAnyObj = {}): Promise<[any, FcResponse<T> | undefined]> => {
+
+    // };
+    // 创建 axios 实例
+
     const fileUploader = (files: FileList, formats = 'prototxt') => {
         const formData = new FormData();
-        // 将文件转二进制
+        // // 将文件转二进制
         formData.append('file', files[0]);
         formData.append('filename', files[0].name);
-        debugger;
-        // fetcher(`/deploy/convert?format=${formats}`, {
-        fetcher(`/deploy/convert`, {
+        formData.append('format', formats);
+        // debugger;
+        fetcher(`/inference/convert?format=${formats}`, {
             method: 'POST',
             body: formData
         }).then(
-            res => {
+            (res: any) => {
                 // debugger
                 // const newFilesId = filesId + 1;
                 // setFilesId(newFilesId);
-                // setshowData(res);
                 debugger;
-                const file = base64ToFile(res.pdmodel);
-                Graph2?.current?.setModelFile(file);
+                const model: any = res.pdmodel;
+                const file = base64ToFile(model);
+                setshowData(file);
+                setShow2(true);
             },
             res => {
                 // debugger
@@ -96,13 +110,27 @@ function App() {
                 // setFilesId(newFilesId);
             }
         );
+
+        // axios({
+        //     method: 'post',
+        //     url: 'http://0.0.0.0:8040/app/api/inference/convert',
+        //     data: formData,
+        //     headers: {'Content-Type': 'Access-Control-Allow-Origin:*'}
+        // })
+        //     .then(function (response) {
+        //         console.log(response);
+        //     })
+        //     .catch(function (error) {
+        //         console.log(error);
+        //     });
     };
     const onClickFile = useCallback(() => {
         // 这里为.prototxt, 用户点击转换按钮，弹出提示框，
         // 『请将模型描述文件.prototxt和参数文件.caffemodel打包成.tar上传』。
         // 弹出文件选择框，让用户重新进行选择.tar文件上传。
         console.log('Graph.current.filess', Graph);
-        const files: FileList | null = Graph?.current?.files as FileList;
+        const Graphs: any = Graph;
+        const files: FileList | null = Graphs?.current?.files as FileList;
         const name = files[0].name.split('.')[1];
         if (name === 'prototxt') {
             alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面');
@@ -141,11 +169,12 @@ function App() {
         }
     }, []);
     useEffect(() => {
-        if (showData && Graph?.current?.files) {
+        // const Graphs: any = Graph;
+        const Graphs2: any = Graph2;
+        if (showData) {
             console.log('Graph2', Graph2);
-            Graph2?.current?.setModelFiles(Graph?.current?.files);
             setShow(false);
-            setShow2(true);
+            Graphs2?.current?.setModelFiles(showData);
         }
     }, [showData]);
 

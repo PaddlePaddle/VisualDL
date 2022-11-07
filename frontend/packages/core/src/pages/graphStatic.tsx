@@ -95,8 +95,7 @@ const Loading = styled.div`
     line-height: ${rem(60)};
 `;
 type GraphProps = {
-    files: FileList | File[] | null;
-    changeName: () => void;
+    changeName: (name: string) => void;
 };
 type pageRef = {
     files: FileList | File[] | null;

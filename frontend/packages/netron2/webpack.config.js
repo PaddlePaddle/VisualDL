@@ -23,7 +23,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const netron = path.dirname(require.resolve('netron2/src'));
+const netron = path.dirname(require.resolve('netron/src'));
 const output = path.resolve(__dirname, 'dist');
 
 const excludes = ['index.js', 'view.js', 'view-sidebar.js', 'view-grapher.js', 'app.js', 'base.js', 'electron.js'];

@@ -38,7 +38,8 @@ export interface Route {
     default?: boolean;
     visible?: boolean;
     path?: string;
-    component?: LazyExoticComponent<FunctionComponent>;
+    // component?: LazyExoticComponent<FunctionComponent>;
+    component?: any;
     children?: Pick<Route, 'id' | 'path' | 'component'>[];
 }
 
