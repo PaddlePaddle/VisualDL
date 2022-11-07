@@ -145,7 +145,10 @@ def create_app(args):  # noqa: C901
 
     @app.route(api_path + '/inference/<path:method>', methods=["GET", "POST"])
     def serve_inference_api(method):
-        data, mimetype, headers = inference_api_call(method, request.args)
+        if request.method == 'POST':
+            data, mimetype, headers = inference_api_call(method, request.form)
+        else:
+            data, mimetype, headers = inference_api_call(method, request.args)
         return make_response(
             Response(data, mimetype=mimetype, headers=headers))
 
