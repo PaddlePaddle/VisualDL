@@ -77,9 +77,10 @@ const SupportTable = styled.table`
 type UploaderProps = {
     onClickUpload?: () => unknown;
     onDropFiles?: (files: FileList) => unknown;
+    Xpaddlae?: boolean;
 };
 
-const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}) => {
+const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles, Xpaddlae}) => {
     const {t} = useTranslation('graph');
 
     const [active, setActive] = useState(false);
@@ -118,16 +119,25 @@ const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles}
                 </Button>
             </DropZone>
             <SupportTable>
-                <tbody>
-                    <tr>
-                        <td>{t('graph:supported-model')}</td>
-                        <td>{t('graph:supported-model-list')}</td>
-                    </tr>
-                    <tr>
-                        <td>{t('graph:experimental-supported-model')}</td>
-                        <td>{t('graph:experimental-supported-model-list')}</td>
-                    </tr>
-                </tbody>
+                {Xpaddlae ? (
+                    <tbody>
+                        <tr>
+                            <td>{t('graph:supported-model')}</td>
+                            <td>{t('graph:supported-model-list-xpaddle')}</td>
+                        </tr>
+                    </tbody>
+                ) : (
+                    <tbody>
+                        <tr>
+                            <td>{t('graph:supported-model')}</td>
+                            <td>{t('graph:supported-model-list')}</td>
+                        </tr>
+                        <tr>
+                            <td>{t('graph:experimental-supported-model')}</td>
+                            <td>{t('graph:experimental-supported-model-list')}</td>
+                        </tr>
+                    </tbody>
+                )}
             </SupportTable>
         </>
     );

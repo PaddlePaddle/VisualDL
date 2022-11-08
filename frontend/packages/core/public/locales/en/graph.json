@@ -53,6 +53,7 @@
     "supported-model": "Supported models: ",
     "Choose-model": "Choose a model",
     "supported-model-list": "PaddlePaddle, ONNX, Keras, Core ML, Caffe, Caffe2, Darknet, MXNet, ncnn, TensorFlow Lite",
+    "supported-model-list-xpaddle": "ONNX、Caffe、Caffe2",
     "upload-model": "Upload Model",
     "upload-tip": "Click or Drop file here to view neural network models",
     "vertical": "Vertical",

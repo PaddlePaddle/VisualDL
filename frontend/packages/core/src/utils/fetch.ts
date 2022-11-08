@@ -17,7 +17,7 @@
 import type {TFunction} from 'i18next';
 import i18next from 'i18next';
 import queryString from 'query-string';
-
+import {toast} from 'react-toastify';
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL;
 console.log('API_URL', API_TOKEN_KEY);
@@ -111,6 +111,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         if (response && 'status' in response) {
             if (response.status !== 0) {
                 const t = await logErrorAndReturnT(response);
+                toast.error((response as ErrorData).msg);
                 throw new Error((response as ErrorData).msg || t('errors:error'));
             } else {
                 return (response as SuccessData<T>).data;

@@ -98,12 +98,13 @@ type GraphProps = {
     changeName: (name: string) => void;
     show?: boolean;
     changeshowdata?: () => void;
+    Xpaddlae?: boolean;
 };
 type pageRef = {
     files: FileList | File[] | null;
     setNodeDocumentations: () => void;
 };
-const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata, show = true}, ref) => {
+const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata, Xpaddlae, show = true}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
@@ -321,7 +322,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
         renderedflag3
     ]);
     const uploader = useMemo(
-        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,
+        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} Xpaddlae={Xpaddlae} />,
         [onClickFile, setModelFile]
     );
     return (

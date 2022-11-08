@@ -1,9 +1,10 @@
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
-import {rem} from '~/utils/style';
+import {rem, primaryColor, size} from '~/utils/style';
 import {toast} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 import GraphStatic from '~/pages/graphStatic';
 import GraphStatic2 from '~/pages/graphStatic2';
+import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
 const ButtonContent = styled.section`
     display: flex;
@@ -49,7 +50,17 @@ const Buttons = styled.div`
 const Content = styled.div`
     height: 100%;
 `;
-
+const Loading = styled.div`
+    ${size('100%', '100%')}
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overscroll-behavior: none;
+    cursor: progress;
+    font-size: ${rem(16)};
+    line-height: ${rem(60)};
+`;
 const Aside = styled.aside`
     width: ${rem(260)};
     display: flex;
@@ -61,6 +72,7 @@ function App() {
     });
     const [showData, setshowData] = useState<any>(null);
     const [baseData, setBaseData] = useState<any>(false);
+    const [loading, setLoading] = useState<any>(false);
     const [file_names, setfile_names] = useState<any>(false);
     const [names, setNames] = useState('');
 
@@ -87,6 +99,7 @@ function App() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fileUploader = (files: FileList, formats = 'prototxt') => {
+        setLoading(true);
         const formData = new FormData();
         // // 将文件转二进制
         formData.append('file', files[0]);
@@ -106,6 +119,7 @@ function App() {
                 setshowData(file);
                 setBaseData(res.data);
                 setfile_names(files[0].name.split('.')[0] + '.tar');
+                setLoading(false);
             },
             res => {
                 // debugger
@@ -118,6 +132,7 @@ function App() {
         //     const file = blobToFile(res.data, res.filename, res.type);
         //     console.log('bolbfile', file);
         //     setshowData(file);
+        //     setLoading(false);
         //     // setShow2(true);
         // });
     };
@@ -134,7 +149,7 @@ function App() {
         const files: FileList | null = Graphs?.current?.files as FileList;
         const name = files[0].name.split('.')[1];
         if (name === 'prototxt') {
-            toast.warning('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面');
+            toast.warning('请将模型描述文件.prototxt和参数文件.caffemodel打包成.tar上传');
             if (file.current) {
                 file.current.value = '';
                 file.current.click();
@@ -145,7 +160,7 @@ function App() {
             fileUploader(files, name);
             return;
         }
-        toast.warning('该页面暂只能转换pb,onnx,prototxt,模型，请见谅');
+        toast.warning('该模型文件暂不支持X2Paddle转换');
         // 用户上传的文件为.pb和.onnx格式，直接发动转换数据 //fileUploader
     }, [fileUploader, showData]);
     const onChangeFile = useCallback(
@@ -224,25 +239,32 @@ function App() {
     }, [show.show2]);
     return (
         <>
-            <Content>
-                <div
-                    style={{
-                        height: show.show ? 'auto' : '0px',
-                        // opacity: show2 ? 1 : 0
-                        overflowY: 'hidden'
-                    }}
-                >
-                    <GraphStatic
-                        ref={Graph}
-                        changeName={setNames}
-                        show={show.show}
-                        changeshowdata={() => {
-                            setshowData(null);
+            {loading ? (
+                <Loading>
+                    <HashLoader size="60px" color={primaryColor} />
+                </Loading>
+            ) : (
+                <Content>
+                    <div
+                        style={{
+                            height: show.show ? 'auto' : '0px',
+                            // opacity: show2 ? 1 : 0
+                            overflowY: 'hidden'
                         }}
-                    />
-                </div>
-                {Graphs2}
-            </Content>
+                    >
+                        <GraphStatic
+                            ref={Graph}
+                            changeName={setNames}
+                            show={show.show}
+                            changeshowdata={() => {
+                                setshowData(null);
+                            }}
+                            Xpaddlae={true}
+                        />
+                    </div>
+                    {Graphs2}
+                </Content>
+            )}
             <ButtonContent style={{marginTop: '20px'}}>
                 <Article>
                     <Buttons
