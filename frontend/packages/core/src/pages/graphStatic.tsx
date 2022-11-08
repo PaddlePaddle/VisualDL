@@ -96,11 +96,14 @@ const Loading = styled.div`
 `;
 type GraphProps = {
     changeName: (name: string) => void;
+    show?: boolean;
+    changeshowdata?: () => void;
 };
 type pageRef = {
     files: FileList | File[] | null;
+    setNodeDocumentations: () => void;
 };
-const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
+const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata, show = true}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
@@ -113,8 +116,9 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
             const name = f[0].name.split('.')[1];
-            changeName(name);
+            changeName && changeName(name);
             setFiles(f);
+            changeshowdata && changeshowdata();
         },
         [storeDispatch]
     );
@@ -133,9 +137,6 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         },
         [setModelFile]
     );
-    useImperativeHandle(ref, () => ({
-        files
-    }));
     const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
     // useEffect(() => {
@@ -175,11 +176,20 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     const [modelData, setModelData] = useState<Properties | null>(null);
     const [nodeData, setNodeData] = useState<Properties | null>(null);
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
+    const [renderedflag3, setRenderedflag3] = useState(true);
 
     useEffect(() => {
         setSearch('');
         setSearchResult({text: '', result: []});
     }, [files, showAttributes, showInitializers, showNames]);
+    useEffect(() => {
+        if (!show) {
+            setRenderedflag3(false);
+        } else {
+            setRenderedflag3(true);
+            setNodeData(null);
+        }
+    }, [show]);
     const bottom = useMemo(
         () =>
             searching ? null : (
@@ -191,7 +201,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     );
 
     const [rendered, setRendered] = useState(false);
-
+    useImperativeHandle(ref, () => ({
+        files,
+        setNodeDocumentations: () => {
+            setRenderedflag3(false);
+        }
+    }));
     const aside = useMemo(() => {
         if (!rendered || loading) {
             return null;
@@ -203,7 +218,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
                 </Aside>
             );
         }
-        if (nodeData) {
+        console.log('nodeData && renderedflag3', nodeData, renderedflag3);
+        if (nodeData && renderedflag3) {
             return (
                 <Aside width={rem(360)}>
                     <NodePropertiesSidebar
@@ -301,7 +317,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         rendered,
         loading,
         nodeData,
-        nodeDocumentation
+        nodeDocumentation,
+        renderedflag3
     ]);
     const uploader = useMemo(
         () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,

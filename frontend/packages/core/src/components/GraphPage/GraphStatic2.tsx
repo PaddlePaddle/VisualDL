@@ -21,7 +21,7 @@ import {contentHeight, position, primaryColor, rem, size, transitionProps} from 
 import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
-import netron from '@visualdl/netron2';
+import netron2 from '@visualdl/netron2';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import useTheme from '~/hooks/useTheme';
@@ -108,6 +108,7 @@ export type GraphRef = {
     select(item: SearchItem): void;
     showModelProperties(): void;
     showNodeDocumentation(data: Properties): void;
+    show2(): void;
 };
 
 type GraphProps = {
@@ -166,6 +167,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 case 'rendered':
                                     setLoading(false);
                                     setRendered(true);
+                                    console.log('函数执行了');
+
                                     onRendered?.();
                                     return;
                             }
@@ -209,8 +212,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         }, [handler, dispatch]);
 
         useEffect(() => {
-            console.log('GraphStatic2');
-            (ready && dispatch('change-files', files)) || undefined;
+            console.log('GraphStatic2', files, ready);
+            (files && ready && dispatch('change-files', files)) || undefined;
         }, [dispatch, files, ready]);
         useEffect(
             () => (ready && dispatch('toggle-attributes', showAttributes)) || undefined,
@@ -246,11 +249,13 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             },
             showNodeDocumentation(data) {
                 dispatch('show-node-documentation', data);
+            },
+            show2() {
+                dispatch('show2');
             }
         }));
 
         const content = useMemo(() => {
-            debugger;
             if (!ready || loading) {
                 return (
                     <Loading>
@@ -259,7 +264,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                 );
             }
             if (ready && !rendered) {
-                // return uploader;
                 return (
                     <Loading>
                         <HashLoader size="60px" color={primaryColor} />
@@ -268,7 +272,6 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             }
             return null;
         }, [ready, loading, rendered, uploader]);
-
         return (
             <Wrapper>
                 {content}
@@ -297,7 +300,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     <Content>
                         <iframe
                             ref={iframe}
-                            src={PUBLIC_PATH + netron}
+                            src={PUBLIC_PATH + netron2}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}

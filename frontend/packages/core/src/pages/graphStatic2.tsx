@@ -85,14 +85,17 @@ const Loading = styled.div`
     line-height: ${rem(60)};
 `;
 type GraphProps = {
+    changeRendered?: () => void;
     files?: FileList | File[] | null;
     changeName?: () => void;
+    show?: boolean;
 };
 type pageRef = {
     setModelFiles: (f: FileList | File[]) => void;
+    setNodeDocumentations: () => void;
     rendered: boolean;
 };
-const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
+const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = true}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
@@ -101,7 +104,9 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
     const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
-
+    const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
+    const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
+    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
@@ -135,10 +140,6 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         },
         [setModelFile]
     );
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
-
-    const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
-    const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
     const setOpenedModel = useCallback((data: OpenedResult) => {
         setModelGraphs(data.graphs);
         setSelectedGraph(data.selected || '');
@@ -168,12 +169,30 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
     const [modelData, setModelData] = useState<Properties | null>(null);
     const [nodeData, setNodeData] = useState<Properties | null>(null);
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
+    const [rendered, setRendered] = useState(false);
+    const [renderedflag, setRenderedflag] = useState(0);
+    const [renderedflag2, setRenderedflag2] = useState(0);
+    const [renderedflag3, setRenderedflag3] = useState(true);
 
     useEffect(() => {
         setSearch('');
         setSearchResult({text: '', result: []});
     }, [files, showAttributes, showInitializers, showNames]);
-
+    useEffect(() => {
+        if (renderedflag > 1 && renderedflag2 === 0) {
+            changeRendered && changeRendered();
+            setRenderedflag2(1);
+            setNodeDocumentation(null);
+        }
+    }, [renderedflag]);
+    useEffect(() => {
+        if (!show) {
+            setRenderedflag3(false);
+        } else {
+            setRenderedflag3(true);
+            setNodeData(null);
+        }
+    }, [show]);
     const bottom = useMemo(
         () =>
             searching ? null : (
@@ -184,10 +203,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         [t, onClickFile, searching]
     );
 
-    const [rendered, setRendered] = useState(false);
     useImperativeHandle(ref, () => ({
         setModelFiles: file => {
             setModelFile(file);
+        },
+        setNodeDocumentations: () => {
+            setRenderedflag3(false);
         },
         rendered: rendered
     }));
@@ -202,7 +223,9 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
                 </Aside>
             );
         }
-        if (nodeData) {
+        console.log('nodeData && renderedflag3', nodeData, renderedflag3);
+
+        if (nodeData && renderedflag3) {
             return (
                 <Aside width={rem(360)}>
                     <NodePropertiesSidebar
@@ -214,7 +237,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
             );
         }
         return (
-            <Aside bottom={bottom}>
+            <Aside>
                 <SearchSection>
                     <Search
                         text={search}
@@ -300,7 +323,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
         rendered,
         loading,
         nodeData,
-        nodeDocumentation
+        nodeDocumentation,
+        renderedflag3
     ]);
 
     const uploader = useMemo(
@@ -326,7 +350,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName}, ref) => {
                         showInitializers={showInitializers}
                         showNames={showNames}
                         horizontal={horizontal}
-                        onRendered={() => setRendered(true)}
+                        onRendered={() => {
+                            setRendered(true);
+                            setRenderedflag(flag => {
+                                return flag + 1;
+                            });
+                        }}
                         onOpened={setOpenedModel}
                         onSearch={data => {
                             setSearchResult(data);

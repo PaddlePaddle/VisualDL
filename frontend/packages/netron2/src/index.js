@@ -105,6 +105,8 @@ host.BrowserHost = class {
                             return this._view.showModelProperties();
                         case 'show-node-documentation':
                             return this._view.showNodeDocumentation(data);
+                        case 'show2':
+                            return this._view._reload();
                         case 'ready':
                             if (this._ready) {
                                 debugger;
@@ -144,6 +146,9 @@ host.BrowserHost = class {
 
     error(message, detail) {
         this.message('error', (message === 'Error' ? '' : message + ' ') + detail);
+    }
+    reload() {
+        this.view._reload();
     }
 
     confirm(message, detail) {
@@ -199,7 +204,7 @@ host.BrowserHost = class {
     }
 
     _changeFiles(files) {
-        console.log('files', files);
+        console.log('files2', files);
         if (files && files?.length) {
             console.log('files.length', files.length);
             files = Array.from(files);
@@ -530,7 +535,7 @@ function getCaption(obj) {
 }
 const hash = getCaption(document.referrer);
 console.log('hash', hash);
-if (hash === 'graphStatic') {
+if (hash === 'graphStatic' || hash === 'togglrGraph') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {
     window.__view__ = new view.View(new host.BrowserHost());

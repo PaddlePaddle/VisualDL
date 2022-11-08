@@ -109,7 +109,7 @@ export default {
                     },
                     {
                         source: [path.join(netronPath2, '**/*')],
-                        destination: path.join(dest, 'netron/dist')
+                        destination: path.join(dest, 'netron2/dist')
                     },
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],

@@ -89,7 +89,6 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         // res = await fetch('http://10.181.196.14:8040/app/api/deploy/convert?format=onnx', addApiToken(options));
 
         res = await fetch(API_URL + url, addApiToken(options));
-        debugger;
     } catch (e) {
         const t = await logErrorAndReturnT(e);
         throw new Error(t('errors:network-error'));
