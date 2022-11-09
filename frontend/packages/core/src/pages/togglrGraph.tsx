@@ -98,7 +98,7 @@ function App() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const fileUploader = (files: FileList, formats = 'prototxt') => {
+    const fileUploader = (files: FileList, formats = '.caffe ') => {
         setLoading(true);
         const formData = new FormData();
         // // 将文件转二进制
