@@ -274,65 +274,67 @@ function App() {
                     {Graphs2}
                 </Contents>
             )}
-            <ButtonContent style={{marginTop: '20px'}}>
-                <Article>
-                    <Buttons
-                        style={{marginRight: '3px'}}
-                        className={show.show ? 'active' : 'un_active'}
-                        onClick={() => {
-                            setShow({
-                                show: true,
-                                show2: false
-                            });
-                        }}
-                    >
-                        {names ? names : 'Toggle'}
-                    </Buttons>
-                    <Buttons
-                        className={!showData ? 'disabled' : show.show2 ? 'active' : 'un_active'}
-                        onClick={() => {
-                            if (!showData) {
-                                toast.warning('请先进行转换,再查看');
-                                return;
-                            }
-                            setShow({
-                                show: false,
-                                show2: true
-                            });
-                        }}
-                    >
-                        paddle
-                    </Buttons>
-                </Article>
-                <Aside>
-                    <Buttons
-                        style={{marginRight: '3px'}}
-                        className={!showData ? 'active' : 'disabled'}
-                        onClick={() => {
-                            if (showData) {
-                                toast.warning('模型已转换,请勿再次点击');
-                                return;
-                            } else {
-                                onClickFile();
-                            }
-                        }}
-                    >
-                        转换
-                    </Buttons>
-                    <Buttons
-                        className={showData ? 'active' : 'disabled'}
-                        onClick={() => {
-                            if (!showData) {
-                                toast.warning('请上传模型文件并转换');
-                                return;
-                            }
-                            downloadFileByBase64(baseData, file_names);
-                        }}
-                    >
-                        下载
-                    </Buttons>
-                </Aside>
-            </ButtonContent>
+            {!loading && names && (
+                <ButtonContent style={{marginTop: '20px'}}>
+                    <Article>
+                        <Buttons
+                            style={{marginRight: '3px'}}
+                            className={show.show ? 'active' : 'un_active'}
+                            onClick={() => {
+                                setShow({
+                                    show: true,
+                                    show2: false
+                                });
+                            }}
+                        >
+                            {names ? names : 'Toggle'}
+                        </Buttons>
+                        <Buttons
+                            className={!showData ? 'disabled' : show.show2 ? 'active' : 'un_active'}
+                            onClick={() => {
+                                if (!showData) {
+                                    toast.warning('请先进行转换,再查看');
+                                    return;
+                                }
+                                setShow({
+                                    show: false,
+                                    show2: true
+                                });
+                            }}
+                        >
+                            paddle
+                        </Buttons>
+                    </Article>
+                    <Aside>
+                        <Buttons
+                            style={{marginRight: '3px'}}
+                            className={!showData ? 'active' : 'disabled'}
+                            onClick={() => {
+                                if (showData) {
+                                    toast.warning('模型已转换,请勿再次点击');
+                                    return;
+                                } else {
+                                    onClickFile();
+                                }
+                            }}
+                        >
+                            转换
+                        </Buttons>
+                        <Buttons
+                            className={showData ? 'active' : 'disabled'}
+                            onClick={() => {
+                                if (!showData) {
+                                    toast.warning('请上传模型文件并转换');
+                                    return;
+                                }
+                                downloadFileByBase64(baseData, file_names);
+                            }}
+                        >
+                            下载
+                        </Buttons>
+                    </Aside>
+                </ButtonContent>
+            )}
             <input
                 ref={file}
                 type="file"
