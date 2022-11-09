@@ -16,6 +16,7 @@ import base64
 import json
 import os
 import tempfile
+from threading import Lock
 
 from flask import request
 from x2paddle.convert import caffe2paddle
@@ -30,6 +31,7 @@ from visualdl.server.api import result
 class ModelConvertApi(object):
     def __init__(self):
         self.supported_formats = {'onnx', 'caffe'}
+        self.lock = Lock()
 
     @result()
     def convert_model(self, format):
@@ -43,7 +45,8 @@ class ModelConvertApi(object):
         result['from'] = format
         result['to'] = 'paddle'
         # call x2paddle to convert models
-        with tempfile.TemporaryDirectory() as tmpdirname:
+        with tempfile.TemporaryDirectory(
+                suffix='x2paddle_translated_models') as tmpdirname:
             with tempfile.NamedTemporaryFile() as fp:
                 fp.write(data)
                 fp.flush()
@@ -72,8 +75,13 @@ class ModelConvertApi(object):
                                          tmpdirname, None)
                 except Exception as e:
                     raise RuntimeError("Convertion error: {}".format(e))
-
-                archive_path = archive(tmpdirname)
+                with self.lock:
+                    origin_dir = os.getcwd()
+                    os.chdir(os.path.dirname(tmpdirname))
+                    archive_path = os.path.join(
+                        os.path.dirname(tmpdirname),
+                        archive(os.path.basename(tmpdirname)))
+                    os.chdir(origin_dir)
             with open(archive_path, 'rb') as archive_fp:
                 archive_encoded = base64.b64encode(
                     archive_fp.read()).decode('utf-8')
@@ -86,6 +94,7 @@ class ModelConvertApi(object):
             result['data'] = archive_encoded
             if os.path.exists(archive_path):
                 os.remove(archive_path)
+
         return result
 
 
