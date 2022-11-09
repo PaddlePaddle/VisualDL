@@ -74,7 +74,7 @@ function App() {
         show2: false
     });
     const [showData, setshowData] = useState<any>(null);
-    const [baseData, setBaseData] = useState<any>(false);
+    const [baseId, setBaseId] = useState<any>(false);
     const [loading, setLoading] = useState<any>(false);
     const [file_names, setfile_names] = useState<any>(false);
     const [names, setNames] = useState('');
@@ -99,7 +99,23 @@ function App() {
         }
         return new File([u8arr], filename);
     };
-
+    const downloadEvt = (url: any, fileName = '未知文件') => {
+        const el = document.createElement('a');
+        el.style.display = 'none';
+        el.setAttribute('target', '_blank');
+        /**
+         * download的属性是HTML5新增的属性
+         * href属性的地址必须是非跨域的地址，如果引用的是第三方的网站或者说是前后端分离的项目(调用后台的接口)，这时download就会不起作用。
+         * 此时，如果是下载浏览器无法解析的文件，例如.exe,.xlsx..那么浏览器会自动下载，但是如果使用浏览器可以解析的文件，比如.txt,.png,.pdf....浏览器就会采取预览模式
+         * 所以，对于.txt,.png,.pdf等的预览功能我们就可以直接不设置download属性(前提是后端响应头的Content-Type: application/octet-stream，如果为application/pdf浏览器则会判断文件为 pdf ，自动执行预览的策略)
+         */
+        fileName && el.setAttribute('download', fileName);
+        el.href = url;
+        console.log(el);
+        document.body.appendChild(el);
+        el.click();
+        document.body.removeChild(el);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fileUploader = (files: FileList, formats = 'caffe') => {
         if (!files) {
@@ -112,6 +128,7 @@ function App() {
         formData.append('file', files[0]);
         formData.append('filename', files[0].name);
         formData.append('format', formats);
+        const name: string = files[0].name.split('.')[0] + '.tar';
         // debugger;
         fetcher(`/inference/convert?format=${formats}`, {
             method: 'POST',
@@ -124,7 +141,7 @@ function App() {
                 const file = base64UrlToFile(res.pdmodel, name);
                 console.log('file', file);
                 setshowData(file);
-                setBaseData(res.data);
+                setBaseId(res.request_id);
                 setfile_names(files[0].name.split('.')[0] + '.tar');
                 setLoading(false);
             },
@@ -139,7 +156,6 @@ function App() {
         //     console.log('res', res);
         //     setTimeout(() => {
         //         const file = blobToFile(res.data, res.filename, res.type);
-        //         console.log('bolbfile', file);
         //         setshowData(file);
         //         setLoading(false);
         //     }, 5000);
@@ -213,11 +229,32 @@ function App() {
     // * desc: 下载参数入口
     // * @param base64  ：返回数据的blob对象或链接
     // * @param fileName  ：下载后文件名标记
-    const downloadFileByBase64 = (base64: any, fileName: string) => {
-        if (!base64 || !fileName) return;
-        const myBlob = dataURLtoBlob(base64);
-        const myUrl = URL.createObjectURL(myBlob);
-        downloadFile(myUrl, fileName);
+    const downloadFileByBase64 = (baseId: any, fileName: string) => {
+        console.log('baseId', baseId, fileName);
+
+        if (baseId === undefined || !fileName) return;
+        // const myBlob = dataURLtoBlob(base64);
+        // const myUrl = URL.createObjectURL(myBlob);
+        // downloadFile(myUrl, fileName);
+        setLoading(true);
+        fetcher(`/inference/download?request_id${baseId}`, {
+            method: 'POST'
+        }).then(
+            (res: any) => {
+                console.log('blobres', res);
+
+                const file = blobToFile(res.data, res.filename, res.type);
+                console.log('bolbfile', file);
+                downloadEvt(file, fileName);
+                setLoading(false);
+            },
+            res => {
+                // debugger
+                setLoading(false);
+                // const newFilesId = filesId + 1;
+                // setFilesId(newFilesId);
+            }
+        );
     };
     useEffect(() => {
         // const Graphs: any = Graph;
@@ -337,12 +374,13 @@ function App() {
                         <Buttons
                             className={showData ? 'active' : 'disabled'}
                             onClick={() => {
+                                console.log('showData', showData);
                                 if (!showData) {
                                     // toast.warning('请上传模型文件并转换');
                                     toast.warning(t('warin-info5'));
                                     return;
                                 }
-                                downloadFileByBase64(baseData, file_names);
+                                downloadFileByBase64(baseId, file_names);
                             }}
                         >
                             {t('togglegraph:download')}
