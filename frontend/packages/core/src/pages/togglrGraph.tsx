@@ -300,7 +300,14 @@ function App() {
                     <Buttons
                         style={{marginRight: '3px'}}
                         className={!showData ? 'active' : 'disabled'}
-                        onClick={onClickFile}
+                        onClick={() => {
+                            if (showData) {
+                                toast.warning('模型已转换,请勿再次点击');
+                                return;
+                            } else {
+                                onClickFile();
+                            }
+                        }}
                     >
                         转换
                     </Buttons>
