@@ -7,6 +7,7 @@ import GraphStatic from '~/pages/graphStatic';
 import GraphStatic2 from '~/pages/graphStatic2';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
+import {useTranslation} from 'react-i18next';
 const ButtonContent = styled.section`
     display: flex;
     .active {
@@ -67,6 +68,7 @@ const Aside = styled.aside`
     display: flex;
 `;
 function App() {
+    const {t} = useTranslation(['togglegraph']);
     const [show, setShow] = useState({
         show: true,
         show2: false
@@ -146,7 +148,8 @@ function App() {
         // 『请将模型描述文件.prototxt和参数文件.caffemodel打包成.tar上传』。
         // 弹出文件选择框，让用户重新进行选择.tar文件上传。
         if (showData) {
-            toast.warning('模型文件已转换，请勿再次点击');
+            // toast.warning('模型文件已转换，请勿再次点击');
+            toast.warning(t('warin-info6'));
             return;
         }
         console.log('Graph.current.filess', Graph);
@@ -154,7 +157,7 @@ function App() {
         const files: FileList | null = Graphs?.current?.files as FileList;
         const name = files[0].name.split('.')[1];
         if (name === 'prototxt') {
-            toast.warning('请将模型描述文件.prototxt和参数文件.caffemodel打包成.tar上传');
+            toast.warning(t('togglegraph:warin-info'));
             if (file.current) {
                 file.current.value = '';
                 file.current.click();
@@ -165,7 +168,8 @@ function App() {
             fileUploader(files, name);
             return;
         }
-        toast.warning('该模型文件暂不支持X2Paddle转换');
+        // toast.warning('该模型文件暂不支持X2Paddle转换');
+        toast.warning(t('togglegraph:warin-info2'));
         // 用户上传的文件为.pb和.onnx格式，直接发动转换数据 //fileUploader
     }, [fileUploader, showData]);
     const onChangeFile = useCallback(
@@ -293,7 +297,8 @@ function App() {
                             className={!showData ? 'disabled' : show.show2 ? 'active' : 'un_active'}
                             onClick={() => {
                                 if (!showData) {
-                                    toast.warning('请先进行转换,再查看');
+                                    // toast.warning('请先进行转换,再查看');
+                                    toast.warning(t('warin-info3'));
                                     return;
                                 }
                                 setShow({
@@ -311,26 +316,28 @@ function App() {
                             className={!showData ? 'active' : 'disabled'}
                             onClick={() => {
                                 if (showData) {
-                                    toast.warning('模型已转换,请勿再次点击');
+                                    toast.warning(t('warin-info4'));
+                                    // toast.warning('模型已转换,请勿再次点击');
                                     return;
                                 } else {
                                     onClickFile();
                                 }
                             }}
                         >
-                            转换
+                            {t('togglegraph:transformation')}
                         </Buttons>
                         <Buttons
                             className={showData ? 'active' : 'disabled'}
                             onClick={() => {
                                 if (!showData) {
-                                    toast.warning('请上传模型文件并转换');
+                                    // toast.warning('请上传模型文件并转换');
+                                    toast.warning(t('warin-info5'));
                                     return;
                                 }
                                 downloadFileByBase64(baseData, file_names);
                             }}
                         >
-                            下载
+                            {t('togglegraph:download')}
                         </Buttons>
                     </Aside>
                 </ButtonContent>
