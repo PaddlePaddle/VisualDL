@@ -106,35 +106,35 @@ function App() {
         formData.append('filename', files[0].name);
         formData.append('format', formats);
         // debugger;
-        fetcher(`/inference/convert?format=${formats}`, {
-            method: 'POST',
-            body: formData
-        }).then(
-            (res: any) => {
-                // debugger
-                const name: string = files[0].name.split('.')[0] + '.paddle';
-                console.log('res', res);
-                const file = base64UrlToFile(res.pdmodel, name);
-                console.log('file', file);
-                setshowData(file);
-                setBaseData(res.data);
-                setfile_names(files[0].name.split('.')[0] + '.tar');
-                setLoading(false);
-            },
-            res => {
-                // debugger
-                // const newFilesId = filesId + 1;
-                // setFilesId(newFilesId);
-            }
-        );
-        // fetcher('/graph/graph').then((res: any) => {
-        //     console.log('res', res);
-        //     const file = blobToFile(res.data, res.filename, res.type);
-        //     console.log('bolbfile', file);
-        //     setshowData(file);
-        //     setLoading(false);
-        //     // setShow2(true);
-        // });
+        // fetcher(`/inference/convert?format=${formats}`, {
+        //     method: 'POST',
+        //     body: formData
+        // }).then(
+        //     (res: any) => {
+        //         // debugger
+        //         const name: string = files[0].name.split('.')[0] + '.paddle';
+        //         console.log('res', res);
+        //         const file = base64UrlToFile(res.pdmodel, name);
+        //         console.log('file', file);
+        //         setshowData(file);
+        //         setBaseData(res.data);
+        //         setfile_names(files[0].name.split('.')[0] + '.tar');
+        //         setLoading(false);
+        //     },
+        //     res => {
+        //         // debugger
+        //         // const newFilesId = filesId + 1;
+        //         // setFilesId(newFilesId);
+        //     }
+        // );
+        fetcher('/graph/graph').then((res: any) => {
+            console.log('res', res);
+            const file = blobToFile(res.data, res.filename, res.type);
+            console.log('bolbfile', file);
+            setshowData(file);
+            setLoading(false);
+            // setShow2(true);
+        });
     };
     const onClickFile = useCallback(() => {
         // 这里为.prototxt, 用户点击转换按钮，弹出提示框，
@@ -239,32 +239,33 @@ function App() {
     }, [show.show2]);
     return (
         <>
-            {loading ? (
-                <Loading>
-                    <HashLoader size="60px" color={primaryColor} />
-                </Loading>
-            ) : (
-                <Content>
-                    <div
-                        style={{
-                            height: show.show ? 'auto' : '0px',
-                            // opacity: show2 ? 1 : 0
-                            overflowY: 'hidden'
+            (
+            <Content>
+                {loading && (
+                    <Loading>
+                        <HashLoader size="60px" color={primaryColor} />
+                    </Loading>
+                )}
+                <div
+                    style={{
+                        height: show.show ? 'auto' : '0px',
+                        // opacity: show2 ? 1 : 0
+                        overflowY: 'hidden'
+                    }}
+                >
+                    <GraphStatic
+                        ref={Graph}
+                        changeName={setNames}
+                        show={show.show}
+                        changeshowdata={() => {
+                            setshowData(null);
                         }}
-                    >
-                        <GraphStatic
-                            ref={Graph}
-                            changeName={setNames}
-                            show={show.show}
-                            changeshowdata={() => {
-                                setshowData(null);
-                            }}
-                            Xpaddlae={true}
-                        />
-                    </div>
-                    {Graphs2}
-                </Content>
-            )}
+                        Xpaddlae={true}
+                    />
+                </div>
+                {Graphs2}
+            </Content>
+            )
             <ButtonContent style={{marginTop: '20px'}}>
                 <Article>
                     <Buttons
