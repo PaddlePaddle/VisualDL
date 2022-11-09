@@ -130,16 +130,19 @@ function App() {
             },
             res => {
                 // debugger
+                setLoading(false);
                 // const newFilesId = filesId + 1;
                 // setFilesId(newFilesId);
             }
         );
         // fetcher('/graph/graph').then((res: any) => {
         //     console.log('res', res);
-        //     const file = blobToFile(res.data, res.filename, res.type);
-        //     console.log('bolbfile', file);
-        //     setshowData(file);
-        //     setLoading(false);
+        //     setTimeout(() => {
+        //         const file = blobToFile(res.data, res.filename, res.type);
+        //         console.log('bolbfile', file);
+        //         setshowData(file);
+        //         setLoading(false);
+        //     }, 5000);
         //     // setShow2(true);
         // });
     };
@@ -171,7 +174,7 @@ function App() {
         // toast.warning('该模型文件暂不支持X2Paddle转换');
         toast.warning(t('togglegraph:warin-info2'));
         // 用户上传的文件为.pb和.onnx格式，直接发动转换数据 //fileUploader
-    }, [fileUploader, showData]);
+    }, [fileUploader, showData, t]);
     const onChangeFile = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
@@ -248,37 +251,38 @@ function App() {
     }, [show.show2]);
     return (
         <Content>
-            {loading ? (
+            {loading && (
                 <Loading>
                     <HashLoader size="60px" color={primaryColor} />
                 </Loading>
-            ) : (
-                <Contents
-                // style={{
-                //     display: loading ? 'none' : 'block'
-                // }}
-                >
-                    <div
-                        style={{
-                            height: show.show ? 'auto' : '0px',
-                            // opacity: show2 ? 1 : 0
-                            overflowY: 'hidden'
-                        }}
-                    >
-                        <GraphStatic
-                            ref={Graph}
-                            changeName={setNames}
-                            show={show.show}
-                            changeshowdata={() => {
-                                setshowData(null);
-                            }}
-                            Xpaddlae={true}
-                        />
-                    </div>
-                    {Graphs2}
-                </Contents>
             )}
-            {!loading && names && (
+            <Contents
+                style={{
+                    height: !loading ? 'auto' : '0px',
+                    overflow: 'hidden'
+                }}
+            >
+                <div
+                    style={{
+                        height: show.show ? 'auto' : '0px',
+                        // opacity: show2 ? 1 : 0
+                        overflowY: 'hidden'
+                    }}
+                >
+                    <GraphStatic
+                        ref={Graph}
+                        changeName={setNames}
+                        show={show.show}
+                        changeshowdata={() => {
+                            setshowData(null);
+                        }}
+                        Xpaddlae={true}
+                    />
+                </div>
+                {Graphs2}
+            </Contents>
+
+            {names && !loading && (
                 <ButtonContent style={{marginTop: '20px'}}>
                     <Article>
                         <Buttons
@@ -313,14 +317,18 @@ function App() {
                     <Aside>
                         <Buttons
                             style={{marginRight: '3px'}}
-                            className={!showData ? 'active' : 'disabled'}
+                            className={!showData && names ? 'active' : 'disabled'}
                             onClick={() => {
                                 if (showData) {
                                     toast.warning(t('warin-info4'));
                                     // toast.warning('模型已转换,请勿再次点击');
                                     return;
                                 } else {
-                                    onClickFile();
+                                    if (!names) {
+                                        toast.warning(t('warin-info7'));
+                                    } else {
+                                        onClickFile();
+                                    }
                                 }
                             }}
                         >
