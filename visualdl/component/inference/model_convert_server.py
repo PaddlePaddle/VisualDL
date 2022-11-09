@@ -16,6 +16,7 @@ import base64
 import json
 import os
 import tempfile
+from collections import deque
 from threading import Lock
 
 from flask import request
@@ -32,6 +33,9 @@ class ModelConvertApi(object):
     def __init__(self):
         self.supported_formats = {'onnx', 'caffe'}
         self.lock = Lock()
+        self.translated_models = deque(
+            maxlen=5)  # used to store user's translated model for download
+        self.request_id = 0  # used to store user's request
 
     @result()
     def convert_model(self, format):
@@ -82,26 +86,34 @@ class ModelConvertApi(object):
                         os.path.dirname(tmpdirname),
                         archive(os.path.basename(tmpdirname)))
                     os.chdir(origin_dir)
+                    result['request_id'] = self.request_id
+                    self.request_id += 1
             with open(archive_path, 'rb') as archive_fp:
-                archive_encoded = base64.b64encode(
-                    archive_fp.read()).decode('utf-8')
+                self.translated_models.append((result['request_id'],
+                                               archive_fp.read()))
             with open(
                     os.path.join(tmpdirname, 'inference_model',
                                  'model.pdmodel'), 'rb') as model_fp:
                 model_encoded = base64.b64encode(
                     model_fp.read()).decode('utf-8')
             result['pdmodel'] = model_encoded
-            result['data'] = archive_encoded
             if os.path.exists(archive_path):
                 os.remove(archive_path)
 
         return result
+
+    @result('application/octet-stream')
+    def download_model(self, request_id):
+        for stored_request_id, data in self.translated_models:
+            if str(stored_request_id) == request_id:
+                return data
 
 
 def create_model_convert_api_call():
     api = ModelConvertApi()
     routes = {
         'convert': (api.convert_model, ['format']),
+        'download': (api.download_model, ['request_id'])
     }
 
     def call(path: str, args):
