@@ -99,7 +99,7 @@ function App() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const fileUploader = (files: FileList, formats = 'caffe ') => {
+    const fileUploader = (files: FileList, formats = 'caffe') => {
         if (!files) {
             toast.warning('请上传模型文件模型文件');
             return;
