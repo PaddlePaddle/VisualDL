@@ -237,7 +237,7 @@ function App() {
         // const myUrl = URL.createObjectURL(myBlob);
         // downloadFile(myUrl, fileName);
         setLoading(true);
-        fetcher(`/inference/download?request_id${baseId}`, {
+        fetcher(`/inference/download?request_id=${baseId}`, {
             method: 'POST'
         }).then(
             (res: any) => {
