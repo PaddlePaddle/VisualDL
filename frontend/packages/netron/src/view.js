@@ -261,12 +261,13 @@ view.View = class {
         return this._timeout(2).then(() => {
             return this._modelFactoryService.open(context).then(model => {
                 return this._timeout(20).then(() => {
+                    console.log('model.graphs.length', model.graphs.length);
                     const graph = model.graphs.length > 0 ? model.graphs[0] : null;
                     this._host.message('opened', {
                         graphs: model.graphs.map(g => g.name || ''),
                         selected: graph && (graph.name || '')
                     });
-                    return this._updateGraph2(model, graph);
+                    return this._updateGraph2(graph);
                 });
             });
         });
@@ -366,6 +367,9 @@ view.View = class {
             if (graph && graph != this._activeGraph) {
                 this._selectItem = null;
                 const nodes = graph.nodes;
+                console.log('graphs', graph);
+
+                console.log('nodes.length', nodes);
                 if (nodes.length > 1400) {
                     if (
                         !this._host.confirm(
@@ -396,14 +400,11 @@ view.View = class {
         });
     }
     jumpRoute(node) {
-        console.log('node', node);
         if (node.is_leaf) {
-            console.log('isCtrl', this.isCtrl);
             if (this.isCtrl) {
                 for (const nodes of this._allGraph.nodes) {
                     if (nodes.name === node.name) {
                         for (const type of this.non_graphMetadatas) {
-                            console.log('type', type.name.toLowerCase(), node.type);
                             if (type.name.toLowerCase() === node.type) {
                                 if (this.Language === 'zh') {
                                     window.open(
@@ -481,6 +482,7 @@ view.View = class {
                     for (const node of nodes) {
                         let path = node.name.split('/');
                         path.pop();
+                        console.log('path.length', path.length);
                         while (path.length > 0) {
                             const name = path.join('/');
                             path.pop();

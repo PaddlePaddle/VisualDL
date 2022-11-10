@@ -45,7 +45,7 @@ const Title = styled.div`
 
 const Content = styled.div`
     padding: ${rem(20)};
-    height: calc(100% - ${rem(60)});
+    height: ${rem(600)};
     overflow: auto;
 `;
 

@@ -20,13 +20,13 @@ import {MutableRefObject, useCallback, useEffect, useLayoutEffect, useMemo, useR
 import {position, primaryColor, size} from '~/utils/style';
 
 import type {ECharts} from 'echarts';
+import * as echarts from 'echarts';
+// import * as echarts from 'echarts-gl';
 import {dataURL2Blob} from '~/utils/image';
 import {saveFile} from '~/utils/saveFile';
 import styled from 'styled-components';
 import {themes} from '~/utils/theme';
 import useTheme from '~/hooks/useTheme';
-import {options} from '../resource/scalar/chart';
-
 export type Options = {
     loading?: boolean;
     gl?: boolean;
@@ -58,25 +58,17 @@ const useECharts = <T extends HTMLElement, W extends HTMLElement = HTMLDivElemen
             if (!ref.current) {
                 return;
             }
-
-            const {default: echarts} = await import('echarts');
-            if (options.gl) {
-                await import('echarts-gl');
-            }
-
             const echartInstance = echarts.init(ref.current as unknown as HTMLDivElement);
-
             ref.current.addEventListener('mouseleave', hideTip);
 
             setTimeout(() => {
-                // if (options.zoom && !options?.isCtrol) {
-                //     // echartInstance.dispatchAction({
-                //     //     type: 'takeGlobalCursor',
-                //     //     key: 'dataZoomSelect',
-                //     //     dataZoomSelectActive: true
-                //     // });
-                // }
-
+                if (options.zoom) {
+                    echartInstance.dispatchAction({
+                        type: 'takeGlobalCursor',
+                        key: 'dataZoomSelect',
+                        dataZoomSelectActive: true
+                    });
+                }
                 if (echartInstance) {
                     onInit.current?.(echartInstance);
                 }

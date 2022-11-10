@@ -17,7 +17,17 @@
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {
+    FunctionComponent,
+    ForwardRefRenderFunction,
+    useImperativeHandle,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState
+} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions, selectors} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
@@ -84,8 +94,17 @@ const Loading = styled.div`
     font-size: ${rem(16)};
     line-height: ${rem(60)};
 `;
-
-const Graph: FunctionComponent = () => {
+type GraphProps = {
+    changeName: (name: string) => void;
+    show?: boolean;
+    changeshowdata?: () => void;
+    Xpaddlae?: boolean;
+};
+type pageRef = {
+    files: FileList | File[] | null;
+    setNodeDocumentations: () => void;
+};
+const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata, Xpaddlae, show = true}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
@@ -97,7 +116,10 @@ const Graph: FunctionComponent = () => {
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
+            const name = f[0].name.substring(f[0].name.lastIndexOf('.') + 1);
+            changeName && changeName(name);
             setFiles(f);
+            changeshowdata && changeshowdata();
         },
         [storeDispatch]
     );
@@ -116,14 +138,13 @@ const Graph: FunctionComponent = () => {
         },
         [setModelFile]
     );
-
     const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
-    useEffect(() => {
-        if (data?.data?.size) {
-            setFiles([new File([data.data], data.filename || 'unknown_model')]);
-        }
-    }, [data]);
+    // useEffect(() => {
+    //     if (data?.data?.size) {
+    //         setFiles([new File([data.data], data.filename || 'unknown_model')]);
+    //     }
+    // }, [data]);
 
     const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
     const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
@@ -156,12 +177,20 @@ const Graph: FunctionComponent = () => {
     const [modelData, setModelData] = useState<Properties | null>(null);
     const [nodeData, setNodeData] = useState<Properties | null>(null);
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
+    const [renderedflag3, setRenderedflag3] = useState(true);
 
     useEffect(() => {
         setSearch('');
         setSearchResult({text: '', result: []});
     }, [files, showAttributes, showInitializers, showNames]);
-
+    useEffect(() => {
+        if (!show) {
+            setRenderedflag3(false);
+        } else {
+            setRenderedflag3(true);
+            setNodeData(null);
+        }
+    }, [show]);
     const bottom = useMemo(
         () =>
             searching ? null : (
@@ -173,7 +202,12 @@ const Graph: FunctionComponent = () => {
     );
 
     const [rendered, setRendered] = useState(false);
-
+    useImperativeHandle(ref, () => ({
+        files,
+        setNodeDocumentations: () => {
+            setRenderedflag3(false);
+        }
+    }));
     const aside = useMemo(() => {
         if (!rendered || loading) {
             return null;
@@ -185,7 +219,8 @@ const Graph: FunctionComponent = () => {
                 </Aside>
             );
         }
-        if (nodeData) {
+        console.log('nodeData && renderedflag3', nodeData, renderedflag3);
+        if (nodeData && renderedflag3) {
             return (
                 <Aside width={rem(360)}>
                     <NodePropertiesSidebar
@@ -283,14 +318,13 @@ const Graph: FunctionComponent = () => {
         rendered,
         loading,
         nodeData,
-        nodeDocumentation
+        nodeDocumentation,
+        renderedflag3
     ]);
-
     const uploader = useMemo(
-        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,
+        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} Xpaddlae={Xpaddlae} />,
         [onClickFile, setModelFile]
     );
-
     return (
         <>
             <Title>{t('common:graph')}</Title>
@@ -334,6 +368,6 @@ const Graph: FunctionComponent = () => {
             </Content>
         </>
     );
-};
+});
 
 export default Graph;

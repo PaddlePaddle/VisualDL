@@ -62,6 +62,7 @@ async function start() {
 
     const baseUri = snowpackEnv.SNOWPACK_PUBLIC_BASE_URI;
     const apiUrl = snowpackEnv.SNOWPACK_PUBLIC_API_URL;
+    console.log('apiUrl', apiUrl, backend);
 
     if (backend) {
         const {createProxyMiddleware} = await import('http-proxy-middleware');

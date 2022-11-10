@@ -20,7 +20,7 @@ import graph from '../../assets/graph/yolov3.cfg';
 
 export default async () => {
     const result = await fetch(graph);
-
+    console.log('result', result);
     return new Response(await result.arrayBuffer(), {
         status: 200,
         headers: {

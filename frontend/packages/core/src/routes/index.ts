@@ -25,9 +25,11 @@ export enum Pages {
     Audio = 'audio',
     Text = 'text',
     Graph = 'graph',
+    ToggleGraph = 'ToggleGraph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
+    Profiler = 'profiler',
     HyperParameter = 'hyper-parameter'
 }
 
@@ -36,7 +38,8 @@ export interface Route {
     default?: boolean;
     visible?: boolean;
     path?: string;
-    component?: LazyExoticComponent<FunctionComponent>;
+    // component?: LazyExoticComponent<FunctionComponent>;
+    component?: any;
     children?: Pick<Route, 'id' | 'path' | 'component'>[];
 }
 
@@ -89,6 +92,11 @@ const routes: Route[] = [
         ]
     },
     {
+        id: Pages.ToggleGraph,
+        path: '/x2paddle',
+        component: React.lazy(() => import('~/pages/x2paddle'))
+    },
+    {
         id: Pages.Histogram,
         path: '/histogram',
         component: React.lazy(() => import('~/pages/histogram'))
@@ -97,6 +105,11 @@ const routes: Route[] = [
         id: Pages.HyperParameter,
         path: '/hyper-parameter',
         component: React.lazy(() => import('~/pages/hyper-parameter'))
+    },
+    {
+        id: Pages.Profiler,
+        path: '/profiler',
+        component: React.lazy(() => import('~/pages/profiler'))
     },
     {
         id: Pages.HighDimensional,

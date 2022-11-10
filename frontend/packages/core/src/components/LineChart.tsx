@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -20,16 +21,16 @@ import React, {useEffect, useImperativeHandle, useState} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 
-import type {EChartOption} from 'echarts';
+import type {EChartsOption, XAXisComponentOption, YAXisComponentOption} from 'echarts';
 import GridLoader from 'react-spinners/GridLoader';
 import defaultsDeep from 'lodash/defaultsDeep';
 import {formatTime} from '~/utils';
 import {useTranslation} from 'react-i18next';
 
 type LineChartProps = {
-    options?: EChartOption;
+    options?: EChartsOption;
     title?: string;
-    data?: Partial<NonNullable<EChartOption<EChartOption.SeriesLine>['series']>>;
+    data?: any;
     loading?: boolean;
     zoom?: boolean;
     onInit?: Options['onInit'];
@@ -53,7 +54,9 @@ export type LineChartRef = {
 
 const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
     ({options, data, title, loading, zoom, className, onInit}, ref) => {
+        // const [chartOption, setchartOption] = useState<EChartsOption>();
         const {i18n} = useTranslation();
+
         const {
             ref: echartRef,
             echart,
@@ -65,7 +68,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             autoFit: true,
             onInit
         });
-        const [isCtrol, setIsCtrol] = useState<boolean>(false);
+
         const theme = useChartTheme();
 
         useImperativeHandle(ref, () => ({
@@ -79,18 +82,11 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
             }
         }));
         useEffect(() => {
-            window.addEventListener('keydown', keydown); // 添加全局事件
-            window.addEventListener('keyup', keyUp); // 添加全局事件
-            return () => {
-                window.removeEventListener('keydown', keydown); // 销毁
-                window.removeEventListener('keyup', keyUp); // 销毁
-            };
-        }, []);
-        useEffect(() => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const {color, colorAlt, series, ...defaults} = chart;
-
-            let chartOptions: EChartOption = defaultsDeep(
+            const {color, series, ...defaults} = chart;
+            if (!echart) {
+                return;
+            }
+            let chartOptions: EChartsOption = defaultsDeep(
                 {
                     title: {
                         text: title ?? ''
@@ -104,14 +100,18 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     yAxis: {
                         splitNumber: 4
                     },
-                    dataZoom: [
-                        {
-                            type: 'inside',
-                            start: 0,
-                            end: 25
+                    toolbox: {
+                        show: true,
+                        showTitle: false,
+                        itemSize: 0,
+                        feature: {
+                            dataZoom: {
+                                show: true
+                                // xAxisIndex: 0
+                            }
                         }
-                    ],
-                    series: data?.map((item, index) =>
+                    },
+                    series: data?.map((item: any, index: number) =>
                         defaultsDeep(
                             {
                                 // show symbol if there is only one point
@@ -133,7 +133,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                 theme,
                 defaults
             );
-            if ((chartOptions?.xAxis as EChartOption.XAxis).type === 'time') {
+            if ((chartOptions?.xAxis as XAXisComponentOption)?.type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         xAxis: {
@@ -145,7 +145,7 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            if ((chartOptions?.yAxis as EChartOption.YAxis).type === 'time') {
+            if ((chartOptions?.yAxis as YAXisComponentOption).type === 'time') {
                 chartOptions = defaultsDeep(
                     {
                         yAxis: {
@@ -157,41 +157,16 @@ const LineChart = React.forwardRef<LineChartRef, LineChartProps & WithStyled>(
                     chartOptions
                 );
             }
-            console.log('!options?.isCtrol', isCtrol);
-            setTimeout(() => {
-                if (!isCtrol && echart) {
-                    echart.dispatchAction({
-                        type: 'takeGlobalCursor',
-                        key: 'dataZoomSelect',
-                        dataZoomSelectActive: true
-                    });
-                }
-                if (isCtrol && echart) {
-                    echart.dispatchAction({
-                        type: 'takeGlobalCursor',
-                        key: 'dataZoomInside',
-                        dataZoomSelectActive: false
-                    });
-                }
-
-                // if (echartInstance) {
-                //     onInit.current?.(echartInstance);
-                // }
-            }, 0);
             echart?.setOption(chartOptions, {notMerge: true});
-        }, [options, data, title, theme, i18n.language, echart, isCtrol]);
-        const keydown = (e: any) => {
-            if (e.key === 'Control') {
-                console.log('e.tagert keydown', e.key);
-                setIsCtrol(true);
-            }
-        };
-        const keyUp = (e: any) => {
-            console.log('e.tagert keyUp', e.key);
-            if (e.key === 'Control') {
-                setIsCtrol(false);
-            }
-        };
+            echart?.dispatchAction({
+                type: 'takeGlobalCursor',
+                key: 'dataZoomSelect',
+                dataZoomSelectActive: true
+            });
+            // debugger
+            console.log('chartOptions', chartOptions);
+        }, [options, theme, data, title, i18n.language, echart]);
+
         return (
             <Wrapper ref={wrapper} className={className}>
                 {!echart && (

@@ -17,7 +17,7 @@
 // cspell:words pnpify svgs entrypoints
 
 import * as env from './builder/env.js';
-
+import proxy from 'http2-proxy';
 import {fileURLToPath} from 'url';
 import fs from 'fs';
 import path from 'path';
@@ -37,6 +37,8 @@ function isWorkspace() {
 
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
+const netronPath2 = path.dirname(resolve.sync(cwd, '@visualdl/netron2'));
+
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
@@ -56,6 +58,14 @@ export default {
             match: 'routes',
             src: '.*',
             dest: '/index.html'
+        },
+        {
+            match: 'all',
+            src: '/app/api/.*',
+            dest: (req, res) => {
+                console.log('被拦截了');
+                proxy.web(req, res, {hostname: 'http://10.181.196.14', port: '8040'});
+            }
         }
     ],
     env,
@@ -98,6 +108,10 @@ export default {
                         destination: path.join(dest, 'netron/dist')
                     },
                     {
+                        source: [path.join(netronPath2, '**/*')],
+                        destination: path.join(dest, 'netron2/dist')
+                    },
+                    {
                         source: [path.join(wasmPath, '*.{js,wasm}')],
                         destination: path.join(dest, 'wasm/dist')
                     }
@@ -111,7 +125,9 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is']
+        namedExports: ['gl-vec2', 'dagre'],
+        // knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client']
+        knownEntrypoints: ['chai', '@testing-library/react']
     },
     buildOptions: {
         out: 'dist',
