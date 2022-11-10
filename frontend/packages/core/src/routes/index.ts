@@ -93,8 +93,8 @@ const routes: Route[] = [
     },
     {
         id: Pages.ToggleGraph,
-        path: '/togglrGraph',
-        component: React.lazy(() => import('~/pages/togglrGraph'))
+        path: '/x2paddle',
+        component: React.lazy(() => import('~/pages/x2paddle'))
     },
     {
         id: Pages.Histogram,
