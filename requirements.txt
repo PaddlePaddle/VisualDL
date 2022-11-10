@@ -10,4 +10,3 @@ matplotlib
 pandas
 multiprocess
 packaging
-x2paddle
