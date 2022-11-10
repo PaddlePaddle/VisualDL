@@ -116,7 +116,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
-            const name = f[0].name.split('.')[1];
+            const name = f[0].name.substring(f[0].name.lastIndexOf('.') + 1);
             changeName && changeName(name);
             setFiles(f);
             changeshowdata && changeshowdata();

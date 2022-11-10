@@ -110,8 +110,9 @@ function App() {
          * 所以，对于.txt,.png,.pdf等的预览功能我们就可以直接不设置download属性(前提是后端响应头的Content-Type: application/octet-stream，如果为application/pdf浏览器则会判断文件为 pdf ，自动执行预览的策略)
          */
         fileName && el.setAttribute('download', fileName);
-        el.href = url;
-        console.log(el);
+        const href = URL.createObjectURL(url);
+        el.href = href;
+        console.log(el, href);
         document.body.appendChild(el);
         el.click();
         document.body.removeChild(el);
@@ -128,21 +129,20 @@ function App() {
         formData.append('file', files[0]);
         formData.append('filename', files[0].name);
         formData.append('format', formats);
-        const name: string = files[0].name.split('.')[0] + '.tar';
-        // debugger;
         fetcher(`/inference/convert?format=${formats}`, {
             method: 'POST',
             body: formData
         }).then(
             (res: any) => {
                 // debugger
-                const name: string = files[0].name.split('.')[0] + '.paddle';
-                console.log('res', res);
-                const file = base64UrlToFile(res.pdmodel, name);
+                const name2: string = files[0].name.substring(files[0].name.lastIndexOf('.') + 1) + '.paddle';
+                console.log('res', res, name2);
+                const file = base64UrlToFile(res.pdmodel, name2);
                 console.log('file', file);
                 setshowData(file);
                 setBaseId(res.request_id);
-                setfile_names(files[0].name.split('.')[0] + '.tar');
+                const name3 = files[0].name.substring(0, files[0].name.lastIndexOf('.'));
+                setfile_names(name3 + '.tar');
                 setLoading(false);
             },
             res => {
@@ -155,7 +155,10 @@ function App() {
         // fetcher('/graph/graph').then((res: any) => {
         //     console.log('res', res);
         //     setTimeout(() => {
+        //         // const file = blobToFile(res.data, res.filename, res.type);
         //         const file = blobToFile(res.data, res.filename, res.type);
+        //         console.log('bolbfile', file);
+        //         downloadEvt(res.data, res.filename);
         //         setshowData(file);
         //         setLoading(false);
         //     }, 5000);
@@ -195,9 +198,6 @@ function App() {
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
             if (target && target.files && target.files.length) {
-                // setModelFile(target.files);
-                //『请将模型描述文件.prototxt和参数文件.caffemodel打包成.tar上传』。
-                //fileUploader
                 fileUploader(target.files);
             }
         },
@@ -216,43 +216,27 @@ function App() {
     // * desc: 下载方法
     // * @param url  ：返回数据的blob对象或链接
     // * @param fileName  ：下载后文件名标记
-    const downloadFile = (url: any, name = "What's the fuvk") => {
-        const a = document.createElement('a');
-        a.setAttribute('href', url);
-        a.setAttribute('download', name);
-        // a.setAttribute('target', '_blank');
-        // const clickEvent = document.createEvent('MouseEvents');
-        // clickEvent.initEvent('click', true, true);
-        // a.dispatchEvent(clickEvent);
-        a.click();
-    };
-    // * desc: 下载参数入口
-    // * @param base64  ：返回数据的blob对象或链接
-    // * @param fileName  ：下载后文件名标记
+    // const downloadFile = (url: any, name = "What's the fuvk") => {
+    //     const a = document.createElement('a');
+    //     a.setAttribute('href', url);
+    //     a.setAttribute('download', name);
+    //     a.click();
+    // };
     const downloadFileByBase64 = (baseId: any, fileName: string) => {
         console.log('baseId', baseId, fileName);
 
         if (baseId === undefined || !fileName) return;
-        // const myBlob = dataURLtoBlob(base64);
-        // const myUrl = URL.createObjectURL(myBlob);
-        // downloadFile(myUrl, fileName);
         setLoading(true);
         fetcher(`/inference/download?request_id=${baseId}`, {
-            method: 'POST'
+            method: 'GET'
         }).then(
             (res: any) => {
-                console.log('blobres', res);
-
-                const file = blobToFile(res.data, res.filename, res.type);
-                console.log('bolbfile', file);
-                downloadEvt(file, fileName);
+                console.log('blobres', res, res.data);
+                downloadEvt(res.data, fileName);
                 setLoading(false);
             },
             res => {
-                // debugger
                 setLoading(false);
-                // const newFilesId = filesId + 1;
-                // setFilesId(newFilesId);
             }
         );
     };

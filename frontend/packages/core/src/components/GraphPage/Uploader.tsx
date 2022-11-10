@@ -113,7 +113,7 @@ const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles,
                 onDragLeave={onDragLeave}
             >
                 <Icon type="upload" className="upload-icon" />
-                <span>{t('graph:upload-tip')}</span>
+                {Xpaddlae ? <span>{t('graph:upload-tip2')}</span> : <span>{t('graph:upload-tip')}</span>}
                 <Button type="primary" rounded className="upload-button" onClick={onClick}>
                     {t('graph:upload-model')}
                 </Button>

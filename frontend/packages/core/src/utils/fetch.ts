@@ -130,6 +130,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
     } else {
         let data: Blob;
         try {
+            console.log('datas', res);
             data = await res.blob();
         } catch (e) {
             const t = await logErrorAndReturnT(e);
@@ -138,6 +139,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         const disposition = res.headers.get('Content-Disposition');
         // support safari
         if (!data.arrayBuffer) {
+            console.log('arrayBuffer', data);
             data.arrayBuffer = async () =>
                 new Promise<ArrayBuffer>((resolve, reject) => {
                     const fileReader = new FileReader();
@@ -147,6 +149,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
                     fileReader.readAsArrayBuffer(data);
                 });
         }
+        console.log('datas', data);
         let filename: string | null = null;
         if (disposition && disposition.indexOf('attachment') !== -1) {
             const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);

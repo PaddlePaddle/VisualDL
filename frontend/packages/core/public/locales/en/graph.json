@@ -56,6 +56,7 @@
     "supported-model-list-xpaddle": "ONNX、Caffe、Caffe2",
     "upload-model": "Upload Model",
     "upload-tip": "Click or Drop file here to view neural network models",
+    "upload-tip2": "Click or drag the file to the page to upload the model for model conversion",
     "vertical": "Vertical",
     "zoom-in": "Zoom In",
     "zoom-out": "Zoom Out"
