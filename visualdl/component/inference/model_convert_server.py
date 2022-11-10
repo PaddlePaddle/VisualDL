@@ -43,8 +43,7 @@ class ModelConvertApi(object):
         data = file_handle.stream.read()
         if format not in self.supported_formats:
             raise RuntimeError('Model format {} is not supported. \
-          Only tensorflow, onnx and caffe models are supported now.'.format(
-                format))
+          Only onnx and caffe models are supported now.'.format(format))
         result = {}
         result['from'] = format
         result['to'] = 'paddle'
@@ -56,6 +55,12 @@ class ModelConvertApi(object):
                 fp.flush()
                 try:
                     if format == 'onnx':
+                        try:
+                            import onnx  # noqa: F401
+                        except Exception:
+                            raise RuntimeError(
+                                "[ERROR] onnx is not installed, use \"pip install onnx==1.6.0\"."
+                            )
                         onnx2paddle(fp.name, tmpdirname)
                     elif format == 'caffe':
                         with tempfile.TemporaryDirectory() as unarchivedir:
@@ -78,7 +83,10 @@ class ModelConvertApi(object):
                             caffe2paddle(prototxt_path, weight_path,
                                          tmpdirname, None)
                 except Exception as e:
-                    raise RuntimeError("Convertion error: {}".format(e))
+                    raise RuntimeError(
+                        "[Convertion error] {}.\n Please open an issue at \
+                            https://github.com/PaddlePaddle/X2Paddle/issues to report your problem."
+                        .format(e))
                 with self.lock:
                     origin_dir = os.getcwd()
                     os.chdir(os.path.dirname(tmpdirname))

@@ -11,3 +11,4 @@ pandas
 multiprocess
 packaging
 x2paddle
+rarfile
