@@ -25,6 +25,7 @@ export enum Pages {
     Audio = 'audio',
     Text = 'text',
     Graph = 'graph',
+    ToggleGraph = 'ToggleGraph',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
@@ -37,7 +38,8 @@ export interface Route {
     default?: boolean;
     visible?: boolean;
     path?: string;
-    component?: LazyExoticComponent<FunctionComponent>;
+    // component?: LazyExoticComponent<FunctionComponent>;
+    component?: any;
     children?: Pick<Route, 'id' | 'path' | 'component'>[];
 }
 
@@ -88,6 +90,11 @@ const routes: Route[] = [
                 component: React.lazy(() => import('~/pages/graphStatic'))
             }
         ]
+    },
+    {
+        id: Pages.ToggleGraph,
+        path: '/x2paddle',
+        component: React.lazy(() => import('~/pages/x2paddle'))
     },
     {
         id: Pages.Histogram,

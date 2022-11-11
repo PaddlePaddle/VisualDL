@@ -1,0 +1,12 @@
+{
+    "transformation": "转换",
+    "download": "下载",
+    "convert_before": "Please convert before viewing",
+    "warin-info": "请将模型描述文件.prototxt和参数文件.caffemodel打包成.tar上传",
+    "warin-info2": "该模型文件暂不支持X2Paddle转换",
+    "warin-info3": "请先进行转换,再查看",
+    "warin-info4": "模型已转换,请勿再次点击",
+    "warin-info5": "请上传模型文件并转换",
+    "warin-info6": "模型文件已转换，请勿再次点击",
+    "warin-info7": "请上传模型文件"
+}

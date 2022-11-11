@@ -17,7 +17,7 @@
 // cspell:words pnpify svgs entrypoints
 
 import * as env from './builder/env.js';
-
+import proxy from 'http2-proxy';
 import {fileURLToPath} from 'url';
 import fs from 'fs';
 import path from 'path';
@@ -37,7 +37,8 @@ function isWorkspace() {
 
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
-const TracePath = path.dirname(resolve.sync(cwd, './public/static'));
+const netronPath2 = path.dirname(resolve.sync(cwd, '@visualdl/netron2'));
+
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
@@ -57,6 +58,14 @@ export default {
             match: 'routes',
             src: '.*',
             dest: '/index.html'
+        },
+        {
+            match: 'all',
+            src: '/app/api/.*',
+            dest: (req, res) => {
+                console.log('被拦截了');
+                proxy.web(req, res, {hostname: 'http://10.181.196.14', port: '8040'});
+            }
         }
     ],
     env,
@@ -66,8 +75,6 @@ export default {
     plugins: [
         '@snowpack/plugin-react-refresh',
         '@snowpack/plugin-dotenv',
-        'snowpack-plugin-less',
-        '@snowpack/plugin-sass',
         [
             '@snowpack/plugin-typescript',
             {
@@ -101,8 +108,8 @@ export default {
                         destination: path.join(dest, 'netron/dist')
                     },
                     {
-                        source: [path.join(TracePath, '**/*')],
-                        destination: path.join(dest, 'trace/dist')
+                        source: [path.join(netronPath2, '**/*')],
+                        destination: path.join(dest, 'netron2/dist')
                     },
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],
@@ -118,8 +125,9 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        // knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is','rc-util/es/hooks/useId','rc-util/es/Portal','rc-util/es/Dom/contains','rc-util/es/Dom/css','rc-util/es/getScrollBarSize','rc-util/es/PortalWrapper','rc-select/es/hooks/useId','rc-util/es/Dom/isVisible','rc-util/es/Dom/focus','rc-util/es/Dom/focus']
-        knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client', 'react-is', 'antd']
+        namedExports: ['gl-vec2', 'dagre'],
+        // knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client']
+        knownEntrypoints: ['chai', '@testing-library/react']
     },
     buildOptions: {
         out: 'dist',
