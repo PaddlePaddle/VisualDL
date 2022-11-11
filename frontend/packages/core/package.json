@@ -56,7 +56,6 @@
         "echarts-gl": "^2.0.9",
         "eventemitter3": "4.0.7",
         "file-saver": "2.0.5",
-        "http2-proxy": "^5.0.53",
         "i18next": "20.6.0",
         "i18next-browser-languagedetector": "6.1.2",
         "i18next-fetch-backend": "3.0.0",

@@ -7818,11 +7818,6 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-http2-proxy@^5.0.53:
-  version "5.0.53"
-  resolved "https://registry.npmmirror.com/http2-proxy/-/http2-proxy-5.0.53.tgz#fc6cb07d2bb977a388ebeec4449557f2011e5a1f"
-  integrity sha512-k9OUKrPWau/YeViJGv5peEFgSGPE2n8CDyk/G3f+JfaaJzbFMPAK5PJTd99QYSUvgUwVBGNbZJCY/BEb+kUZNQ==
-
 http2-wrapper@^1.0.0-beta.5.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/http2-wrapper/-/http2-wrapper-1.0.3.tgz#b8f55e0c1f25d4ebd08b3b0c2c079f9590800b3d"

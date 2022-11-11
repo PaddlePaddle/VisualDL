@@ -17,7 +17,6 @@
 // cspell:words pnpify svgs entrypoints
 
 import * as env from './builder/env.js';
-import proxy from 'http2-proxy';
 import {fileURLToPath} from 'url';
 import fs from 'fs';
 import path from 'path';
@@ -58,14 +57,6 @@ export default {
             match: 'routes',
             src: '.*',
             dest: '/index.html'
-        },
-        {
-            match: 'all',
-            src: '/app/api/.*',
-            dest: (req, res) => {
-                console.log('被拦截了');
-                proxy.web(req, res, {hostname: 'http://10.181.196.14', port: '8040'});
-            }
         }
     ],
     env,
