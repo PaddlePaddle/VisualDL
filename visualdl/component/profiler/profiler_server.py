@@ -59,6 +59,14 @@ class ProfilerApi(object):
         lang = lang.lower()
         return self._reader.get_descriptions(lang)
 
+    def component_tabs(self):
+        '''
+        Get all component tabs supported by readers in Api.
+        '''
+        tabs = set()
+        tabs.update(self._reader.component_tabs(update=True))
+        return tabs
+
     @result()
     def overview_environment(self, run, worker, span):
         run_manager = self._reader.get_run_manager(run)
@@ -382,7 +390,8 @@ def create_profiler_api_call(logdir):
         'comparison/phase_table_inner': (api.comparison_phase_table_inner, [
             "base_run", "base_worker", "base_span", "exp_run", "exp_worker",
             "exp_span", "phase_name"
-        ])
+        ]),
+        'component_tabs': (api.component_tabs, [])
     }
 
     def call(path: str, args):

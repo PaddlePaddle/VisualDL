@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
-import sys
 import socket
+import sys
 from argparse import ArgumentParser
 
 from visualdl import __version__
-from visualdl.server.log import (init_logger, logger)
+from visualdl.server.log import init_logger
+from visualdl.server.log import logger
 
 default_host = None
 default_port = 8040
@@ -45,6 +45,7 @@ class DefaultArgs(object):
         self.theme = args.get('theme', None)
         self.dest = args.get('dest', '')
         self.behavior = args.get('behavior', '')
+        self.component_tabs = args.get('component_tabs', None)
 
 
 def get_host(host=default_host, port=default_port):
@@ -72,6 +73,20 @@ def validate_args(args):
     if args.theme is not None and args.theme not in support_themes:
         logger.error('Theme {} is not support.'.format(args.theme))
         sys.exit(-1)
+
+    # input unsupported component tab name
+    supported_tabs = [
+        'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram',
+        'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve',
+        'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server'
+    ]
+    if args.component_tabs is not None:
+        for component_tab in args.component_tabs:
+            if component_tab not in supported_tabs:
+                logger.error(
+                    'Component_tab {} is not support. Please choose tabs \
+                    in {}'.format(component_tab, supported_tabs))
+                sys.exit(-1)
 
 
 def format_args(args):
@@ -112,6 +127,7 @@ class ParseArgs(object):
         self.theme = args.theme
         self.dest = args.dest
         self.behavior = args.behavior
+        self.component_tabs = args.component_tabs
 
 
 def parse_args():
@@ -125,10 +141,14 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--logdir",
+        "--logdir", action="store", nargs="+", help="log file directory")
+
+    parser.add_argument(
+        "--component_tabs",
         action="store",
         nargs="+",
-        help="log file directory")
+        help="component tabs presented in html page.")
+
     parser.add_argument(
         "-p",
         "--port",
@@ -155,7 +175,8 @@ def parse_args():
         dest="cache_timeout",
         type=float,
         default=default_cache_timeout,
-        help="memory cache timeout duration in seconds (default: %(default)s)", )
+        help="memory cache timeout duration in seconds (default: %(default)s)",
+    )
     parser.add_argument(
         "-L",
         "--language",
@@ -169,27 +190,23 @@ def parse_args():
         action="store",
         dest="public_path",
         default=None,
-        help="set public path"
-    )
+        help="set public path")
     parser.add_argument(
         "--api-only",
         action="store_true",
         dest="api_only",
         default=False,
-        help="serve api only"
-    )
+        help="serve api only")
     parser.add_argument(
         "--verbose",
         "-v",
         action="count",
         default=0,
-        help="set log level, use -vvv... to get more information"
-    )
+        help="set log level, use -vvv... to get more information")
     parser.add_argument(
         "--version",
         action="version",
-        version="%(prog)s {}".format(__version__)
-    )
+        version="%(prog)s {}".format(__version__))
     parser.add_argument(
         "--product",
         type=str,
@@ -201,25 +218,16 @@ def parse_args():
         action="store_false",
         dest="telemetry",
         default=True,
-        help="disable telemetry"
-    )
+        help="disable telemetry")
     parser.add_argument(
         "--theme",
         action="store",
         dest="theme",
         default=None,
         choices=support_themes,
-        help="set theme"
-    )
-    parser.add_argument(
-        'dest',
-        nargs='?',
-        help='set destination for log'
-    )
-    parser.add_argument(
-        "behavior",
-        nargs='?'
-    )
+        help="set theme")
+    parser.add_argument('dest', nargs='?', help='set destination for log')
+    parser.add_argument("behavior", nargs='?')
 
     args = parser.parse_args()
 
