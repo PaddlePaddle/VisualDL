@@ -84,8 +84,8 @@ def validate_args(args):
         for component_tab in args.component_tabs:
             if component_tab not in supported_tabs:
                 logger.error(
-                    'Component_tab {} is not support. Please choose tabs \
-                    in {}'.format(component_tab, supported_tabs))
+                    'Component_tab {} is not support. Please choose tabs in {}'
+                    .format(component_tab, supported_tabs))
                 sys.exit(-1)
 
 
