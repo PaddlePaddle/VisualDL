@@ -33,6 +33,7 @@ import styled from 'styled-components';
 import useClassNames from '~/hooks/useClassNames';
 import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
+import {fetcher} from '~/utils/fetch';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -263,7 +264,7 @@ const SubNav: FunctionComponent<{
 const Navbar: FunctionComponent = () => {
     const {t, i18n} = useTranslation('common');
     const {pathname} = useLocation();
-
+    const [navList, setNavlist] = useState<string[]>([]);
     const changeLanguage = useCallback(() => {
         const language = i18n.language;
         const allLanguages = (i18n.options.supportedLngs || []).filter(lng => lng !== 'cimode');
@@ -276,8 +277,20 @@ const Navbar: FunctionComponent = () => {
 
     const [components] = useComponents();
 
-    const componentsInNavbar = useMemo(() => components.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [components]);
-    const flattenMoreComponents = useMemo(() => flatten(components.slice(MAX_ITEM_COUNT_IN_NAVBAR)), [components]);
+    const newcomponents = useMemo(() => {
+        const Components = [];
+        for (const item of components) {
+            if (navList.includes(item.id)) {
+                Components.push(item);
+            }
+        }
+        return Components;
+    }, [navList, components]);
+    const componentsInNavbar = useMemo(() => newcomponents.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [newcomponents]);
+    const flattenMoreComponents = useMemo(
+        () => flatten(newcomponents.slice(MAX_ITEM_COUNT_IN_NAVBAR)),
+        [newcomponents]
+    );
     const componentsInMoreMenu = useMemo(
         () =>
             flattenMoreComponents.map(item => ({
@@ -287,6 +300,12 @@ const Navbar: FunctionComponent = () => {
         [currentPath, flattenMoreComponents]
     );
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
+    useEffect(() => {
+        // setLoading(true);
+        fetcher('/component_tabs').then((res: any) => {
+            setNavlist(res);
+        });
+    }, []);
     useEffect(() => {
         setNavItemsInNavbar(oldItems =>
             componentsInNavbar.map(item => {
@@ -325,7 +344,7 @@ const Navbar: FunctionComponent = () => {
                 };
             })
         );
-    }, [componentsInNavbar, currentPath]);
+    }, [componentsInNavbar, currentPath, navList]);
 
     return (
         <Nav>

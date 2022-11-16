@@ -16,13 +16,12 @@
 
 // cSpell:words pageview inited
 import 'antd/dist/antd.css';
-import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo} from 'react';
-import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
+import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo, useState} from 'react';
+import {Redirect, Route, BrowserRouter as Router, Switch, useLocation, useHistory} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';
 import {actions, selectors} from '~/store';
 import {headerHeight, position, size, zIndexes, setRem} from '~/utils/style';
 import {useDispatch, useSelector} from 'react-redux';
-
 import ErrorBoundary from '~/components/ErrorBoundary';
 import ErrorPage from '~/pages/error';
 import {Helmet} from 'react-helmet';
@@ -33,7 +32,7 @@ import {ToastContainer} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 import routes from '~/routes';
 import styled from 'styled-components';
-import {useTranslation} from 'react-i18next';
+import {setDefaults, useTranslation} from 'react-i18next';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 
@@ -48,7 +47,6 @@ const Header = styled.header`
     ${position('fixed', 0, 0, null, 0)}
 `;
 
-const defaultRoute = routes.find(route => route.default);
 const routers = routes.reduce<Omit<typeof routes[number], 'children'>[]>((m, route) => {
     if (route.children) {
         m.push(...route.children);
@@ -78,8 +76,10 @@ const Telemetry: FunctionComponent = () => {
 };
 
 const App: FunctionComponent = () => {
+    const history = useHistory();
     const {t, i18n} = useTranslation('errors');
-
+    const [navList, setNavlist] = useState<string[]>([]);
+    const [defaultRoute, setDefaultRoute] = useState('');
     const dir = useMemo(() => (i18n.language ? i18n.dir(i18n.language) : ''), [i18n]);
 
     const dispatch = useDispatch();
@@ -107,7 +107,25 @@ const App: FunctionComponent = () => {
             };
         }
     }, [toggleTheme]);
-
+    useEffect(() => {
+        // setLoading(true);
+        fetcher('/component_tabs').then((res: any) => {
+            setNavlist(res);
+        });
+    }, []);
+    useEffect(() => {
+        // const defaultRoute = routes;
+        if (navList.length > 0) {
+            for (const route of routes) {
+                // debugger;
+                if (navList.includes(route.id)) {
+                    // debugger;
+                    // history.push(`/${route.path}`)
+                    setDefaultRoute(route.id);
+                }
+            }
+        }
+    }, [navList, history]);
     return (
         <div className="app">
             <Helmet defaultTitle="VisualDL" titleTemplate="%s - VisualDL">
@@ -120,28 +138,42 @@ const App: FunctionComponent = () => {
                     revalidateOnReconnect: false
                 }}
             >
-                <Main>
-                    <Router basename={BASE_URI || '/'}>
-                        <Telemetry />
-                        <Header>
-                            <Navbar />
-                        </Header>
-                        <ErrorBoundary fallback={<ErrorPage />}>
-                            <Suspense fallback={<Progress />}>
-                                <Switch>
-                                    <Redirect exact from="/" to={defaultRoute?.path ?? '/index'} />
-                                    {routers.map(route => (
-                                        <Route key={route.id} path={route.path} component={route.component} />
-                                    ))}
-                                    <Route path="*">
-                                        <ErrorPage title={t('errors:page-not-found')} />
-                                    </Route>
-                                </Switch>
-                            </Suspense>
-                        </ErrorBoundary>
-                    </Router>
-                </Main>
-                <ToastContainer />
+                {navList.length && defaultRoute && (
+                    <Main>
+                        <Router basename={BASE_URI || '/'}>
+                            <Telemetry />
+                            <Header>
+                                <Navbar />
+                            </Header>
+                            <ErrorBoundary fallback={<ErrorPage />}>
+                                <Suspense fallback={<Progress />}>
+                                    <Switch>
+                                        <Redirect exact from="/" to={defaultRoute ?? '/index'} />
+                                        {routers.map(
+                                            route =>
+                                                navList.includes(route.id) && (
+                                                    <Route
+                                                        key={route.id}
+                                                        path={route.path}
+                                                        component={route.component}
+                                                    />
+                                                )
+                                        )}
+                                        <Route path="*">
+                                            <ErrorPage title={t('errors:page-not-found')} />
+                                        </Route>
+                                    </Switch>
+                                </Suspense>
+                            </ErrorBoundary>
+                        </Router>
+                    </Main>
+                )}
+                <ToastContainer
+                    autoClose={100000}
+                    style={{wordBreak: 'break-all'}}
+                    draggable={false}
+                    closeOnClick={false}
+                />
             </SWRConfig>
         </div>
     );
