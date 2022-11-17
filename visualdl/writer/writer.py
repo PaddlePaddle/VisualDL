@@ -12,17 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
 import os
 import time
+
 import numpy as np
-from visualdl.writer.record_writer import RecordFileWriter
+
+from visualdl.component.base_component import audio
+from visualdl.component.base_component import embedding
+from visualdl.component.base_component import histogram
+from visualdl.component.base_component import hparam
+from visualdl.component.base_component import image
+from visualdl.component.base_component import meta_data
+from visualdl.component.base_component import pr_curve
+from visualdl.component.base_component import roc_curve
+from visualdl.component.base_component import scalar
+from visualdl.component.base_component import text
+from visualdl.component.graph import translate_graph
+from visualdl.io import bfile
 from visualdl.server.log import logger
-from visualdl.utils.img_util import merge_images
 from visualdl.utils.figure_util import figure_to_image
+from visualdl.utils.img_util import merge_images
 from visualdl.utils.md5_util import md5
-from visualdl.component.base_component import scalar, image, embedding, audio, \
-    histogram, pr_curve, roc_curve, meta_data, text, hparam
+from visualdl.writer.record_writer import RecordFileWriter
 
 
 class DummyFileWriter(object):
@@ -133,7 +144,11 @@ class LogWriter(object):
     def file_name(self):
         return self._file_writer.get_filename()
 
-    def add_meta(self, tag='meta_data_tag', display_name='', step=0, walltime=None):
+    def add_meta(self,
+                 tag='meta_data_tag',
+                 display_name='',
+                 step=0,
+                 walltime=None):
         """Add a meta to vdl record file.
 
         Args:
@@ -146,8 +161,11 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            meta_data(tag=tag, display_name=display_name, step=step,
-                      walltime=walltime))
+            meta_data(
+                tag=tag,
+                display_name=display_name,
+                step=step,
+                walltime=walltime))
 
     def add_scalar(self, tag, value, step, walltime=None):
         """Add a scalar to vdl record file.
@@ -191,8 +209,12 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            image(tag=tag, image_array=img, step=step, walltime=walltime,
-                  dataformats=dataformats))
+            image(
+                tag=tag,
+                image_array=img,
+                step=step,
+                walltime=walltime,
+                dataformats=dataformats))
 
     def add_figure(self, tag, figure, step, walltime=None):
         """Add an figure to vdl record file.
@@ -234,14 +256,20 @@ class LogWriter(object):
         """
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
-        walltime = round(
-            time.time() * 1000) if walltime is None else walltime
+        walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             text(
                 tag=tag, text_string=text_string, step=step,
                 walltime=walltime))
 
-    def add_image_matrix(self, tag, imgs, step, rows=-1, scale=1.0, walltime=None, dataformats="HWC"):
+    def add_image_matrix(self,
+                         tag,
+                         imgs,
+                         step,
+                         rows=-1,
+                         scale=1.0,
+                         walltime=None,
+                         dataformats="HWC"):
         """Add an image to vdl record file.
 
         Args:
@@ -264,16 +292,24 @@ class LogWriter(object):
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
-        img = merge_images(imgs=imgs, dataformats=dataformats, scale=scale, rows=rows)
-        self.add_image(tag=tag,
-                       img=img,
-                       step=step,
-                       walltime=walltime,
-                       dataformats=dataformats)
+        img = merge_images(
+            imgs=imgs, dataformats=dataformats, scale=scale, rows=rows)
+        self.add_image(
+            tag=tag,
+            img=img,
+            step=step,
+            walltime=walltime,
+            dataformats=dataformats)
 
-    def add_embeddings(self, tag, mat=None, metadata=None,
-                       metadata_header=None, walltime=None, labels=None,
-                       hot_vectors=None, labels_meta=None):
+    def add_embeddings(self,
+                       tag,
+                       mat=None,
+                       metadata=None,
+                       metadata_header=None,
+                       walltime=None,
+                       labels=None,
+                       hot_vectors=None,
+                       labels_meta=None):
         """Add embeddings to vdl record file.
 
         Args:
@@ -407,12 +443,7 @@ class LogWriter(object):
                 step=step,
                 walltime=walltime))
 
-    def add_histogram(self,
-                      tag,
-                      values,
-                      step,
-                      walltime=None,
-                      buckets=10):
+    def add_histogram(self, tag, values, step, walltime=None, buckets=10):
         """Add an histogram to vdl record file.
 
         Args:
@@ -522,8 +553,7 @@ class LogWriter(object):
                 step=step,
                 walltime=walltime,
                 num_thresholds=num_thresholds,
-                weights=weights
-                ))
+                weights=weights))
 
     def add_roc_curve(self,
                       tag,
@@ -564,8 +594,59 @@ class LogWriter(object):
                 step=step,
                 walltime=walltime,
                 num_thresholds=num_thresholds,
-                weights=weights
-                ))
+                weights=weights))
+
+    def add_graph(self, model, input_spec, verbose=False):
+        """
+        Add a model graph to vdl graph file.
+        Args:
+            model (paddle.nn.Layer): Model to draw.
+            input_spec (list[paddle.static.InputSpec|Tensor]): Describes the input \
+                of the saved model's forward arguments.
+            verbose (bool): Whether to print some graph statistic information in console.
+        Note:
+            Paddlepaddle is required to use add_graph interface.
+        Example:
+            import paddle
+            import paddle.nn as nn
+            import paddle.nn.functional as F
+            from visualdl import LogWriter
+            class MyNet(nn.Layer):
+                def __init__(self):
+                    super(MyNet, self).__init__()
+                    self.conv1 = nn.Conv2D(in_channels=1, out_channels=20, kernel_size=5, stride=1, padding=2)
+                    self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
+                    self.conv2 = nn.Conv2D(in_channels=20, out_channels=20, kernel_size=5, stride=1, padding=2)
+                    self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
+                    self.fc = nn.Linear(in_features=980, out_features=10)
+                def forward(self, inputs):
+                    x = self.conv1(inputs)
+                    x = F.relu(x)
+                    x = self.max_pool1(x)
+                    x = self.conv2(x)
+                    x = F.relu(x)
+                    x = self.max_pool2(x)
+                    x = paddle.reshape(x, [x.shape[0], -1])
+                    x = self.fc(x)
+                    return x
+            net = MyNet()
+            with LogWriter(logdir="./log/graph_test/") as writer:
+                writer.add_graph(
+                    model=net,
+                    input_spec=[paddle.static.InputSpec([-1, 1, 28, 28], 'float32')],
+                    verbose=True)
+        """
+        try:
+            result = translate_graph(model, input_spec, verbose)
+        except Exception as e:
+            print("Failed to save model graph, error: {}".format(e))
+            return
+        graph_file_name = bfile.join(
+            self.logdir,
+            "vdlgraph.%010d.log%s" % (time.time(), self._filename_suffix))
+        writer = bfile.BFile(graph_file_name, "w")
+        writer.write(result)
+        writer.close()
 
     def flush(self):
         """Flush all data in cache to disk.

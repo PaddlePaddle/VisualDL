@@ -250,9 +250,17 @@ app.run(logdir="./log")
 
 ### Graph
 
-一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向。
+一键可视化模型的网络结构。可查看模型属性、节点信息、节点输入输出等，并支持节点搜索，辅助用户快速分析模型结构与了解数据流向，覆盖动态图与静态图两种格式。
+- 动态图
+
 <p align="center">
-<img src="https://user-images.githubusercontent.com/48054808/84483052-5acdd980-accb-11ea-8519-1608da7ee698.png" width="85%"/>
+<img src="https://user-images.githubusercontent.com/22424850/175770313-2509f7e9-041a-4654-9a0f-45f4bd76e1e8.gif" width="85%"/>
+</p>
+
+- 静态图
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/175770315-11e2c3f5-141c-4f05-be86-0e1e2785e11f.gif" width="85%"/>
 </p>
 
 ### Histogram
@@ -293,6 +301,12 @@ app.run(logdir="./log")
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/28444161/119247155-e9c0c280-bbb9-11eb-8175-58a9c7657a9c.gif" width="85%"/>
+</p>
+
+### Profiler
+通过多个视图可视化性能分析的数据，辅助用户定位性能瓶颈并进行优化。可参考[使用VisualDL做性能分析](./profiler/README_CN.md)。
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="85%"/>
 </p>
 
 ### VDL.service

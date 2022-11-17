@@ -511,48 +511,118 @@ visualdl --logdir ./log --port 8080
 
 ## Graph--网络结构组件
 
+
 ### 介绍
 
-Graph组件一键可视化模型的网络结构。用于查看模型属性、节点信息、节点输入输出等，并进行节点搜索，协助开发者们快速分析模型结构与了解数据流向。
+Graph组件一键可视化模型的网络结构。用于查看模型属性、节点信息、节点输入输出等，并进行节点搜索，协助开发者们快速分析模型结构与了解数据流向，覆盖动态图与静态图两种格式。
+
+### 记录接口
+
+Graph组件的记录接口如下：
+
+```python
+add_graph(model, input_spec, verbose=False):
+```
+
+接口参数说明如下：
+
+| 参数           | 格式                  | 含义                                        |
+| -------------- | --------------------- | ------------------------------------------- |
+| model          | paddle.nn.Layer              | Paddle的动态图模型 |
+| input_spec     | list\[paddle.static.InputSpec\|Tensor\]                     | 用于描述模型[输入的参数](https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/static/InputSpec_cn.html)        |
+| verbose           | bool             | 是否在终端打印模型的节点统计信息       |
+
+**注意**
+
+使用add_graph接口需要安装飞桨paddlepaddle, 安装步骤请参考[飞桨官方网站](https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html)。
 
 ### Demo
-共有两种启动方式：
+下面展示了使用 Graph 组件记录飞桨动态图模型的示例，代码见[Graph组件](https://github.com/PaddlePaddle/VisualDL/blob/develop/demo/components/graph_test.py)
 
-- 前端启动Graph：
+```python
+import paddle
+import paddle.nn as nn
+import paddle.nn.functional as F
 
-  - 如只需使用Graph，无需添加任何参数，在命令行执行`visualdl`后即可启动。
-  - 如果同时需使用其他功能，在命令行指定日志文件路径（以`./log`为例），即可启动：
-
-  ```shell
-  visualdl --logdir ./log --port 8080
-  ```
+from visualdl import LogWriter
 
 
-- 后端启动Graph：
+class MyNet(nn.Layer):
+    def __init__(self):
+        super(MyNet, self).__init__()
+        self.conv1 = nn.Conv2D(
+            in_channels=1, out_channels=20, kernel_size=5, stride=1, padding=2)
+        self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
+        self.conv2 = nn.Conv2D(
+            in_channels=20,
+            out_channels=20,
+            kernel_size=5,
+            stride=1,
+            padding=2)
+        self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
+        self.fc = nn.Linear(in_features=980, out_features=10)
 
-  - 在命令行加入参数`--model`并指定**模型文件**路径（非文件夹路径），即可启动：
+    def forward(self, inputs):
+        x = self.conv1(inputs)
+        x = F.relu(x)
+        x = self.max_pool1(x)
+        x = self.conv2(x)
+        x = F.relu(x)
+        x = self.max_pool2(x)
+        x = paddle.reshape(x, [x.shape[0], -1])
+        x = self.fc(x)
+        return x
 
-  ```shell
-  visualdl --model ./log/model --port 8080
-  ```
-*Graph目前只支持可视化网络结构格式的模型文件（如__model__（注意此处为两个下划线'_'））
+
+net = MyNet()
+with LogWriter(logdir="./log/graph_test/") as writer:
+    writer.add_graph(
+        model=net,
+        input_spec=[paddle.static.InputSpec([-1, 1, 28, 28], 'float32')],
+        verbose=True)
+```
+
+运行上述程序后，在命令行执行
+
+```shell
+visualdl --logdir ./log/graph_test/ --port 8080
+```
+
+接着在浏览器打开`http://127.0.0.1:8080`，即可查看Graph
 
    
-启动后即可查看网络结构可视化：
+启动后即可查看飞桨动态图网络结构可视化：
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84490149-51e20580-acd5-11ea-9663-1f156892c0e0.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/22424850/175808777-5bc24d7a-9115-44d0-8709-a82a3e341b3d.gif" width="80%"/>
 </p>
+
+**注意**
+
+VisualDL之前的版本支持通过--model参数直接指定模型结构文件，现在仍然保持这一选项，
+通过`add_graph`接口导出的动态图模型文件（文件名包含"vdlgraph"), 在动态图页面展示，
+并在页面中以'manual_input_model'来表示通过该参数指定的模型。其余所支持的文件格式在静态图页面中展示。
+
+例如
+```shell
+visualdl --model ./log/model.pdmodel --port 8080
+```
+将展示在静态图页面。
+
+```shell
+visualdl --model ./log/vdlgraph.1655783158.log --port 8080
+```
+将展示在动态图页面。
+
 
 ### 功能操作说明
 
-- 一键上传模型
-  - 支持模型格式：PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite
-  - 实验性支持模型格式：TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow
-
+当前Graph页面分为动态图和静态图两个页面。其中动态图页面用来展示通过add_graph接口导出的飞桨动态图模型结构，静态图页面用来展示飞桨静态图模型结构（通过飞桨的[paddle.jit.save](https://www.paddlepaddle.org.cn/documentation/docs/zh/api/paddle/jit/save_cn.html)导出的后缀名为pdmodel的文件）及其它可支持框架的模型。
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/48054808/84487396-44c31780-acd1-11ea-831a-1632e636613d.png" width="80%"/>
+  <img src="https://user-images.githubusercontent.com/22424850/175809463-56c0801a-744e-49ed-97bb-66122a351ff7.png" width="80%"/>
 </p>
+
+**通用功能**:
 
 - 支持上下左右任意拖拽模型、放大和缩小模型
 
@@ -598,6 +668,44 @@ Graph组件一键可视化模型的网络结构。用于查看模型属性、节
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/48054808/84487998-27db1400-acd2-11ea-83d7-5d75832ef41d.png" width="25%"/>
+</p>
+
+**动态图页面特有功能**:
+
+- 展开和折叠指定节点
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175809498-753ce2de-fc97-4050-88db-d70f7de47086.png" width="80%"/>
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175809509-04232d9f-572c-4503-a58f-22d5c1e17e5b.png" width="80%"/>
+</p>
+
+- 一键全展开和全折叠
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175809551-67f67552-59b7-4aca-a1cc-fe5606e7e512.png" width="80%"/>
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175809610-d07c0b15-d1bd-4542-aacd-29b4d2ba8fcb.png" width="80%"/>
+</p>
+
+- 飞桨API链接功能
+
+  对于使用paddle.nn中的组件搭建的节点，可以使用alt+鼠标点击的方式跳转到官网的API说明文档。
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175809570-241db056-0b41-4e3a-828d-376a011a4645.png" width="80%"/>
+</p>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/175809574-8c173b88-ed27-4c29-a3e1-a3887d2d3107.png" width="80%"/>
+</p>
+
+**静态图页面特有功能**:
+
+- 一键上传模型
+  - 支持模型格式：PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite
+  - 实验性支持模型格式：TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/48054808/84487396-44c31780-acd1-11ea-831a-1632e636613d.png" width="80%"/>
 </p>
 
 ## Histogram--直方图组件

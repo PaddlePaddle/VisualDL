@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2014 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js"></script>
+    <script>
+        'use strict';
+
+        function onTraceViewerImportFail() {
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.textContent =
+                    'tracing/bin/trace_viewer_full.html is missing. ' +
+                    'Run vulcanize_trace_viewer from $TRACE_VIEWER and reload.';
+            });
+        }
+    </script>
+    <link rel="import" href="trace_viewer_full.html" onerror="onTraceViewerImportFail(event)">
+
+    <style>
+        html,
+        body {
+            box-sizing: border-box;
+            overflow: hidden;
+            margin: 0px;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #trace-viewer {
+            width: 100%;
+            height: 100%;
+        }
+
+        #trace-viewer:focus {
+            outline: none;
+        }
+    </style>
+    <script>
+        'use strict';
+
+        (function () {
+            let viewer;
+            let name;
+            let model;
+
+            // You can set this to true if you want to hide the WebComponentsV0 polyfill
+            // warning.
+            window.__hideTraceViewerPolyfillWarning = true;
+
+            window.addEventListener("message", event => {
+                const data = event.data || {}
+                // console.log(data)
+                // name = data.name || 'unknown'
+                console.log('datas',data)
+                // name = data.name || 'unknown'
+                name = 'traceViewers'
+                onResult(data.data)
+            })
+
+            function onResult(result) {
+                model = new tr.Model();
+                const i = new tr.importer.Import(model);
+                const p = i.importTracesWithProgressDialog([result]);
+                p.then(onModelLoaded, onImportFail);
+            }
+
+            function onModelLoaded() {
+                viewer.model = model;
+                viewer.viewTitle = name;
+            }
+
+            function onImportFail() {
+                const overlay = new tr.ui.b.Overlay();
+                overlay.textContent = `Import '${name}' failed`;
+                overlay.title = 'Import error';
+                overlay.visible = true;
+            }
+
+            document.addEventListener('WebComponentsReady', function () {
+                const container = document.createElement('track-view-container');
+                container.id = 'track_view_container';
+
+                viewer = document.createElement('tr-ui-timeline-view');
+                viewer.track_view_container = container;
+                Polymer.dom(viewer).appendChild(container);
+
+                viewer.id = 'trace-viewer';
+                viewer.globalMode = true;
+                Polymer.dom(document.body).appendChild(viewer);
+
+                if (window.parent) {
+                  window.parent.postMessage({ msg: 'ready' }, '*')
+                }
+            });
+        }());
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

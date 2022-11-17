@@ -17,9 +17,8 @@
 // cSpell:words actived nextcode
 
 const view = require('./view');
-
+const view2 = require('./view2');
 const host = {};
-
 host.BrowserHost = class {
     constructor() {
         window.eval = () => {
@@ -54,7 +53,6 @@ host.BrowserHost = class {
         this._view = view;
         return Promise.resolve();
     }
-
     start() {
         window.addEventListener(
             'message',
@@ -64,12 +62,19 @@ host.BrowserHost = class {
                     const type = originalData.type;
                     const data = originalData.data;
                     switch (type) {
+                        // 在此书添加一个this._view的事件传递Graph页面过来的数据
                         case 'change-files':
                             return this._changeFiles(data);
                         case 'zoom-in':
                             return this._view.zoomIn();
                         case 'zoom-out':
                             return this._view.zoomOut();
+                        case 'select-item':
+                            return this._view.selectItem(data);
+                        case 'toggle-Language':
+                            return this._view.toggleLanguage(data);
+                        case 'isAlt':
+                            return this._view.changeAlt(data);
                         case 'zoom-reset':
                             return this._view.resetZoom();
                         case 'toggle-attributes':
@@ -78,6 +83,8 @@ host.BrowserHost = class {
                             return this._view.toggleInitializers(data);
                         case 'toggle-names':
                             return this._view.toggleNames(data);
+                        case 'toggle-KeepData':
+                            return this._view.toggleKeepData(data);
                         case 'toggle-direction':
                             return this._view.toggleDirection(data);
                         case 'toggle-theme':
@@ -86,6 +93,10 @@ host.BrowserHost = class {
                             return this._view.export(`${document.title}.${data}`);
                         case 'change-graph':
                             return this._view.changeGraph(data);
+                        case 'change-allGraph':
+                            return this._view.changeAllGrap(data);
+                        case 'change-select':
+                            return this._view.changeSelect(data);
                         case 'search':
                             return this._view.find(data);
                         case 'select':
@@ -116,7 +127,16 @@ host.BrowserHost = class {
     }
 
     status(status) {
+        // 反传回去
         this.message('status', status);
+    }
+    selectNodeId(nodeInfo) {
+        // 反传回去
+        this.message('nodeId', nodeInfo);
+    }
+    selectItems(item) {
+        // 反传回去
+        this.message('selectItem', item);
     }
 
     error(message, detail) {
@@ -498,4 +518,14 @@ class BrowserFileContext {
     }
 }
 
-window.__view__ = new view.View(new host.BrowserHost());
+function getCaption(obj) {
+    let index = obj.lastIndexOf('/'); //获取-后边的字符串
+    let newObj = obj.substring(index + 1, obj.length);
+    return newObj;
+}
+const hash = getCaption(document.referrer);
+if (hash === 'graphStatic') {
+    window.__view__ = new view2.View(new host.BrowserHost());
+} else {
+    window.__view__ = new view.View(new host.BrowserHost());
+}
