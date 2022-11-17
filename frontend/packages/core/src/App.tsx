@@ -76,9 +76,7 @@ const Telemetry: FunctionComponent = () => {
 };
 
 const App: FunctionComponent = () => {
-    const history = useHistory();
     const {t, i18n} = useTranslation('errors');
-    const [navList, setNavlist] = useState<string[]>([]);
     const [defaultRoute, setDefaultRoute] = useState('');
     const dir = useMemo(() => (i18n.language ? i18n.dir(i18n.language) : ''), [i18n]);
 
@@ -107,25 +105,6 @@ const App: FunctionComponent = () => {
             };
         }
     }, [toggleTheme]);
-    useEffect(() => {
-        // setLoading(true);
-        fetcher('/component_tabs').then((res: any) => {
-            setNavlist(res);
-        });
-    }, []);
-    useEffect(() => {
-        // const defaultRoute = routes;
-        if (navList.length > 0) {
-            for (const route of routes) {
-                // debugger;
-                if (navList.includes(route.id)) {
-                    // debugger;
-                    // history.push(`/${route.path}`)
-                    setDefaultRoute(route.id);
-                }
-            }
-        }
-    }, [navList, history]);
     return (
         <div className="app">
             <Helmet defaultTitle="VisualDL" titleTemplate="%s - VisualDL">
@@ -138,36 +117,28 @@ const App: FunctionComponent = () => {
                     revalidateOnReconnect: false
                 }}
             >
-                {navList.length && defaultRoute && (
-                    <Main>
-                        <Router basename={BASE_URI || '/'}>
-                            <Telemetry />
-                            <Header>
-                                <Navbar />
-                            </Header>
-                            <ErrorBoundary fallback={<ErrorPage />}>
-                                <Suspense fallback={<Progress />}>
-                                    <Switch>
-                                        <Redirect exact from="/" to={defaultRoute ?? '/index'} />
-                                        {routers.map(
-                                            route =>
-                                                navList.includes(route.id) && (
-                                                    <Route
-                                                        key={route.id}
-                                                        path={route.path}
-                                                        component={route.component}
-                                                    />
-                                                )
-                                        )}
-                                        <Route path="*">
-                                            <ErrorPage title={t('errors:page-not-found')} />
-                                        </Route>
-                                    </Switch>
-                                </Suspense>
-                            </ErrorBoundary>
-                        </Router>
-                    </Main>
-                )}
+                <Main>
+                    <Router basename={BASE_URI || '/'}>
+                        <Telemetry />
+                        <Header>
+                            <Navbar />
+                        </Header>
+                        <ErrorBoundary fallback={<ErrorPage />}>
+                            <Suspense fallback={<Progress />}>
+                                <Switch>
+                                    <Redirect exact from="/" to={defaultRoute ?? '/index'} />
+                                    {routers.map(route => (
+                                        <Route key={route.id} path={route.path} component={route.component} />
+                                    ))}
+                                    <Route path="*">
+                                        <ErrorPage title={t('errors:page-not-found')} />
+                                    </Route>
+                                </Switch>
+                            </Suspense>
+                        </ErrorBoundary>
+                    </Router>
+                </Main>
+
                 <ToastContainer
                     autoClose={100000}
                     style={{wordBreak: 'break-all'}}

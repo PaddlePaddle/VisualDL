@@ -17,6 +17,7 @@
 // cspell:words cimode
 
 import {Link, LinkProps, useLocation} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import {border, borderRadius, rem, size, transitionProps, triangle} from '~/utils/style';
 
@@ -262,6 +263,7 @@ const SubNav: FunctionComponent<{
 );
 
 const Navbar: FunctionComponent = () => {
+    const history = useHistory();
     const {t, i18n} = useTranslation('common');
     const {pathname} = useLocation();
     const [navList, setNavlist] = useState<string[]>([]);
@@ -306,6 +308,19 @@ const Navbar: FunctionComponent = () => {
             setNavlist(res);
         });
     }, []);
+    useEffect(() => {
+        // const defaultRoute = routes;
+        if (navList.length > 0) {
+            for (const route of routes) {
+                // debugger;
+                if (navList.includes(route.id)) {
+                    // debugger;
+                    history.push(`/${route.id}`);
+                    // setDefaultRoute(route.id);
+                }
+            }
+        }
+    }, [navList, history]);
     useEffect(() => {
         setNavItemsInNavbar(oldItems =>
             componentsInNavbar.map(item => {
