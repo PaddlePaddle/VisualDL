@@ -305,7 +305,7 @@ const Navbar: FunctionComponent = () => {
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
     useEffect(() => {
         // setLoading(true);
-        fetcher('/app/component_tabs').then((res: any) => {
+        fetcher('/component_tabs').then((res: any) => {
             setNavlist(res);
         });
     }, []);
