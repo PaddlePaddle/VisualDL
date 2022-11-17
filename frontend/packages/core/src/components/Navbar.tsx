@@ -27,6 +27,7 @@ import type {Route} from '~/routes';
 import ThemeToggle from '~/components/ThemeToggle';
 import Tippy from '@tippyjs/react';
 import ee from '~/utils/event';
+import routes from '~/routes';
 import {getApiToken} from '~/utils/fetch';
 import logo from '~/assets/images/logo.svg';
 import queryString from 'query-string';
@@ -304,7 +305,7 @@ const Navbar: FunctionComponent = () => {
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
     useEffect(() => {
         // setLoading(true);
-        fetcher('/component_tabs').then((res: any) => {
+        fetcher('/app/component_tabs').then((res: any) => {
             setNavlist(res);
         });
     }, []);
