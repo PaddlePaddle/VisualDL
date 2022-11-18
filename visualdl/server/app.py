@@ -35,6 +35,7 @@ from visualdl import __version__
 from visualdl.component.inference.model_convert_server import create_model_convert_api_call
 from visualdl.component.profiler.profiler_server import create_profiler_api_call
 from visualdl.server.api import create_api_call
+from visualdl.server.api import get_component_tabs
 from visualdl.server.args import parse_args
 from visualdl.server.args import ParseArgs
 from visualdl.server.log import info
@@ -149,6 +150,16 @@ def create_app(args):  # noqa: C901
             data, mimetype, headers = inference_api_call(method, request.form)
         else:
             data, mimetype, headers = inference_api_call(method, request.args)
+        return make_response(
+            Response(data, mimetype=mimetype, headers=headers))
+
+    @app.route(api_path + '/component_tabs')
+    def component_tabs():
+        data, mimetype, headers = get_component_tabs(
+            api_call,
+            profiler_api_call,
+            vdl_args=args,
+            request_args=request.args)
         return make_response(
             Response(data, mimetype=mimetype, headers=headers))
 
