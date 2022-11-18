@@ -60,6 +60,18 @@ class GraphReader(object):
     def logdir(self):
         return self.dir
 
+    def component_tabs(self, update=False):
+        """Get component tabs used by vdl frontend.
+        """
+        component_tabs = set()
+        if not self.logdir:
+            return component_tabs
+        if update is True:
+            self.runs(update=update)
+        if self.walks:
+            component_tabs.add('dynamic_graph')
+        return component_tabs
+
     def get_all_walk(self):
         flush_walks = {}
         for dir in self.dir:

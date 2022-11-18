@@ -66,8 +66,9 @@ class ProfilerReader(object):
         self.run_managers = {}
         self.profile_result_queue = Queue()
         self.tempfile = None
-        self.runs()
-        Thread(target=self._get_data_from_queue, args=()).start()
+        if logdir:
+            self.runs()
+            Thread(target=self._get_data_from_queue, args=()).start()
 
     @property
     def logdir(self):
@@ -86,6 +87,18 @@ class ProfilerReader(object):
             return self.run_managers[run]
         else:
             return None
+
+    def component_tabs(self, update=False):
+        """Get component tabs used by vdl frontend.
+        """
+        component_tabs = set()
+        if not self.logdir:
+            return component_tabs
+        if update is True:
+            self.runs(update=update)
+        if self.walks:
+            component_tabs.add('profiler')
+        return component_tabs
 
     def profile_runs(self, update=False):
         """Get profile run files.

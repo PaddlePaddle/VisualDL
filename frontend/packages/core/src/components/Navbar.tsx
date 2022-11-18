@@ -17,6 +17,7 @@
 // cspell:words cimode
 
 import {Link, LinkProps, useLocation} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
 import {border, borderRadius, rem, size, transitionProps, triangle} from '~/utils/style';
 
@@ -26,6 +27,7 @@ import type {Route} from '~/routes';
 import ThemeToggle from '~/components/ThemeToggle';
 import Tippy from '@tippyjs/react';
 import ee from '~/utils/event';
+import routes from '~/routes';
 import {getApiToken} from '~/utils/fetch';
 import logo from '~/assets/images/logo.svg';
 import queryString from 'query-string';
@@ -33,6 +35,8 @@ import styled from 'styled-components';
 import useClassNames from '~/hooks/useClassNames';
 import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
+import {fetcher} from '~/utils/fetch';
+import {Child} from './ProfilerPage/OperatorView/type';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -261,9 +265,10 @@ const SubNav: FunctionComponent<{
 );
 
 const Navbar: FunctionComponent = () => {
+    const history = useHistory();
     const {t, i18n} = useTranslation('common');
     const {pathname} = useLocation();
-
+    const [navList, setNavlist] = useState<string[]>([]);
     const changeLanguage = useCallback(() => {
         const language = i18n.language;
         const allLanguages = (i18n.options.supportedLngs || []).filter(lng => lng !== 'cimode');
@@ -271,13 +276,68 @@ const Navbar: FunctionComponent = () => {
         const nextLanguage = index < 0 || index >= allLanguages.length - 1 ? allLanguages[0] : allLanguages[index + 1];
         i18n.changeLanguage(nextLanguage);
     }, [i18n]);
-
+    const routeEm: any = useMemo(() => {
+        return {
+            scalar: 'scalar',
+            histogram: 'histogram',
+            image: 'image',
+            audio: 'audio',
+            text: 'text',
+            graphStatic: 'dynamic_graph',
+            graphDynamic: 'dynamic_graph',
+            'high-dimensional': 'embeddings',
+            'pr-curve': 'pr_curve',
+            'roc-curve': 'roc_curve',
+            profiler: 'profiler',
+            'hyper-parameter': 'hyper_parameters',
+            x2paddle: 'x2paddle',
+            fastdeploy_server: 'fastdeploy_server'
+        };
+    }, []);
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
     const [components] = useComponents();
+    const routePush = (route: any, Components: any[]) => {
+        if (navList.includes(routeEm[route.id])) {
+            // debugger;
 
-    const componentsInNavbar = useMemo(() => components.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [components]);
-    const flattenMoreComponents = useMemo(() => flatten(components.slice(MAX_ITEM_COUNT_IN_NAVBAR)), [components]);
+            return true;
+            // setDefaultRoute(route.id);
+        }
+        if (route.children) {
+            for (const Route of route.children) {
+                routePush(Route, Components);
+            }
+        }
+    };
+    const newcomponents = useMemo(() => {
+        const Components = [];
+        const parent: any[] = [];
+        if (navList.length > 0) {
+            for (const item of components) {
+                // debugger;
+                // const Id: any = item.id;
+                if (navList.includes(routeEm[item.id])) {
+                    Components.push(item);
+                }
+                if (item.children) {
+                    for (const Route of item.children) {
+                        const flag = routePush(Route, Components);
+                        if (flag && !parent.includes(item.id)) {
+                            parent.push(item.id);
+                            Components.push(item);
+                        }
+                    }
+                }
+            }
+        }
+        return Components;
+    }, [components, navList]);
+    const componentsInNavbar = useMemo(() => newcomponents.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [newcomponents]);
+    const flattenMoreComponents = useMemo(
+        () => flatten(newcomponents.slice(MAX_ITEM_COUNT_IN_NAVBAR)),
+        [newcomponents]
+    );
     const componentsInMoreMenu = useMemo(
         () =>
             flattenMoreComponents.map(item => ({
@@ -287,6 +347,36 @@ const Navbar: FunctionComponent = () => {
         [currentPath, flattenMoreComponents]
     );
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
+    const routesChange = (route: any) => {
+        if (navList.includes(routeEm[route.id])) {
+            // debugger;
+            history.push(`/${route.id}`);
+            return true;
+            // setDefaultRoute(route.id);
+        }
+        if (route.Children) {
+            for (const Route of route.Children) {
+                routesChange(Route);
+            }
+        }
+    };
+    useEffect(() => {
+        // setLoading(true);
+        fetcher('/component_tabs').then((res: any) => {
+            setNavlist(res);
+        });
+    }, []);
+    useEffect(() => {
+        // const defaultRoute = routes;
+        if (navList.length > 0) {
+            for (const route of routes) {
+                const flag = routesChange(route);
+                if (flag) {
+                    return;
+                }
+            }
+        }
+    }, [navList]);
     useEffect(() => {
         setNavItemsInNavbar(oldItems =>
             componentsInNavbar.map(item => {
@@ -325,7 +415,8 @@ const Navbar: FunctionComponent = () => {
                 };
             })
         );
-    }, [componentsInNavbar, currentPath]);
+    }, [componentsInNavbar, currentPath, navList]);
+    console.log('componentsInNavbar', componentsInNavbar);
 
     return (
         <Nav>
