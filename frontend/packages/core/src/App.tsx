@@ -138,7 +138,6 @@ const App: FunctionComponent = () => {
                         </ErrorBoundary>
                     </Router>
                 </Main>
-
                 <ToastContainer
                     autoClose={100000}
                     style={{wordBreak: 'break-all'}}

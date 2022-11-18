@@ -66,8 +66,9 @@ class ProfilerReader(object):
         self.run_managers = {}
         self.profile_result_queue = Queue()
         self.tempfile = None
-        self.runs()
-        Thread(target=self._get_data_from_queue, args=()).start()
+        if logdir:
+            self.runs()
+            Thread(target=self._get_data_from_queue, args=()).start()
 
     @property
     def logdir(self):

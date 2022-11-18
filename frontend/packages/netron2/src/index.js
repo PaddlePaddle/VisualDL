@@ -105,6 +105,8 @@ host.BrowserHost = class {
                             return this._view.showModelProperties();
                         case 'show-node-documentation':
                             return this._view.showNodeDocumentation(data);
+                        case 'show2':
+                            return this._view._reload();
                         case 'ready':
                             if (this._ready) {
                                 debugger;
@@ -133,15 +135,20 @@ host.BrowserHost = class {
     }
     selectNodeId(nodeInfo) {
         // 反传回去
+        console.log('节点点击事件触发了', nodeInfo);
         this.message('nodeId', nodeInfo);
     }
     selectItems(item) {
         // 反传回去
+        console.log('节点点击事件触发了', item);
         this.message('selectItem', item);
     }
 
     error(message, detail) {
         this.message('error', (message === 'Error' ? '' : message + ' ') + detail);
+    }
+    reload() {
+        this.view._reload();
     }
 
     confirm(message, detail) {
@@ -197,7 +204,7 @@ host.BrowserHost = class {
     }
 
     _changeFiles(files) {
-        console.log('files', files);
+        console.log('files2', files);
         if (files && files?.length) {
             console.log('files.length', files.length);
             files = Array.from(files);
@@ -527,6 +534,7 @@ function getCaption(obj) {
     return newObj;
 }
 const hash = getCaption(document.referrer);
+console.log('hash', hash);
 if (hash === 'graphStatic' || hash === 'x2paddle') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {
