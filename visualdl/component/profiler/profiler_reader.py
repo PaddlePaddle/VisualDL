@@ -88,6 +88,18 @@ class ProfilerReader(object):
         else:
             return None
 
+    def component_tabs(self, update=False):
+        """Get component tabs used by vdl frontend.
+        """
+        component_tabs = set()
+        if not self.logdir:
+            return component_tabs
+        if update is True:
+            self.runs(update=update)
+        if self.walks:
+            component_tabs.add('profiler')
+        return component_tabs
+
     def profile_runs(self, update=False):
         """Get profile run files.
 

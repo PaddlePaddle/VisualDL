@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
 import collections
 from functools import partial  # noqa: F401
-from visualdl.io import bfile
+
 from visualdl.component import components
+from visualdl.io import bfile
+from visualdl.proto import record_pb2
 from visualdl.reader.record_reader import RecordReader
 from visualdl.server.data_manager import default_data_manager
-from visualdl.proto import record_pb2
-from visualdl.utils.string_util import decode_tag, encode_tag
+from visualdl.utils.string_util import decode_tag
+from visualdl.utils.string_util import encode_tag
 
 
 def is_VDLRecord_file(path, check=False):
@@ -74,10 +75,12 @@ class LogReader(object):
 
         # {'run': {'scalar': {'tag1': data, 'tag2': data}}}
         self._log_datas = collections.defaultdict(
-            lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
+            lambda: collections.defaultdict(lambda: collections.defaultdict(
+                list)))
 
         if file_path:
-            self._log_data = collections.defaultdict(lambda: collections.defaultdict(list))
+            self._log_data = collections.defaultdict(lambda: collections.
+                                                     defaultdict(list))
             self.get_file_reader(file_path=file_path)
             remain = self.get_remain()
             self.read_log_data(remain=remain)
@@ -100,12 +103,15 @@ class LogReader(object):
         self._model = model_path
         with bfile.BFile(model_path, 'rb') as bfp:
             if not bfp.isfile(model_path):
-                print("Model path %s should be file path, please check this path." % model_path)
+                print(
+                    "Model path %s should be file path, please check this path."
+                    % model_path)
             else:
                 if bfile.exists(model_path):
                     self._model = model_path
                 else:
-                    print("Model path %s is invalid, please check this path." % model_path)
+                    print("Model path %s is invalid, please check this path." %
+                          model_path)
 
     @property
     def logdir(self):
@@ -130,15 +136,16 @@ class LogReader(object):
         return log_tags
 
     def get_log_data(self, component, run, tag):
-        if (run in self._log_datas.keys() and
-                component in self._log_datas[run].keys() and
-                tag in self._log_datas[run][component].keys()):
+        if (run in self._log_datas.keys()
+                and component in self._log_datas[run].keys()
+                and tag in self._log_datas[run][component].keys()):
             return self._log_datas[run][component][tag]
         else:
             file_path = bfile.join(run, self.walks[run])
             reader = self._get_file_reader(file_path=file_path, update=False)
             remain = self.get_remain(reader=reader)
-            data = self.read_log_data(remain=remain, update=False)[component][tag]
+            data = self.read_log_data(
+                remain=remain, update=False)[component][tag]
             data = self.parsing_from_proto(component, data)
             self._log_datas[run][component][tag] = data
             return data
@@ -303,7 +310,8 @@ class LogReader(object):
         """
         if self.reader is None and reader is None:
             raise RuntimeError("Please specify log path!")
-        return self.reader.get_remain() if reader is None else reader.get_remain()
+        return self.reader.get_remain(
+        ) if reader is None else reader.get_remain()
 
     def read_log_data(self, remain, update=True):
         """Parse data from log file without sampling.
@@ -311,7 +319,8 @@ class LogReader(object):
         Args:
             remain: Raw data from log file.
         """
-        _log_data = collections.defaultdict(lambda: collections.defaultdict(list))
+        _log_data = collections.defaultdict(lambda: collections.defaultdict(
+            list))
         for item in remain:
             component, dir, tag, record = self.parse_from_bin(item)
             _log_data[component][tag].append(record)
@@ -342,6 +351,20 @@ class LogReader(object):
         components_set = set(self._tags.values())
 
         return components_set
+
+    def component_tabs(self, update=False):
+        """Get component tabs used by vdl frontend.
+        """
+        component_tabs = set()
+        if not self.logdir:
+            return component_tabs
+        if update is True:
+            self.load_new_data(update=update)
+        for component in set(self._tags.values()):
+            if component == 'meta_data':
+                continue
+            component_tabs.add(component)
+        return component_tabs
 
     def load_new_data(self, update=True):
         """Load remain data.
