@@ -36,6 +36,7 @@ import useClassNames from '~/hooks/useClassNames';
 import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
+import {Child} from './ProfilerPage/OperatorView/type';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -302,10 +303,41 @@ const Navbar: FunctionComponent = () => {
             })),
         [currentPath, flattenMoreComponents]
     );
+    const routeEm = useMemo(() => {
+        return {
+            scalar: 'scalar',
+            histogram: 'histogram',
+            image: 'image',
+            audio: 'audio',
+            text: 'text',
+            graphStatic: 'graph',
+            graphDynamic: 'graphDynamic',
+            'high-dimensional': 'embeddings',
+            'pr-curve': 'pr-curve',
+            'roc-curve': 'roc-curve',
+            profiler: 'profiler',
+            'hyper-parameter': 'hyper-parameter',
+            x2paddle: 'x2paddle',
+            fastdeploy_server: 'FastDeployServer'
+        };
+    }, []);
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
+    const routesChange = (route: any) => {
+        if (navList.includes(routeEm[route.id])) {
+            // debugger;
+            history.push(routeEm[route.id]);
+            return;
+            // setDefaultRoute(route.id);
+        }
+        if (route.Children) {
+            for (const Route of route.Children) {
+                routesChange(Route);
+            }
+        }
+    };
     useEffect(() => {
         // setLoading(true);
-        fetcher('/component_tabs').then((res: any) => {
+        fetcher('/app/component_tabs').then((res: any) => {
             setNavlist(res);
         });
     }, []);
@@ -314,11 +346,7 @@ const Navbar: FunctionComponent = () => {
         if (navList.length > 0) {
             for (const route of routes) {
                 // debugger;
-                if (navList.includes(route.id)) {
-                    // debugger;
-                    history.push(`/${route.id}`);
-                    // setDefaultRoute(route.id);
-                }
+                routesChange(route);
             }
         }
     }, [navList, history]);
