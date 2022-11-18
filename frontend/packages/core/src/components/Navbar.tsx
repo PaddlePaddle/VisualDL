@@ -276,20 +276,63 @@ const Navbar: FunctionComponent = () => {
         const nextLanguage = index < 0 || index >= allLanguages.length - 1 ? allLanguages[0] : allLanguages[index + 1];
         i18n.changeLanguage(nextLanguage);
     }, [i18n]);
-
+    const routeEm: any = useMemo(() => {
+        return {
+            scalar: 'scalar',
+            histogram: 'histogram',
+            image: 'image',
+            audio: 'audio',
+            text: 'text',
+            graphStatic: 'dynamic_graph',
+            graphDynamic: 'dynamic_graph',
+            'high-dimensional': 'embeddings',
+            'pr-curve': 'pr-curve',
+            'roc-curve': 'roc-curve',
+            profiler: 'profiler',
+            'hyper-parameter': 'hyper_parameters',
+            x2paddle: 'x2paddle',
+            fastdeploy_server: 'FastDeployServer'
+        };
+    }, []);
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
     const [components] = useComponents();
+    const routePush = (route: any, Components: any[]) => {
+        if (navList.includes(routeEm[route.id])) {
+            // debugger;
 
+            return true;
+            // setDefaultRoute(route.id);
+        }
+        if (route.children) {
+            for (const Route of route.children) {
+                routePush(Route, Components);
+            }
+        }
+    };
     const newcomponents = useMemo(() => {
         const Components = [];
-        for (const item of components) {
-            if (navList.includes(item.id)) {
-                Components.push(item);
+        const parent: any[] = [];
+        if (navList.length > 0) {
+            for (const item of components) {
+                // debugger;
+                // const Id: any = item.id;
+                if (navList.includes(routeEm[item.id])) {
+                    Components.push(item);
+                }
+                if (item.children) {
+                    for (const Route of item.children) {
+                        const flag = routePush(Route, Components);
+                        if (flag && !parent.includes(item.id)) {
+                            parent.push(item.id);
+                            Components.push(item);
+                        }
+                    }
+                }
             }
         }
         return Components;
-    }, [navList, components]);
+    }, [components, navList]);
     const componentsInNavbar = useMemo(() => newcomponents.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [newcomponents]);
     const flattenMoreComponents = useMemo(
         () => flatten(newcomponents.slice(MAX_ITEM_COUNT_IN_NAVBAR)),
@@ -303,30 +346,12 @@ const Navbar: FunctionComponent = () => {
             })),
         [currentPath, flattenMoreComponents]
     );
-    const routeEm = useMemo(() => {
-        return {
-            scalar: 'scalar',
-            histogram: 'histogram',
-            image: 'image',
-            audio: 'audio',
-            text: 'text',
-            graphStatic: 'graph',
-            graphDynamic: 'graphDynamic',
-            'high-dimensional': 'embeddings',
-            'pr-curve': 'pr-curve',
-            'roc-curve': 'roc-curve',
-            profiler: 'profiler',
-            'hyper-parameter': 'hyper-parameter',
-            x2paddle: 'x2paddle',
-            fastdeploy_server: 'FastDeployServer'
-        };
-    }, []);
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
     const routesChange = (route: any) => {
         if (navList.includes(routeEm[route.id])) {
             // debugger;
-            history.push(routeEm[route.id]);
-            return;
+            history.push(`/${route.id}`);
+            return true;
             // setDefaultRoute(route.id);
         }
         if (route.Children) {
@@ -345,11 +370,13 @@ const Navbar: FunctionComponent = () => {
         // const defaultRoute = routes;
         if (navList.length > 0) {
             for (const route of routes) {
-                // debugger;
-                routesChange(route);
+                const flag = routesChange(route);
+                if (flag) {
+                    return;
+                }
             }
         }
-    }, [navList, history]);
+    }, [navList]);
     useEffect(() => {
         setNavItemsInNavbar(oldItems =>
             componentsInNavbar.map(item => {
@@ -389,6 +416,7 @@ const Navbar: FunctionComponent = () => {
             })
         );
     }, [componentsInNavbar, currentPath, navList]);
+    console.log('componentsInNavbar', componentsInNavbar);
 
     return (
         <Nav>
