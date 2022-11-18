@@ -25,7 +25,7 @@ export enum Pages {
     Audio = 'audio',
     Text = 'text',
     Graph = 'graph',
-    ToggleGraph = 'ToggleGraph',
+    x2paddle = 'x2paddle',
     HighDimensional = 'high-dimensional',
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
@@ -92,7 +92,7 @@ const routes: Route[] = [
         ]
     },
     {
-        id: Pages.ToggleGraph,
+        id: Pages.x2paddle,
         path: '/x2paddle',
         component: React.lazy(() => import('~/pages/x2paddle'))
     },

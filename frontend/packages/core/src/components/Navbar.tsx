@@ -290,7 +290,7 @@ const Navbar: FunctionComponent = () => {
             'roc-curve': 'roc_curve',
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
-            ToggleGraph: 'x2paddle',
+            x2paddle: 'x2paddle',
             fastdeploy_server: 'fastdeploy_server'
         };
     }, []);
@@ -362,7 +362,7 @@ const Navbar: FunctionComponent = () => {
     };
     useEffect(() => {
         // setLoading(true);
-        fetcher('/component_tabs').then((res: any) => {
+        fetcher('/app/component_tabs').then((res: any) => {
             setNavlist(res);
         });
     }, []);
