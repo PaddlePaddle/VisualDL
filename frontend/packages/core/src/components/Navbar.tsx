@@ -286,12 +286,12 @@ const Navbar: FunctionComponent = () => {
             graphStatic: 'dynamic_graph',
             graphDynamic: 'dynamic_graph',
             'high-dimensional': 'embeddings',
-            'pr-curve': 'pr-curve',
-            'roc-curve': 'roc-curve',
+            'pr-curve': 'pr_curve',
+            'roc-curve': 'roc_curve',
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
             x2paddle: 'x2paddle',
-            fastdeploy_server: 'FastDeployServer'
+            fastdeploy_server: 'fastdeploy_server'
         };
     }, []);
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
