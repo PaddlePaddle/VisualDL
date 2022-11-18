@@ -290,7 +290,7 @@ const Navbar: FunctionComponent = () => {
             'roc-curve': 'roc_curve',
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
-            x2paddle: 'ToggleGraph',
+            ToggleGraph: 'x2paddle',
             fastdeploy_server: 'fastdeploy_server'
         };
     }, []);
