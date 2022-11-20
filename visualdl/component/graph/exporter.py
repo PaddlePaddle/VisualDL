@@ -26,7 +26,8 @@ def translate_graph(model, input_spec, verbose=True):
     with tempfile.TemporaryDirectory() as tmp:
         model._full_name = '{}[{}]'.format(model.__class__.__name__, "model")
         create_opname_scope(model)
-        paddle.jit.save(model, os.path.join(tmp, 'temp'), input_spec)
+        paddle.jit.to_static(model, input_spec)
+        paddle.jit.save(model, os.path.join(tmp, 'temp'))
         model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
         result = analyse_model(model_data)
     if verbose:
