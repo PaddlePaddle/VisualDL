@@ -37,6 +37,7 @@ import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
 import {Child} from './ProfilerPage/OperatorView/type';
+import {isArray} from 'lodash';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
@@ -297,7 +298,8 @@ const Navbar: FunctionComponent = () => {
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
     const [components] = useComponents();
-    const routePush = (route: any, Components: any[]) => {
+    const routePush = (route: any, component: any) => {
+        const Components = isArray(component) ? [...component] : [...component.values()];
         if (navList.includes(routeEm[route.id])) {
             // debugger;
 
@@ -311,27 +313,42 @@ const Navbar: FunctionComponent = () => {
         }
     };
     const newcomponents = useMemo(() => {
-        const Components = [];
+        const Components = new Map();
+
         const parent: any[] = [];
         if (navList.length > 0) {
             for (const item of components) {
-                // debugger;
                 // const Id: any = item.id;
                 if (navList.includes(routeEm[item.id])) {
-                    Components.push(item);
+                    // Components.push(item);
+                    Components.set(item.id, item);
                 }
                 if (item.children) {
                     for (const Route of item.children) {
                         const flag = routePush(Route, Components);
                         if (flag && !parent.includes(item.id)) {
                             parent.push(item.id);
-                            Components.push(item);
+                            const newItems = {
+                                ...item,
+                                children: [Route]
+                            };
+                            Components.set(item.id, newItems);
+                        } else if (flag && parent.includes(item.id)) {
+                            // debugger;
+                            const newItem = Components.get(item.id);
+                            const newItems = {
+                                ...newItem,
+                                children: [...newItem.children, Route]
+                            };
+                            Components.set(item.id, newItems);
                         }
                     }
                 }
             }
         }
-        return Components;
+        console.log('Components', [...Components], Components);
+        // debugger;
+        return [...Components.values()];
     }, [components, navList]);
     const componentsInNavbar = useMemo(() => newcomponents.slice(0, MAX_ITEM_COUNT_IN_NAVBAR), [newcomponents]);
     const flattenMoreComponents = useMemo(
