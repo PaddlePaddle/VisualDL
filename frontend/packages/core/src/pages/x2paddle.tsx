@@ -177,7 +177,7 @@ function App() {
         console.log('Graph.current.filess', Graph);
         const Graphs: any = Graph;
         const files: FileList | null = Graphs?.current?.files as FileList;
-        const name = files[0].name.split('.')[1];
+        const name = files[0].name.substring(files[0].name.lastIndexOf('.') + 1);
         if (name === 'prototxt') {
             toast.warning(t('togglegraph:warin-info'));
             if (file.current) {
