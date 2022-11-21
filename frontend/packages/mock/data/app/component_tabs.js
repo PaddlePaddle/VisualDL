@@ -30,4 +30,4 @@
 //     'x2paddle',
 //     'fastdeploy_server'
 // ];
-export default ['x2paddle'];
+export default ['dynamic_graph'];

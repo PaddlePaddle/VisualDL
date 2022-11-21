@@ -347,18 +347,25 @@ const Navbar: FunctionComponent = () => {
         [currentPath, flattenMoreComponents]
     );
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
-    const routesChange = (route: any) => {
+    const routesChange = (route: any, parentPath?: any) => {
+        // debugger;
         if (navList.includes(routeEm[route.id])) {
             // debugger;
-            history.push(`/${route.id}`);
-            return true;
+            if (parentPath) {
+                history.push(`${parentPath}/${route.id}`);
+                return true;
+            } else {
+                history.push(`/${route.id}`);
+                return true;
+            }
             // setDefaultRoute(route.id);
         }
-        if (route.Children) {
-            for (const Route of route.Children) {
-                routesChange(Route);
+        if (route.children) {
+            for (const Route of route.children) {
+                routesChange(Route, `/${route.id}`);
             }
         }
+        // return false;
     };
     useEffect(() => {
         // setLoading(true);
