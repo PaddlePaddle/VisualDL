@@ -355,7 +355,7 @@ const Navbar: FunctionComponent = () => {
         () => flatten(newcomponents.slice(MAX_ITEM_COUNT_IN_NAVBAR)),
         [newcomponents]
     );
-    const componentsInMoreMenu = useMemo(
+    const componentsInMoreMenu: any = useMemo(
         () =>
             flattenMoreComponents.map(item => ({
                 ...item,
@@ -404,12 +404,12 @@ const Navbar: FunctionComponent = () => {
     useEffect(() => {
         setNavItemsInNavbar(oldItems =>
             componentsInNavbar.map(item => {
-                const children = item.children?.map(child => ({
+                const children = item.children?.map((child: any) => ({
                     ...child,
                     active: child.path === currentPath
                 }));
                 if (item.children && !item.path) {
-                    const child = item.children.find(child => child.path === currentPath);
+                    const child = item.children.find((child: any) => child.path === currentPath);
                     if (child) {
                         return {
                             ...item,
@@ -425,7 +425,7 @@ const Navbar: FunctionComponent = () => {
                             return {
                                 ...item,
                                 ...oldItem,
-                                name: item.children?.find(c => c.id === oldItem.cid)?.name ?? item.name,
+                                name: item.children?.find((c: any) => c.id === oldItem.cid)?.name ?? item.name,
                                 active: false,
                                 children
                             };
