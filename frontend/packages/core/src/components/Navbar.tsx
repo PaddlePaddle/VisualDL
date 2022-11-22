@@ -284,7 +284,7 @@ const Navbar: FunctionComponent = () => {
             image: 'image',
             audio: 'audio',
             text: 'text',
-            graphStatic: 'dynamic_graph',
+            graphStatic: 'static_graph',
             graphDynamic: 'dynamic_graph',
             'high-dimensional': 'embeddings',
             'pr-curve': 'pr_curve',
