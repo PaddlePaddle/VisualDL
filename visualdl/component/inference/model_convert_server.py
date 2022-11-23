@@ -15,6 +15,7 @@
 import base64
 import json
 import os
+import subprocess
 import tempfile
 from collections import deque
 from threading import Lock
@@ -58,9 +59,8 @@ class ModelConvertApi(object):
                         try:
                             import onnx  # noqa: F401
                         except Exception:
-                            raise RuntimeError(
-                                "[ERROR] onnx is not installed, use \"pip install onnx==1.6.0\"."
-                            )
+                            subprocess.check_call(
+                                ['pip', 'install', 'onnx>=1.6.0'])
                         onnx2paddle(fp.name, tmpdirname)
                     elif format == 'caffe':
                         with tempfile.TemporaryDirectory() as unarchivedir:

@@ -12,4 +12,3 @@ multiprocess
 packaging
 x2paddle
 rarfile
-onnx >= 1.6.0
