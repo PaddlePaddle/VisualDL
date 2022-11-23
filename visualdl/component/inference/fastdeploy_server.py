@@ -57,7 +57,7 @@ class FastDeployServerApi(object):
         pass
 
     @result()
-    def config_update(self, cur_dir, model_name):
+    def config_update(self, cur_dir, model_name, config):
         pass
 
     @result()
@@ -83,11 +83,12 @@ def create_fastdeploy_api_call():
     api = FastDeployServerApi()
     routes = {
         'get_directory': (api.get_directory, ['dir']),
-        'config_update': (api.config_update, ['dir', 'name']),
+        'config_update': (api.config_update, ['dir', 'name', 'config']),
         'get_config': (api.get_config, ['dir']),
         'start_server': (api.start_server, ['dir', 'args']),
         'stop_server': (api.stop_server, ['server_id']),
-        'get_server_output': (api.get_server_output, ['server_id'])
+        'get_server_output': (api.get_server_output, ['server_id']),
+        'test_server': (api.test_server_with_gradio, ['server_id'])
     }
 
     def call(path: str, args):
