@@ -194,6 +194,8 @@ class ProfilerApi(object):
         run_manager = self._reader.get_run_manager(run)
         distributed_profiler_data = run_manager.get_distributed_profiler_data(
             span)
+        if distributed_profiler_data is None:
+            return
         return distributed_profiler_data.get_distributed_steps()
 
     @result()
@@ -201,6 +203,8 @@ class ProfilerApi(object):
         run_manager = self._reader.get_run_manager(run)
         distributed_profiler_data = run_manager.get_distributed_profiler_data(
             span)
+        if distributed_profiler_data is None:
+            return
         return distributed_profiler_data.get_distributed_histogram(
             step, time_unit)
 
