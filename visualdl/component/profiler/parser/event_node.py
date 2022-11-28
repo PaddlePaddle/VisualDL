@@ -265,10 +265,16 @@ class ProfilerResult:
     def parse_json(self, json_data):
         self.schema_version = json_data['schemaVersion']
         self.span_idx = json_data['span_indx']
-        self.device_infos = {
-            device_info['id']: device_info
-            for device_info in json_data['deviceProperties']
-        }
+        try:
+            self.device_infos = {
+                device_info['id']: device_info
+                for device_info in json_data['deviceProperties']
+            }
+        except Exception:
+            print(
+                "paddlepaddle-gpu version is needed to get GPU device informations."
+            )
+            self.device_infos = {}
         hostnodes = []
         runtimenodes = []
         devicenodes = []
