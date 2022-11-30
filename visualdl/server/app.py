@@ -162,6 +162,50 @@ def create_app(args):  # noqa: C901
             data, mimetype, headers = fastdeploy_api_call(method, request.args)
         return make_response(
             Response(data, mimetype=mimetype, headers=headers))
+    
+    @app.route(api_path + '/fastdeploy/fastdeploy_client', methods=["GET", "POST"])
+    def serve_fastdeploy_create_fastdeploy_client():
+        try:
+            if request.method == 'POST':
+                fastdeploy_api_call('create_fastdeploy_client', request.form)
+            else:
+                fastdeploy_api_call('create_fastdeploy_client', request.args)
+        except Exception as e:
+            error_msg = '{}'.format(e)
+            return make_response(error_msg)
+        return redirect(api_path + "/fastdeploy/fastdeploy_client/app", code=302)
+
+    @app.route(api_path + "/fastdeploy/fastdeploy_client/<path:path>", methods=["GET", "POST"])
+    def request_fastdeploy_create_fastdeploy_client_app(path: str):
+        '''
+        Gradio app server url interface. We route urls for gradio app to gradio server.
+
+        Args:
+            path(str): All resource path from gradio server.
+
+        Returns:
+            Any thing from gradio server.
+        '''
+        if request.method == 'POST':
+            port = fastdeploy_api_call('create_fastdeploy_client', request.form)
+        else:
+            port = fastdeploy_api_call('create_fastdeploy_client', request.args)
+        if path == 'app':
+            proxy_url = request.url.replace(request.host_url.rstrip('/') + api_path + '/fastdeploy/fastdeploy_client/app',
+                                            'http://localhost:{}/'.format(port))
+        else:
+            proxy_url = request.url.replace(request.host_url.rstrip('/') + api_path + '/fastdeploy/fastdeploy_client/',
+                                            'http://localhost:{}/'.format(port))
+        resp = requests.request(method=request.method,
+                                url=proxy_url,
+                                headers={key: value
+                                         for (key, value) in request.headers if key != 'Host'},
+                                data=request.get_data(),
+                                cookies=request.cookies,
+                                allow_redirects=False)
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()]
+        response = Response(resp.content, resp.status_code, headers)
+        return response
 
     @app.route(check_live_path)
     def check_live():

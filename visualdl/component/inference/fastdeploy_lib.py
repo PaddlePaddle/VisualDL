@@ -55,6 +55,7 @@ def analyse_config(cur_dir:str):
           if model_sub_dir not in all_model_versions[model_name]:
             all_model_versions[model_name][model_sub_dir] = []
           all_model_versions[model_name][model_sub_dir].append(version_resource_file)
+  return all_model_configs, all_model_versions, all_model_paths
 
 def exchange_format_to_original_format(exchange_format):
   '''
@@ -64,7 +65,7 @@ def exchange_format_to_original_format(exchange_format):
   models = []
   all_models = {}
   if 'ensembles' in exchange_format:
-    emsembles = exchange_format['ensembles']
+    ensembles = exchange_format['ensembles']
   if 'models' in exchange_format:
     models = exchange_format['models']
   alls = ensembles + models
@@ -74,23 +75,22 @@ def exchange_format_to_original_format(exchange_format):
       optimization_config = model_config['optimization']
       del model_config['optimization']
       model_config['optimization'] = {}
-      model_config['optimization']['execution_accelerators'] = optimization_config
-    # 2. put parameters in 'cpu_execution_accelerator' and 'gpu_execution_accelerator' inside 'parameters' keyword
-    for accelerator_name, accelerator_items in optimization_config.items():
-      reversed_accelerator_items = []
-      for accelerator_item in accelerator_items:
-        transformed_accelerator_item = {}
-        for key, value in accelerator_item.items():
-          if key == 'name':
-            transformed_accelerator_item[key] = value
-          else:
-            if 'parameters' not in transformed_accelerator_item:
-              transformed_accelerator_item['parameters'] = {}
-            transformed_accelerator_item['parameters'][key] = value
-        reversed_accelerator_items.append(transformed_accelerator_item)
-      del optimization_config[accelerator_name]
-      optimization_config[accelerator_name] = reversed_accelerator_items
-        
+      model_config['optimization']['executionAccelerators'] = optimization_config
+      # 2. put parameters in 'cpu_execution_accelerator' and 'gpu_execution_accelerator' inside 'parameters' keyword
+      for accelerator_name, accelerator_items in optimization_config.items():
+        reversed_accelerator_items = []
+        for accelerator_item in accelerator_items:
+          transformed_accelerator_item = {}
+          for key, value in accelerator_item.items():
+            if key == 'name':
+              transformed_accelerator_item[key] = value
+            else:
+              if 'parameters' not in transformed_accelerator_item:
+                transformed_accelerator_item['parameters'] = {}
+              transformed_accelerator_item['parameters'][key] = value
+          reversed_accelerator_items.append(transformed_accelerator_item)
+        del optimization_config[accelerator_name]
+        optimization_config[accelerator_name] = reversed_accelerator_items
     # 3. delete versions information
     if 'versions' in model_config:
       del model_config['versions']
@@ -113,7 +113,9 @@ def exchange_format_to_original_format(exchange_format):
             del model_config_in_step['outputModels']
             del model_config_in_step['inputVars']
             del model_config_in_step['outputVars']
-    all_models['name'] = model_config
+        for remove_item in remove_list:
+          step_configs.remove(remove_item)
+    all_models[model_config['name']] = model_config
   return all_models
     
 
@@ -125,13 +127,13 @@ def original_format_to_exchange_format(original_format, version_info):
   exchange_format['ensembles'] = []
   exchange_format['models'] = []
   for model_name, model_config in original_format.items():
-    # 1. remove 'execution_accelerators' keyword
-    # 2. put parameters in 'cpu_execution_accelerator' and 'gpu_execution_accelerator' outside
+    # 1. remove 'executionAccelerators' keyword
+    # 2. put parameters in 'cpuExecutionAccelerator' and 'gpuExecutionAccelerator' outside
     transformed_config = copy.deepcopy(model_config)
     if 'optimization' in model_config:
-      if 'execution_accelerators' in model_config['optimization']:
+      if 'executionAccelerators' in model_config['optimization']:
         transformed_optimization_config = {}
-        for accelerator_name, accelerator_items in model_config['optimization']['execution_accelerators'].items():
+        for accelerator_name, accelerator_items in model_config['optimization']['executionAccelerators'].items():
           transformed_optimization_config[accelerator_name] = []
           for accelerator_item in accelerator_items:
             transformed_accelerator_item = {}
@@ -146,7 +148,7 @@ def original_format_to_exchange_format(original_format, version_info):
         transformed_config['optimization'] = transformed_optimization_config
     # 3. add versions information
     if model_name in version_info:
-      transformed_config[model_name]['versions'] = version_info[model_name]
+      transformed_config['versions'] = version_info[model_name]
     if 'platform' in model_config and model_config['platform'] == 'ensemble':  # emsemble model 
       # 4. remove ensembleScheduling
       if 'ensembleScheduling' in model_config:
