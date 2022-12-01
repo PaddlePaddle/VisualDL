@@ -80,27 +80,32 @@ class FastDeployServerApi(object):
 
     @result()
     def start_server(self, configs):
+        configs = json.loads(configs)
         process = launch_process(configs)
         self.opened_servers[process.pid] = process
         return process.pid
 
     @result()
     def stop_server(self, server_id):
+        server_id = int(server_id)
         if server_id not in self.opened_servers:
             return
         kill_process(self.opened_servers[server_id])
         del self.opened_servers[server_id]
 
-    @result('text/plain')
+    @result('application/octet-stream')
     def get_server_output(self, server_id):
-        stdout_generator = get_process_output(server_id)
+        server_id = int(server_id)
+        if server_id not in self.opened_servers:
+            return
+        stdout_generator = get_process_output(self.opened_servers[server_id])
         return stdout_generator
     
     def create_fastdeploy_client(self):
         if self.client_port is None:
             def get_free_tcp_port():
                 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                # tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
                 tcp.bind(('localhost', 0))
                 addr, port = tcp.getsockname()
                 tcp.close()
@@ -110,7 +115,6 @@ class FastDeployServerApi(object):
             app = create_gradio_client_app()
             thread = Process(target=app.launch, kwargs={'server_port': self.client_port})
             thread.start()
-
             def check_alive():
                 while True:
                     try:
@@ -129,7 +133,7 @@ def create_fastdeploy_api_call():
         'get_directory': (api.get_directory, ['dir']),
         'config_update': (api.config_update, ['dir', 'name', 'config']),
         'get_config': (api.get_config, ['dir']),
-        'start_server': (api.start_server, ['dir', 'args']),
+        'start_server': (api.start_server, ['config']),
         'stop_server': (api.stop_server, ['server_id']),
         'get_server_output': (api.get_server_output, ['server_id']),
         'create_fastdeploy_client': (api.create_fastdeploy_client, [])

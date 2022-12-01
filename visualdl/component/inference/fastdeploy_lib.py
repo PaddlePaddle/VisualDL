@@ -5,6 +5,7 @@ import copy
 from subprocess import CalledProcessError
 from subprocess import PIPE
 from subprocess import Popen
+import select
 
 import google.protobuf.json_format as json_format
 import google.protobuf.text_format as text_format
@@ -240,8 +241,8 @@ def launch_process(kwargs: dict):
   cmd = ['fastdeployserver']
   for key, value in kwargs.items():
       cmd.append('--{}'.format(key))
-      cmd.append('{}'.foramt(value))
-  p = Popen(cmd, stdout=PIPE, bufsize=1, universal_newlines=True)
+      cmd.append('{}'.format(value))
+  p = Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True)
   return p
 
 
@@ -249,8 +250,13 @@ def get_process_output(process):
   '''
   Get the standard output of a opened subprocess.
   '''
-  for line in process.stdout:
-      yield line
+  while process.poll() is None:
+    readlist,_, _ = select.select([process.stdout, process.stderr],[],[])
+    for item in readlist:
+      data = item.readline()
+      if not data:
+        return
+      yield data
 
 
 def kill_process(process):
