@@ -12,3 +12,7 @@ multiprocess
 packaging
 x2paddle
 rarfile
+gradio
+fastdeploy-python
+tritonclient[all]
+attrdict
