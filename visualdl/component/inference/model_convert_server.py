@@ -58,14 +58,17 @@ class ModelConvertApi(object):
         identity = hl.hexdigest()
         result['request_id'] = identity
         target_path = os.path.join(X2PADDLE_CACHE_PATH, identity)
-        if os.path.exists(target_path):  # if data in cache
-            with open(
+        if os.path.exists(target_path):
+            if os.path.exists(
                     os.path.join(target_path, 'inference_model',
-                                 'model.pdmodel'), 'rb') as model_fp:
-                model_encoded = base64.b64encode(
-                    model_fp.read()).decode('utf-8')
-            result['pdmodel'] = model_encoded
-            return result
+                                 'model.pdmodel')):  # if data in cache
+                with open(
+                        os.path.join(target_path, 'inference_model',
+                                     'model.pdmodel'), 'rb') as model_fp:
+                    model_encoded = base64.b64encode(
+                        model_fp.read()).decode('utf-8')
+                result['pdmodel'] = model_encoded
+                return result
         else:
             os.makedirs(target_path, exist_ok=True)
         with tempfile.NamedTemporaryFile() as fp:
