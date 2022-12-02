@@ -1767,6 +1767,8 @@ class DistributedProfilerData:
         data = []
         for profile_data in self.profile_datas:
             device_infos = profile_data.device_infos
+            if not device_infos:
+                return data
             gpu_id = int(next(iter(profile_data.gpu_ids)))
             data.append({
                 'worker_name':

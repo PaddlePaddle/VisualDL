@@ -16,18 +16,8 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
-import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
-import React, {
-    FunctionComponent,
-    ForwardRefRenderFunction,
-    useImperativeHandle,
-    forwardRef,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from 'react';
+import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic2';
+import React, {FunctionComponent, useImperativeHandle, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions, selectors} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
@@ -95,16 +85,17 @@ const Loading = styled.div`
     line-height: ${rem(60)};
 `;
 type GraphProps = {
-    changeName: (name: string) => void;
+    changeRendered?: () => void;
+    files?: FileList | File[] | null;
+    changeName?: () => void;
     show?: boolean;
-    changeshowdata?: () => void;
-    Xpaddlae?: boolean;
 };
 type pageRef = {
-    files: FileList | File[] | null;
+    setModelFiles: (f: FileList | File[]) => void;
     setNodeDocumentations: () => void;
+    rendered: boolean;
 };
-const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata, Xpaddlae, show = true}, ref) => {
+const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = true}, ref) => {
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
@@ -113,13 +104,13 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
     const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
+    const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
+    const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
+    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
-            const name = f[0].name.substring(f[0].name.lastIndexOf('.') + 1);
-            changeName && changeName(name);
             setFiles(f);
-            changeshowdata && changeshowdata();
         },
         [storeDispatch]
     );
@@ -129,6 +120,17 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
             file.current.click();
         }
     }, []);
+    // const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const target = e.target as EventTarget & HTMLInputElement;
+    //     const file: FileList | null = target.files as FileList;
+    //     if (file[0].name.split('.')[1] === 'pdmodel') {
+    //         alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面');
+    //         return;
+    //     }
+    //     if (target && target.files && target.files.length) {
+    //         fileUploader(target.files);
+    //     }
+    // };
     const onChangeFile = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const target = e.target;
@@ -138,16 +140,6 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
         },
         [setModelFile]
     );
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
-
-    // useEffect(() => {
-    //     if (data?.data?.size) {
-    //         setFiles([new File([data.data], data.filename || 'unknown_model')]);
-    //     }
-    // }, [data]);
-
-    const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
-    const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
     const setOpenedModel = useCallback((data: OpenedResult) => {
         setModelGraphs(data.graphs);
         setSelectedGraph(data.selected || '');
@@ -177,12 +169,22 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
     const [modelData, setModelData] = useState<Properties | null>(null);
     const [nodeData, setNodeData] = useState<Properties | null>(null);
     const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
+    const [rendered, setRendered] = useState(false);
+    const [renderedflag, setRenderedflag] = useState(0);
+    const [renderedflag2, setRenderedflag2] = useState(0);
     const [renderedflag3, setRenderedflag3] = useState(true);
 
     useEffect(() => {
         setSearch('');
         setSearchResult({text: '', result: []});
     }, [files, showAttributes, showInitializers, showNames]);
+    useEffect(() => {
+        if (renderedflag > 1 && renderedflag2 === 0) {
+            changeRendered && changeRendered();
+            setRenderedflag2(1);
+            setNodeDocumentation(null);
+        }
+    }, [renderedflag]);
     useEffect(() => {
         if (!show) {
             setRenderedflag3(false);
@@ -201,12 +203,14 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
         [t, onClickFile, searching]
     );
 
-    const [rendered, setRendered] = useState(false);
     useImperativeHandle(ref, () => ({
-        files,
+        setModelFiles: file => {
+            setModelFile(file);
+        },
         setNodeDocumentations: () => {
             setRenderedflag3(false);
-        }
+        },
+        rendered: rendered
     }));
     const aside = useMemo(() => {
         if (!rendered || loading) {
@@ -220,6 +224,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
             );
         }
         console.log('nodeData && renderedflag3', nodeData, renderedflag3);
+
         if (nodeData && renderedflag3) {
             return (
                 <Aside width={rem(360)}>
@@ -232,7 +237,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
             );
         }
         return (
-            <Aside bottom={bottom}>
+            <Aside>
                 <SearchSection>
                     <Search
                         text={search}
@@ -321,10 +326,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
         nodeDocumentation,
         renderedflag3
     ]);
+
     const uploader = useMemo(
-        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} Xpaddlae={Xpaddlae} />,
+        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,
         [onClickFile, setModelFile]
     );
+
     return (
         <>
             <Title>{t('common:graph')}</Title>
@@ -343,7 +350,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
                         showInitializers={showInitializers}
                         showNames={showNames}
                         horizontal={horizontal}
-                        onRendered={() => setRendered(true)}
+                        onRendered={() => {
+                            setRendered(true);
+                            setRenderedflag(flag => {
+                                return flag + 1;
+                            });
+                        }}
                         onOpened={setOpenedModel}
                         onSearch={data => {
                             setSearchResult(data);

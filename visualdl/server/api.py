@@ -99,12 +99,18 @@ class Api(object):
     def _get_with_retry(self, key, func, *args, **kwargs):
         return self._cache(key, try_call, func, self._reader, *args, **kwargs)
 
-    def _get_with_reader(self, key, func, reader, *args, **kwargs):
-        return self._cache(key, func, reader, *args, **kwargs)
-
     @result()
     def components(self):
         return self._get('data/components', lib.get_components)
+
+    def component_tabs(self):
+        '''
+        Get all component tabs supported by readers in Api.
+        '''
+        tabs = set()
+        tabs.update(self._reader.component_tabs(update=True))
+        tabs.update(self._graph_reader.component_tabs(update=True))
+        return tabs
 
     @result()
     def runs(self):
@@ -128,6 +134,11 @@ class Api(object):
     def scalar_tags(self):
         return self._get_with_retry('data/plugin/scalars/tags',
                                     lib.get_scalar_tags)
+
+    @result()
+    def scalars_tags(self):
+        return self._get_with_retry('data/plugin/multiscalars/tags',
+                                    lib.get_scalars_tags)
 
     @result()
     def image_tags(self):
@@ -188,10 +199,23 @@ class Api(object):
         key = os.path.join('data/plugin/scalars/scalars', run, tag)
         return self._get_with_retry(key, lib.get_scalar, run, tag)
 
+    @result()
+    def scalars_list(self, run, tag, sub_tag):
+        key = os.path.join('data/plugin/multiscalars/scalars', run, tag,
+                           sub_tag)
+        return self._get_with_retry(key, lib.get_scalars, run, tag, sub_tag)
+
     @result('text/csv')
     def scalar_data(self, run, tag, type='tsv'):
         key = os.path.join('data/plugin/scalars/data', run, tag, type)
         return self._get_with_retry(key, lib.get_scalar_data, run, tag, type)
+
+    @result('text/csv')
+    def scalars_data(self, run, tag, sub_tag, type='tsv'):
+        key = os.path.join('data/plugin/multiscalars/data', run, tag, sub_tag,
+                           type)
+        return self._get_with_retry(key, lib.get_scalars_data, run, tag,
+                                    sub_tag, type)
 
     @result()
     def image_list(self, mode, tag):
@@ -380,6 +404,23 @@ class Api(object):
         return lib.get_graph_all_nodes(graph_reader, run)
 
 
+@result()
+def get_component_tabs(*apis, vdl_args, request_args):
+    '''
+    Get component tabs in all apis, so tabs can be presented according to existed data in frontend.
+    '''
+    all_tabs = set()
+    if vdl_args.component_tabs:
+        return list(vdl_args.component_tabs)
+    if vdl_args.logdir:
+        for api in apis:
+            all_tabs.update(api('component_tabs', request_args))
+            all_tabs.add('static_graph')
+    else:
+        return ['static_graph', 'x2paddle', 'fastdeploy_server']
+    return list(all_tabs)
+
+
 def create_api_call(logdir, model, cache_timeout):
     api = Api(logdir, model, cache_timeout)
     routes = {
@@ -389,6 +430,7 @@ def create_api_call(logdir, model, cache_timeout):
         'tags': (api.tags, []),
         'logs': (api.logs, []),
         'scalar/tags': (api.scalar_tags, []),
+        'scalars/tags': (api.scalars_tags, []),
         'image/tags': (api.image_tags, []),
         'text/tags': (api.text_tags, []),
         'audio/tags': (api.audio_tags, []),
@@ -397,7 +439,9 @@ def create_api_call(logdir, model, cache_timeout):
         'pr-curve/tags': (api.pr_curve_tags, []),
         'roc-curve/tags': (api.roc_curve_tags, []),
         'scalar/list': (api.scalar_list, ['run', 'tag']),
+        'scalars/list': (api.scalars_list, ['run', 'tag', 'sub_tag']),
         'scalar/data': (api.scalar_data, ['run', 'tag', 'type']),
+        'scalars/data': (api.scalars_data, ['run', 'tag', 'sub_tag', 'type']),
         'image/list': (api.image_list, ['run', 'tag']),
         'image/image': (api.image_image, ['run', 'tag', 'index']),
         'text/list': (api.text_list, ['run', 'tag']),
@@ -426,7 +470,8 @@ def create_api_call(logdir, model, cache_timeout):
         'hparams/data': (api.hparam_data, ['type']),
         'hparams/indicators': (api.hparam_indicator, []),
         'hparams/list': (api.hparam_list, []),
-        'hparams/metric': (api.hparam_metric, ['run', 'metric'])
+        'hparams/metric': (api.hparam_metric, ['run', 'metric']),
+        'component_tabs': (api.component_tabs, [])
     }
 
     def call(path: str, args):

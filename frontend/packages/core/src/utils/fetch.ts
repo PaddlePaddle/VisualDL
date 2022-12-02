@@ -17,9 +17,10 @@
 import type {TFunction} from 'i18next';
 import i18next from 'i18next';
 import queryString from 'query-string';
-
+import {toast} from 'react-toastify';
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
 const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL;
+console.log('API_URL', API_TOKEN_KEY);
 
 const API_TOKEN_HEADER = 'X-VisualDL-Instance-ID';
 
@@ -85,6 +86,8 @@ export function fetcher<T = unknown>(url: string, options?: RequestInit): Promis
 export async function fetcher<T = unknown>(url: string, options?: RequestInit): Promise<BlobResponse | string | T> {
     let res: Response;
     try {
+        // res = await fetch('http://10.181.196.14:8040/app/api/deploy/convert?format=onnx', addApiToken(options));
+
         res = await fetch(API_URL + url, addApiToken(options));
     } catch (e) {
         const t = await logErrorAndReturnT(e);
@@ -108,6 +111,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         if (response && 'status' in response) {
             if (response.status !== 0) {
                 const t = await logErrorAndReturnT(response);
+                toast.error((response as ErrorData).msg);
                 throw new Error((response as ErrorData).msg || t('errors:error'));
             } else {
                 return (response as SuccessData<T>).data;
@@ -126,6 +130,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
     } else {
         let data: Blob;
         try {
+            console.log('datas', res);
             data = await res.blob();
         } catch (e) {
             const t = await logErrorAndReturnT(e);
@@ -134,6 +139,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         const disposition = res.headers.get('Content-Disposition');
         // support safari
         if (!data.arrayBuffer) {
+            console.log('arrayBuffer', data);
             data.arrayBuffer = async () =>
                 new Promise<ArrayBuffer>((resolve, reject) => {
                     const fileReader = new FileReader();
@@ -143,6 +149,7 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
                     fileReader.readAsArrayBuffer(data);
                 });
         }
+        console.log('datas', data);
         let filename: string | null = null;
         if (disposition && disposition.indexOf('attachment') !== -1) {
             const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);

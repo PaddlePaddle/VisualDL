@@ -36,6 +36,7 @@ from visualdl.component.inference.fastdeploy_server import create_fastdeploy_api
 from visualdl.component.inference.model_convert_server import create_model_convert_api_call
 from visualdl.component.profiler.profiler_server import create_profiler_api_call
 from visualdl.server.api import create_api_call
+from visualdl.server.api import get_component_tabs
 from visualdl.server.args import parse_args
 from visualdl.server.args import ParseArgs
 from visualdl.server.log import info
@@ -162,8 +163,9 @@ def create_app(args):  # noqa: C901
             data, mimetype, headers = fastdeploy_api_call(method, request.args)
         return make_response(
             Response(data, mimetype=mimetype, headers=headers))
-    
-    @app.route(api_path + '/fastdeploy/fastdeploy_client', methods=["GET", "POST"])
+
+    @app.route(
+        api_path + '/fastdeploy/fastdeploy_client', methods=["GET", "POST"])
     def serve_fastdeploy_create_fastdeploy_client():
         try:
             if request.method == 'POST':
@@ -173,9 +175,12 @@ def create_app(args):  # noqa: C901
         except Exception as e:
             error_msg = '{}'.format(e)
             return make_response(error_msg)
-        return redirect(api_path + "/fastdeploy/fastdeploy_client/app", code=302)
+        return redirect(
+            api_path + "/fastdeploy/fastdeploy_client/app", code=302)
 
-    @app.route(api_path + "/fastdeploy/fastdeploy_client/<path:path>", methods=["GET", "POST"])
+    @app.route(
+        api_path + "/fastdeploy/fastdeploy_client/<path:path>",
+        methods=["GET", "POST"])
     def request_fastdeploy_create_fastdeploy_client_app(path: str):
         '''
         Gradio app server url interface. We route urls for gradio app to gradio server.
@@ -187,25 +192,44 @@ def create_app(args):  # noqa: C901
             Any thing from gradio server.
         '''
         if request.method == 'POST':
-            port = fastdeploy_api_call('create_fastdeploy_client', request.form)
+            port = fastdeploy_api_call('create_fastdeploy_client',
+                                       request.form)
         else:
-            port = fastdeploy_api_call('create_fastdeploy_client', request.args)
+            port = fastdeploy_api_call('create_fastdeploy_client',
+                                       request.args)
         if path == 'app':
-            proxy_url = request.url.replace(request.host_url.rstrip('/') + api_path + '/fastdeploy/fastdeploy_client/app',
-                                            'http://localhost:{}/'.format(port))
+            proxy_url = request.url.replace(
+                request.host_url.rstrip('/') + api_path +
+                '/fastdeploy/fastdeploy_client/app',
+                'http://localhost:{}/'.format(port))
         else:
-            proxy_url = request.url.replace(request.host_url.rstrip('/') + api_path + '/fastdeploy/fastdeploy_client/',
-                                            'http://localhost:{}/'.format(port))
-        resp = requests.request(method=request.method,
-                                url=proxy_url,
-                                headers={key: value
-                                         for (key, value) in request.headers if key != 'Host'},
-                                data=request.get_data(),
-                                cookies=request.cookies,
-                                allow_redirects=False)
+            proxy_url = request.url.replace(
+                request.host_url.rstrip('/') + api_path +
+                '/fastdeploy/fastdeploy_client/',
+                'http://localhost:{}/'.format(port))
+        resp = requests.request(
+            method=request.method,
+            url=proxy_url,
+            headers={
+                key: value
+                for (key, value) in request.headers if key != 'Host'
+            },
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False)
         headers = [(name, value) for (name, value) in resp.raw.headers.items()]
         response = Response(resp.content, resp.status_code, headers)
         return response
+
+    @app.route(api_path + '/component_tabs')
+    def component_tabs():
+        data, mimetype, headers = get_component_tabs(
+            api_call,
+            profiler_api_call,
+            vdl_args=args,
+            request_args=request.args)
+        return make_response(
+            Response(data, mimetype=mimetype, headers=headers))
 
     @app.route(check_live_path)
     def check_live():

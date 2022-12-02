@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-// cSpell:disable
-
-import graph from '../../assets/graph/yolov3.cfg';
-
-export default async () => {
-    const result = await fetch(graph);
-    console.log('result', result);
-    return new Response(await result.arrayBuffer(), {
-        status: 200,
-        headers: {
-            'Content-Type': 'application/octet-stream',
-            'Content-Disposition': 'attachment; filename="yolov3.cfg"'
-        }
-    });
-};
+export default [
+    'scalar',
+    'image',
+    // 'text',
+    'embeddings',
+    'audio',
+    'histogram',
+    'hyper_parameters',
+    'static_graph',
+    'dynamic_graph',
+    'pr_curve',
+    'roc_curve',
+    'profiler',
+    'x2paddle',
+    'fastdeploy_server'
+];
+// export default ['dynamic_graph'];
