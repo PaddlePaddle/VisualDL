@@ -12,21 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
-import os
 import json
-
+import os
 
 VDL_SERVER = "https://www.paddlepaddle.org.cn/paddle/visualdl/service/server"
 
-default_vdl_config = {
-    'server_url': VDL_SERVER
-}
+default_vdl_config = {'server_url': VDL_SERVER}
 
 USER_HOME = os.path.expanduser('~')
 VDL_HOME = os.path.join(USER_HOME, '.visualdl')
 CONF_HOME = os.path.join(VDL_HOME, 'conf')
 CONFIG_PATH = os.path.join(CONF_HOME, 'config.json')
+FASTDEPLOYSERVER_PATH = os.path.join(VDL_HOME, 'fastdeployserver')
 
 
 def init_vdl_config():
@@ -35,3 +32,5 @@ def init_vdl_config():
     if not os.path.exists(CONFIG_PATH) or 0 == os.path.getsize(CONFIG_PATH):
         with open(CONFIG_PATH, 'w') as fp:
             fp.write(json.dumps(default_vdl_config))
+    if not os.path.exists(FASTDEPLOYSERVER_PATH):
+        os.makedirs(FASTDEPLOYSERVER_PATH, exist_ok=True)
