@@ -18,6 +18,29 @@ from PIL import Image
 from visualdl.proto.record_pb2 import Record
 
 
+def scalars(main_tag, tag_scalar_dict, step, walltime=None):
+    """Package data to scalars
+
+    Args:
+        main_tag (string): Data identifier
+        tag_scalar_dict (dict): A dict to provide multi-values with tags
+        step (int): Step of scalar
+        walltime (int): Wall time of scalar
+
+    Return:
+        Package with format of record_pb2.Record
+    """
+    for sub_tag, value in tag_scalar_dict.items():
+        value = float(value)
+        yield Record(values=[
+            Record.Value(
+                id=step,
+                tag=main_tag,
+                timestamp=walltime,
+                tag_value=Record.TagValue(tag=sub_tag, value=value))
+        ])
+
+
 def scalar(tag, value, step, walltime=None):
     """Package data to one scalar.
     Args:
