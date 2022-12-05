@@ -123,6 +123,13 @@ class LogReader(object):
             for item in proto_datas:
                 data.append([item.id, item.tag, item.timestamp, item.value])
             return data
+        elif 'scalars' == component:
+            for item in proto_datas:
+                data.append([
+                    item.id, item.tag, item.tag_value.tag, item.timestamp,
+                    item.tag_value.value
+                ])
+            return data
         return proto_datas
 
     def _get_log_tags(self):
@@ -143,6 +150,8 @@ class LogReader(object):
         else:
             file_path = bfile.join(run, self.walks[run])
             reader = self._get_file_reader(file_path=file_path, update=False)
+            reader.dir = run
+            self.reader = reader
             remain = self.get_remain(reader=reader)
             data = self.read_log_data(
                 remain=remain, update=False)[component][tag]
@@ -191,6 +200,8 @@ class LogReader(object):
                 component = "text"
             elif "hparam" == value_type:
                 component = "hyper_parameters"
+            elif "tag_value" == value_type:
+                component = "scalars"
             else:
                 raise TypeError("Invalid value type `%s`." % value_type)
             self._tags[path] = component
@@ -265,7 +276,6 @@ class LogReader(object):
         if update:
             self.register_reader(file_path)
             self.reader = self.readers[file_path]
-            self.reader.dir = file_path
             return self.reader
         else:
             reader = RecordReader(filepath=file_path)
@@ -275,6 +285,7 @@ class LogReader(object):
         if update:
             if path not in list(self.readers.keys()):
                 reader = RecordReader(filepath=path, dir=dir)
+                reader.dir = dir
                 self.readers[path] = reader
         else:
             pass
