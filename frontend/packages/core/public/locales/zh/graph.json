@@ -14,6 +14,7 @@
     },
     "experimental-supported-model": "VisualDL实验性支持：",
     "experimental-supported-model-list": "TorchScript、PyTorch、Torch、 ArmNN、BigDL、Chainer、CNTK、Deeplearning4j、MediaPipe、ML.NET、MNN、OpenVINO、Scikit-learn、Tengine、TensorFlow.js、TensorFlow",
+
     "export-file": "导出文件",
     "export-png": "PNG",
     "export-svg": "SVG",
@@ -52,8 +53,10 @@
     "keep-expanded": "保持展开",
     "supported-model": "VisualDL支持：",
     "supported-model-list": "PaddlePaddle、ONNX、Keras、Core ML、Caffe、Caffe2、Darknet、MXNet、ncnn、TensorFlow Lite",
+    "supported-model-list-xpaddle": "ONNX、Caffe、Caffe2",
     "upload-model": "上传模型",
     "upload-tip": "点击或拖拽文件到页面上传模型，进行结构展示",
+    "upload-tip2": "点击或拖拽文件到页面上传模型，进行模型转换",
     "vertical": "垂直",
     "Choose-model": "选择模型",
     "zoom-in": "放大",

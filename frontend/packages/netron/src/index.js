@@ -107,6 +107,7 @@ host.BrowserHost = class {
                             return this._view.showNodeDocumentation(data);
                         case 'ready':
                             if (this._ready) {
+                                debugger;
                                 return this.status('ready');
                             }
                             return;
@@ -196,7 +197,9 @@ host.BrowserHost = class {
     }
 
     _changeFiles(files) {
-        if (files && files.length) {
+        console.log('files', files);
+        if (files && files?.length) {
+            console.log('files.length', files.length);
             files = Array.from(files);
             const file = files.find(file => this._view.accept(file.name));
             if (!file) {
@@ -524,7 +527,7 @@ function getCaption(obj) {
     return newObj;
 }
 const hash = getCaption(document.referrer);
-if (hash === 'graphStatic') {
+if (hash === 'graphStatic' || hash === 'x2paddle') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {
     window.__view__ = new view.View(new host.BrowserHost());
