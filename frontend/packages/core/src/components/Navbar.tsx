@@ -386,7 +386,7 @@ const Navbar: FunctionComponent = () => {
     };
     useEffect(() => {
         // setLoading(true);
-        fetcher('/component_tabs').then((res: any) => {
+        fetcher('/app/component_tabs').then((res: any) => {
             setNavlist(res);
         });
     }, []);

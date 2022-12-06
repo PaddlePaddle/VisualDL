@@ -30,7 +30,8 @@ export enum Pages {
     PRCurve = 'pr-curve',
     ROCCurve = 'roc-curve',
     Profiler = 'profiler',
-    HyperParameter = 'hyper-parameter'
+    HyperParameter = 'hyper-parameter',
+    Fastdeploy_server = 'fastdeploy_server'
 }
 
 export interface Route {
@@ -81,12 +82,12 @@ const routes: Route[] = [
         children: [
             {
                 id: 'graphDynamic',
-                path: '/graph/graphDynamic',
+                path: '/graphDynamic',
                 component: React.lazy(() => import('~/pages/graphDynamic'))
             },
             {
                 id: 'graphStatic',
-                path: '/graph/graphStatic',
+                path: '/graphStatic',
                 component: React.lazy(() => import('~/pages/graphStatic'))
             }
         ]
@@ -125,6 +126,11 @@ const routes: Route[] = [
         id: Pages.ROCCurve,
         path: '/roc-curve',
         component: React.lazy(() => import('~/pages/curves/roc'))
+    },
+    {
+        id: Pages.Fastdeploy_server,
+        path: '/fastdeploy_server',
+        component: React.lazy(() => import('~/pages/Fastdeploy'))
     }
 ];
 

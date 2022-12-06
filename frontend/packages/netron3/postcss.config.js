@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-// export default [
-//     'scalar',
-//     'image',
-//     'text',
-//     'embeddings',
-//     'audio',
-//     'histogram',
-//     'hyper_parameters',
-//     'static_graph',
-//     'dynamic_graph',
-//     'pr_curve',
-//     'roc_curve',
-//     'profiler',
-//     'x2paddle',
-//     'fastdeploy_server'
-// ];
-export default ['fastdeploy_server'];
+module.exports = {
+    plugins: [require('autoprefixer')]
+};

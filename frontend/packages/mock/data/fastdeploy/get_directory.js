@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-// export default [
-//     'scalar',
-//     'image',
-//     'text',
-//     'embeddings',
-//     'audio',
-//     'histogram',
-//     'hyper_parameters',
-//     'static_graph',
-//     'dynamic_graph',
-//     'pr_curve',
-//     'roc_curve',
-//     'profiler',
-//     'x2paddle',
-//     'fastdeploy_server'
-// ];
-export default ['fastdeploy_server'];
+export default {
+    parent_dir: 'cur_dir',
+    sub_dir: ['sub_dir0', 'sub_dir1', 'sub_dir2', 'sub_dir3', 'sub_dir4', 'sub_dir5', 'sub_dir6', 'sub_dir7']
+};
