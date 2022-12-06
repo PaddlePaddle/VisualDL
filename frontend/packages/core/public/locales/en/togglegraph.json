@@ -1,0 +1,12 @@
+{
+    "transformation": "transformation",
+    "download": "download",
+    "convert_before": "Please convert before viewing",
+    "warin-info": "Please package the model description file. prototxt and parameter file. caffemodel into. tar to upload",
+    "warin-info2": "The model file does not support X2Paddle conversion temporarily",
+    "warin-info3": "Please convert before viewing",
+    "warin-info4": "The model has been converted, please do not click again",
+    "warin-info5": "Please upload the model file and convert it",
+    "warin-info6": "Model file has been converted, please do not click again",
+    "warin-info7": "Please upload the model file"
+}

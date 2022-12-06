@@ -104,11 +104,8 @@ class RunManager:
         return
 
     def join(self):
-        if self.has_join:
-            return
         for thread in self.threads.values():
             thread.join()
-        self.has_join = True
         distributed_profiler_data = defaultdict(list)
         for worker_name, span_data in self.profiler_data.items():
             for span_idx, profiler_data in span_data.items():

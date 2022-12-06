@@ -14,6 +14,7 @@
 # =======================================================================
 import os
 import re
+from threading import Lock
 from threading import Thread
 
 import packaging.version
@@ -28,6 +29,7 @@ from .run_manager import RunManager
 from visualdl.io import bfile
 
 _name_pattern = re.compile(r"(.+)_time_(.+)\.paddle_trace\.((pb)|(json))")
+_lock = Lock()
 
 
 def is_VDLProfiler_file(path):
@@ -88,6 +90,18 @@ class ProfilerReader(object):
         else:
             return None
 
+    def component_tabs(self, update=False):
+        """Get component tabs used by vdl frontend.
+        """
+        component_tabs = set()
+        if not self.logdir:
+            return component_tabs
+        if update is True:
+            self.runs(update=update)
+        if self.walks:
+            component_tabs.add('profiler')
+        return component_tabs
+
     def profile_runs(self, update=False):
         """Get profile run files.
 
@@ -118,8 +132,10 @@ class ProfilerReader(object):
                 self.run_managers[run] = RunManager(run)
             self.run_managers[run].set_all_filenames(filenames)
             for filename in filenames:
-                if self.run_managers[run].has_handled(filename):
-                    continue
+                with _lock:  # we add this to prevent parallel requests for handling a file multiple times
+                    if self.run_managers[run].has_handled(filename):
+                        continue
+                    self.run_managers[run].handled_filenames.add(filename)
                 self._read_data(run, filename)
         return list(self.walks.keys())
 

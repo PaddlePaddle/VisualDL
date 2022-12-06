@@ -208,7 +208,9 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
             };
         }, [handler, dispatch]);
 
-        useEffect(() => (ready && dispatch('change-files', files)) || undefined, [dispatch, files, ready]);
+        useEffect(() => {
+            (ready && dispatch('change-files', files)) || undefined;
+        }, [dispatch, files, ready]);
         useEffect(
             () => (ready && dispatch('toggle-attributes', showAttributes)) || undefined,
             [dispatch, showAttributes, ready]

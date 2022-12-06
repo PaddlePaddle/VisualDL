@@ -397,6 +397,9 @@ class BosFileSystem(object):
         bucket_name, object_key = get_object_info(filename)
         if not self.exists(filename):
             init_data = b''
+            # Two cases will come here
+            # 1. the file not exist, then we need to create the file
+            # 2. sts token invalid in self.exists, we should renew the token, and continue to write
             try:
                 self.bos_client.append_object(
                     bucket_name=bucket_name,
@@ -404,15 +407,23 @@ class BosFileSystem(object):
                     data=init_data,
                     content_md5=content_md5(init_data),
                     content_length=len(init_data))
-            except (exception.BceServerError, exception.BceHttpClientError):
-                self.renew_bos_client_from_server()
-                self.bos_client.append_object(
-                    bucket_name=bucket_name,
-                    key=object_key,
-                    data=init_data,
-                    content_md5=content_md5(init_data),
-                    content_length=len(init_data))
-                return
+            except (exception.BceServerError, exception.BceHttpClientError) as e:
+                if bucket_name == 'visualdl-server':  # only sts token from visualdl-server, we can renew automatically
+                    self.renew_bos_client_from_server()
+                    # we should add a judgement for case 2
+                    try:
+                        self.bos_client.get_object_meta_data(bucket_name, object_key)
+                    except exception.BceError:
+                        # the file not exists, then create the file
+                        self.bos_client.append_object(
+                            bucket_name=bucket_name,
+                            key=object_key,
+                            data=init_data,
+                            content_md5=content_md5(init_data),
+                            content_length=len(init_data))
+                        return
+                else:
+                    raise e  # user defined bos token, we have no idea to renew the token, so throw the exception
         content_length = len(file_content)
 
         try:
@@ -425,18 +436,20 @@ class BosFileSystem(object):
                 content_md5=content_md5(file_content),
                 content_length=content_length,
                 offset=offset)
-        except (exception.BceServerError, exception.BceHttpClientError):
-            self.renew_bos_client_from_server()
-            offset = self.get_meta(bucket_name,
-                                   object_key).metadata.content_length
-            self.bos_client.append_object(
-                bucket_name=bucket_name,
-                key=object_key,
-                data=file_content,
-                content_md5=content_md5(file_content),
-                content_length=content_length,
-                offset=offset)
-
+        except (exception.BceServerError, exception.BceHttpClientError) as e:
+            if bucket_name == 'visualdl-server':  # only sts token from visualdl-server, we can renew automatically
+                self.renew_bos_client_from_server()
+                offset = self.get_meta(bucket_name,
+                                       object_key).metadata.content_length
+                self.bos_client.append_object(
+                    bucket_name=bucket_name,
+                    key=object_key,
+                    data=file_content,
+                    content_md5=content_md5(file_content),
+                    content_length=content_length,
+                    offset=offset)
+            else:
+                raise e  # user defined bos token, we have no idea to renew the token, so throw the exception
         self._file_contents_to_add = b''
         self._file_contents_count = 0
         self._start_append_time = time.time()

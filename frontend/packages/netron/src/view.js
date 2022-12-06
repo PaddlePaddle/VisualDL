@@ -261,12 +261,13 @@ view.View = class {
         return this._timeout(2).then(() => {
             return this._modelFactoryService.open(context).then(model => {
                 return this._timeout(20).then(() => {
+                    console.log('model.graphs.length', model.graphs.length);
                     const graph = model.graphs.length > 0 ? model.graphs[0] : null;
                     this._host.message('opened', {
                         graphs: model.graphs.map(g => g.name || ''),
                         selected: graph && (graph.name || '')
                     });
-                    return this._updateGraph2(model, graph);
+                    return this._updateGraph2(graph);
                 });
             });
         });
@@ -366,6 +367,9 @@ view.View = class {
             if (graph && graph != this._activeGraph) {
                 this._selectItem = null;
                 const nodes = graph.nodes;
+                console.log('graphs', graph);
+
+                console.log('nodes.length', nodes);
                 if (nodes.length > 1400) {
                     if (
                         !this._host.confirm(
@@ -478,6 +482,7 @@ view.View = class {
                     for (const node of nodes) {
                         let path = node.name.split('/');
                         path.pop();
+                        console.log('path.length', path.length);
                         while (path.length > 0) {
                             const name = path.join('/');
                             path.pop();
