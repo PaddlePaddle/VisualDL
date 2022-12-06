@@ -215,11 +215,11 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [IsEmsembles, setIsEmsembles] = useState<boolean>();
     const [showFlag, setShowFlag] = useState<boolean>(false);
     const [selectOptions, setSelectOptions] = useState([]);
-    // const [emsembles, setEmsembles] = useState<string>();
+    // const [ensembles, setEmsembles] = useState<string>();
     const [steps, setSteps] = useState<any>();
     const [nodeClick, setNodeClick] = useState<any>();
 
-    const [emsemblesName, setEmsemblesName] = useState<string>();
+    const [ensemblesName, setEnsemblesName] = useState<string>();
 
     const iframe = useRef<HTMLIFrameElement>(null);
     const [form] = Form.useForm();
@@ -227,7 +227,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
     console.log('form', form.getFieldsValue(true));
 
-    const [treeData, setTreeData] = useState(modelData.emsembles.versions);
+    const [treeData, setTreeData] = useState(modelData.ensembles?.versions);
     const ports = {
         groups: {
             top: {
@@ -467,34 +467,36 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (!modelData) {
             return;
         }
-        const SelectOptions = modelData.emsembles.map((emsembles: any) => {
+        console.log('modelData.ensembles', modelData.ensembles);
+        const SelectOptions = modelData.ensembles?.map((ensembles: any) => {
             return {
-                value: emsembles.name,
-                label: emsembles.name
+                value: ensembles.name,
+                label: ensembles.name
             };
         });
-        setEmsemblesName(modelData.emsembles[0].name);
+        setEnsemblesName(modelData.ensembles[0]?.name);
         setSelectOptions(SelectOptions);
     }, [modelData]);
     useEffect(() => {
-        if (!emsemblesName) {
+        if (!ensemblesName) {
             return;
         }
-        const emsembles = modelData.emsembles.filter((emsembles: any) => {
-            if (emsembles.name === emsemblesName) {
-                return emsembles;
+        console.log('modelData.ensembles', modelData.ensembles);
+        const ensembles = modelData.ensembles?.filter((ensembles: any) => {
+            if (ensembles.name === ensemblesName) {
+                return ensembles;
             }
         });
-        setSteps(emsembles[0].step);
-        setTreeData(emsembles[0].versions);
-    }, [emsemblesName]);
+        setSteps(ensembles[0]?.step);
+        setTreeData(ensembles[0]?.versions);
+    }, [ensemblesName]);
     useEffect(() => {
         if (!flag || !steps) {
             return;
         }
         const edgeMap: any = {};
 
-        steps.map((node: any) => {
+        steps?.map((node: any) => {
             const inputs = node.inputModels;
             for (const input of inputs) {
                 let tuple = edgeMap[input];
@@ -779,65 +781,61 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             .then(values => {
                 // setIsModalOpen(false);
                 const ModelData = ModelDatas;
-                const newCpu_execution_accelerator = values.cpu_execution_accelerator.map(
-                    (item: any, index: number) => {
-                        // const params =
-                        const newObject: any = {};
-                        // newObject[item.key] = item.value;
-                        if (item.params) {
-                            for (const param of item.params) {
-                                newObject[param['key']] = param['value'];
-                            }
+                const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any, index: number) => {
+                    // const params =
+                    const newObject: any = {};
+                    // newObject[item.key] = item.value;
+                    if (item.params) {
+                        for (const param of item.params) {
+                            newObject[param['key']] = param['value'];
                         }
+                    }
 
-                        return {
-                            name: item.name,
-                            params: newObject
-                        };
-                    }
-                );
-                const newGpu_execution_accelerator = values.gpu_execution_accelerator.map(
-                    (item: any, index: number) => {
-                        const newObject: any = {};
-                        if (item.params) {
-                            for (const param of item.params) {
-                                newObject[param['key']] = param['value'];
-                            }
+                    return {
+                        name: item.name,
+                        params: newObject
+                    };
+                });
+                const newgpuExecutionAccelerator = values.gpuExecutionAccelerator?.map((item: any, index: number) => {
+                    const newObject: any = {};
+                    if (item.params) {
+                        for (const param of item.params) {
+                            newObject[param['key']] = param['value'];
                         }
-                        return {
-                            name: item.name,
-                            params: newObject
-                        };
                     }
-                );
+                    return {
+                        name: item.name,
+                        params: newObject
+                    };
+                });
                 if (IsEmsembles) {
                     console.log('values', values);
 
-                    const emsembless = ModelDatas.emsembles.map((emsembles: any) => {
-                        if (emsembles.name === emsemblesName) {
+                    const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
+                        if (ensembles.name === ensemblesName) {
                             return {
-                                ...emsembles,
+                                ...ensembles,
                                 optimization: {
-                                    cpu_execution_accelerator: newCpu_execution_accelerator,
-                                    gpu_execution_accelerator: newGpu_execution_accelerator
+                                    cpuExecutionAccelerator: newcpuExecutionAccelerator,
+                                    gpuExecutionAccelerator: newgpuExecutionAccelerator
                                 }
                             };
                         } else {
-                            return emsembles;
+                            return ensembles;
                         }
                     });
-                    ModelData.emsembles = emsembless;
+                    ModelData.ensembles = emsembless;
                     // setModelDatas(ModelData);
-                    upModelData(emsemblesName, dirValue, ModelData);
+                    upModelData(ensemblesName, dirValue, ModelData);
                     // setIsModalOpen(false);
                 } else {
-                    const models = ModelData.models.map((model: any) => {
+                    const models = ModelData.models?.map((model: any) => {
                         if (model.name === modelName) {
                             return {
                                 ...model,
                                 optimization: {
-                                    cpu_execution_accelerator: newCpu_execution_accelerator,
-                                    gpu_execution_accelerator: newGpu_execution_accelerator
+                                    cpuExecutionAccelerator: newcpuExecutionAccelerator,
+                                    gpuExecutionAccelerator: newgpuExecutionAccelerator
                                 }
                             };
                         } else {
@@ -845,7 +843,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         }
                     });
                     ModelData.models = models;
-                    upModelData(emsemblesName, dirValue, ModelData);
+                    upModelData(ensemblesName, dirValue, ModelData);
                     // setModelDatas(ModelData);
                 }
             })
@@ -905,7 +903,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         console.log('selected', selectedKeys, info);
     };
     const onFill = (models: any) => {
-        const newcpu = models?.optimization?.cpu_execution_accelerator.map((cpu: any) => {
+        const newcpu = models?.optimization?.cpuExecutionAccelerator?.map((cpu: any) => {
             const attr = Object.keys(cpu);
             const attr2 = cpu[attr[1]] && Object.keys(cpu[attr[1]]);
             const params = attr2?.map((key: any) => {
@@ -920,7 +918,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             };
         });
 
-        const newgpu = models?.optimization?.gpu_execution_accelerator.map((gpu: any) => {
+        const newgpu = models?.optimization?.gpuExecutionAccelerator?.map((gpu: any) => {
             const attr = Object.keys(gpu);
             const attr2 = gpu[attr[1]] && Object.keys(gpu[attr[1]]);
             const params = attr2?.map((key: any) => {
@@ -937,8 +935,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
         const modelss = {
             ...models,
-            cpu_execution_accelerator: newcpu,
-            gpu_execution_accelerator: newgpu
+            cpuExecutionAccelerator: newcpu,
+            gpuExecutionAccelerator: newgpu
         };
 
         form.setFieldsValue(modelss);
@@ -959,10 +957,10 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const changeEmsembles = (model: any) => {
         setIsEmsembles(true);
         setShowFlag(!showFlag);
-        // setTreeData(model.emsembles.versions);
+        // setTreeData(model.ensembles.versions);
     };
-    const EmsemblesNameChange = (value: string) => {
-        setEmsemblesName(value);
+    const EnsemblesNameChange = (value: string) => {
+        setEnsemblesName(value);
     };
     useEffect(() => {
         if (!flag) {
@@ -981,7 +979,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             if (!IsEmsembles) {
                 graphModel && onFill(graphModel);
             } else {
-                modelData && onFill(modelData.emsembles[0]);
+                modelData && onFill(modelData.ensembles[0]);
             }
         }
     }, [isModalOpen, graphModel]);
@@ -1009,17 +1007,17 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 placeholder="Search to Select"
                                 optionFilterProp="children"
                                 // filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                value={emsemblesName}
+                                value={ensemblesName}
                                 options={selectOptions}
                                 onChange={value => {
-                                    EmsemblesNameChange(value);
+                                    EnsemblesNameChange(value);
                                 }}
                             />
                         </SelectContent>
                     </div>
                     <div id="stencil" ref={dndContainerRef}>
                         {modelData &&
-                            modelData.models.map((model: any, index: number) => {
+                            modelData.models?.map((model: any, index: number) => {
                                 return (
                                     <div
                                         data-type={model.name}
@@ -1104,8 +1102,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         />
                     </Form.Item>
                     <Form.Item
-                        name="max_batch_size"
-                        label="max_batch_size"
+                        name="maxBatchSize"
+                        label="maxBatchSize"
                         rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
                     >
                         <Input />
@@ -1114,7 +1112,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Form.List name="input">
                             {(fields, {add, remove}) => (
                                 <div>
-                                    {fields.map((field: any, index: number) => (
+                                    {fields?.map((field: any, index: number) => (
                                         <div key={field.key}>
                                             <div
                                                 style={{
@@ -1143,9 +1141,9 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                 </Form.Item>
                                                 <Form.Item
                                                     {...field}
-                                                    label="data_type"
+                                                    label="dataType"
                                                     labelCol={{span: 4}}
-                                                    name={[field.name, 'data_type']}
+                                                    name={[field.name, 'dataType']}
                                                     rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
                                                 >
                                                     <Select>
@@ -1156,7 +1154,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                                 </Option>
                                                             )
                                                         )} */}
-                                                        {dataType.map(item => (
+                                                        {dataType?.map(item => (
                                                             <Option key={item} value={item}>
                                                                 {item}
                                                             </Option>
@@ -1190,7 +1188,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Form.List name="output">
                             {(fields2, {add, remove}) => (
                                 <div>
-                                    {fields2.map((field: any, index: number) => (
+                                    {fields2?.map((field: any, index: number) => (
                                         <div key={field.key}>
                                             <div
                                                 style={{
@@ -1219,13 +1217,13 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                 </Form.Item>
                                                 <Form.Item
                                                     {...field}
-                                                    label="data_type"
+                                                    label="dataType"
                                                     labelCol={{span: 4}}
-                                                    name={[field.name, 'data_type']}
+                                                    name={[field.name, 'dataType']}
                                                     rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
                                                 >
                                                     <Select>
-                                                        {dataType.map(item => (
+                                                        {dataType?.map(item => (
                                                             <Option key={item} value={item}>
                                                                 {item}
                                                             </Option>
@@ -1258,7 +1256,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Form.List name="instance_group">
                             {(fields3, {add, remove}) => (
                                 <div>
-                                    {fields3.map((field: any, index: number) => (
+                                    {fields3?.map((field: any, index: number) => (
                                         <div key={field.key}>
                                             <div
                                                 style={{
@@ -1327,7 +1325,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     </Form.Item>
                     <Form.Item name="optimization" label="optimization">
                         <div>
-                            <Form.List name="cpu_execution_accelerator">
+                            <Form.List name="cpuExecutionAccelerator">
                                 {(fields4, {add, remove}) => (
                                     <div>
                                         <div
@@ -1342,10 +1340,10 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                 style={{
                                                     marginRight: '10px'
                                                 }}
-                                            >{`cpu_execution_accelerator`}</div>
+                                            >{`cpuExecutionAccelerator`}</div>
                                             <PlusCircleOutlined onClick={() => add()} />
                                         </div>
-                                        {fields4.map(field => (
+                                        {fields4?.map(field => (
                                             <Space align="baseline" key={field.key}>
                                                 <div>
                                                     <div
@@ -1398,7 +1396,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                                         </div>
                                                                         <PlusCircleOutlined onClick={() => addTest()} />
                                                                     </div>
-                                                                    {fields5.map(fields => (
+                                                                    {fields5?.map(fields => (
                                                                         <Space align="baseline" key={fields.key}>
                                                                             <Form.Item
                                                                                 {...fields}
@@ -1445,7 +1443,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             </Form.List>
                         </div>
                         <div>
-                            <Form.List name="gpu_execution_accelerator">
+                            <Form.List name="gpuExecutionAccelerator">
                                 {(fields6, {add, remove}) => (
                                     <div>
                                         <div
@@ -1460,10 +1458,10 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                 style={{
                                                     marginRight: '10px'
                                                 }}
-                                            >{`gpu_execution_accelerator`}</div>
+                                            >{`gpuExecutionAccelerator`}</div>
                                             <PlusCircleOutlined onClick={() => add()} />
                                         </div>
-                                        {fields6.map(field => (
+                                        {fields6?.map(field => (
                                             <Space align="baseline" key={field.key}>
                                                 <div>
                                                     <div
@@ -1516,7 +1514,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                                         </div>
                                                                         <PlusCircleOutlined onClick={() => addTest()} />
                                                                     </div>
-                                                                    {fields7.map(fields => (
+                                                                    {fields7?.map(fields => (
                                                                         <Space align="baseline" key={fields.key}>
                                                                             <Form.Item
                                                                                 {...fields}

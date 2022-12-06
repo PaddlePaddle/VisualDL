@@ -15,430 +15,127 @@
  */
 
 export default {
-    models: [
-        {
-            name: 'runtime',
-            backend: 'fastdeploy',
-            max_batch_size: 8,
-            versions: {
-                1: ['model_1.pdmodels', 'model_1.pdiparams'],
-                2: ['model_2.pdmodels', 'model_2.pdiparams']
-            },
-            input: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            output: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            instance_group: [
-                {
-                    count: 2,
-                    kind: 'KIND_GPU',
-                    gpus: [0]
-                },
-                {
-                    count: 1,
-                    kind: 'KIND_GPU',
-                    gpus: [1, 2]
-                }
-            ],
-            optimization: {
-                cpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime',
-                        params: {
-                            cpu_threads: 8
-                        }
-                    }
-                ],
-                gpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime'
-                    }
-                ]
-            }
-        },
-        {
-            name: 'feed',
-            backend: 'fastdeploy',
-            max_batch_size: 8,
-            versions: {
-                1: ['model_1.pdmodels', 'model_1.pdiparams'],
-                2: ['model_2.pdmodels', 'model_2.pdiparams']
-            },
-            input: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            output: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            instance_group: [
-                {
-                    count: 2,
-                    kind: 'KIND_GPU',
-                    gpus: [0]
-                },
-                {
-                    count: 1,
-                    kind: 'KIND_GPU',
-                    gpus: [1, 2]
-                }
-            ],
-            optimization: {
-                cpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime',
-                        params: {
-                            cpu_threads: 8
-                        }
-                    }
-                ],
-                gpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime'
-                    }
-                ]
-            }
-        },
-        {
-            name: 'preprocess',
-            backend: 'fastdeploy',
-            max_batch_size: 8,
-            versions: {
-                1: ['model_1.pdmodels', 'model_1.pdiparams'],
-                2: ['model_2.pdmodels', 'model_2.pdiparams']
-            },
-            input: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            output: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            instance_group: [
-                {
-                    count: 2,
-                    kind: 'KIND_GPU',
-                    gpus: [0]
-                },
-                {
-                    count: 1,
-                    kind: 'KIND_GPU',
-                    gpus: [1, 2]
-                }
-            ],
-            optimization: {
-                cpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime',
-                        params: {
-                            cpu_threads: 8
-                        }
-                    }
-                ],
-                gpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime'
-                    }
-                ]
-            }
-        },
-        {
-            name: 'postprocess',
-            backend: 'fastdeploy',
-            max_batch_size: 8,
-            versions: {
-                1: ['model_1.pdmodels', 'model_1.pdiparams'],
-                2: ['model_2.pdmodels', 'model_2.pdiparams']
-            },
-            input: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            output: [
-                {
-                    name: 'input0',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                },
-                {
-                    name: 'input1',
-                    data_type: 'TYPE_FP32',
-                    dims: [16]
-                }
-            ],
-            instance_group: [
-                {
-                    count: 2,
-                    kind: 'KIND_GPU',
-                    gpus: [0]
-                },
-                {
-                    count: 1,
-                    kind: 'KIND_GPU',
-                    gpus: [1, 2]
-                }
-            ],
-            optimization: {
-                cpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime',
-                        params: {
-                            cpu_threads: 8
-                        }
-                    }
-                ],
-                gpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime'
-                    }
-                ]
-            }
-        }
-    ],
-    emsembles: [
+    ensembles: [
         {
             name: 'yolov5',
             platform: 'ensemble',
-            max_batch_size: 1,
-            versions: [
-                {
-                    title: '1',
-                    key: '1'
-                }
-            ],
-            input: [
-                {
-                    name: 'INPUT',
-                    data_type: 'TYPE_UINT8',
-                    dims: [-1, -1, 3]
-                }
-            ],
-            output: [
-                {
-                    name: 'detction_result',
-                    data_type: 'TYPE_STRING',
-                    dims: [-1]
-                }
-            ],
-            instance_group: [
-                {
-                    count: 2,
-                    kind: 'KIND_GPU',
-                    gpus: [0]
-                },
-                {
-                    count: 1,
-                    kind: 'KIND_GPU',
-                    gpus: [100]
-                }
-            ],
-            optimization: {
-                cpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime',
-                        params: {
-                            cpu_threads: 8
-                        }
-                    }
-                ],
-                gpu_execution_accelerator: [
-                    {
-                        name: 'onnxruntime'
-                    }
-                ]
-            },
+            maxBatchSize: 1,
+            input: [{name: 'INPUT', dataType: 'TYPE_UINT8', dims: ['-1', '-1', '3']}],
+            output: [{name: 'detction_result', dataType: 'TYPE_STRING', dims: ['-1']}],
+            versions: [{title: '1', key: '1', children: [{title: 'README.md', key: 'README.md'}]}],
             step: [
-                {
-                    modelName: 'feed',
-                    modelType: 'virtual', // 虚拟节点
-                    inputModels: [],
-                    outputModels: ['preprocess'],
-                    inputVars: [],
-                    outputVars: ['INPUT']
-                },
                 {
                     modelName: 'preprocess',
                     modelVersion: '1',
-                    modelType: 'normal', // 真实节点
-                    inputModels: ['feed'],
-                    outputModels: ['runtime', 'postprocess'],
+                    inputMap: {INPUT_0: 'INPUT'},
+                    outputMap: {preprocess_output_1: 'postprocess_input_1', preprocess_output_0: 'infer_input'},
+                    modelType: 'normal',
+                    inputModels: ['feed', 'feed'],
+                    outputModels: ['postprocess', 'runtime'],
                     inputVars: ['INPUT'],
-                    outputVars: ['infer_input', 'postprocess_input_1'],
-                    inputMap: {
-                        INPUT_0: 'INPUT'
-                    },
-                    outputMap: {
-                        preprocess_output_1: 'postprocess_input_1',
-                        preprocess_output_0: 'infer_input'
-                    }
+                    outputVars: ['postprocess_input_1', 'infer_input']
                 },
                 {
                     modelName: 'runtime',
                     modelVersion: '1',
-                    modelType: 'normal', // 真实节点
+                    inputMap: {images: 'infer_input'},
+                    outputMap: {output: 'infer_output'},
+                    modelType: 'normal',
                     inputModels: ['preprocess'],
                     outputModels: ['postprocess'],
                     inputVars: ['infer_input'],
-                    outputVars: ['infer_output'],
-                    inputMap: {
-                        images: 'infer_input'
-                    },
-                    outputMap: {
-                        output: 'infer_output'
-                    }
+                    outputVars: ['infer_output']
                 },
                 {
                     modelName: 'postprocess',
                     modelVersion: '1',
-                    modelType: 'normal', // 真实节点
-                    inputModels: ['feed', 'runtime'],
-                    outputModels: ['fetch'],
+                    inputMap: {POST_INPUT_1: 'postprocess_input_1', POST_INPUT_0: 'infer_output'},
+                    outputMap: {POST_OUTPUT: 'detction_result'},
+                    modelType: 'normal',
+                    inputModels: ['preprocess', 'runtime'],
+                    outputModels: ['fetch', 'fetch'],
                     inputVars: ['postprocess_input_1', 'infer_output'],
-                    outputVars: ['detction_result'],
-                    inputMap: {
-                        POST_INPUT_1: 'postprocess_input_1',
-                        POST_INPUT_0: 'infer_output'
-                    },
-                    outputMap: {
-                        POST_OUTPUT: 'detction_result'
-                    }
+                    outputVars: ['detction_result']
+                },
+                {
+                    modelName: 'feed',
+                    modelType: 'virtual',
+                    inputModels: [],
+                    outputModels: ['preprocess', 'preprocess'],
+                    inputVars: [],
+                    outputVars: ['INPUT', 'INPUT']
                 },
                 {
                     modelName: 'fetch',
-                    modelType: 'virtual', // 虚拟节点
-                    inputModels: ['postprocess'],
+                    modelType: 'virtual',
+                    inputModels: ['postprocess', 'postprocess'],
                     outputModels: [],
-                    inputVars: ['detction_result'],
+                    inputVars: ['detction_result', 'detction_result'],
                     outputVars: []
                 }
             ]
         }
     ],
-    step: [
+    models: [
         {
-            modelName: 'feed',
-            modelType: 'virtual', // 虚拟节点
-            inputModels: [],
-            outputModels: ['preprocess'],
-            inputVars: [],
-            outputVars: ['INPUT']
+            name: 'postprocess',
+            input: [
+                {name: 'POST_INPUT_0', dataType: 'TYPE_FP32', dims: ['-1', '-1', '-1']},
+                {name: 'POST_INPUT_1', dataType: 'TYPE_STRING', dims: ['-1']}
+            ],
+            output: [{name: 'POST_OUTPUT', dataType: 'TYPE_STRING', dims: ['-1']}],
+            instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
+            backend: 'python',
+            versions: [
+                {
+                    title: '1',
+                    key: '1',
+                    children: [
+                        {title: '__pycache__', key: '__pycache__'},
+                        {title: 'model.py', key: 'model.py'}
+                    ]
+                }
+            ]
         },
         {
-            modelName: 'preprocess',
-            modelVersion: '1',
-            modelType: 'normal', // 真实节点
-            inputModels: ['feed'],
-            outputModels: ['runtime', 'postprocess'],
-            inputVars: ['INPUT'],
-            outputVars: ['infer_input', 'postprocess_input_1'],
-            inputMap: {
-                INPUT_0: 'INPUT'
-            },
-            outputMap: {
-                preprocess_output_1: 'postprocess_input_1',
-                preprocess_output_0: 'infer_input'
-            }
+            name: 'runtime',
+            maxBatchSize: 16,
+            input: [{name: 'images', dataType: 'TYPE_FP32', dims: ['3', '-1', '-1']}],
+            output: [{name: 'output', dataType: 'TYPE_FP32', dims: ['-1', '-1']}],
+            instanceGroup: [{count: 1, gpus: [0], kind: 'KIND_GPU'}],
+            backend: 'fastdeploy',
+            optimization: {gpuExecutionAccelerator: [{name: 'onnxruntime', parameters: {cpu_threads: '2'}}]},
+            versions: [
+                {
+                    title: '1',
+                    key: '1',
+                    children: [
+                        {title: 'model.onnx', key: 'model.onnx'},
+                        {title: 'README.md', key: 'README.md'}
+                    ]
+                }
+            ]
         },
         {
-            modelName: 'runtime',
-            modelVersion: '1',
-            modelType: 'normal', // 真实节点
-            inputModels: ['preprocess'],
-            outputModels: ['postprocess'],
-            inputVars: ['infer_input'],
-            outputVars: ['infer_output'],
-            inputMap: {
-                images: 'infer_input'
-            },
-            outputMap: {
-                output: 'infer_output'
-            }
-        },
-        {
-            modelName: 'postprocess',
-            modelVersion: '1',
-            modelType: 'normal', // 真实节点
-            inputModels: ['preprocess', 'runtime'],
-            outputModels: ['fetch'],
-            inputVars: ['postprocess_input_1', 'infer_output'],
-            outputVars: ['detction_result'],
-            inputMap: {
-                POST_INPUT_1: 'postprocess_input_1',
-                POST_INPUT_0: 'infer_output'
-            },
-            outputMap: {
-                POST_OUTPUT: 'detction_result'
-            }
-        },
-        {
-            modelName: 'fetch',
-            modelType: 'virtual', // 虚拟节点
-            inputModels: ['postprocess'],
-            outputModels: [],
-            inputVars: ['detction_result'],
-            outputVars: []
+            name: 'preprocess',
+            maxBatchSize: 1,
+            input: [{name: 'INPUT_0', dataType: 'TYPE_UINT8', dims: ['-1', '-1', '3']}],
+            output: [
+                {name: 'preprocess_output_0', dataType: 'TYPE_FP32', dims: ['3', '-1', '-1']},
+                {name: 'preprocess_output_1', dataType: 'TYPE_STRING', dims: ['-1']}
+            ],
+            instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
+            backend: 'python',
+            versions: [
+                {
+                    title: '1',
+                    key: '1',
+                    children: [
+                        {title: '__pycache__', key: '__pycache__'},
+                        {title: 'model.py', key: 'model.py'}
+                    ]
+                }
+            ]
         }
     ]
 };

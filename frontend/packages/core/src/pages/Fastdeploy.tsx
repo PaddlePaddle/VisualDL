@@ -143,7 +143,7 @@ function App() {
     });
     const [mode, setMode] = useState<TabPosition>('left');
     const [inputValue, setInputValue] = useState('');
-    const [dirValue, setDirValue] = useState('');
+    const [dirValue, setDirValue] = useState('.');
     const [dirs, setDirs] = useState('');
     const [selectOptions, setSelectOptions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -218,7 +218,7 @@ function App() {
                 console.log('blobres', res);
                 // downloadEvt(res.data, fileName);
                 setDirs(dirValue);
-                setDirValue('');
+                setDirValue('.');
                 setModelData(res);
                 setIsModalOpen(false);
                 setLoading(false);
@@ -382,7 +382,7 @@ function App() {
                     </div>
                 </Contents2>
             )}
-            <Modal width={800} title="关闭服务" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal width={800} title="更换模型" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <SelectContent>
                     <Select
                         style={{width: '100%', height: '60px'}}
