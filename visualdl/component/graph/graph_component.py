@@ -19,6 +19,145 @@ import re
 _graph_version = '1.0.0'
 
 
+def post_order_traverse(root, all_ops, post_order_results):
+    '''
+    Traversal a tree in post order.
+    Args:
+        root: current node of the tree.
+        all_ops: used to index all nodes.
+        post_order_results(list): used to store traversal results in place.
+    '''
+    for child in all_ops[root]['children_node']:
+        post_order_traverse(child, all_ops, post_order_results)
+    post_order_results.append(root)
+    return
+
+
+def create_non_leaf_nodes(parent_node_name, child_node_name, all_ops,
+                          general_children_dict):
+    '''
+    Create a path from leaf to root, e.g. /a/b/c -> /a/b -> /a -> /. If node in path not exists, \
+        create one and fill information.
+    Args:
+        parent_node_name: name of parent node
+        child_node_name: name of current node
+        all_ops: used to store and index all nodes.
+        general_children_dict: used to store all descendants for each non-leaf node.
+    '''
+    if parent_node_name == '/' or parent_node_name == '':  # root node
+        parent_node_name = '/'
+    if parent_node_name not in all_ops:
+        all_ops[parent_node_name] = {}
+        all_ops[parent_node_name]['children_node'] = set()
+        all_ops[parent_node_name]['name'] = parent_node_name
+        all_ops[parent_node_name]['show_name'] = os.path.dirname(
+            all_ops[child_node_name]['show_name'])
+        all_ops[parent_node_name]['attrs'] = {}
+        all_ops[parent_node_name]['input_nodes'] = set()
+        all_ops[parent_node_name]['output_nodes'] = set()
+        all_ops[parent_node_name]['type'] = os.path.basename(
+            all_ops[parent_node_name]['show_name'])
+        all_ops[parent_node_name]['input_vars'] = set()
+        all_ops[parent_node_name]['output_vars'] = set()
+        all_ops[parent_node_name]['parent_node'] = ''
+        all_ops[parent_node_name]['edge_input_nodes'] = []
+        all_ops[parent_node_name]['edge_output_nodes'] = []
+        all_ops[parent_node_name]['is_leaf_node'] = False
+
+    all_ops[child_node_name]['parent_node'] = parent_node_name
+    all_ops[parent_node_name]['children_node'].add(child_node_name)
+    general_children_dict[parent_node_name].add(child_node_name)
+    general_children_dict[parent_node_name].update(
+        general_children_dict[child_node_name])
+    if parent_node_name == '/':  # root node
+        return
+    else:
+        create_non_leaf_nodes(
+            os.path.dirname(parent_node_name), parent_node_name, all_ops,
+            general_children_dict)
+
+
+def construct_edges(var_name, all_ops, all_vars, all_edges):
+    '''
+    Construct path edges from var's from_node to to_nodes.
+    Algorithm:
+        1. Judge if src_node and dst_node have the same parent node, if yes, link them directly
+        and fill information in all_edges, return.
+        2. Find the closest common ancestor, repeat link node and its parent until reach the common ancestor.
+        Every time construct a new edge, fill information in all_edges.
+    Args:
+        var_name: name of variable to process
+        all_ops: used to index all nodes.
+        all_vars:  used to index all variables.
+        all_edges: used to store and index all edges
+    '''
+    from_node = all_vars[var_name]['from_node']
+    to_nodes = all_vars[var_name]['to_nodes']
+
+    def _construct_edge(src_node, dst_node):
+        if all_ops[src_node]['parent_node'] == all_ops[dst_node][
+                'parent_node']:
+            if (src_node, dst_node) not in all_edges:
+                all_edges[(src_node, dst_node)] = {
+                    'from_node': src_node,
+                    'to_node': dst_node,
+                    'vars': {var_name},
+                    'label': ''
+                }
+            else:
+                all_edges[(src_node, dst_node)]['vars'].add(var_name)
+        else:
+            common_ancestor = os.path.commonpath([src_node, dst_node])
+            src_base_node = src_node
+            while True:
+                parent_node = all_ops[src_base_node]['parent_node']
+                if parent_node == common_ancestor:
+                    break
+                if (src_base_node, parent_node) not in all_edges:
+                    all_edges[(src_base_node, parent_node)] = {
+                        'from_node': src_base_node,
+                        'to_node': parent_node,
+                        'vars': {var_name},
+                        'label': ''
+                    }
+                else:
+                    all_edges[(src_base_node,
+                               parent_node)]['vars'].add(var_name)
+                src_base_node = parent_node
+            dst_base_node = dst_node
+            while True:
+                parent_node = all_ops[dst_base_node]['parent_node']
+                if parent_node == common_ancestor:
+                    break
+                if (parent_node, dst_base_node) not in all_edges:
+                    all_edges[(parent_node, dst_base_node)] = {
+                        'from_node': parent_node,
+                        'to_node': dst_base_node,
+                        'vars': {var_name},
+                        'label': ''
+                    }
+                else:
+                    all_edges[(parent_node,
+                               dst_base_node)]['vars'].add(var_name)
+                dst_base_node = parent_node
+            if (src_base_node, dst_base_node) not in all_edges:
+                all_edges[(src_base_node, dst_base_node)] = {
+                    'from_node': src_base_node,
+                    'to_node': dst_base_node,
+                    'vars': {var_name},
+                    'label': ''
+                }
+            else:
+                all_edges[(src_base_node, dst_base_node)]['vars'].add(var_name)
+        return
+
+    if from_node and to_nodes:
+        for to_node in to_nodes:
+            if from_node == to_node:
+                continue
+            _construct_edge(from_node, to_node)
+
+
 def analyse_model(model_pb):  # noqa: C901
     try:
         from paddle.framework import core
@@ -154,130 +293,16 @@ def analyse_model(model_pb):  # noqa: C901
 
     general_children_dict = collections.defaultdict(set)
 
-    def create_non_leaf_nodes(parent_node_name, child_node_name):
-        if parent_node_name == '/' or parent_node_name == '':  # root node
-            parent_node_name = '/'
-        if parent_node_name not in all_ops:
-            all_ops[parent_node_name] = {}
-            all_ops[parent_node_name]['children_node'] = set()
-            all_ops[parent_node_name]['name'] = parent_node_name
-            all_ops[parent_node_name]['show_name'] = os.path.dirname(
-                all_ops[child_node_name]['show_name'])
-            all_ops[parent_node_name]['attrs'] = {}
-            all_ops[parent_node_name]['input_nodes'] = set()
-            all_ops[parent_node_name]['output_nodes'] = set()
-            all_ops[parent_node_name]['type'] = os.path.basename(
-                all_ops[parent_node_name]['show_name'])
-            all_ops[parent_node_name]['input_vars'] = set()
-            all_ops[parent_node_name]['output_vars'] = set()
-            all_ops[parent_node_name]['parent_node'] = ''
-            all_ops[parent_node_name]['edge_input_nodes'] = []
-            all_ops[parent_node_name]['edge_output_nodes'] = []
-            all_ops[parent_node_name]['is_leaf_node'] = False
-
-        all_ops[child_node_name]['parent_node'] = parent_node_name
-        all_ops[parent_node_name]['children_node'].add(child_node_name)
-        general_children_dict[parent_node_name].add(child_node_name)
-        general_children_dict[parent_node_name].update(
-            general_children_dict[child_node_name])
-        if parent_node_name == '/':  # root node
-            return
-        else:
-            create_non_leaf_nodes(
-                os.path.dirname(parent_node_name), parent_node_name)
-
-    def construct_edges(var_name):
-        '''
-        Construct path edges from var's from_node to to_nodes.
-        Algorithm:
-            1. Judge if src_node and dst_node have the same parent node, if yes, link them directly
-            and fill information in all_edges, return.
-            2. Find the closest common ancestor, repeat link node and its parent until reach the common ancestor.
-            Every time construct a new edge, fill information in all_edges.
-        '''
-        from_node = all_vars[var_name]['from_node']
-        to_nodes = all_vars[var_name]['to_nodes']
-
-        def _construct_edge(src_node, dst_node):
-            if all_ops[src_node]['parent_node'] == all_ops[dst_node][
-                    'parent_node']:
-                if (src_node, dst_node) not in all_edges:
-                    all_edges[(src_node, dst_node)] = {
-                        'from_node': src_node,
-                        'to_node': dst_node,
-                        'vars': {var_name},
-                        'label': ''
-                    }
-                else:
-                    all_edges[(src_node, dst_node)]['vars'].add(var_name)
-            else:
-                common_ancestor = os.path.commonpath([src_node, dst_node])
-                src_base_node = src_node
-                while True:
-                    parent_node = all_ops[src_base_node]['parent_node']
-                    if parent_node == common_ancestor:
-                        break
-                    if (src_base_node, parent_node) not in all_edges:
-                        all_edges[(src_base_node, parent_node)] = {
-                            'from_node': src_base_node,
-                            'to_node': parent_node,
-                            'vars': {var_name},
-                            'label': ''
-                        }
-                    else:
-                        all_edges[(src_base_node,
-                                   parent_node)]['vars'].add(var_name)
-                    src_base_node = parent_node
-                dst_base_node = dst_node
-                while True:
-                    parent_node = all_ops[dst_base_node]['parent_node']
-                    if parent_node == common_ancestor:
-                        break
-                    if (parent_node, dst_base_node) not in all_edges:
-                        all_edges[(parent_node, dst_base_node)] = {
-                            'from_node': parent_node,
-                            'to_node': dst_base_node,
-                            'vars': {var_name},
-                            'label': ''
-                        }
-                    else:
-                        all_edges[(parent_node,
-                                   dst_base_node)]['vars'].add(var_name)
-                    dst_base_node = parent_node
-                if (src_base_node, dst_base_node) not in all_edges:
-                    all_edges[(src_base_node, dst_base_node)] = {
-                        'from_node': src_base_node,
-                        'to_node': dst_base_node,
-                        'vars': {var_name},
-                        'label': ''
-                    }
-                else:
-                    all_edges[(src_base_node,
-                               dst_base_node)]['vars'].add(var_name)
-            return
-
-        if from_node and to_nodes:
-            for to_node in to_nodes:
-                if from_node == to_node:
-                    continue
-                _construct_edge(from_node, to_node)
-
     all_op_names = list(all_ops.keys())
     for op_name in all_op_names:
-        create_non_leaf_nodes(os.path.dirname(op_name), op_name)
+        create_non_leaf_nodes(
+            os.path.dirname(op_name), op_name, all_ops, general_children_dict)
 
     # fill all non-leaf node's  'output_nodes' 'input_nodes' 'output_vars' 'input_vars'
     # post-order traverse tree
     post_order_results = []
 
-    def post_order_traverse(root):
-        for child in all_ops[root]['children_node']:
-            post_order_traverse(child)
-        nonlocal post_order_results
-        post_order_results.append(root)
-        return
-
-    post_order_traverse('/')
+    post_order_traverse('/', all_ops, post_order_results)
 
     for op_name in post_order_results:
         op = all_ops[op_name]
@@ -312,7 +337,7 @@ def analyse_model(model_pb):  # noqa: C901
 
     # Supplement edges and 'edge_input_nodes', 'edge_output_nodes' in op to help draw in frontend
     for var_name in all_vars.keys():
-        construct_edges(var_name)
+        construct_edges(var_name, all_ops, all_vars, all_edges)
 
     for src_node, to_node in all_edges.keys():
         all_ops[src_node]['edge_output_nodes'].append(to_node)
