@@ -4,27 +4,15 @@ import {Tabs} from 'antd';
 import Input from '~/components/Input';
 import Content from '~/components/Content';
 import FastdeployGraph from '~/components/FastdeployGraph';
+import ServerBox from '~/components//FastdeployGraph/serverBox';
 import {toast} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 import HashLoader from 'react-spinners/HashLoader';
+import {Select} from 'antd';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
-const ButtonContent = styled.section`
-    display: flex;
-    .active {
-        background-color: #2932e1;
-        color: white;
-    }
-    .un_active {
-        background-color: white;
-        color: #2932e1;
-    }
-    .disabled {
-        background: #ccc;
-        color: white;
-        cursor: not-allowed;
-    }
-`;
+import {Modal} from 'antd';
+import {filter} from '../resource/hyper-parameter/filter';
 
 interface IAnyObj {
     [index: string]: unknown;
@@ -42,12 +30,65 @@ const InputContent = styled.div`
         border-radius: 0px;
         flex: 1;
     }
+    .titleName {
+        flex: 1;
+        font-size: 28px;
+    }
 `;
 const Contents = styled.div`
     height: 100%;
     background: white;
     display: flex;
     flex-direction: column;
+`;
+const Contents2 = styled.div`
+    height: 100%;
+    background: white;
+    display: flex;
+    justify-content: center;
+
+    .inputContents {
+        margin-top: 200px;
+        width: 600px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        .ant-select-selector {
+            height: 60px;
+            .ant-select-selection-placeholder {
+                line-height: 60px;
+            }
+            .ant-select-selection-item {
+                line-height: 60px;
+            }
+        }
+    }
+    .inputButton {
+        font-size: 24px;
+        height: 40px;
+        line-height: 40px;
+        width: 80px;
+        color: white;
+        text-align: center;
+        background-color: var(--navbar-background-color);
+        margin-left: 20px;
+    }
+`;
+const SelectContent = styled.div`
+    height: 60px;
+    display: flex;
+    align-items: center;
+    .ant-select {
+        .ant-select-selector {
+            height: 100%;
+            .ant-select-selection-placeholder {
+                line-height: 60px;
+            }
+            .ant-select-selection-item {
+                line-height: 60px;
+            }
+        }
+    }
 `;
 const Buttons = styled.div`
     height: ${rem(36)};
@@ -83,6 +124,16 @@ const TabsContent = styled.div`
     .ant-tabs-content-left {
         height: 100%;
     }
+    .ant-tabs-nav-add {
+        display: none;
+    }
+    .ant-tabs-nav-list {
+        .ant-tabs-tab:nth-of-type(1) {
+            .ant-tabs-tab-remove {
+                display: none;
+            }
+        }
+    }
 `;
 function App() {
     const {t} = useTranslation(['togglegraph']);
@@ -92,22 +143,84 @@ function App() {
     });
     const [mode, setMode] = useState<TabPosition>('left');
     const [inputValue, setInputValue] = useState('');
-    const [dir, setDir] = useState('');
+    const [dirValue, setDirValue] = useState('');
+    const [dirs, setDirs] = useState('');
+    const [selectOptions, setSelectOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modelData, setModelData] = useState<any>();
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen2, setIsModalOpen2] = useState(false);
+    const [targetKeys, setTargetKey] = useState('');
+    const [serverId, setServerId] = useState<number>();
+    const [serverModels, setServerModels] = useState<any>([]);
     useEffect(() => {
         // const Graphs: any = Graph;
-        getModelData();
-    }, []);
+        // getModelData();
+        getDir(dirValue);
+    }, [dirValue]);
+    useEffect(() => {
+        if (serverId !== undefined) {
+            outDatas(serverId);
+        }
+    }, [serverId]);
+    // useEffect(() => {
+    //     debugger;
+    //     if (!serverModels.length) {
+    //         return;
+    //     }
+    //     setReforce(!reforce);
+    // }, [serverModels.length]);
+    const outDatas = (serverId: number) => {
+        fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${0}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('get_server_output', res);
+
+                const serverModel = serverModels;
+                const newServerModel = serverModel.map((model: any) => {
+                    if (model.id === serverId) {
+                        return {
+                            text: model.text + res,
+                            lengths: model.text.length + res.length,
+                            id: model.id
+                        };
+                    } else {
+                        return model;
+                    }
+                });
+                const flag = serverModel.some((model: any) => {
+                    return model.id === serverId;
+                });
+                if (!flag) {
+                    newServerModel.push({
+                        text: res,
+                        lengths: res.length,
+                        id: serverId
+                    });
+                }
+                setServerModels(newServerModel);
+                setServerId(undefined);
+                setLoading(false);
+            },
+            res => {
+                console.log('get_server_output', res);
+                setServerId(undefined);
+                setLoading(false);
+            }
+        );
+    };
     const getModelData = () => {
-        fetcher(`/fastdeploy/get_config?dir=${dir}`, {
+        fetcher(`/fastdeploy/get_config?dir=${dirValue}`, {
             method: 'GET'
         }).then(
             (res: any) => {
                 console.log('blobres', res);
                 // downloadEvt(res.data, fileName);
+                setDirs(dirValue);
+                setDirValue('');
                 setModelData(res);
+                setIsModalOpen(false);
                 setLoading(false);
             },
             res => {
@@ -115,34 +228,184 @@ function App() {
             }
         );
     };
+    const ChangeServerId = (id: number) => {
+        setServerId(id);
+    };
+    const SplicingDir = (value: string) => {
+        const newDir = dirValue + `/${value}`;
+        setDirValue(newDir);
+    };
+    const getDir = (dir: string) => {
+        fetcher(`/fastdeploy/get_directory?dir=${dir}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('res', res);
+                // downloadEvt(res.data, fileName);
+                // setModelData(res);
+                if (res?.sub_dir.length > 0) {
+                    const newOptions = res?.sub_dir.map((dir: string) => {
+                        return {
+                            value: dir,
+                            label: dir
+                        };
+                    });
+                    setSelectOptions(newOptions);
+                }
+                setLoading(false);
+            },
+            res => {
+                setLoading(false);
+            }
+        );
+    };
+    const ChangeModelClick = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        // onFinish();
+        getModelData();
+    };
+    const handleOk2 = () => {
+        stopSever(targetKeys);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel2 = () => {
+        setIsModalOpen2(false);
+    };
+    const stopSever = (targetKey: string) => {
+        fetcher(`/fastdeploy/stop_server?server_id=${targetKey}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('res', res);
+                // downloadEvt(res.data, fileName);
+                // setModelData(res);
+                remove(targetKey);
+                setLoading(false);
+            },
+            res => {
+                setLoading(false);
+            }
+        );
+    };
+    const remove = (targetKey: string) => {
+        const serverModel = serverModels;
+        const newServerModel = serverModel.filter((model: any) => {
+            const modelId = `${model.id}`;
+            if (modelId !== targetKey) {
+                return model;
+            }
+        });
+        setServerModels(newServerModel);
+        setIsModalOpen2(false);
+    };
+
+    const onEdit = (targetKey: string, action: 'add' | 'remove') => {
+        if (action === 'add') {
+            console.log(11111);
+        } else {
+            // stopSever(targetKey);
+            setTargetKey(targetKey);
+            setIsModalOpen2(true);
+        }
+    };
+    console.log('serverModels', serverModels);
+
     return (
         <Content>
-            {/* {loading && (
+            {loading && (
                 <Loading>
                     <HashLoader size="60px" color={primaryColor} />
                 </Loading>
-            )} */}
-            <Contents>
-                <InputContent>
-                    <Input
-                        // placeholder={t('common:search-tags')}
-                        className="inputWrapper"
-                        rounded
-                        value={inputValue}
-                        onChange={(value: string) => setInputValue(value)}
+            )}
+            {modelData ? (
+                <Contents>
+                    <InputContent>
+                        <div className="titleName">{`当前模型库:${dirs}`}</div>
+                        <Buttons onClick={ChangeModelClick}>更换模型库</Buttons>
+                    </InputContent>
+                    <TabsContent>
+                        <Tabs
+                            defaultActiveKey="1"
+                            type="editable-card"
+                            onEdit={onEdit}
+                            tabPosition={mode}
+                            style={{height: '100%'}}
+                        >
+                            {modelData && (
+                                <Tabs.TabPane tab=" emsemble模型结构" key="item-1">
+                                    <FastdeployGraph
+                                        modelData={modelData}
+                                        dirValue={dirs}
+                                        ChangeServerId={ChangeServerId}
+                                    ></FastdeployGraph>
+                                </Tabs.TabPane>
+                            )}
+                            {serverModels &&
+                                serverModels.map((server: any) => {
+                                    // debugger;
+                                    return (
+                                        <Tabs.TabPane tab={`Server${server.id}`} key={server.id}>
+                                            <ServerBox
+                                                Datas={server.text}
+                                                updatdDatas={() => {
+                                                    outDatas(server.id);
+                                                }}
+                                            ></ServerBox>
+                                        </Tabs.TabPane>
+                                    );
+                                })}
+                        </Tabs>
+                    </TabsContent>
+                </Contents>
+            ) : (
+                <Contents2>
+                    <div className="inputContents">
+                        <Select
+                            style={{width: '80%', height: '60px'}}
+                            placeholder="Search to Select"
+                            optionFilterProp="children"
+                            // filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                            value={dirValue}
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                            }
+                            options={selectOptions}
+                            onChange={value => {
+                                SplicingDir(value);
+                            }}
+                        />
+                        <div className="inputButton" onClick={getModelData}>
+                            ok
+                        </div>
+                    </div>
+                </Contents2>
+            )}
+            <Modal width={800} title="关闭服务" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                <SelectContent>
+                    <Select
+                        style={{width: '100%', height: '60px'}}
+                        placeholder="Search to Select"
+                        optionFilterProp="children"
+                        // filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                        value={dirValue}
+                        filterSort={(optionA, optionB) =>
+                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        options={selectOptions}
+                        onChange={value => {
+                            SplicingDir(value);
+                        }}
                     />
-                    <Buttons>更换模型库</Buttons>
-                </InputContent>
-                <TabsContent>
-                    <Tabs defaultActiveKey="1" tabPosition={mode} style={{height: '100%'}}>
-                        {modelData && (
-                            <Tabs.TabPane tab="项目 1" key="item-1">
-                                <FastdeployGraph modelData={modelData}></FastdeployGraph>
-                            </Tabs.TabPane>
-                        )}
-                    </Tabs>
-                </TabsContent>
-            </Contents>
+                </SelectContent>
+            </Modal>
+            <Modal width={800} title="Basic Modal" visible={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
+                请确认是否关闭所启动服务
+            </Modal>
             {/* {React.lazy(() => import('~/components/Fastdeploy'))} */}
         </Content>
     );
