@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import styled from 'styled-components';
-import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
+import React, {useState, useEffect, useRef, useCallback, useMemo, FunctionComponent} from 'react';
 import {rem, primaryColor, size} from '~/utils/style';
 import {Graph, Shape} from '@antv/x6';
 import {Modal} from 'antd';
@@ -187,7 +187,12 @@ const dataType = [
     'TYPE_STRING',
     'TYPE_BF16'
 ];
-const index = ({modelData, dirValue, ChangeServerId}) => {
+type ArgumentProps = {
+    modelData: any;
+    dirValue?: any;
+    ChangeServerId?: any;
+};
+const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId}) => {
     // #region 初始化图形
     const [ModelDatas, setModelDatas] = useState<any>(modelData);
     const [flag, setFlag] = useState<boolean>();
@@ -585,7 +590,7 @@ const index = ({modelData, dirValue, ChangeServerId}) => {
             edgeMaps2[edge] = level;
         }
         console.log('edgeMaps2', edgeMaps2);
-        const nodess = [];
+        const nodess: any = [];
         for (let index = 0; index < nodes.length; index++) {
             const node = nodes[index];
             Shape.HTML.register({
@@ -738,7 +743,7 @@ const index = ({modelData, dirValue, ChangeServerId}) => {
             showPorts(ports, false);
         });
     };
-    const upModelData = (name: string, dir: string, config: any) => {
+    const upModelData = (name: any, dir: string, config: any) => {
         fetcher(`/fastdeploy/config_update`, {
             method: 'post',
             body: JSON.stringify({
@@ -1005,11 +1010,6 @@ const index = ({modelData, dirValue, ChangeServerId}) => {
                                 optionFilterProp="children"
                                 // filterOption={(input, option) => (option?.label ?? '').includes(input)}
                                 value={emsemblesName}
-                                filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? '')
-                                        .toLowerCase()
-                                        .localeCompare((optionB?.label ?? '').toLowerCase())
-                                }
                                 options={selectOptions}
                                 onChange={value => {
                                     EmsemblesNameChange(value);
@@ -1570,7 +1570,6 @@ const index = ({modelData, dirValue, ChangeServerId}) => {
                     <Form.Item
                         name={'model-repository'}
                         label={'model-repository'}
-                        disabled={true}
                         rules={[
                             {
                                 required: true,
@@ -1578,7 +1577,7 @@ const index = ({modelData, dirValue, ChangeServerId}) => {
                             }
                         ]}
                     >
-                        <Input />
+                        <Input disabled={true} />
                     </Form.Item>
                     <Form.Item
                         name={'backend-config'}

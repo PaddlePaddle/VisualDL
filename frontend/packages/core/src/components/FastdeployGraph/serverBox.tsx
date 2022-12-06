@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
 import {rem} from '~/utils/style';
 const Buttons = styled.div`
@@ -17,7 +17,11 @@ const ButtonContent = styled.div`
     padding-top: 20px;
     padding-bottom: 20px;
 `;
-function serverBox({Datas, updatdDatas}) {
+type ArgumentProps = {
+    Datas: any;
+    updatdDatas?: any;
+};
+const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas}) => {
     console.log('Datas', Datas);
 
     return (
@@ -43,6 +47,6 @@ function serverBox({Datas, updatdDatas}) {
             </ButtonContent>
         </div>
     );
-}
+};
 
 export default serverBox;

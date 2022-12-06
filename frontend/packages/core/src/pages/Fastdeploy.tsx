@@ -304,7 +304,7 @@ function App() {
         setIsModalOpen2(false);
     };
 
-    const onEdit = (targetKey: string, action: 'add' | 'remove') => {
+    const onEdit: any = (targetKey: string, action: 'add' | 'remove') => {
         if (action === 'add') {
             console.log(11111);
         } else {
@@ -371,9 +371,6 @@ function App() {
                             optionFilterProp="children"
                             // filterOption={(input, option) => (option?.label ?? '').includes(input)}
                             value={dirValue}
-                            filterSort={(optionA, optionB) =>
-                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                            }
                             options={selectOptions}
                             onChange={value => {
                                 SplicingDir(value);
@@ -393,9 +390,6 @@ function App() {
                         optionFilterProp="children"
                         // filterOption={(input, option) => (option?.label ?? '').includes(input)}
                         value={dirValue}
-                        filterSort={(optionA, optionB) =>
-                            (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                        }
                         options={selectOptions}
                         onChange={value => {
                             SplicingDir(value);
