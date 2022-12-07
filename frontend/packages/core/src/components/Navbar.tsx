@@ -284,6 +284,7 @@ const Navbar: FunctionComponent = () => {
             image: 'image',
             audio: 'audio',
             text: 'text',
+            fastdeploy_server: 'fastdeploy_server',
             graphStatic: 'static_graph',
             graphDynamic: 'dynamic_graph',
             'high-dimensional': 'embeddings',
@@ -291,17 +292,17 @@ const Navbar: FunctionComponent = () => {
             'roc-curve': 'roc_curve',
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
-            x2paddle: 'x2paddle',
-            fastdeploy_server: 'fastdeploy_server'
+            x2paddle: 'x2paddle'
         };
     }, []);
+    console.log('pathname', pathname);
+
     const currentPath = useMemo(() => pathname.replace(BASE_URI, ''), [pathname]);
 
     const [components] = useComponents();
     const routePush = (route: any, component: any) => {
         const Components = isArray(component) ? [...component] : [...component.values()];
         console.log('routeEm[route.id]', navList, navList.includes(routeEm[route.id]));
-
         if (navList.includes(routeEm[route.id])) {
             // debugger;
 
@@ -322,6 +323,7 @@ const Navbar: FunctionComponent = () => {
                 // const Id: any = item.id;
                 if (navList.includes(routeEm[item.id])) {
                     // Components.push(item);
+
                     Components.set(item.id, item);
                 }
                 if (item.children) {
@@ -356,6 +358,8 @@ const Navbar: FunctionComponent = () => {
         () => flatten(newcomponents.slice(MAX_ITEM_COUNT_IN_NAVBAR)),
         [newcomponents]
     );
+    console.log('currentPath', currentPath);
+
     const componentsInMoreMenu: any = useMemo(
         () =>
             flattenMoreComponents.map(item => ({
@@ -365,26 +369,44 @@ const Navbar: FunctionComponent = () => {
         [currentPath, flattenMoreComponents]
     );
     const [navItemsInNavbar, setNavItemsInNavbar] = useState<NavbarItemType[]>([]);
-    const routesChange = (route: any, parentPath?: any) => {
+    const routesChange = (route: any, parentPath: string, path: string) => {
         // debugger;
-        if (navList.includes(routeEm[route.id])) {
-            // debugger;
-            if (parentPath) {
-                history.push(`${parentPath}/${route.id}`);
-                return true;
-            } else {
-                history.push(`/${route.id}`);
-                return true;
-            }
-            // setDefaultRoute(route.id);
+        //     if (navList.includes(routeEm[route.id])) {
+        //         debugger;
+        //     //     if (parentPath) {
+        //     //         history.push(`${parentPath}/${route.id}`);
+        //     //         return true;
+        //     //     } else {
+        //     //         history.push(`/${route.id}`);
+        //     //         return true;
+        //     //     }
+        //     //     // setDefaultRoute(route.id);
+        //     // }
+        //     // if (route.children) {
+        //     //     for (const Route of route.children) {
+        //     //         routesChange(Route, `/${route.id}`);
+        //     //     }
+        //     // }
+        //     // return false;
+        // };
+        let id = '';
+        if (parentPath) {
+            id = parentPath + `/${route.id}`;
+        } else {
+            id = `/${route.id}`;
+        }
+        // debugger;
+        if (routeEm[route.id] === path) {
+            history.push(id);
+            return;
         }
         if (route.children) {
             for (const Route of route.children) {
-                routesChange(Route, `/${route.id}`);
+                routesChange(Route, id, path);
             }
         }
-        // return false;
     };
+
     useEffect(() => {
         // setLoading(true);
         fetcher('/component_tabs').then((res: any) => {
@@ -395,13 +417,25 @@ const Navbar: FunctionComponent = () => {
     }, []);
     useEffect(() => {
         // const defaultRoute = routes;
-        if (navList.length > 0) {
-            for (const route of routes) {
-                const flag = routesChange(route);
-                if (flag) {
-                    return;
+        if (navList.length > 0 && pathname) {
+            console.log('pathname', pathname);
+            const path = navList[0];
+            // debugger;
+            // const path = routeEm[pathNames];
+
+            if (pathname === '/') {
+                for (const route of routes) {
+                    routesChange(route, '', path);
                 }
             }
+            // history.push(`/${route}`);
+            else {
+                history.push(path);
+            }
+
+            // const route = navList[navList.length - 1];
+            // debugger;
+            // routesChange(route);
         }
     }, [navList]);
     useEffect(() => {

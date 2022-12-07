@@ -16,5 +16,5 @@
 
 export default {
     parent_dir: 'cur_dir',
-    sub_dir: ['sub_dir0', 'sub_dir1', 'sub_dir2', 'sub_dir3', 'sub_dir4', 'sub_dir5', 'sub_dir6', 'sub_dir7']
+    sub_dir: ['sub_dir0', 'sub_dir1', 'sub_dir2', 'sub_dir3', 'sub_dir4', 'sub_dir5', 'sub_dir6', 'sub_dir7', '..']
 };

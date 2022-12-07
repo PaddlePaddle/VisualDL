@@ -319,11 +319,17 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             mousewheel: {
                 enabled: true,
                 zoomAtMousePosition: true,
-                // modifiers: 'ctrl',
                 minScale: 0.5,
-                maxScale: 3,
-                modifiers: ['ctrl', 'meta']
+                maxScale: 3
+                // modifiers: ['ctrl', 'meta']
             },
+            panning: true,
+            // scroller: {
+            //     enabled: true,
+            //     pannable: true,
+            //     pageVisible: true,
+            //     pageBreak: false
+            // },
             connecting: {
                 router: {
                     name: 'manhattan',
@@ -748,16 +754,27 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         });
     };
     const upModelData = (name: any, dir: string, config: any) => {
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('dir', dir);
-        formData.append('config', JSON.stringify(config));
+        let formBody: any = [];
+        const details: any = {
+            name: name,
+            dir: dir,
+            config: JSON.stringify(config)
+        };
+        for (const property in details) {
+            const encodedKey = encodeURIComponent(property);
+            const encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + '=' + encodedValue);
+        }
+        formBody = formBody.join('&');
+        // formData.append('name', name);
+        // formData.append('dir', dir);
+        // formData.append('config', JSON.stringify(config));
         fetcher(`/fastdeploy/config_update`, {
-            method: 'post',
-            body: formData,
+            method: 'POST',
             headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
+            body: formBody
         }).then(
             (res: any) => {
                 console.log('blobres', res);
@@ -866,15 +883,25 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             ?.validateFields()
             .then(values => {
                 setConfigs(values);
-                const formData = new FormData();
-                const configs = JSON.stringify(values);
-                formData.append('config', configs);
+                // const formData = new FormData();
+                // const configs = JSON.stringify(values);
+                // formData.append('config', configs);
+                let formBody: any = [];
+                const details: any = {
+                    config: JSON.stringify(values)
+                };
+                for (const property in details) {
+                    const encodedKey = encodeURIComponent(property);
+                    const encodedValue = encodeURIComponent(details[property]);
+                    formBody.push(encodedKey + '=' + encodedValue);
+                }
+                formBody = formBody.join('&');
                 fetcher(`/fastdeploy/start_server`, {
-                    method: 'post',
-                    body: formData,
+                    method: 'POST',
                     headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    body: formBody
                 }).then(
                     (res: any) => {
                         console.log('resss', res);
@@ -889,7 +916,6 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 );
             })
             .catch(errorInfo => {
-                // console.log('errorInfo', errorInfo);
                 alert(errorInfo);
             });
     };

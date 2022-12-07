@@ -142,7 +142,6 @@ function App() {
         show2: false
     });
     const [mode, setMode] = useState<TabPosition>('left');
-    const [inputValue, setInputValue] = useState('');
     const [dirValue, setDirValue] = useState('.');
     const [dirs, setDirs] = useState('');
     const [selectOptions, setSelectOptions] = useState([]);
@@ -232,8 +231,14 @@ function App() {
         setServerId(id);
     };
     const SplicingDir = (value: string) => {
-        const newDir = dirValue + `/${value}`;
-        setDirValue(newDir);
+        if (value === '..') {
+            const newDir = dirValue?.split('/');
+            const newDir2 = newDir.splice(0, newDir.length - 1).join('/');
+            setDirValue(newDir2);
+        } else {
+            const newDir = dirValue + `/${value}`;
+            setDirValue(newDir);
+        }
     };
     const getDir = (dir: string) => {
         fetcher(`/fastdeploy/get_directory?dir=${dir}`, {
