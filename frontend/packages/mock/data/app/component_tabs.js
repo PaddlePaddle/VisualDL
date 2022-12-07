@@ -17,7 +17,7 @@
 export default [
     'scalar',
     'image',
-    // 'text',
+    'text',
     'embeddings',
     'audio',
     'histogram',
@@ -30,4 +30,4 @@ export default [
     'x2paddle',
     'fastdeploy_server'
 ];
-// export default ['dynamic_graph'];
+// export default ['histogram'];

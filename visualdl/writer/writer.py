@@ -665,7 +665,7 @@ class LogWriter(object):
             result = translate_graph(model, input_spec, verbose)
         except Exception as e:
             print("Failed to save model graph, error: {}".format(e))
-            return
+            raise e
         graph_file_name = bfile.join(
             self.logdir,
             "vdlgraph.%010d.log%s" % (time.time(), self._filename_suffix))
