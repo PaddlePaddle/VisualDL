@@ -219,32 +219,32 @@ def analyse_step_relationships(step_config, inputs, outputs):
             for var in inputs:
                 if var['name'] not in vars_dict:
                     vars_dict[var['name']] = {}
-                    vars_dict[var['name']]['from_models'] = []
-                    vars_dict[var['name']]['to_models'] = []
-                vars_dict[var['name']]['from_models'].append('feed')
+                    vars_dict[var['name']]['from_models'] = set()
+                    vars_dict[var['name']]['to_models'] = set()
+                vars_dict[var['name']]['from_models'].add('feed')
             for var in outputs:
                 if var['name'] not in vars_dict:
                     vars_dict[var['name']] = {}
-                    vars_dict[var['name']]['from_models'] = []
-                    vars_dict[var['name']]['to_models'] = []
-                vars_dict[var['name']]['to_models'].append('fetch')
+                    vars_dict[var['name']]['from_models'] = set()
+                    vars_dict[var['name']]['to_models'] = set()
+                vars_dict[var['name']]['to_models'].add('fetch')
         else:
             for var_placehold_name, var_name in model_config_in_step[
                     'inputMap'].items():
                 if var_name not in vars_dict:
                     vars_dict[var_name] = {}
-                    vars_dict[var_name]['from_models'] = []
-                    vars_dict[var_name]['to_models'] = []
-                vars_dict[var_name]['to_models'].append(
+                    vars_dict[var_name]['from_models'] = set()
+                    vars_dict[var_name]['to_models'] = set()
+                vars_dict[var_name]['to_models'].add(
                     model_config_in_step['modelName'])
 
             for var_placehold_name, var_name in model_config_in_step[
                     'outputMap'].items():
                 if var_name not in vars_dict:
                     vars_dict[var_name] = {}
-                    vars_dict[var_name]['from_models'] = []
-                    vars_dict[var_name]['to_models'] = []
-                vars_dict[var_name]['from_models'].append(
+                    vars_dict[var_name]['from_models'] = set()
+                    vars_dict[var_name]['to_models'] = set()
+                vars_dict[var_name]['from_models'].add(
                     model_config_in_step['modelName'])
     for var_name, relationships in vars_dict.items():
         for from_model in relationships['from_models']:
