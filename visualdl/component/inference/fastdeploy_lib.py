@@ -67,6 +67,9 @@ def analyse_config(cur_dir: str):
                         all_model_versions[model_name][model_sub_dir] = []
                     all_model_versions[model_name][model_sub_dir].append(
                         version_resource_file)
+    if not all_model_configs:
+        raise Exception(
+            'Not a valid model repository, please choose the right path')
     return all_model_configs, all_model_versions, all_model_paths
 
 
