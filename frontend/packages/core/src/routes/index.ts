@@ -31,7 +31,7 @@ export enum Pages {
     ROCCurve = 'roc-curve',
     Profiler = 'profiler',
     HyperParameter = 'hyper-parameter',
-    Fastdeploy_server = 'fastdeploy_server',
+    fastdeploy_server = 'fastdeploy_server',
     FastdeployClient = 'FastdeployClient'
 }
 
@@ -129,7 +129,7 @@ const routes: Route[] = [
         component: React.lazy(() => import('~/pages/curves/roc'))
     },
     {
-        id: Pages.Fastdeploy_server,
+        id: Pages.fastdeploy_server,
         path: '/fastdeploy_server',
         component: React.lazy(() => import('~/pages/Fastdeploy'))
     },

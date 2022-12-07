@@ -314,7 +314,6 @@ const Navbar: FunctionComponent = () => {
     };
     const newcomponents = useMemo(() => {
         const Components = new Map();
-
         const parent: any[] = [];
         if (navList.length > 0) {
             for (const item of components) {
@@ -387,6 +386,8 @@ const Navbar: FunctionComponent = () => {
     useEffect(() => {
         // setLoading(true);
         fetcher('/component_tabs').then((res: any) => {
+            console.log('component_tabs', res);
+
             setNavlist(res);
         });
     }, []);
