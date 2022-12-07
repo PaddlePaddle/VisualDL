@@ -748,13 +748,13 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         });
     };
     const upModelData = (name: any, dir: string, config: any) => {
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('dir', dir);
+        formData.append('config', config);
         fetcher(`/fastdeploy/config_update`, {
             method: 'post',
-            body: JSON.stringify({
-                name: name,
-                dir: dir,
-                config: config
-            })
+            body: formData
         }).then(
             (res: any) => {
                 console.log('blobres', res);
@@ -863,11 +863,12 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             ?.validateFields()
             .then(values => {
                 setConfigs(values);
+                const formData = new FormData();
+                const configs = values;
+                formData.append('config', configs);
                 fetcher(`/fastdeploy/start_server`, {
                     method: 'post',
-                    body: JSON.stringify({
-                        config: values
-                    }),
+                    body: formData,
                     headers: {
                         'Content-Type': 'application/json'
                     }
