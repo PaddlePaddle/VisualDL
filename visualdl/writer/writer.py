@@ -26,6 +26,7 @@ from visualdl.component.base_component import meta_data
 from visualdl.component.base_component import pr_curve
 from visualdl.component.base_component import roc_curve
 from visualdl.component.base_component import scalar
+from visualdl.component.base_component import scalars
 from visualdl.component.base_component import text
 from visualdl.component.graph import translate_graph
 from visualdl.io import bfile
@@ -186,6 +187,30 @@ class LogWriter(object):
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
             scalar(tag=tag, value=value, step=step, walltime=walltime))
+
+    def add_scalars(self, main_tag, tag_scalar_dict, step, walltime=None):
+        """Add a group of scalars to vdl record file.
+
+        Args:
+            main_tag (string): Data identifier
+            tag_scalar_dict (float): A dict to provide multi-values with tags
+            step (int): Step of scalar
+            walltime (int): Wall time of scalar
+
+        Example:
+            import math
+            for index in range(1, 101):
+                alpha = index*2*math.pi/100
+                tval = {'sin':math.sin(alpha), 'cos':math.cos(alpha)}
+                writer.add_scalars(tag="sin_and_cos", tag_value=tval, step=index)
+        """
+        if '%' in main_tag:
+            raise RuntimeError("% can't appear in tag!")
+        if not isinstance(tag_scalar_dict, dict):
+            raise RuntimeError("tag_value must be a dict!")
+        walltime = round(time.time() * 1000) if walltime is None else walltime
+        for record in scalars(main_tag, tag_scalar_dict, step, walltime):
+            self._get_file_writer().add_record(record)
 
     def add_image(self, tag, img, step, walltime=None, dataformats="HWC"):
         """Add an image to vdl record file.
@@ -640,7 +665,7 @@ class LogWriter(object):
             result = translate_graph(model, input_spec, verbose)
         except Exception as e:
             print("Failed to save model graph, error: {}".format(e))
-            return
+            raise e
         graph_file_name = bfile.join(
             self.logdir,
             "vdlgraph.%010d.log%s" % (time.time(), self._filename_suffix))

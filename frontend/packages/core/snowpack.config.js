@@ -39,6 +39,7 @@ const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
 const netronPath2 = path.dirname(resolve.sync(cwd, '@visualdl/netron2'));
 // const netronPath3 = path.dirname(resolve.sync(cwd, '@visualdl/netron3'));
 
+const TracePath = path.dirname(resolve.sync(cwd, './public/static'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
 
@@ -107,6 +108,10 @@ export default {
                     //     source: [path.join(netronPath3, '**/*')],
                     //     destination: path.join(dest, 'netron3/dist')
                     // },
+                    {
+                        source: [path.join(TracePath, '**/*')],
+                        destination: path.join(dest, 'trace/dist')
+                    },
                     {
                         source: [path.join(wasmPath, '*.{js,wasm}')],
                         destination: path.join(dest, 'wasm/dist')
