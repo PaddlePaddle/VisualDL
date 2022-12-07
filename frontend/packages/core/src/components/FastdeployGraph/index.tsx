@@ -756,7 +756,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             method: 'post',
             body: formData,
             headers: {
-                'Content-Type': 'multipart/form-data/'
+                'Content-Type': 'multipart/form-data'
             }
         }).then(
             (res: any) => {
@@ -873,7 +873,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     method: 'post',
                     body: formData,
                     headers: {
-                        'Content-Type': 'multipart/form-data/'
+                        'Content-Type': 'multipart/form-data'
                     }
                 }).then(
                     (res: any) => {
