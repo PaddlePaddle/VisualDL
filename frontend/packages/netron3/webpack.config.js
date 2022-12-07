@@ -62,9 +62,9 @@ module.exports = {
         warnings: false
     },
     entry: {
-        index: './src/index.js',
-        shim: './src/shim.js',
-        style: './src/style.scss'
+        index: './src/index.js'
+        // shim: './src/shim.js',
+        // style: './src/style.scss'
     },
     output: {
         path: output,

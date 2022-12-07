@@ -201,9 +201,11 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [graphs, setGraphs] = useState<Graph>();
     const [edgeMaps, setEdgeMaps] = useState<any>({});
     const [configs, setConfigs] = useState<any>({
-        'model-repository': '',
-        'backend-config': 'python',
-        'shm-default-byte-size': '10485760'
+        'model-repository': 'yolov5_serving/models',
+        'backend-config': 'python,shm-default-byte-size=10485760',
+        'http-port': 8000,
+        'grpc-port': 8001,
+        'metrics-port': 8002
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
@@ -782,30 +784,30 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // setIsModalOpen(false);
                 const ModelData = ModelDatas;
                 const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any, index: number) => {
-                    // const params =
+                    // const parameters =
                     const newObject: any = {};
                     // newObject[item.key] = item.value;
-                    if (item.params) {
-                        for (const param of item.params) {
+                    if (item.parameters) {
+                        for (const param of item.parameters) {
                             newObject[param['key']] = param['value'];
                         }
                     }
 
                     return {
                         name: item.name,
-                        params: newObject
+                        parameters: newObject
                     };
                 });
                 const newgpuExecutionAccelerator = values.gpuExecutionAccelerator?.map((item: any, index: number) => {
                     const newObject: any = {};
-                    if (item.params) {
-                        for (const param of item.params) {
+                    if (item.parameters) {
+                        for (const param of item.parameters) {
                             newObject[param['key']] = param['value'];
                         }
                     }
                     return {
                         name: item.name,
-                        params: newObject
+                        parameters: newObject
                     };
                 });
                 if (IsEmsembles) {
@@ -815,6 +817,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         if (ensembles.name === ensemblesName) {
                             return {
                                 ...ensembles,
+                                ...values,
                                 optimization: {
                                     cpuExecutionAccelerator: newcpuExecutionAccelerator,
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
@@ -833,6 +836,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         if (model.name === modelName) {
                             return {
                                 ...model,
+                                ...values,
                                 optimization: {
                                     cpuExecutionAccelerator: newcpuExecutionAccelerator,
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
@@ -861,7 +865,9 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 setConfigs(values);
                 fetcher(`/fastdeploy/start_server`, {
                     method: 'post',
-                    body: JSON.stringify(values),
+                    body: JSON.stringify({
+                        config: values
+                    }),
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -906,30 +912,30 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         const newcpu = models?.optimization?.cpuExecutionAccelerator?.map((cpu: any) => {
             const attr = Object.keys(cpu);
             const attr2 = cpu[attr[1]] && Object.keys(cpu[attr[1]]);
-            const params = attr2?.map((key: any) => {
+            const parameters = attr2?.map((key: any) => {
                 return {
                     key: key,
-                    value: cpu?.params?.[key]
+                    value: cpu?.parameters?.[key]
                 };
             });
             return {
                 name: cpu.name,
-                params: params
+                parameters: parameters
             };
         });
 
         const newgpu = models?.optimization?.gpuExecutionAccelerator?.map((gpu: any) => {
             const attr = Object.keys(gpu);
             const attr2 = gpu[attr[1]] && Object.keys(gpu[attr[1]]);
-            const params = attr2?.map((key: any) => {
+            const parameters = attr2?.map((key: any) => {
                 return {
                     key: key,
-                    value: gpu?.params?.[key]
+                    value: gpu?.parameters?.[key]
                 };
             });
             return {
                 name: gpu.name,
-                params: params
+                parameters: parameters
             };
         });
 
@@ -938,7 +944,6 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             cpuExecutionAccelerator: newcpu,
             gpuExecutionAccelerator: newgpu
         };
-
         form.setFieldsValue(modelss);
     };
     const onFill2 = (config: any) => {
@@ -987,7 +992,9 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (isModalOpen2 && dirValue) {
             onFill2({
                 'backend-config': configs['backend-config'],
-                'shm-default-byte-size': configs['shm-default-byte-size'],
+                'metrics-port': configs['metrics-port'],
+                'http-port': configs['http-port'],
+                'grpc-port': configs['grpc-port'],
                 'model-repository': dirValue
             });
         }
@@ -1373,7 +1380,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                         />
                                                     </div>
                                                     <Form.Item>
-                                                        <Form.List name={[field.name, 'params']} key={field.key}>
+                                                        <Form.List name={[field.name, 'parameters']} key={field.key}>
                                                             {(fields5, {add: addTest, remove: removeTest}) => (
                                                                 <div
                                                                     style={{
@@ -1392,7 +1399,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                                                 marginRight: '10px'
                                                                             }}
                                                                         >
-                                                                            params
+                                                                            parameters
                                                                         </div>
                                                                         <PlusCircleOutlined onClick={() => addTest()} />
                                                                     </div>
@@ -1491,7 +1498,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                         />
                                                     </div>
                                                     <Form.Item>
-                                                        <Form.List name={[field.name, 'params']} key={field.key}>
+                                                        <Form.List name={[field.name, 'parameters']} key={field.key}>
                                                             {(fields7, {add: addTest, remove: removeTest}) => (
                                                                 <div
                                                                     style={{
@@ -1510,7 +1517,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                                                 marginRight: '10px'
                                                                             }}
                                                                         >
-                                                                            params
+                                                                            parameters
                                                                         </div>
                                                                         <PlusCircleOutlined onClick={() => addTest()} />
                                                                     </div>
@@ -1590,8 +1597,38 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        name={'shm-default-byte-size'}
-                        label={'shm-default-byte-size'}
+                        // name={'shm-default-byte-size'}
+                        // label={'shm-default-byte-size'}
+                        name={'http-port'}
+                        label={'http-port'}
+                        rules={[
+                            {
+                                required: true,
+                                message: '该字段为必填项请填写对应信息'
+                            }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        // name={'shm-default-byte-size'}
+                        // label={'shm-default-byte-size'}
+                        name={'grpc-port'}
+                        label={'grpc-port'}
+                        rules={[
+                            {
+                                required: true,
+                                message: '该字段为必填项请填写对应信息'
+                            }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        // name={'shm-default-byte-size'}
+                        // label={'shm-default-byte-size'}
+                        name={'metrics-port'}
+                        label={'metrics-port'}
                         rules={[
                             {
                                 required: true,

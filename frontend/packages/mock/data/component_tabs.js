@@ -30,4 +30,4 @@
 //     'x2paddle',
 //     'fastdeploy_server'
 // ];
-export default ['fastdeploy_server'];
+export default ['fastdeploy_server,FastdeployClient'];
