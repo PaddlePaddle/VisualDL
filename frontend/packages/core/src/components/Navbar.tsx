@@ -300,6 +300,8 @@ const Navbar: FunctionComponent = () => {
     const [components] = useComponents();
     const routePush = (route: any, component: any) => {
         const Components = isArray(component) ? [...component] : [...component.values()];
+        console.log('routeEm[route.id]', navList, navList.includes(routeEm[route.id]));
+
         if (navList.includes(routeEm[route.id])) {
             // debugger;
 
