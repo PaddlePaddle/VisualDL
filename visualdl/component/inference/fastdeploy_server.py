@@ -81,6 +81,10 @@ class FastDeployServerApi(object):
     def start_server(self, configs):
         configs = json.loads(configs)
         process = launch_process(configs)
+        if process.poll() is not None:
+            raise RuntimeError(
+                "Launch fastdeploy server failed, please check your launching arguments"
+            )
         self.opened_servers[process.pid] = process
         return process.pid
 
