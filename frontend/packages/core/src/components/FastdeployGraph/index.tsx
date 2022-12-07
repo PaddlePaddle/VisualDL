@@ -754,7 +754,10 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         formData.append('config', JSON.stringify(config));
         fetcher(`/fastdeploy/config_update`, {
             method: 'post',
-            body: formData
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data/'
+            }
         }).then(
             (res: any) => {
                 console.log('blobres', res);
@@ -870,7 +873,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     method: 'post',
                     body: formData,
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'multipart/form-data/'
                     }
                 }).then(
                     (res: any) => {
