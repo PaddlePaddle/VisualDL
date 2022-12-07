@@ -751,7 +751,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         const formData = new FormData();
         formData.append('name', name);
         formData.append('dir', dir);
-        formData.append('config', config);
+        formData.append('config', JSON.stringify(config));
         fetcher(`/fastdeploy/config_update`, {
             method: 'post',
             body: formData
@@ -864,7 +864,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             .then(values => {
                 setConfigs(values);
                 const formData = new FormData();
-                const configs = values;
+                const configs = JSON.stringify(values);
                 formData.append('config', configs);
                 fetcher(`/fastdeploy/start_server`, {
                     method: 'post',
