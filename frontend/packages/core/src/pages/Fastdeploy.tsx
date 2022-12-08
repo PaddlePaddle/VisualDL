@@ -152,6 +152,9 @@ function App() {
     const [targetKeys, setTargetKey] = useState('');
     const [serverId, setServerId] = useState<number>();
     const [serverModels, setServerModels] = useState<any>([]);
+    const [opens, setOPens] = useState(false);
+    const [opens2, setOPens2] = useState(false);
+
     useEffect(() => {
         // const Graphs: any = Graph;
         // getModelData();
@@ -348,7 +351,7 @@ function App() {
                             style={{height: '100%'}}
                         >
                             {modelData && (
-                                <Tabs.TabPane tab=" emsemble模型结构" key="item-1" style={{height: '100%'}}>
+                                <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
                                     <FastdeployGraph
                                         modelData={modelData}
                                         dirValue={dirs}
@@ -380,6 +383,15 @@ function App() {
                             style={{width: '80%', height: '60px'}}
                             placeholder="Search to Select"
                             optionFilterProp="children"
+                            // mode={'tags'}
+                            // className="ant-select-open"
+                            onFocus={() => {
+                                setOPens(true);
+                            }}
+                            onBlur={() => {
+                                setOPens(false);
+                            }}
+                            open={opens}
                             // filterOption={(input, option) => (option?.label ?? '').includes(input)}
                             value={dirValue}
                             options={selectOptions}
@@ -393,12 +405,27 @@ function App() {
                     </div>
                 </Contents2>
             )}
-            <Modal width={800} title="更换模型" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal
+                width={800}
+                title="更换模型"
+                cancelText={'取消'}
+                okText={'确定'}
+                visible={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+            >
                 <SelectContent>
                     <Select
                         style={{width: '100%', height: '60px'}}
                         placeholder="Search to Select"
                         optionFilterProp="children"
+                        onFocus={() => {
+                            setOPens2(true);
+                        }}
+                        onBlur={() => {
+                            setOPens2(false);
+                        }}
+                        open={opens2}
                         // filterOption={(input, option) => (option?.label ?? '').includes(input)}
                         value={dirValue}
                         options={selectOptions}
@@ -408,7 +435,15 @@ function App() {
                     />
                 </SelectContent>
             </Modal>
-            <Modal width={800} title="Basic Modal" visible={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
+            <Modal
+                width={800}
+                title="Basic Modal"
+                cancelText={'取消'}
+                okText={'关闭服务'}
+                visible={isModalOpen2}
+                onOk={handleOk2}
+                onCancel={handleCancel2}
+            >
                 请确认是否关闭所启动服务
             </Modal>
             {/* {React.lazy(() => import('~/components/Fastdeploy'))} */}

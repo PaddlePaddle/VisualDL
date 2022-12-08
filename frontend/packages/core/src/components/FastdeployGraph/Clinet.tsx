@@ -23,7 +23,7 @@ const serverBox: FunctionComponent = () => {
                 src={PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client'}
                 // src={'https://www.baidu.com/'}
                 frameBorder={0}
-                scrolling="no"
+                scrolling="true"
                 marginWidth={0}
                 marginHeight={0}
             ></iframe>

@@ -1030,7 +1030,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         } else {
             modelData && onFill(modelData.ensembles[0]);
         }
-    }, [isModalOpen, graphModel]);
+    }, [isModalOpen, graphModel, IsEmsembles]);
     useEffect(() => {
         if (isModalOpen2 && dirValue) {
             onFill2({
@@ -1097,7 +1097,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             }}
                             onClick={changeEmsembles}
                         >
-                            更新emsemble配置
+                            ensemble配置
                         </Buttons>
                         <Buttons
                             style={{
@@ -1116,6 +1116,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 width={800}
                 title={IsEmsembles ? '配置emsemble' : '配置模型'}
                 visible={isModalOpen}
+                cancelText={'取消'}
+                okText={'更新'}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
@@ -1618,7 +1620,15 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     </Form.Item>
                 </Form>
             </Modal>
-            <Modal width={800} title="配置启动参数" visible={isModalOpen2} onOk={handleOk2} onCancel={handleCancel2}>
+            <Modal
+                width={800}
+                title="配置启动参数"
+                cancelText={'取消'}
+                okText={'启动'}
+                visible={isModalOpen2}
+                onOk={handleOk2}
+                onCancel={handleCancel2}
+            >
                 <Form {...layout} form={form2} name="dynamic_form_complex" autoComplete="off">
                     <Form.Item
                         name={'model-repository'}
