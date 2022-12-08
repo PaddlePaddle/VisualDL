@@ -49,6 +49,7 @@ class FastDeployServerApi(object):
         cur_dir, sub_dirs, filenames = os.walk(cur_dir).send(None)
         if Path(self.root_dir) != Path(os.path.abspath(cur_dir)):
             sub_dirs.append('..')
+        sub_dirs = sorted(sub_dirs)
         directorys = {
             'parent_dir':
             os.path.relpath(Path(os.path.abspath(cur_dir)), self.root_dir),
