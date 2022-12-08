@@ -170,7 +170,13 @@ function App() {
     //     setReforce(!reforce);
     // }, [serverModels.length]);
     const outDatas = (serverId: number) => {
-        fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${0}`, {
+        let length = 0;
+        for (const model of serverModels) {
+            if (model.id === serverId) {
+                length = model.text.length;
+            }
+        }
+        fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${length}`, {
             method: 'GET'
         }).then(
             (res: any) => {

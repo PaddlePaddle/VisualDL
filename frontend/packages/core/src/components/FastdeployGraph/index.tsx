@@ -1010,12 +1010,13 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         getmodelData(nodeClick.data, nodeClick.name);
     }, [nodeClick]);
     useEffect(() => {
-        if (isModalOpen) {
-            if (!IsEmsembles) {
-                graphModel && onFill(graphModel);
-            } else {
-                modelData && onFill(modelData.ensembles[0]);
-            }
+        // if (isModalOpen) {
+
+        // }
+        if (!IsEmsembles) {
+            graphModel && onFill(graphModel);
+        } else {
+            modelData && onFill(modelData.ensembles[0]);
         }
     }, [isModalOpen, graphModel]);
     useEffect(() => {
@@ -1033,7 +1034,12 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     console.log('showFlag', showFlag);
 
     return (
-        <Content>
+        <Content
+            style={{
+                height: '100%',
+                width: '100%'
+            }}
+        >
             <div id="container">
                 <div id="graph-container"></div>
                 <div id="stencil_content">
