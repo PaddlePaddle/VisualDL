@@ -293,7 +293,7 @@ const Navbar: FunctionComponent = () => {
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
             x2paddle: 'x2paddle',
-            FASTDEPLOY_CLIENT: 'fastdeploy_client'
+            fastdeploy_client: 'fastdeploy_client'
         };
     }, []);
     console.log('pathname', pathname);
@@ -422,7 +422,10 @@ const Navbar: FunctionComponent = () => {
         if (navList.length > 0 && pathname) {
             console.log('pathname', pathname);
             const path = navList[0];
-            routesChange(route, '', path);
+            for (const route of routes) {
+                routesChange(route, '', path);
+            }
+            // routesChange(route, '', path);
             // debugger;
             // const path = routeEm[pathNames];
             // if (pathname === '/index') {
