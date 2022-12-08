@@ -400,7 +400,7 @@ function App() {
                             }}
                         />
                         <div className="inputButton" onClick={getModelData}>
-                            ok
+                            确定
                         </div>
                     </div>
                 </Contents2>
@@ -409,7 +409,7 @@ function App() {
                 width={800}
                 title="更换模型"
                 cancelText={'取消'}
-                okText={'确定'}
+                okText={'更换模型库'}
                 visible={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}

@@ -99,7 +99,7 @@ function App() {
                     >
                         {serverModels.map((server: any, index: number) => {
                             return (
-                                <Tabs.TabPane tab={`Server${server}`} key={server} style={{height: '100%'}}>
+                                <Tabs.TabPane tab={`Client${server}`} key={server} style={{height: '100%'}}>
                                     <Clinet></Clinet>
                                 </Tabs.TabPane>
                             );

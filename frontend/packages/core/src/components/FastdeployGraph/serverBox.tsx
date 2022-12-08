@@ -21,6 +21,11 @@ type ArgumentProps = {
     Datas: any;
     updatdDatas?: any;
 };
+const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
+// type ArgumentProps = {
+
+// };
+console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas}) => {
     console.log('Datas', Datas);
 
@@ -38,12 +43,22 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas}) => {
             >
                 {Datas}
             </div>
-            <ButtonContent
-                onClick={() => {
-                    updatdDatas();
-                }}
-            >
-                <Buttons>更新日志</Buttons>
+            <ButtonContent>
+                <Buttons
+                    onClick={() => {
+                        const url = PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client';
+                        window.open(url);
+                    }}
+                >
+                    打开客户端
+                </Buttons>
+                <Buttons
+                    onClick={() => {
+                        updatdDatas();
+                    }}
+                >
+                    更新日志
+                </Buttons>
             </ButtonContent>
         </div>
     );

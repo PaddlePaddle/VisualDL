@@ -381,60 +381,10 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 }
             }
         });
-        Graph.registerEdge(
-            'custom-edge', // 边名称
-            {
-                // 基类
-                inherit: 'edge',
-                // 属性样式
-                attrs: {
-                    line: {
-                        stroke: '#5755a1'
-                    }
-                },
-                // 默认标签
-                defaultLabel: {
-                    markup: [
-                        {
-                            tagName: 'rect',
-                            selector: 'body'
-                        },
-                        {
-                            tagName: 'text',
-                            selector: 'label'
-                        }
-                    ],
-                    attrs: {
-                        label: {
-                            fill: 'black',
-                            fontSize: 14,
-                            textAnchor: 'middle',
-                            textVerticalAnchor: 'middle',
-                            pointerEvents: 'none'
-                        },
-                        body: {
-                            ref: 'label',
-                            fill: 'white',
-                            stroke: '#5755a1',
-                            strokeWidth: 2,
-                            rx: 4,
-                            ry: 4,
-                            refWidth: '140%',
-                            refHeight: '140%',
-                            refX: '-20%',
-                            refY: '-20%'
-                        }
-                    },
-                    position: {
-                        distance: 100, // 绝对定位
-                        options: {
-                            absoluteDistance: true
-                        }
-                    }
-                },
-                tools: ['vertices', 'segments']
-            }
-        );
+        // Graph.registerEdge(
+        //     'custom-edge', // 边名称
+
+        // );
         // const dnd = new Dnd({
         //     target: graph,
         //     scaled: false,
@@ -457,6 +407,9 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         });
         setGraphs(graph);
         setFlag(true);
+        // return () => {
+        //     Graph = null;
+        // };
         // form.setFieldsValue(modelss);
         // onFill(modelData.models[0]);
     }, []);
@@ -578,8 +531,56 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             nodeEdges.push({
                 source: {cell: edge.source, port: 'right'},
                 target: {cell: edge.target, port: 'left'},
-                shape: 'custom-edge',
-                tools: ['vertices', 'segments']
+                // shape: 'custom-edge',
+                tools: ['vertices', 'segments'],
+                // 基类
+                inherit: 'edge',
+                // 属性样式
+                attrs: {
+                    line: {
+                        stroke: '#5755a1'
+                    }
+                },
+                // 默认标签
+                defaultLabel: {
+                    markup: [
+                        {
+                            tagName: 'rect',
+                            selector: 'body'
+                        },
+                        {
+                            tagName: 'text',
+                            selector: 'label'
+                        }
+                    ],
+                    attrs: {
+                        label: {
+                            fill: 'black',
+                            fontSize: 14,
+                            textAnchor: 'middle',
+                            textVerticalAnchor: 'middle',
+                            pointerEvents: 'none'
+                        },
+                        body: {
+                            ref: 'label',
+                            fill: 'white',
+                            stroke: '#5755a1',
+                            strokeWidth: 2,
+                            rx: 4,
+                            ry: 4,
+                            refWidth: '140%',
+                            refHeight: '140%',
+                            refX: '-20%',
+                            refY: '-20%'
+                        }
+                    },
+                    position: {
+                        distance: 100, // 绝对定位
+                        options: {
+                            absoluteDistance: true
+                        }
+                    }
+                }
             });
         }
         const edgeMaps: any = {};
@@ -1119,7 +1120,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </div>
             <Modal
                 width={800}
-                title={IsEmsembles ? '配置emsemble' : '配置模型'}
+                title={IsEmsembles ? '配置ensemble' : '配置模型'}
                 visible={isModalOpen}
                 cancelText={'取消'}
                 okText={'更新'}
