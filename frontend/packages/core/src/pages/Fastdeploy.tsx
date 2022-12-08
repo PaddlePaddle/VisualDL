@@ -348,7 +348,7 @@ function App() {
                             style={{height: '100%'}}
                         >
                             {modelData && (
-                                <Tabs.TabPane tab=" emsemble模型结构" key="item-1">
+                                <Tabs.TabPane tab=" emsemble模型结构" key="item-1" style={{height: '100%'}}>
                                     <FastdeployGraph
                                         modelData={modelData}
                                         dirValue={dirs}
