@@ -40,7 +40,7 @@ const TabsContent = styled.div`
 function App() {
     const {t} = useTranslation(['togglegraph']);
     const [loading, setLoading] = useState(false);
-    const [serverModels, setServerModels] = useState<any>([]);
+    const [serverModels, setServerModels] = useState<any>([0]);
     const getClient = () => {
         fetcher(`/fastdeploy/fastdeploy_client`, {
             method: 'GET'
