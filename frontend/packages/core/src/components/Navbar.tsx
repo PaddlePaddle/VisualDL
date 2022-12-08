@@ -422,17 +422,18 @@ const Navbar: FunctionComponent = () => {
         if (navList.length > 0 && pathname) {
             console.log('pathname', pathname);
             const path = navList[0];
+            routesChange(route, '', path);
             // debugger;
             // const path = routeEm[pathNames];
-            if (pathname === '/index') {
-                for (const route of routes) {
-                    routesChange(route, '', path);
-                }
-            }
-            // history.push(`/${route}`);
-            else {
-                history.push(path);
-            }
+            // if (pathname === '/index') {
+            //     for (const route of routes) {
+            //         routesChange(route, '', path);
+            //     }
+            // }
+            // // history.push(`/${route}`);
+            // else {
+            //     history.push(path);
+            // }
 
             // const route = navList[navList.length - 1];
             // debugger;
