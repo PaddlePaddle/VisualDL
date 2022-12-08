@@ -835,7 +835,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
                     const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
                         if (ensembles.name === ensemblesName) {
-                            return {
+                            const newemsembles = {
                                 ...ensembles,
                                 ...values,
                                 optimization: {
@@ -843,18 +843,24 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
                                 }
                             };
+
+                            delete newemsembles['cpuExecutionAccelerator'];
+                            delete newemsembles['gpuExecutionAccelerator'];
+                            return newemsembles;
                         } else {
                             return ensembles;
                         }
                     });
                     ModelData.ensembles = emsembless;
                     // setModelDatas(ModelData);
+                    console.log('ModelDatas', ModelData);
+
                     upModelData(ensemblesName, dirValue, ModelData);
                     // setIsModalOpen(false);
                 } else {
                     const models = ModelData.models?.map((model: any) => {
                         if (model.name === modelName) {
-                            return {
+                            const newmodel = {
                                 ...model,
                                 ...values,
                                 optimization: {
@@ -862,11 +868,18 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
                                 }
                             };
+                            delete newmodel['cpuExecutionAccelerator'];
+                            delete newmodel['gpuExecutionAccelerator'];
+                            return newmodel;
                         } else {
                             return model;
                         }
                     });
+                    debugger;
+                    // models.delete('cpuExecutionAccelerator');
+                    // models.delete('gpuExecutionAccelerator');
                     ModelData.models = models;
+                    console.log('ModelDatas', ModelData);
                     upModelData(modelName, dirValue, ModelData);
                     // setModelDatas(ModelData);
                 }
