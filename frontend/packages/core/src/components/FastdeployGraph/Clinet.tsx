@@ -5,6 +5,8 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // type ArgumentProps = {
 
 // };
+console.log('PUBLIC_PATH', PUBLIC_PATH);
+
 const serverBox: FunctionComponent = () => {
     return (
         <div
