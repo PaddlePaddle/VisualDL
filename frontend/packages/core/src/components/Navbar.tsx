@@ -292,7 +292,8 @@ const Navbar: FunctionComponent = () => {
             'roc-curve': 'roc_curve',
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
-            x2paddle: 'x2paddle'
+            x2paddle: 'x2paddle',
+            FastdeployClient: 'fastdeploy_client'
         };
     }, []);
     console.log('pathname', pathname);
@@ -397,6 +398,7 @@ const Navbar: FunctionComponent = () => {
         }
         // debugger;
         if (routeEm[route.id] === path) {
+            console.log('path', route);
             history.push(id);
             return;
         }
