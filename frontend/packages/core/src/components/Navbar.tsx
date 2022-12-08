@@ -424,8 +424,7 @@ const Navbar: FunctionComponent = () => {
             const path = navList[0];
             // debugger;
             // const path = routeEm[pathNames];
-
-            if (pathname === '/') {
+            if (pathname === '/index') {
                 for (const route of routes) {
                     routesChange(route, '', path);
                 }
