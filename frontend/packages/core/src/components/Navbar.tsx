@@ -398,6 +398,7 @@ const Navbar: FunctionComponent = () => {
         }
         // debugger;
         if (routeEm[route.id] === path) {
+            debugger;
             console.log('path', route);
             history.push(id);
             return;
@@ -421,22 +422,21 @@ const Navbar: FunctionComponent = () => {
         // const defaultRoute = routes;
         if (navList.length > 0 && pathname) {
             console.log('pathname', pathname);
-            const path = navList[0];
-            for (const route of routes) {
-                routesChange(route, '', path);
-            }
+
             // routesChange(route, '', path);
             // debugger;
             // const path = routeEm[pathNames];
-            // if (pathname === '/index') {
-            //     for (const route of routes) {
-            //         routesChange(route, '', path);
-            //     }
-            // }
-            // // history.push(`/${route}`);
-            // else {
-            //     history.push(path);
-            // }
+            if (pathname === '/') {
+                const path = navList[0];
+                for (const route of routes) {
+                    routesChange(route, '', path);
+                }
+            } else {
+                const path = pathname;
+                for (const route of routes) {
+                    routesChange(route, '', path);
+                }
+            }
 
             // const route = navList[navList.length - 1];
             // debugger;

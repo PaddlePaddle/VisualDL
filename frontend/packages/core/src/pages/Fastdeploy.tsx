@@ -86,6 +86,7 @@ const SelectContent = styled.div`
             }
             .ant-select-selection-item {
                 line-height: 60px;
+                color: black;
             }
         }
     }

@@ -192,6 +192,7 @@ type ArgumentProps = {
     dirValue?: any;
     ChangeServerId?: any;
 };
+const formItems = ['name', 'backend', 'version', 'maxBatchSize', 'input', 'output', 'instanceGroup', 'optimization'];
 const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId}) => {
     // #region 初始化图形
     const [ModelDatas, setModelDatas] = useState<any>(modelData);
@@ -987,6 +988,12 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             cpuExecutionAccelerator: newcpu,
             gpuExecutionAccelerator: newgpu
         };
+        // form.setFieldsValue({});
+        for (const item of formItems) {
+            if (!modelss[item]) {
+                modelss[item] = undefined;
+            }
+        }
         form.setFieldsValue(modelss);
     };
     const onFill2 = (config: any) => {
@@ -1167,7 +1174,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     <Form.Item
                         name="maxBatchSize"
                         label="maxBatchSize"
-                        rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
+                        // rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
                     >
                         <Input />
                     </Form.Item>
@@ -1315,8 +1322,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             )}
                         </Form.List>
                     </Form.Item>
-                    <Form.Item label="instance_group">
-                        <Form.List name="instance_group">
+                    <Form.Item label="instanceGroup">
+                        <Form.List name="instanceGroup">
                             {(fields3, {add, remove}) => (
                                 <div>
                                     {fields3?.map((field: any, index: number) => (
