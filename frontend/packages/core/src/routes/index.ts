@@ -32,7 +32,7 @@ export enum Pages {
     Profiler = 'profiler',
     HyperParameter = 'hyper-parameter',
     fastdeploy_server = 'fastdeploy_server',
-    FastdeployClient = 'FastdeployClient'
+    FASTDEPLOY_CLIENT = 'FASTDEPLOY_CLIENT'
 }
 
 export interface Route {
@@ -134,7 +134,7 @@ const routes: Route[] = [
         component: React.lazy(() => import('~/pages/Fastdeploy'))
     },
     {
-        id: Pages.FastdeployClient,
+        id: Pages.FASTDEPLOY_CLIENT,
         path: '/FastdeployClient',
         component: React.lazy(() => import('~/pages/FastdeployClient'))
     }

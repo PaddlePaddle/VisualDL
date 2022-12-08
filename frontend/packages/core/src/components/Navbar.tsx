@@ -293,7 +293,7 @@ const Navbar: FunctionComponent = () => {
             profiler: 'profiler',
             'hyper-parameter': 'hyper_parameters',
             x2paddle: 'x2paddle',
-            FastdeployClient: 'fastdeploy_client'
+            FASTDEPLOY_CLIENT: 'fastdeploy_client'
         };
     }, []);
     console.log('pathname', pathname);

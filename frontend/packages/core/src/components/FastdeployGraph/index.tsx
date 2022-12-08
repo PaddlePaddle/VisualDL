@@ -995,7 +995,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const getmodelData = (model: any, name: string) => {
         setModelName(name);
         setGraphModel(model);
-        if (!IsEmsembles) {
+        if (IsEmsembles) {
             setIsEmsembles(false);
         }
         const flag = !showFlag;
@@ -1022,13 +1022,18 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         getmodelData(nodeClick.data, nodeClick.name);
     }, [nodeClick]);
     useEffect(() => {
-        // if (isModalOpen) {
-
-        // }
-        if (!IsEmsembles) {
-            graphModel && onFill(graphModel);
-        } else {
-            modelData && onFill(modelData.ensembles[0]);
+        if (isModalOpen) {
+            if (!IsEmsembles) {
+                graphModel && onFill(graphModel);
+            } else {
+                // modelData && onFill(modelData.ensembles[0]);
+                for (const ensembles of modelData.ensembles) {
+                    if (ensembles.name === ensemblesName) {
+                        onFill(ensembles);
+                        return;
+                    }
+                }
+            }
         }
     }, [isModalOpen, graphModel, IsEmsembles]);
     useEffect(() => {
