@@ -42,7 +42,7 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [serverModels, setServerModels] = useState<any>([]);
     const getClient = () => {
-        fetcher(`/fastdeploy/create_fastdeploy_client`, {
+        fetcher(`/fastdeploy/fastdeploy_client`, {
             method: 'GET'
         }).then(
             (res: any) => {

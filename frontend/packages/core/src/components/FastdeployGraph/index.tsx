@@ -867,7 +867,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         }
                     });
                     ModelData.models = models;
-                    upModelData(ensemblesName, dirValue, ModelData);
+                    upModelData(modelName, dirValue, ModelData);
                     // setModelDatas(ModelData);
                 }
             })
