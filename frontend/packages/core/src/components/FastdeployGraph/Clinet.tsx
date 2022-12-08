@@ -5,7 +5,7 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // type ArgumentProps = {
 
 // };
-console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/create_fastdeploy_client');
+console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 
 const serverBox: FunctionComponent = () => {
     return (
@@ -20,7 +20,7 @@ const serverBox: FunctionComponent = () => {
                     width: '100%',
                     height: '100%'
                 }}
-                src={PUBLIC_PATH + '/api/fastdeploy/create_fastdeploy_client'}
+                src={PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client'}
                 // src={'https://www.baidu.com/'}
                 frameBorder={0}
                 scrolling="no"
