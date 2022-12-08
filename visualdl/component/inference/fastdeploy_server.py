@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import datetime
 import json
 import os
+import shutil
 import socket
 import time
 from multiprocessing import Process
@@ -74,6 +76,12 @@ class FastDeployServerApi(object):
         model_dir = self.model_paths[(Path(os.path.abspath(cur_dir)),
                                       model_name)]
         text_proto = json2pbtxt(json.dumps(all_models[model_name]))
+        # backup user's config.pbtxt first, when data corrupted by front-end, we still can recovery data
+        shutil.copy(
+            os.path.join(model_dir, 'config.pbtxt'),
+            os.path.join(
+                model_dir, 'config_vdlbackup_{}.pbtxt'.format(
+                    datetime.datetime.now().isoformat())))
         with open(os.path.join(model_dir, 'config.pbtxt'), 'w') as f:
             f.write(text_proto)
         return
