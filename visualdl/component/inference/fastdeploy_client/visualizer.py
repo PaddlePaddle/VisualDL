@@ -1,10 +1,25 @@
+# Copyright (c) 2022 VisualDL Authors. All Rights Reserve.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =======================================================================
 import fastdeploy as fd
 import numpy as np
 
 __all__ = [
     'visualize_detection', 'visualize_keypoint_detection',
-    'visualize_face_detection', 'visualize_segmentation', 'visualize_matting',
-    'visualize_ocr'
+    'visualize_face_detection', 'visualize_face_alignment',
+    'visualize_segmentation', 'visualize_matting', 'visualize_ocr',
+    'visualize_headpose'
 ]
 
 
@@ -54,6 +69,16 @@ def visualize_face_detection(image, data):
     return result
 
 
+def visualize_face_alignment(image, data):
+    landmarks = np.array(data['landmarks'])
+
+    facealignment_result = fd.C.vision.FaceAlignmentResult()
+    facealignment_result.landmarks = landmarks
+
+    result = fd.vision.vis_face_alignment(image, facealignment_result)
+    return result
+
+
 def visualize_segmentation(image, data):
     label_ids = np.array(data['label_ids'])
     score_map = np.array(data['score_map'])
@@ -99,4 +124,14 @@ def visualize_ocr(image, data):
     ocr_result.cls_labels = cls_labels
 
     result = fd.vision.vis_ppocr(image, ocr_result)
+    return result
+
+
+def visualize_headpose(image, data):
+    euler_angles = np.array(data['euler_angles'])
+
+    headpose_result = fd.C.vision.HeadPoseResult()
+    headpose_result.euler_angles = euler_angles
+
+    result = fd.vision.vis_headpose(image, headpose_result)
     return result
