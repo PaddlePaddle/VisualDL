@@ -875,7 +875,6 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             return model;
                         }
                     });
-                    debugger;
                     // models.delete('cpuExecutionAccelerator');
                     // models.delete('gpuExecutionAccelerator');
                     ModelData.models = models;
