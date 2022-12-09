@@ -398,7 +398,6 @@ const Navbar: FunctionComponent = () => {
         }
         // debugger;
         if (routeEm[route.id] === path) {
-            debugger;
             console.log('path', route);
             history.push(id);
             return;
