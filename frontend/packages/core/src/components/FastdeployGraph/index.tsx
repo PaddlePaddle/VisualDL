@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 import React, {useState, useEffect, useRef, useCallback, useMemo, FunctionComponent} from 'react';
 import {rem, primaryColor, size} from '~/utils/style';
-import {Graph, Shape} from '@antv/x6';
+import {Graph, Shape, Cell} from '@antv/x6';
 import {Modal} from 'antd';
 // import dagre from 'dagre';
 import {DagreLayout} from '@antv/layout';
@@ -456,6 +456,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         });
         setSteps(ensembles[0]?.step);
+        // graphs?.clearCells();
         setTreeData(ensembles[0]?.versions);
     }, [ensemblesName]);
     useEffect(() => {
@@ -463,6 +464,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             return;
         }
         graphs?.clearCells();
+        // debugger;
         const edgeMap: any = {};
 
         steps?.map((node: any) => {
@@ -610,8 +612,30 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         }
         console.log('edgeMaps2', edgeMaps2);
         const nodess: any = [];
+        // const registers = Object.keys(Shape.HTML.shapeMaps);
+        // for (const register of registers) {
+        //     Graph.unregisterAnchor(register);
+        // }
+        // Shape.HTML.shapeMaps = {};
         for (let index = 0; index < nodes.length; index++) {
             const node = nodes[index];
+            // debugger;
+            // debugger;
+            // const registers = Object.keys(Shape.HTML.shapeMaps);
+            // if (!registers.includes(node.id)) {
+            //     Shape.HTML.register({
+            //         shape: node.id,
+            //         width: 60,
+            //         height: 40,
+            //         html() {
+            //             const div = document.createElement('div');
+            //             const textNode = document.createTextNode(node.id);
+            //             div.className = 'custom-html';
+            //             div.appendChild(textNode);
+            //             return div;
+            //         }
+            //     });
+            // }
             Shape.HTML.register({
                 shape: node.id,
                 width: 60,
@@ -624,7 +648,10 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     return div;
                 }
             });
-            const HtmlNode = graphs?.createNode({
+
+            // debugger;
+            // const HtmlNode = graphs?.createNode();
+            nodess.push({
                 id: node.id,
                 shape: node.id,
                 size: {
@@ -636,11 +663,41 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 ports: ports
                 // tools: ['button-remove']
             });
-            nodess.push(HtmlNode);
+            // debugger;
+            // graphs?.addEdges(nodeEdges);
+            // nodess?.push({
+            //     id: node.id,
+            //     x: 300 + edgeMaps2[node.id] * 120,
+            //     y: 100,
+            //     width: 60,
+            //     height: 40,
+            //     shape: 'html',
+            //     size: {
+            //         width: 60,
+            //         height: 40
+            //     },
+            //     html: {
+            //         render(node: Cell) {
+            //             return `<div class='custom-html'>
+            //             ${node.id}
+            //         <div>`;
+            //         }
+            //     },
+            //     shouldComponentUpdate(node: Cell) {
+            //         return node.hasChanged('data');
+            //     },
+            //     ports: ports
+            // });
+            // debugger;
         }
-        console.log('nodess', nodess);
-        graphs?.addEdges(nodeEdges);
-        graphs?.addNodes(nodess);
+        console.log('nodess', nodess, Shape.HTML.shapeMaps);
+        // debugger;
+        // graphs?.addNodes(nodess);
+        debugger;
+        graphs?.fromJSON({
+            nodes: nodess,
+            edges: nodeEdges
+        });
         setGraphs(graphs);
     }, [steps, flag]);
     const graphPlug = (graph: any) => {

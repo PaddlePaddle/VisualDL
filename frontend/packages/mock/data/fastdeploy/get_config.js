@@ -201,65 +201,6 @@
 export default {
     ensembles: [
         {
-            name: 'ernie_tokencls',
-            platform: 'ensemble',
-            maxBatchSize: 64,
-            input: [{name: 'INPUT', dataType: 'TYPE_STRING', dims: ['1']}],
-            output: [{name: 'OUTPUT', dataType: 'TYPE_STRING', dims: ['1']}],
-            versions: [{title: '1', key: '1', children: [{title: 'README.md', key: 'README.md'}]}],
-            step: [
-                {
-                    modelName: 'ernie_tokenizer',
-                    modelVersion: '1',
-                    inputMap: {INPUT_0: 'INPUT'},
-                    outputMap: {OUTPUT_1: 'tokenizer_token_type_ids', OUTPUT_0: 'tokenizer_input_ids'},
-                    modelType: 'normal',
-                    inputModels: ['feed'],
-                    outputModels: ['ernie_tokencls_model'],
-                    inputVars: ['INPUT'],
-                    outputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids']
-                },
-                {
-                    modelName: 'ernie_tokencls_model',
-                    modelVersion: '1',
-                    inputMap: {input_ids: 'tokenizer_input_ids', token_type_ids: 'tokenizer_token_type_ids'},
-                    outputMap: {'linear_113.tmp_1': 'OUTPUT_2'},
-                    modelType: 'normal',
-                    inputModels: ['ernie_tokenizer'],
-                    outputModels: ['ernie_tokencls_postprocess'],
-                    inputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids'],
-                    outputVars: ['OUTPUT_2']
-                },
-                {
-                    modelName: 'ernie_tokencls_postprocess',
-                    modelVersion: '1',
-                    inputMap: {POST_INPUT: 'OUTPUT_2'},
-                    outputMap: {POST_OUTPUT: 'OUTPUT'},
-                    modelType: 'normal',
-                    inputModels: ['ernie_tokencls_model'],
-                    outputModels: ['fetch'],
-                    inputVars: ['OUTPUT_2'],
-                    outputVars: ['OUTPUT']
-                },
-                {
-                    modelName: 'feed',
-                    modelType: 'virtual',
-                    inputModels: [],
-                    outputModels: ['ernie_tokenizer'],
-                    inputVars: [],
-                    outputVars: ['INPUT']
-                },
-                {
-                    modelName: 'fetch',
-                    modelType: 'virtual',
-                    inputModels: ['ernie_tokencls_postprocess'],
-                    outputModels: [],
-                    inputVars: ['OUTPUT'],
-                    outputVars: []
-                }
-            ]
-        },
-        {
             name: 'ernie_seqcls',
             platform: 'ensemble',
             maxBatchSize: 64,
@@ -317,6 +258,65 @@ export default {
                     inputModels: ['ernie_seqcls_postprocess'],
                     outputModels: [],
                     inputVars: ['confidence', 'label'],
+                    outputVars: []
+                }
+            ]
+        },
+        {
+            name: 'ernie_tokencls',
+            platform: 'ensemble',
+            maxBatchSize: 64,
+            input: [{name: 'INPUT', dataType: 'TYPE_STRING', dims: ['1']}],
+            output: [{name: 'OUTPUT', dataType: 'TYPE_STRING', dims: ['1']}],
+            versions: [{title: '1', key: '1', children: [{title: 'README.md', key: 'README.md'}]}],
+            step: [
+                {
+                    modelName: 'ernie_tokenizer',
+                    modelVersion: '1',
+                    inputMap: {INPUT_0: 'INPUT'},
+                    outputMap: {OUTPUT_1: 'tokenizer_token_type_ids', OUTPUT_0: 'tokenizer_input_ids'},
+                    modelType: 'normal',
+                    inputModels: ['feed'],
+                    outputModels: ['ernie_tokencls_model'],
+                    inputVars: ['INPUT'],
+                    outputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids']
+                },
+                {
+                    modelName: 'ernie_tokencls_model',
+                    modelVersion: '1',
+                    inputMap: {input_ids: 'tokenizer_input_ids', token_type_ids: 'tokenizer_token_type_ids'},
+                    outputMap: {'linear_113.tmp_1': 'OUTPUT_2'},
+                    modelType: 'normal',
+                    inputModels: ['ernie_tokenizer'],
+                    outputModels: ['ernie_tokencls_postprocess'],
+                    inputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids'],
+                    outputVars: ['OUTPUT_2']
+                },
+                {
+                    modelName: 'ernie_tokencls_postprocess',
+                    modelVersion: '1',
+                    inputMap: {POST_INPUT: 'OUTPUT_2'},
+                    outputMap: {POST_OUTPUT: 'OUTPUT'},
+                    modelType: 'normal',
+                    inputModels: ['ernie_tokencls_model'],
+                    outputModels: ['fetch'],
+                    inputVars: ['OUTPUT_2'],
+                    outputVars: ['OUTPUT']
+                },
+                {
+                    modelName: 'feed',
+                    modelType: 'virtual',
+                    inputModels: [],
+                    outputModels: ['ernie_tokenizer'],
+                    inputVars: [],
+                    outputVars: ['INPUT']
+                },
+                {
+                    modelName: 'fetch',
+                    modelType: 'virtual',
+                    inputModels: ['ernie_tokencls_postprocess'],
+                    outputModels: [],
+                    inputVars: ['OUTPUT'],
                     outputVars: []
                 }
             ]
