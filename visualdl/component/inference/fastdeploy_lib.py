@@ -47,6 +47,22 @@ def json2pbtxt(content: str):
     return text_proto
 
 
+def validate_data(model_config):
+    '''
+    Validate data in model config, we should check empty value recieved from front end.
+    The easiest way to handle it is to drop empty value.
+    Args:
+        model_config: model config to be saved in config file
+    Return:
+        model config after filtering.
+    '''
+    model_config_filtered = {}
+    for key, value in model_config.items():
+        if value:
+            model_config_filtered[key] = value
+    return model_config_filtered
+
+
 def analyse_config(cur_dir: str):
     '''
   Analyse the model config in specified directory.
@@ -69,6 +85,8 @@ def analyse_config(cur_dir: str):
                     pbtxt2json(open(os.path.join(model_dir, filename)).read()))
                 all_model_configs[
                     model_name] = json_config  # store original config file content in json format
+                if 'name' not in json_config:
+                    json_config['name'] = model_name
         for model_sub_dir in model_sub_dirs:
             if re.match(
                     r'\d+',
@@ -220,7 +238,7 @@ def original_format_to_exchange_format(original_format, version_info):
     return exchange_format
 
 
-def analyse_step_relationships(step_config, inputs, outputs):
+def analyse_step_relationships(step_config, inputs, outputs):  # noqa: C901
     '''
   Analyse model relationships in ensemble step. And fill  \
     "inputModels", "outputModels", "inputVars", "outputVars" in step_config.
@@ -266,12 +284,15 @@ def analyse_step_relationships(step_config, inputs, outputs):
     for var_name, relationships in vars_dict.items():
         for from_model in relationships['from_models']:
             models_dict[from_model]['outputVars'].append(var_name)
-            models_dict[from_model]['outputModels'].extend(
-                relationships['to_models'])
+            for var_to_model in relationships['to_models']:
+                if var_to_model not in models_dict[from_model]['outputModels']:
+                    models_dict[from_model]['outputModels'].append(
+                        var_to_model)
         for to_model in relationships['to_models']:
             models_dict[to_model]['inputVars'].append(var_name)
-            models_dict[to_model]['inputModels'].extend(
-                relationships['from_models'])
+            for var_from_model in relationships['from_models']:
+                if var_from_model not in models_dict[to_model]['inputModels']:
+                    models_dict[to_model]['inputModels'].append(var_from_model)
 
 
 def launch_process(kwargs: dict):
