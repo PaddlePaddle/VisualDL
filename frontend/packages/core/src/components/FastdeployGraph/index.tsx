@@ -693,7 +693,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         console.log('nodess', nodess, Shape.HTML.shapeMaps);
         // debugger;
         // graphs?.addNodes(nodess);
-        debugger;
+        // debugger;
         graphs?.fromJSON({
             nodes: nodess,
             edges: nodeEdges
