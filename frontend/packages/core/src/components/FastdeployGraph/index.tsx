@@ -669,7 +669,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             edges: nodeEdges
         });
         // setFlag(false);
-        // setGraphs(graphs);
+        setGraphs(graphs);
     }, [steps, flag]);
     const graphPlug = (graph: any) => {
         // graph.use(
