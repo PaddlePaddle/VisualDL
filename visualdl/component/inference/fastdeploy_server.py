@@ -31,6 +31,7 @@ from .fastdeploy_lib import json2pbtxt
 from .fastdeploy_lib import kill_process
 from .fastdeploy_lib import launch_process
 from .fastdeploy_lib import original_format_to_exchange_format
+from .fastdeploy_lib import validate_data
 from visualdl.server.api import gen_result
 from visualdl.server.api import result
 from visualdl.utils.dir import FASTDEPLOYSERVER_PATH
@@ -75,7 +76,8 @@ class FastDeployServerApi(object):
         all_models = exchange_format_to_original_format(config)
         model_dir = self.model_paths[(Path(os.path.abspath(cur_dir)),
                                       model_name)]
-        text_proto = json2pbtxt(json.dumps(all_models[model_name]))
+        filtered_config = validate_data(all_models[model_name])
+        text_proto = json2pbtxt(json.dumps(filtered_config))
         # backup user's config.pbtxt first, when data corrupted by front-end, we still can recovery data
         shutil.copy(
             os.path.join(model_dir, 'config.pbtxt'),
