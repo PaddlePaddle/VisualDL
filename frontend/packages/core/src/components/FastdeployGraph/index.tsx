@@ -239,38 +239,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [treeData, setTreeData] = useState(modelData.ensembles?.versions);
     const ports = {
         groups: {
-            top: {
-                position: 'top',
-                attrs: {
-                    circle: {
-                        r: 4,
-                        magnet: true,
-                        stroke: '#5F95FF',
-                        strokeWidth: 1,
-                        fill: '#fff',
-                        style: {
-                            visibility: 'hidden'
-                        }
-                    }
-                }
-            },
             right: {
                 position: 'right',
-                attrs: {
-                    circle: {
-                        r: 4,
-                        magnet: true,
-                        stroke: '#5F95FF',
-                        strokeWidth: 1,
-                        fill: '#fff',
-                        style: {
-                            visibility: 'hidden'
-                        }
-                    }
-                }
-            },
-            bottom: {
-                position: 'bottom',
                 attrs: {
                     circle: {
                         r: 4,
@@ -412,6 +382,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 }
             }
         });
+        // graph.clearCells();
         setGraphs(graph);
         setFlag(true);
         // return () => {
@@ -456,15 +427,14 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         });
         setSteps(ensembles[0]?.step);
-        // graphs?.clearCells();
         setTreeData(ensembles[0]?.versions);
     }, [ensemblesName]);
     useEffect(() => {
         if (!flag || !steps) {
             return;
         }
-        graphs?.clearCells();
         // debugger;
+        graphs?.clearCells();
         const edgeMap: any = {};
 
         steps?.map((node: any) => {
@@ -698,22 +668,23 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             nodes: nodess,
             edges: nodeEdges
         });
-        setGraphs(graphs);
+        // setFlag(false);
+        // setGraphs(graphs);
     }, [steps, flag]);
     const graphPlug = (graph: any) => {
-        graph.use(
-            new Transform({
-                resizing: true,
-                rotating: true
-            })
-        );
-        graph.use(
-            new Selection({
-                enabled: true,
-                rubberband: true,
-                showNodeSelectionBox: true
-            })
-        );
+        // graph.use(
+        //     new Transform({
+        //         resizing: true,
+        //         rotating: true
+        //     })
+        // );
+        // graph.use(
+        //     new Selection({
+        //         enabled: true,
+        //         rubberband: true,
+        //         showNodeSelectionBox: true
+        //     })
+        // );
         graph.use(
             new Snapline({
                 enabled: true,
