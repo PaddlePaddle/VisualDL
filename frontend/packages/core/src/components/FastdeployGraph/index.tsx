@@ -879,7 +879,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 }
                             };
                             const newInstanceGroup = newmodel.instanceGroup.map((item: any) => {
-                                if (item.kind !== 'KIND_GPU' && item.kind !== 'KIND_MODEL') {
+                                if (item.kind !== 'KIND_CPU' && item.kind !== 'KIND_MODEL') {
                                     return {
                                         count: item.count,
                                         gpus: undefined,
@@ -1372,7 +1372,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`变量${index + 1}`}</div>
+                                                >{`实例${index + 1}`}</div>
                                                 <MinusCircleOutlined onClick={() => remove(field.name)} />
                                             </div>
                                             <div key={field.key}>
@@ -1410,7 +1410,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                             console.log('valuess', value);
 
                                                             const newShowGpus = [...showGpus];
-                                                            if (value !== 'KIND_GPU' && value !== 'KIND_MODEL') {
+                                                            if (value !== 'KIND_CPU' && value !== 'KIND_MODEL') {
                                                                 if (!newShowGpus[index]) {
                                                                     newShowGpus[index] = true;
                                                                 }
