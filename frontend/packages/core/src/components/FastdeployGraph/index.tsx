@@ -880,13 +880,13 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             };
                             const newInstanceGroup = newmodel.instanceGroup.map((item: any) => {
                                 if (item.kind !== 'KIND_CPU' && item.kind !== 'KIND_MODEL') {
+                                    return item;
+                                } else {
                                     return {
                                         count: item.count,
                                         gpus: undefined,
                                         kind: item.kind
                                     };
-                                } else {
-                                    return item;
                                 }
                             });
                             newmodel.instanceGroup = newInstanceGroup;
