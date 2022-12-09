@@ -462,6 +462,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (!flag || !steps) {
             return;
         }
+        graphs?.clearCells();
         const edgeMap: any = {};
 
         steps?.map((node: any) => {
@@ -640,6 +641,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         console.log('nodess', nodess);
         graphs?.addEdges(nodeEdges);
         graphs?.addNodes(nodess);
+        setGraphs(graphs);
     }, [steps, flag]);
     const graphPlug = (graph: any) => {
         graph.use(
