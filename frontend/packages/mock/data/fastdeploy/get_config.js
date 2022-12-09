@@ -74,6 +74,65 @@ export default {
                     outputVars: []
                 }
             ]
+        },
+        {
+            name: 'yolov6',
+            platform: 'ensemble',
+            maxBatchSize: 1,
+            input: [{name: 'INPUT', dataType: 'TYPE_UINT8', dims: ['-1', '-1', '3']}],
+            output: [{name: 'detction_result', dataType: 'TYPE_STRING', dims: ['-1']}],
+            versions: [{title: '1', key: '1', children: [{title: 'README.md', key: 'README.md'}]}],
+            step: [
+                {
+                    modelName: 'preprocess',
+                    modelVersion: '1',
+                    inputMap: {INPUT_0: 'INPUT'},
+                    outputMap: {preprocess_output_1: 'postprocess_input_1', preprocess_output_0: 'infer_input'},
+                    modelType: 'normal',
+                    inputModels: ['feed', 'feed'],
+                    outputModels: ['postprocess', 'runtime'],
+                    inputVars: ['INPUT'],
+                    outputVars: ['postprocess_input_1', 'infer_input']
+                },
+                {
+                    modelName: 'runtime',
+                    modelVersion: '1',
+                    inputMap: {images: 'infer_input'},
+                    outputMap: {output: 'infer_output'},
+                    modelType: 'normal',
+                    inputModels: ['preprocess'],
+                    outputModels: ['postprocess'],
+                    inputVars: ['infer_input'],
+                    outputVars: ['infer_output']
+                },
+                {
+                    modelName: 'postprocess',
+                    modelVersion: '1',
+                    inputMap: {POST_INPUT_1: 'postprocess_input_1', POST_INPUT_0: 'infer_output'},
+                    outputMap: {POST_OUTPUT: 'detction_result'},
+                    modelType: 'normal',
+                    inputModels: ['preprocess', 'runtime'],
+                    outputModels: ['fetch', 'fetch'],
+                    inputVars: ['postprocess_input_1', 'infer_output'],
+                    outputVars: ['detction_result']
+                },
+                {
+                    modelName: 'feed',
+                    modelType: 'virtual',
+                    inputModels: [],
+                    outputModels: ['preprocess', 'preprocess'],
+                    inputVars: [],
+                    outputVars: ['INPUT', 'INPUT']
+                },
+                {
+                    modelName: 'fetch',
+                    modelType: 'virtual',
+                    inputModels: ['postprocess', 'postprocess'],
+                    outputModels: [],
+                    inputVars: ['detction_result', 'detction_result'],
+                    outputVars: []
+                }
+            ]
         }
     ],
     models: [

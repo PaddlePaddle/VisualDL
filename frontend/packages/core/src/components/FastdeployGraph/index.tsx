@@ -72,6 +72,9 @@ const Content = styled.div`
                 line-height: 40px;
                 margin: 16px;
                 cursor: move;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
         #buttonContent {
@@ -187,6 +190,7 @@ const dataType = [
     'TYPE_STRING',
     'TYPE_BF16'
 ];
+const kindType = ['KIND_AUTO', 'KIND_GPU', 'KIND_CPU', 'KIND_MODEL'];
 type ArgumentProps = {
     modelData: any;
     dirValue?: any;
@@ -201,6 +205,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [Dnds, setDnds] = useState<any>();
     const [graphs, setGraphs] = useState<Graph>();
     const [edgeMaps, setEdgeMaps] = useState<any>({});
+    const [showGpus, setShowGpus] = useState<any>({});
+
     const [configs, setConfigs] = useState<any>({
         'model-repository': 'yolov5_serving/models',
         'backend-config': 'python,shm-default-byte-size=10485760',
@@ -870,6 +876,18 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
                                 }
                             };
+                            const newInstanceGroup = newmodel.instanceGroup.map((item: any) => {
+                                if (item.kind !== 'KIND_GPU' && item.kind !== 'KIND_MODEL') {
+                                    return {
+                                        count: item.count,
+                                        gpus: undefined,
+                                        kind: item.kind
+                                    };
+                                } else {
+                                    return item;
+                                }
+                            });
+                            newmodel.instanceGroup = newInstanceGroup;
                             delete newmodel['cpuExecutionAccelerator'];
                             delete newmodel['gpuExecutionAccelerator'];
                             return newmodel;
@@ -988,6 +1006,18 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             cpuExecutionAccelerator: newcpu,
             gpuExecutionAccelerator: newgpu
         };
+        const newShowGpus = [];
+        if (modelss?.instanceGroup) {
+            for (const item of modelss?.instanceGroup) {
+                if (item.kind !== 'KIND_CPU' && item.kind !== 'KIND_MODEL') {
+                    newShowGpus.push(true);
+                } else {
+                    newShowGpus.push(false);
+                }
+            }
+        }
+        setShowGpus(newShowGpus);
+
         // form.setFieldsValue({});
         for (const item of formItems) {
             if (!modelss[item]) {
@@ -1341,7 +1371,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                         marginRight: '10px'
                                                     }}
                                                 >{`变量${index + 1}`}</div>
-                                                {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
+                                                <MinusCircleOutlined onClick={() => remove(field.name)} />
                                             </div>
                                             <div key={field.key}>
                                                 <Form.Item
@@ -1369,26 +1399,65 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                             )
                                                         )}
                                                     </Select> */}
-                                                    <Input />
+                                                    {/* <Input /> */}
+                                                    <Select
+                                                        onChange={value => {
+                                                            // form?.validateFields().then(values => {
+                                                            //     console.log('valuess', values);
+                                                            // });
+                                                            console.log('valuess', value);
+
+                                                            const newShowGpus = [...showGpus];
+                                                            if (value !== 'KIND_GPU' && value !== 'KIND_MODEL') {
+                                                                if (!newShowGpus[index]) {
+                                                                    newShowGpus[index] = true;
+                                                                }
+                                                            } else {
+                                                                if (newShowGpus[index]) {
+                                                                    newShowGpus[index] = false;
+                                                                }
+                                                            }
+                                                            setShowGpus(newShowGpus);
+                                                        }}
+                                                    >
+                                                        {kindType?.map(item => (
+                                                            <Option key={item} value={item}>
+                                                                {item}
+                                                            </Option>
+                                                        ))}
+                                                    </Select>
                                                 </Form.Item>
-                                                <Form.Item
-                                                    {...field}
-                                                    label="gpus"
-                                                    labelCol={{span: 4}}
-                                                    name={[field.name, 'gpus']}
-                                                    rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
+                                                {showGpus[index] && (
+                                                    <Form.Item
+                                                        {...field}
+                                                        label="gpus"
+                                                        labelCol={{span: 4}}
+                                                        name={[field.name, 'gpus']}
+                                                        rules={[
+                                                            {required: true, message: '该字段为必填项请填写对应信息'}
+                                                        ]}
+                                                    >
+                                                        <Input />
+                                                    </Form.Item>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
 
-                                    {/* <Form.Item>
-                                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                    <Form.Item>
+                                        <Button
+                                            type="dashed"
+                                            onClick={() => {
+                                                const newShowGpus = [...showGpus, true];
+                                                setShowGpus(newShowGpus);
+                                                add();
+                                            }}
+                                            block
+                                            icon={<PlusOutlined />}
+                                        >
                                             Add sights
                                         </Button>
-                                    </Form.Item> */}
+                                    </Form.Item>
                                 </div>
                             )}
                         </Form.List>
