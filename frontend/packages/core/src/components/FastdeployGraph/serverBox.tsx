@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useEffect} from 'react';
 import styled from 'styled-components';
 import {rem} from '~/utils/style';
 const Buttons = styled.div`
@@ -28,7 +28,14 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas}) => {
     console.log('Datas', Datas);
-
+    useEffect(() => {
+        const time: any = setInterval(() => {
+            updatdDatas();
+        }, 10000);
+        return () => {
+            clearInterval(time);
+        };
+    }, []);
     return (
         <div>
             <div
