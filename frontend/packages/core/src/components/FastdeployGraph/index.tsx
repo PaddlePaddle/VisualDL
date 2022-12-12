@@ -239,8 +239,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [treeData, setTreeData] = useState(modelData.ensembles?.versions);
     const ports = {
         groups: {
-            right: {
-                position: 'right',
+            top: {
+                position: 'top',
                 attrs: {
                     circle: {
                         r: 4,
@@ -254,8 +254,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     }
                 }
             },
-            left: {
-                position: 'left',
+            bottom: {
+                position: 'bottom',
                 attrs: {
                     circle: {
                         r: 4,
@@ -271,22 +271,22 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         },
         items: [
-            // {
-            //     id: 'top',
-            //     group: 'top'
-            // },
             {
-                id: 'right',
-                group: 'right'
+                id: 'top',
+                group: 'top'
             },
             // {
-            //     id: 'bottom',
-            //     group: 'bottom'
+            //     id: 'right',
+            //     group: 'right'
             // },
             {
-                id: 'left',
-                group: 'left'
+                id: 'bottom',
+                group: 'bottom'
             }
+            // {
+            //     id: 'left',
+            //     group: 'left'
+            // }
         ]
     };
     useEffect(() => {
@@ -509,8 +509,16 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         const nodeEdges = [];
         for (const edge of edges) {
             nodeEdges.push({
-                source: {cell: edge.source, port: 'right'},
-                target: {cell: edge.target, port: 'left'},
+                source: {
+                    cell: edge.source,
+                    connectionPoint: {
+                        name: 'boundary',
+                        args: {
+                            sticky: true
+                        }
+                    }
+                },
+                target: {cell: edge.target, connectionPoint: 'boundary'}, // 没有参数时可以简化写法},
                 // shape: 'custom-edge',
                 tools: ['vertices', 'segments'],
                 // 基类
@@ -563,30 +571,16 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 }
             });
         }
-        const edgeMaps: any = {};
-        for (const edge of Object.keys(edgeMap)) {
-            edgeMaps[edge] = edgeMap[edge].from.length;
-        }
-        console.log('edgeMaps', edgeMaps);
-        const edgeMaps2: any = {};
-        for (const edge of Object.keys(edgeMaps)) {
-            let level = edgeMaps[edge];
-            // 自身的等级
 
-            // 自身的输入
-            const map = edgeMap[edge].from;
-            for (const edge of map) {
-                level += edgeMaps[edge];
-            }
-            edgeMaps2[edge] = level;
-        }
-        console.log('edgeMaps2', edgeMaps2);
         const nodess: any = [];
-        // const registers = Object.keys(Shape.HTML.shapeMaps);
-        // for (const register of registers) {
-        //     Graph.unregisterAnchor(register);
-        // }
-        // Shape.HTML.shapeMaps = {};
+        const postions: any = {};
+        for (const step of steps) {
+            const name = step.modelName;
+            postions[name] = {
+                x: step['pos_x'],
+                y: step['pos_y']
+            };
+        }
         for (let index = 0; index < nodes.length; index++) {
             const node = nodes[index];
             // debugger;
@@ -606,6 +600,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             //         }
             //     });
             // }
+            const postion = postions[node?.id];
             Shape.HTML.register({
                 shape: node.id,
                 width: 60,
@@ -628,8 +623,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     width: 60,
                     height: 40
                 },
-                x: 300 + edgeMaps2[node.id] * 120,
-                y: 100,
+                x: 500 + postion.x * 120,
+                y: 100 + postion.y * 80,
                 ports: ports
                 // tools: ['button-remove']
             });
