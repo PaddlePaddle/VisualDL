@@ -227,7 +227,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     // const [ensembles, setEmsembles] = useState<string>();
     const [steps, setSteps] = useState<any>();
     const [nodeClick, setNodeClick] = useState<any>();
-
+    const [triggerClick, setTriggerClick] = useState<any>();
     const [ensemblesName, setEnsemblesName] = useState<string>();
 
     const iframe = useRef<HTMLIFrameElement>(null);
@@ -369,18 +369,9 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         // });
         // setDnds(dnd);
         graph.on('node:dblclick', ({node}) => {
-            // reset()
-            // node.attr('body/stroke', 'orange')；
-            console.log('nodesss', node, modelData.models);
-            for (const model of modelData.models) {
-                if (model.name === node.id) {
-                    setNodeClick({
-                        name: model.name,
-                        data: model
-                    });
-                    return;
-                }
-            }
+            setTriggerClick({
+                name: node.id
+            });
         });
         // graph.clearCells();
         setGraphs(graph);
@@ -520,7 +511,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 },
                 target: {cell: edge.target, connectionPoint: 'boundary'}, // 没有参数时可以简化写法},
                 // shape: 'custom-edge',
-                tools: ['vertices', 'segments'],
+                // tools: ['vertices', 'segments'],
                 // 基类
                 inherit: 'edge',
                 // 属性样式
@@ -574,11 +565,16 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
         const nodess: any = [];
         const postions: any = {};
+        let max = 0;
         for (const step of steps) {
             const name = step.modelName;
+            if (name.length > max) {
+                max = name.length;
+            }
             postions[name] = {
                 x: step['pos_x'],
-                y: step['pos_y']
+                y: step['pos_y'],
+                lengths: name.length
             };
         }
         for (let index = 0; index < nodes.length; index++) {
@@ -603,7 +599,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             const postion = postions[node?.id];
             Shape.HTML.register({
                 shape: node.id,
-                width: 60,
+                width: 10 + max * 10,
+                // width: 10 + postion['lengths'] * 10,
                 height: 40,
                 html() {
                     const div = document.createElement('div');
@@ -620,14 +617,15 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 id: node.id,
                 shape: node.id,
                 size: {
-                    width: 60,
+                    width: 10 + max * 10,
                     height: 40
                 },
-                x: 500 + postion.x * 120,
-                y: 100 + postion.y * 80,
+                x: 300 + postion.x * 90,
+                y: 50 + postion.y * 80,
                 ports: ports
                 // tools: ['button-remove']
             });
+            // debugger;
             // debugger;
             // graphs?.addEdges(nodeEdges);
             // nodess?.push({
@@ -1110,6 +1108,21 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             });
         }
     }, [dirValue, isModalOpen2]);
+    useEffect(() => {
+        if (!triggerClick) {
+            return;
+        }
+        const name = triggerClick.name;
+        for (const model of modelData.models) {
+            if (model.name === name) {
+                setNodeClick({
+                    name: model.name,
+                    data: model
+                });
+                return;
+            }
+        }
+    }, [triggerClick]);
     console.log('graphs', treeData);
     console.log('showFlag', showFlag);
 
