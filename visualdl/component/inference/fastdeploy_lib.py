@@ -19,6 +19,7 @@ import random
 import re
 import signal
 import string
+from collections import defaultdict
 from subprocess import Popen
 from subprocess import STDOUT
 
@@ -293,6 +294,52 @@ def analyse_step_relationships(step_config, inputs, outputs):  # noqa: C901
             for var_from_model in relationships['from_models']:
                 if var_from_model not in models_dict[to_model]['inputModels']:
                     models_dict[to_model]['inputModels'].append(var_from_model)
+    calculate_layout_for_frontend(models_dict)
+
+
+def calculate_layout_for_frontend(model_config_in_step):
+    '''
+    Analyse model topology connections and prepare the positions for each model in layout.
+    Dynamic program algorithm:
+        depth(cur_node) = max([depth(prev_node) for prev_node in cur_node['inputModels']])
+    Args:
+        model_config_in_step(dict): model config in ensemble models' step, indexed by model name.
+    Returns:
+        None. Results calculated will be saved in place.
+    '''
+    path_depth = defaultdict(int)
+
+    def depth_recursive(model):
+        if model['modelName'] == 'feed':
+            path_depth[model['modelName']] = 0
+            return 0
+        if path_depth[model['modelName']] != 0:
+            return path_depth[model['modelName']]
+        path_depth[model['modelName']] = max([
+            depth_recursive(model_config_in_step[model_name]) for model_name in
+            model_config_in_step[model['modelName']]['inputModels']
+        ]) + 1
+        return path_depth[model['modelName']]
+
+    depth_recursive(model_config_in_step['fetch'])
+    path_depth_tuple = [
+        (k, v)
+        for k, v in sorted(path_depth.items(), key=lambda item: item[1])
+    ]
+    cur_x = 0
+    last_depth = -1
+    for model_name, depth in path_depth_tuple:
+        if depth == last_depth:
+            model_config_in_step[model_name]['pos_y'] = depth
+            model_config_in_step[model_name]['pos_x'] = cur_x
+            cur_x += 1
+        else:
+            cur_x = 0
+            model_config_in_step[model_name]['pos_y'] = depth
+            model_config_in_step[model_name]['pos_x'] = cur_x
+            cur_x += 1
+        last_depth = depth
+    return
 
 
 def launch_process(kwargs: dict):
