@@ -491,6 +491,7 @@ def check_process_alive(pid):
     Return:
         status(bool): True if process is still alive.
     '''
+    pid = int(pid)
     try:
         os.kill(pid, 0)
     except OSError:
@@ -524,14 +525,16 @@ def generate_metric_table(server_addr, server_port):
     model_table = {}
     gpu_table = {}
 
-    res = requests.get("http://{}:{}/metrics")
+    res = requests.get("http://{}:{}/metrics".format(server_addr, server_port))
     metric_content = res.text
     for content in metric_content.split('\n'):
-        if content.startwith('#'):
+        if content.startswith('#'):
             continue
         else:
-            res = re.match(r'(\w+)({.*}) (\w+)',
+            res = re.match(r'(\w+){(.*)} (\w+)',
                            content)  # match output by server metrics interface
+            if not res:
+                continue
             metric_name = res.group(1)
             model = res.group(2)
             value = res.group(3)
@@ -549,6 +552,8 @@ def generate_metric_table(server_addr, server_port):
                         model_table[model_name][metric_name] = value
                     elif key == 'GPU':
                         gpu_name = infos['gpu_uuid']
+                        if gpu_name not in gpu_table:
+                            gpu_table[gpu_name] = {}
                         gpu_table[gpu_name][metric_name] = value
                     elif key == 'CPU':
                         pass
