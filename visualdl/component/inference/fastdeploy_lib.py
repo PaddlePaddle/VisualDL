@@ -408,7 +408,7 @@ def get_process_output(pid, length):
     if os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid))):
         with open(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
                   'r') as f:
-            logfilename = f.read()
+            logfilename = f.readline().strip('\n')
         # delete file ${logfilename} if exists
         if os.path.exists(
                 os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename))):
@@ -441,7 +441,7 @@ def kill_process(process):
     if os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid))):
         with open(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
                   'r') as f:
-            logfilename = f.read()
+            logfilename = f.readline().strip('\n')
         # delete file ${logfilename} if exists
         if os.path.exists(
                 os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename))):
@@ -467,7 +467,7 @@ def get_alive_fastdeploy_servers():
                 with open(
                         os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
                         'r') as f:
-                    logfilename = f.read()
+                    logfilename = f.readline().strip('\n')
                 # delete file ${logfilename} if exists
                 if os.path.exists(
                         os.path.join(FASTDEPLOYSERVER_PATH,
