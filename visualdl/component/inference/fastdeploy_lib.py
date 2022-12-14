@@ -25,6 +25,7 @@ from subprocess import STDOUT
 
 import google.protobuf.json_format as json_format
 import google.protobuf.text_format as text_format
+import requests
 
 from .proto.model_config.protxt_pb2 import ModelConfig
 from visualdl.utils.dir import FASTDEPLOYSERVER_PATH
@@ -347,9 +348,14 @@ def launch_process(kwargs: dict):
   Launch a fastdeploy server according to specified arguments.
   '''
     cmd = ['fastdeployserver']
+    start_args = {}
     for key, value in kwargs.items():
+        if key == 'default_model_name':  # Used to fill client model_name automatically
+            start_args[key] = value
+            pass
         cmd.append('--{}'.format(key))
         cmd.append('{}'.format(value))
+        start_args[key] = value
 
     logfilename = 'logfile-{}'.format(get_random_string(8))
     while os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, logfilename)):
@@ -364,8 +370,8 @@ def launch_process(kwargs: dict):
     with open(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(p.pid)),
               'w') as f:
         f.write(
-            logfilename
-        )  # filename ${p.pid} contain the real log filename ${logfilename}
+            logfilename + '\n' + json.dumps(start_args)
+        )  # filename ${p.pid} contain the real log filename ${logfilename}, and start arguments
     return p
 
 
@@ -374,6 +380,25 @@ def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join([random.choice(letters) for i in range(length)])
     return result_str
+
+
+def get_start_arguments(server_id):
+    '''
+    Get the start arguments for fastdeployserver process.
+    Args:
+        server_id(int): fastdeployserver process id
+    Returns:
+        args(dict): launch arguments when start fastdeployserver process.
+    '''
+    args = {}
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        with open(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
+                'r') as f:
+            f.readline()
+            args = json.loads(f.read())
+    return args
 
 
 def get_process_output(pid, length):
@@ -423,3 +448,111 @@ def kill_process(process):
             os.remove(
                 os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename)))
         os.remove(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)))
+
+
+def get_alive_fastdeploy_servers():
+    '''
+    Search pids in `FASTDEPLOYSERVER_PATH`, if process is dead and log still exists due to \
+        some unexpectable reasons, delete log file.
+    '''
+    pids = [
+        name for name in os.listdir(FASTDEPLOYSERVER_PATH)
+        if 'logfile' not in name
+    ]
+    should_delete_pids = []
+    for pid in pids:
+        if check_process_alive(pid) is False:
+            if os.path.exists(
+                    os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid))):
+                with open(
+                        os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
+                        'r') as f:
+                    logfilename = f.read()
+                # delete file ${logfilename} if exists
+                if os.path.exists(
+                        os.path.join(FASTDEPLOYSERVER_PATH,
+                                     '{}'.format(logfilename))):
+                    os.remove(
+                        os.path.join(FASTDEPLOYSERVER_PATH,
+                                     '{}'.format(logfilename)))
+                os.remove(
+                    os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)))
+            should_delete_pids.append(pid)
+    for pid in should_delete_pids:
+        pids.remove(pid)
+    return pids
+
+
+def check_process_alive(pid):
+    '''
+    Given a pid, check whether the process is alive or not.
+    Args:
+        pid(int): process id
+    Return:
+        status(bool): True if process is still alive.
+    '''
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
+
+
+_metric_column_name = {
+    "Model": {
+        "nv_inference_request_success", "nv_inference_request_failure",
+        "nv_inference_count", "nv_inference_exec_count",
+        "nv_inference_request_duration_us", "nv_inference_queue_duration_us",
+        "nv_inference_compute_input_duration_us",
+        "nv_inference_compute_infer_duration_us",
+        "nv_inference_compute_output_duration_us"
+    },
+    "GPU": {
+        "nv_gpu_power_usage", "nv_gpu_power_limit", "nv_energy_consumption",
+        "nv_gpu_utilization", "nv_gpu_memory_total_bytes",
+        "nv_gpu_memory_used_bytes"
+    },
+    "CPU": {
+        "nv_cpu_utilization", "nv_cpu_memory_total_bytes",
+        "nv_cpu_memory_used_bytes"
+    }
+}
+
+
+def generate_metric_table(server_addr, server_port):
+    model_table = {}
+    gpu_table = {}
+
+    res = requests.get("http://{}:{}/metrics")
+    metric_content = res.text
+    for content in metric_content.split('\n'):
+        if content.startwith('#'):
+            continue
+        else:
+            res = re.match(r'(\w+)({.*}) (\w+)',
+                           content)  # match output by server metrics interface
+            metric_name = res.group(1)
+            model = res.group(2)
+            value = res.group(3)
+            infos = {}
+            for info in model.split(','):
+                k, v = info.split('=')
+                v = v.strip('"')
+                infos[k] = v
+            for key, metric_names in _metric_column_name.items():
+                if metric_name in metric_names:
+                    if key == 'Model':
+                        model_name = infos['model']
+                        if model_name not in model_table:
+                            model_table[model_name] = {}
+                        model_table[model_name][metric_name] = value
+                    elif key == 'GPU':
+                        gpu_name = infos['gpu_uuid']
+                        gpu_table[gpu_name][metric_name] = value
+                    elif key == 'CPU':
+                        pass
+    results = {}
+    results['Model'] = model_table
+    results['GPU'] = gpu_table
+    return results
