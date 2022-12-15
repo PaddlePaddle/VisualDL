@@ -218,8 +218,9 @@ function App() {
         }).then(
             (res: any) => {
                 console.log('get_server_output', res);
-
                 const serverModel = serverModels;
+                console.log('serverModelsss', serverModel);
+
                 const newServerModel = serverModel.map((model: any) => {
                     console.log('model.id === serverId', serverId, model.id, model);
                     if (model.id === serverId) {

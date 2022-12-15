@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect, useState} from 'react';
+import React, {FunctionComponent, useEffect, useState, useRef} from 'react';
 import styled from 'styled-components';
 import ModelTables from './ModelTables';
 import CPUTables from './CPUTables';
@@ -51,16 +51,29 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server_id}) => {
     const [flag, setFlag] = useState(true);
+    // const [Datas, setDatas] = useState<any>();
     console.log('Datas', Datas);
-    useEffect(() => {
-        let time: any = setInterval(() => {
-            updatdDatas();
-        }, 5000);
-        return () => {
-            time = null;
-        };
-    }, []);
+    // useEffect(() => {
+    //     const timer = setInterval(() => {
+    //         setCount(count + 1);
+    //     }, 10000);
+    //     console.log('更新了', timer);
+    //     return () => clearInterval(timer);
+    // }, [count]);
     //  Datas.metric
+    const cbRef = useRef<Function>();
+    useEffect(() => {
+        cbRef.current = updatdDatas;
+    });
+    useEffect(() => {
+        const callback = () => {
+            cbRef.current?.();
+        };
+        const timer = setInterval(() => {
+            callback();
+        }, 10000);
+        return () => clearInterval(timer);
+    }, []);
     return (
         <div>
             {flag ? (
