@@ -19,6 +19,7 @@ import re
 import sys
 import threading
 import time
+import urllib
 import webbrowser
 
 import requests
@@ -32,6 +33,7 @@ from flask_babel import Babel
 
 import visualdl.server
 from visualdl import __version__
+from visualdl.component.inference.fastdeploy_lib import get_start_arguments
 from visualdl.component.inference.fastdeploy_server import create_fastdeploy_api_call
 from visualdl.component.inference.model_convert_server import create_model_convert_api_call
 from visualdl.component.profiler.profiler_server import create_profiler_api_call
@@ -170,11 +172,18 @@ def create_app(args):  # noqa: C901
         try:
             if request.method == 'POST':
                 fastdeploy_api_call('create_fastdeploy_client', request.form)
+                request_args = request.form
             else:
                 fastdeploy_api_call('create_fastdeploy_client', request.args)
+                request_args = request.args
         except Exception as e:
             error_msg = '{}'.format(e)
             return make_response(error_msg)
+        args = urllib.parse.urlencode(request_args)
+        if args:
+            return redirect(
+                api_path + "/fastdeploy/fastdeploy_client/app?{}".format(args),
+                code=302)
         return redirect(
             api_path + "/fastdeploy/fastdeploy_client/app", code=302)
 
@@ -194,9 +203,11 @@ def create_app(args):  # noqa: C901
         if request.method == 'POST':
             port = fastdeploy_api_call('create_fastdeploy_client',
                                        request.form)
+            request_args = request.form
         else:
             port = fastdeploy_api_call('create_fastdeploy_client',
                                        request.args)
+            request_args = request.args
         if path == 'app':
             proxy_url = request.url.replace(
                 request.host_url.rstrip('/') + api_path +
@@ -217,8 +228,47 @@ def create_app(args):  # noqa: C901
             data=request.get_data(),
             cookies=request.cookies,
             allow_redirects=False)
+        if path == 'app':
+            content = resp.content
+            if request_args and 'server_id' in request_args:
+                server_id = request_args.get('server_id')
+                start_args = get_start_arguments(server_id)
+                http_port = start_args.get('http-port', '')
+                model_name = start_args.get('default_model_name', '')
+                content = content.decode()
+                try:
+                    default_server_addr = re.search(
+                        r'"label": "Server address".*?"value": "".*?}',
+                        content).group(0)
+                    cur_server_addr = default_server_addr.replace(
+                        '"value": ""',
+                        '"value": "localhost:{}"'.format(http_port))
+                    default_model_name = re.search(
+                        r'"label": "model name".*?"value": "".*?}',
+                        content).group(0)
+                    cur_model_name = default_model_name.replace(
+                        '"value": ""', '"value": "{}"'.format(model_name))
+                    default_model_version = re.search(
+                        r'"label": "model version".*?"value": "".*?}',
+                        content).group(0)
+                    cur_model_version = default_model_version.replace(
+                        '"value": ""', '"value": "{}"'.format('1'))
+                    if http_port:
+                        content = content.replace(default_server_addr,
+                                                  cur_server_addr)
+                    if model_name:
+                        content = content.replace(default_model_name,
+                                                  cur_model_name)
+                    content = content.replace(default_model_version,
+                                              cur_model_version)
+                except Exception:
+                    pass
+                finally:
+                    content = content.encode()
+        else:
+            content = resp.content
         headers = [(name, value) for (name, value) in resp.raw.headers.items()]
-        response = Response(resp.content, resp.status_code, headers)
+        response = Response(content, resp.status_code, headers)
         return response
 
     @app.route(api_path + '/component_tabs')

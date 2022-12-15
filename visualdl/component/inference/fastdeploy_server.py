@@ -26,7 +26,10 @@ import requests
 from .fastdeploy_client.client_app import create_gradio_client_app
 from .fastdeploy_lib import analyse_config
 from .fastdeploy_lib import exchange_format_to_original_format
+from .fastdeploy_lib import generate_metric_table
+from .fastdeploy_lib import get_alive_fastdeploy_servers
 from .fastdeploy_lib import get_process_output
+from .fastdeploy_lib import get_start_arguments
 from .fastdeploy_lib import json2pbtxt
 from .fastdeploy_lib import kill_process
 from .fastdeploy_lib import launch_process
@@ -127,6 +130,17 @@ class FastDeployServerApi(object):
         else:
             return
 
+    @result()
+    def get_server_metric(self, server_id):
+        args = get_start_arguments(server_id)
+        host = 'localhost'
+        port = args.get('metrics-port', 8002)
+        return generate_metric_table(host, port)
+
+    @result()
+    def get_server_list(self):
+        return get_alive_fastdeploy_servers()
+
     def create_fastdeploy_client(self):
         if self.client_port is None:
 
@@ -166,7 +180,9 @@ def create_fastdeploy_api_call():
         'start_server': (api.start_server, ['config']),
         'stop_server': (api.stop_server, ['server_id']),
         'get_server_output': (api.get_server_output, ['server_id', 'length']),
-        'create_fastdeploy_client': (api.create_fastdeploy_client, [])
+        'create_fastdeploy_client': (api.create_fastdeploy_client, []),
+        'get_server_list': (api.get_server_list, []),
+        'get_server_metric': (api.get_server_metric, ['server_id'])
     }
 
     def call(path: str, args):

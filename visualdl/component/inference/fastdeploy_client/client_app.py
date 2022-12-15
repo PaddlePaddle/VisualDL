@@ -36,7 +36,7 @@ supported_tasks = {
     'ocr': visualize_ocr,
     'facealignment': visualize_face_alignment,
     'headpose': visualize_headpose,
-    'others(raw data)': lambda x: str(x)
+    'unspecified': lambda x: str(x)
 }
 
 
@@ -55,11 +55,6 @@ def create_gradio_client_app():  # noqa:C901
           }
           .dark input[type='range'] {
               accent-color: #dfdfdf;
-          }
-          .container {
-              max-width: 1200px;
-              margin: auto;
-              padding-top: 1.5rem;
           }
           #gallery {
               min-height: 22rem;
@@ -162,84 +157,76 @@ def create_gradio_client_app():  # noqa:C901
                             placeholder="1",
                         )
 
-                    check_button = gr.Button("GetInputOutputName")
-
             with gr.Box():
-                gr.Markdown("Inputs")
                 with gr.Tab("component format"):
-                    gr.Markdown(
-                        "Fill inputs according to your need, choose either image or text for each input."
-                    )
-                    with gr.Column():
-                        with gr.Accordion("input 1"):
-                            input_name_1_text = gr.Textbox(
-                                label="input name", interactive=False)
-                            input_1_image = gr.Image(type='numpy')
-                            input_1_text = gr.Textbox(
-                                label="contents", max_lines=1000)
-                        with gr.Accordion("input 2", open=False):
-                            input_name_2_text = gr.Textbox(
-                                label="input name", interactive=False)
-                            input_2_image = gr.Image(type='numpy')
-                            input_2_text = gr.Textbox(
-                                label="contents", max_lines=1000)
+                    check_button = gr.Button("GetInputOutputName")
+                    component_format_column = gr.Column(visible=False)
+                    with component_format_column:
+                        task_radio = gr.Radio(
+                            choices=list(supported_tasks.keys()),
+                            value='unspecified',
+                            label='task type',
+                            visible=True)
+                        gr.Markdown(
+                            "Fill inputs according to your need, choose either image or text for each input."
+                        )
+                        with gr.Row():
+                            with gr.Column():
+                                gr.Markdown("Inputs")
+                                input_accordions = []
+                                input_name_texts = []
+                                input_images = []
+                                input_texts = []
+                                for i in range(6):
+                                    accordion = gr.Accordion(
+                                        "input {}".format(i),
+                                        open=True,
+                                        visible=False)
+                                    with accordion:
+                                        input_name_text = gr.Textbox(
+                                            label="input name",
+                                            interactive=False)
+                                        input_image = gr.Image(type='numpy')
+                                        input_text = gr.Textbox(
+                                            label="contents", max_lines=1000)
+                                    input_accordions.append(accordion)
+                                    input_name_texts.append(input_name_text)
+                                    input_images.append(input_image)
+                                    input_texts.append(input_text)
 
-                        with gr.Accordion("input 3", open=False):
-                            input_name_3_text = gr.Textbox(
-                                label="input name", interactive=False)
-                            input_3_image = gr.Image(type='numpy')
-                            input_3_text = gr.Textbox(
-                                label="contents", max_lines=1000)
-                    with gr.Box():
-                        gr.Markdown("Outputs")
-                        with gr.Column():
-                            with gr.Accordion("output 1"):
-                                output_name_1_text = gr.Textbox(
-                                    label="output name", interactive=False)
-                                task_select_items1 = gr.Dropdown(
-                                    choices=list(supported_tasks.keys()),
-                                    value='others(raw data)',
-                                    label='task type')
-                                output_1_text = gr.Textbox(
-                                    label="raw data",
-                                    interactive=False,
-                                    show_label=True)
-                                output_1_image = gr.Image(interactive=False)
-                            with gr.Accordion("output 2", open=False):
-                                output_name_2_text = gr.Textbox(
-                                    label="output name", interactive=False)
-                                task_select_items2 = gr.Dropdown(
-                                    choices=list(supported_tasks.keys()),
-                                    value='others(raw data)',
-                                    label='task type')
-                                output_2_text = gr.Textbox(
-                                    label="raw data",
-                                    interactive=False,
-                                    show_label=True,
-                                )
-                                output_2_image = gr.Image(interactive=False)
-
-                            with gr.Accordion("output 3", open=False):
-                                output_name_3_text = gr.Textbox(
-                                    label="output name", interactive=False)
-                                task_select_items3 = gr.Dropdown(
-                                    choices=list(supported_tasks.keys()),
-                                    value='others(raw data)',
-                                    label='task type')
-                                output_3_text = gr.Textbox(
-                                    label="raw data",
-                                    interactive=False,
-                                    show_label=True)
-                                output_3_image = gr.Image(interactive=False)
-                    component_submit_button = gr.Button("submit")
+                            with gr.Column():
+                                gr.Markdown("Outputs")
+                                output_accordions = []
+                                output_name_texts = []
+                                output_images = []
+                                output_texts = []
+                                for i in range(6):
+                                    accordion = gr.Accordion(
+                                        "output {}".format(i),
+                                        open=True,
+                                        visible=False)
+                                    with accordion:
+                                        output_name_text = gr.Textbox(
+                                            label="output name",
+                                            interactive=False)
+                                        output_text = gr.Textbox(
+                                            label="raw data",
+                                            interactive=False,
+                                            show_label=True)
+                                        output_image = gr.Image(
+                                            interactive=False)
+                                    output_accordions.append(accordion)
+                                    output_name_texts.append(output_name_text)
+                                    output_images.append(output_image)
+                                    output_texts.append(output_text)
+                        component_submit_button = gr.Button("submit")
                 with gr.Tab("raw format"):
                     raw_payload_text = gr.Textbox(
                         label="request payload", max_lines=10000)
-                    with gr.Box():
+                    with gr.Column():
                         gr.Markdown("Outputs")
-                        with gr.Column():
-                            output_raw_text = gr.Textbox(
-                                label="raw data", interactive=False)
+                        output_raw_text = gr.Textbox(
+                            label="raw data", interactive=False)
                     raw_submit_button = gr.Button("submit")
 
             status_text = gr.Textbox(
@@ -247,14 +234,8 @@ def create_gradio_client_app():  # noqa:C901
                 show_label=True,
                 max_lines=1,
                 interactive=False)
-        all_input_output_components = [
-            input_name_1_text, input_name_2_text, input_name_3_text,
-            input_1_image, input_2_image, input_3_image, input_1_text,
-            input_2_text, input_3_text, output_name_1_text, output_name_2_text,
-            output_name_3_text, output_1_text, output_2_text, output_3_text,
-            output_1_image, output_2_image, output_3_image, task_select_items1,
-            task_select_items2, task_select_items3
-        ]
+        all_input_output_components = input_accordions + input_name_texts + input_images + \
+            input_texts + output_accordions + output_name_texts + output_images + output_texts
 
         def get_input_output_name(server_addr, model_name, model_version):
             try:
@@ -262,23 +243,22 @@ def create_gradio_client_app():  # noqa:C901
                     server_addr, model_name, model_version)
             except Exception as e:
                 return {status_text: str(e)}
-            input_name_texts = [
-                input_name_1_text, input_name_2_text, input_name_3_text
-            ]
-            output_name_texts = [
-                output_name_1_text, output_name_2_text, output_name_3_text
-            ]
             results = {
                 component: None
                 for component in all_input_output_components
             }
-            results[task_select_items1] = 'others(raw data)'
-            results[task_select_items2] = 'others(raw data)'
-            results[task_select_items3] = 'others(raw data)'
+            results[component_format_column] = gr.update(visible=True)
+            results[check_button] = gr.update(visible=False)
+            for input_accordio in input_accordions:
+                results[input_accordio] = gr.update(visible=False)
+            for output_accordio in output_accordions:
+                results[output_accordio] = gr.update(visible=False)
             results[status_text] = 'GetInputOutputName Successful'
             for i, input_meta in enumerate(input_metas):
+                results[input_accordions[i]] = gr.update(visible=True)
                 results[input_name_texts[i]] = input_meta['name']
             for i, output_meta in enumerate(output_metas):
+                results[output_accordions[i]] = gr.update(visible=True)
                 results[output_name_texts[i]] = output_meta['name']
             return results
 
@@ -286,66 +266,36 @@ def create_gradio_client_app():  # noqa:C901
             server_addr = args[0]
             model_name = args[1]
             model_version = args[2]
-            input_name_1 = args[3]
-            input_1_image_data = args[4]
-            input_1_text_data = args[5]
-            input_name_2 = args[6]
-            input_2_image_data = args[7]
-            input_2_text_data = args[8]
-            input_name_3 = args[9]
-            input_3_image_data = args[10]
-            input_3_text_data = args[11]
-            task_select_items1_data = args[12]
-            task_select_items2_data = args[13]
-            task_select_items3_data = args[14]
+            names = args[3:3 + len(input_name_texts)]
+            images = args[3 + len(input_name_texts):3 + len(input_name_texts) +
+                          len(input_images)]
+            texts = args[3 + len(input_name_texts) + len(input_images):3 +
+                         len(input_name_texts) + len(input_images) +
+                         len(input_texts)]
+            task_type = args[-1]
             if server_addr and model_name and model_version:
                 inputs = {}
-                if input_name_1:
-                    if input_1_image_data is not None:
-                        inputs[input_name_1] = np.array([input_1_image_data])
-                    if input_1_text_data:
-                        inputs[input_name_1] = np.array(
-                            [[input_1_text_data.encode('utf-8')]],
-                            dtype=np.object_)
-                if input_name_2:
-                    if input_2_image_data is not None:
-                        inputs[input_name_2] = np.array([input_2_image_data])
-                    if input_2_text_data:
-                        inputs[input_name_2] = np.array(
-                            [[input_2_text_data.encode('utf-8')]],
-                            dtype=np.object_)
-                if input_name_3:
-                    if input_3_image_data is not None:
-                        inputs[input_name_3] = np.array([input_3_image_data])
-                    if input_3_text_data:
-                        inputs[input_name_3] = np.array(
-                            [[input_3_text_data.encode('utf-8')]],
-                            dtype=np.object_)
+                for i, input_name in enumerate(names):
+                    if input_name:
+                        if images[i] is not None:
+                            inputs[input_name] = np.array([images[i]])
+                        if texts[i]:
+                            inputs[input_name] = np.array(
+                                [[texts[i].encode('utf-8')]], dtype=np.object_)
                 try:
                     infer_results = _http_manager.infer(
                         server_addr, model_name, model_version, inputs)
                     results = {status_text: 'Inference Successful'}
-                    output_name_texts = [
-                        output_name_1_text, output_name_2_text,
-                        output_name_3_text
-                    ]
-                    output_texts = [
-                        output_1_text, output_2_text, output_3_text
-                    ]
-                    output_images = [
-                        output_1_image, output_2_image, output_3_image
-                    ]
-                    output_task_types = [
-                        task_select_items1_data, task_select_items2_data,
-                        task_select_items3_data
-                    ]
                     for i, (output_name,
                             data) in enumerate(infer_results.items()):
                         results[output_name_texts[i]] = output_name
                         results[output_texts[i]] = str(data)
-                        if output_task_types[i] != 'others(raw data)':
-                            results[output_images[i]] = supported_tasks[
-                                output_task_types[i]](input_1_image_data, data)
+                        if task_type != 'unspecified':
+                            try:
+                                results[output_images[i]] = supported_tasks[
+                                    task_type](images[0], data)
+                            except Exception:
+                                results[output_images[i]] = None
                     return results
                 except Exception as e:
                     return {status_text: 'Error: {}'.format(e)}
@@ -374,20 +324,18 @@ def create_gradio_client_app():  # noqa:C901
         check_button.click(
             fn=get_input_output_name,
             inputs=[server_addr_text, model_name_text, model_version_text],
-            outputs=[*all_input_output_components, status_text])
+            outputs=[
+                *all_input_output_components, check_button,
+                component_format_column, status_text
+            ])
         component_submit_button.click(
             fn=component_inference,
             inputs=[
                 server_addr_text, model_name_text, model_version_text,
-                input_name_1_text, input_1_image, input_1_text,
-                input_name_2_text, input_2_image, input_2_text,
-                input_name_3_text, input_3_image, input_3_text,
-                task_select_items1, task_select_items2, task_select_items3
+                *input_name_texts, *input_images, *input_texts, task_radio
             ],
             outputs=[
-                output_name_1_text, output_name_2_text, output_name_3_text,
-                output_1_text, output_2_text, output_3_text, output_1_image,
-                output_2_image, output_3_image, status_text
+                *output_name_texts, *output_images, *output_texts, status_text
             ])
         raw_submit_button.click(
             fn=raw_inference,
