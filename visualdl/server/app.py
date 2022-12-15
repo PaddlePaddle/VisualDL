@@ -234,31 +234,45 @@ def create_app(args):  # noqa: C901
                 server_id = request_args.get('server_id')
                 start_args = get_start_arguments(server_id)
                 http_port = start_args.get('http-port', '')
+                metrics_port = start_args.get('metrics-port', '')
                 model_name = start_args.get('default_model_name', '')
                 content = content.decode()
                 try:
                     default_server_addr = re.search(
-                        r'"label": "Server address".*?"value": "".*?}',
-                        content).group(0)
+                        r'"label": "服务ip".*?"value": "".*?}', content).group(0)
                     cur_server_addr = default_server_addr.replace(
-                        '"value": ""',
-                        '"value": "localhost:{}"'.format(http_port))
-                    default_model_name = re.search(
-                        r'"label": "model name".*?"value": "".*?}',
+                        '"value": ""', '"value": "localhost"')
+                    default_http_port = re.search(
+                        r'"label": "推理服务端口".*?"value": "".*?}',
                         content).group(0)
+                    cur_http_port = default_http_port.replace(
+                        '"value": ""', '"value": "{}"'.format(http_port))
+                    default_metrics_port = re.search(
+                        r'"label": "性能服务端口".*?"value": "".*?}',
+                        content).group(0)
+                    cur_metrics_port = default_metrics_port.replace(
+                        '"value": ""', '"value": "{}"'.format(metrics_port))
+                    default_model_name = re.search(
+                        r'"label": "模型名称".*?"value": "".*?}', content).group(0)
                     cur_model_name = default_model_name.replace(
                         '"value": ""', '"value": "{}"'.format(model_name))
                     default_model_version = re.search(
-                        r'"label": "model version".*?"value": "".*?}',
-                        content).group(0)
+                        r'"label": "模型版本".*?"value": "".*?}', content).group(0)
                     cur_model_version = default_model_version.replace(
                         '"value": ""', '"value": "{}"'.format('1'))
+
+                    content = content.replace(default_server_addr,
+                                              cur_server_addr)
                     if http_port:
-                        content = content.replace(default_server_addr,
-                                                  cur_server_addr)
+                        content = content.replace(default_http_port,
+                                                  cur_http_port)
+                    if metrics_port:
+                        content = content.replace(default_metrics_port,
+                                                  cur_metrics_port)
                     if model_name:
                         content = content.replace(default_model_name,
                                                   cur_model_name)
+
                     content = content.replace(default_model_version,
                                               cur_model_version)
                 except Exception:

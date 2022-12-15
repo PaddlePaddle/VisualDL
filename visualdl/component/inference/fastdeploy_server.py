@@ -113,9 +113,12 @@ class FastDeployServerApi(object):
             # FASTDEPLOYSERVER_PATH(may be launched by other vdl app instance by gunicorn)
             kill_process(server_id)
         # check if there are servers killed by other vdl app instance and become zoombie
+        should_delete = []
         for server_id, process in self.opened_servers.items():
             if process.poll() is not None:
-                del self.opened_servers[server_id]
+                should_delete.append(server_id)
+        for server_id in should_delete:
+            del self.opened_servers[server_id]
 
     @result('text/plain')
     def get_server_output(self, server_id, length):
