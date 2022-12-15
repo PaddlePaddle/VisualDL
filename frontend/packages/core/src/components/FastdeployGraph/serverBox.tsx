@@ -61,6 +61,9 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
     //     return () => clearInterval(timer);
     // }, [count]);
     //  Datas.metric
+    useEffect(() => {
+        updatdDatas();
+    }, []);
     const cbRef = useRef();
     useEffect(() => {
         cbRef.current = updatdDatas;
@@ -130,7 +133,7 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
                 <ButtonRight>
                     <Buttons
                         onClick={() => {
-                            const url = PUBLIC_PATH + `/api/fastdeploy/fastdeploy_client+?server_id=${server_id}`;
+                            const url = PUBLIC_PATH + `/api/fastdeploy/fastdeploy_client?server_id=${server_id}`;
                             window.open(url);
                         }}
                     >

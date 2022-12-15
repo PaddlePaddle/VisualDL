@@ -496,6 +496,14 @@ function App() {
                         onEdit={onEdit}
                         tabPosition={mode}
                         style={{height: '100%'}}
+                        onChange={activeKey => {
+                            console.log('activeKey', activeKey);
+
+                            if (activeKey !== 'item-1') {
+                                const activeKeys = Number(activeKey);
+                                outDatas(activeKeys);
+                            }
+                        }}
                     >
                         {modelData && (
                             <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
@@ -510,7 +518,13 @@ function App() {
                             serverModels.map((server: any) => {
                                 // debugger;
                                 return (
-                                    <Tabs.TabPane tab={`Server${server.id}`} key={server.id}>
+                                    <Tabs.TabPane
+                                        onTabClick={() => {
+                                            outDatas(server.id);
+                                        }}
+                                        tab={`Server${server.id}`}
+                                        key={server.id}
+                                    >
                                         <ServerBox
                                             Datas={server}
                                             server_id={server.id}
