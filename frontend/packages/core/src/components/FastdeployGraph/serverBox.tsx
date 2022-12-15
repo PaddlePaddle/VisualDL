@@ -61,7 +61,7 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
     //     return () => clearInterval(timer);
     // }, [count]);
     //  Datas.metric
-    const cbRef = useRef<Function>();
+    const cbRef = useRef();
     useEffect(() => {
         cbRef.current = updatdDatas;
     });
@@ -101,11 +101,11 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
                     }}
                 >
                     <div>
-                        <TableTitle>表一:模型服务监控</TableTitle>
+                        <TableTitle>模型服务监控</TableTitle>
                         <ModelTables Datas={Datas?.metric?.Model}></ModelTables>
                     </div>
                     <div>
-                        <TableTitle>表二:GPU监控</TableTitle>
+                        <TableTitle>GPU监控</TableTitle>
                         <CPUTables Datas={Datas?.metric?.GPU}></CPUTables>
                     </div>
                 </div>

@@ -169,11 +169,11 @@ function App() {
             outDatas(serverId);
         }
     }, [serverId]);
-    useEffect(() => {
-        if (serverId !== undefined) {
-            metricDatas(serverId);
-        }
-    }, [metric]);
+    // useEffect(() => {
+    //     if (serverId !== undefined) {
+    //         metricDatas(serverId);
+    //     }
+    // }, [metric]);
     // useEffect(() => {
     //     debugger;
     //     if (!serverModels.length) {
@@ -246,7 +246,9 @@ function App() {
                 }
                 console.log('newServerModel', newServerModel);
                 setServerModels(newServerModel);
-                setMetric(!metric);
+                metricDatas(serverId);
+                ChangeServerId(serverId);
+                // setMetric(!metric);
                 // setServerId(undefined);
                 // setLoading(false);
             },
@@ -285,12 +287,12 @@ function App() {
                 //     });
                 // }
                 setServerModels(newServerModel);
-                setServerId(undefined);
+                // setServerId(undefined);
                 setLoading(false);
             },
             res => {
                 console.log('get_server_output', res);
-                setServerId(undefined);
+                // setServerId(undefined);
                 setLoading(false);
             }
         );
