@@ -518,13 +518,7 @@ function App() {
                             serverModels.map((server: any) => {
                                 // debugger;
                                 return (
-                                    <Tabs.TabPane
-                                        onTabClick={() => {
-                                            outDatas(server.id);
-                                        }}
-                                        tab={`Server${server.id}`}
-                                        key={server.id}
-                                    >
+                                    <Tabs.TabPane tab={`Server${server.id}`} key={server.id}>
                                         <ServerBox
                                             Datas={server}
                                             server_id={server.id}

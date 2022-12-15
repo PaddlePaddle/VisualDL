@@ -61,10 +61,7 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
     //     return () => clearInterval(timer);
     // }, [count]);
     //  Datas.metric
-    useEffect(() => {
-        updatdDatas();
-    }, []);
-    const cbRef = useRef();
+    const cbRef: any = useRef();
     useEffect(() => {
         cbRef.current = updatdDatas;
     });
@@ -76,6 +73,9 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
             callback();
         }, 10000);
         return () => clearInterval(timer);
+    }, []);
+    useEffect(() => {
+        updatdDatas();
     }, []);
     return (
         <div>
