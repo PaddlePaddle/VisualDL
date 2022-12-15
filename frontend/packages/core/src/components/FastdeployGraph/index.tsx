@@ -941,9 +941,13 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // const formData = new FormData();
                 // const configs = JSON.stringify(values);
                 // formData.append('config', configs);
+                const bodys = {
+                    ...values,
+                    default_model_name: ensemblesName
+                };
                 let formBody: any = [];
                 const details: any = {
-                    config: JSON.stringify(values)
+                    config: JSON.stringify(bodys)
                 };
                 for (const property in details) {
                     const encodedKey = encodeURIComponent(property);

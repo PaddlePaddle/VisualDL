@@ -155,7 +155,10 @@ function App() {
     const [serverModels, setServerModels] = useState<any>([]);
     const [opens, setOPens] = useState(false);
     const [opens2, setOPens2] = useState(false);
-
+    const [metric, setMetric] = useState(false);
+    useEffect(() => {
+        GetServerList();
+    }, []);
     useEffect(() => {
         // const Graphs: any = Graph;
         // getModelData();
@@ -166,6 +169,11 @@ function App() {
             outDatas(serverId);
         }
     }, [serverId]);
+    useEffect(() => {
+        if (serverId !== undefined) {
+            metricDatas(serverId);
+        }
+    }, [metric]);
     // useEffect(() => {
     //     debugger;
     //     if (!serverModels.length) {
@@ -173,6 +181,31 @@ function App() {
     //     }
     //     setReforce(!reforce);
     // }, [serverModels.length]);
+    const GetServerList = () => {
+        setLoading(true);
+        fetcher(`/fastdeploy/get_server_list`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                const ServerModel = res.map((Id: number) => {
+                    return {
+                        text: '',
+                        lengths: 0,
+                        metric: '',
+                        id: Id
+                    };
+                });
+                setServerModels(ServerModel);
+                ChangeServerId(res[0]);
+                setLoading(false);
+            },
+            res => {
+                console.log('get_server_output', res);
+                // setServerId(undefined);
+                setLoading(false);
+            }
+        );
+    };
     const outDatas = (serverId: number) => {
         let length = 0;
         for (const model of serverModels) {
@@ -188,8 +221,10 @@ function App() {
 
                 const serverModel = serverModels;
                 const newServerModel = serverModel.map((model: any) => {
+                    console.log('model.id === serverId', serverId, model.id, model);
                     if (model.id === serverId) {
                         return {
+                            ...model,
                             text: model.text + res,
                             lengths: model.text.length + res.length,
                             id: model.id
@@ -208,6 +243,46 @@ function App() {
                         id: serverId
                     });
                 }
+                console.log('newServerModel', newServerModel);
+                setServerModels(newServerModel);
+                setMetric(!metric);
+                // setServerId(undefined);
+                // setLoading(false);
+            },
+            res => {
+                console.log('get_server_output', res);
+                // setServerId(undefined);
+                setLoading(false);
+            }
+        );
+    };
+    const metricDatas = (serverId: number) => {
+        fetcher(`/fastdeploy/get_server_metric?server_id=${serverId}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('get_server_metric', res);
+
+                const serverModel = serverModels;
+                const newServerModel = serverModel.map((model: any) => {
+                    if (model.id === serverId) {
+                        return {
+                            ...model,
+                            metric: res
+                        };
+                    } else {
+                        return model;
+                    }
+                });
+                // const flag = serverModel.some((model: any) => {
+                //     return model.id === serverId;
+                // });
+                // if (!flag) {
+                //     newServerModel.push({
+
+                //         id: serverId
+                //     });
+                // }
                 setServerModels(newServerModel);
                 setServerId(undefined);
                 setLoading(false);
@@ -337,7 +412,7 @@ function App() {
                     <HashLoader size="60px" color={primaryColor} />
                 </Loading>
             )}
-            {modelData ? (
+            {/* {modelData ? (
                 <Contents>
                     <InputContent>
                         <div className="titleName">{`当前模型库:${dirs}`}</div>
@@ -405,7 +480,47 @@ function App() {
                         </div>
                     </div>
                 </Contents2>
-            )}
+            )} */}
+            <Contents>
+                <InputContent>
+                    <div className="titleName">{`当前模型库:${dirs}`}</div>
+                    <Buttons onClick={ChangeModelClick}>更换模型库</Buttons>
+                </InputContent>
+                <TabsContent>
+                    <Tabs
+                        defaultActiveKey="1"
+                        type="editable-card"
+                        onEdit={onEdit}
+                        tabPosition={mode}
+                        style={{height: '100%'}}
+                    >
+                        {modelData && (
+                            <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
+                                <FastdeployGraph
+                                    modelData={modelData}
+                                    dirValue={dirs}
+                                    ChangeServerId={ChangeServerId}
+                                ></FastdeployGraph>
+                            </Tabs.TabPane>
+                        )}
+                        {serverModels &&
+                            serverModels.map((server: any) => {
+                                // debugger;
+                                return (
+                                    <Tabs.TabPane tab={`Server${server.id}`} key={server.id}>
+                                        <ServerBox
+                                            Datas={server}
+                                            server_id={server.id}
+                                            updatdDatas={() => {
+                                                outDatas(server.id);
+                                            }}
+                                        ></ServerBox>
+                                    </Tabs.TabPane>
+                                );
+                            })}
+                    </Tabs>
+                </TabsContent>
+            </Contents>
             <Modal
                 width={800}
                 title="更换模型"
