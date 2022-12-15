@@ -4,6 +4,7 @@ import ModelTables from './ModelTables';
 import CPUTables from './CPUTables';
 
 import {rem} from '~/utils/style';
+import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
 const TableTitle = styled.div`
     margin-bottom: 20px;
     margin-top: 20px;
@@ -51,9 +52,14 @@ console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeplo
 const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server_id}) => {
     const [flag, setFlag] = useState(true);
     console.log('Datas', Datas);
-    // useEffect(() => {
-    //     updatdDatas();
-    // }, []);
+    useEffect(() => {
+        let time: any = setInterval(() => {
+            updatdDatas();
+        }, 5000);
+        return () => {
+            time = null;
+        };
+    }, []);
     //  Datas.metric
     return (
         <div>
