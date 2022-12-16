@@ -13,6 +13,7 @@
 # limitations under the License.
 # =======================================================================
 import json
+import re
 
 import requests
 import tritonclient.http as httpclient
@@ -48,6 +49,168 @@ def prepare_request(inputs_meta, inputs_data, outputs_meta):
         infer_output = httpclient.InferRequestedOutput(output_dict.name)
         outputs.append(infer_output)
     return inputs, outputs
+
+
+metrics_table_head = """
+<style>
+table, th {{
+  border:0.1px solid black;
+}}
+</style>
+
+<div>
+<table style="width:100%">
+  <tr>
+    <th rowspan="2">模型名称</th>
+    <th colspan="4">执行统计</th>
+    <th colspan="5">延迟统计</th>
+
+  </tr>
+  <tr>
+   <th>请求处理成功数</th>
+  <th>请求处理失败数</th>
+  <th>推理batch数</th>
+  <th>推理样本数</th>
+  <th>请求处理时间</th>
+  <th>任务队列等待时间</th>
+  <th>输入处理时间</th>
+  <th>模型推理时间</th>
+  <th>输出处理时间</th>
+  </tr>
+  {}
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div>
+<table style="width:100%">
+  <tr>
+    <th rowspan="2">GPU</th>
+    <th colspan="4">性能指标</th>
+    <th colspan="2">显存</th>
+  </tr>
+  <tr>
+   <th>利用率</th>
+  <th>功率</th>
+  <th>功率限制</th>
+  <th>耗电量</th>
+  <th>总量</th>
+  <th>已使用</th>
+  </tr>
+  {}
+</table>
+</div>
+"""
+
+
+def get_metric_data(server_addr, metric_port):  # noqa:C901
+    '''
+    Get metrics data from fastdeploy server, and transform it into html table.
+    Args:
+        server_addr(str): fastdeployserver ip address
+        metric_port(int): fastdeployserver metrics port
+    Returns:
+        htmltable(str): html table to show metrics data
+    '''
+    model_table = {}
+    gpu_table = {}
+    metric_column_name = {
+        "Model": {
+            "nv_inference_request_success", "nv_inference_request_failure",
+            "nv_inference_count", "nv_inference_exec_count",
+            "nv_inference_request_duration_us",
+            "nv_inference_queue_duration_us",
+            "nv_inference_compute_input_duration_us",
+            "nv_inference_compute_infer_duration_us",
+            "nv_inference_compute_output_duration_us"
+        },
+        "GPU": {
+            "nv_gpu_power_usage", "nv_gpu_power_limit",
+            "nv_energy_consumption", "nv_gpu_utilization",
+            "nv_gpu_memory_total_bytes", "nv_gpu_memory_used_bytes"
+        },
+        "CPU": {
+            "nv_cpu_utilization", "nv_cpu_memory_total_bytes",
+            "nv_cpu_memory_used_bytes"
+        }
+    }
+    try:
+        res = requests.get("http://{}:{}/metrics".format(
+            server_addr, metric_port))
+    except Exception:
+        return metrics_table_head.format('', '')
+    metric_content = res.text
+    for content in metric_content.split('\n'):
+        if content.startswith('#'):
+            continue
+        else:
+            res = re.match(r'(\w+){(.*)} (\w+)',
+                           content)  # match output by server metrics interface
+            if not res:
+                continue
+            metric_name = res.group(1)
+            model = res.group(2)
+            value = res.group(3)
+            infos = {}
+            for info in model.split(','):
+                k, v = info.split('=')
+                v = v.strip('"')
+                infos[k] = v
+            for key, metric_names in metric_column_name.items():
+                if metric_name in metric_names:
+                    if key == 'Model':
+                        model_name = infos['model']
+                        if model_name not in model_table:
+                            model_table[model_name] = {}
+                        model_table[model_name][metric_name] = value
+                    elif key == 'GPU':
+                        gpu_name = infos['gpu_uuid']
+                        if gpu_name not in gpu_table:
+                            gpu_table[gpu_name] = {}
+                        gpu_table[gpu_name][metric_name] = value
+                    elif key == 'CPU':
+                        pass
+    model_data_list = []
+    gpu_data_list = []
+    model_data_metric_names = [
+        "nv_inference_request_success", "nv_inference_request_failure",
+        "nv_inference_exec_count", "nv_inference_count",
+        "nv_inference_request_duration_us", "nv_inference_queue_duration_us",
+        "nv_inference_compute_input_duration_us",
+        "nv_inference_compute_infer_duration_us",
+        "nv_inference_compute_output_duration_us"
+    ]
+    gpu_data_metric_names = [
+        "nv_gpu_utilization", "nv_gpu_power_usage", "nv_gpu_power_limit",
+        "nv_energy_consumption", "nv_gpu_memory_total_bytes",
+        "nv_gpu_memory_used_bytes"
+    ]
+    for k, v in model_table.items():
+        data = []
+        data.append(k)
+        for data_metric in model_data_metric_names:
+            data.append(v[data_metric])
+        model_data_list.append(data)
+    for k, v in gpu_table.items():
+        data = []
+        data.append(k)
+        for data_metric in gpu_data_metric_names:
+            data.append(v[data_metric])
+        gpu_data_list.append(data)
+    model_data = '\n'.join([
+        "<tr>" + '\n'.join(["<td>" + item + "</td>"
+                            for item in data]) + "</tr>"
+        for data in model_data_list
+    ])
+    gpu_data = '\n'.join([
+        "<tr>" + '\n'.join(["<td>" + item + "</td>"
+                            for item in data]) + "</tr>"
+        for data in gpu_data_list
+    ])
+    return metrics_table_head.format(model_data, gpu_data)
 
 
 class HttpClientManager:

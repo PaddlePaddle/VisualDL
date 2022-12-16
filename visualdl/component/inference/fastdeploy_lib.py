@@ -352,7 +352,7 @@ def launch_process(kwargs: dict):
     for key, value in kwargs.items():
         if key == 'default_model_name':  # Used to fill client model_name automatically
             start_args[key] = value
-            pass
+            continue
         cmd.append('--{}'.format(key))
         cmd.append('{}'.format(value))
         start_args[key] = value
@@ -524,8 +524,11 @@ _metric_column_name = {
 def generate_metric_table(server_addr, server_port):
     model_table = {}
     gpu_table = {}
-
-    res = requests.get("http://{}:{}/metrics".format(server_addr, server_port))
+    try:
+        res = requests.get("http://{}:{}/metrics".format(
+            server_addr, server_port))
+    except Exception:
+        return None
     metric_content = res.text
     for content in metric_content.split('\n'):
         if content.startswith('#'):
