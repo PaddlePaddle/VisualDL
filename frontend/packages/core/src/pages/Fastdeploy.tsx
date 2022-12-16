@@ -169,17 +169,34 @@ function App() {
         if (serverId !== undefined) {
             // outDatas(serverId);
             const serverModel = serverModels;
-            const newServerModel = serverModel.map((model: any) => {
+            let flag = false;
+            for (const model of serverModels) {
                 if (model.id === serverId) {
-                    return {
-                        Id: serverId,
-                        flag: !model.flag
-                    };
-                } else {
-                    return model;
+                    flag = true;
                 }
-            });
-            setServerModels(newServerModel);
+            }
+            if (flag) {
+                const newServerModel = serverModel.map((model: any) => {
+                    if (model.id === serverId) {
+                        return {
+                            Id: serverId,
+                            flag: !model.flag
+                        };
+                    } else {
+                        return model;
+                    }
+                });
+                setServerModels(newServerModel);
+            } else {
+                const newServerModel = [
+                    ...serverModel,
+                    {
+                        Id: serverId,
+                        flag: true
+                    }
+                ];
+                setServerModels(newServerModel);
+            }
         }
     }, [serverId]);
     // useEffect(() => {
