@@ -528,7 +528,7 @@ def generate_metric_table(server_addr, server_port):
         res = requests.get("http://{}:{}/metrics".format(
             server_addr, server_port))
     except Exception:
-        return {}
+        return None
     metric_content = res.text
     for content in metric_content.split('\n'):
         if content.startswith('#'):
