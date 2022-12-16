@@ -414,14 +414,16 @@ function App() {
         );
     };
     const remove = (targetKey: string) => {
-        debugger;
         const serverModel = serverModels;
         const newServerModel = serverModel.filter((model: any) => {
-            const modelId = `${model.id}`;
+            const modelId = `${model.Id}`;
+            console.log('modelId = `${model.Id}`;', modelId, targetKey);
+
             if (modelId !== targetKey) {
                 return model;
             }
         });
+        console.log(newServerModel);
         setServerModels(newServerModel);
         setIsModalOpen2(false);
     };
