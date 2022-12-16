@@ -53,9 +53,9 @@ def prepare_request(inputs_meta, inputs_data, outputs_meta):
 
 metrics_table_head = """
 <style>
-table, th {
+table, th {{
   border:0.1px solid black;
-}
+}}
 </style>
 
 <div>
@@ -137,7 +137,11 @@ def get_metric_data(server_addr, metric_port):  # noqa:C901
             "nv_cpu_memory_used_bytes"
         }
     }
-    res = requests.get("http://{}:{}/metrics".format(server_addr, metric_port))
+    try:
+        res = requests.get("http://{}:{}/metrics".format(
+            server_addr, metric_port))
+    except Exception:
+        return metrics_table_head.format('', '')
     metric_content = res.text
     for content in metric_content.split('\n'):
         if content.startswith('#'):

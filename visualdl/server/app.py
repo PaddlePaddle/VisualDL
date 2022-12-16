@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import json
 import multiprocessing
 import os
 import re
@@ -239,28 +240,35 @@ def create_app(args):  # noqa: C901
                 content = content.decode()
                 try:
                     default_server_addr = re.search(
-                        r'"label": "服务ip".*?"value": "".*?}', content).group(0)
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("服务ip", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
                     cur_server_addr = default_server_addr.replace(
                         '"value": ""', '"value": "localhost"')
                     default_http_port = re.search(
-                        r'"label": "推理服务端口".*?"value": "".*?}',
-                        content).group(0)
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("推理服务端口", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
                     cur_http_port = default_http_port.replace(
                         '"value": ""', '"value": "{}"'.format(http_port))
                     default_metrics_port = re.search(
-                        r'"label": "性能服务端口".*?"value": "".*?}',
-                        content).group(0)
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("性能服务端口", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
                     cur_metrics_port = default_metrics_port.replace(
                         '"value": ""', '"value": "{}"'.format(metrics_port))
                     default_model_name = re.search(
-                        r'"label": "模型名称".*?"value": "".*?}', content).group(0)
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("模型名称", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
                     cur_model_name = default_model_name.replace(
                         '"value": ""', '"value": "{}"'.format(model_name))
                     default_model_version = re.search(
-                        r'"label": "模型版本".*?"value": "".*?}', content).group(0)
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("模型版本", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
                     cur_model_version = default_model_version.replace(
                         '"value": ""', '"value": "{}"'.format('1'))
-
                     content = content.replace(default_server_addr,
                                               cur_server_addr)
                     if http_port:

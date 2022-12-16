@@ -231,25 +231,25 @@ def create_gradio_client_app():  # noqa:C901
                                     output_images.append(output_image)
                                     output_texts.append(output_text)
                         component_submit_button = gr.Button("提交请求")
-                with gr.Tab("源格式"):
+                with gr.Tab("原始形式"):
                     gr.Markdown("模型输入")
                     raw_payload_text = gr.Textbox(
                         label="负载数据", max_lines=10000)
                     with gr.Column():
                         gr.Markdown("输出")
                         output_raw_text = gr.Textbox(
-                            label="服务返回的原数据", interactive=False)
+                            label="服务返回的原始数据", interactive=False)
                     raw_submit_button = gr.Button("提交请求")
 
             with gr.Box():
                 with gr.Column():
                     gr.Markdown("服务性能统计（每次提交请求会自动更新数据，您也可以手动点击更新）")
-                    update_metric_button = gr.Button("更新数据")
-                    output_html_table = gr.Textbox(
+                    output_html_table = gr.HTML(
                         label="metrics",
                         interactive=False,
                         show_label=False,
                         value=metrics_table_head.format('', ''))
+                    update_metric_button = gr.Button("更新统计数据")
 
             status_text = gr.Textbox(
                 label="status",
