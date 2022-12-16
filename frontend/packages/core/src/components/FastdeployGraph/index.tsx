@@ -236,7 +236,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
     console.log('form', form.getFieldsValue(true));
 
-    const [treeData, setTreeData] = useState(modelData.ensembles?.versions);
+    const [treeData, setTreeData] = useState(modelData?.ensembles?.versions);
     const ports = {
         groups: {
             top: {
@@ -397,8 +397,8 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (!modelData) {
             return;
         }
-        console.log('modelData.ensembles', modelData.ensembles);
-        const SelectOptions = modelData.ensembles?.map((ensembles: any) => {
+        console.log('modelData.ensembles', modelData?.ensembles);
+        const SelectOptions = modelData?.ensembles?.map((ensembles: any) => {
             return {
                 value: ensembles.name,
                 label: ensembles.name
@@ -408,7 +408,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         setSelectOptions(SelectOptions);
     }, [modelData]);
     useEffect(() => {
-        if (!ensemblesName) {
+        if (!ensemblesName || !modelData) {
             return;
         }
         console.log('modelData.ensembles', modelData.ensembles);
@@ -1087,7 +1087,7 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         getmodelData(nodeClick.data, nodeClick.name);
     }, [nodeClick]);
     useEffect(() => {
-        if (isModalOpen) {
+        if (isModalOpen && modelData) {
             if (!IsEmsembles) {
                 graphModel && onFill(graphModel);
             } else {

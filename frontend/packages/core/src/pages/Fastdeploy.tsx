@@ -486,8 +486,8 @@ function App() {
             )} */}
             <Contents>
                 <InputContent>
-                    <div className="titleName">{`当前模型库:${dirs}`}</div>
-                    <Buttons onClick={ChangeModelClick}>更换模型库</Buttons>
+                    <div className="titleName">{dirs ? `请选择模型库` : `当前模型库:${dirs}`}</div>
+                    <Buttons onClick={ChangeModelClick}>载入模型库</Buttons>
                 </InputContent>
                 <TabsContent>
                     <Tabs
@@ -505,15 +505,14 @@ function App() {
                             }
                         }}
                     >
-                        {modelData && (
-                            <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
-                                <FastdeployGraph
-                                    modelData={modelData}
-                                    dirValue={dirs}
-                                    ChangeServerId={ChangeServerId}
-                                ></FastdeployGraph>
-                            </Tabs.TabPane>
-                        )}
+                        <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
+                            <FastdeployGraph
+                                modelData={modelData}
+                                dirValue={dirs}
+                                ChangeServerId={ChangeServerId}
+                            ></FastdeployGraph>
+                        </Tabs.TabPane>
+
                         {serverModels &&
                             serverModels.map((server: any) => {
                                 // debugger;
