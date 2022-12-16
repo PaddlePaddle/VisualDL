@@ -1,8 +1,16 @@
-import React, {FunctionComponent, useEffect, useState, useRef} from 'react';
+import React, {
+    FunctionComponent,
+    useEffect,
+    useState,
+    useRef,
+    useImperativeHandle,
+    forwardRef,
+    ForwardRefRenderFunction
+} from 'react';
 import styled from 'styled-components';
 import ModelTables from './ModelTables';
 import CPUTables from './CPUTables';
-
+import {fetcher} from '~/utils/fetch';
 import {rem} from '~/utils/style';
 import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
 const TableTitle = styled.div`
@@ -40,19 +48,31 @@ const ButtonRight = styled.div`
     padding-bottom: 20px;
 `;
 type ArgumentProps = {
-    Datas: any;
     server_id: any;
-    updatdDatas?: any;
+    Flag: number;
 };
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // type ArgumentProps = {
 
 // };
+export type serverBoxRef = {
+    outDatas(type: number): void;
+};
+
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
-const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server_id}) => {
+const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag, server_id}) => {
     const [flag, setFlag] = useState(true);
-    // const [Datas, setDatas] = useState<any>();
-    console.log('Datas', Datas);
+    const [Datas, setDatas] = useState<any>({
+        text: '',
+        lengths: 0,
+        metric: null
+    });
+    useEffect(() => {
+        if (Flag === undefined) {
+            return;
+        }
+        outDatas(server_id);
+    }, [Flag]);
     // useEffect(() => {
     //     const timer = setInterval(() => {
     //         setCount(count + 1);
@@ -61,22 +81,59 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
     //     return () => clearInterval(timer);
     // }, [count]);
     //  Datas.metric
-    const cbRef: any = useRef();
-    useEffect(() => {
-        cbRef.current = updatdDatas;
-    });
-    useEffect(() => {
-        const callback = () => {
-            cbRef.current?.();
-        };
-        const timer = setInterval(() => {
-            callback();
-        }, 10000);
-        return () => clearInterval(timer);
-    }, []);
-    useEffect(() => {
-        updatdDatas();
-    }, []);
+    const outDatas = (serverId: number) => {
+        const length = Datas.text.length;
+        fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${length}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('get_server_output', res);
+                metricDatas(serverId, res);
+            },
+            res => {
+                console.log('get_server_output', res);
+            }
+        );
+    };
+    const metricDatas = (serverId: number, texts: any) => {
+        fetcher(`/fastdeploy/get_server_metric?server_id=${serverId}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('get_server_metric', res);
+                setDatas({
+                    ...Datas,
+                    text: Datas.text + texts,
+                    lengths: Datas.text.length + texts.length,
+                    metric: res
+                });
+            },
+            res => {
+                console.log('get_server_output', res);
+            }
+        );
+    };
+    // const cbRef: any = useRef();
+    // useEffect(() => {
+    //     cbRef.current = updatdDatas;
+    // });
+    // useEffect(() => {
+    //     const callback = () => {
+    //         cbRef.current?.();
+    //     };
+    //     const timer = setInterval(() => {
+    //         callback();
+    //     }, 10000);
+    //     return () => clearInterval(timer);
+    // }, []);
+    // useEffect(() => {
+    //     updatdDatas();
+    // }, []);
+    // useImperativeHandle(ref, () => ({
+    //     outData(serverId: number) {
+    //         outDatas(serverId);
+    //     }
+    // }));
     return (
         <div>
             {flag ? (
@@ -152,4 +209,4 @@ const serverBox: FunctionComponent<ArgumentProps> = ({Datas, updatdDatas, server
     );
 };
 
-export default serverBox;
+export default forwardRef(serverBox);
