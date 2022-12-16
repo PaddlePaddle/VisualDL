@@ -198,7 +198,7 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     </Buttons>
                     <Buttons
                         onClick={() => {
-                            updatdDatas();
+                            outDatas(server_id);
                         }}
                     >
                         更新日志
