@@ -71,7 +71,7 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
         if (Flag === undefined) {
             return;
         }
-        outDatas(server_id);
+        outDatas();
     }, [Flag]);
     // useEffect(() => {
     //     const timer = setInterval(() => {
@@ -81,7 +81,8 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
     //     return () => clearInterval(timer);
     // }, [count]);
     //  Datas.metric
-    const outDatas = (serverId: number) => {
+    const outDatas = () => {
+        const serverId = server_id;
         const length = Datas.text.length;
         fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${length}`, {
             method: 'GET'
@@ -113,22 +114,19 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
             }
         );
     };
-    // const cbRef: any = useRef();
-    // useEffect(() => {
-    //     cbRef.current = updatdDatas;
-    // });
-    // useEffect(() => {
-    //     const callback = () => {
-    //         cbRef.current?.();
-    //     };
-    //     const timer = setInterval(() => {
-    //         callback();
-    //     }, 10000);
-    //     return () => clearInterval(timer);
-    // }, []);
-    // useEffect(() => {
-    //     updatdDatas();
-    // }, []);
+    const cbRef: any = useRef();
+    useEffect(() => {
+        cbRef.current = outDatas;
+    });
+    useEffect(() => {
+        const callback = () => {
+            cbRef.current?.();
+        };
+        const timer = setInterval(() => {
+            callback();
+        }, 10000);
+        return () => clearInterval(timer);
+    }, []);
     // useImperativeHandle(ref, () => ({
     //     outData(serverId: number) {
     //         outDatas(serverId);
@@ -198,7 +196,7 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     </Buttons>
                     <Buttons
                         onClick={() => {
-                            outDatas(server_id);
+                            outDatas();
                         }}
                     >
                         更新日志
