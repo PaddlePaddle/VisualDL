@@ -541,7 +541,6 @@ function App() {
                                 return (
                                     <Tabs.TabPane tab={`Server${server.Id}`} key={server.Id}>
                                         <ServerBox
-                                            Datas={server}
                                             server_id={server.Id}
                                             Flag={server.flag}
                                             // updatdDatas={() => {
