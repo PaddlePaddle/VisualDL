@@ -199,7 +199,7 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                             outDatas();
                         }}
                     >
-                        更新日志
+                        更新数据
                     </Buttons>
                 </ButtonRight>
             </ButtonContent>

@@ -517,7 +517,7 @@ function App() {
             )} */}
             <Contents>
                 <InputContent>
-                    <div className="titleName">{dirs ? `请选择模型库` : `当前模型库:${dirs}`}</div>
+                    <div className="titleName">{dirs ? `载入模型库:${dirs}` : `请选择模型库`}</div>
                     <Buttons onClick={ChangeModelClick}>载入模型库</Buttons>
                 </InputContent>
                 <TabsContent>

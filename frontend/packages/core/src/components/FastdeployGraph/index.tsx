@@ -45,7 +45,8 @@ const Content = styled.div`
         }
     }
     #stencil_content {
-        width: 180px;
+        min-width: 180px;
+        width: auto;
         height: 100%;
         position: relative;
         border-right: 1px solid #dfe3e8;
@@ -64,9 +65,12 @@ const Content = styled.div`
         #stencil {
             height: 80%;
             .dnd-rect {
-                width: 100px;
+                min-width: 100px;
+                width: auto;
                 height: 40px;
                 border: 1px solid #8f8f8f;
+                padding-left: 10px;
+                padding-right: 10px;
                 border-radius: 6px;
                 text-align: center;
                 line-height: 40px;
