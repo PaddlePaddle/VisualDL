@@ -293,7 +293,7 @@ const Graph: FunctionComponent = () => {
                                                     checked={selectedRuns === run ? true : false}
                                                     value={run}
                                                     title={run}
-                                                    onChange={(value: string) => {
+                                                    onChange={() => {
                                                         setSelectedRuns(run);
                                                     }}
                                                 >

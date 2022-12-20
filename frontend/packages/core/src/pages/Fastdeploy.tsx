@@ -9,10 +9,10 @@ import {fetcher} from '~/utils/fetch';
 import HashLoader from 'react-spinners/HashLoader';
 import {Select} from 'antd';
 import styled from 'styled-components';
-import {useTranslation} from 'react-i18next';
+// import {useTranslation} from 'react-i18next';
 import {Modal} from 'antd';
 
-type TabPosition = 'left' | 'right' | 'top' | 'bottom';
+// type TabPosition = 'left' | 'right' | 'top' | 'bottom';
 const InputContent = styled.div`
     display: flex;
     height: ${rem(50)};

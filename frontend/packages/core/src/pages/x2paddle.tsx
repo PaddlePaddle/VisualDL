@@ -73,11 +73,11 @@ function App() {
     const Graph = useRef(null);
     const Graph2 = useRef(null);
     // 创建 axios 实例
-    const blobToFile = function (theBlob: any, fileName: any, type: any) {
-        theBlob.lastModifiedDate = new Date();
-        theBlob.name = fileName;
-        return new window.File([theBlob], theBlob.name, {type: type});
-    };
+    // const blobToFile = function (theBlob: any, fileName: any, type: any) {
+    //     theBlob.lastModifiedDate = new Date();
+    //     theBlob.name = fileName;
+    //     return new window.File([theBlob], theBlob.name, {type: type});
+    // };
     const base64UrlToFile = (base64Url: any, filename: any) => {
         // const arr = base64Url.split(',');
         // const mime = arr[0].match(/:(.*?);/)[1];

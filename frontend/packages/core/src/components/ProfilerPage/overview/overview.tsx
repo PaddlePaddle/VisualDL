@@ -129,10 +129,10 @@ interface chartDataType {
     gpu: cpuData[];
     cpu: cpuData[];
 }
-type SelectListItem<T> = {
-    value: T;
-    label: string;
-};
+// type SelectListItem<T> = {
+//     value: T;
+//     label: string;
+// };
 
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units, descriptions}) => {
     const {t} = useTranslation(['profiler', 'common']);

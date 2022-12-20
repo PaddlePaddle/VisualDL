@@ -6,7 +6,7 @@ import Clinet from '~/components//FastdeployGraph/Clinet';
 import {fetcher} from '~/utils/fetch';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
-import {useTranslation} from 'react-i18next';
+// import {useTranslation} from 'react-i18next';
 
 const Contents = styled.div`
     height: 100%;
