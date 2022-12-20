@@ -24,17 +24,7 @@ const ButtonContent = styled.section`
         cursor: not-allowed;
     }
 `;
-type Fn = (data: FcResponse<any>) => unknown;
 
-interface IAnyObj {
-    [index: string]: unknown;
-}
-
-interface FcResponse<T> {
-    errno: string;
-    errmsg: string;
-    data: T;
-}
 const Article = styled.article`
     flex: auto;
     display: flex;
@@ -147,6 +137,7 @@ function App() {
             },
             res => {
                 // debugger
+                console.log('errres', res);
                 setLoading(false);
                 // const newFilesId = filesId + 1;
                 // setFilesId(newFilesId);
@@ -204,15 +195,15 @@ function App() {
         [fileUploader]
     );
     //将base64转换为blob
-    const dataURLtoBlob = (base64Url: any) => {
-        const bstr = atob(base64Url);
-        let n = bstr.length;
-        const u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new Blob([u8arr]);
-    };
+    // const dataURLtoBlob = (base64Url: any) => {
+    //     const bstr = atob(base64Url);
+    //     let n = bstr.length;
+    //     const u8arr = new Uint8Array(n);
+    //     while (n--) {
+    //         u8arr[n] = bstr.charCodeAt(n);
+    //     }
+    //     return new Blob([u8arr]);
+    // };
     // * desc: 下载方法
     // * @param url  ：返回数据的blob对象或链接
     // * @param fileName  ：下载后文件名标记
@@ -236,6 +227,7 @@ function App() {
                 setLoading(false);
             },
             res => {
+                console.log('errres', res);
                 setLoading(false);
             }
         );

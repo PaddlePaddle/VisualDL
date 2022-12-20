@@ -120,10 +120,14 @@ const Graph: FunctionComponent = () => {
         }).then(
             res => {
                 // debugger
+                console.log('res', res);
+
                 const newFilesId = filesId + 1;
                 setFilesId(newFilesId);
             },
             res => {
+                console.log('errres', res);
+
                 // debugger
                 const newFilesId = filesId + 1;
                 setFilesId(newFilesId);
@@ -309,6 +313,7 @@ const Graph: FunctionComponent = () => {
                 )}
             </Aside>
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         t,
         bottom,

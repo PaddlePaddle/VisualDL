@@ -52,11 +52,10 @@ export type LineChartRef = {
     restore(): void;
     saveAsImage(): void;
 };
-
+const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
 const StackColumnChart = React.forwardRef<LineChartRef, StackChartProps>(
     ({options, data, title, loading, zoom, className, onInit, isWorkerName, units}, ref) => {
         const {i18n} = useTranslation();
-        const color = ['#2932E1', '#00CC88', '#981EFF', '#FF6D6D', '#25C9FF', '#E71ED5', '#FFAA00', '#00307D'];
         const {
             ref: echartRef,
             echart,

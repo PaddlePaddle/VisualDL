@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -36,7 +37,6 @@ import useClassNames from '~/hooks/useClassNames';
 import useComponents from '~/hooks/useComponents';
 import {useTranslation} from 'react-i18next';
 import {fetcher} from '~/utils/fetch';
-import {Child} from './ProfilerPage/OperatorView/type';
 import {isArray} from 'lodash';
 
 const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;

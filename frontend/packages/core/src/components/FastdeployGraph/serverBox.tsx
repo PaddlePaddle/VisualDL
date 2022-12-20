@@ -1,18 +1,11 @@
-import React, {
-    FunctionComponent,
-    useEffect,
-    useState,
-    useRef,
-    useImperativeHandle,
-    forwardRef,
-    ForwardRefRenderFunction
-} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState, useRef, forwardRef, ForwardRefRenderFunction} from 'react';
 import styled from 'styled-components';
 import ModelTables from './ModelTables';
 import CPUTables from './CPUTables';
 import {fetcher} from '~/utils/fetch';
 import {rem} from '~/utils/style';
-import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
+// import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
 const TableTitle = styled.div`
     margin-bottom: 20px;
     margin-top: 20px;

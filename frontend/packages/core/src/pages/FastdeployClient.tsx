@@ -8,11 +8,6 @@ import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 
-interface IAnyObj {
-    [index: string]: unknown;
-}
-
-type TabPosition = 'left' | 'right' | 'top' | 'bottom';
 const Contents = styled.div`
     height: 100%;
     background: white;
@@ -38,7 +33,6 @@ const TabsContent = styled.div`
     }
 `;
 function App() {
-    const {t} = useTranslation(['togglegraph']);
     const [loading, setLoading] = useState(false);
     const [serverModels, setServerModels] = useState<any>([0]);
     const getClient = () => {
@@ -58,6 +52,7 @@ function App() {
                 setLoading(false);
             },
             res => {
+                console.log('errres', res);
                 setLoading(false);
             }
         );
@@ -97,7 +92,7 @@ function App() {
                         tabPosition={'left'}
                         style={{height: '100%'}}
                     >
-                        {serverModels.map((server: any, index: number) => {
+                        {serverModels.map((server: any) => {
                             return (
                                 <Tabs.TabPane tab={`Client${server}`} key={server} style={{height: '100%'}}>
                                     <Clinet></Clinet>

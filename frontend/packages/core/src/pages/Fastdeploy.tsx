@@ -1,23 +1,16 @@
-import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useState, useEffect} from 'react';
 import {rem, primaryColor, size} from '~/utils/style';
 import {Tabs} from 'antd';
-import Input from '~/components/Input';
 import Content from '~/components/Content';
 import FastdeployGraph from '~/components/FastdeployGraph';
 import ServerBox from '~/components//FastdeployGraph/serverBox';
-import {toast} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 import HashLoader from 'react-spinners/HashLoader';
 import {Select} from 'antd';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import {Modal} from 'antd';
-import {filter} from '../resource/hyper-parameter/filter';
-import {number} from 'echarts';
-
-interface IAnyObj {
-    [index: string]: unknown;
-}
 
 type TabPosition = 'left' | 'right' | 'top' | 'bottom';
 const InputContent = styled.div`
@@ -41,39 +34,6 @@ const Contents = styled.div`
     background: white;
     display: flex;
     flex-direction: column;
-`;
-const Contents2 = styled.div`
-    height: 100%;
-    background: white;
-    display: flex;
-    justify-content: center;
-
-    .inputContents {
-        margin-top: 200px;
-        width: 600px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        .ant-select-selector {
-            height: 60px;
-            .ant-select-selection-placeholder {
-                line-height: 60px;
-            }
-            .ant-select-selection-item {
-                line-height: 60px;
-            }
-        }
-    }
-    .inputButton {
-        font-size: 24px;
-        height: 40px;
-        line-height: 40px;
-        width: 80px;
-        color: white;
-        text-align: center;
-        background-color: var(--navbar-background-color);
-        margin-left: 20px;
-    }
 `;
 const SelectContent = styled.div`
     height: 60px;
@@ -103,12 +63,6 @@ const Buttons = styled.div`
     background-color: var(--navbar-background-color);
 `;
 
-const Titles = styled.div`
-    font-size: 20px;
-    padding-top: 150px;
-    padding-bottom: 20px;
-    text-align: center;
-`;
 const Loading = styled.div`
     ${size('100%', '100%')}
     display: flex;
@@ -137,13 +91,8 @@ const TabsContent = styled.div`
         }
     }
 `;
+const mode = 'left';
 function App() {
-    const {t} = useTranslation(['togglegraph']);
-    const [show, setShow] = useState({
-        show: true,
-        show2: false
-    });
-    const [mode, setMode] = useState<TabPosition>('left');
     const [dirValue, setDirValue] = useState('.');
     const [dirs, setDirs] = useState('');
     const [selectOptions, setSelectOptions] = useState([]);
@@ -154,9 +103,7 @@ function App() {
     const [targetKeys, setTargetKey] = useState('');
     const [serverId, setServerId] = useState<number>();
     const [serverModels, setServerModels] = useState<any>([]);
-    const [opens, setOPens] = useState(false);
     const [opens2, setOPens2] = useState(false);
-    const [metric, setMetric] = useState(false);
     useEffect(() => {
         GetServerList();
     }, []);
@@ -339,6 +286,7 @@ function App() {
                 setLoading(false);
             },
             res => {
+                console.log('errblobres', res);
                 setLoading(false);
             }
         );
@@ -376,6 +324,7 @@ function App() {
                 setLoading(false);
             },
             res => {
+                console.log('errblobres', res);
                 setLoading(false);
             }
         );
@@ -409,6 +358,7 @@ function App() {
                 setLoading(false);
             },
             res => {
+                console.log('errblobres', res);
                 setLoading(false);
             }
         );

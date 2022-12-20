@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -17,17 +18,7 @@
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
 import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
-import React, {
-    FunctionComponent,
-    ForwardRefRenderFunction,
-    useImperativeHandle,
-    forwardRef,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from 'react';
+import React, {useImperativeHandle, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions, selectors} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
@@ -138,7 +129,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
         },
         [setModelFile]
     );
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
+    const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
     // useEffect(() => {
     //     if (data?.data?.size) {

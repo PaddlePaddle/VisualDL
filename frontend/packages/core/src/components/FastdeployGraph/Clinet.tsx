@@ -1,6 +1,4 @@
 import React, {FunctionComponent} from 'react';
-import styled from 'styled-components';
-import {rem} from '~/utils/style';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // type ArgumentProps = {
 

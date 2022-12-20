@@ -1,22 +1,24 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import styled from 'styled-components';
-import React, {useState, useEffect, useRef, useCallback, useMemo, FunctionComponent} from 'react';
-import {rem, primaryColor, size} from '~/utils/style';
-import {Graph, Shape, Cell} from '@antv/x6';
+import React, {useState, useEffect, useRef, FunctionComponent} from 'react';
+// import {rem, primaryColor, size} from '~/utils/style';
+import {Graph, Shape} from '@antv/x6';
 import {Modal} from 'antd';
 // import dagre from 'dagre';
-import {DagreLayout} from '@antv/layout';
-import {Stencil} from '@antv/x6-plugin-stencil';
-import {Transform} from '@antv/x6-plugin-transform';
-import {Selection} from '@antv/x6-plugin-selection';
+// import {DagreLayout} from '@antv/layout';
+// import {Stencil} from '@antv/x6-plugin-stencil';
+// import {Transform} from '@antv/x6-plugin-transform';
+// import {Selection} from '@antv/x6-plugin-selection';
 import {Snapline} from '@antv/x6-plugin-snapline';
 import {Keyboard} from '@antv/x6-plugin-keyboard';
 import {Clipboard} from '@antv/x6-plugin-clipboard';
 import {DownOutlined} from '@ant-design/icons';
 import {Tree} from 'antd';
 import {fetcher} from '~/utils/fetch';
-import type {DataNode, TreeProps} from 'antd/es/tree';
-import {Dnd} from '@antv/x6-plugin-dnd';
+import type {TreeProps} from 'antd/es/tree';
+// import {Dnd} from '@antv/x6-plugin-dnd';
 import {History} from '@antv/x6-plugin-history';
 import {MinusCircleOutlined, PlusOutlined, PlusCircleOutlined} from '@ant-design/icons';
 import {Button, Form, Input, Select, Space} from 'antd';
@@ -24,7 +26,7 @@ import {Button, Form, Input, Select, Space} from 'antd';
 // import {use} from 'chai';
 // import { model } from '../../store/graph/selectors';
 // import ref from '../../../types/static';
-import {height} from '../Select';
+// import {height} from '../Select';
 const Content = styled.div`
     height: 100%;
     #container {
@@ -157,27 +159,27 @@ const Buttons = styled.div`
 `;
 const {Option} = Select;
 
-const areas = [
-    {label: 'Beijing', value: 'Beijing'},
-    {label: 'Shanghai', value: 'Shanghai'}
-];
+// const areas = [
+//     {label: 'Beijing', value: 'Beijing'},
+//     {label: 'Shanghai', value: 'Shanghai'}
+// ];
 
-const sights = {
-    Beijing: ['Tiananmen', 'Great Wall'],
-    Shanghai: ['Oriental Pearl', 'The Bund']
-};
+// const sights = {
+//     Beijing: ['Tiananmen', 'Great Wall'],
+//     Shanghai: ['Oriental Pearl', 'The Bund']
+// };
 const layout = {
     labelCol: {span: 6},
     wrapperCol: {span: 16}
 };
-type SightsKeys = keyof typeof sights;
-const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
+// type SightsKeys = keyof typeof sights;
+// const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
-let IFRAME_HOST = `${window.location.protocol}//${window.location.host}`;
-if (PUBLIC_PATH.startsWith('http')) {
-    const url = new URL(PUBLIC_PATH);
-    IFRAME_HOST = `${url.protocol}//${url.host}`;
-}
+// let IFRAME_HOST = `${window.location.protocol}//${window.location.host}`;
+// if (PUBLIC_PATH.startsWith('http')) {
+//     const url = new URL(PUBLIC_PATH);
+//     IFRAME_HOST = `${url.protocol}//${url.host}`;
+// }
 const dataType = [
     'TYPE_BOOL',
     'TYPE_UINT8',
@@ -206,9 +208,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [ModelDatas, setModelDatas] = useState<any>(modelData);
     const [flag, setFlag] = useState<boolean>();
     const [flag2, setFlag2] = useState<boolean>();
-    const [Dnds, setDnds] = useState<any>();
+    // const [Dnds, setDnds] = useState<any>();
     const [graphs, setGraphs] = useState<Graph>();
-    const [edgeMaps, setEdgeMaps] = useState<any>({});
+    // const [edgeMaps, setEdgeMaps] = useState<any>({});
     const [showGpus, setShowGpus] = useState<any>({});
 
     const [configs, setConfigs] = useState<any>({
@@ -234,7 +236,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [triggerClick, setTriggerClick] = useState<any>();
     const [ensemblesName, setEnsemblesName] = useState<string>();
 
-    const iframe = useRef<HTMLIFrameElement>(null);
+    // const iframe = useRef<HTMLIFrameElement>(null);
     const [form] = Form.useForm();
     const [form2] = Form.useForm();
 
@@ -295,6 +297,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     };
     useEffect(() => {
         const graph = new Graph({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             container: document.getElementById('graph-container')!,
             grid: true,
             mousewheel: {
@@ -838,7 +841,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             .then(values => {
                 // setIsModalOpen(false);
                 const ModelData = ModelDatas;
-                const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any, index: number) => {
+                const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any) => {
                     // const parameters =
                     const newObject: any = {};
                     // newObject[item.key] = item.value;
@@ -853,7 +856,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         parameters: newObject
                     };
                 });
-                const newgpuExecutionAccelerator = values.gpuExecutionAccelerator?.map((item: any, index: number) => {
+                const newgpuExecutionAccelerator = values.gpuExecutionAccelerator?.map((item: any) => {
                     const newObject: any = {};
                     if (item.parameters) {
                         for (const param of item.parameters) {
@@ -931,7 +934,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 }
             })
             .catch(errorInfo => {
-                // console.log('errorInfo', errorInfo);
+                console.log('errorInfo', errorInfo);
                 // alert(errorInfo);
             });
     };
@@ -991,13 +994,13 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const handleCancel2 = () => {
         setIsModalOpen2(false);
     };
-    const onFinish = (values: any) => {
-        console.log('Received values of form:', values);
-    };
+    // const onFinish = (values: any) => {
+    //     console.log('Received values of form:', values);
+    // };
 
-    const handleChange = () => {
-        form.setFieldsValue({});
-    };
+    // const handleChange = () => {
+    //     form.setFieldsValue({});
+    // };
     const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
         console.log('selected', selectedKeys, info);
     };
@@ -1070,7 +1073,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         const flag = !showFlag;
         setShowFlag(flag);
     };
-    const changeEmsembles = (model: any) => {
+    const changeEmsembles = () => {
         setIsEmsembles(true);
         setShowFlag(!showFlag);
         // setTreeData(model.ensembles.versions);
@@ -1161,7 +1164,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     </div>
                     <div id="stencil" ref={dndContainerRef}>
                         {modelData &&
-                            modelData.models?.map((model: any, index: number) => {
+                            modelData.models?.map((model: any) => {
                                 return (
                                     <div
                                         data-type={model.name}
@@ -1256,7 +1259,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     </Form.Item>
                     <Form.Item label="input">
                         <Form.List name="input">
-                            {(fields, {add, remove}) => (
+                            {fields => (
                                 <div>
                                     {fields?.map((field: any, index: number) => (
                                         <div key={field.key}>
@@ -1332,7 +1335,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     <div></div>
                     <Form.Item label="output">
                         <Form.List name="output">
-                            {(fields2, {add, remove}) => (
+                            {fields2 => (
                                 <div>
                                     {fields2?.map((field: any, index: number) => (
                                         <div key={field.key}>

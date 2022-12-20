@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as chart from '~/utils/chart';
+// import * as chart from '~/utils/chart';
 
 import React, {useEffect, useCallback} from 'react';
 import {primaryColor} from '~/utils/style';
@@ -59,6 +59,7 @@ export type LineChartRef = {
 
 const DistributedChart = React.forwardRef<LineChartRef, DistributedChartProps>(
     ({options, data, titles, loading, zoom, className, onInit}, ref) => {
+        console.log(ref);
         const {t} = useTranslation(['profiler', 'common']);
         const {i18n} = useTranslation();
 
