@@ -467,7 +467,7 @@ function App() {
             )} */}
             <Contents>
                 <InputContent>
-                    <div className="titleName">{dirs ? `载入模型库:${dirs}` : `请选择模型库`}</div>
+                    <div className="titleName">{dirs ? `当前模型库:${dirs}` : `请载入模型库`}</div>
                     <Buttons onClick={ChangeModelClick}>载入模型库</Buttons>
                 </InputContent>
                 <TabsContent>
@@ -524,9 +524,9 @@ function App() {
             </Contents>
             <Modal
                 width={800}
-                title="更换模型"
+                title="载入模型"
                 cancelText={'取消'}
-                okText={'更换模型库'}
+                okText={'载入模型库'}
                 visible={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
