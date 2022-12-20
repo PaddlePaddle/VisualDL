@@ -201,7 +201,7 @@ type ArgumentProps = {
     ChangeServerId?: any;
 };
 const formItems = ['name', 'backend', 'version', 'maxBatchSize', 'input', 'output', 'instanceGroup', 'optimization'];
-const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId}) => {
+const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId}) => {
     // #region 初始化图形
     const [ModelDatas, setModelDatas] = useState<any>(modelData);
     const [flag, setFlag] = useState<boolean>();
@@ -1837,4 +1837,4 @@ const index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         </Content>
     );
 };
-export default index;
+export default Index;

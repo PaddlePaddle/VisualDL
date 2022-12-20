@@ -60,7 +60,7 @@ export type serverBoxRef = {
 };
 
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
-const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag, server_id}) => {
+const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag, server_id}) => {
     const [flag, setFlag] = useState(true);
     const [Datas, setDatas] = useState<any>({
         text: '',
@@ -207,4 +207,4 @@ const serverBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
     );
 };
 
-export default forwardRef(serverBox);
+export default forwardRef(ServerBox);

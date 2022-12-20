@@ -7,7 +7,7 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // };
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 
-const serverBox: FunctionComponent = () => {
+const ServerBox: FunctionComponent = () => {
     return (
         <div
             style={{
@@ -31,4 +31,4 @@ const serverBox: FunctionComponent = () => {
     );
 };
 
-export default serverBox;
+export default ServerBox;
