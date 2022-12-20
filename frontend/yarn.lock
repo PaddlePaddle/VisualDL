@@ -156,7 +156,7 @@
 
 "@antv/x6-react-shape@^2.0.0":
   version "2.0.0"
-  resolved "https://npmmirror.com/@antv/x6-react-shape/-/x6-react-shape-2.0.0.tgz#dc26de8a024c834ce89798e7d323d7e6528363b0"
+  resolved "https://registry.npmmirror.com/@antv/x6-react-shape/-/x6-react-shape-2.0.0.tgz#dc26de8a024c834ce89798e7d323d7e6528363b0"
   integrity sha512-JZEHVfJb2ihbC4GCHQQS4EX93/xXJ1uglLFafg210m9mV84Wcg48thefQM8lEEAgFogcUz8tx7jzJrNdPDff8A==
 
 "@antv/x6@^2.0.2":
