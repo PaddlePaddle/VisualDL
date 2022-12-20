@@ -16,7 +16,7 @@
 
 // cSpell:words pageview inited
 import 'antd/dist/antd.css';
-import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, Suspense, useCallback, useEffect, useMemo} from 'react';
 import {Redirect, Route, BrowserRouter as Router, Switch, useLocation} from 'react-router-dom';
 import {THEME, matchMedia} from '~/utils/theme';
 import {actions, selectors} from '~/store';
