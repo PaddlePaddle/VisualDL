@@ -358,7 +358,7 @@ def launch_process(kwargs: dict):
         cmd.append('{}'.format(value))
         start_args[key] = value
 
-    all_model_configs, all_model_versions, _ = analyse_config(
+    all_model_configs, all_model_versions = analyse_config(
         start_args['model-repository'])
     model_repo_config = original_format_to_exchange_format(
         all_model_configs, all_model_versions)
