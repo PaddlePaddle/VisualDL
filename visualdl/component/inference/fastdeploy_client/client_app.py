@@ -273,7 +273,7 @@ def create_gradio_client_app():  # noqa:C901
                 for component in all_input_output_components
             }
             results[component_format_column] = gr.update(visible=True)
-            results[check_button] = gr.update(visible=False)
+            # results[check_button] = gr.update(visible=False)
             for input_accordio in input_accordions:
                 results[input_accordio] = gr.update(visible=False)
             for output_accordio in output_accordions:
@@ -313,6 +313,7 @@ def create_gradio_client_app():  # noqa:C901
                 try:
                     infer_results = _http_manager.infer(
                         server_addr, model_name, model_version, inputs)
+                    print('infer_results', infer_results)
                     results = {status_text: 'Inference Successful'}
                     for i, (output_name,
                             data) in enumerate(infer_results.items()):
