@@ -93,8 +93,12 @@ const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
         const arrays = Object.keys(Datas);
         const data = arrays.map((name: string) => {
             const model = Datas[name];
+            const datas: any = {};
+            for (const keys of Object.keys(model)) {
+                datas[keys] = model[keys] + 'ms';
+            }
             return {
-                ...model,
+                ...datas,
                 key: name,
                 name: name
             };

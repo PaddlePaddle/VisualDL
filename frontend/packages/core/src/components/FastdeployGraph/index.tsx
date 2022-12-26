@@ -14,13 +14,14 @@ import {Modal} from 'antd';
 import {Snapline} from '@antv/x6-plugin-snapline';
 import {Keyboard} from '@antv/x6-plugin-keyboard';
 import {Clipboard} from '@antv/x6-plugin-clipboard';
+import {Export} from '@antv/x6-plugin-export';
 import {DownOutlined} from '@ant-design/icons';
 import {Tree} from 'antd';
 import {fetcher} from '~/utils/fetch';
 import type {TreeProps} from 'antd/es/tree';
 // import {Dnd} from '@antv/x6-plugin-dnd';
 import {History} from '@antv/x6-plugin-history';
-import {MinusCircleOutlined, PlusOutlined, PlusCircleOutlined} from '@ant-design/icons';
+import {MinusCircleOutlined, PlusOutlined, PlusCircleOutlined, VerticalAlignBottomOutlined} from '@ant-design/icons';
 import {Button, Form, Input, Select, Space} from 'antd';
 // import netron from '@visualdl/netron3';
 // import {use} from 'chai';
@@ -214,14 +215,17 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [showGpus, setShowGpus] = useState<any>({});
 
     const [configs, setConfigs] = useState<any>({
+        'server-name': '1111',
         'model-repository': 'yolov5_serving/models',
         'backend-config': 'python,shm-default-byte-size=10485760',
         'http-port': 8000,
         'grpc-port': 8001,
-        'metrics-port': 8002
+        'metrics-port': 8002,
+        gpus: 111
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
+    const [isModalOpen3, setIsModalOpen3] = useState(false);
 
     const dndContainerRef = useRef<HTMLInputElement | null>(null);
     const [graphModel, setGraphModel] = useState<any>();
@@ -235,11 +239,16 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [nodeClick, setNodeClick] = useState<any>();
     const [triggerClick, setTriggerClick] = useState<any>();
     const [ensemblesName, setEnsemblesName] = useState<string>();
+    const [selectKeys, setSelectKeys] = useState<any>();
+
+    const [version, setVersion] = useState<any>();
 
     // const iframe = useRef<HTMLIFrameElement>(null);
     const [form] = Form.useForm();
     const [form2] = Form.useForm();
+    const [form3] = Form.useForm();
 
+    const [svgs, setSvgs] = useState<string>();
     console.log('form', form.getFieldsValue(true));
 
     const [treeData, setTreeData] = useState(modelData?.ensembles?.versions);
@@ -425,7 +434,16 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         });
         setSteps(ensembles[0]?.step);
-        setTreeData(ensembles[0]?.versions);
+        const treedatas = getTreeData(ensembles[0]?.versions);
+        const treedata = treedatas.map((version: any) => {
+            return {
+                ...version,
+                // checkable: false
+                selectable: true,
+                icon: <VerticalAlignBottomOutlined />
+            };
+        });
+        setTreeData(treedata);
     }, [ensemblesName]);
     useEffect(() => {
         if (!flag || !steps) {
@@ -685,6 +703,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         //         showNodeSelectionBox: true
         //     })
         // );
+        graph.use(new Export());
         graph.use(
             new Snapline({
                 enabled: true,
@@ -707,6 +726,26 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             })
         );
         setFlag2(true);
+    };
+    const getTreeData = (treedata: any) => {
+        const treedatas = treedata.map((version: any) => {
+            let Child: any = '';
+            if (version.children) {
+                Child = getTreeData(version.children);
+            }
+            if (Child) {
+                return {
+                    ...version,
+                    children: Child,
+                    selectable: false
+                };
+            }
+            return {
+                ...version,
+                selectable: false
+            };
+        });
+        return treedatas;
     };
     const showPorts = (ports: NodeListOf<SVGElement>, show: boolean) => {
         for (let i = 0, len = ports.length; i < len; i = i + 1) {
@@ -956,11 +995,13 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 const details: any = {
                     config: JSON.stringify(bodys)
                 };
+                // debugger;
                 for (const property in details) {
                     const encodedKey = encodeURIComponent(property);
                     const encodedValue = encodeURIComponent(details[property]);
                     formBody.push(encodedKey + '=' + encodedValue);
                 }
+                formBody.push('ensemble-img' + '=' + svgs);
                 formBody = formBody.join('&');
                 fetcher(`/fastdeploy/start_server`, {
                     method: 'POST',
@@ -985,6 +1026,41 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 alert(errorInfo);
             });
     };
+    const handleOk3 = () => {
+        // console.log(111);
+        // setIsModalOpen2(false);
+        form3
+            ?.validateFields()
+            .then(values => {
+                const pretrain_model_name = values['models'];
+                // const version = selectedKeys[0];
+                const name = IsEmsembles ? ensemblesName : modelName;
+                fetcher(
+                    '/fastdeploy/download_pretrain_model' +
+                        `?dir=${dirValue}` +
+                        `&name=${name}` +
+                        `&version=${version}` +
+                        `&pretrain_model_name=${pretrain_model_name}`
+                ).then(
+                    (res: any) => {
+                        console.log('resss', res);
+                        debugger;
+                        // ChangeServerId(res.id);
+                        // ChangeServerId(res);
+                        setIsModalOpen3(false);
+                        setSelectKeys([]);
+                    },
+                    res => {
+                        console.log(res);
+                        setIsModalOpen(false);
+                        setSelectKeys([]);
+                    }
+                );
+            })
+            .catch(errorInfo => {
+                alert(errorInfo);
+            });
+    };
     const handleCancel = () => {
         setIsModalOpen(false);
         if (nodeClick) {
@@ -993,6 +1069,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     };
     const handleCancel2 = () => {
         setIsModalOpen2(false);
+    };
+    const handleCancel3 = () => {
+        setSelectKeys([]);
+        setIsModalOpen3(false);
     };
     // const onFinish = (values: any) => {
     //     console.log('Received values of form:', values);
@@ -1003,6 +1083,18 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     // };
     const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
         console.log('selected', selectedKeys, info);
+        if (info.selected) {
+            setSelectKeys(selectedKeys);
+            setVersion(selectedKeys[0]);
+            setIsModalOpen3(true);
+            // const version = selectedKeys[0]
+            // fetcher(
+            //     '/fastdeploy/download_pretrain_model' + `?dir=${dirValue}` + `&version=${version}` + `&expand_all=${expand_all}`
+            // ).then((res: Theobj) => {
+            //     setSelectItem(null);
+            //     setModelDatas(res);
+            // });
+        }
     };
     const onFill = (models: any) => {
         const newcpu = models?.optimization?.cpuExecutionAccelerator?.map((cpu: any) => {
@@ -1067,6 +1159,16 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const getmodelData = (model: any, name: string) => {
         setModelName(name);
         setGraphModel(model);
+        const treedatas = getTreeData(model.versions);
+        const treedata = treedatas.map((version: any) => {
+            return {
+                ...version,
+                // checkable: false
+                selectable: true,
+                icon: <VerticalAlignBottomOutlined />
+            };
+        });
+        setTreeData(treedata);
         if (IsEmsembles) {
             setIsEmsembles(false);
         }
@@ -1076,7 +1178,14 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const changeEmsembles = () => {
         setIsEmsembles(true);
         setShowFlag(!showFlag);
-        // setTreeData(model.ensembles.versions);
+        // const treedata = modelData.ensembles[0].versions.map((version: any) => {
+        //     return {
+        //         ...version,
+        //         // checkable: false
+        //         icon: <VerticalAlignBottomOutlined />
+        //     };
+        // });
+        // setTreeData(treedata);
     };
     const EnsemblesNameChange = (value: string) => {
         setEnsemblesName(value);
@@ -1111,12 +1220,36 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     useEffect(() => {
         if (isModalOpen2 && dirValue) {
             onFill2({
+                'server-name': configs['server-name'],
                 'backend-config': configs['backend-config'],
                 'metrics-port': configs['metrics-port'],
                 'http-port': configs['http-port'],
                 'grpc-port': configs['grpc-port'],
-                'model-repository': dirValue
+                'model-repository': dirValue,
+                gpus: configs['gpus']
             });
+            const styles = `.custom-html {
+                width: 100%;
+                height: 100%;
+                border-radius: 1em;
+                perspective: 600px;
+                text-align: center;
+                line-height: 40px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                box-shadow: 0 0.125em 0.3125em rgba(0, 0, 0, 0.25), 0 0.02125em 0.06125em rgba(0, 0, 0, 0.25);
+            }`;
+            graphs &&
+                graphs.toPNG(
+                    (dataUri: string) => {
+                        console.log('dataUri', dataUri);
+                        setSvgs(dataUri);
+                        // debugger;
+                    },
+
+                    {copyStyles: true, preserveDimensions: true, stylesheet: styles}
+                );
         }
     }, [dirValue, isModalOpen2]);
     useEffect(() => {
@@ -1136,7 +1269,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     }, [triggerClick]);
     console.log('graphs', treeData);
     console.log('showFlag', showFlag);
-
+    // const createhtml = svg => {
+    //     return {__html: svg};
+    // };
     return (
         <Content
             style={{
@@ -1244,6 +1379,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     <Form.Item name="version" label="version">
                         <Tree
                             showLine
+                            showIcon
+                            selectedKeys={selectKeys}
                             switcherIcon={<DownOutlined />}
                             defaultExpandedKeys={['0-0-0']}
                             onSelect={onSelect}
@@ -1762,6 +1899,18 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             >
                 <Form {...layout} form={form2} name="dynamic_form_complex" autoComplete="off">
                     <Form.Item
+                        name={'server-name'}
+                        label={'server-name'}
+                        rules={[
+                            {
+                                required: true,
+                                message: '该字段为必填项请填写对应信息'
+                            }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
                         name={'model-repository'}
                         label={'model-repository'}
                         rules={[
@@ -1827,6 +1976,42 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     >
                         <Input />
                     </Form.Item>
+                    <Form.Item
+                        name={'gpus'}
+                        label={'gpus'}
+                        rules={[
+                            {
+                                required: true,
+                                message: '该字段为必填项请填写对应信息'
+                            }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Form>
+            </Modal>
+            <Modal
+                width={800}
+                title="预训练模型名"
+                cancelText={'取消'}
+                okText={'启动'}
+                visible={isModalOpen3}
+                onOk={handleOk3}
+                onCancel={handleCancel3}
+            >
+                <Form {...layout} form={form3} name="dynamic_form_complex" autoComplete="off">
+                    <Form.Item
+                        name={'models'}
+                        label={'预训练模型'}
+                        rules={[
+                            {
+                                required: true,
+                                message: '该字段为必填项请填写对应信息'
+                            }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
                 </Form>
             </Modal>
             {/* <iframe
@@ -1837,6 +2022,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 marginWidth={0}
                 marginHeight={0}
             ></iframe> */}
+            {/* <div dangerouslySetInnerHTML={createhtml(svgs)}></div> */}
+            <div>
+                <img src={svgs} alt="" />
+            </div>
         </Content>
     );
 };

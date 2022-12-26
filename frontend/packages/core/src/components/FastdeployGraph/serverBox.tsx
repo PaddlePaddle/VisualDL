@@ -3,8 +3,9 @@ import React, {useEffect, useState, useRef, forwardRef, ForwardRefRenderFunction
 import styled from 'styled-components';
 import ModelTables from './ModelTables';
 import CPUTables from './CPUTables';
+import ServerConfig from './ServerConfig';
 import {fetcher} from '~/utils/fetch';
-import {rem} from '~/utils/style';
+import {backgrounds, rem} from '~/utils/style';
 // import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
 const TableTitle = styled.div`
     margin-bottom: 20px;
@@ -19,8 +20,7 @@ const Buttons = styled.div`
     font-size: 16px;
     margin-left: 20px;
     width: 100px;
-    color: white;
-    background-color: var(--navbar-background-color);
+    border: 1px solid;
 `;
 const ButtonContent = styled.div`
     display: flex;
@@ -33,6 +33,11 @@ const ButtonLeft = styled.div`
     justify-content: flex-end;
     padding-top: 20px;
     padding-bottom: 20px;
+    .backgrounds {
+        background-color: var(--navbar-background-color);
+        color: white;
+        border: none;
+    }
 `;
 const ButtonRight = styled.div`
     display: flex;
@@ -43,6 +48,7 @@ const ButtonRight = styled.div`
 type ArgumentProps = {
     server_id: any;
     Flag: number;
+    onEdit: () => any;
 };
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // type ArgumentProps = {
@@ -53,13 +59,14 @@ export type serverBoxRef = {
 };
 
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
-const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag, server_id}) => {
-    const [flag, setFlag] = useState(true);
+const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag, server_id, onEdit}) => {
+    const [flag, setFlag] = useState(0);
     const [Datas, setDatas] = useState<any>({
         text: '',
         lengths: 0,
         metric: null
     });
+    const [configs, setConfigs] = useState<any>();
     useEffect(() => {
         if (Flag === undefined) {
             return;
@@ -83,14 +90,15 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
             (res: any) => {
                 console.log('get_server_output', res);
                 metricDatas(serverId, res);
+                getServe(serverId);
             },
             res => {
                 console.log('get_server_output', res);
             }
         );
     };
-    const metricDatas = (serverId: number, texts: any) => {
-        fetcher(`/fastdeploy/get_server_metric?server_id=${serverId}`, {
+    const metricDatas = async (serverId: number, texts: any) => {
+        await fetcher(`/fastdeploy/get_server_metric?server_id=${serverId}`, {
             method: 'GET'
         }).then(
             (res: any) => {
@@ -101,6 +109,19 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     lengths: Datas.text.length + texts.length,
                     metric: res
                 });
+            },
+            res => {
+                console.log('get_server_output', res);
+            }
+        );
+    };
+    const getServe = async (serverId: number) => {
+        await fetcher(`/fastdeploy/get_server_config?server_id=${serverId}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('get_server_config', res);
+                setConfigs(res);
             },
             res => {
                 console.log('get_server_output', res);
@@ -127,7 +148,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
     // }));
     return (
         <div>
-            {flag ? (
+            {flag === 0 ? (
                 <div
                     style={{
                         whiteSpace: 'pre-wrap',
@@ -140,7 +161,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                 >
                     {Datas.text}
                 </div>
-            ) : (
+            ) : flag === 1 ? (
                 <div
                     style={{
                         whiteSpace: 'pre-wrap',
@@ -160,22 +181,45 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                         <CPUTables Datas={Datas?.metric?.GPU}></CPUTables>
                     </div>
                 </div>
+            ) : (
+                <div
+                    style={{
+                        whiteSpace: 'pre-wrap',
+                        // background: 'black',
+                        // color: 'white',
+                        padding: '20px',
+                        height: '650px',
+                        overflowY: 'auto'
+                    }}
+                >
+                    <ServerConfig modelData={configs}></ServerConfig>
+                </div>
             )}
             <ButtonContent>
                 <ButtonLeft>
                     <Buttons
+                        className={flag === 0 ? 'backgrounds' : ''}
                         onClick={() => {
-                            setFlag(true);
+                            setFlag(0);
                         }}
                     >
                         日志
                     </Buttons>
                     <Buttons
+                        className={flag === 1 ? 'backgrounds' : ''}
                         onClick={() => {
-                            setFlag(false);
+                            setFlag(1);
                         }}
                     >
                         性能
+                    </Buttons>
+                    <Buttons
+                        className={flag === 2 ? 'backgrounds' : ''}
+                        onClick={() => {
+                            setFlag(2);
+                        }}
+                    >
+                        模型库配置
                     </Buttons>
                 </ButtonLeft>
                 <ButtonRight>
@@ -187,6 +231,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     >
                         打开客户端
                     </Buttons>
+                    <Buttons onClick={onEdit}>关闭服务</Buttons>
                     <Buttons
                         onClick={() => {
                             outDatas();

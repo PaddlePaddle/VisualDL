@@ -337,6 +337,7 @@ function App() {
         getModelData();
     };
     const handleOk2 = () => {
+        // debugger;
         stopSever(targetKeys);
     };
 
@@ -354,6 +355,7 @@ function App() {
                 console.log('res', res);
                 // downloadEvt(res.data, fileName);
                 // setModelData(res);
+                // debugger;
                 remove(targetKey);
                 setLoading(false);
             },
@@ -379,6 +381,7 @@ function App() {
     };
 
     const onEdit: any = (targetKey: string, action: 'add' | 'remove') => {
+        // debugger;
         if (action === 'add') {
             console.log(11111);
         } else {
@@ -512,6 +515,10 @@ function App() {
                                         <ServerBox
                                             server_id={server.Id}
                                             Flag={server.flag}
+                                            onEdit={() => {
+                                                const id = server.Id + '';
+                                                onEdit(id, 'remove');
+                                            }}
                                             // updatdDatas={() => {
                                             //     outDatas(server.id);
                                             // }}
@@ -524,7 +531,7 @@ function App() {
             </Contents>
             <Modal
                 width={800}
-                title="载入模型"
+                title="载入模型库"
                 cancelText={'取消'}
                 okText={'载入模型库'}
                 visible={isModalOpen}
@@ -554,7 +561,7 @@ function App() {
             </Modal>
             <Modal
                 width={800}
-                title="Basic Modal"
+                title="关闭服务"
                 cancelText={'取消'}
                 okText={'关闭服务'}
                 visible={isModalOpen2}
