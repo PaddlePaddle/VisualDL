@@ -4,6 +4,30 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.4.2 - 2022-12-25
+
+**ZH**
+
+- 问题修复
+    - **FE**: 修复直方图的显示问题 （#1177）
+    - **BE**: 修复cpu版paddle导出的profiler性能数据文件的载入问题 （#1176）
+    - **BE**: 修复当graph中存在多个program block时候的导出错误 (#1180)
+
+- 其它改进
+    - **BE**: 用户启动vdl不指定logdir参数时让程序不报错退出 （#1171）
+    - **BE**: 新增add_scalars接口 (#1175)
+
+**EN**
+
+- Bug Fixes
+    - **FE**: Fix histogram tab presentation problem （#1177）
+    - **BE**: Fix a bug of loading profiler data exported by paddle of cpu version （#1176）
+    - **BE**: Fix error of exporting graph with multiple program blocks (#1180)
+
+- Enhancement
+    - **BE**: Do not crash vdl when logdir is missing in launching parameters （#1171）
+    - **BE**: Add add_scalars component (#1175)
+
 ## v2.4.1 - 2022-09-14
 
 **ZH**
