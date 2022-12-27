@@ -71,11 +71,11 @@ table, th {{
   <th>请求处理失败数</th>
   <th>推理batch数</th>
   <th>推理样本数</th>
-  <th>请求处理时间</th>
-  <th>任务队列等待时间</th>
-  <th>输入处理时间</th>
-  <th>模型推理时间</th>
-  <th>输出处理时间</th>
+  <th>请求处理时间(ms)</th>
+  <th>任务队列等待时间(ms)</th>
+  <th>输入处理时间(ms)</th>
+  <th>模型推理时间(ms)</th>
+  <th>输出处理时间(ms)</th>
   </tr>
   {}
 </table>
@@ -93,12 +93,12 @@ table, th {{
     <th colspan="2">显存</th>
   </tr>
   <tr>
-   <th>利用率</th>
-  <th>功率</th>
-  <th>功率限制</th>
-  <th>耗电量</th>
-  <th>总量</th>
-  <th>已使用</th>
+   <th>利用率(%)</th>
+  <th>功率(W)</th>
+  <th>功率限制(W)</th>
+  <th>耗电量(W)</th>
+  <th>总量(GB)</th>
+  <th>已使用(GB)</th>
   </tr>
   {}
 </table>
@@ -159,6 +159,18 @@ def get_metric_data(server_addr, metric_port):  # noqa:C901
                 k, v = info.split('=')
                 v = v.strip('"')
                 infos[k] = v
+            if metric_name in [
+                    "nv_inference_request_duration_us",
+                    "nv_inference_queue_duration_us",
+                    "nv_inference_compute_input_duration_us",
+                    "nv_inference_compute_infer_duration_us",
+                    "nv_inference_compute_output_duration_us"
+            ]:
+                value = float(value) / 1000
+            elif metric_name in [
+                    "nv_gpu_memory_total_bytes", "nv_gpu_memory_used_bytes"
+            ]:
+                value = float(value) / 1024 / 1024 / 1024
             for key, metric_names in metric_column_name.items():
                 if metric_name in metric_names:
                     if key == 'Model':
