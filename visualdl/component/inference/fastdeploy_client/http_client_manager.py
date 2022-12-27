@@ -166,11 +166,11 @@ def get_metric_data(server_addr, metric_port):  # noqa:C901
                     "nv_inference_compute_infer_duration_us",
                     "nv_inference_compute_output_duration_us"
             ]:
-                value = float(value) / 1000
+                value = str(float(value) / 1000)
             elif metric_name in [
                     "nv_gpu_memory_total_bytes", "nv_gpu_memory_used_bytes"
             ]:
-                value = float(value) / 1024 / 1024 / 1024
+                value = str(float(value) / 1024 / 1024 / 1024)
             for key, metric_names in metric_column_name.items():
                 if metric_name in metric_names:
                     if key == 'Model':
