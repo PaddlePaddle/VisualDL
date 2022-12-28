@@ -300,6 +300,12 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
         setIsModalOpen(true);
     };
     useEffect(() => {
+        if (!modelData) {
+            return;
+        }
+        setEnsemblesName(modelData.ensembles[0]?.name);
+    }, [modelData]);
+    useEffect(() => {
         if (showFlag !== undefined) {
             showModal();
         }
@@ -311,6 +317,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
             } else {
                 // modelData && onFill(modelData.ensembles[0]);
                 for (const ensembles of modelData.ensembles) {
+                    // debugger;
                     if (ensembles.name === ensemblesName) {
                         onFill(ensembles);
                         return;
