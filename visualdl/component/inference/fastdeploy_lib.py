@@ -346,12 +346,17 @@ def launch_process(kwargs: dict):
   Launch a fastdeploy server according to specified arguments.
   '''
     cmd = ['fastdeployserver']
+    launch_env = os.environ.copy()
     start_args = {}
     for key, value in kwargs.items():
         if key == 'default_model_name':  # Used to fill client model_name automatically
             start_args[key] = value
             continue
         if key == 'server-name' or key == 'ensemble-img':  # extra information
+            start_args[key] = value
+            continue
+        if key == 'gpus':
+            launch_env['CUDA_VISIBLE_DEVICES'] = value
             start_args[key] = value
             continue
         cmd.append('--{}'.format(key))
@@ -372,7 +377,8 @@ def launch_process(kwargs: dict):
             os.path.join(FASTDEPLOYSERVER_PATH, logfilename), 'w',
             buffering=1),
         stderr=STDOUT,
-        universal_newlines=True)
+        universal_newlines=True,
+        env=launch_env)
     server_name = start_args['server-name'] if start_args[
         'server-name'] else p.pid
     with open(
@@ -446,7 +452,7 @@ def get_process_logfile_name(server_id):
         with open(
                 os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
                 'r') as f:
-            filename = int(f.read().split('\n')[0])
+            filename = f.read().split('\n')[0]
     return filename
 
 
