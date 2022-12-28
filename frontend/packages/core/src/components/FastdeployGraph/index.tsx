@@ -2035,9 +2035,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 marginHeight={0}
             ></iframe> */}
             {/* <div dangerouslySetInnerHTML={createhtml(svgs)}></div> */}
-            <div>
+            {/* <div>
                 <img src={svgs} alt="" />
-            </div>
+            </div> */}
         </Content>
     );
 };
