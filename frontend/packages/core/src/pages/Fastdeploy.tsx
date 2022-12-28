@@ -502,7 +502,7 @@ function App() {
                         <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
                             <FastdeployGraph
                                 modelData={modelData}
-                                upModels={getModelData}
+                                // upModels={getModelData}
                                 dirValue={dirs}
                                 ChangeServerId={ChangeServerId}
                             ></FastdeployGraph>

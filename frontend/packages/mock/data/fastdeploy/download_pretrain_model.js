@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-export default 0;
+export default [
+    {
+        title: '2',
+        key: '2',
+        children: [
+            {
+                title: '__pycache__',
+                key: '__pycache__'
+            },
+            {
+                title: 'model.py',
+                key: 'model.py'
+            }
+        ]
+    }
+];

@@ -199,13 +199,13 @@ const dataType = [
 ];
 const kindType = ['KIND_AUTO', 'KIND_GPU', 'KIND_CPU', 'KIND_MODEL'];
 type ArgumentProps = {
-    upModels: (dirValues: string) => void;
+    // upModels: (dirValues: string) => void;
     modelData: any;
     dirValue?: any;
     ChangeServerId?: any;
 };
 const formItems = ['name', 'backend', 'version', 'maxBatchSize', 'input', 'output', 'instanceGroup', 'optimization'];
-const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId, upModels}) => {
+const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId}) => {
     // #region 初始化图形
     const [ModelDatas, setModelDatas] = useState<any>(modelData);
     const [flag, setFlag] = useState<boolean>();
@@ -422,6 +422,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             };
         });
         setEnsemblesName(modelData.ensembles[0]?.name);
+        setModelDatas(modelData);
         setSelectOptions(SelectOptions);
     }, [modelData]);
     useEffect(() => {
@@ -860,7 +861,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // debugger;
                 // downloadEvt(res.data, fileName);
                 setModelDatas(config);
-                upModels(dirValue);
                 setIsModalOpen(false);
             },
             res => {
@@ -884,7 +884,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             .then(async values => {
                 // debugger;
                 // setIsModalOpen(false);
-                const ModelData = modelData;
+                const ModelData = ModelDatas;
                 const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any) => {
                     // const parameters =
                     const newObject: any = {};
@@ -914,7 +914,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 });
                 if (IsEmsembles) {
                     console.log('values', values);
-
                     const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
                         if (ensembles.name === ensemblesName) {
                             const newemsembles = {
@@ -941,7 +940,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     // await getModelData(dirValue);
                     // setIsModalOpen(false);
                 } else {
-                    // debugger;
+                    // debuggersss;
                     const models = ModelData.models?.map((model: any) => {
                         if (model.name === modelName) {
                             const newmodel = {
@@ -1059,6 +1058,56 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         // debugger;
                         // ChangeServerId(res.id);
                         // ChangeServerId(res);
+                        debugger;
+                        const ModelData = ModelDatas;
+                        if (IsEmsembles) {
+                            console.log('values', values);
+
+                            const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
+                                if (ensembles.name === ensemblesName) {
+                                    const newemsembles = {
+                                        ...ensembles,
+                                        version: res
+                                    };
+                                    return newemsembles;
+                                } else {
+                                    return ensembles;
+                                }
+                            });
+                            ModelData.ensembles = emsembless;
+                            // await getModelData(dirValue);
+                            // setIsModalOpen(false);
+                        } else {
+                            // debuggersss;
+                            const models = ModelData.models?.map((model: any) => {
+                                if (model.name === modelName) {
+                                    const newmodel = {
+                                        ...model,
+                                        version: res
+                                    };
+                                    return newmodel;
+                                } else {
+                                    return model;
+                                }
+                            });
+                            // models.delete('cpuExecutionAccelerator');
+                            // models.delete('gpuExecutionAccelerator');
+                            ModelData.models = models;
+
+                            // await getModelData(dirValue);
+                            // setModelDatas(ModelData);
+                        }
+                        const treedatas = getTreeData(res);
+                        const treedata = treedatas.map((version: any) => {
+                            return {
+                                ...version,
+                                // checkable: false
+                                selectable: true,
+                                icon: <VerticalAlignBottomOutlined />
+                            };
+                        });
+                        setTreeData(treedata);
+                        setModelDatas(ModelData);
                         setIsModalOpen3(false);
                         setSelectKeys([]);
                     },
@@ -1279,7 +1328,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         }
     }, [triggerClick]);
-    console.log('graphs', treeData);
+    console.log('graphssss', ModelDatas);
     console.log('showFlag', showFlag);
     // const createhtml = svg => {
     //     return {__html: svg};
@@ -1386,7 +1435,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         </Form.Item>
                     )}
                     {/* <Form.Item name="platform" label="platform" rules={[{required: true, message: 'Missing area'}]}>
-                        <Input />
+                        <Input />treeData
                     </Form.Item> */}
                     <Form.Item name="version" label="version">
                         <Tree
