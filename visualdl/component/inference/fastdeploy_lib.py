@@ -356,8 +356,9 @@ def launch_process(kwargs: dict):
             start_args[key] = value
             continue
         if key == 'gpus':
-            launch_env['CUDA_VISIBLE_DEVICES'] = value
-            start_args[key] = value
+            if value:
+                launch_env['CUDA_VISIBLE_DEVICES'] = value
+                start_args[key] = value
             continue
         cmd.append('--{}'.format(key))
         cmd.append('{}'.format(value))
