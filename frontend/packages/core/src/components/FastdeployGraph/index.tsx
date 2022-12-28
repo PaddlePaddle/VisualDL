@@ -941,7 +941,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     // await getModelData(dirValue);
                     // setIsModalOpen(false);
                 } else {
-                    debugger;
+                    // debugger;
                     const models = ModelData.models?.map((model: any) => {
                         if (model.name === modelName) {
                             const newmodel = {
