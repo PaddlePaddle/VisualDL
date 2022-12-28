@@ -71,7 +71,6 @@ def analyse_config(cur_dir: str):
   Return a json object to describe configuration.
   '''
     all_model_configs = {}
-    all_model_paths = {}
     all_model_versions = {}
     parent_dir, sub_dirs, filenames = os.walk(cur_dir).send(
         None)  # models can only put directory in model repository,
@@ -82,7 +81,6 @@ def analyse_config(cur_dir: str):
         model_name = os.path.basename(model_dir)
         for filename in filenames:
             if 'config.pbtxt' in filename:
-                all_model_paths[model_name] = model_dir  # store model path
                 json_config = json.loads(
                     pbtxt2json(open(os.path.join(model_dir, filename)).read()))
                 all_model_configs[
@@ -104,7 +102,7 @@ def analyse_config(cur_dir: str):
     if not all_model_configs:
         raise Exception(
             'Not a valid model repository, please choose the right path')
-    return all_model_configs, all_model_versions, all_model_paths
+    return all_model_configs, all_model_versions
 
 
 def exchange_format_to_original_format(exchange_format):
@@ -353,10 +351,18 @@ def launch_process(kwargs: dict):
         if key == 'default_model_name':  # Used to fill client model_name automatically
             start_args[key] = value
             continue
+        if key == 'server-name' or key == 'ensemble-img':  # extra information
+            start_args[key] = value
+            continue
         cmd.append('--{}'.format(key))
         cmd.append('{}'.format(value))
         start_args[key] = value
 
+    all_model_configs, all_model_versions = analyse_config(
+        start_args['model-repository'])
+    model_repo_config = original_format_to_exchange_format(
+        all_model_configs, all_model_versions)
+    model_repo_config['ensemble-img'] = start_args['ensemble-img']
     logfilename = 'logfile-{}'.format(get_random_string(8))
     while os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, logfilename)):
         logfilename = 'logfile-{}'.format(get_random_string(8))
@@ -367,11 +373,18 @@ def launch_process(kwargs: dict):
             buffering=1),
         stderr=STDOUT,
         universal_newlines=True)
-    with open(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(p.pid)),
-              'w') as f:
-        f.write(
-            logfilename + '\n' + json.dumps(start_args)
-        )  # filename ${p.pid} contain the real log filename ${logfilename}, and start arguments
+    server_name = start_args['server-name'] if start_args[
+        'server-name'] else p.pid
+    with open(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_name)),
+            'w') as f:
+        # filename ${server_name} contain 4 lines:
+        # line1 : the real log filename ${logfilename}
+        # line2 : pid
+        # line3 : launch arguments
+        # line4 : model-repository configuration
+        f.write(logfilename + '\n' + str(p.pid) + '\n' +
+                json.dumps(start_args) + '\n' + json.dumps(model_repo_config))
     return p
 
 
@@ -386,7 +399,7 @@ def get_start_arguments(server_id):
     '''
     Get the start arguments for fastdeployserver process.
     Args:
-        server_id(int): fastdeployserver process id
+        server_id(str): fastdeployserver process name
     Returns:
         args(dict): launch arguments when start fastdeployserver process.
     '''
@@ -396,19 +409,73 @@ def get_start_arguments(server_id):
         with open(
                 os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
                 'r') as f:
-            f.readline()
-            args = json.loads(f.read())
+            arguments_json = f.read().split('\n')[2]
+            args = json.loads(arguments_json)
     return args
 
 
-def get_process_output(pid, length):
+def get_process_pid(server_id):
+    '''
+    Get the process id for fastdeployserver process.
+    Args:
+        server_id(str): fastdeployserver process name
+    Returns:
+        pid(int): process id.
+    '''
+    pid = None
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        with open(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
+                'r') as f:
+            pid = int(f.read().split('\n')[1])
+    return pid
+
+
+def get_process_logfile_name(server_id):
+    '''
+    Get the process logfile name for fastdeployserver process.
+    Args:
+        server_id(str): fastdeployserver process name
+    Returns:
+        logfile(str): logfile name.
+    '''
+    filename = None
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        with open(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
+                'r') as f:
+            filename = int(f.read().split('\n')[0])
+    return filename
+
+
+def get_process_model_configuration(server_id):
+    '''
+    Get the model repository configuration for fastdeployserver process.
+    Args:
+        server_id(str): fastdeployserver process name
+    Returns:
+        configuration(dict): model repository configuration
+    '''
+    conf = {}
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        with open(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
+                'r') as f:
+            conf_json = f.read().split('\n')[3]
+            conf = json.loads(conf_json)
+    return conf
+
+
+def get_process_output(server_id, length):
     '''
   Get the standard output of a opened subprocess.
   '''
-    if os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid))):
-        with open(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
-                  'r') as f:
-            logfilename = f.readline().strip('\n')
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        logfilename = get_process_logfile_name(server_id)
         # delete file ${logfilename} if exists
         if os.path.exists(
                 os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename))):
@@ -420,14 +487,31 @@ def get_process_output(pid, length):
                 return data
 
 
+def delete_files_for_process(server_id):
+    '''
+    Delete logfile for fastdeployserver process.
+    Args:
+        server_id(str): fastdeployserver process name
+    '''
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        logfilename = get_process_logfile_name(server_id)
+        # delete file ${logfilename} if exists
+        if os.path.exists(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename))):
+            os.remove(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename)))
+        os.remove(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)))
+
+
 def kill_process(process):
     '''
   Stop a opened subprocess.
   '''
-    if type(process) == int:  # pid, use os.kill to terminate
-        pid = process
+    if type(process) == str:  # server_id, use os.kill to terminate
+        pid = get_process_pid(process)
         try:
-            os.kill(process, signal.SIGKILL)
+            os.kill(pid, signal.SIGKILL)
             # delete file ${pid} if exists
         except Exception:
             pass
@@ -438,60 +522,38 @@ def kill_process(process):
             process.wait(10)
         except Exception:
             pass
-    if os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid))):
-        with open(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
-                  'r') as f:
-            logfilename = f.readline().strip('\n')
-        # delete file ${logfilename} if exists
-        if os.path.exists(
-                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename))):
-            os.remove(
-                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(logfilename)))
-        os.remove(os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)))
 
 
 def get_alive_fastdeploy_servers():
     '''
-    Search pids in `FASTDEPLOYSERVER_PATH`, if process is dead and log still exists due to \
+    Search server names in `FASTDEPLOYSERVER_PATH`, if process is dead and log still exists due to \
         some unexpectable reasons, delete log file.
     '''
-    pids = [
+    server_names = [
         name for name in os.listdir(FASTDEPLOYSERVER_PATH)
         if 'logfile' not in name
     ]
-    should_delete_pids = []
-    for pid in pids:
-        if check_process_alive(pid) is False:
-            if os.path.exists(
-                    os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid))):
-                with open(
-                        os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)),
-                        'r') as f:
-                    logfilename = f.readline().strip('\n')
-                # delete file ${logfilename} if exists
-                if os.path.exists(
-                        os.path.join(FASTDEPLOYSERVER_PATH,
-                                     '{}'.format(logfilename))):
-                    os.remove(
-                        os.path.join(FASTDEPLOYSERVER_PATH,
-                                     '{}'.format(logfilename)))
-                os.remove(
-                    os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(pid)))
-            should_delete_pids.append(pid)
-    for pid in should_delete_pids:
-        pids.remove(pid)
-    return pids
+    should_delete_servers = []
+    for server_name in server_names:
+        if check_process_alive(server_name) is False:
+            delete_files_for_process(server_name)
+            should_delete_servers.append(server_name)
+    for server_name in should_delete_servers:
+        server_names.remove(server_name)
+    return server_names
 
 
-def check_process_alive(pid):
+def check_process_alive(server_id):
     '''
-    Given a pid, check whether the process is alive or not.
+    Given a server id, check whether the process is alive or not.
     Args:
-        pid(int): process id
+        server_id(str): fastdeployserver process name
     Return:
         status(bool): True if process is still alive.
     '''
-    pid = int(pid)
+    pid = get_process_pid(server_id)
+    if pid is None:
+        return False
     try:
         os.kill(pid, 0)
     except OSError:
@@ -521,7 +583,7 @@ _metric_column_name = {
 }
 
 
-def generate_metric_table(server_addr, server_port):
+def generate_metric_table(server_addr, server_port):  # noqa:C901
     model_table = {}
     gpu_table = {}
     try:
@@ -546,6 +608,18 @@ def generate_metric_table(server_addr, server_port):
                 k, v = info.split('=')
                 v = v.strip('"')
                 infos[k] = v
+            if metric_name in [
+                    "nv_inference_request_duration_us",
+                    "nv_inference_queue_duration_us",
+                    "nv_inference_compute_input_duration_us",
+                    "nv_inference_compute_infer_duration_us",
+                    "nv_inference_compute_output_duration_us"
+            ]:
+                value = float(value) / 1000
+            elif metric_name in [
+                    "nv_gpu_memory_total_bytes", "nv_gpu_memory_used_bytes"
+            ]:
+                value = float(value) / 1024 / 1024 / 1024
             for key, metric_names in _metric_column_name.items():
                 if metric_name in metric_names:
                     if key == 'Model':

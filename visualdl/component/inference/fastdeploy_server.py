@@ -21,13 +21,16 @@ import time
 from multiprocessing import Process
 from pathlib import Path
 
+import fastdeploy as fd
 import requests
 
 from .fastdeploy_client.client_app import create_gradio_client_app
 from .fastdeploy_lib import analyse_config
+from .fastdeploy_lib import delete_files_for_process
 from .fastdeploy_lib import exchange_format_to_original_format
 from .fastdeploy_lib import generate_metric_table
 from .fastdeploy_lib import get_alive_fastdeploy_servers
+from .fastdeploy_lib import get_process_model_configuration
 from .fastdeploy_lib import get_process_output
 from .fastdeploy_lib import get_start_arguments
 from .fastdeploy_lib import json2pbtxt
@@ -46,7 +49,6 @@ class FastDeployServerApi(object):
         self.opened_servers = {
         }  # Use to store the opened server process pid and process itself
         self.client_port = None
-        self.model_paths = {}
 
     @result()
     def get_directory(self, cur_dir):
@@ -66,10 +68,7 @@ class FastDeployServerApi(object):
 
     @result()
     def get_config(self, cur_dir):
-        all_model_configs, all_model_versions, all_model_paths = analyse_config(
-            cur_dir)
-        for name, value in all_model_paths.items():
-            self.model_paths[(Path(os.path.abspath(cur_dir)), name)] = value
+        all_model_configs, all_model_versions = analyse_config(cur_dir)
         return original_format_to_exchange_format(all_model_configs,
                                                   all_model_versions)
 
@@ -77,8 +76,7 @@ class FastDeployServerApi(object):
     def config_update(self, cur_dir, model_name, config):
         config = json.loads(config)
         all_models = exchange_format_to_original_format(config)
-        model_dir = self.model_paths[(Path(os.path.abspath(cur_dir)),
-                                      model_name)]
+        model_dir = os.path.join(os.path.abspath(cur_dir), model_name)
         filtered_config = validate_data(all_models[model_name])
         text_proto = json2pbtxt(json.dumps(filtered_config))
         # backup user's config.pbtxt first, when data corrupted by front-end, we still can recovery data
@@ -99,19 +97,21 @@ class FastDeployServerApi(object):
             raise RuntimeError(
                 "Launch fastdeploy server failed, please check your launching arguments"
             )
-        self.opened_servers[process.pid] = process
-        return process.pid
+        server_name = configs['server-name'] if configs[
+            'server-name'] else process.pid
+        self.opened_servers[server_name] = process
+        return server_name
 
     @result()
     def stop_server(self, server_id):
-        server_id = int(server_id)
         if server_id in self.opened_servers:  # check if server_id in self.opened_servers
             kill_process(self.opened_servers[server_id])
             del self.opened_servers[server_id]
-        elif str(server_id) in set(
+        elif server_id in set(
                 os.listdir(FASTDEPLOYSERVER_PATH)):  # check if server_id in
             # FASTDEPLOYSERVER_PATH(may be launched by other vdl app instance by gunicorn)
             kill_process(server_id)
+        delete_files_for_process(server_id)
         # check if there are servers killed by other vdl app instance and become zoombie
         should_delete = []
         for server_id, process in self.opened_servers.items():
@@ -122,7 +122,6 @@ class FastDeployServerApi(object):
 
     @result('text/plain')
     def get_server_output(self, server_id, length):
-        server_id = int(server_id)
         length = int(length)
         if server_id in self.opened_servers:  # check if server_id in self.opened_servers
             return get_process_output(server_id, length)
@@ -143,6 +142,20 @@ class FastDeployServerApi(object):
     @result()
     def get_server_list(self):
         return get_alive_fastdeploy_servers()
+
+    @result()
+    def get_server_config(self, server_id):
+        return get_process_model_configuration(server_id)
+
+    @result()
+    def download_pretrain_model(self, cur_dir, model_name, version,
+                                pretrain_model_name):
+        version_resource_dir = os.path.join(
+            os.path.abspath(cur_dir), model_name, version)
+        fd.download_model(name=pretrain_model_name, path=version_resource_dir)
+        os.system('mv {}/{}/* {} && rm -r {}/{}'.format(
+            version_resource_dir, pretrain_model_name, version_resource_dir,
+            version_resource_dir, pretrain_model_name))
 
     def create_fastdeploy_client(self):
         if self.client_port is None:
@@ -185,7 +198,11 @@ def create_fastdeploy_api_call():
         'get_server_output': (api.get_server_output, ['server_id', 'length']),
         'create_fastdeploy_client': (api.create_fastdeploy_client, []),
         'get_server_list': (api.get_server_list, []),
-        'get_server_metric': (api.get_server_metric, ['server_id'])
+        'get_server_metric': (api.get_server_metric, ['server_id']),
+        'get_server_config': (api.get_server_config, ['server_id']),
+        'download_pretrain_model':
+        (api.download_pretrain_model,
+         ['dir', 'name', 'version', 'pretrain_model_name']),
     }
 
     def call(path: str, args):
