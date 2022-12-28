@@ -199,12 +199,13 @@ const dataType = [
 ];
 const kindType = ['KIND_AUTO', 'KIND_GPU', 'KIND_CPU', 'KIND_MODEL'];
 type ArgumentProps = {
+    upModels: (dirValues: string) => void;
     modelData: any;
     dirValue?: any;
     ChangeServerId?: any;
 };
 const formItems = ['name', 'backend', 'version', 'maxBatchSize', 'input', 'output', 'instanceGroup', 'optimization'];
-const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId}) => {
+const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeServerId, upModels}) => {
     // #region 初始化图形
     const [ModelDatas, setModelDatas] = useState<any>(modelData);
     const [flag, setFlag] = useState<boolean>();
@@ -215,13 +216,13 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [showGpus, setShowGpus] = useState<any>({});
 
     const [configs, setConfigs] = useState<any>({
-        'server-name': '1111',
+        'server-name': null,
         'model-repository': 'yolov5_serving/models',
         'backend-config': 'python,shm-default-byte-size=10485760',
         'http-port': 8000,
         'grpc-port': 8001,
         'metrics-port': 8002,
-        gpus: 111
+        gpus: null
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
@@ -831,6 +832,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         });
     };
     const upModelData = (name: any, dir: string, config: any) => {
+        // debugger;
         let formBody: any = [];
         const details: any = {
             name: name,
@@ -855,8 +857,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         }).then(
             (res: any) => {
                 console.log('blobres', res);
+                // debugger;
                 // downloadEvt(res.data, fileName);
                 setModelDatas(config);
+                upModels(dirValue);
                 setIsModalOpen(false);
             },
             res => {
@@ -877,9 +881,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const handleOk = () => {
         // onfinish();
         form?.validateFields()
-            .then(values => {
+            .then(async values => {
+                // debugger;
                 // setIsModalOpen(false);
-                const ModelData = ModelDatas;
+                const ModelData = modelData;
                 const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any) => {
                     // const parameters =
                     const newObject: any = {};
@@ -933,8 +938,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     console.log('ModelDatas', ModelData);
 
                     upModelData(ensemblesName, dirValue, ModelData);
+                    // await getModelData(dirValue);
                     // setIsModalOpen(false);
                 } else {
+                    debugger;
                     const models = ModelData.models?.map((model: any) => {
                         if (model.name === modelName) {
                             const newmodel = {
@@ -969,6 +976,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     ModelData.models = models;
                     console.log('ModelDatas', ModelData);
                     upModelData(modelName, dirValue, ModelData);
+                    // await getModelData(dirValue);
                     // setModelDatas(ModelData);
                 }
             })
@@ -1905,12 +1913,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     <Form.Item
                         name={'server-name'}
                         label={'server-name'}
-                        rules={[
-                            {
-                                required: true,
-                                message: '该字段为必填项请填写对应信息'
-                            }
-                        ]}
+                        // rules={[
+                        //     {
+                        //         required: true,
+                        //         message: '该字段为必填项请填写对应信息'
+                        //     }
+                        // ]}
                     >
                         <Input />
                     </Form.Item>
@@ -1983,12 +1991,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     <Form.Item
                         name={'gpus'}
                         label={'gpus'}
-                        rules={[
-                            {
-                                required: true,
-                                message: '该字段为必填项请填写对应信息'
-                            }
-                        ]}
+                        // rules={[
+                        //     {
+                        //         // required: true,
+                        //         message: '该字段为必填项请填写对应信息'
+                        //     }
+                        // ]}
                     >
                         <Input />
                     </Form.Item>
@@ -1996,7 +2004,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="预训练模型名"
+                title="预训练模型下载"
                 cancelText={'取消'}
                 okText={'启动'}
                 visible={isModalOpen3}
@@ -2006,7 +2014,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 <Form {...layout} form={form3} name="dynamic_form_complex" autoComplete="off">
                     <Form.Item
                         name={'models'}
-                        label={'预训练模型'}
+                        label={'预训练模型名'}
                         rules={[
                             {
                                 required: true,

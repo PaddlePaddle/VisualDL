@@ -272,14 +272,14 @@ function App() {
     //         }
     //     );
     // };
-    const getModelData = () => {
-        fetcher(`/fastdeploy/get_config?dir=${dirValue}`, {
+    const getModelData = (dirValues: string) => {
+        fetcher(`/fastdeploy/get_config?dir=${dirValues}`, {
             method: 'GET'
         }).then(
             (res: any) => {
                 console.log('blobres', res);
                 // downloadEvt(res.data, fileName);
-                setDirs(dirValue);
+                setDirs(dirValues);
                 setDirValue('.');
                 setModelData(res);
                 setIsModalOpen(false);
@@ -334,7 +334,7 @@ function App() {
     };
     const handleOk = () => {
         // onFinish();
-        getModelData();
+        getModelData(dirValue);
     };
     const handleOk2 = () => {
         // debugger;
@@ -502,6 +502,7 @@ function App() {
                         <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
                             <FastdeployGraph
                                 modelData={modelData}
+                                upModels={getModelData}
                                 dirValue={dirs}
                                 ChangeServerId={ChangeServerId}
                             ></FastdeployGraph>
