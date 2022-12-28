@@ -49,31 +49,31 @@ const columns: ColumnsType<DataType> = [
         title: '延迟统计',
         children: [
             {
-                title: '请求处理时间',
+                title: '请求处理时间(ms)',
                 dataIndex: 'nv_inference_request_duration_us',
                 key: 'nv_inference_request_duration_us',
                 width: 150
             },
             {
-                title: '任务队列等待时间',
+                title: '任务队列等待时间(ms)',
                 dataIndex: 'nv_inference_queue_duration_us',
                 key: 'nv_inference_queue_duration_us',
                 width: 150
             },
             {
-                title: '输入处理时间',
+                title: '输入处理时间(ms)',
                 dataIndex: 'nv_inference_compute_input_duration_us',
                 key: 'nv_inference_compute_input_duration_us',
                 width: 150
             },
             {
-                title: '模型推理时间',
+                title: '模型推理时间(ms)',
                 dataIndex: 'nv_inference_compute_infer_duration_us',
                 key: 'nv_inference_compute_infer_duration_us',
                 width: 150
             },
             {
-                title: '输出处理时间',
+                title: '输出处理时间(ms)',
                 dataIndex: 'nv_inference_compute_output_duration_us',
                 key: 'nv_inference_compute_output_duration_us',
                 width: 150
@@ -93,12 +93,9 @@ const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
         const arrays = Object.keys(Datas);
         const data = arrays.map((name: string) => {
             const model = Datas[name];
-            const datas: any = {};
-            for (const keys of Object.keys(model)) {
-                datas[keys] = model[keys] + 'ms';
-            }
+
             return {
-                ...datas,
+                ...model,
                 key: name,
                 name: name
             };

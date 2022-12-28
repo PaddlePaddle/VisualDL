@@ -511,7 +511,7 @@ function App() {
                             serverModels.map((server: any) => {
                                 // debugger;
                                 return (
-                                    <Tabs.TabPane tab={`Server${server.Id}`} key={server.Id}>
+                                    <Tabs.TabPane tab={`Server-${server.Id}`} key={server.Id}>
                                         <ServerBox
                                             server_id={server.Id}
                                             Flag={server.flag}

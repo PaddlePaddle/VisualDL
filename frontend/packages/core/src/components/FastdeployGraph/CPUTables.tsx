@@ -21,19 +21,19 @@ const columns: ColumnsType<DataType> = [
         title: '性能指标',
         children: [
             {
-                title: '利用率',
+                title: '利用率(%)',
                 dataIndex: 'nv_gpu_utilization',
                 key: 'nv_gpu_utilization',
                 width: 150
             },
             {
-                title: '功率',
+                title: '功率(W)',
                 dataIndex: 'nv_gpu_power_usage',
                 key: 'nv_gpu_power_usage',
                 width: 150
             },
             {
-                title: '功率限制',
+                title: '功率限制(W)',
                 dataIndex: 'nv_gpu_power_limit',
                 key: 'nv_gpu_power_limit',
                 width: 150
@@ -44,13 +44,13 @@ const columns: ColumnsType<DataType> = [
         title: '显存',
         children: [
             {
-                title: '总量',
+                title: '总量(GB)',
                 dataIndex: 'nv_gpu_memory_total_bytes',
                 key: 'nv_gpu_memory_total_bytes',
                 width: 150
             },
             {
-                title: '已使用',
+                title: '已使用(GB)',
                 dataIndex: 'nv_gpu_memory_used_bytes',
                 key: 'nv_gpu_memory_used_bytes',
                 width: 150
@@ -70,12 +70,9 @@ const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
         const arrays = Object.keys(Datas);
         const data = arrays.map((name: string) => {
             const model = Datas[name];
-            const datas: any = {};
-            for (const keys of Object.keys(model)) {
-                datas[keys] = model[keys] + 'ms';
-            }
+
             return {
-                ...datas,
+                ...model,
                 key: name,
                 name: name
             };

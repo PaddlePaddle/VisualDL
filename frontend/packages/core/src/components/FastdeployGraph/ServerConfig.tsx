@@ -744,7 +744,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
                                                                         >
                                                                             parameters
                                                                         </div>
-                                                                        <PlusCircleOutlined onClick={() => addTest()} />
+                                                                        {/* <PlusCircleOutlined onClick={() => addTest()} /> */}
                                                                     </div>
                                                                     {fields5?.map(fields => (
                                                                         <Space align="baseline" key={fields.key}>

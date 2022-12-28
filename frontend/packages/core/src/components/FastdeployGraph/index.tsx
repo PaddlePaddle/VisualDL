@@ -1048,7 +1048,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 ).then(
                     (res: any) => {
                         console.log('resss', res);
-                        debugger;
+                        // debugger;
                         // ChangeServerId(res.id);
                         // ChangeServerId(res);
                         setIsModalOpen3(false);
@@ -1252,7 +1252,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         // debugger;
                     },
 
-                    {copyStyles: true, preserveDimensions: true, stylesheet: styles}
+                    {copyStyles: true, preserveDimensions: true, stylesheet: styles, padding: 50}
                 );
         }
     }, [dirValue, isModalOpen2]);
@@ -2027,9 +2027,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 marginHeight={0}
             ></iframe> */}
             {/* <div dangerouslySetInnerHTML={createhtml(svgs)}></div> */}
-            {/* <div>
+            <div>
                 <img src={svgs} alt="" />
-            </div> */}
+            </div>
         </Content>
     );
 };
