@@ -1001,7 +1001,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     const encodedValue = encodeURIComponent(details[property]);
                     formBody.push(encodedKey + '=' + encodedValue);
                 }
-                formBody.push('ensemble-img' + '=' + svgs);
+                svgs && formBody.push(encodeURIComponent('ensemble-img') + '=' + encodeURIComponent(svgs));
                 formBody = formBody.join('&');
                 fetcher(`/fastdeploy/start_server`, {
                     method: 'POST',
@@ -2023,9 +2023,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 marginHeight={0}
             ></iframe> */}
             {/* <div dangerouslySetInnerHTML={createhtml(svgs)}></div> */}
-            <div>
+            {/* <div>
                 <img src={svgs} alt="" />
-            </div>
+            </div> */}
         </Content>
     );
 };
