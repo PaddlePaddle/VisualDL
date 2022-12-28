@@ -991,6 +991,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     ...values,
                     default_model_name: ensemblesName
                 };
+                if (svgs) {
+                    bodys['ensemble-img'] = svgs;
+                }
                 let formBody: any = [];
                 const details: any = {
                     config: JSON.stringify(bodys)
@@ -1001,8 +1004,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     const encodedValue = encodeURIComponent(details[property]);
                     formBody.push(encodedKey + '=' + encodedValue);
                 }
-                svgs && formBody.push(encodeURIComponent('ensemble-img') + '=' + encodeURIComponent(svgs));
                 formBody = formBody.join('&');
+                console.log('formBody', formBody);
+
                 fetcher(`/fastdeploy/start_server`, {
                     method: 'POST',
                     headers: {
