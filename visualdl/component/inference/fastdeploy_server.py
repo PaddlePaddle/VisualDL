@@ -152,10 +152,17 @@ class FastDeployServerApi(object):
                                 pretrain_model_name):
         version_resource_dir = os.path.join(
             os.path.abspath(cur_dir), model_name, version)
-        fd.download_model(name=pretrain_model_name, path=version_resource_dir)
-        os.system('mv {}/{}/* {} && rm -r {}/{}'.format(
-            version_resource_dir, pretrain_model_name, version_resource_dir,
-            version_resource_dir, pretrain_model_name))
+        model_path = fd.download_model(
+            name=pretrain_model_name, path=version_resource_dir)
+        if model_path:
+            os.system('mv {}/{}/* {} && rm -r {}/{}'.format(
+                version_resource_dir, pretrain_model_name,
+                version_resource_dir, version_resource_dir,
+                pretrain_model_name))
+        else:
+            raise RuntimeError(
+                "No pretrained model named {} can be downloaded".format(
+                    pretrain_model_name))
 
     def create_fastdeploy_client(self):
         if self.client_port is None:
