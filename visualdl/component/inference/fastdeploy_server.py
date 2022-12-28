@@ -15,6 +15,7 @@
 import datetime
 import json
 import os
+import re
 import shutil
 import socket
 import time
@@ -159,6 +160,25 @@ class FastDeployServerApi(object):
                 version_resource_dir, pretrain_model_name,
                 version_resource_dir, version_resource_dir,
                 pretrain_model_name))
+            version_info_for_frontend = []
+            for version_name in os.listdir(os.path.join(cur_dir, model_name)):
+                if re.match(
+                        r'\d+',
+                        version_name):  # version directory consists of numbers
+                    version_filenames_dict_for_frontend = {}
+                    version_filenames_dict_for_frontend['title'] = version_name
+                    version_filenames_dict_for_frontend['key'] = version_name
+                    version_filenames_dict_for_frontend['children'] = []
+                    for filename in os.listdir(
+                            os.path.join(cur_dir, model_name, version_name)):
+                        version_filenames_dict_for_frontend['children'].append(
+                            {
+                                'title': filename,
+                                'key': filename
+                            })
+                    version_info_for_frontend.append(
+                        version_filenames_dict_for_frontend)
+            return version_info_for_frontend
         else:
             raise RuntimeError(
                 "No pretrained model named {} can be downloaded".format(
