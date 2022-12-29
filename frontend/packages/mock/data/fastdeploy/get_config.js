@@ -201,49 +201,109 @@
 export default {
     ensembles: [
         {
-            name: 'ernie_tokencls',
+            name: 'cls_pp',
             platform: 'ensemble',
-            maxBatchSize: 64,
-            input: [{name: 'INPUT', dataType: 'TYPE_STRING', dims: ['1']}],
-            output: [{name: 'OUTPUT', dataType: 'TYPE_STRING', dims: ['1']}],
-            versions: [{title: '1', key: '1', children: [{title: 'README.md', key: 'README.md'}]}],
+            maxBatchSize: 128,
+            input: [{name: 'x', dataType: 'TYPE_FP32', dims: ['3', '-1', '-1']}],
+            output: [
+                {name: 'cls_labels', dataType: 'TYPE_INT32', dims: ['1']},
+                {name: 'cls_scores', dataType: 'TYPE_FP32', dims: ['1']}
+            ],
             step: [
                 {
-                    modelName: 'ernie_tokenizer',
+                    modelName: 'cls_runtime',
                     modelVersion: '1',
-                    inputMap: {INPUT_0: 'INPUT'},
-                    outputMap: {OUTPUT_1: 'tokenizer_token_type_ids', OUTPUT_0: 'tokenizer_input_ids'},
+                    inputMap: {x: 'x'},
+                    outputMap: {'softmax_0.tmp_0': 'infer_output'},
                     modelType: 'normal',
                     inputModels: ['feed'],
-                    outputModels: ['ernie_tokencls_model'],
-                    inputVars: ['INPUT'],
-                    outputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids'],
+                    outputModels: ['cls_postprocess'],
+                    inputVars: ['x'],
+                    outputVars: ['infer_output'],
                     pos_y: 1,
                     pos_x: 0
                 },
                 {
-                    modelName: 'ernie_tokencls_model',
+                    modelName: 'cls_postprocess',
                     modelVersion: '1',
-                    inputMap: {input_ids: 'tokenizer_input_ids', token_type_ids: 'tokenizer_token_type_ids'},
-                    outputMap: {'linear_113.tmp_1': 'OUTPUT_2'},
+                    inputMap: {POST_INPUT_0: 'infer_output'},
+                    outputMap: {POST_OUTPUT_1: 'cls_scores', POST_OUTPUT_0: 'cls_labels'},
                     modelType: 'normal',
-                    inputModels: ['ernie_tokenizer'],
-                    outputModels: ['ernie_tokencls_postprocess'],
-                    inputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids'],
-                    outputVars: ['OUTPUT_2'],
+                    inputModels: ['cls_runtime'],
+                    outputModels: ['fetch'],
+                    inputVars: ['infer_output'],
+                    outputVars: ['cls_scores', 'cls_labels'],
                     pos_y: 2,
                     pos_x: 0
                 },
                 {
-                    modelName: 'ernie_tokencls_postprocess',
+                    modelName: 'feed',
+                    modelType: 'virtual',
+                    inputModels: [],
+                    outputModels: ['cls_runtime'],
+                    inputVars: [],
+                    outputVars: ['x'],
+                    pos_y: 0,
+                    pos_x: 0
+                },
+                {
+                    modelName: 'fetch',
+                    modelType: 'virtual',
+                    inputModels: ['cls_postprocess'],
+                    outputModels: [],
+                    inputVars: ['cls_scores', 'cls_labels'],
+                    outputVars: [],
+                    pos_y: 3,
+                    pos_x: 0
+                }
+            ]
+        },
+        {
+            name: 'pp_ocr',
+            platform: 'ensemble',
+            maxBatchSize: 1,
+            input: [{name: 'INPUT', dataType: 'TYPE_UINT8', dims: ['-1', '-1', '3']}],
+            output: [
+                {name: 'rec_texts', dataType: 'TYPE_STRING', dims: ['-1', '1']},
+                {name: 'rec_scores', dataType: 'TYPE_FP32', dims: ['-1', '1']}
+            ],
+            step: [
+                {
+                    modelName: 'det_preprocess',
                     modelVersion: '1',
-                    inputMap: {POST_INPUT: 'OUTPUT_2'},
-                    outputMap: {POST_OUTPUT: 'OUTPUT'},
+                    inputMap: {INPUT_0: 'INPUT'},
+                    outputMap: {OUTPUT_0: 'infer_input', OUTPUT_1: 'infos'},
                     modelType: 'normal',
-                    inputModels: ['ernie_tokencls_model'],
+                    inputModels: ['feed'],
+                    outputModels: ['det_runtime', 'det_postprocess'],
+                    inputVars: ['INPUT'],
+                    outputVars: ['infer_input', 'infos'],
+                    pos_y: 1,
+                    pos_x: 0
+                },
+                {
+                    modelName: 'det_runtime',
+                    modelVersion: '1',
+                    inputMap: {x: 'infer_input'},
+                    outputMap: {'sigmoid_0.tmp_0': 'infer_output'},
+                    modelType: 'normal',
+                    inputModels: ['det_preprocess'],
+                    outputModels: ['det_postprocess'],
+                    inputVars: ['infer_input'],
+                    outputVars: ['infer_output'],
+                    pos_y: 2,
+                    pos_x: 0
+                },
+                {
+                    modelName: 'det_postprocess',
+                    modelVersion: '1',
+                    inputMap: {ORI_IMG: 'INPUT', POST_INPUT_1: 'infos', POST_INPUT_0: 'infer_output'},
+                    outputMap: {POST_OUTPUT_0: 'rec_texts', POST_OUTPUT_1: 'rec_scores'},
+                    modelType: 'normal',
+                    inputModels: ['feed', 'det_preprocess', 'det_runtime'],
                     outputModels: ['fetch'],
-                    inputVars: ['OUTPUT_2'],
-                    outputVars: ['OUTPUT'],
+                    inputVars: ['INPUT', 'infos', 'infer_output'],
+                    outputVars: ['rec_texts', 'rec_scores'],
                     pos_y: 3,
                     pos_x: 0
                 },
@@ -251,7 +311,7 @@ export default {
                     modelName: 'feed',
                     modelType: 'virtual',
                     inputModels: [],
-                    outputModels: ['ernie_tokenizer'],
+                    outputModels: ['det_postprocess', 'det_preprocess'],
                     inputVars: [],
                     outputVars: ['INPUT'],
                     pos_y: 0,
@@ -260,9 +320,9 @@ export default {
                 {
                     modelName: 'fetch',
                     modelType: 'virtual',
-                    inputModels: ['ernie_tokencls_postprocess'],
+                    inputModels: ['det_postprocess'],
                     outputModels: [],
-                    inputVars: ['OUTPUT'],
+                    inputVars: ['rec_texts', 'rec_scores'],
                     outputVars: [],
                     pos_y: 4,
                     pos_x: 0
@@ -270,73 +330,59 @@ export default {
             ]
         },
         {
-            name: 'ernie_seqcls',
+            name: 'rec_pp',
             platform: 'ensemble',
-            maxBatchSize: 64,
-            input: [{name: 'INPUT', dataType: 'TYPE_STRING', dims: ['1']}],
+            maxBatchSize: 128,
+            input: [{name: 'x', dataType: 'TYPE_FP32', dims: ['3', '48', '-1']}],
             output: [
-                {name: 'label', dataType: 'TYPE_INT64', dims: ['1']},
-                {name: 'confidence', dataType: 'TYPE_FP32', dims: ['1']}
+                {name: 'rec_texts', dataType: 'TYPE_STRING', dims: ['1']},
+                {name: 'rec_scores', dataType: 'TYPE_FP32', dims: ['1']}
             ],
-            versions: [{title: '1', key: '1', children: [{title: 'README.md', key: 'README.md'}]}],
             step: [
                 {
-                    modelName: 'ernie_tokenizer',
+                    modelName: 'rec_runtime',
                     modelVersion: '1',
-                    inputMap: {INPUT_0: 'INPUT'},
-                    outputMap: {OUTPUT_1: 'tokenizer_token_type_ids', OUTPUT_0: 'tokenizer_input_ids'},
+                    inputMap: {x: 'x'},
+                    outputMap: {'softmax_5.tmp_0': 'infer_output'},
                     modelType: 'normal',
                     inputModels: ['feed'],
-                    outputModels: ['ernie_seqcls_model'],
-                    inputVars: ['INPUT'],
-                    outputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids'],
+                    outputModels: ['rec_postprocess'],
+                    inputVars: ['x'],
+                    outputVars: ['infer_output'],
                     pos_y: 1,
                     pos_x: 0
                 },
                 {
-                    modelName: 'ernie_seqcls_model',
+                    modelName: 'rec_postprocess',
                     modelVersion: '1',
-                    inputMap: {input_ids: 'tokenizer_input_ids', token_type_ids: 'tokenizer_token_type_ids'},
-                    outputMap: {'linear_113.tmp_1': 'OUTPUT_2'},
+                    inputMap: {POST_INPUT_0: 'infer_output'},
+                    outputMap: {POST_OUTPUT_0: 'rec_texts', POST_OUTPUT_1: 'rec_scores'},
                     modelType: 'normal',
-                    inputModels: ['ernie_tokenizer'],
-                    outputModels: ['ernie_seqcls_postprocess'],
-                    inputVars: ['tokenizer_token_type_ids', 'tokenizer_input_ids'],
-                    outputVars: ['OUTPUT_2'],
-                    pos_y: 2,
-                    pos_x: 0
-                },
-                {
-                    modelName: 'ernie_seqcls_postprocess',
-                    modelVersion: '1',
-                    inputMap: {POST_INPUT: 'OUTPUT_2'},
-                    outputMap: {POST_label: 'label', POST_confidence: 'confidence'},
-                    modelType: 'normal',
-                    inputModels: ['ernie_seqcls_model'],
+                    inputModels: ['rec_runtime'],
                     outputModels: ['fetch'],
-                    inputVars: ['OUTPUT_2'],
-                    outputVars: ['label', 'confidence'],
-                    pos_y: 3,
+                    inputVars: ['infer_output'],
+                    outputVars: ['rec_texts', 'rec_scores'],
+                    pos_y: 2,
                     pos_x: 0
                 },
                 {
                     modelName: 'feed',
                     modelType: 'virtual',
                     inputModels: [],
-                    outputModels: ['ernie_tokenizer'],
+                    outputModels: ['rec_runtime'],
                     inputVars: [],
-                    outputVars: ['INPUT'],
+                    outputVars: ['x'],
                     pos_y: 0,
                     pos_x: 0
                 },
                 {
                     modelName: 'fetch',
                     modelType: 'virtual',
-                    inputModels: ['ernie_seqcls_postprocess'],
+                    inputModels: ['rec_postprocess'],
                     outputModels: [],
-                    inputVars: ['label', 'confidence'],
+                    inputVars: ['rec_texts', 'rec_scores'],
                     outputVars: [],
-                    pos_y: 4,
+                    pos_y: 3,
                     pos_x: 0
                 }
             ]
@@ -344,112 +390,80 @@ export default {
     ],
     models: [
         {
-            maxBatchSize: 64,
-            input: [
-                {name: 'input_ids', dataType: 'TYPE_INT64', dims: ['-1']},
-                {name: 'token_type_ids', dataType: 'TYPE_INT64', dims: ['-1']}
-            ],
-            output: [{name: 'linear_113.tmp_1', dataType: 'TYPE_FP32', dims: ['15']}],
-            instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
-            backend: 'fastdeploy',
-            name: 'ernie_seqcls_model',
-            optimization: {cpuExecutionAccelerator: [{name: 'openvino', parameters: {cpu_threads: '5'}}]},
-            versions: [
-                {
-                    title: '1',
-                    key: '1',
-                    children: [
-                        {title: 'model.pdiparams', key: 'model.pdiparams'},
-                        {title: 'model.pdmodel', key: 'model.pdmodel'},
-                        {title: 'README.md', key: 'README.md'}
-                    ]
-                }
-            ]
-        },
-        {
-            name: 'ernie_seqcls_postprocess',
-            maxBatchSize: 32,
-            input: [{name: 'POST_INPUT', dataType: 'TYPE_FP32', dims: ['15']}],
+            name: 'rec_postprocess',
+            maxBatchSize: 128,
+            input: [{name: 'POST_INPUT_0', dataType: 'TYPE_FP32', dims: ['-1', '6625']}],
             output: [
-                {name: 'POST_label', dataType: 'TYPE_INT64', dims: ['1']},
-                {name: 'POST_confidence', dataType: 'TYPE_FP32', dims: ['1']}
+                {name: 'POST_OUTPUT_0', dataType: 'TYPE_STRING', dims: ['1']},
+                {name: 'POST_OUTPUT_1', dataType: 'TYPE_FP32', dims: ['1']}
             ],
             instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
             backend: 'python',
-            optimization: {},
-            versions: [
-                {
-                    title: '1',
-                    key: '1',
-                    children: [
-                        {title: '__pycache__', key: '__pycache__'},
-                        {title: 'model.py', key: 'model.py'}
-                    ]
-                }
-            ]
+            versions: [{title: '1', key: '1', children: [{title: 'model.py', key: 'model.py'}]}]
         },
         {
-            maxBatchSize: 64,
-            input: [
-                {name: 'input_ids', dataType: 'TYPE_INT64', dims: ['-1']},
-                {name: 'token_type_ids', dataType: 'TYPE_INT64', dims: ['-1']}
-            ],
-            output: [{name: 'linear_113.tmp_1', dataType: 'TYPE_FP32', dims: ['-1', '7']}],
-            instanceGroup: [{count: 1, kind: 'KIND_GPU'}],
-            backend: 'fastdeploy',
-            name: 'ernie_tokencls_model',
-            optimization: {gpuExecutionAccelerator: [{name: 'paddle'}]},
-            versions: [
-                {
-                    title: '1',
-                    key: '1',
-                    children: [
-                        {title: 'model.pdiparams', key: 'model.pdiparams'},
-                        {title: 'model.pdmodel', key: 'model.pdmodel'},
-                        {title: 'README.md', key: 'README.md'}
-                    ]
-                }
-            ]
-        },
-        {
-            name: 'ernie_tokenizer',
-            maxBatchSize: 32,
-            input: [{name: 'INPUT_0', dataType: 'TYPE_STRING', dims: ['1']}],
+            name: 'det_preprocess',
+            maxBatchSize: 1,
+            input: [{name: 'INPUT_0', dataType: 'TYPE_UINT8', dims: ['-1', '-1', '3']}],
             output: [
-                {name: 'OUTPUT_0', dataType: 'TYPE_INT64', dims: ['-1']},
-                {name: 'OUTPUT_1', dataType: 'TYPE_INT64', dims: ['-1']}
+                {name: 'OUTPUT_0', dataType: 'TYPE_FP32', dims: ['3', '-1', '-1']},
+                {name: 'OUTPUT_1', dataType: 'TYPE_INT32', dims: ['4']}
             ],
             instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
             backend: 'python',
-            optimization: {},
-            versions: [
-                {
-                    title: '1',
-                    key: '1',
-                    children: [
-                        {title: '__pycache__', key: '__pycache__'},
-                        {title: 'model.py', key: 'model.py'}
-                    ]
-                }
-            ]
+            versions: [{title: '1', key: '1', children: [{title: 'model.py', key: 'model.py'}]}]
         },
         {
-            name: 'ernie_tokencls_postprocess',
-            maxBatchSize: 64,
-            input: [{name: 'POST_INPUT', dataType: 'TYPE_FP32', dims: ['-1', '7']}],
-            output: [{name: 'POST_OUTPUT', dataType: 'TYPE_STRING', dims: ['1']}],
+            name: 'rec_runtime',
+            maxBatchSize: 128,
+            input: [{name: 'x', dataType: 'TYPE_FP32', dims: ['3', '48', '-1']}],
+            output: [{name: 'softmax_5.tmp_0', dataType: 'TYPE_FP32', dims: ['-1', '6625']}],
+            instanceGroup: [{count: 1, gpus: [0], kind: 'KIND_GPU'}],
+            backend: 'fastdeploy'
+        },
+        {
+            name: 'det_runtime',
+            maxBatchSize: 1,
+            input: [{name: 'x', dataType: 'TYPE_FP32', dims: ['3', '-1', '-1']}],
+            output: [{name: 'sigmoid_0.tmp_0', dataType: 'TYPE_FP32', dims: ['1', '-1', '-1']}],
+            instanceGroup: [{count: 1, gpus: [0], kind: 'KIND_GPU'}],
+            backend: 'fastdeploy'
+        },
+        {
+            name: 'cls_runtime',
+            maxBatchSize: 128,
+            input: [{name: 'x', dataType: 'TYPE_FP32', dims: ['3', '-1', '-1']}],
+            output: [{name: 'softmax_0.tmp_0', dataType: 'TYPE_FP32', dims: ['2']}],
+            instanceGroup: [{count: 1, gpus: [0], kind: 'KIND_GPU'}],
+            backend: 'fastdeploy'
+        },
+        {
+            name: 'det_postprocess',
+            maxBatchSize: 128,
+            input: [
+                {name: 'POST_INPUT_0', dataType: 'TYPE_FP32', dims: ['1', '-1', '-1']},
+                {name: 'POST_INPUT_1', dataType: 'TYPE_INT32', dims: ['4']},
+                {name: 'ORI_IMG', dataType: 'TYPE_UINT8', dims: ['-1', '-1', '3']}
+            ],
+            output: [
+                {name: 'POST_OUTPUT_0', dataType: 'TYPE_STRING', dims: ['-1', '1']},
+                {name: 'POST_OUTPUT_1', dataType: 'TYPE_FP32', dims: ['-1', '1']}
+            ],
             instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
             backend: 'python',
-            versions: [
-                {
-                    title: '1',
-                    key: '1',
-                    children: [
-                        {title: '__pycache__', key: '__pycache__'},
-                        {title: 'model.py', key: 'model.py'}
-                    ]
-                }
-            ]
+            versions: [{title: '1', key: '1', children: [{title: 'model.py', key: 'model.py'}]}]
+        },
+        {
+            name: 'cls_postprocess',
+            maxBatchSize: 128,
+            input: [{name: 'POST_INPUT_0', dataType: 'TYPE_FP32', dims: ['2']}],
+            output: [
+                {name: 'POST_OUTPUT_0', dataType: 'TYPE_INT32', dims: ['1']},
+                {name: 'POST_OUTPUT_1', dataType: 'TYPE_FP32', dims: ['1']}
+            ],
+            instanceGroup: [{count: 1, kind: 'KIND_CPU'}],
+            backend: 'python',
+            versions: [{title: '1', key: '1', children: [{title: 'model.py', key: 'model.py'}]}]
         }
     ]
 };

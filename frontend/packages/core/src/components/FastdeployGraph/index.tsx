@@ -437,7 +437,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         });
         setSteps(ensembles[0]?.step);
         const treedatas = getTreeData(ensembles[0]?.versions);
-        const treedata = treedatas.map((version: any) => {
+        const treedata = treedatas?.map((version: any) => {
             return {
                 ...version,
                 // checkable: false
@@ -730,7 +730,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         setFlag2(true);
     };
     const getTreeData = (treedata: any) => {
-        const treedatas = treedata.map((version: any) => {
+        const treedatas = treedata?.map((version: any) => {
             let Child: any = '';
             if (version.children) {
                 Child = getTreeData(version.children);
@@ -1099,7 +1099,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             // setModelDatas(ModelData);
                         }
                         const treedatas = getTreeData(res);
-                        const treedata = treedatas.map((version: any) => {
+                        const treedata = treedatas?.map((version: any) => {
                             return {
                                 ...version,
                                 // checkable: false
@@ -1222,7 +1222,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         setModelName(name);
         setGraphModel(model);
         const treedatas = getTreeData(model.versions);
-        const treedata = treedatas.map((version: any) => {
+        const treedata = treedatas?.map((version: any) => {
             return {
                 ...version,
                 // checkable: false
