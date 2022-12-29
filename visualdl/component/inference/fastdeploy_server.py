@@ -149,6 +149,39 @@ class FastDeployServerApi(object):
         return get_process_model_configuration(server_id)
 
     @result()
+    def get_pretrain_model_list(self):
+        '''
+        Get all available fastdeploy models from hub server.
+        '''
+        res = requests.get(
+            'http://paddlepaddle.org.cn/paddlehub/fastdeploy_listmodels')
+        result = res.json()
+        if result['status'] != 0:
+            raise RuntimeError("Can not get model list from hub model server.")
+        else:
+            data = result['data']
+            model_list = {}
+            for category, models in data.items():
+                if category not in model_list:
+                    model_list[category] = set()
+                for model in models:
+                    model_list[category].add(model['name'])
+            # adapt data format for frontend
+            models_info = []
+            for category, model_names in model_list.items():
+                models_info.append({
+                    "value": category,
+                    "label": category,
+                    "children": []
+                })
+                for model_name in sorted(model_names):
+                    models_info[-1]["children"].append({
+                        "value": model_name,
+                        "label": model_name
+                    })
+            return models_info
+
+    @result()
     def download_pretrain_model(self, cur_dir, model_name, version,
                                 pretrain_model_name):
         version_resource_dir = os.path.join(
@@ -236,6 +269,7 @@ def create_fastdeploy_api_call():
         'get_server_list': (api.get_server_list, []),
         'get_server_metric': (api.get_server_metric, ['server_id']),
         'get_server_config': (api.get_server_config, ['server_id']),
+        'get_pretrain_model_list': (api.get_pretrain_model_list, []),
         'download_pretrain_model':
         (api.download_pretrain_model,
          ['dir', 'name', 'version', 'pretrain_model_name']),
