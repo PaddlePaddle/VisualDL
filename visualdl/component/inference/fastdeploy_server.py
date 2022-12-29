@@ -156,10 +156,15 @@ class FastDeployServerApi(object):
         model_path = fd.download_model(
             name=pretrain_model_name, path=version_resource_dir)
         if model_path:
-            os.system('mv {}/{}/* {} && rm -r {}/{}'.format(
-                version_resource_dir, pretrain_model_name,
-                version_resource_dir, version_resource_dir,
-                pretrain_model_name))
+            if '.onnx' in model_path:
+                os.system('mv {} {}/{}'.format(model_path,
+                                               os.path.dirname(model_path),
+                                               'model.onnx'))
+            else:
+                os.system('mv {}/{}/* {} && rm -r {}/{}'.format(
+                    version_resource_dir, pretrain_model_name,
+                    version_resource_dir, version_resource_dir,
+                    pretrain_model_name))
             version_info_for_frontend = []
             for version_name in os.listdir(os.path.join(cur_dir, model_name)):
                 if re.match(
