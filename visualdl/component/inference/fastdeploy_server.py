@@ -157,14 +157,18 @@ class FastDeployServerApi(object):
             name=pretrain_model_name, path=version_resource_dir)
         if model_path:
             if '.onnx' in model_path:
-                os.system('mv {} {}/{}'.format(model_path,
-                                               os.path.dirname(model_path),
-                                               'model.onnx'))
+                shutil.move(
+                    model_path,
+                    os.path.join(os.path.dirname(model_path), 'model.onnx'))
             else:
-                os.system('mv {}/{}/* {} && rm -r {}/{}'.format(
-                    version_resource_dir, pretrain_model_name,
-                    version_resource_dir, version_resource_dir,
-                    pretrain_model_name))
+                for filename in os.listdir(model_path):
+                    if '.pdmodel' in filename or '.pdiparams' in filename:
+                        shutil.move(
+                            os.path.join(model_path, filename),
+                            os.path.join(
+                                os.path.dirname(model_path), 'model{}'.format(
+                                    os.path.splitext(filename)[1])))
+                shutil.rmtree(model_path)
             version_info_for_frontend = []
             for version_name in os.listdir(os.path.join(cur_dir, model_name)):
                 if re.match(

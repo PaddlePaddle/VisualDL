@@ -91,12 +91,12 @@ def analyse_config(cur_dir: str):
             if re.match(
                     r'\d+',
                     model_sub_dir):  # version directory consists of numbers
+                if model_name not in all_model_versions:
+                    all_model_versions[model_name] = {}
+                if model_sub_dir not in all_model_versions[model_name]:
+                    all_model_versions[model_name][model_sub_dir] = []
                 for version_resource_file in os.listdir(
                         os.path.join(model_dir, model_sub_dir)):
-                    if model_name not in all_model_versions:
-                        all_model_versions[model_name] = {}
-                    if model_sub_dir not in all_model_versions[model_name]:
-                        all_model_versions[model_name][model_sub_dir] = []
                     all_model_versions[model_name][model_sub_dir].append(
                         version_resource_file)
     if not all_model_configs:
