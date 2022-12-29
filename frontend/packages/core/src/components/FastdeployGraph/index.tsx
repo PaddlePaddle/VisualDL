@@ -885,6 +885,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // debugger;
                 // setIsModalOpen(false);
                 const ModelData = ModelDatas;
+                // debugger;
                 const newcpuExecutionAccelerator = values.cpuExecutionAccelerator?.map((item: any) => {
                     // const parameters =
                     const newObject: any = {};
@@ -1058,7 +1059,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         // debugger;
                         // ChangeServerId(res.id);
                         // ChangeServerId(res);
-                        debugger;
+                        // debugger;
                         const ModelData = ModelDatas;
                         if (IsEmsembles) {
                             console.log('values', values);
@@ -1067,7 +1068,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 if (ensembles.name === ensemblesName) {
                                     const newemsembles = {
                                         ...ensembles,
-                                        version: res
+                                        versions: res
                                     };
                                     return newemsembles;
                                 } else {
@@ -1083,7 +1084,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 if (model.name === modelName) {
                                     const newmodel = {
                                         ...model,
-                                        version: res
+                                        versions: res
                                     };
                                     return newmodel;
                                 } else {
