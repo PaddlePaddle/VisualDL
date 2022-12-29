@@ -436,16 +436,20 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         });
         setSteps(ensembles[0]?.step);
-        const treedatas = getTreeData(ensembles[0]?.versions);
-        const treedata = treedatas?.map((version: any) => {
-            return {
-                ...version,
-                // checkable: false
-                selectable: true,
-                icon: <VerticalAlignBottomOutlined />
-            };
-        });
-        setTreeData(treedata);
+        if (ensembles[0]?.versions) {
+            const treedatas = getTreeData(ensembles[0]?.versions);
+            const treedata = treedatas?.map((version: any) => {
+                return {
+                    ...version,
+                    // checkable: false
+                    selectable: true,
+                    icon: <VerticalAlignBottomOutlined />
+                };
+            });
+            setTreeData(treedata);
+        } else {
+            setTreeData([]);
+        }
     }, [ensemblesName]);
     useEffect(() => {
         if (!flag || !steps) {
@@ -1221,16 +1225,21 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const getmodelData = (model: any, name: string) => {
         setModelName(name);
         setGraphModel(model);
-        const treedatas = getTreeData(model.versions);
-        const treedata = treedatas?.map((version: any) => {
-            return {
-                ...version,
-                // checkable: false
-                selectable: true,
-                icon: <VerticalAlignBottomOutlined />
-            };
-        });
-        setTreeData(treedata);
+        if (model?.versions) {
+            const treedatas = getTreeData(model?.versions);
+            const treedata = treedatas?.map((version: any) => {
+                return {
+                    ...version,
+                    // checkable: false
+                    selectable: true,
+                    icon: <VerticalAlignBottomOutlined />
+                };
+            });
+            setTreeData(treedata);
+        } else {
+            setTreeData([]);
+        }
+
         if (IsEmsembles) {
             setIsEmsembles(false);
         }
@@ -1272,7 +1281,22 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // modelData && onFill(modelData.ensembles[0]);
                 for (const ensembles of modelData.ensembles) {
                     if (ensembles.name === ensemblesName) {
+                        if (ensembles?.versions) {
+                            const treedatas = getTreeData(ensembles?.versions);
+                            const treedata = treedatas?.map((version: any) => {
+                                return {
+                                    ...version,
+                                    // checkable: false
+                                    selectable: true,
+                                    icon: <VerticalAlignBottomOutlined />
+                                };
+                            });
+                            setTreeData(treedata);
+                        } else {
+                            setTreeData([]);
+                        }
                         onFill(ensembles);
+
                         return;
                     }
                 }
