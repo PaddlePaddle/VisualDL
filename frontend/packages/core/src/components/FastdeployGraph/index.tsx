@@ -995,7 +995,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         form2
             ?.validateFields()
             .then(values => {
-                setConfigs(values);
+                // setConfigs(values);
                 // const formData = new FormData();
                 // const configs = JSON.stringify(values);
                 // formData.append('config', configs);
