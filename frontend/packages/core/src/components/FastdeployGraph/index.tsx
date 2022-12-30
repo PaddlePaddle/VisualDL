@@ -1067,12 +1067,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         `&pretrain_model_name=${pretrain_model_name}`
                 ).then(
                     (res: any) => {
-                        setSelectCascader('');
+                        // setSelectCascader('');
                         // cascaderRef?.current?.value&& cascaderRef.current.value = [];
                         // if (cascaderRef?.current?.sValue) {
                         //     cascaderRef.current.sValue = [];
                         // }
-                        setCascaders(undefined);
+                        // setCascaders([]);
                         // debugger;
                         // const clearLen = document.getElementsByClassName('ant-cascader');
                         // if (clearLen) {
