@@ -135,14 +135,15 @@ function App() {
                 });
                 setServerModels(newServerModel);
             } else {
-                const newServerModel = [
-                    ...serverModel,
-                    {
-                        Id: serverId,
-                        flag: true
-                    }
-                ];
-                setServerModels(newServerModel);
+                GetServerList();
+                // const newServerModel = [
+                //     ...serverModel,
+                //     {
+                //         Id: serverId,
+                //         flag: true
+                //     }
+                // ];
+                // setServerModels(newServerModel);
             }
         }
     }, [serverId]);
