@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import React, {useState, useEffect, useRef, FunctionComponent} from 'react';
 // import {rem, primaryColor, size} from '~/utils/style';
 import {Graph, Shape} from '@antv/x6';
-import {Modal} from 'antd';
+import {Modal, Cascader} from 'antd';
 // import dagre from 'dagre';
 // import {DagreLayout} from '@antv/layout';
 // import {Stencil} from '@antv/x6-plugin-stencil';
@@ -181,6 +181,11 @@ const layout = {
 //     const url = new URL(PUBLIC_PATH);
 //     IFRAME_HOST = `${url.protocol}//${url.host}`;
 // }
+interface Option {
+    value: string | number;
+    label: string;
+    children?: Option[];
+}
 const dataType = [
     'TYPE_BOOL',
     'TYPE_UINT8',
@@ -243,12 +248,15 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [selectKeys, setSelectKeys] = useState<any>();
 
     const [version, setVersion] = useState<any>();
+    const [CascaderOptions, setCascaderOptions] = useState<Option[]>([]);
+    const [cascaders, setCascaders] = useState<string[]>();
+    const [selectCascader, setSelectCascader] = useState<string>();
 
     // const iframe = useRef<HTMLIFrameElement>(null);
     const [form] = Form.useForm();
     const [form2] = Form.useForm();
     const [form3] = Form.useForm();
-
+    const cascaderRef = useRef();
     const [svgs, setSvgs] = useState<string>();
     console.log('form', form.getFieldsValue(true));
 
@@ -1048,7 +1056,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         form3
             ?.validateFields()
             .then(values => {
-                const pretrain_model_name = values['models'];
+                const pretrain_model_name = selectCascader;
                 // const version = selectedKeys[0];
                 const name = IsEmsembles ? ensemblesName : modelName;
                 fetcher(
@@ -1059,6 +1067,18 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         `&pretrain_model_name=${pretrain_model_name}`
                 ).then(
                     (res: any) => {
+                        setSelectCascader('');
+                        // cascaderRef?.current?.value&& cascaderRef.current.value = [];
+                        // if (cascaderRef?.current?.sValue) {
+                        //     cascaderRef.current.sValue = [];
+                        // }
+                        setCascaders(undefined);
+                        // debugger;
+                        // const clearLen = document.getElementsByClassName('ant-cascader');
+                        // if (clearLen) {
+                        //     const paraent = clearLen[0].childNodes[2];
+                        //     paraent.click();
+                        // }
                         console.log('resss', res);
                         // debugger;
                         // ChangeServerId(res.id);
@@ -1113,6 +1133,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         });
                         setTreeData(treedata);
                         setModelDatas(ModelData);
+                        setCascaderOptions([]);
                         setIsModalOpen3(false);
                         setSelectKeys([]);
                     },
@@ -1152,7 +1173,11 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (info.selected) {
             setSelectKeys(selectedKeys);
             setVersion(selectedKeys[0]);
-            setIsModalOpen3(true);
+            fetcher('/fastdeploy/get_pretrain_model_list').then((res: any) => {
+                setCascaderOptions(res);
+                setIsModalOpen3(true);
+            });
+
             // const version = selectedKeys[0]
             // fetcher(
             //     '/fastdeploy/download_pretrain_model' + `?dir=${dirValue}` + `&version=${version}` + `&expand_all=${expand_all}`
@@ -1258,6 +1283,15 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         // });
         // setTreeData(treedata);
     };
+    const onCascader: any = (value: string[]) => {
+        console.log('onCascader', value);
+        // const arr = value.split('/');
+        if (value) {
+            const modelName = value[value.length - 1];
+            setCascaders(value);
+            setSelectCascader(modelName);
+        }
+    };
     const EnsemblesNameChange = (value: string) => {
         setEnsemblesName(value);
     };
@@ -1353,7 +1387,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         }
     }, [triggerClick]);
-    console.log('graphssss', ModelDatas);
+    console.log('graphssss', cascaders);
     console.log('showFlag', showFlag);
     // const createhtml = svg => {
     //     return {__html: svg};
@@ -2096,7 +2130,14 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             }
                         ]}
                     >
-                        <Input />
+                        <Cascader
+                            // ref={cascaderRef}
+                            // defaultValue={''}
+                            value={cascaders}
+                            options={CascaderOptions}
+                            onChange={onCascader}
+                            placeholder="Please select"
+                        />
                     </Form.Item>
                 </Form>
             </Modal>
