@@ -249,14 +249,11 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
     const [version, setVersion] = useState<any>();
     const [CascaderOptions, setCascaderOptions] = useState<Option[]>([]);
-    const [cascaders, setCascaders] = useState<string[]>();
-    const [selectCascader, setSelectCascader] = useState<string>();
 
     // const iframe = useRef<HTMLIFrameElement>(null);
     const [form] = Form.useForm();
     const [form2] = Form.useForm();
     const [form3] = Form.useForm();
-    const cascaderRef = useRef();
     const [svgs, setSvgs] = useState<string>();
     console.log('form', form.getFieldsValue(true));
 
@@ -1056,7 +1053,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         form3
             ?.validateFields()
             .then(values => {
-                const pretrain_model_name = selectCascader;
+                console.log('valuesssss', values);
+
+                const pretrain_model_name = values.models[values.models.length - 1];
                 // const version = selectedKeys[0];
                 const name = IsEmsembles ? ensemblesName : modelName;
                 fetcher(
@@ -1246,6 +1245,11 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const onFill2 = (config: any) => {
         form2.setFieldsValue(config);
     };
+    const onFill3 = () => {
+        form3.setFieldsValue({
+            models: []
+        });
+    };
 
     const getmodelData = (model: any, name: string) => {
         setModelName(name);
@@ -1282,15 +1286,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         //     };
         // });
         // setTreeData(treedata);
-    };
-    const onCascader: any = (value: string[]) => {
-        console.log('onCascader', value);
-        // const arr = value.split('/');
-        if (value) {
-            const modelName = value[value.length - 1];
-            setCascaders(value);
-            setSelectCascader(modelName);
-        }
     };
     const EnsemblesNameChange = (value: string) => {
         setEnsemblesName(value);
@@ -1373,6 +1368,11 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         }
     }, [dirValue, isModalOpen2]);
     useEffect(() => {
+        if (isModalOpen3) {
+            onFill3();
+        }
+    }, [isModalOpen3]);
+    useEffect(() => {
         if (!triggerClick) {
             return;
         }
@@ -1387,7 +1387,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         }
     }, [triggerClick]);
-    console.log('graphssss', cascaders);
+    console.log('graphssss');
     console.log('showFlag', showFlag);
     // const createhtml = svg => {
     //     return {__html: svg};
@@ -2130,14 +2130,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             }
                         ]}
                     >
-                        <Cascader
-                            // ref={cascaderRef}
-                            // defaultValue={''}
-                            value={cascaders}
-                            options={CascaderOptions}
-                            onChange={onCascader}
-                            placeholder="Please select"
-                        />
+                        <Cascader options={CascaderOptions} placeholder="Please select" />
                     </Form.Item>
                 </Form>
             </Modal>
