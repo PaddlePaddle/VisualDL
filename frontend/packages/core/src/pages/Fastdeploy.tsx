@@ -118,7 +118,7 @@ function App() {
             const serverModel = serverModels;
             let flag = false;
             for (const model of serverModels) {
-                if (model.id === serverId) {
+                if (model.Id === serverId) {
                     flag = true;
                 }
             }
