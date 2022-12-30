@@ -124,7 +124,7 @@ function App() {
             }
             if (flag) {
                 const newServerModel = serverModel.map((model: any) => {
-                    if (model.id === serverId) {
+                    if (model.Id === serverId) {
                         return {
                             Id: serverId,
                             flag: !model.flag
