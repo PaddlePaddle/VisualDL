@@ -17,6 +17,7 @@ import json
 import os
 import random
 import re
+import shutil
 import signal
 import string
 from collections import defaultdict
@@ -79,29 +80,52 @@ def analyse_config(cur_dir: str):
         model_dir, model_sub_dirs, filenames = os.walk(
             os.path.join(parent_dir, model_dir_name)).send(None)
         model_name = os.path.basename(model_dir)
+        config_filenames = []
         for filename in filenames:
-            if 'config.pbtxt' in filename:
-                json_config = json.loads(
-                    pbtxt2json(open(os.path.join(model_dir, filename)).read()))
-                all_model_configs[
-                    model_name] = json_config  # store original config file content in json format
-                if 'name' not in json_config:
-                    json_config['name'] = model_name
+            if '.pbtxt' in filename:
+                config_filenames.append(
+                    filename
+                )  # filenames with extension .pbtxt are all config files
+        if config_filenames:
+            default_config_filename = config_filenames[0]
+            if 'config.pbtxt' in config_filenames:
+                default_config_filename = 'config.pbtxt'
+                config_filenames.remove(default_config_filename)
+                config_filenames.insert(0, default_config_filename)
+            else:
+                # if no config.pbtxt, we choose the first file in config_filenames list to create config.pbtxt
+                shutil.copy(
+                    os.path.join(model_dir, default_config_filename),
+                    os.path.join(model_dir, 'config.pbtxt'))
+                default_config_filename = 'config.pbtxt'
+                config_filenames.insert(0, default_config_filename)
+            json_config = json.loads(
+                pbtxt2json(
+                    open(os.path.join(model_dir,
+                                      default_config_filename)).read()))
+            json_config[
+                "config_filenames"] = config_filenames  # add config_filenames to config data
+            all_model_configs[
+                model_name] = json_config  # store original config file content in json format
+            json_config[
+                'name'] = model_name  # because name in config data may be different from model_name,
+            # model_name is model directory name actually, we should conform name with model_name.
+        else:
+            continue
         for model_sub_dir in model_sub_dirs:
             if re.match(
                     r'\d+',
                     model_sub_dir):  # version directory consists of numbers
+                if model_name not in all_model_versions:
+                    all_model_versions[model_name] = {}
+                if model_sub_dir not in all_model_versions[model_name]:
+                    all_model_versions[model_name][model_sub_dir] = []
                 for version_resource_file in os.listdir(
                         os.path.join(model_dir, model_sub_dir)):
-                    if model_name not in all_model_versions:
-                        all_model_versions[model_name] = {}
-                    if model_sub_dir not in all_model_versions[model_name]:
-                        all_model_versions[model_name][model_sub_dir] = []
                     all_model_versions[model_name][model_sub_dir].append(
                         version_resource_file)
     if not all_model_configs:
-        raise Exception(
-            'Not a valid model repository, please choose the right path')
+        raise Exception('所选择的路径不是一个有效的模型库，请选择正确的路径')
     return all_model_configs, all_model_versions
 
 
@@ -128,6 +152,8 @@ def exchange_format_to_original_format(exchange_format):
         # 2. delete versions information
         if 'versions' in model_config:
             del model_config['versions']
+        if 'config_filenames' in model_config:
+            del model_config['config_filenames']
         if 'platform' in model_config and model_config[
                 'platform'] == 'ensemble':  # emsemble model
             # 3. add 'ensembleScheduling' keyword
@@ -294,6 +320,44 @@ def analyse_step_relationships(step_config, inputs, outputs):  # noqa: C901
                 if var_from_model not in models_dict[to_model]['inputModels']:
                     models_dict[to_model]['inputModels'].append(var_from_model)
     calculate_layout_for_frontend(models_dict)
+
+
+def get_config_filenames_for_one_model(cur_dir, name):
+    _, _, filenames = os.walk(os.path.join(cur_dir, name)).send(None)
+    config_filenames = []
+    for filename in filenames:
+        if '.pbtxt' in filename:
+            config_filenames.append(
+                filename
+            )  # filenames with extension .pbtxt are all config files
+    return config_filenames
+
+
+def get_config_for_one_model(cur_dir, name, config_filename):
+    all_model_configs = {}
+    all_model_versions = {}
+    filename = os.path.join(cur_dir, name, config_filename)
+    json_config = json.loads(pbtxt2json(open(filename).read()))
+    if 'name' not in json_config:
+        json_config['name'] = name
+    all_model_configs[
+        name] = json_config  # store original config file content in json format
+    all_model_versions[name] = {}
+    for model_sub_dir in os.listdir(os.path.join(cur_dir, name)):
+        if re.match(r'\d+',
+                    model_sub_dir):  # version directory consists of numbers
+            if model_sub_dir not in all_model_versions[name]:
+                all_model_versions[name][model_sub_dir] = []
+            for version_resource_file in os.listdir(
+                    os.path.join(cur_dir, name, model_sub_dir)):
+                all_model_versions[name][model_sub_dir].append(
+                    version_resource_file)
+    model_config = original_format_to_exchange_format(all_model_configs,
+                                                      all_model_versions)
+    if model_config['ensembles']:
+        return model_config['ensembles'][0]
+    elif model_config['models']:
+        return model_config['models'][0]
 
 
 def calculate_layout_for_frontend(model_config_in_step):
