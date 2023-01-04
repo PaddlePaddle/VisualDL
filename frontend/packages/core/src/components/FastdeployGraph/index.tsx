@@ -855,6 +855,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             dir: dir,
             config: JSON.stringify(config)
         };
+        // debugger;
         if (config_filename) {
             details['config_filename'] = config_filename;
         }
@@ -1076,23 +1077,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         `&pretrain_model_name=${pretrain_model_name}`
                 ).then(
                     (res: any) => {
-                        // setSelectCascader('');
-                        // cascaderRef?.current?.value&& cascaderRef.current.value = [];
-                        // if (cascaderRef?.current?.sValue) {
-                        //     cascaderRef.current.sValue = [];
-                        // }
-                        // setCascaders([]);
-                        // debugger;
-                        // const clearLen = document.getElementsByClassName('ant-cascader');
-                        // if (clearLen) {
-                        //     const paraent = clearLen[0].childNodes[2];
-                        //     paraent.click();
-                        // }
-                        console.log('resss', res);
-                        // debugger;
-                        // ChangeServerId(res.id);
-                        // ChangeServerId(res);
-                        // debugger;
                         const ModelData = ModelDatas;
                         if (IsEmsembles) {
                             console.log('values', values);
@@ -1140,6 +1124,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 icon: <VerticalAlignBottomOutlined />
                             };
                         });
+                        form.setFields([
+                            {
+                                name: 'versions',
+                                value: res
+                            }
+                        ]);
                         setTreeData(treedata);
                         setModelDatas(ModelData);
                         setCascaderOptions([]);
@@ -1158,11 +1148,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             });
     };
     const handleOk4 = () => {
+        const modelNames = IsEmsembles ? ensemblesName : modelName;
         const name = form.getFieldValue('config_filenames');
         fetcher(
             '/fastdeploy/set_default_config_for_model' +
                 `?dir=${dirValue}` +
-                `&name=${name}` +
+                `&name=${modelNames}` +
                 `&config_filename=${name}`
         ).then(
             (res: any) => {
@@ -1364,7 +1355,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             setTreeData([]);
                         }
                         fetcher(
-                            '/fastdeploy/get_config_filenames_for_model' + `?dir=${dirValue}` + `&name=${modelName}`
+                            '/fastdeploy/get_config_filenames_for_model' + `?dir=${dirValue}` + `&name=${ensemblesName}`
                         ).then((res: any) => {
                             // debugger;
                             setFilenames(res);
@@ -1436,11 +1427,30 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         setIsModalOpen4(true);
     };
     const onGetConfigModel = (value: string) => {
+        const modelNames = IsEmsembles ? ensemblesName : modelName;
         fetcher(
-            '/fastdeploy/get_config_for_model' + `?dir=${dirValue}` + `&name=${modelName}` + `&config_filename=${value}`
+            '/fastdeploy/get_config_for_model' +
+                `?dir=${dirValue}` +
+                `&name=${modelNames}` +
+                `&config_filename=${value}`
         ).then((res: any) => {
-            // debugger;
-            // setFilenames(res);
+            form.setFields([
+                {
+                    name: 'versions',
+                    value: res.versions
+                }
+            ]);
+            const treedatas = getTreeData(res?.versions);
+            const treedata = treedatas?.map((version: any) => {
+                return {
+                    ...version,
+                    // checkable: false
+                    selectable: true,
+                    icon: <VerticalAlignBottomOutlined />
+                };
+            });
+            setTreeData(treedata);
+            // setModelDatas(ModelData)
             res && onFill(res);
         });
     };
@@ -1587,7 +1597,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     {/* <Form.Item name="platform" label="platform" rules={[{required: true, message: 'Missing area'}]}>
                         <Input />treeData
                     </Form.Item> */}
-                    <Form.Item name="version" label="version">
+                    <Form.Item name="versions" label="versions">
                         <Tree
                             showLine
                             showIcon
