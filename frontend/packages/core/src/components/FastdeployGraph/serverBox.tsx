@@ -192,7 +192,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                         overflowY: 'auto'
                     }}
                 >
-                    <ServerConfig modelData={configs}></ServerConfig>
+                    <ServerConfig serverId={server_id} modelData={configs}></ServerConfig>
                 </div>
             )}
             <ButtonContent>

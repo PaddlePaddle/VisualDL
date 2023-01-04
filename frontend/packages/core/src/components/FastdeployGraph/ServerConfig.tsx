@@ -1,11 +1,6 @@
-import React, {useState, useEffect, useRef, FunctionComponent} from 'react';
-import {
-    MinusCircleOutlined,
-    PlusOutlined,
-    PlusCircleOutlined,
-    DownOutlined,
-    VerticalAlignBottomOutlined
-} from '@ant-design/icons';
+import React, {useState, useEffect, FunctionComponent} from 'react';
+import {MinusCircleOutlined, DownOutlined, VerticalAlignBottomOutlined} from '@ant-design/icons';
+import {Graph, Shape} from '@antv/x6';
 import {Button, Form, Input, Select, Space} from 'antd';
 import type {TreeProps} from 'antd/es/tree';
 import {Tree} from 'antd';
@@ -77,12 +72,12 @@ const Content = styled.div`
             justify-content: center;
         }
     }
-    #graph-container {
+    .graph-containers {
         width: calc(100% - 180px);
         height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        // display: flex;
+        // align-items: center;
+        // justify-content: center;
     }
     .x6-widget-stencil {
         background-color: #fff;
@@ -115,6 +110,24 @@ const Content = styled.div`
     }
     .x6-widget-selection-box {
         opacity: 0;
+    }
+`;
+const SelectContent = styled.div`
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    .ant-select {
+        .ant-select-selector {
+            height: 100%;
+            border: none;
+            .ant-select-selection-placeholder {
+                line-height: 50px;
+            }
+            .ant-select-selection-item {
+                line-height: 50px;
+            }
+        }
     }
 `;
 const Buttons = styled.div`
@@ -152,8 +165,65 @@ const kindType = ['KIND_AUTO', 'KIND_GPU', 'KIND_CPU', 'KIND_MODEL'];
 const {Option} = Select;
 type ArgumentProps = {
     modelData: any;
+    serverId: string;
 };
-const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
+const ports = {
+    groups: {
+        top: {
+            position: 'top',
+            attrs: {
+                circle: {
+                    r: 4,
+                    magnet: true,
+                    stroke: '#5F95FF',
+                    strokeWidth: 1,
+                    fill: '#fff',
+                    style: {
+                        visibility: 'hidden'
+                    }
+                }
+            }
+        },
+        bottom: {
+            position: 'bottom',
+            attrs: {
+                circle: {
+                    r: 4,
+                    magnet: true,
+                    stroke: '#5F95FF',
+                    strokeWidth: 1,
+                    fill: '#fff',
+                    style: {
+                        visibility: 'hidden'
+                    }
+                }
+            }
+        }
+    },
+    items: [
+        {
+            id: 'top',
+            group: 'top'
+        },
+        // {
+        //     id: 'right',
+        //     group: 'right'
+        // },
+        {
+            id: 'bottom',
+            group: 'bottom'
+        }
+        // {
+        //     id: 'left',
+        //     group: 'left'
+        // }
+    ]
+};
+const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) => {
+    const graphContainer = `graph-containers${serverId}`;
+    const [ModelDatas, setModelDatas] = useState<any>(modelData);
+    const [steps, setSteps] = useState<any>();
+    const [selectOptions, setSelectOptions] = useState([]);
     const [graphModel, setGraphModel] = useState<any>();
     const [modelName, setModelName] = useState<string>();
     const [nodeClick, setNodeClick] = useState<any>();
@@ -162,6 +232,10 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
     const [showGpus, setShowGpus] = useState<any>({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [ensemblesName, setEnsemblesName] = useState<string>();
+    const [triggerClick, setTriggerClick] = useState<any>();
+    const [flag, setFlag] = useState<boolean>();
+    const [graphs, setGraphs] = useState<Graph>();
+
     const [form] = Form.useForm();
     const [treeData, setTreeData] = useState(modelData?.ensembles[0]?.versions);
     const getmodelData = (model: any, name: string) => {
@@ -170,17 +244,8 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
         const treedata = model.versions.map((version: any) => {
             return {
                 ...version
-                // icon: <VerticalAlignBottomOutlined />
             };
         });
-        // const treedatas = getTreeData(model.versions);
-        // const treedata = treedatas.map((version: any) => {
-        //     return {
-        //         ...version,
-        //         checkable: true,
-        //         icon:<VerticalAlignBottomOutlined />,
-        //     };
-        // });
         setTreeData(treedata);
         if (IsEmsembles) {
             setIsEmsembles(false);
@@ -299,12 +364,329 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
     const showModal = () => {
         setIsModalOpen(true);
     };
+    const EnsemblesNameChange = (value: string) => {
+        setEnsemblesName(value);
+    };
+    useEffect(() => {
+        const graph = new Graph({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            container: document.getElementById(graphContainer)!,
+            grid: true,
+            mousewheel: {
+                enabled: false,
+                zoomAtMousePosition: true,
+                minScale: 0.5,
+                maxScale: 3
+                // modifiers: ['ctrl', 'meta']
+            },
+            panning: false,
+            // scroller: {
+            //     enabled: true,
+            //     pannable: true,
+            //     pageVisible: true,
+            //     pageBreak: false
+            // },
+            translating: {
+                restrict: false
+            },
+            interacting: {
+                edgeMovable: false,
+                nodeMovable: false
+            },
+            connecting: {
+                router: {
+                    name: 'manhattan',
+                    args: {
+                        padding: 1
+                    }
+                },
+                connector: {
+                    name: 'rounded',
+                    args: {
+                        radius: 8
+                    }
+                },
+                anchor: 'center',
+                connectionPoint: 'anchor',
+                allowBlank: false,
+                snap: {
+                    radius: 20
+                },
+                createEdge() {
+                    return new Shape.Edge({
+                        attrs: {
+                            line: {
+                                stroke: '#A2B1C3',
+                                strokeWidth: 2,
+                                targetMarker: {
+                                    name: 'block',
+                                    width: 12,
+                                    height: 8
+                                }
+                            }
+                        },
+                        zIndex: 0
+                    });
+                },
+                validateConnection({targetMagnet}) {
+                    return !!targetMagnet;
+                }
+            },
+            highlighting: {
+                magnetAdsorbed: {
+                    name: 'stroke',
+                    args: {
+                        attrs: {
+                            fill: '#5F95FF',
+                            stroke: '#5F95FF'
+                        }
+                    }
+                }
+            }
+        });
+        graph.on('node:dblclick', ({node}) => {
+            setTriggerClick({
+                name: node.id
+            });
+        });
+        debugger;
+        setGraphs(graph);
+        setFlag(true);
+    }, []);
+    useEffect(() => {
+        if (!triggerClick) {
+            return;
+        }
+        const name = triggerClick.name;
+        for (const model of modelData.models) {
+            if (model.name === name) {
+                setNodeClick({
+                    name: model.name,
+                    data: model
+                });
+                return;
+            }
+        }
+    }, [triggerClick]);
+    useEffect(() => {
+        if (!nodeClick) {
+            return;
+        }
+        getmodelData(nodeClick.data, nodeClick.name);
+    }, [nodeClick]);
     useEffect(() => {
         if (!modelData) {
             return;
         }
+        console.log('modelData.ensembles', modelData?.ensembles);
+        const SelectOptions = modelData?.ensembles?.map((ensembles: any) => {
+            return {
+                value: ensembles.name,
+                label: ensembles.name
+            };
+        });
         setEnsemblesName(modelData.ensembles[0]?.name);
+        setModelDatas(modelData);
+        setSelectOptions(SelectOptions);
     }, [modelData]);
+    useEffect(() => {
+        if (!ensemblesName || !modelData) {
+            return;
+        }
+        console.log('modelData.ensembles', modelData.ensembles);
+        const ensembles = modelData.ensembles?.filter((ensembles: any) => {
+            if (ensembles.name === ensemblesName) {
+                return ensembles;
+            }
+        });
+        setSteps(ensembles[0]?.step);
+        if (ensembles[0]?.versions) {
+            const treedatas = getTreeData(ensembles[0]?.versions);
+            const treedata = treedatas?.map((version: any) => {
+                return {
+                    ...version,
+                    // checkable: false
+                    selectable: true,
+                    icon: <VerticalAlignBottomOutlined />
+                };
+            });
+            setTreeData(treedata);
+        } else {
+            setTreeData([]);
+        }
+    }, [ensemblesName]);
+    useEffect(() => {
+        if (!flag || !steps) {
+            return;
+        }
+        // debugger;
+        graphs?.clearCells();
+        const edgeMap: any = {};
+
+        steps?.map((node: any) => {
+            const inputs = node.inputModels;
+            for (const input of inputs) {
+                let tuple = edgeMap[input];
+                if (!tuple) {
+                    tuple = {from: [], to: []};
+                    edgeMap[input] = tuple;
+                }
+                tuple.to.push(node.modelName);
+            }
+            const outputs = node.outputModels;
+            for (const output of outputs) {
+                let tuple = edgeMap[output];
+                if (!tuple) {
+                    tuple = {from: [], to: []};
+                    edgeMap[output] = tuple;
+                }
+                tuple.from.push(node.modelName);
+            }
+        });
+
+        console.log('edgeMap', edgeMap);
+        const edges = [];
+        const nodes = [];
+        for (const name of Object.keys(edgeMap)) {
+            nodes.push({
+                id: `${name}`,
+                width: 60,
+                height: 40,
+                label: name
+            });
+            const node = edgeMap[name];
+            for (const output of node.to) {
+                // edges.push([name, output]);
+                edges.push({
+                    source: name,
+                    target: output
+                });
+            }
+            console.log('nodes', nodes);
+            console.log('edges', edges);
+        }
+
+        const nodeEdges = [];
+        for (const edge of edges) {
+            nodeEdges.push({
+                source: {
+                    cell: edge.source,
+                    connectionPoint: {
+                        name: 'boundary',
+                        args: {
+                            sticky: true
+                        }
+                    }
+                },
+                target: {cell: edge.target, connectionPoint: 'boundary'}, // 没有参数时可以简化写法},
+                // shape: 'custom-edge',
+                // tools: ['vertices', 'segments'],
+                // 基类
+                inherit: 'edge',
+                // 属性样式
+                attrs: {
+                    line: {
+                        stroke: '#5755a1'
+                    }
+                },
+                // 默认标签
+                defaultLabel: {
+                    markup: [
+                        {
+                            tagName: 'rect',
+                            selector: 'body'
+                        },
+                        {
+                            tagName: 'text',
+                            selector: 'label'
+                        }
+                    ],
+                    attrs: {
+                        label: {
+                            fill: 'black',
+                            fontSize: 14,
+                            textAnchor: 'middle',
+                            textVerticalAnchor: 'middle',
+                            pointerEvents: 'none'
+                        },
+                        body: {
+                            ref: 'label',
+                            fill: 'white',
+                            stroke: '#5755a1',
+                            strokeWidth: 2,
+                            rx: 4,
+                            ry: 4,
+                            refWidth: '140%',
+                            refHeight: '140%',
+                            refX: '-20%',
+                            refY: '-20%'
+                        }
+                    },
+                    position: {
+                        distance: 100, // 绝对定位
+                        options: {
+                            absoluteDistance: true
+                        }
+                    }
+                }
+            });
+        }
+
+        const nodess: any = [];
+        const postions: any = {};
+        let max = 0;
+        for (const step of steps) {
+            const name = step.modelName;
+            if (name.length > max) {
+                max = name.length;
+            }
+            postions[name] = {
+                x: step['pos_x'],
+                y: step['pos_y'],
+                lengths: name.length
+            };
+        }
+        for (let index = 0; index < nodes.length; index++) {
+            const node = nodes[index];
+            const postion = postions[node?.id];
+            Shape.HTML.register({
+                shape: node.id,
+                width: 10 + max * 10,
+                // width: 10 + postion['lengths'] * 10,
+                height: 40,
+                html() {
+                    const div = document.createElement('div');
+                    const textNode = document.createTextNode(node.id);
+                    div.className = 'custom-html';
+                    div.appendChild(textNode);
+                    return div;
+                }
+            });
+
+            // debugger;
+            // const HtmlNode = graphs?.createNode();
+            nodess.push({
+                id: node.id,
+                shape: node.id,
+                size: {
+                    width: 10 + max * 10,
+                    height: 40
+                },
+                x: 300 + postion.x * 90,
+                y: 50 + postion.y * 80,
+                ports: ports
+                // tools: ['button-remove']
+            });
+        }
+        console.log('nodess', nodess, Shape.HTML.shapeMaps);
+        debugger;
+        graphs?.fromJSON({
+            nodes: nodess,
+            edges: nodeEdges
+        });
+        // setFlag(false);
+        setGraphs(graphs);
+    }, [steps, flag]);
     useEffect(() => {
         if (showFlag !== undefined) {
             showModal();
@@ -335,27 +717,44 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData}) => {
             }}
         >
             <div id="container">
-                <div id="graph-container">
-                    <img src={modelData && modelData['ensemble-img']} alt="" />
+                <div id={graphContainer} className="graph-containers">
+                    {/* <img src={modelData && modelData['ensemble-img']} alt="" /> */}
                 </div>
                 <div id="stencil_content">
                     <div id="stencil">
-                        {modelData &&
-                            modelData.models?.map((model: any) => {
-                                return (
-                                    <div
-                                        data-type={model.name}
-                                        className="dnd-rect"
-                                        key={model.name}
-                                        // onMouseDown={startDrag}
-                                        onClick={() => {
-                                            getmodelData(model, model.name);
-                                        }}
-                                    >
-                                        {model.name}
-                                    </div>
-                                );
-                            })}
+                        <div className="stencli_select">
+                            <SelectContent>
+                                <Select
+                                    style={{width: '100%', height: '50px'}}
+                                    placeholder="Search to Select"
+                                    optionFilterProp="children"
+                                    // filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                    value={ensemblesName}
+                                    options={selectOptions}
+                                    onChange={value => {
+                                        EnsemblesNameChange(value);
+                                    }}
+                                />
+                            </SelectContent>
+                        </div>
+                        <div id="stencil">
+                            {modelData &&
+                                modelData.models?.map((model: any) => {
+                                    return (
+                                        <div
+                                            data-type={model.name}
+                                            className="dnd-rect"
+                                            key={model.name}
+                                            // onMouseDown={startDrag}
+                                            onClick={() => {
+                                                getmodelData(model, model.name);
+                                            }}
+                                        >
+                                            {model.name}
+                                        </div>
+                                    );
+                                })}
+                        </div>
                     </div>
                     <div id="buttonContent">
                         <Buttons

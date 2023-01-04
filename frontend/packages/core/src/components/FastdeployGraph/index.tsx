@@ -23,6 +23,7 @@ import type {TreeProps} from 'antd/es/tree';
 import {History} from '@antv/x6-plugin-history';
 import {MinusCircleOutlined, PlusOutlined, PlusCircleOutlined, VerticalAlignBottomOutlined} from '@ant-design/icons';
 import {Button, Form, Input, Select, Space} from 'antd';
+import {fromPairs} from 'lodash';
 // import netron from '@visualdl/netron3';
 // import {use} from 'chai';
 // import { model } from '../../store/graph/selectors';
@@ -158,6 +159,14 @@ const Buttons = styled.div`
     color: white;
     background-color: var(--navbar-background-color);
 `;
+const Buttons2 = styled(Buttons)`
+    width: auto;
+    height: 32px;
+    line-height: 32px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 20px;
+`;
 const {Option} = Select;
 
 // const areas = [
@@ -232,9 +241,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [isModalOpen3, setIsModalOpen3] = useState(false);
+    const [isModalOpen4, setIsModalOpen4] = useState(false);
 
     const dndContainerRef = useRef<HTMLInputElement | null>(null);
     const [graphModel, setGraphModel] = useState<any>();
+    const [filenames, setFilenames] = useState<any>([]);
+    const [config_filename, setConfig_filename] = useState<any>('');
     const [modelName, setModelName] = useState<string>();
 
     const [IsEmsembles, setIsEmsembles] = useState<boolean>();
@@ -395,14 +407,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 name: node.id
             });
         });
-        // graph.clearCells();
         setGraphs(graph);
         setFlag(true);
-        // return () => {
-        //     Graph = null;
-        // };
-        // form.setFieldsValue(modelss);
-        // onFill(modelData.models[0]);
     }, []);
     useEffect(() => {
         if (!flag || !graphs) {
@@ -849,6 +855,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             dir: dir,
             config: JSON.stringify(config)
         };
+        if (config_filename) {
+            details['config_filename'] = config_filename;
+        }
         for (const property in details) {
             const encodedKey = encodeURIComponent(property);
             const encodedValue = encodeURIComponent(details[property]);
@@ -869,6 +878,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 console.log('blobres', res);
                 // debugger;
                 // downloadEvt(res.data, fileName);
+                setConfig_filename('');
                 setModelDatas(config);
                 setIsModalOpen(false);
             },
@@ -1147,6 +1157,23 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 alert(errorInfo);
             });
     };
+    const handleOk4 = () => {
+        const name = form.getFieldValue('config_filenames');
+        fetcher(
+            '/fastdeploy/set_default_config_for_model' +
+                `?dir=${dirValue}` +
+                `&name=${name}` +
+                `&config_filename=${name}`
+        ).then(
+            (res: any) => {
+                setIsModalOpen4(false);
+                setConfig_filename(name);
+            },
+            res => {
+                console.log(res);
+            }
+        );
+    };
     const handleCancel = () => {
         setIsModalOpen(false);
         if (nodeClick) {
@@ -1159,6 +1186,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const handleCancel3 = () => {
         setSelectKeys([]);
         setIsModalOpen3(false);
+    };
+    const handleCancel4 = () => {
+        // setSelectKeys([]);
+        setIsModalOpen4(false);
     };
     // const onFinish = (values: any) => {
     //     console.log('Received values of form:', values);
@@ -1240,6 +1271,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 modelss[item] = undefined;
             }
         }
+        console.log('modelss', modelss);
+
         form.setFieldsValue(modelss);
     };
     const onFill2 = (config: any) => {
@@ -1305,7 +1338,13 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     useEffect(() => {
         if (isModalOpen && modelData) {
             if (!IsEmsembles) {
-                graphModel && onFill(graphModel);
+                fetcher('/fastdeploy/get_config_filenames_for_model' + `?dir=${dirValue}` + `&name=${modelName}`).then(
+                    (res: any) => {
+                        // debugger;
+                        setFilenames(res);
+                        graphModel && onFill(graphModel);
+                    }
+                );
             } else {
                 // modelData && onFill(modelData.ensembles[0]);
                 for (const ensembles of modelData.ensembles) {
@@ -1324,7 +1363,13 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         } else {
                             setTreeData([]);
                         }
-                        onFill(ensembles);
+                        fetcher(
+                            '/fastdeploy/get_config_filenames_for_model' + `?dir=${dirValue}` + `&name=${modelName}`
+                        ).then((res: any) => {
+                            // debugger;
+                            setFilenames(res);
+                            onFill(ensembles);
+                        });
 
                         return;
                     }
@@ -1387,6 +1432,18 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         }
     }, [triggerClick]);
+    const onConfig = () => {
+        setIsModalOpen4(true);
+    };
+    const onGetConfigModel = (value: string) => {
+        fetcher(
+            '/fastdeploy/get_config_for_model' + `?dir=${dirValue}` + `&name=${modelName}` + `&config_filename=${value}`
+        ).then((res: any) => {
+            // debugger;
+            // setFilenames(res);
+            res && onFill(res);
+        });
+    };
     console.log('graphssss');
     console.log('showFlag', showFlag);
     // const createhtml = svg => {
@@ -1469,6 +1526,40 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 onCancel={handleCancel}
             >
                 <Form {...layout} form={form} name="dynamic_form_complex" autoComplete="off">
+                    <Form.Item label="config_filenames">
+                        <div style={{display: 'flex'}}>
+                            <Form.Item
+                                name="config_filenames"
+                                rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
+                                style={{
+                                    marginBottom: '0px',
+                                    flex: 1
+                                }}
+                            >
+                                <Select
+                                    onChange={value => {
+                                        onGetConfigModel(value);
+                                    }}
+                                >
+                                    {/* {(sights[form.getFieldValue('area') as SightsKeys] || []).map(
+                                                            item => (
+                                                                <Option key={item} value={item}>
+                                                                    {item}
+                                                                </Option>
+
+
+                                                            )
+                                                        )} */}
+                                    {filenames?.map((item: string) => (
+                                        <Option key={item} value={item}>
+                                            {item}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                            <Buttons2 onClick={onConfig}>设为配置启动文件</Buttons2>
+                        </div>
+                    </Form.Item>
                     <Form.Item
                         name="name"
                         label="name"
@@ -2133,6 +2224,17 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Cascader options={CascaderOptions} placeholder="Please select" />
                     </Form.Item>
                 </Form>
+            </Modal>
+            <Modal
+                width={800}
+                title="预训练模型下载"
+                cancelText={'取消'}
+                okText={'确定'}
+                visible={isModalOpen4}
+                onOk={handleOk4}
+                onCancel={handleCancel4}
+            >
+                设为启动配置文件将覆盖当前的文件的内容
             </Modal>
             {/* <iframe
                 ref={iframe}
