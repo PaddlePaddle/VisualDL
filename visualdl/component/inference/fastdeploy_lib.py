@@ -103,8 +103,9 @@ def analyse_config(cur_dir: str):
                 pbtxt2json(
                     open(os.path.join(model_dir,
                                       default_config_filename)).read()))
-            json_config[
-                "config_filenames"] = config_filenames  # add config_filenames to config data
+            json_config["config_filenames"] = config_filenames[
+                0]  # add config_filenames to config data (frontend developer said he only wanted one filename,
+            # and to request config_filenames by get_config_filenames_for_one_model later)
             all_model_configs[
                 model_name] = json_config  # store original config file content in json format
             json_config[
@@ -340,6 +341,7 @@ def get_config_for_one_model(cur_dir, name, config_filename):
     json_config = json.loads(pbtxt2json(open(filename).read()))
     if 'name' not in json_config:
         json_config['name'] = name
+    json_config["config_filenames"] = config_filename
     all_model_configs[
         name] = json_config  # store original config file content in json format
     all_model_versions[name] = {}
