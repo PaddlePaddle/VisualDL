@@ -339,8 +339,9 @@ def get_config_for_one_model(cur_dir, name, config_filename):
     all_model_versions = {}
     filename = os.path.join(cur_dir, name, config_filename)
     json_config = json.loads(pbtxt2json(open(filename).read()))
-    if 'name' not in json_config:
-        json_config['name'] = name
+    json_config[
+        'name'] = name  # because name in config data may be different from model_name,
+    # model_name is model directory name actually, we should conform name with model_name.
     json_config["config_filenames"] = config_filename
     all_model_configs[
         name] = json_config  # store original config file content in json format

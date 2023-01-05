@@ -248,9 +248,10 @@ class FastDeployServerApi(object):
                 os.path.join(
                     model_dir, 'config_vdlbackup_{}.pbtxt'.format(
                         datetime.datetime.now().isoformat())))
-        shutil.copy(
-            os.path.join(model_dir, config_filename),
-            os.path.join(model_dir, 'config.pbtxt'))
+        if config_filename != 'config.pbtxt':
+            shutil.copy(
+                os.path.join(model_dir, config_filename),
+                os.path.join(model_dir, 'config.pbtxt'))
         return
 
     def create_fastdeploy_client(self):
