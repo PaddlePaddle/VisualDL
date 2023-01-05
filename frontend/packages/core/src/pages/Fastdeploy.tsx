@@ -9,6 +9,8 @@ import {fetcher} from '~/utils/fetch';
 import HashLoader from 'react-spinners/HashLoader';
 import {Select} from 'antd';
 import styled from 'styled-components';
+import {toast} from 'react-toastify';
+
 // import {useTranslation} from 'react-i18next';
 import {Modal} from 'antd';
 
@@ -359,6 +361,9 @@ function App() {
                 // debugger;
                 remove(targetKey);
                 setLoading(false);
+                toast.success('关闭服务成功', {
+                    autoClose: 2000
+                });
             },
             res => {
                 console.log('errblobres', res);

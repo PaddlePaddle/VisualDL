@@ -24,12 +24,13 @@ import type {TreeProps} from 'antd/es/tree';
 import {History} from '@antv/x6-plugin-history';
 import {MinusCircleOutlined, PlusOutlined, PlusCircleOutlined, VerticalAlignBottomOutlined} from '@ant-design/icons';
 import {Button, Form, Input, Select, Space} from 'antd';
-import {fromPairs} from 'lodash';
+import {fromPairs, isArray} from 'lodash';
 // import netron from '@visualdl/netron3';
 // import {use} from 'chai';
 // import { model } from '../../store/graph/selectors';
 // import ref from '../../../types/static';
 // import {height} from '../Select';
+import {InitOutput} from '../../../../wasm/dist/index';
 const Content = styled.div`
     height: 100%;
     #container {
@@ -161,7 +162,7 @@ const Buttons = styled.div`
     background-color: var(--navbar-background-color);
 `;
 const Buttons2 = styled(Buttons)`
-    width: auto;
+    width: 138px;
     height: 32px;
     line-height: 32px;
     padding-left: 5px;
@@ -881,9 +882,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 console.log('blobres', res);
                 // debugger;
                 // downloadEvt(res.data, fileName);
-                setConfig_filename('');
+                // setConfig_filename('');
                 setModelDatas(config);
                 setIsModalOpen(false);
+                toast.success('更新数据成功', {
+                    autoClose: 2000
+                });
             },
             res => {
                 console.log('blobres', res);
@@ -903,12 +907,14 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const handleOk = () => {
         // onfinish();
         if (!configsButton) {
-            toast.error('该文件为备份的配置文件不允许修改，请重新选择');
+            toast.error('该文件为备份的配置文件不允许修改，请重新选择', {
+                autoClose: 2000
+            });
             return;
         }
         form?.validateFields()
             .then(async values => {
-                // debugger;
+                debugger;
                 // setIsModalOpen(false);
                 const ModelData = ModelDatas;
                 // debugger;
@@ -939,6 +945,37 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         parameters: newObject
                     };
                 });
+                const newInput = values.input.map((input: any) => {
+                    const type = isArray(input.dims);
+                    const dimss = type ? input.dims : input.dims.split(',');
+                    return {
+                        ...input,
+                        dims: dimss
+                    };
+                });
+
+                const newOutput = values.output.map((output: any) => {
+                    const type = isArray(output.dims);
+                    const dimss = type ? output.dims : output.dims.split(',');
+                    return {
+                        ...output,
+                        dims: dimss
+                    };
+                });
+                const newInstanceGroups = values.instanceGroup.map((group: any) => {
+                    if (group.gpus) {
+                        const type = isArray(group.gpus);
+                        const gpuss = type ? group.gpus : group.gpus.split(',');
+                        return {
+                            ...group,
+                            gpus: gpuss
+                        };
+                    } else {
+                        return {
+                            ...group
+                        };
+                    }
+                });
                 if (IsEmsembles) {
                     console.log('values', values);
                     const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
@@ -946,6 +983,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             const newemsembles = {
                                 ...ensembles,
                                 ...values,
+                                input: newInput,
+                                output: newOutput,
+                                instanceGroup: newInstanceGroups,
                                 optimization: {
                                     cpuExecutionAccelerator: newcpuExecutionAccelerator,
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
@@ -973,6 +1013,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             const newmodel = {
                                 ...model,
                                 ...values,
+                                input: newInput,
+                                output: newOutput,
+                                instanceGroup: newInstanceGroups,
                                 optimization: {
                                     cpuExecutionAccelerator: newcpuExecutionAccelerator,
                                     gpuExecutionAccelerator: newgpuExecutionAccelerator
@@ -1053,6 +1096,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         // ChangeServerId(res.id);
                         ChangeServerId(res);
                         setIsModalOpen2(false);
+                        toast.success('启动服务成功', {
+                            autoClose: 2000
+                        });
                     },
                     res => {
                         console.log(res);
@@ -1166,15 +1212,18 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 setIsModalOpen4(false);
                 // const name = form.getf
                 // setConfig_filename(name);
-                if (name !== 'config.pbtxt') {
-                    onGetConfigModel('config.pbtxt');
-                    // form.setFields([
-                    //     {
-                    //         name: 'config_filenames',
-                    //         value: 'config.pbtxt5'
-                    //     }
-                    // ]);
-                }
+                fetcher('/fastdeploy/get_config_filenames_for_model' + `?dir=${dirValue}` + `&name=${modelNames}`).then(
+                    (res: any) => {
+                        // debugger;
+                        setFilenames(res);
+                        toast.success('启动配置文件成功', {
+                            autoClose: 2000
+                        });
+                        if (name !== 'config.pbtxt') {
+                            onGetConfigModel('config.pbtxt');
+                        }
+                    }
+                );
             },
             res => {
                 console.log(res);
@@ -1565,7 +1614,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
                                 style={{
                                     marginBottom: '0px',
-                                    flex: 1
+                                    width: '340px'
                                 }}
                             >
                                 <Select
@@ -1589,7 +1638,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Buttons2 onClick={onConfig}>设为配置启动文件</Buttons2>
+                            <Buttons2 onClick={onConfig}>设为启动配置文件</Buttons2>
                         </div>
                     </Form.Item>
                     <Form.Item
@@ -2266,7 +2315,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 onOk={handleOk4}
                 onCancel={handleCancel4}
             >
-                设为启动配置文件将覆盖当前的文件的内容
+                设为启动配置文件即会将当前文件作为config.pbtxt,并覆盖之前的config.pbtxt的内容,被覆盖前的config.pbtxt会自动进行备份,是否继续
             </Modal>
             {/* <iframe
                 ref={iframe}

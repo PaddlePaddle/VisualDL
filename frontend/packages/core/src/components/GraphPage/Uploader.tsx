@@ -120,12 +120,27 @@ const Uploader: FunctionComponent<UploaderProps> = ({onClickUpload, onDropFiles,
             </DropZone>
             <SupportTable>
                 {Xpaddlae ? (
-                    <tbody>
-                        <tr>
-                            <td>{t('graph:supported-model')}</td>
-                            <td>{t('graph:supported-model-list-xpaddle')}</td>
-                        </tr>
-                    </tbody>
+                    // <tbody>
+                    //     <tr>
+                    //         <td>{t('graph:supported-model')}</td>
+                    //         <td>{t('graph:supported-model-list-xpaddle')}</td>
+                    //     </tr>
+                    // </tbody>
+                    <div
+                        style={{
+                            display: 'flex',
+                            fontSize: '18px'
+                        }}
+                    >
+                        <div
+                        // style={{
+                        //     fontSize: '1.1428571428571428em'
+                        // }}
+                        >
+                            {t('graph:supported-model')}
+                        </div>
+                        <div>{t('graph:supported-model-list-xpaddle')}</div>
+                    </div>
                 ) : (
                     <tbody>
                         <tr>
