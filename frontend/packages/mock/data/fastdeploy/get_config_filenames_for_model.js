@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export default ['config.pbtxt', 'config01.pbtxt'];
+export default [
+    'config.pbtxt',
+    'config_vdlbackup_2023-01-05T11:25:01.694514.pbtxt',
+    'config_vdlbackup_2023-01-05T11:05:13.423998.pbtxt',
+    'config_vdlbackup_2023-01-05T11:18:19.996202.pbtxt',
+    'config_vdlbackup_2023-01-05T11:09:50.646703.pbtxt',
+    'config_vdlbackup_2022-12-28T18:21:25.316965.pbtxt',
+    'config_vdlbackup_2022-12-28T16:03:43.568570.pbtxt',
+    'config_vdlbackup_2023-01-04T17:29:35.897158.pbtxt',
+    'config_vdlbackup_2023-01-05T11:06:51.577665.pbtxt',
+    'config_vdlbackup_2022-12-28T16:21:35.908249.pbtxt',
+    'config_vdlbackup_2022-12-28T16:03:54.162789.pbtxt',
+    'config_vdlbackup_2022-12-29T11:29:25.599371.pbtxt'
+];

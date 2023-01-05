@@ -258,7 +258,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [triggerClick, setTriggerClick] = useState<any>();
     const [ensemblesName, setEnsemblesName] = useState<string>();
     const [selectKeys, setSelectKeys] = useState<any>();
-
+    const [configsButton, setConfigsButton] = useState<boolean>(true);
     const [version, setVersion] = useState<any>();
     const [CascaderOptions, setCascaderOptions] = useState<Option[]>([]);
 
@@ -856,9 +856,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             config: JSON.stringify(config)
         };
         // debugger;
-        if (config_filename) {
-            details['config_filename'] = config_filename;
-        }
+        // if (config_filename) {
+        //     details['config_filename'] = config_filename;
+        // }
+        details['config_filename'] = form.getFieldValue('config_filenames');
         for (const property in details) {
             const encodedKey = encodeURIComponent(property);
             const encodedValue = encodeURIComponent(details[property]);
@@ -1158,7 +1159,17 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         ).then(
             (res: any) => {
                 setIsModalOpen4(false);
-                setConfig_filename(name);
+                // const name = form.getf
+                // setConfig_filename(name);
+                if (name !== 'config.pbtxt') {
+                    onGetConfigModel(name);
+                    form.setFields([
+                        {
+                            name: 'config_filenames',
+                            value: 'config.pbtxt'
+                        }
+                    ]);
+                }
             },
             res => {
                 console.log(res);
@@ -1452,6 +1463,11 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             setTreeData(treedata);
             // setModelDatas(ModelData)
             res && onFill(res);
+            if (value.includes('vdlbackup')) {
+                setConfigsButton(false);
+            } else {
+                setConfigsButton(true);
+            }
         });
     };
     console.log('graphssss');
@@ -1532,6 +1548,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 visible={isModalOpen}
                 cancelText={'取消'}
                 okText={'更新'}
+                footer={null}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
