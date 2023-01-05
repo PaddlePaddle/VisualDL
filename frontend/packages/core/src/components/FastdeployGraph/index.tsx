@@ -6,6 +6,7 @@ import React, {useState, useEffect, useRef, FunctionComponent} from 'react';
 // import {rem, primaryColor, size} from '~/utils/style';
 import {Graph, Shape} from '@antv/x6';
 import {Modal, Cascader} from 'antd';
+import {toast} from 'react-toastify';
 // import dagre from 'dagre';
 // import {DagreLayout} from '@antv/layout';
 // import {Stencil} from '@antv/x6-plugin-stencil';
@@ -901,6 +902,10 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
     const handleOk = () => {
         // onfinish();
+        if (!configsButton) {
+            toast.error('该文件为备份的配置文件不允许修改，请重新选择');
+            return;
+        }
         form?.validateFields()
             .then(async values => {
                 // debugger;
@@ -1548,7 +1553,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 visible={isModalOpen}
                 cancelText={'取消'}
                 okText={'更新'}
-                footer={null}
+                // footer={!configsButton ? null : ''}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
