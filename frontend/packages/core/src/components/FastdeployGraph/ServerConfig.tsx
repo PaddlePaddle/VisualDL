@@ -449,7 +449,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                 name: node.id
             });
         });
-        debugger;
+        // debugger;
         setGraphs(graph);
         setFlag(true);
     }, []);
@@ -679,7 +679,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
             });
         }
         console.log('nodess', nodess, Shape.HTML.shapeMaps);
-        debugger;
+        // debugger;
         graphs?.fromJSON({
             nodes: nodess,
             edges: nodeEdges
