@@ -1162,13 +1162,13 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // const name = form.getf
                 // setConfig_filename(name);
                 if (name !== 'config.pbtxt') {
-                    onGetConfigModel(name);
-                    form.setFields([
-                        {
-                            name: 'config_filenames',
-                            value: 'config.pbtxt'
-                        }
-                    ]);
+                    onGetConfigModel('config.pbtxt');
+                    // form.setFields([
+                    //     {
+                    //         name: 'config_filenames',
+                    //         value: 'config.pbtxt5'
+                    //     }
+                    // ]);
                 }
             },
             res => {

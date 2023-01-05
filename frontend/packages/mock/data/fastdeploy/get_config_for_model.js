@@ -16,7 +16,7 @@
 
 export default {
     name: 'postprocess',
-    config_filenames: 'config.pbtxt',
+    config_filenames: 'config2.pbtxt',
     input: [
         {
             name: 'POST_INPUT_0',
