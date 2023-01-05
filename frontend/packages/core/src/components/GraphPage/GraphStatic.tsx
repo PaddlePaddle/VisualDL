@@ -209,6 +209,7 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
         }, [handler, dispatch]);
 
         useEffect(() => {
+            console.log('GraphStaticss', files, ready);
             (ready && dispatch('change-files', files)) || undefined;
         }, [dispatch, files, ready]);
         useEffect(

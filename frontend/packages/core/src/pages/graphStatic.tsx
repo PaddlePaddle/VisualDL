@@ -99,11 +99,11 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
-    const storeModel = useSelector(selectors.graph.model);
+    // const storeModel = useSelector(selectors.graph.model);
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | File[] | null>(storeModel);
+    const [files, setFiles] = useState<FileList | File[] | null>();
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));
