@@ -103,7 +103,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | File[] | null>();
+    const [files, setFiles] = useState<any>();
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
             storeDispatch(actions.graph.setModel(f));

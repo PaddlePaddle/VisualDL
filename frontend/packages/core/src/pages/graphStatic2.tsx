@@ -104,7 +104,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<FileList | File[] | null>();
+    const [files, setFiles] = useState<any>();
     const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
     const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
     const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
