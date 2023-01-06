@@ -1187,6 +1187,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         setCascaderOptions([]);
                         setIsModalOpen3(false);
                         setSelectKeys([]);
+                        toast.success('下载预训练模型成功', {
+                            autoClose: 2000
+                        });
                     },
                     res => {
                         console.log(res);
@@ -1216,7 +1219,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     (res: any) => {
                         // debugger;
                         setFilenames(res);
-                        toast.success('启动配置文件成功', {
+                        toast.success('设为启动配置文件成功', {
                             autoClose: 2000
                         });
                         if (name !== 'config.pbtxt') {
@@ -2308,7 +2311,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="预训练模型下载"
+                title="设为启动配置文件"
                 cancelText={'取消'}
                 okText={'确定'}
                 visible={isModalOpen4}

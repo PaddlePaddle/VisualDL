@@ -6,6 +6,7 @@ import CPUTables from './CPUTables';
 import ServerConfig from './ServerConfig';
 import {fetcher} from '~/utils/fetch';
 import {backgrounds, rem} from '~/utils/style';
+import {toast} from 'react-toastify';
 // import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
 const TableTitle = styled.div`
     margin-bottom: 20px;
@@ -122,6 +123,9 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
             (res: any) => {
                 console.log('get_server_config', res);
                 setConfigs(res);
+                toast.success('更新日志和性能数据成功', {
+                    autoClose: 2000
+                });
             },
             res => {
                 console.log('get_server_output', res);
