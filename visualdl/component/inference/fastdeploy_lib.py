@@ -26,6 +26,7 @@ from subprocess import STDOUT
 
 import google.protobuf.json_format as json_format
 import google.protobuf.text_format as text_format
+import psutil
 import requests
 
 from .proto.model_config.protxt_pb2 import ModelConfig
@@ -437,7 +438,10 @@ def launch_process(kwargs: dict):
         cmd.append('--{}'.format(key))
         cmd.append('{}'.format(value))
         start_args[key] = value
-
+    if start_args['server-name'] and start_args['server-name'] in os.listdir(
+            FASTDEPLOYSERVER_PATH):
+        raise RuntimeError("启动服务失败，服务名称{}已经被使用，请重新填写服务名称".format(
+            start_args['server-name']))
     all_model_configs, all_model_versions = analyse_config(
         start_args['model-repository'])
     model_repo_config = original_format_to_exchange_format(
@@ -568,6 +572,29 @@ def get_process_output(server_id, length):
                 return data
 
 
+def mark_pid_for_dead_process(server_id):
+    '''
+    Resource files for a dead server only deleted when user closes the server in frontend.
+    When user close the server, pid recorded in logfile will be killed.
+    In case a dead process id is reassigned for a new process, we should mark the pid recorded in logfile as outdated.
+    Here, we choose to replace the pid to -1 in logfile to denote the zombie process \
+        which has been polled and becomes dead.
+    Args:
+        server_id(str): fastdeployserver process name
+    '''
+    if os.path.exists(
+            os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id))):
+        with open(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
+                'r') as f:
+            contents = f.read().split('\n')
+        contents[1] = '-1'  # we replace pid to -1
+        with open(
+                os.path.join(FASTDEPLOYSERVER_PATH, '{}'.format(server_id)),
+                'w') as f:
+            f.write('\n'.join(contents))
+
+
 def delete_files_for_process(server_id):
     '''
     Delete logfile for fastdeployserver process.
@@ -591,9 +618,10 @@ def kill_process(process):
   '''
     if type(process) == str:  # server_id, use os.kill to terminate
         pid = get_process_pid(process)
+        if pid == -1:  # we use -1 to mark dead process
+            return
         try:
             os.kill(pid, signal.SIGKILL)
-            # delete file ${pid} if exists
         except Exception:
             pass
     else:
@@ -624,6 +652,21 @@ def get_alive_fastdeploy_servers():
     return server_names
 
 
+def check_process_zombie(server_id):
+    '''
+    Given a server id, check whether the process became zoombie and mark pid as -1.
+    Args:
+        server_id(str): fastdeployserver process name
+    Return:
+        status(bool): True if process became zoombie.
+    '''
+    pid = get_process_pid(server_id)
+    if pid == -1:
+        return True
+    else:
+        return False
+
+
 def check_process_alive(server_id):
     '''
     Given a server id, check whether the process is alive or not.
@@ -635,12 +678,21 @@ def check_process_alive(server_id):
     pid = get_process_pid(server_id)
     if pid is None:
         return False
+    if pid == -1:  # We use -1 to mark zombie process which has been dead process.
+        # Consider user wants to know the reason for dead process  due to exception,
+        # we return True to let user in frontend can get the log for dead process.
+        return True
     try:
         os.kill(pid, 0)
     except OSError:
         return False
     else:
-        return True
+        if 'fastdeployserve' not in psutil.Process(pid).name(
+        ):  # We should judge the pid is fastdeployserver process, in case pid has been reassigned.
+            # Note: I do not know why psutil.Process(pid).name() is fastdeployserve but not fastdeployserver.
+            return False
+        else:
+            return True
 
 
 _metric_column_name = {

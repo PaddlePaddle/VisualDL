@@ -27,7 +27,7 @@ import requests
 
 from .fastdeploy_client.client_app import create_gradio_client_app
 from .fastdeploy_lib import analyse_config
-from .fastdeploy_lib import check_process_alive
+from .fastdeploy_lib import check_process_zombie
 from .fastdeploy_lib import delete_files_for_process
 from .fastdeploy_lib import exchange_format_to_original_format
 from .fastdeploy_lib import generate_metric_table
@@ -40,6 +40,7 @@ from .fastdeploy_lib import get_start_arguments
 from .fastdeploy_lib import json2pbtxt
 from .fastdeploy_lib import kill_process
 from .fastdeploy_lib import launch_process
+from .fastdeploy_lib import mark_pid_for_dead_process
 from .fastdeploy_lib import original_format_to_exchange_format
 from .fastdeploy_lib import validate_data
 from visualdl.server.api import gen_result
@@ -121,13 +122,7 @@ class FastDeployServerApi(object):
             # FASTDEPLOYSERVER_PATH(may be launched by other vdl app instance by gunicorn)
             kill_process(server_id)
         delete_files_for_process(server_id)
-        # check if there are servers killed by other vdl app instance and become zoombie
-        should_delete = []
-        for server_id, process in self.opened_servers.items():
-            if process.poll() is not None:
-                should_delete.append(server_id)
-        for server_id in should_delete:
-            del self.opened_servers[server_id]
+        self._poll_zombie_process()
 
     @result('text/plain')
     def get_server_output(self, server_id, length):
@@ -154,10 +149,11 @@ class FastDeployServerApi(object):
 
     @result()
     def check_server_alive(self, server_id):
-        if check_process_alive(server_id) is False:
-            delete_files_for_process(server_id)
+        self._poll_zombie_process()
+        if check_process_zombie(server_id) is True:
             raise RuntimeError(
-                "服务{}由于发生异常而退出，通常是由于启动参数设置不当或者环境配置有问题，请检查服务日志查看原因，然后手动关闭该服务项")
+                "服务{}由于发生异常或者被kill而退出，通常是由于启动参数设置不当或者环境配置有问题，请检查服务日志查看原因，然后手动关闭该服务项"
+                .format(server_id))
         return
 
     @result()
@@ -292,6 +288,17 @@ class FastDeployServerApi(object):
 
             check_alive()
         return self.client_port
+
+    def _poll_zombie_process(self):
+        # check if there are servers killed by other vdl app instance and become zoombie
+        should_delete = []
+        for server_id, process in self.opened_servers.items():
+            if process.poll() is not None:
+                mark_pid_for_dead_process(server_id)
+                should_delete.append(server_id)
+
+        for server_id in should_delete:
+            del self.opened_servers[server_id]
 
 
 def create_fastdeploy_api_call():
