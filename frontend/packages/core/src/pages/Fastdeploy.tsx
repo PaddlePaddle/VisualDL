@@ -491,6 +491,8 @@ function App() {
                             if (activeKey !== 'item-1') {
                                 const serverModel = serverModels;
                                 const activeKeys = Number(activeKey);
+                                console.log('serverModel', serverModel);
+
                                 const newServerModel = serverModel.map((model: any) => {
                                     if (model.Id === activeKeys) {
                                         return {
@@ -501,6 +503,7 @@ function App() {
                                         return model;
                                     }
                                 });
+                                console.log('newServerModel', newServerModel);
                                 setServerModels(newServerModel);
                             }
                         }}
