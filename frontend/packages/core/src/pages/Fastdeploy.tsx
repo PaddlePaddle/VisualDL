@@ -128,7 +128,7 @@ function App() {
                 const newServerModel = serverModel.map((model: any) => {
                     if (model.Id === serverId) {
                         return {
-                            Id: serverId,
+                            Id: serverId + '',
                             flag: !model.flag
                         };
                     } else {
@@ -170,7 +170,7 @@ function App() {
                 const ServerModel = res.map((Id: number) => {
                     return {
                         flag: true,
-                        Id: Id
+                        Id: Id + ''
                     };
                 });
                 setServerModels(ServerModel);
@@ -490,13 +490,13 @@ function App() {
                             console.log('activeKey', activeKey);
                             if (activeKey !== 'item-1') {
                                 const serverModel = serverModels;
-                                // const activeKeys = Number(activeKey);
+                                const activeKeys = activeKey + '';
                                 console.log('serverModel', serverModel);
 
                                 const newServerModel = serverModel.map((model: any) => {
-                                    if (model.Id === activeKey) {
+                                    if (model.Id === activeKeys) {
                                         return {
-                                            Id: model.Id,
+                                            Id: model.Id + '',
                                             flag: !model.flag
                                         };
                                     } else {
