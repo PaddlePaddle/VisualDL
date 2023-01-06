@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export default [12364, 23421, 34211];
+export default ['test_yolov5', '23421', '34211'];
