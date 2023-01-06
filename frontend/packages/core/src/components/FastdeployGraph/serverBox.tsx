@@ -85,6 +85,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
     const isAlive = () => {
         const serverId = server_id;
         // const length = Datas.text.length;
+        // debugger;
         fetcher(`/fastdeploy/check_server_alive?server_id=${serverId}`, {
             method: 'GET'
         }).then(

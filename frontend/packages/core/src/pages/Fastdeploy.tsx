@@ -492,9 +492,9 @@ function App() {
                                 const serverModel = serverModels;
                                 const activeKeys = Number(activeKey);
                                 const newServerModel = serverModel.map((model: any) => {
-                                    if (model.id === activeKeys) {
+                                    if (model.Id === activeKeys) {
                                         return {
-                                            Id: serverId,
+                                            Id: model.Id,
                                             flag: !model.flag
                                         };
                                     } else {
