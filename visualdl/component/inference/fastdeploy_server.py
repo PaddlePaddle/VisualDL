@@ -107,7 +107,7 @@ class FastDeployServerApi(object):
             raise RuntimeError(
                 "启动fastdeployserver服务器失败，请检查环境中是否存在fastdeployserver程序")
         server_name = configs['server-name'] if configs[
-            'server-name'] else process.pid
+            'server-name'] else str(process.pid)
         self.opened_servers[server_name] = process
         return server_name
 
