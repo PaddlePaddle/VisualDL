@@ -27,6 +27,7 @@ import requests
 
 from .fastdeploy_client.client_app import create_gradio_client_app
 from .fastdeploy_lib import analyse_config
+from .fastdeploy_lib import check_process_alive
 from .fastdeploy_lib import delete_files_for_process
 from .fastdeploy_lib import exchange_format_to_original_format
 from .fastdeploy_lib import generate_metric_table
@@ -103,7 +104,8 @@ class FastDeployServerApi(object):
         configs = json.loads(configs)
         process = launch_process(configs)
         if process.poll() is not None:
-            raise RuntimeError("启动fastdeployserver服务器失败，请检查启动参数")
+            raise RuntimeError(
+                "启动fastdeployserver服务器失败，请检查环境中是否存在fastdeployserver程序")
         server_name = configs['server-name'] if configs[
             'server-name'] else process.pid
         self.opened_servers[server_name] = process
@@ -149,6 +151,14 @@ class FastDeployServerApi(object):
     @result()
     def get_server_list(self):
         return get_alive_fastdeploy_servers()
+
+    @result()
+    def check_server_alive(self, server_id):
+        if check_process_alive(server_id) is False:
+            delete_files_for_process(server_id)
+            raise RuntimeError(
+                "服务{}由于发生异常而退出，通常是由于启动参数设置不当或者环境配置有问题，请检查服务日志查看原因，然后手动关闭该服务项")
+        return
 
     @result()
     def get_server_config(self, server_id):
@@ -305,6 +315,7 @@ def create_fastdeploy_api_call():
         'get_server_metric': (api.get_server_metric, ['server_id']),
         'get_server_config': (api.get_server_config, ['server_id']),
         'get_pretrain_model_list': (api.get_pretrain_model_list, []),
+        'check_server_alive': (api.check_server_alive, ['server_id']),
         'download_pretrain_model':
         (api.download_pretrain_model,
          ['dir', 'name', 'version', 'pretrain_model_name']),

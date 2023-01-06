@@ -326,11 +326,18 @@ def analyse_step_relationships(step_config, inputs, outputs):  # noqa: C901
 def get_config_filenames_for_one_model(cur_dir, name):
     _, _, filenames = os.walk(os.path.join(cur_dir, name)).send(None)
     config_filenames = []
+    backup_config_filenames = []
     for filename in filenames:
-        if '.pbtxt' in filename:
+        if '.pbtxt' in filename and 'vdlbackup' not in filename:
             config_filenames.append(
                 filename
-            )  # filenames with extension .pbtxt are all config files
+            )  # filenames with extension .pbtxt and not contain 'vdlbackup' are normal config files
+        elif '.pbtxt' in filename and 'vdlbackup' in filename:
+            backup_config_filenames.append(
+                filename
+            )  # filenames with extension .pbtxt and  contain 'vdlbackup' are backup config files
+    config_filenames = sorted(config_filenames) + sorted(
+        backup_config_filenames)
     return config_filenames
 
 
