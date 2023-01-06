@@ -316,13 +316,14 @@ app.run(logdir="./log")
 提供onnx模型转paddle模型的可视化操作界面，帮助用户可视化onnx模型结构并且获取转换后的paddle模型结构和参数文件。
 
 
+
 ### FastDeploy Server
-提供给用户载入和修改fastdeployserver模型库、管理fastdeployserver服务以及测试服务的可视化界面。详细内容可参考[使用VisualDL进行fastdeployserver下的模型服务化部署](./fastdeploy/README_CN.md)。
+提供给用户载入和修改fastdeployserver模型库、管理监控fastdeployserver服务以及测试服务的可视化界面。详细内容可参考[使用VisualDL进行fastdeployserver下的模型服务化部署](./fastdeploy_server/README_CN.md)。
 
 
 
 ### FastDeploy Client
-提供给用户访问fastdeployserver服务的客户端界面，进行一键预测和可视化结果。详细内容可参考[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy/README_CN.md)。
+提供给用户访问fastdeployserver服务的客户端界面，进行一键预测和可视化结果。详细内容可参考[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)。
 
 
 
@@ -344,7 +345,7 @@ Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技�
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[使用VisualDL做性能分析](./profiler/README_CN.md)，
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[使用VisualDL做性能分析](./profiler/README_CN.md)，[使用VisualDL进行fastdeployserver下的模型服务化部署](./fastdeploy_server/README_CN.md)，[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)。
 
 
 ## 技术交流
