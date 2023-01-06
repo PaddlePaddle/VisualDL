@@ -72,7 +72,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
         if (Flag === undefined) {
             return;
         }
-        outDatas();
+        isAlive();
     }, [Flag]);
     // useEffect(() => {
     //     const timer = setInterval(() => {
@@ -82,6 +82,21 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
     //     return () => clearInterval(timer);
     // }, [count]);
     //  Datas.metric
+    const isAlive = () => {
+        const serverId = server_id;
+        // const length = Datas.text.length;
+        fetcher(`/fastdeploy/check_server_alive?server_id=${serverId}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('check_server_alive', res);
+                outDatas();
+            },
+            res => {
+                console.log('error_check_server_alive', res);
+            }
+        );
+    };
     const outDatas = () => {
         const serverId = server_id;
         const length = Datas.text.length;
@@ -92,6 +107,25 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                 console.log('get_server_output', res);
                 metricDatas(serverId, res);
                 getServe(serverId);
+            },
+            res => {
+                console.log('get_server_output', res);
+            }
+        );
+    };
+    const clickOutDatas = () => {
+        const serverId = server_id;
+        const length = Datas.text.length;
+        fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${length}`, {
+            method: 'GET'
+        }).then(
+            (res: any) => {
+                console.log('get_server_output', res);
+                metricDatas(serverId, res);
+                getServe(serverId);
+                toast.success(`${serverId}更新日志和性能数据成功`, {
+                    autoClose: 2000
+                });
             },
             res => {
                 console.log('get_server_output', res);
@@ -123,9 +157,6 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
             (res: any) => {
                 console.log('get_server_config', res);
                 setConfigs(res);
-                toast.success('更新日志和性能数据成功', {
-                    autoClose: 2000
-                });
             },
             res => {
                 console.log('get_server_output', res);
@@ -238,7 +269,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     <Buttons onClick={onEdit}>关闭服务</Buttons>
                     <Buttons
                         onClick={() => {
-                            outDatas();
+                            clickOutDatas();
                         }}
                     >
                         更新数据
