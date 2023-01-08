@@ -252,9 +252,15 @@ class HttpClientManager:
         results = {}
         for output in output_metadata:
             result = response.as_numpy(output.name)  # datatype: numpy
-            if output.datatype == 'BYTES':
-                try:  # maybe not vison tasks, normal text
-                    value = result[0][0]  # datatype: bytes
+            if output.datatype == 'BYTES':  # datatype: bytes
+                try:
+                    value = result
+                    if len(result.shape) == 1:
+                        value = result[0]
+                    elif len(result.shape) == 2:
+                        value = result[0][0]
+                    elif len(result.shape) == 3:
+                        value = result[0][0][0]
                     result = json.loads(value)  # datatype: json
                 except Exception:
                     pass

@@ -126,6 +126,12 @@ def analyse_config(cur_dir: str):
                         os.path.join(model_dir, model_sub_dir)):
                     all_model_versions[model_name][model_sub_dir].append(
                         version_resource_file)
+        if model_name not in all_model_versions:  # if a model has config but no version directory,
+            # to convenient users, we create one
+            all_model_versions[model_name] = {}
+            os.mkdir(os.path.join(model_dir, '1'))
+            all_model_versions[model_name]['1'] = []
+
     if not all_model_configs:
         raise Exception('所选择的路径不是一个有效的模型库，请选择正确的路径')
     return all_model_configs, all_model_versions
