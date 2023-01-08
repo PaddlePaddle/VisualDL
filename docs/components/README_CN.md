@@ -1179,10 +1179,19 @@ visualdl --host 0.0.0.0 --port 8080
 ### 功能操作说明
 
 - 转换onnx模型并进行下载
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+</p>
 
 - 更换模型，选取一个新的模型进行转换
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203105-afa88c93-038c-4c01-bbc8-b07aa5ecfcf4.gif" width="100%"/>
+</p>
 
 - 对比转换前后的模型结构
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203137-cb113b58-7977-4de5-b742-2089e4336b47.gif" width="100%"/>
+</p>
 
 **注**：如果转换模型失败，将会弹出报错提示，可以拷贝模型转换失败的错误信息到[X2Paddle](https://github.com/PaddlePaddle/X2Paddle/issues)的issue中，帮助我们更好地优化模型转换工具。
 
@@ -1190,11 +1199,16 @@ visualdl --host 0.0.0.0 --port 8080
 
 ### 介绍
 FastDeploy服务化部署管理组件辅助用户基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)使用fastdeployserver进行快速的服务化部署。主要提供模型库配置修改，fastdeployserver服务管理监控的功能。请参考文档[使用VisualDL进行fastdeployserver下的模型服务化部署](./fastdeploy_server/README_CN.md)进行使用。
-
+ <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+</p>
 ## FastDeploy Client--FastDeploy服务的客户端组件
 
 ### 介绍
 FastDeploy服务的客户端组件提供用户提供给用户对基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)开启的fastdeployserver服务进行访问的客户端界面，进行一键预测和可视化结果。请参考文档[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)进行使用。
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+</p>
 
 
 ## VDL.service
