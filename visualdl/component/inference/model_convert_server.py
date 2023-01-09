@@ -80,7 +80,7 @@ class ModelConvertApi(object):
                         import onnx  # noqa: F401
                     except Exception:
                         raise RuntimeError(
-                            "[ERROR] onnx is not installed, use \"pip install onnx==1.6.0\"."
+                            "[ERROR] onnx is not installed, use \"pip install onnx>=1.6.0\"."
                         )
                     onnx2paddle(fp.name, target_path)
                 elif format == 'caffe':
