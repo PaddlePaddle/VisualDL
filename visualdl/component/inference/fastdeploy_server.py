@@ -276,6 +276,37 @@ class FastDeployServerApi(object):
 
     @result()
     def delete_resource_for_model(self, cur_dir, model_name, version,
+                                  resource_filename):
+        if self.root_dir not in Path(
+                os.path.abspath(cur_dir)
+        ).parents:  # should prevent user remove files outside model-repository
+            raise RuntimeError('所删除的文件路径有误')
+        resource_path = os.path.join(
+            os.path.abspath(cur_dir), model_name, version, resource_filename)
+        if os.path.exists(resource_path):
+            os.remove(resource_path)
+        version_info_for_frontend = []
+        for version_name in os.listdir(os.path.join(cur_dir, model_name)):
+            if re.match(r'\d+',
+                        version_name):  # version directory consists of numbers
+                version_filenames_dict_for_frontend = {}
+                version_filenames_dict_for_frontend['title'] = version_name
+                version_filenames_dict_for_frontend['key'] = version_name
+                version_filenames_dict_for_frontend['children'] = []
+                for filename in os.listdir(
+                        os.path.join(cur_dir, model_name, version_name)):
+                    version_filenames_dict_for_frontend['children'].append({
+                        'title':
+                        filename,
+                        'key':
+                        filename
+                    })
+                version_info_for_frontend.append(
+                    version_filenames_dict_for_frontend)
+        return version_info_for_frontend
+
+    @result()
+    def rename_resource_for_model(self, cur_dir, model_name, version,
                                   resource_filename, new_filename):
         if self.root_dir not in Path(
                 os.path.abspath(cur_dir)
