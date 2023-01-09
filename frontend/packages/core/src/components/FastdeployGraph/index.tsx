@@ -1298,14 +1298,15 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const handleOk6 = () => {
         form4?.validateFields().then(values => {
             console.log('valuesssss', values);
-            const resource_filename = values['new_filename'];
+            const new_filename = values['new_filename'];
             const modelNames = IsEmsembles ? ensemblesName : modelName;
             fetcher(
                 '/fastdeploy/rename_resource_for_model' +
                     `?dir=${dirValue}` +
                     `&name=${modelNames}` +
                     `&version=${version}` +
-                    `&resource_filename=${resource_filename}`
+                    `&new_filename=${new_filename}` +
+                    `&resource_filename=${selectKeys}`
             ).then(
                 (res: any) => {
                     const ModelData = ModelDatas;
