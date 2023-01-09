@@ -427,7 +427,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         }
         console.log('modelData.ensembles', modelData?.ensembles);
         if (modelData?.ensembles.length === 0) {
-            setEnsemblesName(undefined);
+            setEnsemblesName('');
             setSelectOptions([]);
         } else {
             const SelectOptions = modelData?.ensembles?.map((ensembles: any) => {
@@ -443,28 +443,34 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         setModelDatas(modelData);
     }, [modelData]);
     useEffect(() => {
-        if (!ensemblesName || !modelData) {
+        if (ensemblesName === undefined || !modelData) {
             return;
         }
+        debugger;
         console.log('modelData.ensembles', modelData.ensembles);
         const ensembles = modelData.ensembles?.filter((ensembles: any) => {
             if (ensembles.name === ensemblesName) {
                 return ensembles;
             }
         });
-        setSteps(ensembles[0]?.step);
-        if (ensembles[0]?.versions) {
-            const treedatas = getTreeData(ensembles[0]?.versions);
-            const treedata = treedatas?.map((version: any) => {
-                return {
-                    ...version,
-                    // checkable: false
-                    selectable: true,
-                    icon: <VerticalAlignBottomOutlined />
-                };
-            });
-            setTreeData(treedata);
+        if (ensembles?.length) {
+            setSteps(ensembles[0]?.step);
+            if (ensembles[0]?.versions) {
+                const treedatas = getTreeData(ensembles[0]?.versions);
+                const treedata = treedatas?.map((version: any) => {
+                    return {
+                        ...version,
+                        // checkable: false
+                        selectable: true,
+                        icon: <VerticalAlignBottomOutlined />
+                    };
+                });
+                setTreeData(treedata);
+            } else {
+                setTreeData([]);
+            }
         } else {
+            setSteps([]);
             setTreeData([]);
         }
     }, [ensemblesName]);
@@ -472,7 +478,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (!flag || !steps) {
             return;
         }
-        // debugger;
+        debugger;
         graphs?.clearCells();
         const edgeMap: any = {};
 
