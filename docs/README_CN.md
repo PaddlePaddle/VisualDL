@@ -314,17 +314,23 @@ app.run(logdir="./log")
 
 ### X2Paddle
 提供onnx模型转paddle模型的可视化操作界面，帮助用户可视化onnx模型结构并且获取转换后的paddle模型结构和参数文件。
-
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+</p>
 
 
 ### FastDeploy Server
 提供给用户载入和修改fastdeployserver模型库、管理监控fastdeployserver服务以及测试服务的可视化界面。详细内容可参考[使用VisualDL进行fastdeployserver下的模型服务化部署](./fastdeploy_server/README_CN.md)。
-
+ <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+</p>
 
 
 ### FastDeploy Client
 提供给用户访问fastdeployserver服务的客户端界面，进行一键预测和可视化结果。详细内容可参考[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)。
-
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+</p>
 
 
 ### VDL.service
