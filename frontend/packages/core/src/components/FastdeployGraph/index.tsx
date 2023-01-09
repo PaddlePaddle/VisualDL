@@ -1289,6 +1289,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 setTreeData(treedata);
                 setModelDatas(ModelData);
                 setIsModalOpen5(false);
+                toast.success('删除资源文件成功', {
+                    autoClose: 2000
+                });
             },
             res => {
                 console.log(res);
@@ -1354,6 +1357,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     setTreeData(treedata);
                     setModelDatas(ModelData);
                     setIsModalOpen6(false);
+                    toast.success('重命名资源文件成功', {
+                        autoClose: 2000
+                    });
                 },
                 res => {
                     console.log(res);
@@ -1373,6 +1379,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             setFilenames(res);
             onGetConfigModel(res[0]);
             setIsModalOpen7(false);
+            toast.success('删除配置文件成功', {
+                autoClose: 2000
+            });
         });
         // onGetConfigModel()
     };
