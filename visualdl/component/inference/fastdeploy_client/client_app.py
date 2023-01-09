@@ -313,7 +313,6 @@ def create_gradio_client_app():  # noqa:C901
                 try:
                     infer_results = _http_manager.infer(
                         server_addr, model_name, model_version, inputs)
-                    print('infer_results', infer_results)
                     results = {status_text: 'Inference Successful'}
                     for i, (output_name,
                             data) in enumerate(infer_results.items()):

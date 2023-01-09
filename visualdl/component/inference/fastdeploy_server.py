@@ -27,7 +27,8 @@ import requests
 
 from .fastdeploy_client.client_app import create_gradio_client_app
 from .fastdeploy_lib import analyse_config
-from .fastdeploy_lib import check_process_alive
+from .fastdeploy_lib import check_process_zombie
+from .fastdeploy_lib import copy_config_file_to_default_config
 from .fastdeploy_lib import delete_files_for_process
 from .fastdeploy_lib import exchange_format_to_original_format
 from .fastdeploy_lib import generate_metric_table
@@ -40,6 +41,7 @@ from .fastdeploy_lib import get_start_arguments
 from .fastdeploy_lib import json2pbtxt
 from .fastdeploy_lib import kill_process
 from .fastdeploy_lib import launch_process
+from .fastdeploy_lib import mark_pid_for_dead_process
 from .fastdeploy_lib import original_format_to_exchange_format
 from .fastdeploy_lib import validate_data
 from visualdl.server.api import gen_result
@@ -107,7 +109,7 @@ class FastDeployServerApi(object):
             raise RuntimeError(
                 "启动fastdeployserver服务器失败，请检查环境中是否存在fastdeployserver程序")
         server_name = configs['server-name'] if configs[
-            'server-name'] else process.pid
+            'server-name'] else str(process.pid)
         self.opened_servers[server_name] = process
         return server_name
 
@@ -121,13 +123,7 @@ class FastDeployServerApi(object):
             # FASTDEPLOYSERVER_PATH(may be launched by other vdl app instance by gunicorn)
             kill_process(server_id)
         delete_files_for_process(server_id)
-        # check if there are servers killed by other vdl app instance and become zoombie
-        should_delete = []
-        for server_id, process in self.opened_servers.items():
-            if process.poll() is not None:
-                should_delete.append(server_id)
-        for server_id in should_delete:
-            del self.opened_servers[server_id]
+        self._poll_zombie_process()
 
     @result('text/plain')
     def get_server_output(self, server_id, length):
@@ -154,10 +150,11 @@ class FastDeployServerApi(object):
 
     @result()
     def check_server_alive(self, server_id):
-        if check_process_alive(server_id) is False:
-            delete_files_for_process(server_id)
+        self._poll_zombie_process()
+        if check_process_zombie(server_id) is True:
             raise RuntimeError(
-                "服务{}由于发生异常而退出，通常是由于启动参数设置不当或者环境配置有问题，请检查服务日志查看原因，然后手动关闭该服务项")
+                "服务{}由于发生异常或者被kill而退出，通常是由于启动参数设置不当或者环境配置有问题，请检查服务日志查看原因，然后手动关闭该服务项"
+                .format(server_id))
         return
 
     @result()
@@ -217,6 +214,11 @@ class FastDeployServerApi(object):
                             os.path.join(
                                 os.path.dirname(model_path), 'model{}'.format(
                                     os.path.splitext(filename)[1])))
+                    else:
+                        shutil.move(
+                            os.path.join(model_path, filename),
+                            os.path.join(
+                                os.path.dirname(model_path), filename))
                 shutil.rmtree(model_path)
             version_info_for_frontend = []
             for version_name in os.listdir(os.path.join(cur_dir, model_name)):
@@ -249,6 +251,16 @@ class FastDeployServerApi(object):
         return get_config_filenames_for_one_model(cur_dir, name)
 
     @result()
+    def delete_config_for_model(self, cur_dir, name, config_filename):
+        if self.root_dir not in Path(
+                os.path.abspath(cur_dir)
+        ).parents:  # should prevent user remove files outside model-repository
+            raise RuntimeError('所删除的文件路径有误')
+        if os.path.exists(os.path.join(cur_dir, name, config_filename)):
+            os.remove(os.path.join(cur_dir, name, config_filename))
+        return get_config_filenames_for_one_model(cur_dir, name)
+
+    @result()
     def set_default_config_for_model(self, cur_dir, name, config_filename):
         model_dir = os.path.join(os.path.abspath(cur_dir), name)
         # backup config.pbtxt to config_vdlbackup_{datetime}.pbtxt
@@ -259,10 +271,72 @@ class FastDeployServerApi(object):
                     model_dir, 'config_vdlbackup_{}.pbtxt'.format(
                         datetime.datetime.now().isoformat())))
         if config_filename != 'config.pbtxt':
-            shutil.copy(
-                os.path.join(model_dir, config_filename),
-                os.path.join(model_dir, 'config.pbtxt'))
+            copy_config_file_to_default_config(model_dir, config_filename)
         return
+
+    @result()
+    def delete_resource_for_model(self, cur_dir, model_name, version,
+                                  resource_filename):
+        if self.root_dir not in Path(
+                os.path.abspath(cur_dir)
+        ).parents:  # should prevent user remove files outside model-repository
+            raise RuntimeError('所删除的文件路径有误')
+        resource_path = os.path.join(
+            os.path.abspath(cur_dir), model_name, version, resource_filename)
+        if os.path.exists(resource_path):
+            os.remove(resource_path)
+        version_info_for_frontend = []
+        for version_name in os.listdir(os.path.join(cur_dir, model_name)):
+            if re.match(r'\d+',
+                        version_name):  # version directory consists of numbers
+                version_filenames_dict_for_frontend = {}
+                version_filenames_dict_for_frontend['title'] = version_name
+                version_filenames_dict_for_frontend['key'] = version_name
+                version_filenames_dict_for_frontend['children'] = []
+                for filename in os.listdir(
+                        os.path.join(cur_dir, model_name, version_name)):
+                    version_filenames_dict_for_frontend['children'].append({
+                        'title':
+                        filename,
+                        'key':
+                        filename
+                    })
+                version_info_for_frontend.append(
+                    version_filenames_dict_for_frontend)
+        return version_info_for_frontend
+
+    @result()
+    def rename_resource_for_model(self, cur_dir, model_name, version,
+                                  resource_filename, new_filename):
+        if self.root_dir not in Path(
+                os.path.abspath(cur_dir)
+        ).parents:  # should prevent user remove files outside model-repository
+            raise RuntimeError('所重命名的文件路径有误')
+        resource_path = os.path.join(
+            os.path.abspath(cur_dir), model_name, version, resource_filename)
+        new_file_path = os.path.join(
+            os.path.abspath(cur_dir), model_name, version, new_filename)
+        if os.path.exists(resource_path):
+            shutil.move(resource_path, new_file_path)
+        version_info_for_frontend = []
+        for version_name in os.listdir(os.path.join(cur_dir, model_name)):
+            if re.match(r'\d+',
+                        version_name):  # version directory consists of numbers
+                version_filenames_dict_for_frontend = {}
+                version_filenames_dict_for_frontend['title'] = version_name
+                version_filenames_dict_for_frontend['key'] = version_name
+                version_filenames_dict_for_frontend['children'] = []
+                for filename in os.listdir(
+                        os.path.join(cur_dir, model_name, version_name)):
+                    version_filenames_dict_for_frontend['children'].append({
+                        'title':
+                        filename,
+                        'key':
+                        filename
+                    })
+                version_info_for_frontend.append(
+                    version_filenames_dict_for_frontend)
+        return version_info_for_frontend
 
     def create_fastdeploy_client(self):
         if self.client_port is None:
@@ -293,6 +367,17 @@ class FastDeployServerApi(object):
             check_alive()
         return self.client_port
 
+    def _poll_zombie_process(self):
+        # check if there are servers killed by other vdl app instance and become zoombie
+        should_delete = []
+        for server_id, process in self.opened_servers.items():
+            if process.poll() is not None:
+                mark_pid_for_dead_process(server_id)
+                should_delete.append(server_id)
+
+        for server_id in should_delete:
+            del self.opened_servers[server_id]
+
 
 def create_fastdeploy_api_call():
     api = FastDeployServerApi()
@@ -307,6 +392,8 @@ def create_fastdeploy_api_call():
                                  ['dir', 'name', 'config_filename']),
         'set_default_config_for_model': (api.set_default_config_for_model,
                                          ['dir', 'name', 'config_filename']),
+        'delete_config_for_model': (api.delete_config_for_model,
+                                    ['dir', 'name', 'config_filename']),
         'start_server': (api.start_server, ['config']),
         'stop_server': (api.stop_server, ['server_id']),
         'get_server_output': (api.get_server_output, ['server_id', 'length']),
@@ -319,6 +406,12 @@ def create_fastdeploy_api_call():
         'download_pretrain_model':
         (api.download_pretrain_model,
          ['dir', 'name', 'version', 'pretrain_model_name']),
+        'delete_resource_for_model':
+        (api.delete_resource_for_model,
+         ['dir', 'name', 'version', 'resource_filename']),
+        'rename_resource_for_model': (api.rename_resource_for_model, [
+            'dir', 'name', 'version', 'resource_filename', 'new_filename'
+        ])
     }
 
     def call(path: str, args):

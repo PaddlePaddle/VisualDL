@@ -16,3 +16,4 @@ gradio
 fastdeploy-python
 tritonclient[all]
 attrdict
+psutil

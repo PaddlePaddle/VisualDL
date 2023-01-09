@@ -15,6 +15,7 @@
 import json
 import re
 
+import numpy as np
 import requests
 import tritonclient.http as httpclient
 from attrdict import AttrDict
@@ -40,6 +41,18 @@ def prepare_request(inputs_meta, inputs_data, outputs_meta):
             raise RuntimeError(
                 'Error: input name {} required for model not existed.'.format(
                     input_name))
+        if input_dict['datatype'] == 'FP32':
+            inputs_data[input_name] = inputs_data[input_name].astype(
+                np.float32
+            ) / 255  # image data returned by gradio is uint8, convert to fp32
+        if len(input_dict['shape']
+               ) == 3 and input_dict['shape'][0] == 3:  # NCHW
+            inputs_data[input_name] = inputs_data[input_name][0].transpose(
+                2, 0, 1)
+        elif len(input_dict['shape']
+                 ) == 4 and input_dict['shape'][1] == 3:  # NCHW
+            inputs_data[input_name] = inputs_data[input_name].transpose(
+                0, 3, 1, 2)
         infer_input = httpclient.InferInput(
             input_name, inputs_data[input_name].shape, input_dict['datatype'])
         infer_input.set_data_from_numpy(inputs_data[input_name])
@@ -239,7 +252,7 @@ class HttpClientManager:
         except Exception:
             raise RuntimeError(
                 'Can not connect to server {}, please check your \
-        server address'.format(server_url))
+                    server address'.format(server_url))
 
     def infer(self, server_url, model_name, model_version, inputs):
         fastdeploy_client = self._create_client(server_url)
@@ -249,12 +262,19 @@ class HttpClientManager:
                                           output_metadata)
         response = fastdeploy_client.infer(
             model_name, inputs, model_version=model_version, outputs=outputs)
+
         results = {}
         for output in output_metadata:
             result = response.as_numpy(output.name)  # datatype: numpy
-            if output.datatype == 'BYTES':
-                try:  # maybe not vison tasks, normal text
-                    value = result[0][0]  # datatype: bytes
+            if output.datatype == 'BYTES':  # datatype: bytes
+                try:
+                    value = result
+                    if len(result.shape) == 1:
+                        value = result[0]
+                    elif len(result.shape) == 2:
+                        value = result[0][0]
+                    elif len(result.shape) == 3:
+                        value = result[0][0][0]
                     result = json.loads(value)  # datatype: json
                 except Exception:
                     pass
