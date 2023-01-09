@@ -446,7 +446,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (ensemblesName === undefined || !modelData) {
             return;
         }
-        debugger;
         console.log('modelData.ensembles', modelData.ensembles);
         const ensembles = modelData.ensembles?.filter((ensembles: any) => {
             if (ensembles.name === ensemblesName) {
@@ -478,7 +477,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         if (!flag || !steps) {
             return;
         }
-        debugger;
         graphs?.clearCells();
         const edgeMap: any = {};
 
@@ -2595,7 +2593,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="设为启动配置文件"
+                title="删除资源文件"
                 cancelText={'取消'}
                 okText={'确定'}
                 visible={isModalOpen5}
