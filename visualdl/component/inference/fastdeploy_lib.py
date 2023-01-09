@@ -17,7 +17,6 @@ import json
 import os
 import random
 import re
-import shutil
 import signal
 import string
 from collections import defaultdict
@@ -95,9 +94,8 @@ def analyse_config(cur_dir: str):
                 config_filenames.insert(0, default_config_filename)
             else:
                 # if no config.pbtxt, we choose the first file in config_filenames list to create config.pbtxt
-                shutil.copy(
-                    os.path.join(model_dir, default_config_filename),
-                    os.path.join(model_dir, 'config.pbtxt'))
+                copy_config_file_to_default_config(model_dir,
+                                                   default_config_filename)
                 default_config_filename = 'config.pbtxt'
                 config_filenames.insert(0, default_config_filename)
             json_config = json.loads(
@@ -189,6 +187,16 @@ def exchange_format_to_original_format(exchange_format):
                     step_configs.remove(remove_item)
         all_models[model_config['name']] = model_config
     return all_models
+
+
+def copy_config_file_to_default_config(model_dir, config_name):
+    json_config = json.loads(
+        pbtxt2json(open(os.path.join(model_dir, config_name)).read()))
+    model_name = os.path.basename(model_dir)
+    json_config['name'] = model_name
+    text_proto = json2pbtxt(json.dumps(json_config))
+    with open(os.path.join(model_dir, 'config.pbtxt'), 'w') as f:
+        f.write(text_proto)
 
 
 def original_format_to_exchange_format(original_format, version_info):

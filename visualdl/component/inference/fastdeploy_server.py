@@ -28,6 +28,7 @@ import requests
 from .fastdeploy_client.client_app import create_gradio_client_app
 from .fastdeploy_lib import analyse_config
 from .fastdeploy_lib import check_process_zombie
+from .fastdeploy_lib import copy_config_file_to_default_config
 from .fastdeploy_lib import delete_files_for_process
 from .fastdeploy_lib import exchange_format_to_original_format
 from .fastdeploy_lib import generate_metric_table
@@ -270,22 +271,22 @@ class FastDeployServerApi(object):
                     model_dir, 'config_vdlbackup_{}.pbtxt'.format(
                         datetime.datetime.now().isoformat())))
         if config_filename != 'config.pbtxt':
-            shutil.copy(
-                os.path.join(model_dir, config_filename),
-                os.path.join(model_dir, 'config.pbtxt'))
+            copy_config_file_to_default_config(model_dir, config_filename)
         return
 
     @result()
     def delete_resource_for_model(self, cur_dir, model_name, version,
-                                  resource_filename):
+                                  resource_filename, new_filename):
         if self.root_dir not in Path(
                 os.path.abspath(cur_dir)
         ).parents:  # should prevent user remove files outside model-repository
-            raise RuntimeError('所删除的文件路径有误')
+            raise RuntimeError('所重命名的文件路径有误')
         resource_path = os.path.join(
             os.path.abspath(cur_dir), model_name, version, resource_filename)
+        new_file_path = os.path.join(
+            os.path.abspath(cur_dir), model_name, version, new_filename)
         if os.path.exists(resource_path):
-            os.remove(resource_path)
+            shutil.move(resource_path, new_file_path)
         version_info_for_frontend = []
         for version_name in os.listdir(os.path.join(cur_dir, model_name)):
             if re.match(r'\d+',
@@ -376,7 +377,10 @@ def create_fastdeploy_api_call():
          ['dir', 'name', 'version', 'pretrain_model_name']),
         'delete_resource_for_model':
         (api.delete_resource_for_model,
-         ['dir', 'name', 'version', 'resource_filename'])
+         ['dir', 'name', 'version', 'resource_filename']),
+        'rename_resource_for_model': (api.rename_resource_for_model, [
+            'dir', 'name', 'version', 'resource_filename', 'new_filename'
+        ])
     }
 
     def call(path: str, args):
