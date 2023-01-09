@@ -24,6 +24,7 @@ VDL_HOME = os.path.join(USER_HOME, '.visualdl')
 CONF_HOME = os.path.join(VDL_HOME, 'conf')
 CONFIG_PATH = os.path.join(CONF_HOME, 'config.json')
 FASTDEPLOYSERVER_PATH = os.path.join(VDL_HOME, 'fastdeployserver')
+X2PADDLE_CACHE_PATH = os.path.join(VDL_HOME, 'x2paddle')
 
 
 def init_vdl_config():
@@ -34,3 +35,5 @@ def init_vdl_config():
             fp.write(json.dumps(default_vdl_config))
     if not os.path.exists(FASTDEPLOYSERVER_PATH):
         os.makedirs(FASTDEPLOYSERVER_PATH, exist_ok=True)
+    if not os.path.exists(X2PADDLE_CACHE_PATH):
+        os.makedirs(X2PADDLE_CACHE_PATH, exist_ok=True)

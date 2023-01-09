@@ -17,3 +17,4 @@ fastdeploy-python
 tritonclient[all]
 attrdict
 psutil
+onnx >= 1.6.0
