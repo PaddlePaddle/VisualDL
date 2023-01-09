@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import styled from 'styled-components';
-import React, {useState, useEffect, useRef, FunctionComponent} from 'react';
+import React, {useState, useEffect, useRef, FunctionComponent, useCallback} from 'react';
 // import {rem, primaryColor, size} from '~/utils/style';
 import {Graph, Shape} from '@antv/x6';
 import {Modal, Cascader} from 'antd';
@@ -22,17 +22,27 @@ import {fetcher} from '~/utils/fetch';
 import type {TreeProps} from 'antd/es/tree';
 // import {Dnd} from '@antv/x6-plugin-dnd';
 import {History} from '@antv/x6-plugin-history';
-import {MinusCircleOutlined, PlusOutlined, PlusCircleOutlined, VerticalAlignBottomOutlined} from '@ant-design/icons';
+import {
+    MinusCircleOutlined,
+    PlusOutlined,
+    PlusCircleOutlined,
+    VerticalAlignBottomOutlined,
+    DeleteOutlined
+} from '@ant-design/icons';
 import {Button, Form, Input, Select, Space} from 'antd';
 import {fromPairs, isArray} from 'lodash';
-// import netron from '@visualdl/netron3';
-// import {use} from 'chai';
-// import { model } from '../../store/graph/selectors';
-// import ref from '../../../types/static';
-// import {height} from '../Select';
+const {TreeNode} = Tree;
 import {InitOutput} from '../../../../wasm/dist/index';
+import {div} from 'numeric';
 const Content = styled.div`
     height: 100%;
+    .ant-select-selector {
+        .ant-select-selection-item {
+            .select_icon {
+                display: none;
+            }
+        }
+    }
     #container {
         height: 100%;
         display: flex;
@@ -170,28 +180,10 @@ const Buttons2 = styled(Buttons)`
     margin-left: 20px;
 `;
 const {Option} = Select;
-
-// const areas = [
-//     {label: 'Beijing', value: 'Beijing'},
-//     {label: 'Shanghai', value: 'Shanghai'}
-// ];
-
-// const sights = {
-//     Beijing: ['Tiananmen', 'Great Wall'],
-//     Shanghai: ['Oriental Pearl', 'The Bund']
-// };
 const layout = {
     labelCol: {span: 6},
     wrapperCol: {span: 16}
 };
-// type SightsKeys = keyof typeof sights;
-// const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
-
-// let IFRAME_HOST = `${window.location.protocol}//${window.location.host}`;
-// if (PUBLIC_PATH.startsWith('http')) {
-//     const url = new URL(PUBLIC_PATH);
-//     IFRAME_HOST = `${url.protocol}//${url.host}`;
-// }
 interface Option {
     value: string | number;
     label: string;
@@ -244,6 +236,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [isModalOpen3, setIsModalOpen3] = useState(false);
     const [isModalOpen4, setIsModalOpen4] = useState(false);
+    const [isModalOpen5, setIsModalOpen5] = useState(false);
+    const [isModalOpen6, setIsModalOpen6] = useState(false);
+    const [isModalOpen7, setIsModalOpen7] = useState(false);
 
     const dndContainerRef = useRef<HTMLInputElement | null>(null);
     const [graphModel, setGraphModel] = useState<any>();
@@ -253,6 +248,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
 
     const [IsEmsembles, setIsEmsembles] = useState<boolean>();
     const [showFlag, setShowFlag] = useState<boolean>(false);
+    const [Isopen, setIsopen] = useState<boolean>(false);
     const [selectOptions, setSelectOptions] = useState([]);
     // const [ensembles, setEmsembles] = useState<string>();
     const [steps, setSteps] = useState<any>();
@@ -268,6 +264,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const [form] = Form.useForm();
     const [form2] = Form.useForm();
     const [form3] = Form.useForm();
+    const [form4] = Form.useForm();
+
     const [svgs, setSvgs] = useState<string>();
     console.log('form', form.getFieldsValue(true));
 
@@ -428,15 +426,21 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             return;
         }
         console.log('modelData.ensembles', modelData?.ensembles);
-        const SelectOptions = modelData?.ensembles?.map((ensembles: any) => {
-            return {
-                value: ensembles.name,
-                label: ensembles.name
-            };
-        });
-        setEnsemblesName(modelData.ensembles[0]?.name);
+        if (modelData?.ensembles.length === 0) {
+            setEnsemblesName(undefined);
+            setSelectOptions([]);
+        } else {
+            const SelectOptions = modelData?.ensembles?.map((ensembles: any) => {
+                return {
+                    value: ensembles.name,
+                    label: ensembles.name
+                };
+            });
+            setSelectOptions(SelectOptions);
+            setEnsemblesName(modelData.ensembles[0]?.name);
+        }
+
         setModelDatas(modelData);
-        setSelectOptions(SelectOptions);
     }, [modelData]);
     useEffect(() => {
         if (!ensemblesName || !modelData) {
@@ -492,8 +496,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 tuple.from.push(node.modelName);
             }
         });
-
-        console.log('edgeMap', edgeMap);
         const edges = [];
         const nodes = [];
         for (const name of Object.keys(edgeMap)) {
@@ -1060,10 +1062,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         form2
             ?.validateFields()
             .then(values => {
-                // setConfigs(values);
-                // const formData = new FormData();
-                // const configs = JSON.stringify(values);
-                // formData.append('config', configs);
                 const bodys = {
                     ...values,
                     default_model_name: ensemblesName
@@ -1172,8 +1170,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             return {
                                 ...version,
                                 // checkable: false
-                                selectable: true,
-                                icon: <VerticalAlignBottomOutlined />
+                                selectable: true
                             };
                         });
                         form.setFields([
@@ -1186,7 +1183,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         setModelDatas(ModelData);
                         setCascaderOptions([]);
                         setIsModalOpen3(false);
-                        setSelectKeys([]);
+                        setSelectKeys(null);
                         toast.success('下载预训练模型成功', {
                             autoClose: 2000
                         });
@@ -1194,7 +1191,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     res => {
                         console.log(res);
                         setIsModalOpen(false);
-                        setSelectKeys([]);
+                        setSelectKeys(null);
                     }
                 );
             })
@@ -1233,6 +1230,147 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             }
         );
     };
+    const handleOk5 = () => {
+        const modelNames = IsEmsembles ? ensemblesName : modelName;
+        fetcher(
+            '/fastdeploy/delete_resource_for_model' +
+                `?dir=${dirValue}` +
+                `&name=${modelNames}` +
+                `&version=${version}` +
+                `&resource_filename=${selectKeys}`
+        ).then(
+            (res: any) => {
+                const ModelData = ModelDatas;
+                if (IsEmsembles) {
+                    const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
+                        if (ensembles.name === ensemblesName) {
+                            const newemsembles = {
+                                ...ensembles,
+                                versions: res
+                            };
+                            return newemsembles;
+                        } else {
+                            return ensembles;
+                        }
+                    });
+                    ModelData.ensembles = emsembless;
+                } else {
+                    // debuggersss;
+                    const models = ModelData.models?.map((model: any) => {
+                        if (model.name === modelName) {
+                            const newmodel = {
+                                ...model,
+                                versions: res
+                            };
+                            return newmodel;
+                        } else {
+                            return model;
+                        }
+                    });
+                    ModelData.models = models;
+                }
+                const treedatas = getTreeData(res);
+                const treedata = treedatas?.map((version: any) => {
+                    return {
+                        ...version,
+                        selectable: true
+                    };
+                });
+                form.setFields([
+                    {
+                        name: 'versions',
+                        value: res
+                    }
+                ]);
+                setTreeData(treedata);
+                setModelDatas(ModelData);
+                setIsModalOpen5(false);
+            },
+            res => {
+                console.log(res);
+            }
+        );
+    };
+    const handleOk6 = () => {
+        form4?.validateFields().then(values => {
+            console.log('valuesssss', values);
+            const resource_filename = values['new_filename'];
+            const modelNames = IsEmsembles ? ensemblesName : modelName;
+            fetcher(
+                '/fastdeploy/rename_resource_for_model' +
+                    `?dir=${dirValue}` +
+                    `&name=${modelNames}` +
+                    `&version=${version}` +
+                    `&resource_filename=${resource_filename}`
+            ).then(
+                (res: any) => {
+                    const ModelData = ModelDatas;
+                    if (IsEmsembles) {
+                        const emsembless = ModelDatas.ensembles?.map((ensembles: any) => {
+                            if (ensembles.name === ensemblesName) {
+                                const newemsembles = {
+                                    ...ensembles,
+                                    versions: res
+                                };
+                                return newemsembles;
+                            } else {
+                                return ensembles;
+                            }
+                        });
+                        ModelData.ensembles = emsembless;
+                    } else {
+                        // debuggersss;
+                        const models = ModelData.models?.map((model: any) => {
+                            if (model.name === modelName) {
+                                const newmodel = {
+                                    ...model,
+                                    versions: res
+                                };
+                                return newmodel;
+                            } else {
+                                return model;
+                            }
+                        });
+                        ModelData.models = models;
+                    }
+                    const treedatas = getTreeData(res);
+                    const treedata = treedatas?.map((version: any) => {
+                        return {
+                            ...version,
+                            selectable: true
+                        };
+                    });
+                    form.setFields([
+                        {
+                            name: 'versions',
+                            value: res
+                        }
+                    ]);
+                    setTreeData(treedata);
+                    setModelDatas(ModelData);
+                    setIsModalOpen6(false);
+                },
+                res => {
+                    console.log(res);
+                }
+            );
+        });
+    };
+    const handleOk7 = async () => {
+        const modelNames = IsEmsembles ? ensemblesName : modelName;
+        fetcher(
+            '/fastdeploy/delete_config_for_model' +
+                `?dir=${dirValue}` +
+                `&name=${modelNames}` +
+                `&config_filename=${selectKeys}`
+        ).then((res: any) => {
+            console.log('delete_config', res);
+            setFilenames(res);
+            onGetConfigModel(res[0]);
+            setIsModalOpen7(false);
+        });
+        // onGetConfigModel()
+    };
     const handleCancel = () => {
         setIsModalOpen(false);
         if (nodeClick) {
@@ -1243,12 +1381,20 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         setIsModalOpen2(false);
     };
     const handleCancel3 = () => {
-        setSelectKeys([]);
+        setSelectKeys(null);
         setIsModalOpen3(false);
     };
     const handleCancel4 = () => {
-        // setSelectKeys([]);
         setIsModalOpen4(false);
+    };
+    const handleCancel5 = () => {
+        setIsModalOpen5(false);
+    };
+    const handleCancel6 = () => {
+        setIsModalOpen6(false);
+    };
+    const handleCancel7 = () => {
+        setIsModalOpen7(false);
     };
     // const onFinish = (values: any) => {
     //     console.log('Received values of form:', values);
@@ -1257,23 +1403,61 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     // const handleChange = () => {
     //     form.setFieldsValue({});
     // };
-    const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
-        console.log('selected', selectedKeys, info);
-        if (info.selected) {
-            setSelectKeys(selectedKeys);
-            setVersion(selectedKeys[0]);
-            fetcher('/fastdeploy/get_pretrain_model_list').then((res: any) => {
-                setCascaderOptions(res);
-                setIsModalOpen3(true);
-            });
-
-            // const version = selectedKeys[0]
-            // fetcher(
-            //     '/fastdeploy/download_pretrain_model' + `?dir=${dirValue}` + `&version=${version}` + `&expand_all=${expand_all}`
-            // ).then((res: Theobj) => {
-            //     setSelectItem(null);
-            //     setModelDatas(res);
-            // });
+    const onSelect = (selectedKeys: any) => {
+        // debugger;
+        console.log('selected', selectedKeys);
+        setSelectKeys(selectedKeys);
+        setVersion(selectedKeys);
+        fetcher('/fastdeploy/get_pretrain_model_list').then((res: any) => {
+            setCascaderOptions(res);
+            setIsModalOpen3(true);
+        });
+    };
+    const onDelete_config = (selectedKeys: any) => {
+        setSelectKeys(selectedKeys);
+        setIsModalOpen7(true);
+    };
+    const onDelete = (selectedKeys: any) => {
+        console.log('selected', selectedKeys, treeData);
+        let versions = '';
+        for (const trees of treeData) {
+            if (trees.key === selectedKeys) {
+                versions = trees.key;
+                return;
+            }
+            if (trees.children) {
+                for (const trees2 of trees.children) {
+                    if (trees2.key === selectedKeys) {
+                        versions = trees.key;
+                        setSelectKeys(selectedKeys);
+                        setVersion(versions);
+                        setIsModalOpen5(true);
+                        return;
+                    }
+                }
+            }
+        }
+    };
+    const onRename = (selectedKeys: any) => {
+        // debugger;
+        console.log('selected', selectedKeys);
+        let versions = '';
+        for (const trees of treeData) {
+            if (trees.key === selectedKeys) {
+                versions = trees.key;
+                return;
+            }
+            if (trees.children) {
+                for (const trees2 of trees.children) {
+                    if (trees2.key === selectedKeys) {
+                        versions = trees.key;
+                        setSelectKeys(selectedKeys);
+                        setVersion(versions);
+                        setIsModalOpen6(true);
+                        return;
+                    }
+                }
+            }
         }
     };
     const onFill = (models: any) => {
@@ -1370,18 +1554,80 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const changeEmsembles = () => {
         setIsEmsembles(true);
         setShowFlag(!showFlag);
-        // const treedata = modelData.ensembles[0].versions.map((version: any) => {
-        //     return {
-        //         ...version,
-        //         // checkable: false
-        //         icon: <VerticalAlignBottomOutlined />
-        //     };
-        // });
-        // setTreeData(treedata);
     };
     const EnsemblesNameChange = (value: string) => {
         setEnsemblesName(value);
     };
+    const getTreeNode = useCallback(
+        (data: any) => {
+            // debugger;
+            if (data && data.length > 0) {
+                return data.map((item: any) => {
+                    if (item.children) {
+                        return (
+                            <TreeNode
+                                key={item.key}
+                                title={
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                marginRight: '20px'
+                                            }}
+                                        >
+                                            {item.title}
+                                        </div>
+                                        <VerticalAlignBottomOutlined
+                                            onClick={() => {
+                                                onSelect(item.key);
+                                            }}
+                                        />
+                                    </div>
+                                }
+                            >
+                                {getTreeNode(item.children)}
+                            </TreeNode>
+                        );
+                    }
+                    return (
+                        <TreeNode
+                            key={item.key}
+                            title={
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            marginRight: '20px'
+                                        }}
+                                        onClick={() => {
+                                            onRename(item.key);
+                                        }}
+                                    >
+                                        {item.title}
+                                    </div>
+                                    <DeleteOutlined
+                                        onClick={() => {
+                                            onDelete(item.key);
+                                        }}
+                                    />
+                                </div>
+                            }
+                        ></TreeNode>
+                    );
+                });
+            }
+            return [];
+        },
+        [treeData]
+    );
     useEffect(() => {
         if (!flag) {
             return;
@@ -1405,7 +1651,6 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     }
                 );
             } else {
-                // modelData && onFill(modelData.ensembles[0]);
                 for (const ensembles of modelData.ensembles) {
                     if (ensembles.name === ensemblesName) {
                         if (ensembles?.versions) {
@@ -1414,8 +1659,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 return {
                                     ...version,
                                     // checkable: false
-                                    selectable: true,
-                                    icon: <VerticalAlignBottomOutlined />
+                                    selectable: true
                                 };
                             });
                             setTreeData(treedata);
@@ -1518,6 +1762,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 };
             });
             setTreeData(treedata);
+            setIsopen(false);
             // setModelDatas(ModelData)
             res && onFill(res);
             if (value.includes('vdlbackup')) {
@@ -1624,19 +1869,39 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                     onChange={value => {
                                         onGetConfigModel(value);
                                     }}
+                                    onDropdownVisibleChange={() => {
+                                        setIsopen(true);
+                                    }}
                                 >
-                                    {/* {(sights[form.getFieldValue('area') as SightsKeys] || []).map(
-                                                            item => (
-                                                                <Option key={item} value={item}>
-                                                                    {item}
-                                                                </Option>
-
-
-                                                            )
-                                                        )} */}
                                     {filenames?.map((item: string) => (
                                         <Option key={item} value={item}>
-                                            {item}
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                <div
+                                                    title={item}
+                                                    style={{
+                                                        overflow: 'hidden',
+                                                        width: '298px',
+                                                        whiteSpace: 'nowrap',
+                                                        textOverflow: 'ellipsis'
+                                                    }}
+                                                >
+                                                    {item}
+                                                </div>
+                                                <DeleteOutlined
+                                                    style={{
+                                                        display: Isopen ? 'nomal' : 'none'
+                                                    }}
+                                                    onClick={() => {
+                                                        onDelete_config(item);
+                                                    }}
+                                                />
+                                            </div>
                                         </Option>
                                     ))}
                                 </Select>
@@ -1675,12 +1940,14 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Tree
                             showLine
                             showIcon
-                            selectedKeys={selectKeys}
+                            // selectedKeys={selectKeys}
                             switcherIcon={<DownOutlined />}
                             defaultExpandedKeys={['0-0-0']}
-                            onSelect={onSelect}
-                            treeData={treeData}
-                        />
+                            // onSelect={onSelect}
+                            // treeData={treeData}
+                        >
+                            {getTreeNode(treeData)}
+                        </Tree>
                     </Form.Item>
                     <Form.Item
                         name="maxBatchSize"
@@ -2320,6 +2587,56 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             >
                 设为启动配置文件即会将当前文件作为config.pbtxt,并覆盖之前的config.pbtxt的内容,被覆盖前的config.pbtxt会自动进行备份,是否继续
             </Modal>
+            <Modal
+                width={800}
+                title="设为启动配置文件"
+                cancelText={'取消'}
+                okText={'确定'}
+                visible={isModalOpen5}
+                onOk={handleOk5}
+                onCancel={handleCancel5}
+            >
+                请确认是否删除资源文件{selectKeys}
+            </Modal>
+            <Modal
+                width={800}
+                title="重命名文件"
+                cancelText={'取消'}
+                okText={'确定'}
+                visible={isModalOpen6}
+                onOk={handleOk6}
+                onCancel={handleCancel6}
+            >
+                <Form {...layout} form={form4} name="dynamic_form_complex" autoComplete="off">
+                    <Form.Item
+                        name={'new_filename'}
+                        label={'新文件名'}
+                        rules={[
+                            {
+                                required: true,
+                                message: '该字段为必填项请填写对应信息'
+                            }
+                        ]}
+                        style={{
+                            marginBottom: '0px'
+                        }}
+                    >
+                        <Input />
+                    </Form.Item>
+                </Form>
+            </Modal>
+            <Modal
+                width={800}
+                title="删除配置文件"
+                cancelText={'取消'}
+                okText={'确定'}
+                visible={isModalOpen7}
+                onOk={handleOk7}
+                onCancel={handleCancel7}
+            >
+                请确认是否删除配置文件{selectKeys}
+            </Modal>
+
             {/* <iframe
                 ref={iframe}
                 src={PUBLIC_PATH + netron}

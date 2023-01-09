@@ -16,7 +16,7 @@
 
 export default {
     name: 'postprocess',
-    config_filenames: 'config_vdlbackup_2023-01-05T11:25:01.694514.pbtxt',
+    config_filenames: 'config_vdlbackup_2023-01',
     input: [
         {
             name: 'POST_INPUT_0',

@@ -116,7 +116,6 @@ function App() {
     }, [dirValue]);
     useEffect(() => {
         if (serverId !== undefined) {
-            // outDatas(serverId);
             const serverModel = serverModels;
             let flag = false;
             for (const model of serverModels) {
@@ -138,29 +137,9 @@ function App() {
                 setServerModels(newServerModel);
             } else {
                 GetServerList();
-                // const newServerModel = [
-                //     ...serverModel,
-                //     {
-                //         Id: serverId,
-                //         flag: true
-                //     }
-                // ];
-                // setServerModels(newServerModel);
             }
         }
     }, [serverId]);
-    // useEffect(() => {
-    //     if (serverId !== undefined) {
-    //         metricDatas(serverId);
-    //     }
-    // }, [metric]);
-    // useEffect(() => {
-    //     debugger;
-    //     if (!serverModels.length) {
-    //         return;
-    //     }
-    //     setReforce(!reforce);
-    // }, [serverModels.length]);
     const GetServerList = () => {
         setLoading(true);
         fetcher(`/fastdeploy/get_server_list`, {
@@ -184,97 +163,6 @@ function App() {
             }
         );
     };
-    // const outDatas = (serverId: number) => {
-    //     let length = 0;
-    //     for (const model of serverModels) {
-    //         if (model.id === serverId) {
-    //             length = model.text.length;
-    //         }
-    //     }
-    //     fetcher(`/fastdeploy/get_server_output?server_id=${serverId}` + `&length=${length}`, {
-    //         method: 'GET'
-    //     }).then(
-    //         (res: any) => {
-    //             console.log('get_server_output', res);
-    //             const serverModel = serverModels;
-    //             console.log('serverModelsss', serverModel);
-
-    //             const newServerModel = serverModel.map((model: any) => {
-    //                 console.log('model.id === serverId', serverId, model.id, model);
-    //                 if (model.id === serverId) {
-    //                     return {
-    //                         ...model,
-    //                         text: model.text + res,
-    //                         lengths: model.text.length + res.length,
-    //                         id: model.id
-    //                     };
-    //                 } else {
-    //                     return model;
-    //                 }
-    //             });
-    //             const flag = serverModel.some((model: any) => {
-    //                 return model.id === serverId;
-    //             });
-    //             if (!flag) {
-    //                 newServerModel.push({
-    //                     text: res,
-    //                     lengths: res.length,
-    //                     id: serverId
-    //                 });
-    //             }
-    //             console.log('newServerModel', newServerModel);
-    //             setServerModels(newServerModel);
-    //             metricDatas(serverId);
-    //             ChangeServerId(serverId);
-    //             // setMetric(!metric);
-    //             // setServerId(undefined);
-    //             // setLoading(false);
-    //         },
-    //         res => {
-    //             console.log('get_server_output', res);
-    //             // setServerId(undefined);
-    //             setLoading(false);
-    //         }
-    //     );
-    // };
-    // const metricDatas = (serverId: number) => {
-    //     fetcher(`/fastdeploy/get_server_metric?server_id=${serverId}`, {
-    //         method: 'GET'
-    //     }).then(
-    //         (res: any) => {
-    //             console.log('get_server_metric', res);
-
-    //             const serverModel = serverModels;
-    //             const newServerModel = serverModel.map((model: any) => {
-    //                 if (model.id === serverId) {
-    //                     return {
-    //                         ...model,
-    //                         metric: res
-    //                     };
-    //                 } else {
-    //                     return model;
-    //                 }
-    //             });
-    //             // const flag = serverModel.some((model: any) => {
-    //             //     return model.id === serverId;
-    //             // });
-    //             // if (!flag) {
-    //             //     newServerModel.push({
-
-    //             //         id: serverId
-    //             //     });
-    //             // }
-    //             setServerModels(newServerModel);
-    //             // setServerId(undefined);
-    //             setLoading(false);
-    //         },
-    //         res => {
-    //             console.log('get_server_output', res);
-    //             // setServerId(undefined);
-    //             setLoading(false);
-    //         }
-    //     );
-    // };
     const getModelData = (dirValues: string) => {
         fetcher(`/fastdeploy/get_config?dir=${dirValues}`, {
             method: 'GET'
@@ -383,6 +271,7 @@ function App() {
         });
         console.log(newServerModel);
         setServerModels(newServerModel);
+        setServerId(undefined);
         setIsModalOpen2(false);
     };
 

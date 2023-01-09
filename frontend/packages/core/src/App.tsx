@@ -38,6 +38,13 @@ const BASE_URI: string = import.meta.env.SNOWPACK_PUBLIC_BASE_URI;
 
 const Main = styled.main`
     padding-top: ${headerHeight};
+    .ant-select-selector {
+        .ant-select-selection-item {
+            .select_icon {
+                display: none;
+            }
+        }
+    }
 `;
 
 const Header = styled.header`
