@@ -1357,6 +1357,12 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     setTreeData(treedata);
                     setModelDatas(ModelData);
                     setIsModalOpen6(false);
+                    form4.setFields([
+                        {
+                            name: 'new_filename',
+                            value: ''
+                        }
+                    ]);
                     toast.success('重命名资源文件成功', {
                         autoClose: 2000
                     });
