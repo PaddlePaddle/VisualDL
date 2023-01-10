@@ -22,7 +22,6 @@ import time
 from multiprocessing import Process
 from pathlib import Path
 
-import fastdeploy as fd
 import requests
 
 from .fastdeploy_client.client_app import create_gradio_client_app
@@ -89,7 +88,8 @@ class FastDeployServerApi(object):
         # backup config filename: {original_name}_vdlbackup_{datetime}.pbtxt
         # backup config can only used to restore config.pbtxt
         if 'vdlbackup' in config_filename:
-            raise RuntimeError("备份的配置文件不允许修改")
+            raise RuntimeError(
+                "Backup config file is not permitted to update.")
         basename = os.path.splitext(config_filename)[0]
         shutil.copy(
             os.path.join(model_dir, config_filename),
@@ -107,7 +107,8 @@ class FastDeployServerApi(object):
         process = launch_process(configs)
         if process.poll() is not None:
             raise RuntimeError(
-                "启动fastdeployserver服务器失败，请检查环境中是否存在fastdeployserver程序")
+                "Failed to launch fastdeployserver，please check fastdeployserver is installed in environment."
+            )
         server_name = configs['server-name'] if configs[
             'server-name'] else str(process.pid)
         self.opened_servers[server_name] = process
@@ -153,8 +154,8 @@ class FastDeployServerApi(object):
         self._poll_zombie_process()
         if check_process_zombie(server_id) is True:
             raise RuntimeError(
-                "服务{}由于发生异常或者被kill而退出，通常是由于启动参数设置不当或者环境配置有问题，请检查服务日志查看原因，然后手动关闭该服务项"
-                .format(server_id))
+                "Server {} is down due to exception or killed，please check the reason according to the log, \
+                then close this server.".format(server_id))
         return
 
     @result()
@@ -170,7 +171,8 @@ class FastDeployServerApi(object):
             'http://paddlepaddle.org.cn/paddlehub/fastdeploy_listmodels')
         result = res.json()
         if result['status'] != 0:
-            raise RuntimeError("从hub的模型服务器请求模型列表失败")
+            raise RuntimeError(
+                "Failed to get pre-trained model list from hub server.")
         else:
             data = result['data']
             model_list = {}
@@ -199,6 +201,12 @@ class FastDeployServerApi(object):
                                 pretrain_model_name):
         version_resource_dir = os.path.join(
             os.path.abspath(cur_dir), model_name, version)
+        try:
+            import fastdeploy as fd
+        except Exception:
+            raise RuntimeError(
+                "fastdeploy is required for visualizing results，please refer to \
+            https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
         model_path = fd.download_model(
             name=pretrain_model_name, path=version_resource_dir)
         if model_path:
@@ -240,7 +248,9 @@ class FastDeployServerApi(object):
                         version_filenames_dict_for_frontend)
             return version_info_for_frontend
         else:
-            raise RuntimeError("预训练模型{}下载失败".format(pretrain_model_name))
+            raise RuntimeError(
+                "Failed to download pre-trained model {}.".format(
+                    pretrain_model_name))
 
     @result()
     def get_config_for_model(self, cur_dir, name, config_filename):
@@ -255,7 +265,8 @@ class FastDeployServerApi(object):
         if self.root_dir not in Path(
                 os.path.abspath(cur_dir)
         ).parents:  # should prevent user remove files outside model-repository
-            raise RuntimeError('所删除的文件路径有误')
+            raise RuntimeError(
+                'Failed to delete config file, please check filepath.')
         if os.path.exists(os.path.join(cur_dir, name, config_filename)):
             os.remove(os.path.join(cur_dir, name, config_filename))
         return get_config_filenames_for_one_model(cur_dir, name)
@@ -280,7 +291,8 @@ class FastDeployServerApi(object):
         if self.root_dir not in Path(
                 os.path.abspath(cur_dir)
         ).parents:  # should prevent user remove files outside model-repository
-            raise RuntimeError('所删除的文件路径有误')
+            raise RuntimeError(
+                'Failed to delete resource file, please check filepath.')
         resource_path = os.path.join(
             os.path.abspath(cur_dir), model_name, version, resource_filename)
         if os.path.exists(resource_path):
@@ -311,7 +323,8 @@ class FastDeployServerApi(object):
         if self.root_dir not in Path(
                 os.path.abspath(cur_dir)
         ).parents:  # should prevent user remove files outside model-repository
-            raise RuntimeError('所重命名的文件路径有误')
+            raise RuntimeError(
+                'Failed to rename resource file, please check filepath.')
         resource_path = os.path.join(
             os.path.abspath(cur_dir), model_name, version, resource_filename)
         new_file_path = os.path.join(

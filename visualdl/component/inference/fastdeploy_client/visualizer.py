@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-import fastdeploy as fd
 import numpy as np
 
 __all__ = [
@@ -24,6 +23,12 @@ __all__ = [
 
 
 def visualize_detection(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     boxes = np.array(data['boxes'])
     scores = np.array(data['scores'])
     label_ids = np.array(data['label_ids'])
@@ -40,6 +45,12 @@ def visualize_detection(image, data):
 
 
 def visualize_keypoint_detection(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     keypoints = np.array(data['keypoints'])
     scores = np.array(data['scores'])
     num_joints = np.array(data['num_joints'])
@@ -54,6 +65,12 @@ def visualize_keypoint_detection(image, data):
 
 
 def visualize_face_detection(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     data = np.array(data['data'])
     scores = np.array(data['scores'])
     landmarks = np.array(data['landmarks'])
@@ -70,6 +87,12 @@ def visualize_face_detection(image, data):
 
 
 def visualize_face_alignment(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     landmarks = np.array(data['landmarks'])
 
     facealignment_result = fd.C.vision.FaceAlignmentResult()
@@ -80,6 +103,12 @@ def visualize_face_alignment(image, data):
 
 
 def visualize_segmentation(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     label_ids = np.array(data['label_ids'])
     score_map = np.array(data['score_map'])
     shape = np.array(data['shape'])
@@ -94,6 +123,12 @@ def visualize_segmentation(image, data):
 
 
 def visualize_matting(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     alpha = np.array(data['alpha'])
     foreground = np.array(data['foreground'])
     contain_foreground = data['contain_foreground']
@@ -110,6 +145,12 @@ def visualize_matting(image, data):
 
 
 def visualize_ocr(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     boxes = np.array(data['boxes'])
     text = np.array(data['text'])
     rec_scores = np.array(data['rec_scores'])
@@ -128,6 +169,12 @@ def visualize_ocr(image, data):
 
 
 def visualize_headpose(image, data):
+    try:
+        import fastdeploy as fd
+    except Exception:
+        raise RuntimeError(
+            "fastdeploy is required for visualizing results，please refer to \
+        https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
     euler_angles = np.array(data['euler_angles'])
 
     headpose_result = fd.C.vision.HeadPoseResult()

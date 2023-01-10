@@ -131,7 +131,9 @@ def analyse_config(cur_dir: str):
             all_model_versions[model_name]['1'] = []
 
     if not all_model_configs:
-        raise Exception('所选择的路径不是一个有效的模型库，请选择正确的路径')
+        raise Exception(
+            'The path you choose is not a valid model repository, please choose a valid path.'
+        )
     return all_model_configs, all_model_versions
 
 
@@ -454,8 +456,9 @@ def launch_process(kwargs: dict):
         start_args[key] = value
     if start_args['server-name'] and start_args['server-name'] in os.listdir(
             FASTDEPLOYSERVER_PATH):
-        raise RuntimeError("启动服务失败，服务名称{}已经被使用，请重新填写服务名称".format(
-            start_args['server-name']))
+        raise RuntimeError(
+            "Failed to launch server，server name {} has been used，please write a different server name."
+            .format(start_args['server-name']))
     all_model_configs, all_model_versions = analyse_config(
         start_args['model-repository'])
     model_repo_config = original_format_to_exchange_format(
