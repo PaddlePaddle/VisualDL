@@ -13,12 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
+import json
 import multiprocessing
 import os
 import re
 import sys
 import threading
 import time
+import urllib
 import webbrowser
 
 import requests
@@ -32,6 +34,8 @@ from flask_babel import Babel
 
 import visualdl.server
 from visualdl import __version__
+from visualdl.component.inference.fastdeploy_lib import get_start_arguments
+from visualdl.component.inference.fastdeploy_server import create_fastdeploy_api_call
 from visualdl.component.inference.model_convert_server import create_model_convert_api_call
 from visualdl.component.profiler.profiler_server import create_profiler_api_call
 from visualdl.server.api import create_api_call
@@ -71,6 +75,7 @@ def create_app(args):  # noqa: C901
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
     profiler_api_call = create_profiler_api_call(args.logdir)
     inference_api_call = create_model_convert_api_call()
+    fastdeploy_api_call = create_fastdeploy_api_call()
     if args.telemetry:
         update_util.PbUpdater(args.product).start()
 
@@ -152,6 +157,141 @@ def create_app(args):  # noqa: C901
             data, mimetype, headers = inference_api_call(method, request.args)
         return make_response(
             Response(data, mimetype=mimetype, headers=headers))
+
+    @app.route(api_path + '/fastdeploy/<path:method>', methods=["GET", "POST"])
+    def serve_fastdeploy_api(method):
+        if request.method == 'POST':
+            data, mimetype, headers = fastdeploy_api_call(method, request.form)
+        else:
+            data, mimetype, headers = fastdeploy_api_call(method, request.args)
+        return make_response(
+            Response(data, mimetype=mimetype, headers=headers))
+
+    @app.route(
+        api_path + '/fastdeploy/fastdeploy_client', methods=["GET", "POST"])
+    def serve_fastdeploy_create_fastdeploy_client():
+        try:
+            if request.method == 'POST':
+                fastdeploy_api_call('create_fastdeploy_client', request.form)
+                request_args = request.form
+            else:
+                fastdeploy_api_call('create_fastdeploy_client', request.args)
+                request_args = request.args
+        except Exception as e:
+            error_msg = '{}'.format(e)
+            return make_response(error_msg)
+        args = urllib.parse.urlencode(request_args)
+        if args:
+            return redirect(
+                api_path + "/fastdeploy/fastdeploy_client/app?{}".format(args),
+                code=302)
+        return redirect(
+            api_path + "/fastdeploy/fastdeploy_client/app", code=302)
+
+    @app.route(
+        api_path + "/fastdeploy/fastdeploy_client/<path:path>",
+        methods=["GET", "POST"])
+    def request_fastdeploy_create_fastdeploy_client_app(path: str):
+        '''
+        Gradio app server url interface. We route urls for gradio app to gradio server.
+
+        Args:
+            path(str): All resource path from gradio server.
+
+        Returns:
+            Any thing from gradio server.
+        '''
+        if request.method == 'POST':
+            port = fastdeploy_api_call('create_fastdeploy_client',
+                                       request.form)
+            request_args = request.form
+        else:
+            port = fastdeploy_api_call('create_fastdeploy_client',
+                                       request.args)
+            request_args = request.args
+        if path == 'app':
+            proxy_url = request.url.replace(
+                request.host_url.rstrip('/') + api_path +
+                '/fastdeploy/fastdeploy_client/app',
+                'http://localhost:{}/'.format(port))
+        else:
+            proxy_url = request.url.replace(
+                request.host_url.rstrip('/') + api_path +
+                '/fastdeploy/fastdeploy_client/',
+                'http://localhost:{}/'.format(port))
+        resp = requests.request(
+            method=request.method,
+            url=proxy_url,
+            headers={
+                key: value
+                for (key, value) in request.headers if key != 'Host'
+            },
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False)
+        if path == 'app':
+            content = resp.content
+            if request_args and 'server_id' in request_args:
+                server_id = request_args.get('server_id')
+                start_args = get_start_arguments(server_id)
+                http_port = start_args.get('http-port', '')
+                metrics_port = start_args.get('metrics-port', '')
+                model_name = start_args.get('default_model_name', '')
+                content = content.decode()
+                try:
+                    default_server_addr = re.search(
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("服务ip", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
+                    cur_server_addr = default_server_addr.replace(
+                        '"value": ""', '"value": "localhost"')
+                    default_http_port = re.search(
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("推理服务端口", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
+                    cur_http_port = default_http_port.replace(
+                        '"value": ""', '"value": "{}"'.format(http_port))
+                    default_metrics_port = re.search(
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("性能服务端口", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
+                    cur_metrics_port = default_metrics_port.replace(
+                        '"value": ""', '"value": "{}"'.format(metrics_port))
+                    default_model_name = re.search(
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("模型名称", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
+                    cur_model_name = default_model_name.replace(
+                        '"value": ""', '"value": "{}"'.format(model_name))
+                    default_model_version = re.search(
+                        '"label": {}.*?"value": "".*?}}'.format(
+                            json.dumps("模型版本", ensure_ascii=True).replace(
+                                '\\', '\\\\')), content).group(0)
+                    cur_model_version = default_model_version.replace(
+                        '"value": ""', '"value": "{}"'.format('1'))
+                    content = content.replace(default_server_addr,
+                                              cur_server_addr)
+                    if http_port:
+                        content = content.replace(default_http_port,
+                                                  cur_http_port)
+                    if metrics_port:
+                        content = content.replace(default_metrics_port,
+                                                  cur_metrics_port)
+                    if model_name:
+                        content = content.replace(default_model_name,
+                                                  cur_model_name)
+
+                    content = content.replace(default_model_version,
+                                              cur_model_version)
+                except Exception:
+                    pass
+                finally:
+                    content = content.encode()
+        else:
+            content = resp.content
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()]
+        response = Response(content, resp.status_code, headers)
+        return response
 
     @app.route(api_path + '/component_tabs')
     def component_tabs():

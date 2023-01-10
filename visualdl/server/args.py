@@ -78,7 +78,8 @@ def validate_args(args):
     supported_tabs = [
         'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram',
         'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve',
-        'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server'
+        'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server',
+        'fastdeploy_client'
     ]
     if args.component_tabs is not None:
         for component_tab in args.component_tabs:
