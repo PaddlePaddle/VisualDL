@@ -80,7 +80,7 @@ visualdl --host 0.0.0.0 --port 8080
   关于模型库的配置文件的完整定义可以参考[proto定义](https://github.com/triton-inference-server/common/blob/main/protobuf/model_config.proto)，文档[Model Configuration介绍](https://github.com/PaddlePaddle/FastDeploy/blob/release/1.0.2/serving/docs/zh_CN/model_configuration.md)对定义进行了一些简要说明。
 
   b. 下载模型资源
-  模型配置框的versions属性，将会列出当前模型所拥有的不同版本目录下存在的资源文件。当需要新增或者替换某个版本下的预训练模型时候，可以点击版本号，弹出预训练模型的下载框，选择希望新增或者替换的预训练模型名，即可以自动下载预训练模型作为该版本下的模型资源。
+  模型配置框的versions属性，将会列出当前模型所拥有的不同版本目录下存在的资源文件。当需要新增或者替换某个版本下的预训练模型时候，可以点击版本号，弹出预训练模型的下载框，选择希望新增或者替换的预训练模型名，即可以自动下载预训练模型作为该版本下的模型资源。此外，模型资源文件允许进行重命名和删除。
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211198445-e276c9b2-78c3-4c35-82a6-4b85cd014e1e.gif" width="100%"/>
   </p>
