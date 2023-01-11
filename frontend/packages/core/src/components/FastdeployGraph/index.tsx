@@ -21,6 +21,7 @@ import {Tree} from 'antd';
 import {fetcher} from '~/utils/fetch';
 import type {TreeProps} from 'antd/es/tree';
 // import {Dnd} from '@antv/x6-plugin-dnd';
+import {useTranslation} from 'react-i18next';
 import {History} from '@antv/x6-plugin-history';
 import {
     MinusCircleOutlined,
@@ -270,6 +271,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     console.log('form', form.getFieldsValue(true));
 
     const [treeData, setTreeData] = useState(modelData?.ensembles?.versions);
+    const {t} = useTranslation(['Fastdeploy']);
     const ports = {
         groups: {
             top: {
@@ -891,7 +893,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // setConfig_filename('');
                 setModelDatas(config);
                 setIsModalOpen(false);
-                toast.success('更新数据成功', {
+                toast.success(`${name}${t('Fastdeploy:Update-successfully')}`, {
                     autoClose: 2000
                 });
             },
@@ -913,7 +915,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const handleOk = () => {
         // onfinish();
         if (!configsButton) {
-            toast.error('该文件为备份的配置文件不允许修改，请重新选择', {
+            toast.error(t('Fastdeploy:Backup-config'), {
                 autoClose: 2000
             });
             return;
@@ -1098,7 +1100,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         // ChangeServerId(res.id);
                         ChangeServerId(res);
                         setIsModalOpen2(false);
-                        toast.success('启动服务成功', {
+                        toast.success(t('Fastdeploy:Launch-server-successfully'), {
                             autoClose: 2000
                         });
                     },
@@ -1188,7 +1190,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         setCascaderOptions([]);
                         setIsModalOpen3(false);
                         setSelectKeys(null);
-                        toast.success('下载预训练模型成功', {
+                        toast.success(t('Download-successfully'), {
                             autoClose: 2000
                         });
                     },
@@ -1220,7 +1222,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                     (res: any) => {
                         // debugger;
                         setFilenames(res);
-                        toast.success('设为启动配置文件成功', {
+                        toast.success(t('Set-successfully'), {
                             autoClose: 2000
                         });
                         if (name !== 'config.pbtxt') {
@@ -1289,7 +1291,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 setTreeData(treedata);
                 setModelDatas(ModelData);
                 setIsModalOpen5(false);
-                toast.success('删除资源文件成功', {
+                toast.success(t('Delete-resource-successfully'), {
                     autoClose: 2000
                 });
             },
@@ -1363,7 +1365,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             value: ''
                         }
                     ]);
-                    toast.success('重命名资源文件成功', {
+                    toast.success(t('Rename-successfully'), {
                         autoClose: 2000
                     });
                 },
@@ -1385,7 +1387,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             setFilenames(res);
             onGetConfigModel(res[0]);
             setIsModalOpen7(false);
-            toast.success('删除配置文件成功', {
+            toast.success(t('Delete-config-successfully'), {
                 autoClose: 2000
             });
         });
@@ -1849,7 +1851,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                             }}
                             onClick={changeEmsembles}
                         >
-                            ensemble配置
+                            {t('Fastdeploy:ensemble-configuration')}
                         </Buttons>
                         <Buttons
                             style={{
@@ -1859,17 +1861,17 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 setIsModalOpen2(true);
                             }}
                         >
-                            启动服务
+                            {t('Fastdeploy:launch-server')}
                         </Buttons>
                     </div>
                 </div>
             </div>
             <Modal
                 width={800}
-                title={IsEmsembles ? '配置ensemble' : '配置模型'}
+                title={IsEmsembles ? t('Fastdeploy:Ensemble-configuration') : t('Fastdeploy:Model-configuration')}
                 visible={isModalOpen}
-                cancelText={'取消'}
-                okText={'更新'}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:update')}
                 // footer={!configsButton ? null : ''}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -1926,7 +1928,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Buttons2 onClick={onConfig}>设为启动配置文件</Buttons2>
+                            <Buttons2 onClick={onConfig}>{t('Fastdeploy:set-as-launch-config')}</Buttons2>
                         </div>
                     </Form.Item>
                     <Form.Item
@@ -1994,7 +1996,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`变量${index + 1}`}</div>
+                                                >{`${t('Fastdeploy:variable')}${index + 1}`}</div>
                                                 {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
                                             </div>
                                             <div key={field.key}>
@@ -2070,7 +2072,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`变量${index + 1}`}</div>
+                                                >{`${t('Fastdeploy:variable')}${index + 1}`}</div>
                                                 {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
                                             </div>
                                             <div key={field.key}>
@@ -2138,7 +2140,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`实例${index + 1}`}</div>
+                                                >{`${t('Fastdeploy:instance')}${index + 1}`}</div>
                                                 <MinusCircleOutlined onClick={() => remove(field.name)} />
                                             </div>
                                             <div key={field.key}>
@@ -2472,9 +2474,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="配置启动参数"
-                cancelText={'取消'}
-                okText={'启动'}
+                title={t('Fastdeploy:Launch-parameters-configuration')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:launch')}
                 visible={isModalOpen2}
                 onOk={handleOk2}
                 onCancel={handleCancel2}
@@ -2574,9 +2576,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="预训练模型下载"
-                cancelText={'取消'}
-                okText={'确定'}
+                title={t('Fastdeploy:Download-pre-trained-model')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:ok')}
                 visible={isModalOpen3}
                 onOk={handleOk3}
                 onCancel={handleCancel3}
@@ -2584,7 +2586,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 <Form {...layout} form={form3} name="dynamic_form_complex" autoComplete="off">
                     <Form.Item
                         name={'models'}
-                        label={'预训练模型名'}
+                        label={t('Fastdeploy:Pre-trained')}
                         rules={[
                             {
                                 required: true,
@@ -2598,31 +2600,32 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="设为启动配置文件"
-                cancelText={'取消'}
-                okText={'确定'}
+                title={t('Fastdeploy:set-as-launch-config')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:ok')}
                 visible={isModalOpen4}
                 onOk={handleOk4}
                 onCancel={handleCancel4}
             >
-                设为启动配置文件即会将当前文件作为config.pbtxt,并覆盖之前的config.pbtxt的内容,被覆盖前的config.pbtxt会自动进行备份,是否继续
+                {t('Fastdeploy:The-config')}
             </Modal>
             <Modal
                 width={800}
-                title="删除资源文件"
-                cancelText={'取消'}
-                okText={'确定'}
+                title={t('Fastdeploy:Delete-resource-file')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:ok')}
                 visible={isModalOpen5}
                 onOk={handleOk5}
                 onCancel={handleCancel5}
             >
-                请确认是否删除资源文件{selectKeys}
+                {t('Fastdeploy:Confirm-delete-resource')}
+                {selectKeys}
             </Modal>
             <Modal
                 width={800}
-                title="重命名文件"
-                cancelText={'取消'}
-                okText={'确定'}
+                title={t('Fastdeploy:Rename-resource-file')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:ok')}
                 visible={isModalOpen6}
                 onOk={handleOk6}
                 onCancel={handleCancel6}
@@ -2647,14 +2650,15 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
             </Modal>
             <Modal
                 width={800}
-                title="删除配置文件"
-                cancelText={'取消'}
-                okText={'确定'}
+                title={t('Fastdeploy:Delete-config-file')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:ok')}
                 visible={isModalOpen7}
                 onOk={handleOk7}
                 onCancel={handleCancel7}
             >
-                请确认是否删除配置文件{selectKeys}
+                {t('Fastdeploy:Confirm-delete-config')}
+                {selectKeys}
             </Modal>
 
             {/* <iframe

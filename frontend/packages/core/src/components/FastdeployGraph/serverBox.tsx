@@ -7,6 +7,7 @@ import ServerConfig from './ServerConfig';
 import {fetcher} from '~/utils/fetch';
 import {backgrounds, rem} from '~/utils/style';
 import {toast} from 'react-toastify';
+import {useTranslation} from 'react-i18next';
 // import type {left} from '@antv/x6/lib/registry/port-label-layout/side';
 const TableTitle = styled.div`
     margin-bottom: 20px;
@@ -68,6 +69,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
         metric: null
     });
     const [configs, setConfigs] = useState<any>();
+    const {t} = useTranslation(['Fastdeploy']);
     useEffect(() => {
         if (Flag === undefined) {
             return;
@@ -124,7 +126,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                 console.log('get_server_output', res);
                 metricDatas(serverId, res);
                 getServe(serverId);
-                toast.success(`${serverId}更新日志和性能数据成功`, {
+                toast.success(`${serverId}${t('Fastdeploy:Update-successfully')}`, {
                     autoClose: 2000
                 });
             },
@@ -239,7 +241,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                             setFlag(0);
                         }}
                     >
-                        日志
+                        {t('Fastdeploy:log')}
                     </Buttons>
                     <Buttons
                         className={flag === 1 ? 'backgrounds' : ''}
@@ -247,7 +249,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                             setFlag(1);
                         }}
                     >
-                        性能
+                        {t('Fastdeploy:metric')}
                     </Buttons>
                     <Buttons
                         className={flag === 2 ? 'backgrounds' : ''}
@@ -255,7 +257,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                             setFlag(2);
                         }}
                     >
-                        模型库配置
+                        {t('Fastdeploy:model-repository')}
                     </Buttons>
                 </ButtonLeft>
                 <ButtonRight>
@@ -265,15 +267,16 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                             window.open(url);
                         }}
                     >
-                        打开客户端
+                        {t('Fastdeploy:open-client')}
                     </Buttons>
-                    <Buttons onClick={onEdit}>关闭服务</Buttons>
+                    {t('Fastdeploy:shutdown')}
+                    <Buttons onClick={onEdit}></Buttons>
                     <Buttons
                         onClick={() => {
                             clickOutDatas();
                         }}
                     >
-                        更新数据
+                        {t('Fastdeploy:updates')}
                     </Buttons>
                 </ButtonRight>
             </ButtonContent>

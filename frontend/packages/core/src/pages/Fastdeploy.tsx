@@ -10,8 +10,7 @@ import HashLoader from 'react-spinners/HashLoader';
 import {Select} from 'antd';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
-
-// import {useTranslation} from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {Modal} from 'antd';
 
 // type TabPosition = 'left' | 'right' | 'top' | 'bottom';
@@ -106,6 +105,7 @@ function App() {
     const [serverId, setServerId] = useState<number>();
     const [serverModels, setServerModels] = useState<any>([]);
     const [opens2, setOPens2] = useState(false);
+    const {t} = useTranslation(['Fastdeploy']);
     useEffect(() => {
         GetServerList();
     }, []);
@@ -249,7 +249,7 @@ function App() {
                 // debugger;
                 remove(targetKey);
                 setLoading(false);
-                toast.success('关闭服务成功', {
+                toast.success(t('Fastdeploy:Shutdown-server-successfully'), {
                     autoClose: 2000
                 });
             },
@@ -365,8 +365,10 @@ function App() {
             )} */}
             <Contents>
                 <InputContent>
-                    <div className="titleName">{dirs ? `当前模型库:${dirs}` : `请载入模型库`}</div>
-                    <Buttons onClick={ChangeModelClick}>载入模型库</Buttons>
+                    <div className="titleName">
+                        {dirs ? `${t('Fastdeploy:Current-model')}:${dirs}` : t('Fastdeploy:Load-model')}
+                    </div>
+                    <Buttons onClick={ChangeModelClick}>{t('Fastdeploy:load-model-repository')}</Buttons>
                 </InputContent>
                 <TabsContent>
                     <Tabs
@@ -397,7 +399,7 @@ function App() {
                             }
                         }}
                     >
-                        <Tabs.TabPane tab=" ensemble模型结构" key="item-1" style={{height: '100%'}}>
+                        <Tabs.TabPane tab={t('ensemble-pipeline')} key="item-1" style={{height: '100%'}}>
                             <FastdeployGraph
                                 modelData={modelData}
                                 // upModels={getModelData}
@@ -430,9 +432,9 @@ function App() {
             </Contents>
             <Modal
                 width={800}
-                title="载入模型库"
+                title={t('Fastdeploy:Load-model-repository')}
                 cancelText={'取消'}
-                okText={'载入模型库'}
+                okText={t('Fastdeploy:load-model-repository')}
                 visible={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -460,14 +462,14 @@ function App() {
             </Modal>
             <Modal
                 width={800}
-                title="关闭服务"
-                cancelText={'取消'}
-                okText={'关闭服务'}
+                title={t('Fastdeploy:Shutdown-server')}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:shutdown')}
                 visible={isModalOpen2}
                 onOk={handleOk2}
                 onCancel={handleCancel2}
             >
-                请确认是否关闭所启动服务
+                {t('Fastdeploy:Confirm')}
             </Modal>
             {/* {React.lazy(() => import('~/components/Fastdeploy'))} */}
         </Content>

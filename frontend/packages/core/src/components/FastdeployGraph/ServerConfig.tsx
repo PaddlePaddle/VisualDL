@@ -7,6 +7,7 @@ import {Tree} from 'antd';
 import styled from 'styled-components';
 import {Modal} from 'antd';
 import {Child} from '../ProfilerPage/OperatorView/type';
+import {useTranslation} from 'react-i18next';
 const Content = styled.div`
     height: 100%;
     #container {
@@ -238,6 +239,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
 
     const [form] = Form.useForm();
     const [treeData, setTreeData] = useState(modelData?.ensembles[0]?.versions);
+    const {t} = useTranslation(['Fastdeploy']);
     const getmodelData = (model: any, name: string) => {
         setModelName(name);
         setGraphModel(model);
@@ -763,17 +765,17 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                             }}
                             onClick={changeEmsembles}
                         >
-                            ensemble配置
+                            {t('Fastdeploy:ensemble-configuration')}
                         </Buttons>
                     </div>
                 </div>
             </div>
             <Modal
                 width={800}
-                title={IsEmsembles ? '配置ensemble' : '配置模型'}
+                title={IsEmsembles ? t('Fastdeploy:Ensemble-configuration') : t('Fastdeploy:Model-configuration')}
                 visible={isModalOpen}
-                cancelText={'取消'}
-                okText={'确定'}
+                cancelText={t('Fastdeploy:cancel')}
+                okText={t('Fastdeploy:ok')}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
@@ -841,7 +843,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`变量${index + 1}`}</div>
+                                                >{`${t('Fastdeploy:variable')}${index + 1}`}</div>
                                                 {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
                                             </div>
                                             <div key={field.key}>
@@ -917,7 +919,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`变量${index + 1}`}</div>
+                                                >{`${t('Fastdeploy:variable')}${index + 1}`}</div>
                                                 {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
                                             </div>
                                             <div key={field.key}>
@@ -985,7 +987,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                                                     style={{
                                                         marginRight: '10px'
                                                     }}
-                                                >{`实例${index + 1}`}</div>
+                                                >{`${t('Fastdeploy:instance')}${index + 1}`}</div>
                                                 {/* <MinusCircleOutlined onClick={() => remove(field.name)} /> */}
                                             </div>
                                             <div key={field.key}>

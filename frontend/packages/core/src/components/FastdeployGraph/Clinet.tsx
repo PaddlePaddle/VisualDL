@@ -1,4 +1,5 @@
 import React, {FunctionComponent} from 'react';
+import {useTranslation} from 'react-i18next';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 // type ArgumentProps = {
 
@@ -6,6 +7,8 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 
 const ServerBox: FunctionComponent = () => {
+    const {t} = useTranslation(['Fastdeploy']);
+
     return (
         <div
             style={{

@@ -1,6 +1,7 @@
 import {Table} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
 import React, {FunctionComponent, useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 
 interface DataType {
     key: string;
@@ -62,6 +63,8 @@ type ArgumentProps = {
     Datas: any;
 };
 const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
+    const {t} = useTranslation(['Fastdeploy']);
+
     const [tabelData, setTabelData] = useState<any>();
     useEffect(() => {
         if (!Datas) {
