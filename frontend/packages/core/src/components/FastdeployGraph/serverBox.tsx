@@ -21,8 +21,11 @@ const Buttons = styled.div`
     text-align: center;
     font-size: 16px;
     margin-left: 20px;
-    width: 100px;
+    min-width: 100px;
+    width: auto;
     border: 1px solid;
+    padding-left: 5px;
+    padding-right: 5px;
 `;
 const ButtonContent = styled.div`
     display: flex;
@@ -269,8 +272,8 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     >
                         {t('Fastdeploy:open-client')}
                     </Buttons>
-                    {t('Fastdeploy:shutdown')}
-                    <Buttons onClick={onEdit}></Buttons>
+
+                    <Buttons onClick={onEdit}>{t('Fastdeploy:shutdown')}</Buttons>
                     <Buttons
                         onClick={() => {
                             clickOutDatas();

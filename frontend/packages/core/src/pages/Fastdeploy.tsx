@@ -433,7 +433,7 @@ function App() {
             <Modal
                 width={800}
                 title={t('Fastdeploy:Load-model-repository')}
-                cancelText={'取消'}
+                cancelText={t('Fastdeploy:cancel')}
                 okText={t('Fastdeploy:load-model-repository')}
                 visible={isModalOpen}
                 onOk={handleOk}
