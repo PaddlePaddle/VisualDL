@@ -441,7 +441,7 @@ Developers are warmly welcomed to use, comment and contribute.
 
 ## More Details
 
-For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md), [VisualDL Profiler Guide](./docs/components/profiler/README.md), [Use VisualDL for fastdeploy serving deployment management](./docs/components/fastdeploy_server/README.md), [Use VisualDL as fastdeploy client for request visualization](./docs/components/fastdeploy_client/README.md).
+For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md), [**VisualDL Profiler Guide**](./docs/components/profiler/README.md), [**Use VisualDL for fastdeploy serving deployment management**](./docs/components/fastdeploy_server/README.md), [**Use VisualDL as fastdeploy client for request visualization**](./docs/components/fastdeploy_client/README.md).
 
 ## Technical Communication
 

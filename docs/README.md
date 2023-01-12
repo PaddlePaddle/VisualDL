@@ -334,7 +334,7 @@ VisualDL, in which Graph is powered by [Netron](https://github.com/lutzroeder/ne
 
 ## More Details
 
-For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./components/README.md), [VisualDL Profiler Guide](./components/profiler/README.md), [Use VisualDL for fastdeploy serving deployment management](./components/fastdeploy_server/README.md), [Use VisualDL as fastdeploy client for request visualization](./components/fastdeploy_client/README.md).
+For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./components/README.md), [**VisualDL Profiler Guide**](./components/profiler/README.md), [**Use VisualDL for fastdeploy serving deployment management**](./components/fastdeploy_server/README.md), [**Use VisualDL as fastdeploy client for request visualization**](./components/fastdeploy_client/README.md).
 
 ## Technical Communication
 

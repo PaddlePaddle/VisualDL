@@ -351,7 +351,7 @@ Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技�
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./components/README_CN.md)，[使用VisualDL做性能分析](./components/profiler/README_CN.md)，[使用VisualDL进行fastdeployserver下的模型服务化部署](./components/fastdeploy_server/README_CN.md)，[使用VisualDL作为fastdeployserver服务的客户端](./components/fastdeploy_client/README_CN.md)。
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./components/README_CN.md)，[**使用VisualDL做性能分析**](./components/profiler/README_CN.md)，[**使用VisualDL进行fastdeployserver下的模型服务化部署**](./components/fastdeploy_server/README_CN.md)，[**使用VisualDL作为fastdeployserver服务的客户端**](./components/fastdeploy_client/README_CN.md)。
 
 
 ## 技术交流

@@ -460,7 +460,7 @@ Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技�
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[使用VisualDL做性能分析](./docs/components/profiler/README_CN.md)，[使用VisualDL进行fastdeployserver下的模型服务化部署](./docs/components/fastdeploy_server/README_CN.md)，[使用VisualDL作为fastdeployserver服务的客户端](./docs/components/fastdeploy_client/README_CN.md)。
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[**使用VisualDL做性能分析**](./docs/components/profiler/README_CN.md)，[**使用VisualDL进行fastdeployserver下的模型服务化部署**](./docs/components/fastdeploy_server/README_CN.md)，[**使用VisualDL作为fastdeployserver服务的客户端**](./docs/components/fastdeploy_client/README_CN.md)。
 ## 技术交流
 
 欢迎您加入VisualDL官方QQ群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。
