@@ -1,8 +1,10 @@
+[**English**](./README.md)
+
 # 使用fastdeploy client进行可视化请求服务
 
 ### 概述
 
-FastDeploy服务的客户端组件主要用于快速的访问基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)开启的fastdeployserver服务，帮助用户进行预测请求和结果的可视化，对部署的服务进行快速验证。该页面基于gradio组件进行开发。
+FastDeploy服务的客户端组件主要用于快速的访问基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)开启的fastdeployserver服务，帮助用户进行预测请求和结果的可视化，对部署的服务进行快速验证。该页面基于gradio进行开发。
  <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211204267-8e044f32-1008-46a7-828a-d7c27ac5754a.gif" width="100%"/>
   </p>
@@ -37,7 +39,7 @@ FastDeploy服务的客户端页面主要分四部分，第一部分为fastdeploy
   </p>
   
 
-  第二种是"原始形式"，这种方式相当于一个原始的http客户端，输入框中输入http请求的原始负载，输出框中显示服务器返回的原始负载。使用这种方式，输入和输出的构造格式对用户完全不透明，因此不建议使用。
+  第二种是"原始形式"，这种方式相当于一个原始的http客户端，输入框中输入http请求的原始负载，输出框中显示服务器返回的原始负载。使用这种方式，输入和输出的构造格式对用户完全不透明，因此不建议使用，除非组件形式没法成功实现请求。
   <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211208731-381222bb-8fbe-45fa-bf78-4a3e2c7f6f04.gif" width="100%"/>
   </p>

@@ -1159,6 +1159,10 @@ visualdl --logdir ./log --port 8080
 ### 介绍
 性能数据可视化组件用来解析飞桨框架性能分析器导出的性能数据文件，从多个角度对性能数据进行汇总分析，帮助用户诊断训练程序的性能瓶颈所在。请参考文档[使用VisualDL做性能分析](./profiler/README_CN.md)进行使用。
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="85%"/>
+</p>
+
 ## X2Paddle--模型转换组件
 
 ### 介绍
