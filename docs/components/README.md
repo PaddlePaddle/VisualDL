@@ -23,7 +23,7 @@ Currently, VisualDL provides **Fifteen Components**: scalar, image, audio, text,
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 | [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way. |
 |[Profiler](#Profiler--profiling-data-visualization)| Profiling data visualization | Analyse profiling data exported by paddle, helping users identify program bottlenecks and optimize performance |
-|[X2Paddle](#X2Paddle--model-format-transformation)| Model transformation| Transform onnx model to paddle format |
+|[X2Paddle](#X2Paddle--model-format-transformation)| Model conversion| Convert onnx model to paddle format |
 |[FastDeploy Server](#FastDeploy-Server--fastdeploy-serving-deployment-management) | Fastdeploy serving deployment management | Provide the functions of loading and editing the model repository, fastdeployserver service management and monitoring |
 |[FastDeploy Client](#FastDeploy-Client--fastdeploy-client-for-request-visualization)| Fastdeploy client | Access the fastdeployserver service, helping users visualize prediction requests and results |
 
