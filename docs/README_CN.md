@@ -189,7 +189,7 @@ visualdl.server.app.run(logdir,
 | public_path   | string                                           | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app'                                                                                                                    |
 | api_only      | boolean                                          | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
 | open_browser  | boolean                                          | 是否打开浏览器，设置为True则在启动后自动打开浏览器并访问VisualDL面板，若设置api_only，则忽略此参数                                                                                           |
-| --component_tabs | 设定需要显示的组件，当前支持'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram', 'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve', 'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'共15个组件。如果设置了此参数，将只展示所指定的组件。如果没有设置此参数，当指定了--logdir参数时候，将会根据日志文件中拥有的数据类型来自动显示相应的组件。当没有指定--logdir参数，默认显示'static_graph', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'这四个名称代表的组件 |
+| --component_tabs | string或list[string_1, string_2, ... , string_n] | 设定需要显示的组件，当前支持'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram', 'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve', 'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'共15个组件。如果设置了此参数，将只展示所指定的组件。如果没有设置此参数，当指定了--logdir参数时候，将会根据日志文件中拥有的数据类型来自动显示相应的组件。当没有指定--logdir参数，默认显示'static_graph', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'这四个名称代表的组件 |
 
 针对上一步生成的日志，我们的启动脚本为：
 
