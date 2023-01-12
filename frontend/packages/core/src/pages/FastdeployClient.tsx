@@ -6,6 +6,8 @@ import Clinet from '~/components//FastdeployGraph/Clinet';
 import {fetcher} from '~/utils/fetch';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
+import {useTranslation} from 'react-i18next';
+
 // import {useTranslation} from 'react-i18next';
 
 const Contents = styled.div`
@@ -35,8 +37,10 @@ const TabsContent = styled.div`
 function App() {
     const [loading, setLoading] = useState(false);
     const [serverModels, setServerModels] = useState<any>([0]);
+    const {i18n} = useTranslation(['Fastdeploy']);
+    const language: string = i18n.language;
     const getClient = () => {
-        fetcher(`/fastdeploy/fastdeploy_client`, {
+        fetcher(`/fastdeploy/fastdeploy_client?lang=${language}`, {
             method: 'GET'
         }).then(
             (res: any) => {

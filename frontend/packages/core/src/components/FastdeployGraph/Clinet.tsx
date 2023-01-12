@@ -7,8 +7,9 @@ const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 console.log('PUBLIC_PATH', PUBLIC_PATH, PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client');
 
 const ServerBox: FunctionComponent = () => {
-    const {t} = useTranslation(['Fastdeploy']);
-
+    // const {t} = useTranslation(['Fastdeploy']);
+    const {i18n} = useTranslation(['Fastdeploy']);
+    const language: string = i18n.language;
     return (
         <div
             style={{
@@ -21,7 +22,7 @@ const ServerBox: FunctionComponent = () => {
                     width: '100%',
                     height: '100%'
                 }}
-                src={PUBLIC_PATH + '/api/fastdeploy/fastdeploy_client'}
+                src={PUBLIC_PATH + `/api/fastdeploy/fastdeploy_client?lang=${language}`}
                 // src={'https://www.baidu.com/'}
                 frameBorder={0}
                 scrolling="true"

@@ -72,7 +72,9 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
         metric: null
     });
     const [configs, setConfigs] = useState<any>();
-    const {t} = useTranslation(['Fastdeploy']);
+    const {i18n, t} = useTranslation(['Fastdeploy']);
+    // const {i18n} = useTranslation(['Fastdeploy']);
+    const language: string = i18n.language;
     useEffect(() => {
         if (Flag === undefined) {
             return;
@@ -214,11 +216,11 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                     }}
                 >
                     <div>
-                        <TableTitle>模型服务监控</TableTitle>
+                        <TableTitle>{t('Fastdeploy:Model-metrics')}</TableTitle>
                         <ModelTables Datas={Datas?.metric?.Model}></ModelTables>
                     </div>
                     <div>
-                        <TableTitle>GPU监控</TableTitle>
+                        <TableTitle>{t('Fastdeploy:GPU-metrics')}</TableTitle>
                         <CPUTables Datas={Datas?.metric?.GPU}></CPUTables>
                     </div>
                 </div>
@@ -266,7 +268,10 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                 <ButtonRight>
                     <Buttons
                         onClick={() => {
-                            const url = PUBLIC_PATH + `/api/fastdeploy/fastdeploy_client?server_id=${server_id}`;
+                            const url =
+                                PUBLIC_PATH +
+                                `/api/fastdeploy/fastdeploy_client?server_id=${server_id}` +
+                                `&lang=${language}`;
                             window.open(url);
                         }}
                     >
