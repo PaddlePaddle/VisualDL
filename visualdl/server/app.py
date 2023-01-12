@@ -239,38 +239,82 @@ def create_app(args):  # noqa: C901
                 model_name = start_args.get('default_model_name', '')
                 content = content.decode()
                 try:
-                    default_server_addr = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("服务ip", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_server_addr = default_server_addr.replace(
-                        '"value": ""', '"value": "localhost"')
-                    default_http_port = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("推理服务端口", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_http_port = default_http_port.replace(
-                        '"value": ""', '"value": "{}"'.format(http_port))
-                    default_metrics_port = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("性能服务端口", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_metrics_port = default_metrics_port.replace(
-                        '"value": ""', '"value": "{}"'.format(metrics_port))
-                    default_model_name = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("模型名称", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_model_name = default_model_name.replace(
-                        '"value": ""', '"value": "{}"'.format(model_name))
-                    default_model_version = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("模型版本", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_model_version = default_model_version.replace(
-                        '"value": ""', '"value": "{}"'.format('1'))
-                    content = content.replace(default_server_addr,
-                                              cur_server_addr)
+                    if request_args.get('lang', 'zh') == 'en':
+                        default_server_addr = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps(
+                                    "server ip", ensure_ascii=True).replace(
+                                        '\\', '\\\\')), content).group(0)
+                        cur_server_addr = default_server_addr.replace(
+                            '"value": ""', '"value": "localhost"')
+                        default_http_port = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps(
+                                    "server port", ensure_ascii=True).replace(
+                                        '\\', '\\\\')), content).group(0)
+                        cur_http_port = default_http_port.replace(
+                            '"value": ""', '"value": "{}"'.format(http_port))
+                        default_metrics_port = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps(
+                                    "metrics port", ensure_ascii=True).replace(
+                                        '\\', '\\\\')), content).group(0)
+                        cur_metrics_port = default_metrics_port.replace(
+                            '"value": ""',
+                            '"value": "{}"'.format(metrics_port))
+                        default_model_name = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps(
+                                    "model name", ensure_ascii=True).replace(
+                                        '\\', '\\\\')), content).group(0)
+                        cur_model_name = default_model_name.replace(
+                            '"value": ""', '"value": "{}"'.format(model_name))
+                        default_model_version = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps("model version",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')),
+                            content).group(0)
+                        cur_model_version = default_model_version.replace(
+                            '"value": ""', '"value": "{}"'.format('1'))
+                        content = content.replace(default_server_addr,
+                                                  cur_server_addr)
+                    else:
+                        default_server_addr = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps("服务ip", ensure_ascii=True).replace(
+                                    '\\', '\\\\')), content).group(0)
+                        cur_server_addr = default_server_addr.replace(
+                            '"value": ""', '"value": "localhost"')
+                        default_http_port = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps(
+                                    "推理服务端口", ensure_ascii=True).replace(
+                                        '\\', '\\\\')), content).group(0)
+                        cur_http_port = default_http_port.replace(
+                            '"value": ""', '"value": "{}"'.format(http_port))
+                        default_metrics_port = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps(
+                                    "性能服务端口", ensure_ascii=True).replace(
+                                        '\\', '\\\\')), content).group(0)
+                        cur_metrics_port = default_metrics_port.replace(
+                            '"value": ""',
+                            '"value": "{}"'.format(metrics_port))
+                        default_model_name = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps("模型名称", ensure_ascii=True).replace(
+                                    '\\', '\\\\')), content).group(0)
+                        cur_model_name = default_model_name.replace(
+                            '"value": ""', '"value": "{}"'.format(model_name))
+                        default_model_version = re.search(
+                            '"label": {}.*?"value": "".*?}}'.format(
+                                json.dumps("模型版本", ensure_ascii=True).replace(
+                                    '\\', '\\\\')), content).group(0)
+                        cur_model_version = default_model_version.replace(
+                            '"value": ""', '"value": "{}"'.format('1'))
+                        content = content.replace(default_server_addr,
+                                                  cur_server_addr)
                     if http_port:
                         content = content.replace(default_http_port,
                                                   cur_http_port)
