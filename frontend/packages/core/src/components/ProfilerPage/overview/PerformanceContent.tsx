@@ -2,7 +2,7 @@
 /* eslint-disable sort-imports */
 import React, {Fragment, FunctionComponent} from 'react';
 import {rem} from '~/utils/style';
-import {useTranslation} from 'react-i18next';
+// import {useTranslation} from 'react-i18next';
 import styled from 'styled-components';
 import BarsChart from '~/components/BarsChart';
 import {Tabs} from 'antd';

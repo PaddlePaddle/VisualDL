@@ -37,6 +37,8 @@ function isWorkspace() {
 const iconsPath = path.dirname(resolve.sync(cwd, '@visualdl/icons'));
 const netronPath = path.dirname(resolve.sync(cwd, '@visualdl/netron'));
 const netronPath2 = path.dirname(resolve.sync(cwd, '@visualdl/netron2'));
+// const netronPath3 = path.dirname(resolve.sync(cwd, '@visualdl/netron3'));
+
 const TracePath = path.dirname(resolve.sync(cwd, './public/static'));
 const wasmPath = path.dirname(resolve.sync(cwd, '@visualdl/wasm'));
 const dest = path.resolve(cwd, './dist/__snowpack__/link/packages');
@@ -102,6 +104,10 @@ export default {
                         source: [path.join(netronPath2, '**/*')],
                         destination: path.join(dest, 'netron2/dist')
                     },
+                    // {
+                    //     source: [path.join(netronPath3, '**/*')],
+                    //     destination: path.join(dest, 'netron3/dist')
+                    // },
                     {
                         source: [path.join(TracePath, '**/*')],
                         destination: path.join(dest, 'trace/dist')
@@ -120,7 +126,7 @@ export default {
     },
     packageOptions: {
         polyfillNode: true,
-        namedExports: ['gl-vec2', 'dagre'],
+        namedExports: [],
         // knownEntrypoints: ['chai', '@testing-library/react', 'fetch-mock/esm/client']
         knownEntrypoints: ['chai', '@testing-library/react']
     },

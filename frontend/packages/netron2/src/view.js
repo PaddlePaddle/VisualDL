@@ -975,6 +975,7 @@ view.View = class {
                 return this._timeout(200).then(() => {
                     const graphRenderer = new grapher.Renderer(this._host, originElement, this);
                     graphRenderer.render(g);
+                    console.log('graphRenderer.render(g)', g);
                     for (const cluster of document.getElementById('clusters').children) {
                         this._clusters[cluster.getAttribute('id')] = cluster;
                     }

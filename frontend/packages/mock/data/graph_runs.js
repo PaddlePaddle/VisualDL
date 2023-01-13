@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export default {status: 0, msg: '', data: ['test_add_graph/', 'test_add_graph/test1']};
+export default {status: 0, msg: '', data: ['dynamic_graph', 'x2paddle', 'fastdeploy_server']};
