@@ -42,9 +42,10 @@ visualdl --host 0.0.0.0 --port 8080
 ```
 进入FastDeployServer的功能选项卡后，
 
-1. 模型库载入和编辑
+1.模型库载入和编辑
 
   -  **模型库载入**
+
   点击"载入模型库"按钮选择模型库路径，可选路径的"根路径"为visualdl启动时所在的路径。如果所选择的路径不是一个有效的模型库路径，则会进行提醒。打开模型库./vision/detection/paddledetection/serving/models
   <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211199367-18d36b58-cbe8-4d5f-994b-9d9317753f78.gif" width="100%"/>
@@ -52,6 +53,7 @@ visualdl --host 0.0.0.0 --port 8080
   
 
   - **模型配置编辑**
+
   在模型库中，模型可以分为基础模型和ensemble模型。ensemble模型由基础模型构成，表示多个基础模型形成的pipeline，如三个基础模型"preprocess","runtime","postprocess"可以构成一个ensemble模型。在画布中显示的即是ensemble模型的构成，右边列举了当前的ensemble模型和所有的基础模型。
   <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211194661-51ecb563-0095-48ce-8143-ed7123f5b03c.png" width="100%"/>
@@ -67,6 +69,7 @@ visualdl --host 0.0.0.0 --port 8080
 
 
   a. 配置修改更新
+
   当用户选择某个配置文件的时候，配置界面将会展示所选配置文件里的配置信息。目前配置界面主要支持用户修改maxBatchSize、instanceGroup以及optimization三个属性的配置，这三个属性的含义和可修改值的说明如下。
   ```text
   maxBatchSize: 设置模型推理时候，允许的最大batch size。请输入非负整数，如16
@@ -82,19 +85,21 @@ visualdl --host 0.0.0.0 --port 8080
   关于模型库的配置文件的完整定义可以参考[proto定义](https://github.com/triton-inference-server/common/blob/main/protobuf/model_config.proto)，文档[Model Configuration介绍](https://github.com/PaddlePaddle/FastDeploy/blob/release/1.0.2/serving/docs/zh_CN/model_configuration.md)对定义进行了一些简要说明。
 
   b. 下载模型资源
+
   模型配置框的versions属性，将会列出当前模型所拥有的不同版本目录下存在的资源文件。当需要新增或者替换某个版本下的预训练模型时候，可以点击版本号，弹出预训练模型的下载框，选择希望新增或者替换的预训练模型名，即可以自动下载预训练模型作为该版本下的模型资源。此外，模型资源文件允许进行重命名和删除。
-<p align="center">
+  <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211198445-e276c9b2-78c3-4c35-82a6-4b85cd014e1e.gif" width="100%"/>
   </p>
 
   c. 设置启动服务时的模型配置文件
+
   当使用fastdeployserver启动模型库时候，所用到的配置文件是每个模型目录下的config.pbtxt，当模型目录下有多个提前准备好的配置文件时候，可以通过选择某个配置文件设置为启动配置文件，就会将所选择的配置文件的内容覆盖config.pbtxt。因此，这一操作相当于是配置回滚，可以用于将某个备份的配置文件的数据载入到config.pbtxt，也可以用于选定某一个配置文件作为fastdeployserver载入模型时所用到的配置文件。
-<p align="center">
+  <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211198515-96932d01-de59-44e5-ac76-e90b146c1aa8.gif" width="100%"/>
   </p>
   
 
-2. fastdeployserver服务管理监控
+2.fastdeployserver服务管理监控
   VisualDL提供了对fastdeployserver服务的管理监控功能。主要包括启动服务、监控服务、关闭服务、测试服务四个方面的功能。
 
   a. 启动服务
@@ -109,12 +114,14 @@ visualdl --host 0.0.0.0 --port 8080
   grpc-port: 指定fastdeployserver的grpc服务端口，默认为8001
   metrics-port: 指定fastdeployserver的性能查询服务端口，默认为8002
   gpus: 指定部署的服务能够使用的gpu号，如使用卡2和卡3，即为"2,3"，如果没有填，则会使用全部可获得的gpu
+
   ```
   <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211198608-c40283b0-e2cb-4a02-ae8a-3f6a2d5baae4.gif" width="100%"/>
   </p>
 
   b. 监控服务
+
   目前主要通过提供给用户fastdeployserver服务的输出信息、性能信息、以及所启动的模型库信息，来实现对所启动服务的监控。前端默认每10s会自动更新一下所监控的信息，用户也可以点击"更新数据"按钮进行手动更新。
   - 日志（fastdeployserver服务的输出信息，可用于获取服务的启动和加载情况，异常信息等）
   - 性能（通过访问fastdeployserver的性能查询服务，获取性能相关数据）
@@ -125,12 +132,14 @@ visualdl --host 0.0.0.0 --port 8080
   </p>
 
   c. 关闭服务
+
   点击左侧的关闭标签或者"关闭服务"按钮，可以手动关停某个fastdeployserver服务。
   <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211198748-c0628ed9-505a-4f7d-ae17-ecadf060b562.gif" width="100%"/>
   </p>
 
   d. 测试服务
+
   点击"打开客户端"按钮，会打开快速测试fastdeployserver服务的客户端界面。该界面基于gradio编写，并且会自动根据fastdeployserver服务启动的参数，帮助用户填好基本的信息，用户可以参考 [使用fastdeploy client进行可视化请求服务](../fastdeploy_client/README_CN.md)进行使用。
   <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211198901-3e58fe9d-8667-4416-987a-200f9edeb05d.gif" width="100%"/>
