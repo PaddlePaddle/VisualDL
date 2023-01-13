@@ -22,3 +22,7 @@ declare module '@visualdl/netron2' {
     const ref: string;
     export default ref;
 }
+// declare module '@visualdl/netron3' {
+//     const ref: string;
+//     export default ref;
+// }

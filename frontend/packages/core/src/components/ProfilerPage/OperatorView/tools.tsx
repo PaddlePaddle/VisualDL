@@ -1,5 +1,5 @@
-import type {ColumnsType} from 'antd/lib/table';
-import React from 'react';
+// import type {ColumnsType} from 'antd/lib/table';
+// import React from 'react';
 import type {EChartsOption} from 'echarts';
 export const options: EChartsOption = {
     grid: {

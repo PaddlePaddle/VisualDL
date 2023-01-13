@@ -14,9 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as chart from '~/utils/chart';
-
 import React, {useEffect, useImperativeHandle} from 'react';
 import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
@@ -219,6 +216,7 @@ const Charts = React.forwardRef<BarChartRef, BarsChartProps>(
                 });
                 echart?.setOption(chartOptions, {notMerge: true});
             }
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [options, data, title, theme, i18n.language, echart, isLegend, units, text]);
         return (
             <Wrapper ref={wrapper} className={className}>

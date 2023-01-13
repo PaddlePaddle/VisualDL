@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
