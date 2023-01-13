@@ -19,7 +19,6 @@ import numpy as np
 import requests
 import tritonclient.http as httpclient
 from attrdict import AttrDict
-from tritonclient.utils import InferenceServerException
 
 
 def convert_http_metadata_config(metadata):
@@ -351,7 +350,7 @@ class HttpClientManager:
         try:
             model_metadata = fastdeploy_client.get_model_metadata(
                 model_name=model_name, model_version=model_version)
-        except InferenceServerException as e:
+        except Exception as e:
             raise RuntimeError("Failed to retrieve the metadata: " + str(e))
 
         model_metadata = convert_http_metadata_config(model_metadata)

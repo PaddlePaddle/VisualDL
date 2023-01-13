@@ -181,6 +181,7 @@ def create_app(args):  # noqa: C901
             error_msg = '{}'.format(e)
             return make_response(error_msg)
         args = urllib.parse.urlencode(request_args)
+
         if args:
             return redirect(
                 api_path + "/fastdeploy/fastdeploy_client/app?{}".format(args),
@@ -201,14 +202,30 @@ def create_app(args):  # noqa: C901
         Returns:
             Any thing from gradio server.
         '''
+        lang = 'zh'
         if request.method == 'POST':
+            if request.mimetype == 'application/json':
+                request_args = request.json
+            else:
+                request_args = request.form.to_dict()
+            if 'data' in request_args:
+                lang = request_args['data'][-1]
+                request_args['lang'] = lang
+            elif 'lang' in request_args:
+                lang = request_args['lang']
+
             port = fastdeploy_api_call('create_fastdeploy_client',
-                                       request.form)
-            request_args = request.form
+                                       request_args)
         else:
+            request_args = request.args.to_dict()
+            if 'data' in request_args:
+                lang = request_args['data'][-1]
+                request_args['lang'] = lang
+            elif 'lang' in request_args:
+                lang = request_args['lang']
             port = fastdeploy_api_call('create_fastdeploy_client',
-                                       request.args)
-            request_args = request.args
+                                       request_args)
+
         if path == 'app':
             proxy_url = request.url.replace(
                 request.host_url.rstrip('/') + api_path +

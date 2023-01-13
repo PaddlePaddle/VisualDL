@@ -18,6 +18,7 @@ import numpy as np
 from .http_client_manager import get_metric_data
 from .http_client_manager import HttpClientManager
 from .http_client_manager import metrics_table_head
+from .http_client_manager import metrics_table_head_en
 from .visualizer import visualize_detection
 from .visualizer import visualize_face_alignment
 from .visualizer import visualize_face_detection
@@ -257,11 +258,19 @@ def create_gradio_client_app():  # noqa:C901
                 max_lines=1,
                 interactive=False)
 
+        lang_text = gr.Textbox(
+            label="lang",
+            show_label=False,
+            value='zh',
+            max_lines=1,
+            visible=False
+        )  # This text box is only used for divide zh and en page
+
         all_input_output_components = input_accordions + input_name_texts + input_images + \
             input_texts + output_accordions + output_name_texts + output_images + output_texts
 
         def get_input_output_name(server_ip, server_port, model_name,
-                                  model_version):
+                                  model_version, lang_text):
             try:
                 server_addr = server_ip + ':' + server_port
                 input_metas, output_metas = _http_manager.get_model_meta(
@@ -358,7 +367,7 @@ def create_gradio_client_app():  # noqa:C901
             except Exception as e:
                 return {status_text: 'Error: {}'.format(e)}
 
-        def update_metric(server_ip, metrics_port):
+        def update_metric(server_ip, metrics_port, lang_text):
             if server_ip and metrics_port:
                 try:
                     html_table = get_metric_data(server_ip, metrics_port, 'zh')
@@ -377,7 +386,7 @@ def create_gradio_client_app():  # noqa:C901
             fn=get_input_output_name,
             inputs=[
                 server_addr_text, server_http_port_text, model_name_text,
-                model_version_text
+                model_version_text, lang_text
             ],
             outputs=[
                 *all_input_output_components, check_button,
@@ -404,7 +413,7 @@ def create_gradio_client_app():  # noqa:C901
             outputs=[output_raw_text, status_text, output_html_table])
         update_metric_button.click(
             fn=update_metric,
-            inputs=[server_addr_text, server_metric_port_text],
+            inputs=[server_addr_text, server_metric_port_text, lang_text],
             outputs=[output_html_table, status_text])
     return block
 
@@ -621,7 +630,7 @@ def create_gradio_client_app_en():  # noqa:C901
                         label="metrics",
                         interactive=False,
                         show_label=False,
-                        value=metrics_table_head.format('', ''))
+                        value=metrics_table_head_en.format('', ''))
                     update_metric_button = gr.Button("update metrics")
 
             status_text = gr.Textbox(
@@ -630,11 +639,19 @@ def create_gradio_client_app_en():  # noqa:C901
                 max_lines=1,
                 interactive=False)
 
+        lang_text = gr.Textbox(
+            label="lang",
+            show_label=False,
+            value='en',
+            max_lines=1,
+            visible=False
+        )  # This text box is only used for divide zh and en page
+
         all_input_output_components = input_accordions + input_name_texts + input_images + \
             input_texts + output_accordions + output_name_texts + output_images + output_texts
 
         def get_input_output_name(server_ip, server_port, model_name,
-                                  model_version):
+                                  model_version, lang_text):
             try:
                 server_addr = server_ip + ':' + server_port
                 input_metas, output_metas = _http_manager.get_model_meta(
@@ -646,7 +663,6 @@ def create_gradio_client_app_en():  # noqa:C901
                 for component in all_input_output_components
             }
             results[component_format_column] = gr.update(visible=True)
-            # results[check_button] = gr.update(visible=False)
             for input_accordio in input_accordions:
                 results[input_accordio] = gr.update(visible=False)
             for output_accordio in output_accordions:
@@ -732,7 +748,7 @@ def create_gradio_client_app_en():  # noqa:C901
             except Exception as e:
                 return {status_text: 'Error: {}'.format(e)}
 
-        def update_metric(server_ip, metrics_port):
+        def update_metric(server_ip, metrics_port, lang_text):
             if server_ip and metrics_port:
                 try:
                     html_table = get_metric_data(server_ip, metrics_port, 'en')
@@ -751,7 +767,7 @@ def create_gradio_client_app_en():  # noqa:C901
             fn=get_input_output_name,
             inputs=[
                 server_addr_text, server_http_port_text, model_name_text,
-                model_version_text
+                model_version_text, lang_text
             ],
             outputs=[
                 *all_input_output_components, check_button,
@@ -778,6 +794,6 @@ def create_gradio_client_app_en():  # noqa:C901
             outputs=[output_raw_text, status_text, output_html_table])
         update_metric_button.click(
             fn=update_metric,
-            inputs=[server_addr_text, server_metric_port_text],
+            inputs=[server_addr_text, server_metric_port_text, lang_text],
             outputs=[output_html_table, status_text])
     return block
