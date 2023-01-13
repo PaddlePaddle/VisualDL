@@ -31,7 +31,7 @@
     "Delete-config-file": "删除配置文件",
     "Delete-resource-file": "删除资源文件",
     "Rename-resource-file": "重命名文件",
-    "Shutdown-server": "Shutdown server",
+    "Shutdown-server": "关闭服务",
     "Update-configuration-successfully": "更新配置成功",
     "Launch-server-successfully": "启动服务成功",
     "Update-successfully": "更新日志和性能数据成功",

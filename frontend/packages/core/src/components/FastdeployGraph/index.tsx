@@ -173,8 +173,10 @@ const Buttons = styled.div`
     background-color: var(--navbar-background-color);
 `;
 const Buttons2 = styled(Buttons)`
-    width: 138px;
+    min-width: 138px;
     height: 32px;
+    padding-left: 5px;
+    padding-right: 5px;
     line-height: 32px;
     padding-left: 5px;
     padding-right: 5px;
@@ -1886,7 +1888,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                                 rules={[{required: true, message: '该字段为必填项请填写对应信息'}]}
                                 style={{
                                     marginBottom: '0px',
-                                    width: '340px'
+                                    // width: '340px'
+                                    width: language === 'zh' ? '340px' : '316px'
                                 }}
                             >
                                 <Select
