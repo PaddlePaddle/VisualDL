@@ -19,7 +19,6 @@ import {Export} from '@antv/x6-plugin-export';
 import {DownOutlined} from '@ant-design/icons';
 import {Tree} from 'antd';
 import {fetcher} from '~/utils/fetch';
-import type {TreeProps} from 'antd/es/tree';
 // import {Dnd} from '@antv/x6-plugin-dnd';
 import {useTranslation} from 'react-i18next';
 import {History} from '@antv/x6-plugin-history';
@@ -31,9 +30,8 @@ import {
     DeleteOutlined
 } from '@ant-design/icons';
 import {Button, Form, Input, Select, Space} from 'antd';
-import {fromPairs, isArray} from 'lodash';
+import {isArray} from 'lodash';
 const {TreeNode} = Tree;
-import {InitOutput} from '../../../../wasm/dist/index';
 import {div} from 'numeric';
 const Content = styled.div`
     height: 100%;
@@ -224,7 +222,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     // const [edgeMaps, setEdgeMaps] = useState<any>({});
     const [showGpus, setShowGpus] = useState<any>({});
 
-    const [configs, setConfigs] = useState<any>({
+    const configs = {
         'server-name': null,
         'model-repository': 'yolov5_serving/models',
         'backend-config': 'python,shm-default-byte-size=10485760',
@@ -232,7 +230,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
         'grpc-port': 8001,
         'metrics-port': 8002,
         gpus: null
-    });
+    };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [isModalOpen3, setIsModalOpen3] = useState(false);
@@ -244,7 +242,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     const dndContainerRef = useRef<HTMLInputElement | null>(null);
     const [graphModel, setGraphModel] = useState<any>();
     const [filenames, setFilenames] = useState<any>([]);
-    const [config_filename, setConfig_filename] = useState<any>('');
+    // const [config_filename, setConfig_filename] = useState<any>('');
     const [modelName, setModelName] = useState<string>();
 
     const [IsEmsembles, setIsEmsembles] = useState<boolean>();
@@ -1215,6 +1213,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 `&config_filename=${name}`
         ).then(
             (res: any) => {
+                console.log('set_default_config_for_model', res);
                 setIsModalOpen4(false);
                 // const name = form.getf
                 // setConfig_filename(name);

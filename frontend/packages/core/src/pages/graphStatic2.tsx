@@ -20,9 +20,9 @@ import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} 
 import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic2';
 import React, {useImperativeHandle, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
-import {actions, selectors} from '~/store';
+import {actions} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 
 import type {BlobResponse} from '~/utils/fetch';
 import Button from '~/components/Button';
@@ -100,7 +100,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
     const {t} = useTranslation(['graph', 'common']);
 
     const storeDispatch = useDispatch();
-    const storeModel = useSelector(selectors.graph.model);
+    // const storeModel = useSelector(selectors.graph.model);
 
     const graph = useRef<GraphRef>(null);
     const file = useRef<HTMLInputElement>(null);

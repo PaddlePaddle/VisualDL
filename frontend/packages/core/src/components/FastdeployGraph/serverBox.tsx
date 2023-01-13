@@ -5,7 +5,7 @@ import ModelTables from './ModelTables';
 import CPUTables from './CPUTables';
 import ServerConfig from './ServerConfig';
 import {fetcher} from '~/utils/fetch';
-import {backgrounds, rem} from '~/utils/style';
+import {rem} from '~/utils/style';
 import {toast} from 'react-toastify';
 import {useTranslation} from 'react-i18next';
 // import type {left} from '@antv/x6/lib/registry/port-label-layout/side';

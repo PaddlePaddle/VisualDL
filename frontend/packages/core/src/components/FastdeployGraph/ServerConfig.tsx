@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect, FunctionComponent} from 'react';
 import {MinusCircleOutlined, DownOutlined, VerticalAlignBottomOutlined} from '@ant-design/icons';
 import {Graph, Shape} from '@antv/x6';
-import {Button, Form, Input, Select, Space} from 'antd';
+import {Form, Input, Select, Space} from 'antd';
 import type {TreeProps} from 'antd/es/tree';
 import {Tree} from 'antd';
 import styled from 'styled-components';
 import {Modal} from 'antd';
-import {Child} from '../ProfilerPage/OperatorView/type';
+// import {Child} from '../ProfilerPage/OperatorView/type';
 import {useTranslation} from 'react-i18next';
 const Content = styled.div`
     height: 100%;
@@ -222,11 +223,11 @@ const ports = {
 };
 const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) => {
     const graphContainer = `graph-containers${serverId}`;
-    const [ModelDatas, setModelDatas] = useState<any>(modelData);
+    // const [ModelDatas, setModelDatas] = useState<any>(modelData);
     const [steps, setSteps] = useState<any>();
     const [selectOptions, setSelectOptions] = useState([]);
     const [graphModel, setGraphModel] = useState<any>();
-    const [modelName, setModelName] = useState<string>();
+    // const [modelName, setModelName] = useState<string>();
     const [nodeClick, setNodeClick] = useState<any>();
     const [showFlag, setShowFlag] = useState<boolean>();
     const [IsEmsembles, setIsEmsembles] = useState<boolean>();
@@ -241,7 +242,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
     const [treeData, setTreeData] = useState(modelData?.ensembles[0]?.versions);
     const {t} = useTranslation(['Fastdeploy']);
     const getmodelData = (model: any, name: string) => {
-        setModelName(name);
+        // setModelName(name);
         setGraphModel(model);
         const treedata = model.versions.map((version: any) => {
             return {
@@ -488,7 +489,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
             };
         });
         setEnsemblesName(modelData.ensembles[0]?.name);
-        setModelDatas(modelData);
+        // setModelDatas(modelData);
         setSelectOptions(SelectOptions);
     }, [modelData]);
     useEffect(() => {
@@ -971,7 +972,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                     </Form.Item>
                     <Form.Item label="instanceGroup">
                         <Form.List name="instanceGroup">
-                            {(fields3, {add, remove}) => (
+                            {(fields3, {}) => (
                                 <div>
                                     {fields3?.map((field: any, index: number) => (
                                         <div key={field.key}>
@@ -1084,7 +1085,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                     <Form.Item name="optimization" label="optimization">
                         <div>
                             <Form.List name="cpuExecutionAccelerator">
-                                {(fields4, {add, remove}) => (
+                                {(fields4, {}) => (
                                     <div>
                                         <div
                                             style={{
@@ -1132,7 +1133,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                                                     </div>
                                                     <Form.Item>
                                                         <Form.List name={[field.name, 'parameters']} key={field.key}>
-                                                            {(fields5, {add: addTest, remove: removeTest}) => (
+                                                            {(fields5, {}) => (
                                                                 <div
                                                                     style={{
                                                                         paddingLeft: '60px'
@@ -1202,7 +1203,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                         </div>
                         <div>
                             <Form.List name="gpuExecutionAccelerator">
-                                {(fields6, {add, remove}) => (
+                                {(fields6, {}) => (
                                     <div>
                                         <div
                                             style={{
@@ -1250,7 +1251,7 @@ const ServerConfig: FunctionComponent<ArgumentProps> = ({modelData, serverId}) =
                                                     </div>
                                                     <Form.Item>
                                                         <Form.List name={[field.name, 'parameters']} key={field.key}>
-                                                            {(fields7, {add: addTest, remove: removeTest}) => (
+                                                            {(fields7, {}) => (
                                                                 <div
                                                                     style={{
                                                                         paddingLeft: '60px'
