@@ -896,7 +896,9 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // setConfig_filename('');
                 setModelDatas(config);
                 setIsModalOpen(false);
-                toast.success(`${name} ${t('Fastdeploy:Update-configuration-successfully')}`, {
+                const message =
+                    language === 'zh' ? `${name} 更新配置成功` : `Update ${name} configuration successfully`;
+                toast.success(message, {
                     autoClose: 2000
                 });
             },
