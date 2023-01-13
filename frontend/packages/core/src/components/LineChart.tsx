@@ -17,7 +17,7 @@
 
 import * as chart from '~/utils/chart';
 
-import React, {useEffect, useImperativeHandle, useState} from 'react';
+import React, {useEffect, useImperativeHandle} from 'react';
 import {WithStyled, primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 

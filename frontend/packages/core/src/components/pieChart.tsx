@@ -20,7 +20,7 @@ import leftIcon from '~/assets/images/leftClick.svg';
 import rightIcon from '~/assets/images/rightClick.svg';
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 import React, {useEffect, useImperativeHandle} from 'react';
-import {WithStyled, primaryColor} from '~/utils/style';
+import {primaryColor} from '~/utils/style';
 import useECharts, {Options, Wrapper, useChartTheme} from '~/hooks/useECharts';
 import styled from 'styled-components';
 import type {EChartsOption} from 'echarts';
@@ -90,7 +90,7 @@ const Content = styled.div`
 `;
 const PieChart = React.forwardRef<LineChartRef, pieChartProps>(
     ({option, data, title, loading, zoom, className, onInit, isCpu, color, units}, ref) => {
-        const {i18n} = useTranslation();
+        // const {i18n} = useTranslation();
         const {t} = useTranslation(['profiler', 'common']);
         const {
             ref: echartRef,
