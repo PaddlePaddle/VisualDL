@@ -131,7 +131,11 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                 console.log('get_server_output', res);
                 metricDatas(serverId, res);
                 getServe(serverId);
-                toast.success(`${serverId} ${t('Fastdeploy:Update-successfully')}`, {
+                const message =
+                    language === 'zh'
+                        ? `${serverId} 更新日志和性能数据成功`
+                        : `Update log and metric for ${serverId} successfully`;
+                toast.success(message, {
                     autoClose: 2000
                 });
             },
