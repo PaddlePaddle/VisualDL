@@ -59,7 +59,9 @@ const Buttons = styled.div`
     text-align: center;
     font-size: 16px;
     margin-left: 20px;
-    width: 100px;
+    min-width: 100px;
+    padding-left: 5px;
+    padding-right: 5px;
     color: white;
     background-color: var(--navbar-background-color);
 `;

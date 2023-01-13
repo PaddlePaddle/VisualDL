@@ -131,7 +131,7 @@ const ServerBox: ForwardRefRenderFunction<serverBoxRef, ArgumentProps> = ({Flag,
                 console.log('get_server_output', res);
                 metricDatas(serverId, res);
                 getServe(serverId);
-                toast.success(`${serverId}${t('Fastdeploy:Update-successfully')}`, {
+                toast.success(`${serverId} ${t('Fastdeploy:Update-successfully')}`, {
                     autoClose: 2000
                 });
             },

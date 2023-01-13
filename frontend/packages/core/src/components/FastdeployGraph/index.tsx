@@ -166,7 +166,9 @@ const Buttons = styled.div`
     text-align: center;
     font-size: 16px;
     margin-left: 2px;
-    width: 86px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 86px;
     color: white;
     background-color: var(--navbar-background-color);
 `;
@@ -269,7 +271,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
     console.log('form', form.getFieldsValue(true));
 
     const [treeData, setTreeData] = useState(modelData?.ensembles?.versions);
-    const {t} = useTranslation(['Fastdeploy']);
+    const {t, i18n} = useTranslation(['Fastdeploy']);
+    const language: string = i18n.language;
     const ports = {
         groups: {
             top: {
@@ -891,7 +894,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 // setConfig_filename('');
                 setModelDatas(config);
                 setIsModalOpen(false);
-                toast.success(`${name}${t('Fastdeploy:Update-successfully')}`, {
+                toast.success(`${name} ${t('Fastdeploy:Update-configuration-successfully')}`, {
                     autoClose: 2000
                 });
             },
@@ -1845,8 +1848,8 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                         <Buttons
                             style={{
                                 position: 'absolute',
-                                left: '-180px',
-                                width: '160px'
+                                left: language === 'zh' ? '-180px' : '-200px',
+                                minWidth: '160px'
                             }}
                             onClick={changeEmsembles}
                         >
@@ -2617,8 +2620,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 onOk={handleOk5}
                 onCancel={handleCancel5}
             >
-                {t('Fastdeploy:Confirm-delete-resource')}
-                {selectKeys}
+                {`${t('Fastdeploy:Confirm-delete-resource')} ${selectKeys}`}
             </Modal>
             <Modal
                 width={800}
@@ -2656,8 +2658,7 @@ const Index: FunctionComponent<ArgumentProps> = ({modelData, dirValue, ChangeSer
                 onOk={handleOk7}
                 onCancel={handleCancel7}
             >
-                {t('Fastdeploy:Confirm-delete-config')}
-                {selectKeys}
+                {`${t('Fastdeploy:Confirm-delete-config')} ${selectKeys}`}
             </Modal>
 
             {/* <iframe

@@ -27,7 +27,7 @@ const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
             title: t('Fastdeploy:Execution-metric'),
             children: [
                 {
-                    title: t('Fastdeploy:inference-request-successs'),
+                    title: t('Fastdeploy:inference-request-success'),
                     dataIndex: 'nv_inference_request_success',
                     key: 'nv_inference_request_success',
                     width: 150

@@ -50,15 +50,15 @@ const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
             title: t('Fastdeploy:Memory'),
             children: [
                 {
-                    title: `${t('Fastdeploy:energy-consumption')}(W)`,
-                    dataIndex: 'nv_energy_consumption',
-                    key: 'nv_energy_consumption',
-                    width: 150
-                },
-                {
                     title: `${t('Fastdeploy:total')}(GB)`,
                     dataIndex: 'nv_gpu_memory_total_bytes',
                     key: 'nv_gpu_memory_total_bytes',
+                    width: 150
+                },
+                {
+                    title: `${t('Fastdeploy:energy-consumption')}(W)`,
+                    dataIndex: 'nv_energy_consumption',
+                    key: 'nv_energy_consumption',
                     width: 150
                 },
                 {
