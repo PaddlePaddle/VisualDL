@@ -307,8 +307,8 @@ class HttpClientManager:
             return fastdeploy_client
         except Exception:
             raise RuntimeError(
-                'Can not connect to server {}, please check your \
-                    server address'.format(server_url))
+                'Can not connect to server {}, please check your '
+                'server address'.format(server_url))
 
     def infer(self, server_url, model_name, model_version, inputs):
         fastdeploy_client = self._create_client(server_url)
