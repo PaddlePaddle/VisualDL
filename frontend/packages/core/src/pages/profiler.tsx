@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -110,9 +111,9 @@ type SelectListItem<T> = {
     value: T;
     label: string;
 };
+const isCompared = false;
 const Profiler: FunctionComponent = () => {
     const {t, i18n} = useTranslation(['profiler', 'common']);
-    const [isCompared, setIsCompared] = useState(false);
     const [runs, setRuns] = useState<string>('');
     const [diffRuns1, setDiffRuns1] = useState<string>('');
     const [diffRuns2, setDiffRuns2] = useState<string>('');

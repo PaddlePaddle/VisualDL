@@ -156,8 +156,8 @@ class FastDeployServerApi(object):
         self._poll_zombie_process()
         if check_process_zombie(server_id) is True:
             raise RuntimeError(
-                "Server {} is down due to exception or killed，please check the reason according to the log, \
-                then close this server.".format(server_id))
+                "Server {} is down due to exception or killed，please check the reason according to the log, "
+                "then close this server.".format(server_id))
         return
 
     @result()
@@ -207,8 +207,9 @@ class FastDeployServerApi(object):
             import fastdeploy as fd
         except Exception:
             raise RuntimeError(
-                "fastdeploy is required for visualizing results，please refer to \
-            https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
+                "fastdeploy is required for visualizing results，please refer to "
+                "https://github.com/PaddlePaddle/FastDeploy to install fastdeploy"
+            )
         model_path = fd.download_model(
             name=pretrain_model_name, path=version_resource_dir)
         if model_path:

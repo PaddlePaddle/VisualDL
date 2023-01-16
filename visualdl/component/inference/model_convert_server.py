@@ -47,8 +47,8 @@ class ModelConvertApi(object):
         file_handle = request.files['file']
         data = file_handle.stream.read()
         if format not in self.supported_formats:
-            raise RuntimeError('Model format {} is not supported. \
-          Only onnx and caffe models are supported now.'.format(format))
+            raise RuntimeError('Model format {} is not supported. "\
+          "Only onnx and caffe models are supported now.'.format(format))
         result = {}
         result['from'] = format
         result['to'] = 'paddle'
@@ -99,14 +99,14 @@ class ModelConvertApi(object):
                                         dirname, filename)
                         if prototxt_path is None or weight_path is None:
                             raise RuntimeError(
-                                ".prototxt or .caffemodel file is missing in your archive file, \
-                please check files uploaded.")
+                                ".prototxt or .caffemodel file is missing in your archive file, "
+                                "please check files uploaded.")
                         caffe2paddle(prototxt_path, weight_path, target_path,
                                      None)
             except Exception as e:
                 raise RuntimeError(
-                    "[Convertion error] {}.\n Please open an issue at \
-                        https://github.com/PaddlePaddle/X2Paddle/issues to report your problem."
+                    "[Convertion error] {}.\n Please open an issue at "
+                    "https://github.com/PaddlePaddle/X2Paddle/issues to report your problem."
                     .format(e))
         with self.lock:  # we need to enter dirname(target_path) to archive,
             # in case unneccessary directory added in archive.

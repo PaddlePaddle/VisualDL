@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /**
  * Copyright 2020 Baidu Inc. All Rights Reserved.
  *
@@ -26,6 +27,7 @@ import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import useTheme from '~/hooks/useTheme';
 import {useTranslation} from 'react-i18next';
+console.log('netron2', netron2);
 
 const PUBLIC_PATH: string = import.meta.env.SNOWPACK_PUBLIC_PATH;
 
