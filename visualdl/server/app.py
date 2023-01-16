@@ -71,7 +71,15 @@ def create_app(args):  # noqa: C901
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
-    babel = Babel(app)
+
+    def get_locale():
+        lang = args.language
+        if not lang or lang not in support_language:
+            lang = request.accept_languages.best_match(support_language)
+        return lang
+
+    babel = Babel(app, locale_selector=get_locale)  # noqa:F841
+    # Babel api from flask_babel v3.0.0
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
     profiler_api_call = create_profiler_api_call(args.logdir)
     inference_api_call = create_model_convert_api_call()
@@ -87,13 +95,6 @@ def create_app(args):  # noqa: C901
         if request.query_string:
             query_string = '?' + request.query_string.decode()
         return url + query_string
-
-    @babel.localeselector
-    def get_locale():
-        lang = args.language
-        if not lang or lang not in support_language:
-            lang = request.accept_languages.best_match(support_language)
-        return lang
 
     if not args.api_only:
 
