@@ -24,8 +24,8 @@ Currently, VisualDL provides **Fifteen Components**: scalar, image, audio, text,
 | [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way. |
 |[Profiler](#Profiler--profiling-data-visualization)| Profiling data visualization | Analyse profiling data exported by paddle, helping users identify program bottlenecks and optimize performance |
 |[X2Paddle](#X2Paddle--model-format-transformation)| Model conversion| Convert onnx model to paddle format |
-|[FastDeployServer](#FastDeploy-Server--fastdeploy-serving-deployment-management) | fastdeploy serving deployment visualization | Provide the functions of loading and editing the model repository, fastdeployserver service management and monitoring |
-|[FastDeployClient](#FastDeploy-Client--fastdeploy-client-for-request-visualization)| fastdeploy client for request visualization  | Access the fastdeployserver service, helping users visualize prediction requests and results |
+|[FastDeployServer](#fastdeployserver--fastdeploy-serving-deployment-visualization) | fastdeploy serving deployment visualization | Provide the functions of loading and editing the model repository, fastdeployserver service management and monitoring |
+|[FastDeployClient](#fastdeployclient--fastdeploy-client-for-request-visualization)| fastdeploy client for request visualization  | Access the fastdeployserver service, helping users visualize prediction requests and results |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 

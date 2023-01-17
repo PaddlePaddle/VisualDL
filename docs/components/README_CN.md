@@ -22,8 +22,8 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 | [Hyper Parameters](#HyperParameters--超参可视化组件) |  超参数可视化  | 以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。 |
 |[Profiler](#Profiler--性能数据可视化组件)| 性能数据可视化 | 解析飞桨框架性能分析器导出的性能数据，辅助用户诊断训练程序性能瓶颈 |
 |[X2Paddle](#X2Paddle--模型转换组件)| 模型转换 | 展示onnx网络结构，并帮助用户转换为飞桨模型，提供转换后的模型结构和参数文件 |
-|[FastDeployServer](#fastdeploy-server--fastdeploy服务化部署管理组件) | Serving可视化部署 | 提供对基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)服务化部署的模型库配置修改，fastdeployserver服务管理监控的功能 |
-|[FastDeployClient](#fastdeploy-client--fastdeploy服务的客户端组件)| Serving服务的客户端 | 提供对基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)开启的fastdeployserver服务进行访问的客户端界面 |
+|[FastDeployServer](#fastdeployserver--serving可视化部署组件) | Serving可视化部署 | 提供对基于[FastDeploy](https://github.com/PaddlePaddle/FastDeploy)的Serving可视化部署，提供配置模型库、管理监控服务以及测试服务等功能 |
+|[FastDeployClient](#fastdeployclient--serving服务的客户端组件)| Serving服务的客户端 | 提供对fastdeployserver服务进行访问的客户端界面 |
 
 
 
@@ -1210,7 +1210,7 @@ FastDeployServer组件辅助用户基于[FastDeploy项目](https://github.com/Pa
 ## FastDeployClient--Serving服务的客户端组件
 
 ### 介绍
-FastDeployClient组件提供给用户对基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)开启的fastdeployserver服务进行访问的客户端界面，进行一键预测和可视化结果。请参考文档[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)进行使用。
+FastDeployClient组件提供给用户对fastdeployserver服务进行访问的客户端界面，进行一键预测和可视化结果。请参考文档[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)进行使用。
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
 </p>
