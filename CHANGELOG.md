@@ -50,18 +50,6 @@ This is the Changelog for the VisualDL 2.0 project.
     - **BE** Add a new launching parameter component_tabs, to support selecting which components are presented in page (#1157 #1159)
 
 
-**EN**
-
-- Bug Fixes
-    - **FE**: Fix histogram tab presentation problem （#1177）
-    - **BE**: Fix a bug of loading profiler data exported by paddle of cpu version （#1176）
-    - **BE**: Fix error of exporting graph with multiple program blocks (#1180)
-
-- Enhancement
-    - **BE**: Do not crash vdl when logdir is missing in launching parameters （#1171）
-    - **BE**: Add add_scalars component (#1175)
-
-
 
 ## v2.4.2 - 2022-12-25
 
