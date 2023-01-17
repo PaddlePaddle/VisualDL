@@ -258,77 +258,152 @@ def create_app(args):  # noqa: C901
                 content = content.decode()
                 try:
                     if request_args.get('lang', 'zh') == 'en':
-                        default_server_addr = re.search(
+                        server_addr_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
-                                json.dumps(
-                                    "server ip", ensure_ascii=True).replace(
-                                        '\\', '\\\\')), content).group(0)
+                                json.dumps("server ip",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not server_addr_match:
+                            server_addr_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps("server ip",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_server_addr = server_addr_match.group(0)
                         cur_server_addr = default_server_addr.replace(
                             '"value": ""', '"value": "localhost"')
-                        default_http_port = re.search(
+                        http_port_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
-                                json.dumps(
-                                    "server port", ensure_ascii=True).replace(
-                                        '\\', '\\\\')), content).group(0)
+                                json.dumps("server port",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not http_port_match:
+                            http_port_match = re.search(
+                                '"label": {}.*?"value": "".*?}}'.format(
+                                    json.dumps(
+                                        "server port",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_http_port = http_port_match.group(0)
+
                         cur_http_port = default_http_port.replace(
                             '"value": ""', '"value": "{}"'.format(http_port))
-                        default_metrics_port = re.search(
+                        metrics_port_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
-                                json.dumps(
-                                    "metrics port", ensure_ascii=True).replace(
-                                        '\\', '\\\\')), content).group(0)
+                                json.dumps("metrics port",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not metrics_port_match:
+                            metrics_port_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps(
+                                        "metrics port",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_metrics_port = metrics_port_match.group(0)
                         cur_metrics_port = default_metrics_port.replace(
                             '"value": ""',
                             '"value": "{}"'.format(metrics_port))
-                        default_model_name = re.search(
+                        model_name_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
-                                json.dumps(
-                                    "model name", ensure_ascii=True).replace(
-                                        '\\', '\\\\')), content).group(0)
+                                json.dumps("model name",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not model_name_match:
+                            model_name_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps(
+                                        "model name",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_model_name = model_name_match.group(0)
                         cur_model_name = default_model_name.replace(
                             '"value": ""', '"value": "{}"'.format(model_name))
-                        default_model_version = re.search(
+                        model_version_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
                                 json.dumps("model version",
                                            ensure_ascii=True).replace(
-                                               '\\', '\\\\')),
-                            content).group(0)
+                                               '\\', '\\\\')), content)
+                        if not model_version_match:
+                            model_version_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps(
+                                        "model version",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_model_version = model_version_match.group(0)
                         cur_model_version = default_model_version.replace(
                             '"value": ""', '"value": "{}"'.format('1'))
                         content = content.replace(default_server_addr,
                                                   cur_server_addr)
                     else:
-                        default_server_addr = re.search(
+                        server_addr_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
                                 json.dumps("服务ip", ensure_ascii=True).replace(
-                                    '\\', '\\\\')), content).group(0)
+                                    '\\', '\\\\')), content)
+                        if not server_addr_match:
+                            server_addr_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps("服务ip",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_server_addr = server_addr_match.group(0)
                         cur_server_addr = default_server_addr.replace(
                             '"value": ""', '"value": "localhost"')
-                        default_http_port = re.search(
+                        http_port_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
-                                json.dumps(
-                                    "推理服务端口", ensure_ascii=True).replace(
-                                        '\\', '\\\\')), content).group(0)
+                                json.dumps("推理服务端口",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not http_port_match:
+                            http_port_match = re.search(
+                                '"label": {}.*?"value": "".*?}}'.format(
+                                    json.dumps("推理服务端口",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_http_port = http_port_match.group(0)
+
                         cur_http_port = default_http_port.replace(
                             '"value": ""', '"value": "{}"'.format(http_port))
-                        default_metrics_port = re.search(
+                        metrics_port_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
-                                json.dumps(
-                                    "性能服务端口", ensure_ascii=True).replace(
-                                        '\\', '\\\\')), content).group(0)
+                                json.dumps("性能服务端口",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not metrics_port_match:
+                            metrics_port_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps("性能服务端口",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_metrics_port = metrics_port_match.group(0)
                         cur_metrics_port = default_metrics_port.replace(
                             '"value": ""',
                             '"value": "{}"'.format(metrics_port))
-                        default_model_name = re.search(
+                        model_name_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
                                 json.dumps("模型名称", ensure_ascii=True).replace(
-                                    '\\', '\\\\')), content).group(0)
+                                    '\\', '\\\\')), content)
+                        if not model_name_match:
+                            model_name_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps("模型名称",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_model_name = model_name_match.group(0)
                         cur_model_name = default_model_name.replace(
                             '"value": ""', '"value": "{}"'.format(model_name))
-                        default_model_version = re.search(
+                        model_version_match = re.search(
                             '"label": {}.*?"value": "".*?}}'.format(
                                 json.dumps("模型版本", ensure_ascii=True).replace(
-                                    '\\', '\\\\')), content).group(0)
+                                    '\\', '\\\\')), content)
+                        if not model_version_match:
+                            model_version_match = re.search(
+                                '"value": "".*?"label": {}.*?}}'.format(
+                                    json.dumps("模型版本",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_model_version = model_version_match.group(0)
                         cur_model_version = default_model_version.replace(
                             '"value": ""', '"value": "{}"'.format('1'))
                         content = content.replace(default_server_addr,
