@@ -271,10 +271,12 @@ def create_app(args):  # noqa: C901
                                                ensure_ascii=True).replace(
                                                    '\\', '\\\\')), content)
                         default_server_addr = server_addr_match.group(0)
-                        cur_server_addr = default_server_addr.replace(
-                            '"value": ""', '"value": "localhost"')
-                        cur_server_addr = default_server_addr.replace(
-                            '"value":""', '"value": "localhost"')
+                        if '"value": ""' in default_server_addr:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value": ""', '"value": "localhost"')
+                        else:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value":""', '"value": "localhost"')
                         content = content.replace(default_server_addr,
                                                   cur_server_addr)
                         http_port_match = re.search(
@@ -292,10 +294,14 @@ def create_app(args):  # noqa: C901
                                             '\\', '\\\\')), content)
                         default_http_port = http_port_match.group(0)
 
-                        cur_http_port = default_http_port.replace(
-                            '"value": ""', '"value": "{}"'.format(http_port))
-                        cur_http_port = default_http_port.replace(
-                            '"value":""', '"value": "{}"'.format(http_port))
+                        if '"value": ""' in default_http_port:
+                            cur_http_port = default_http_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(http_port))
+                        else:
+                            cur_http_port = default_http_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(http_port))
                         if http_port:
                             content = content.replace(default_http_port,
                                                       cur_http_port)
@@ -313,11 +319,14 @@ def create_app(args):  # noqa: C901
                                         ensure_ascii=True).replace(
                                             '\\', '\\\\')), content)
                         default_metrics_port = metrics_port_match.group(0)
-                        cur_metrics_port = default_metrics_port.replace(
-                            '"value": ""',
-                            '"value": "{}"'.format(metrics_port))
-                        cur_metrics_port = default_metrics_port.replace(
-                            '"value":""', '"value": "{}"'.format(metrics_port))
+                        if '"value": ""' in default_metrics_port:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(metrics_port))
+                        else:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(metrics_port))
                         if metrics_port:
                             content = content.replace(default_metrics_port,
                                                       cur_metrics_port)
@@ -335,10 +344,14 @@ def create_app(args):  # noqa: C901
                                         ensure_ascii=True).replace(
                                             '\\', '\\\\')), content)
                         default_model_name = model_name_match.group(0)
-                        cur_model_name = default_model_name.replace(
-                            '"value": ""', '"value": "{}"'.format(model_name))
-                        cur_model_name = default_model_name.replace(
-                            '"value":""', '"value": "{}"'.format(model_name))
+                        if '"value": ""' in default_model_name:
+                            cur_model_name = default_model_name.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(model_name))
+                        else:
+                            cur_model_name = default_model_name.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(model_name))
                         if model_name:
                             content = content.replace(default_model_name,
                                                       cur_model_name)
@@ -356,10 +369,12 @@ def create_app(args):  # noqa: C901
                                         ensure_ascii=True).replace(
                                             '\\', '\\\\')), content)
                         default_model_version = model_version_match.group(0)
-                        cur_model_version = default_model_version.replace(
-                            '"value": ""', '"value": "{}"'.format('1'))
-                        cur_model_version = default_model_version.replace(
-                            '"value":""', '"value": "{}"'.format('1'))
+                        if '"value": ""' in default_model_version:
+                            cur_model_version = default_model_version.replace(
+                                '"value": ""', '"value": "{}"'.format('1'))
+                        else:
+                            cur_model_version = default_model_version.replace(
+                                '"value":""', '"value": "{}"'.format('1'))
                         content = content.replace(default_model_version,
                                                   cur_model_version)
 
@@ -393,10 +408,12 @@ def create_app(args):  # noqa: C901
                                                     '\\', '\\\\')), content)
 
                         default_server_addr = server_addr_match.group(0)
-                        cur_server_addr = default_server_addr.replace(
-                            '"value": ""', '"value": "localhost"')
-                        cur_server_addr = default_server_addr.replace(
-                            '"value":""', '"value": "localhost"')
+                        if '"value": ""' in default_server_addr:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value": ""', '"value": "localhost"')
+                        else:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value":""', '"value": "localhost"')
                         content = content.replace(default_server_addr,
                                                   cur_server_addr)
                         http_port_match = re.search(
@@ -430,10 +447,14 @@ def create_app(args):  # noqa: C901
                                                     '\\', '\\\\')), content)
                         default_http_port = http_port_match.group(0)
 
-                        cur_http_port = default_http_port.replace(
-                            '"value": ""', '"value": "{}"'.format(http_port))
-                        cur_http_port = default_http_port.replace(
-                            '"value":""', '"value": "{}"'.format(http_port))
+                        if '"value": ""' in default_http_port:
+                            cur_http_port = default_http_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(http_port))
+                        else:
+                            cur_http_port = default_http_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(http_port))
                         if http_port:
                             content = content.replace(default_http_port,
                                                       cur_http_port)
@@ -467,11 +488,14 @@ def create_app(args):  # noqa: C901
                                                 ensure_ascii=False).replace(
                                                     '\\', '\\\\')), content)
                         default_metrics_port = metrics_port_match.group(0)
-                        cur_metrics_port = default_metrics_port.replace(
-                            '"value": ""',
-                            '"value": "{}"'.format(metrics_port))
-                        cur_metrics_port = default_metrics_port.replace(
-                            '"value":""', '"value": "{}"'.format(metrics_port))
+                        if '"value": ""' in default_metrics_port:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(metrics_port))
+                        else:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(metrics_port))
                         if metrics_port:
                             content = content.replace(default_metrics_port,
                                                       cur_metrics_port)
@@ -503,10 +527,14 @@ def create_app(args):  # noqa: C901
                                                 ensure_ascii=False).replace(
                                                     '\\', '\\\\')), content)
                         default_model_name = model_name_match.group(0)
-                        cur_model_name = default_model_name.replace(
-                            '"value": ""', '"value": "{}"'.format(model_name))
-                        cur_model_name = default_model_name.replace(
-                            '"value":""', '"value": "{}"'.format(model_name))
+                        if '"value": ""' in default_model_name:
+                            cur_model_name = default_model_name.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(model_name))
+                        else:
+                            cur_model_name = default_model_name.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(model_name))
                         if model_name:
                             content = content.replace(default_model_name,
                                                       cur_model_name)
@@ -539,10 +567,12 @@ def create_app(args):  # noqa: C901
                                                     '\\', '\\\\')), content)
 
                         default_model_version = model_version_match.group(0)
-                        cur_model_version = default_model_version.replace(
-                            '"value": ""', '"value": "{}"'.format('1'))
-                        cur_model_version = default_model_version.replace(
-                            '"value":""', '"value": "{}"'.format('1'))
+                        if '"value": ""' in default_model_version:
+                            cur_model_version = default_model_version.replace(
+                                '"value": ""', '"value": "{}"'.format('1'))
+                        else:
+                            cur_model_version = default_model_version.replace(
+                                '"value":""', '"value": "{}"'.format('1'))
                         content = content.replace(default_model_version,
                                                   cur_model_version)
                 except Exception:
