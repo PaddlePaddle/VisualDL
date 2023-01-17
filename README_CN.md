@@ -416,14 +416,14 @@ value: 3.1297709941864014
 </p>
 
 
-### FastDeploy Server
-提供给用户载入和修改fastdeployserver模型库、管理监控fastdeployserver服务以及测试服务的可视化界面。详细内容可参考[使用VisualDL进行fastdeployserver下的模型服务化部署](./docs/components/fastdeploy_server/README_CN.md)。
+### FastDeployServer
+基于[FastDeploy](https://github.com/PaddlePaddle/FastDeploy)的Serving可视化部署，提供配置模型库、管理监控服务以及测试服务等功能。详细内容可参考[使用VisualDL进行Serving可视化部署](./docs/components/fastdeploy_server/README_CN.md)。
  <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
 </p>
 
 
-### FastDeploy Client
+### FastDeployClient
 提供给用户访问fastdeployserver服务的客户端界面，进行一键预测和可视化结果。详细内容可参考[使用VisualDL作为fastdeployserver服务的客户端](./docs/components/fastdeploy_client/README_CN.md)。
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
@@ -460,7 +460,7 @@ Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技�
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[**使用VisualDL做性能分析**](./docs/components/profiler/README_CN.md)，[**使用VisualDL进行fastdeployserver下的模型服务化部署**](./docs/components/fastdeploy_server/README_CN.md)，[**使用VisualDL作为fastdeployserver服务的客户端**](./docs/components/fastdeploy_client/README_CN.md)。
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[**使用VisualDL做性能分析**](./docs/components/profiler/README_CN.md)，[**使用VisualDL进行Serving可视化部署**](./docs/components/fastdeploy_server/README_CN.md)，[**使用VisualDL作为fastdeployserver服务的客户端**](./docs/components/fastdeploy_client/README_CN.md)。
 ## 技术交流
 
 欢迎您加入VisualDL官方QQ群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。

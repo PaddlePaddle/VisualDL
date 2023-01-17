@@ -1,23 +1,34 @@
 [**中文**](./README_CN.md)
 
-# Use VisualDL for fastdeploy serving deployment management
+# Use VisualDL for fastdeploy serving deployment visualization
 
 ### Introduction
 
-The FastDeploy Server component assists users to use fastdeployserver conveniently based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy). It mainly provides the functions of loading and editing the model repository, fastdeployserver service management and monitoring, and providing the client to test fastdeployserver service. Users can directly load a  initial model repository in FastDeploy examples, and complete the download of model resources required and modification of the model configuration file on VisualDL. Then start the fastdeployserver to deploy a certain model repository, monitor the service log and metrics, and help users make quick test and verification of deployed services.
+VisualDL supports fastdeploy serving deployment visualization based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy). It mainly provides the functions of loading and editing the model repository, service management and monitoring, and providing the client to test service. You can directly load a initial model repository in FastDeploy examples, and complete the download of model resources required and modification of the model configuration file on VisualDL. Then start the fastdeployserver to deploy a certain model repository, monitor the service log and metrics, and help you make quick test and verification of deployed services.
 
 ### Pre-requisite
 
-In order to use this function, users need to install fastdeployserver in the environment. Fastdeployserver is a serving deployment tool of [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy), you can directly use fastdeployserver by downloading the docker image of fastdeploy.
+In order to use this function, you need to install fastdeployserver in the environment. Fastdeployserver is a serving deployment tool of [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy), you can directly use fastdeployserver by downloading the docker image of fastdeploy.
 
 - CPU docker image
 ```bash
 docker pull registry.baidubce.com/paddlepaddle/fastdeploy:1.0.2-cpu-only-21.10
 ```
 - GPU docker image
+
 ```bash
 docker pull registry.baidubce.com/paddlepaddle/fastdeploy:1.0.2-gpu-cuda11.4-trt8.4-21.10
 ```
+You can enter a container using command
+```bash
+nvidia-docker run -it --net=host --name fd_serving -v `pwd`/:/FastDeploy registry.baidubce.com/paddlepaddle/fastdeploy:1.0.2-gpu-cuda11.4-trt8.4-21.10  bash
+```
+
+And install VisualDL in the container by
+```python
+python -m pip install visualdl
+```
+
 You can refer to the above command to obtain the image for use. For more information about fastdeploy serving deployment, please refer to the document [FastDeploy  Serving Deployment](https://github.com/PaddlePaddle/FastDeploy/blob/release/1.0.2 /serving/README_CN.md).
 
 This article assumes that the user has started the fastdeploy docker image, has the fastdeployserver command in the environment, and installed visualdl>=2.5.0. Then visualdl can be used to manage the fastdeployserver services.
@@ -33,7 +44,7 @@ Then open `http://127.0.0.1:8080` in the browser (please replace it with the ip 
 
 ### Function Description
 
-The FastDeploy Server component mainly provides the functions of model repository loading and editing, fastdeployserver services management and monitoring.
+The FastDeploy Server component mainly provides the functions of model repository loading and editing, services management and monitoring.
 The following uses the examples directory under the [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy) as an example to describe the functions. You can first use the following commands to obtain the resources required by the example then open visualdl.
 ```bash
 git clone https://github.com/PaddlePaddle/FastDeploy.git
@@ -57,7 +68,7 @@ After entering the component tab of FastDeploy Server, you can
    <img src="https://user-images.githubusercontent.com/22424850/211194661-51ecb563-0095-48ce-8143-ed7123f5b03c.png" width="100%"/>
    </p>
 
-   Users can click the basic model on the right panel, or double-click the basic model on the canvas to open the configuration editor. Click the "ensemble configuration" button to open the configuration editor of the ensemble model. You can select the configuration file you want to view in the configuration editor.
+   You can click the basic model on the right panel, or double-click the basic model on the canvas to open the configuration editor. Click the "ensemble configuration" button to open the configuration editor of the ensemble model. You can select the configuration file you want to view in the configuration editor.
 
    <p align="center">
    <img src="https://user-images.githubusercontent.com/22424850/211201905-89c3ab64-0dcc-472d-89cc-a83c79945aa5.gif" width="100%"/>
@@ -68,7 +79,7 @@ After entering the component tab of FastDeploy Server, you can
 
    a. Configuration modification update
 
-   When the user selects a configuration file, the configuration editor will display the configuration information in the selected configuration file. Currently, the configuration editor mainly supports users to modify the configuration of three attributes: maxBatchSize, instanceGroup, and optimization. The meanings and values of these three attributes are described as follows.
+   When the user selects a configuration file, the configuration editor will display the configuration information in the selected configuration file. Currently, the configuration editor mainly supports you to modify the configuration of three attributes: maxBatchSize, instanceGroup, and optimization. The meanings and values of these three attributes are described as follows.
    ```text
    maxBatchSize: The maximum batch size allowed in inference. Please enter a non-negative integer, such as 16
    instanceGroup: Set hardware resources the server uses and how many instances are deployed. It contains three configurable items, count represents the number of deployed instances, please enter a non-negative integer, such as 2. kind indicates the type of device used, and you can choose KIND_CPU to indicate the use of CPU or KIND_GPU to indicate the use of GPU. When KIND_GPU is selected, gpus indicates that the GPU card numbers need to be used, please enter multiple integers separated by commas (,), such as using cards 2 and 3, i.e. 2,3
@@ -97,21 +108,21 @@ After entering the component tab of FastDeploy Server, you can
    </p>
 
 
-2.fastdeployserver services management
+2.services management
 
-   VisualDL provides management and monitoring functions for fastdeployserver services. It mainly includes the functions of starting service, monitoring service, closing service and testing service.
+   VisualDL provides management and monitoring functions for services. It mainly includes the functions of starting service, monitoring service, closing service and testing service.
 
    a. Start the service
 
-   Click the "launch server" button to start a fastdeployserver service, and the deployed model repository is the currently loaded one. You can configurate launch parameters of fastdeployserver on the launch parameters configuration editor.
+   Click the "launch server" button to start a fastdeployserver service, and the deployed model repository is the currently loaded one. You can configurate launch parameters of a service on the launch parameters configuration editor.
    The description of each launch parameter is as follows:
    ```text
-   server-name: The service name specified by the user, which is used to name the deployed service for subsequent viewing. If not filled, the default service name is the process number pid of the fastdeployserver process
+   server-name: The service name specified by the user, which is used to name the deployed service for subsequent viewing. If not filled, the default service name is the process number pid of the service process
    model-repository: The model repository to be deployed, which is the currently loaded model repository.
-   backend-config: Specify the backend configuration of fastdeployserver, the format is <backend_name>,<setting>=<value>, where backend_name is the backend name, such as python, tensorrt, etc., followed by the specific configurable items of the backend. The default value is python, shm-default-byte-size=10485760
-   http-port: Specify the http service port of fastdeployserver, the default is 8000
-   grpc-port: Specify the grpc service port of fastdeployserver, the default is 8001
-   metrics-port: Specify the metrics query service port of fastdeployserver, the default is 8002
+   backend-config: Specify the backend configuration of service, the format is <backend_name>,<setting>=<value>, where backend_name is the backend name, such as python, tensorrt, etc., followed by the specific configurable items of the backend. The default value is python, shm-default-byte-size=10485760
+   http-port: Specify the http service port of service, the default is 8000
+   grpc-port: Specify the grpc service port of service, the default is 8001
+   metrics-port: Specify the metrics query service port of service, the default is 8002
    gpus: Specify the number of gpus that can be used by the deployed service. If card 2 and card 3 are used, it is "2,3". If not filled, all available gpus will be used
    ```
    <p align="center">
@@ -120,9 +131,9 @@ After entering the component tab of FastDeploy Server, you can
 
    b. Monitoring service
 
-   At present, the monitoring of the started service is mainly realized by providing the user with the output information of the fastdeployserver service, the metrics information, and the information of the deployed model repository. By default, the front-end will automatically update the monitored information every 10s, and users can also click the "update" button to manually update.
-   - Log (the output log of the fastdeployserver service, which can be used to obtain the startup and loading status of the service, exception information, etc.)
-   - Metrics (obtain performance-related data by accessing the metric query service of fastdeployserver)
+   At present, the monitoring of the started service is mainly realized by providing the user with the output information of the  service, the metrics information, and the information of the deployed model repository. By default, the front-end will automatically update the monitored information every 10s, and you can also click the "update" button to manually update.
+   - Log (the output log of the service, which can be used to obtain the startup and loading status of the service, exception information, etc.)
+   - Metrics (obtain performance-related data by accessing the metric query service)
    - Model repository configuration (used to view the model repository information deployed by the service)
 
    <p align="center">
@@ -131,14 +142,14 @@ After entering the component tab of FastDeploy Server, you can
 
    c. Shutting down the service
 
-   Click the close tab on the left or the "shutdown" button to manually shut down a fastdeployserver service.
+   Click the close tab on the left or the "shutdown" button to manually shut down a service.
    <p align="center">
    <img src="https://user-images.githubusercontent.com/22424850/211198748-c0628ed9-505a-4f7d-ae17-ecadf060b562.gif" width="100%"/>
    </p>
 
    d. Testing the service
    
-   Click the "open client" button to open the client for quickly testing the fastdeployserver service. The client is written based on gradio, and will automatically help users fill in basic information according to the launch parameters of the fastdeployserver service. Users can refer to [Use VisualDL as fastdeploy client for request visualization](../fastdeploy_client/README.md) to use.
+   Click the "open client" button to open the client for quickly testing the service. The client is written based on gradio, and will automatically help you fill in basic information according to the launch parameters of the service. You can refer to [Use VisualDL as fastdeploy client for request visualization](../fastdeploy_client/README.md) to use.
    <p align="center">
    <img src="https://user-images.githubusercontent.com/22424850/211198901-3e58fe9d-8667-4416-987a-200f9edeb05d.gif" width="100%"/>
    </p>

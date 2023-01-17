@@ -6,7 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides **Fifteen Components**: scalar, image, audio, text, graph(dynamic, static), histogram, pr curve, ROC curve, high dimensional and hyperparameters, profiler, x2paddle, fastdeploy server, fastdeploy client. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides **Fifteen Components**: scalar, image, audio, text, graph(dynamic, static), histogram, pr curve, ROC curve, high dimensional and hyperparameters, profiler, x2paddle, fastdeployserver, fastdeployclient. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
@@ -24,8 +24,8 @@ Currently, VisualDL provides **Fifteen Components**: scalar, image, audio, text,
 | [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way. |
 |[Profiler](#Profiler--profiling-data-visualization)| Profiling data visualization | Analyse profiling data exported by paddle, helping users identify program bottlenecks and optimize performance |
 |[X2Paddle](#X2Paddle--model-format-transformation)| Model conversion| Convert onnx model to paddle format |
-|[FastDeploy Server](#FastDeploy-Server--fastdeploy-serving-deployment-management) | Fastdeploy serving deployment management | Provide the functions of loading and editing the model repository, fastdeployserver service management and monitoring |
-|[FastDeploy Client](#FastDeploy-Client--fastdeploy-client-for-request-visualization)| Fastdeploy client | Access the fastdeployserver service, helping users visualize prediction requests and results |
+|[FastDeployServer](#FastDeploy-Server--fastdeploy-serving-deployment-management) | fastdeploy serving deployment visualization | Provide the functions of loading and editing the model repository, fastdeployserver service management and monitoring |
+|[FastDeployClient](#FastDeploy-Client--fastdeploy-client-for-request-visualization)| fastdeploy client for request visualization  | Access the fastdeployserver service, helping users visualize prediction requests and results |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
@@ -1151,18 +1151,18 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to use X2Pad
 
 **Note**: If failed to convert an onnx model to paddle, you can copy the error message of the model conversion to [X2Paddle](https://github.com/PaddlePaddle/X2Paddle/issues) issue to help us improve this tool.
 
-## FastDeploy Server--fastdeploy serving deployment management
+## FastDeployServer--fastdeploy serving deployment visualization
 
 ### Introduction
-The FastDeploy Server component assists users to use fastdeployserver conveniently based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy). It mainly provides the functions of loading and editing the model repository, fastdeployserver service management and monitoring, and providing the client to test fastdeployserver service. Please refer to [use VisualDL for fastdeploy serving deployment management](./fastdeploy_server/README.md).
+The FastDeployServer component assists users to use fastdeployserver to deploy service conveniently based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy). It mainly provides the functions of loading and editing the model repository, service management and monitoring, and providing the client to test service. Please refer to [use VisualDL for fastdeploy serving deployment management](./fastdeploy_server/README.md).
  <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
 </p>
 
-## FastDeploy Client--fastdeploy client for request visualization
+## FastDeployClient--fastdeploy client for request visualization
 
 ### Introduction
-The FastDeploy Client component is mainly used to quickly access the fastdeployserver service based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy), to help users visualize prediction requests and results, and make quick verification of deployed services. Please refer to [use VisualDL as fastdeploy client for request visualization](./fastdeploy_client/README.md).
+The FastDeployClient component is mainly used to quickly access the fastdeployserver service based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy), to help users visualize prediction requests and results, and make quick verification of deployed services. Please refer to [use VisualDL as fastdeploy client for request visualization](./fastdeploy_client/README.md).
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
 </p>

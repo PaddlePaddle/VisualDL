@@ -404,16 +404,16 @@ The X2Paddle component provides the functions of onnx model format visualization
 </p>
 
 
-### FastDeploy Server
-The FastDeploy Server component provides the functions of loading and editing the model repository, fastdeployserver service management and monitoring, and providing the client to test fastdeployserver service. Please refer to [use VisualDL for fastdeploy serving deployment management](./docs/components/fastdeploy_server/README.md).
+### FastDeployServer
+The FastDeployServer component provides the functions of loading and editing the model repository, fastdeployserver service management and monitoring, and providing the client to test service. Please refer to [use VisualDL for fastdeploy serving deployment visualization](./docs/components/fastdeploy_server/README.md).
 
  <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
 </p>
 
 
-### FastDeploy Client
-The FastDeploy Client component is mainly used to quickly access the fastdeployserver service, to help users visualize prediction requests and results. Please refer to [use VisualDL as fastdeploy client for request visualization](./docs/components/fastdeploy_client/README.md).
+### FastDeployClient
+The FastDeployClient component is mainly used to quickly access the fastdeployserver service, to help users visualize prediction requests and results. Please refer to [use VisualDL as fastdeploy client for request visualization](./docs/components/fastdeploy_client/README.md).
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
@@ -441,7 +441,7 @@ Developers are warmly welcomed to use, comment and contribute.
 
 ## More Details
 
-For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md), [**VisualDL Profiler Guide**](./docs/components/profiler/README.md), [**Use VisualDL for fastdeploy serving deployment management**](./docs/components/fastdeploy_server/README.md), [**Use VisualDL as fastdeploy client for request visualization**](./docs/components/fastdeploy_client/README.md).
+For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md), [**VisualDL Profiler Guide**](./docs/components/profiler/README.md), [**Use VisualDL for fastdeploy serving deployment visualization**](./docs/components/fastdeploy_server/README.md), [**Use VisualDL as fastdeploy client for request visualization**](./docs/components/fastdeploy_client/README.md).
 
 ## Technical Communication
 
