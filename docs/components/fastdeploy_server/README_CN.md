@@ -48,7 +48,7 @@ VisualDL的FastDeployServer组件用来支持serving可视化部署，主要提�
 下面以[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)下的examples目录为示例进行功能说明，可以先通过下列命令来获取示例所需要的资源并开启visualdl。
 ```bash
 git clone https://github.com/PaddlePaddle/FastDeploy.git
-cd examples
+cd FastDeploy/examples
 visualdl --host 0.0.0.0 --port 8080
 ```
 进入FastDeployServer的功能选项卡后，

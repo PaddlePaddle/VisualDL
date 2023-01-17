@@ -48,7 +48,7 @@ The FastDeploy Server component mainly provides the functions of model repositor
 The following uses the examples directory under the [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy) as an example to describe the functions. You can first use the following commands to obtain the resources required by the example then open visualdl.
 ```bash
 git clone https://github.com/PaddlePaddle/FastDeploy.git
-cd examples
+cd FastDeploy/examples
 visualdl --host 0.0.0.0 --port 8080
 ```
 After entering the component tab of FastDeploy Server, you can
