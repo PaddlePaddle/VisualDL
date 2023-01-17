@@ -1,3 +1,5 @@
+[**中文**](./README_CN.md)
+
 # VisualDL Profiler Guide
 
 ### Introduction

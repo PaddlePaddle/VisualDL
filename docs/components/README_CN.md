@@ -6,7 +6,7 @@
 
 VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL 利用了丰富的图表来展示数据，用户可以更直观、清晰地查看数据的特征与变化趋势，有助于分析数据、及时发现错误，进而改进神经网络模型的设计。
 
-目前，VisualDL 支持 scalar, image, audio，text, graph, histogram, pr curve, ROC curve, high dimensional, hyper parameters 十个组件，项目正处于高速迭代中，敬请期待新组件的加入。
+目前，VisualDL 支持 scalar, image, audio，text, graph（动态图，静态图）, histogram, pr curve, ROC curve, high dimensional, hyper parameters, profiler, x2paddle, fastdeployserver, fastdeployclient 共十五个组件，项目正处于高速迭代中，敬请期待新组件的加入。
 
 |                           组件名称                           |  展示图表  | 作用                                                         |
 | :----------------------------------------------------------: | :--------: | :----------------------------------------------------------- |
@@ -20,6 +20,12 @@ VisualDL 是一个面向深度学习任务设计的可视化工具。VisualDL �
 |              [ROC Curve](#ROC-Curve--ROC曲线组件)               |   折线图   | 展示不同阈值下的模型表现                               |
 | [High Dimensional](#High-Dimensional--数据降维组件) |  数据降维  | 将高维数据映射到 2D/3D 空间来可视化嵌入，便于观察不同数据的相关性 |
 | [Hyper Parameters](#HyperParameters--超参可视化组件) |  超参数可视化  | 以丰富的视图多角度地可视化超参数与模型关键指标间的关系，便于快速确定最佳超参组合，实现高效调参。 |
+|[Profiler](#Profiler--性能数据可视化组件)| 性能数据可视化 | 解析飞桨框架性能分析器导出的性能数据，辅助用户诊断训练程序性能瓶颈 |
+|[X2Paddle](#X2Paddle--模型转换组件)| 模型转换 | 展示onnx网络结构，并帮助用户转换为飞桨模型，提供转换后的模型结构和参数文件 |
+|[FastDeployServer](#fastdeployserver--serving可视化部署组件) | Serving可视化部署 | 提供对基于[FastDeploy](https://github.com/PaddlePaddle/FastDeploy)的Serving可视化部署，提供配置模型库、管理监控服务以及测试服务等功能 |
+|[FastDeployClient](#fastdeployclient--serving服务的客户端组件)| Serving服务的客户端 | 提供对fastdeployserver服务进行访问的客户端界面 |
+
+
 
 
 同时，VisualDL提供可视化结果保存服务，通过 [VDL.service](#vdlservice) 生成链接，保存并分享可视化结果
@@ -1147,6 +1153,67 @@ visualdl --logdir ./log --port 8080
   <p align="center">
     <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="20%"/>
   </p>
+
+## Profiler--性能数据可视化组件
+
+### 介绍
+性能数据可视化组件用来解析飞桨框架性能分析器导出的性能数据文件，从多个角度对性能数据进行汇总分析，帮助用户诊断训练程序的性能瓶颈所在。请参考文档[使用VisualDL做性能分析](./profiler/README_CN.md)进行使用。
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="85%"/>
+</p>
+
+## X2Paddle--模型转换组件
+
+### 介绍
+X2Paddle模型转换组件用来读取onnx模型，展示onnx模型的网络结构，并且帮助用户对onnx模型转换为paddle模型。用户可以对比原始的onnx模型和转换后的paddle模型结构，并且获取转换后的模型进行使用。
+
+### 启动方式
+使用该功能需要安装x2paddle和onnx>=1.6，在安装visualdl>=2.5.0时候应该会自动安装依赖库。如果需要手动安装上述依赖，可以执行命令
+```bash
+python -m pip install x2paddle onnx>=1.6
+```
+
+在命令行执行
+```shell
+visualdl --host 0.0.0.0 --port 8080
+```
+接着在浏览器打开`http://127.0.0.1:8080`，即可使用X2Paddle组件进行模型转换。
+
+### 功能操作说明
+
+- 转换onnx模型并进行下载
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+</p>
+
+- 更换模型，选取一个新的模型进行转换
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203105-afa88c93-038c-4c01-bbc8-b07aa5ecfcf4.gif" width="100%"/>
+</p>
+
+- 对比转换前后的模型结构
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203137-cb113b58-7977-4de5-b742-2089e4336b47.gif" width="100%"/>
+</p>
+
+**注**：如果转换模型失败，将会弹出报错提示，可以拷贝模型转换失败的错误信息到[X2Paddle](https://github.com/PaddlePaddle/X2Paddle/issues)的issue中，帮助我们更好地优化模型转换工具。
+
+## FastDeployServer--Serving可视化部署组件
+
+### 介绍
+FastDeployServer组件辅助用户基于[FastDeploy项目](https://github.com/PaddlePaddle/FastDeploy)使用fastdeployserver进行快速的服务化部署。主要提供模型库配置修改，服务管理监控的功能。请参考文档[使用VisualDL进行Serving可视化部署](./fastdeploy_server/README_CN.md)进行使用。
+ <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+</p>
+
+## FastDeployClient--Serving服务的客户端组件
+
+### 介绍
+FastDeployClient组件提供给用户对fastdeployserver服务进行访问的客户端界面，进行一键预测和可视化结果。请参考文档[使用VisualDL作为fastdeployserver服务的客户端](./fastdeploy_client/README_CN.md)进行使用。
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+</p>
 
 
 ## VDL.service

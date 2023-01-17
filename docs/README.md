@@ -126,7 +126,7 @@ In the above example, the log has recorded three sets of scalar values. Develper
 Use the command line to launch the VisualDL panel：
 
 ```python
-visualdl --logdir <dir_1, dir_2, ... , dir_n> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only --component_tabs <tab_name1, tab_name2, ...>
 ```
 
 Parameter details:
@@ -140,6 +140,7 @@ Parameter details:
 | --language      | The language of the VisualDL panel. Language can be specified as 'en' or 'zh', and the default is the language used by the browser. |
 | --public-path   | The URL path of the VisualDL panel. The default path is '/app', meaning that the access address is 'http://&lt;host&gt;:&lt;port&gt;/app'. |
 | --api-only      | Decide whether or not to provide only API. If this parameter is set, VisualDL will only provides API service without displaying the web page, and the API address is 'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'. Additionally, If the public_path parameter is not specified, the default address is 'http://&lt;host&gt;:&lt;port&gt;/api'. |
+| --component_tabs  | Decide which components are presented in page, currently support 15 components, i.e. 'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram', 'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve', 'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'. If this parameter is set, only specified components will be presented. If not set, and specify --logdir parameter, only components with data in vdlrecords log are presented. If both --component_tabs and --logdir are not set, only present 'static_graph', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client' components by default |
 
 To visualize the log file generated in the previous step, developers can launch the panel through the command:
 
@@ -176,6 +177,7 @@ The interface parameters are as follows:
 | public_path   | string                                             | The URL path of the VisualDL panel. The default path is '/app', meaning that the access address is 'http://&lt;host&gt;:&lt;port&gt;/app'. |
 | api_only      | boolean                                            | Decide whether or not to provide only API. If this parameter is set, VisualDL will only provides API service without displaying the web page, and the API address is 'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'. Additionally, If the parameter public_path is not specified, the default address is 'http://&lt;host&gt;:&lt;port&gt;/api'. |
 | open_browser  | boolean                                            | Whether or not to open the browser. If this parameter is set as True, the browser will be openned automatically and VisualDL panel will be launched at the same time. If parameter api_only is specified as True,  parameter open_browser can be ignored. |
+| component_tabs | string or list[string_1, string_2, ... , string_n] | Decide which components are presented in page, currently support 15 components, i.e. 'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram', 'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve', 'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'. If this parameter is set, only specified components will be presented. If not set, and specify --logdir parameter, only components with data in vdlrecords log are presented. If both --component_tabs and --logdir are not set, only present 'static_graph', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client' components by default |
 
 To visualize the log file generated in the previous step, developers can launch the panel through the command:
 
@@ -288,10 +290,34 @@ Developers can compare with multiple experiments by specifying and uploading the
 </p>
 
 ### Performance Analysis
-**Performance Analysis**(Profiler) visualize the profiling data collected during your program runs, helping you identify program bottlenecks and optimize performance. Please refer to [VisualDL Profiler Guide](./profiler/README.md)。
+**Performance Analysis**(Profiler) visualize the profiling data collected during your program runs, helping you identify program bottlenecks and optimize performance. Please refer to [VisualDL Profiler Guide](./components/profiler/README.md).
 <p align="center">
 <img src="https://user-images.githubusercontent.com/22424850/185894151-53ffc60b-7203-4cb8-a289-5d97332d0691.gif" width="85%"/>
 </p>
+
+### X2Paddle
+The X2Paddle component provides the functions of onnx model format visualization and transformation to paddle format.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+</p>
+
+
+### FastDeployServer
+The FastDeployServer component provides the functions of loading and editing the model repository, fastdeployserver service management and monitoring, and providing the client to test service. Please refer to [use VisualDL for fastdeploy serving deployment visualization](./components/fastdeploy_server/README.md).
+
+ <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+</p>
+
+
+### FastDeployClient
+The FastDeployClient component is mainly used to quickly access the fastdeployserver service, to help users visualize prediction requests and results. Please refer to [use VisualDL as fastdeploy client for request visualization](./components/fastdeploy_client/README.md).
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+</p>
+
 
 ### VDL.service
 
@@ -308,7 +334,7 @@ VisualDL, in which Graph is powered by [Netron](https://github.com/lutzroeder/ne
 
 ## More Details
 
-For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./docs/components/README.md)。
+For more details related to the use of VisualDL, please refer to [**VisualDL User Guide**](./components/README.md), [**VisualDL Profiler Guide**](./components/profiler/README.md), [**Use VisualDL for fastdeploy serving deployment visualization**](./components/fastdeploy_server/README.md), [**Use VisualDL as fastdeploy client for request visualization**](./components/fastdeploy_client/README.md).
 
 ## Technical Communication
 

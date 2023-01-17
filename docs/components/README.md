@@ -6,7 +6,7 @@
 
 VisualDL is a visualization tool designed for Deep Learning. VisualDL provides a variety of charts to show the trends of parameters. It enables users to understand the training process and model structures of Deep Learning models more clearly and intuitively so as to optimize models efficiently.
 
-Currently, VisualDL provides **Ten Components**: scalar, image, audio, text, graph, histogram, pr curve, ROC curve, high dimensional and hyperparameters. VisualDL iterates rapidly and new functions will be continuously added.
+Currently, VisualDL provides **Fifteen Components**: scalar, image, audio, text, graph(dynamic, static), histogram, pr curve, ROC curve, high dimensional and hyperparameters, profiler, x2paddle, fastdeployserver, fastdeployclient. VisualDL iterates rapidly and new functions will be continuously added.
 
 
 
@@ -22,6 +22,10 @@ Currently, VisualDL provides **Ten Components**: scalar, image, audio, text, gra
 |                   [ROC Curve](#ROC-Curve)                   |   Receiver Operating Characteristic curve    | Show the performance of a classification model at all classification thresholds. |
 | [High Dimensional](#High-Dimensional--Data-Dimensionality-Reduction) | Data Dimensionality Reduction | Project high-dimensional data into 2D/3D space for embedding visualization, making it convenient to observe the correlation between data. |
 | [Hyper Parameters](#hyperparameters--hyperparameter-visualization) |  HyperParameter Visualization  | Visualize the relationship between hyperparameters and model metrics (such as accuracy and loss) in a rich view, helping you identify the best hyperparameters in an efficient way. |
+|[Profiler](#Profiler--profiling-data-visualization)| Profiling data visualization | Analyse profiling data exported by paddle, helping users identify program bottlenecks and optimize performance |
+|[X2Paddle](#X2Paddle--model-format-transformation)| Model conversion| Convert onnx model to paddle format |
+|[FastDeployServer](#fastdeployserver--fastdeploy-serving-deployment-visualization) | fastdeploy serving deployment visualization | Provide the functions of loading and editing the model repository, fastdeployserver service management and monitoring |
+|[FastDeployClient](#fastdeployclient--fastdeploy-client-for-request-visualization)| fastdeploy client for request visualization  | Access the fastdeployserver service, helping users visualize prediction requests and results |
 
 At the same time, VisualDL provides [VDL.service](#vdlservice) , which allows developers to easily save, track and share visualization results of experiments with anyone for free.
 
@@ -1103,6 +1107,67 @@ Then, open the browser and enter the address`http://127.0.0.1:8080` to view:
   <p align="center">
     <img src="https://user-images.githubusercontent.com/28444161/119221157-8b93d100-bb20-11eb-9c9e-7540b3cb92a1.png" width="20%"/>
   </p>
+
+## Profiler--profiling data visualization
+
+### Introduction
+VisualDL supports to visualize profiling data exported by paddle and helps you identify program bottlenecks and optimize performance. Please refer to [VisualDL Profiler Guide](./components/profiler/README.md).
+<p align="center">
+<img src="https://user-images.githubusercontent.com/22424850/185894151-53ffc60b-7203-4cb8-a289-5d97332d0691.gif" width="85%"/>
+</p>
+
+
+## X2Paddle--model format transformation
+
+### Introduction
+
+The X2Paddle component is used to read the onnx model, display the network structure of the onnx model, and help users convert the onnx model into a paddle model. Users can compare the original onnx model and the converted paddle model network, and obtain the converted model for use.
+
+### Usage
+
+Launch the panel by:
+```shell
+visualdl --port 8080
+```
+Then, open the browser and enter the address`http://127.0.0.1:8080` to use X2Paddle component.
+
+
+### Functional Instrucions
+
+- Convert onnx model and download
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+</p>
+
+- Reload a new model
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203105-afa88c93-038c-4c01-bbc8-b07aa5ecfcf4.gif" width="100%"/>
+</p>
+
+- Compare model network between conversions
+   <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203137-cb113b58-7977-4de5-b742-2089e4336b47.gif" width="100%"/>
+</p>
+
+**Note**: If failed to convert an onnx model to paddle, you can copy the error message of the model conversion to [X2Paddle](https://github.com/PaddlePaddle/X2Paddle/issues) issue to help us improve this tool.
+
+## FastDeployServer--fastdeploy serving deployment visualization
+
+### Introduction
+The FastDeployServer component assists users to use fastdeployserver to deploy service conveniently based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy). It mainly provides the functions of loading and editing the model repository, service management and monitoring, and providing the client to test service. Please refer to [use VisualDL for fastdeploy serving deployment management](./fastdeploy_server/README.md).
+ <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+</p>
+
+## FastDeployClient--fastdeploy client for request visualization
+
+### Introduction
+The FastDeployClient component is mainly used to quickly access the fastdeployserver service based on [FastDeploy project](https://github.com/PaddlePaddle/FastDeploy), to help users visualize prediction requests and results, and make quick verification of deployed services. Please refer to [use VisualDL as fastdeploy client for request visualization](./fastdeploy_client/README.md).
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+</p>
+
+
 
 ## VDL.service
 
