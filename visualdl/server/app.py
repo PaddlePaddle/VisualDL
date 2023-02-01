@@ -71,7 +71,15 @@ def create_app(args):  # noqa: C901
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 30
 
     app.config['BABEL_DEFAULT_LOCALE'] = default_language
-    babel = Babel(app)
+
+    def get_locale():
+        lang = args.language
+        if not lang or lang not in support_language:
+            lang = request.accept_languages.best_match(support_language)
+        return lang
+
+    babel = Babel(app, locale_selector=get_locale)  # noqa:F841
+    # Babel api from flask_babel v3.0.0
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
     profiler_api_call = create_profiler_api_call(args.logdir)
     inference_api_call = create_model_convert_api_call()
@@ -87,13 +95,6 @@ def create_app(args):  # noqa: C901
         if request.query_string:
             query_string = '?' + request.query_string.decode()
         return url + query_string
-
-    @babel.localeselector
-    def get_locale():
-        lang = args.language
-        if not lang or lang not in support_language:
-            lang = request.accept_languages.best_match(support_language)
-        return lang
 
     if not args.api_only:
 
@@ -181,6 +182,7 @@ def create_app(args):  # noqa: C901
             error_msg = '{}'.format(e)
             return make_response(error_msg)
         args = urllib.parse.urlencode(request_args)
+
         if args:
             return redirect(
                 api_path + "/fastdeploy/fastdeploy_client/app?{}".format(args),
@@ -201,14 +203,30 @@ def create_app(args):  # noqa: C901
         Returns:
             Any thing from gradio server.
         '''
+        lang = 'zh'
         if request.method == 'POST':
+            if request.mimetype == 'application/json':
+                request_args = request.json
+            else:
+                request_args = request.form.to_dict()
+            if 'data' in request_args:
+                lang = request_args['data'][-1]
+                request_args['lang'] = lang
+            elif 'lang' in request_args:
+                lang = request_args['lang']
+
             port = fastdeploy_api_call('create_fastdeploy_client',
-                                       request.form)
-            request_args = request.form
+                                       request_args)
         else:
+            request_args = request.args.to_dict()
+            if 'data' in request_args:
+                lang = request_args['data'][-1]
+                request_args['lang'] = lang
+            elif 'lang' in request_args:
+                lang = request_args['lang']
             port = fastdeploy_api_call('create_fastdeploy_client',
-                                       request.args)
-            request_args = request.args
+                                       request_args)
+
         if path == 'app':
             proxy_url = request.url.replace(
                 request.host_url.rstrip('/') + api_path +
@@ -239,50 +257,324 @@ def create_app(args):  # noqa: C901
                 model_name = start_args.get('default_model_name', '')
                 content = content.decode()
                 try:
-                    default_server_addr = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("服务ip", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_server_addr = default_server_addr.replace(
-                        '"value": ""', '"value": "localhost"')
-                    default_http_port = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("推理服务端口", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_http_port = default_http_port.replace(
-                        '"value": ""', '"value": "{}"'.format(http_port))
-                    default_metrics_port = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("性能服务端口", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_metrics_port = default_metrics_port.replace(
-                        '"value": ""', '"value": "{}"'.format(metrics_port))
-                    default_model_name = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("模型名称", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_model_name = default_model_name.replace(
-                        '"value": ""', '"value": "{}"'.format(model_name))
-                    default_model_version = re.search(
-                        '"label": {}.*?"value": "".*?}}'.format(
-                            json.dumps("模型版本", ensure_ascii=True).replace(
-                                '\\', '\\\\')), content).group(0)
-                    cur_model_version = default_model_version.replace(
-                        '"value": ""', '"value": "{}"'.format('1'))
-                    content = content.replace(default_server_addr,
-                                              cur_server_addr)
-                    if http_port:
-                        content = content.replace(default_http_port,
-                                                  cur_http_port)
-                    if metrics_port:
-                        content = content.replace(default_metrics_port,
-                                                  cur_metrics_port)
-                    if model_name:
-                        content = content.replace(default_model_name,
-                                                  cur_model_name)
+                    if request_args.get('lang', 'zh') == 'en':
+                        server_addr_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("server ip",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not server_addr_match or server_addr_match.group(
+                                0).count('"label"') >= 2:
+                            server_addr_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps("server ip",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                        default_server_addr = server_addr_match.group(0)
+                        if '"value": ""' in default_server_addr:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value": ""', '"value": "localhost"')
+                        else:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value":""', '"value": "localhost"')
+                        content = content.replace(default_server_addr,
+                                                  cur_server_addr)
+                        http_port_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("server port",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not http_port_match or http_port_match.group(
+                                0).count('"label"') >= 2:
+                            http_port_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps(
+                                        "server port",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_http_port = http_port_match.group(0)
 
-                    content = content.replace(default_model_version,
-                                              cur_model_version)
+                        if '"value": ""' in default_http_port:
+                            cur_http_port = default_http_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(http_port))
+                        else:
+                            cur_http_port = default_http_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(http_port))
+                        if http_port:
+                            content = content.replace(default_http_port,
+                                                      cur_http_port)
+                        metrics_port_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("metrics port",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not metrics_port_match or metrics_port_match.group(
+                                0).count('"label"') >= 2:
+                            metrics_port_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps(
+                                        "metrics port",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_metrics_port = metrics_port_match.group(0)
+                        if '"value": ""' in default_metrics_port:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(metrics_port))
+                        else:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(metrics_port))
+                        if metrics_port:
+                            content = content.replace(default_metrics_port,
+                                                      cur_metrics_port)
+                        model_name_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("model name",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not model_name_match or model_name_match.group(
+                                0).count('"label"') >= 2:
+                            model_name_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps(
+                                        "model name",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_model_name = model_name_match.group(0)
+                        if '"value": ""' in default_model_name:
+                            cur_model_name = default_model_name.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(model_name))
+                        else:
+                            cur_model_name = default_model_name.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(model_name))
+                        if model_name:
+                            content = content.replace(default_model_name,
+                                                      cur_model_name)
+                        model_version_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("model version",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not model_version_match or model_version_match.group(
+                                0).count('"label"') >= 2:
+                            model_version_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps(
+                                        "model version",
+                                        ensure_ascii=True).replace(
+                                            '\\', '\\\\')), content)
+                        default_model_version = model_version_match.group(0)
+                        if '"value": ""' in default_model_version:
+                            cur_model_version = default_model_version.replace(
+                                '"value": ""', '"value": "{}"'.format('1'))
+                        else:
+                            cur_model_version = default_model_version.replace(
+                                '"value":""', '"value": "{}"'.format('1'))
+                        content = content.replace(default_model_version,
+                                                  cur_model_version)
+
+                    else:
+                        server_addr_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("服务ip", ensure_ascii=True).replace(
+                                    '\\', '\\\\')), content)
+                        if not server_addr_match or server_addr_match.group(
+                                0).count('"label"') >= 2:
+                            server_addr_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps("服务ip",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                            if not server_addr_match:
+                                server_addr_match = re.search(
+                                    '"label":\\s*{}.*?"value":\\s*"".*?}}'.
+                                    format(
+                                        json.dumps("服务ip",
+                                                   ensure_ascii=False).replace(
+                                                       '\\', '\\\\')), content)
+                                if not server_addr_match or server_addr_match.group(
+                                        0).count('"label"') >= 2:
+                                    server_addr_match = re.search(
+                                        '"value":\\s*"".*?"label":\\s*{}.*?}}'.
+                                        format(
+                                            json.dumps(
+                                                "服务ip",
+                                                ensure_ascii=False).replace(
+                                                    '\\', '\\\\')), content)
+
+                        default_server_addr = server_addr_match.group(0)
+                        if '"value": ""' in default_server_addr:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value": ""', '"value": "localhost"')
+                        else:
+                            cur_server_addr = default_server_addr.replace(
+                                '"value":""', '"value": "localhost"')
+                        content = content.replace(default_server_addr,
+                                                  cur_server_addr)
+                        http_port_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("推理服务端口",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not http_port_match or http_port_match.group(
+                                0).count('"label"') >= 2:
+                            http_port_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps("推理服务端口",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                            if not http_port_match:
+                                http_port_match = re.search(
+                                    '"label":\\s*{}.*?"value":\\s*"".*?}}'.
+                                    format(
+                                        json.dumps(
+                                            "推理服务端口",
+                                            ensure_ascii=False).replace(
+                                                '\\', '\\\\')), content)
+                                if not http_port_match or http_port_match.group(
+                                        0).count('"label"') >= 2:
+                                    http_port_match = re.search(
+                                        '"value":\\s*"".*?"label":\\s*{}.*?}}'.
+                                        format(
+                                            json.dumps(
+                                                "推理服务端口",
+                                                ensure_ascii=False).replace(
+                                                    '\\', '\\\\')), content)
+                        default_http_port = http_port_match.group(0)
+
+                        if '"value": ""' in default_http_port:
+                            cur_http_port = default_http_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(http_port))
+                        else:
+                            cur_http_port = default_http_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(http_port))
+                        if http_port:
+                            content = content.replace(default_http_port,
+                                                      cur_http_port)
+                        metrics_port_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("性能服务端口",
+                                           ensure_ascii=True).replace(
+                                               '\\', '\\\\')), content)
+                        if not metrics_port_match or metrics_port_match.group(
+                                0).count('"label"') >= 2:
+                            metrics_port_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps("性能服务端口",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                            if not metrics_port_match:
+                                metrics_port_match = re.search(
+                                    '"label":\\s*{}.*?"value":\\s*"".*?}}'.
+                                    format(
+                                        json.dumps(
+                                            "性能服务端口",
+                                            ensure_ascii=False).replace(
+                                                '\\', '\\\\')), content)
+                                if not metrics_port_match or metrics_port_match.group(
+                                        0).count('"label"') >= 2:
+                                    metrics_port_match = re.search(
+                                        '"value":\\s*"".*?"label":\\s*{}.*?}}'.
+                                        format(
+                                            json.dumps(
+                                                "性能服务端口",
+                                                ensure_ascii=False).replace(
+                                                    '\\', '\\\\')), content)
+                        default_metrics_port = metrics_port_match.group(0)
+                        if '"value": ""' in default_metrics_port:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(metrics_port))
+                        else:
+                            cur_metrics_port = default_metrics_port.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(metrics_port))
+                        if metrics_port:
+                            content = content.replace(default_metrics_port,
+                                                      cur_metrics_port)
+                        model_name_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("模型名称", ensure_ascii=True).replace(
+                                    '\\', '\\\\')), content)
+                        if not model_name_match or model_name_match.group(
+                                0).count('"label"') >= 2:
+                            model_name_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps("模型名称",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                            if not model_name_match:
+                                model_name_match = re.search(
+                                    '"label":\\s*{}.*?"value":\\s*"".*?}}'.
+                                    format(
+                                        json.dumps("模型名称",
+                                                   ensure_ascii=False).replace(
+                                                       '\\', '\\\\')), content)
+                                if not model_name_match or model_name_match.group(
+                                        0).count('"label"') >= 2:
+                                    model_name_match = re.search(
+                                        '"value":\\s*"".*?"label":\\s*{}.*?}}'.
+                                        format(
+                                            json.dumps(
+                                                "模型名称",
+                                                ensure_ascii=False).replace(
+                                                    '\\', '\\\\')), content)
+                        default_model_name = model_name_match.group(0)
+                        if '"value": ""' in default_model_name:
+                            cur_model_name = default_model_name.replace(
+                                '"value": ""',
+                                '"value": "{}"'.format(model_name))
+                        else:
+                            cur_model_name = default_model_name.replace(
+                                '"value":""',
+                                '"value": "{}"'.format(model_name))
+                        if model_name:
+                            content = content.replace(default_model_name,
+                                                      cur_model_name)
+                        model_version_match = re.search(
+                            '"label":\\s*{}.*?"value":\\s*"".*?}}'.format(
+                                json.dumps("模型版本", ensure_ascii=True).replace(
+                                    '\\', '\\\\')), content)
+                        if not model_version_match or model_version_match.group(
+                                0).count('"label"') >= 2:
+                            model_version_match = re.search(
+                                '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
+                                    json.dumps("模型版本",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
+                            if not model_version_match:
+                                model_version_match = re.search(
+                                    '"label":\\s*{}.*?"value":\\s*"".*?}}'.
+                                    format(
+                                        json.dumps("模型版本",
+                                                   ensure_ascii=False).replace(
+                                                       '\\', '\\\\')), content)
+                                if not model_version_match or model_version_match.group(
+                                        0).count('"label"') >= 2:
+                                    model_version_match = re.search(
+                                        '"value":\\s*"".*?"label":\\s*{}.*?}}'.
+                                        format(
+                                            json.dumps(
+                                                "模型版本",
+                                                ensure_ascii=False).replace(
+                                                    '\\', '\\\\')), content)
+
+                        default_model_version = model_version_match.group(0)
+                        if '"value": ""' in default_model_version:
+                            cur_model_version = default_model_version.replace(
+                                '"value": ""', '"value": "{}"'.format('1'))
+                        else:
+                            cur_model_version = default_model_version.replace(
+                                '"value":""', '"value": "{}"'.format('1'))
+                        content = content.replace(default_model_version,
+                                                  cur_model_version)
                 except Exception:
                     pass
                 finally:

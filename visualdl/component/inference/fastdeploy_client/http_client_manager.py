@@ -19,7 +19,6 @@ import numpy as np
 import requests
 import tritonclient.http as httpclient
 from attrdict import AttrDict
-from tritonclient.utils import InferenceServerException
 
 
 def convert_http_metadata_config(metadata):
@@ -118,8 +117,63 @@ table, th {{
 </div>
 """
 
+metrics_table_head_en = """
+<style>
+table, th {{
+  border:0.1px solid black;
+}}
+</style>
 
-def get_metric_data(server_addr, metric_port):  # noqa:C901
+<div>
+<table style="width:100%">
+  <tr>
+    <th rowspan="2">Model name</th>
+    <th colspan="4">Execution metric</th>
+    <th colspan="5">Delay metric</th>
+
+  </tr>
+  <tr>
+   <th>inference request success</th>
+  <th>inference request failure</th>
+  <th>inference count</th>
+  <th>inference exec count</th>
+  <th>inference request duration(ms)</th>
+  <th>inference queue duration(ms)</th>
+  <th>inference comput input duration(ms)</th>
+  <th>inference compute infer duration
+(ms)</th>
+  <th>inference compute output duration(ms)</th>
+  </tr>
+  {}
+</table>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<div>
+<table style="width:100%">
+  <tr>
+    <th rowspan="2">GPU</th>
+    <th colspan="4">Performance metric</th>
+    <th colspan="2">Memory</th>
+  </tr>
+  <tr>
+   <th>utilization(%)</th>
+  <th>power usage(W)</th>
+  <th>power limit(W)</th>
+  <th>energy consumption(W)</th>
+  <th>total(GB)</th>
+  <th>used(GB)</th>
+  </tr>
+  {}
+</table>
+</div>
+"""
+
+
+def get_metric_data(server_addr, metric_port, lang='zh'):  # noqa:C901
     '''
     Get metrics data from fastdeploy server, and transform it into html table.
     Args:
@@ -235,6 +289,8 @@ def get_metric_data(server_addr, metric_port):  # noqa:C901
                             for item in data]) + "</tr>"
         for data in gpu_data_list
     ])
+    if lang == 'en':
+        return metrics_table_head_en.format(model_data, gpu_data)
     return metrics_table_head.format(model_data, gpu_data)
 
 
@@ -251,8 +307,8 @@ class HttpClientManager:
             return fastdeploy_client
         except Exception:
             raise RuntimeError(
-                'Can not connect to server {}, please check your \
-                    server address'.format(server_url))
+                'Can not connect to server {}, please check your '
+                'server address'.format(server_url))
 
     def infer(self, server_url, model_name, model_version, inputs):
         fastdeploy_client = self._create_client(server_url)
@@ -294,7 +350,7 @@ class HttpClientManager:
         try:
             model_metadata = fastdeploy_client.get_model_metadata(
                 model_name=model_name, model_version=model_version)
-        except InferenceServerException as e:
+        except Exception as e:
             raise RuntimeError("Failed to retrieve the metadata: " + str(e))
 
         model_metadata = convert_http_metadata_config(model_metadata)

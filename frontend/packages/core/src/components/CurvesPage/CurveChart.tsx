@@ -23,7 +23,6 @@ import {rem, size} from '~/utils/style';
 import Chart from '~/components/Chart';
 import {Chart as ChartLoader} from '~/components/Loader/ChartPage';
 import ChartToolbox from '~/components/ChartToolbox';
-import type {EChartsOption} from 'echarts';
 import TooltipTable from '~/components/TooltipTable';
 import {cycleFetcher} from '~/utils/fetch';
 import {format} from 'd3-format';

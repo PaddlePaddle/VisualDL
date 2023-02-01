@@ -4,6 +4,78 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.5.0 - 2023-01-17
+
+**ZH**
+
+- 功能新增
+    - 增加X2Paddle模型转换组件，提供onnx模型到paddle的一键转换 (#1148 #1153 #1160 #1170)
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+    </p>
+
+    - 增加FastDeployServer组件，支持FastDeploy的serving可视化部署 (#1169 #1198 #1199 #1202)
+     <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+    </p>
+
+    - 增加FastDeployClient组件，支持对fastdeployserver服务进行可视化访问 (#1169 #1197)
+
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+    </p>
+
+- 其它改进
+    - **BE**: 增加启动参数component_tabs，支持选择指定组件进行显示 (#1157 #1159)
+
+**EN**
+
+- Features
+    - Add X2Paddle component, to support conversion from onnx model to paddle model (#1148 #1153 #1160 #1170)
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+    </p>
+
+    - Add FastDeployServer component, to support fastdeploy serving deployment visualization (#1169 #1198 #1199 #1202)
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+    </p>
+
+    - Add FastDeployClient component, to support request visualization for fastdeployserver service (#1169 #1197)
+    <p align="center">
+    <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+    </p>
+
+- Enhancement
+    - **BE** Add a new launching parameter component_tabs, to support selecting which components are presented in page (#1157 #1159)
+
+
+
+## v2.4.2 - 2022-12-25
+
+**ZH**
+
+- 问题修复
+    - **FE**: 修复直方图的显示问题 （#1177）
+    - **BE**: 修复cpu版paddle导出的profiler性能数据文件的载入问题 （#1176）
+    - **BE**: 修复当graph中存在多个program block时候的导出错误 (#1180)
+
+- 其它改进
+    - **BE**: 用户启动vdl不指定logdir参数时让程序不报错退出 （#1171）
+    - **BE**: 新增add_scalars接口 (#1175)
+
+**EN**
+
+- Bug Fixes
+    - **FE**: Fix histogram tab presentation problem （#1177）
+    - **BE**: Fix a bug of loading profiler data exported by paddle of cpu version （#1176）
+    - **BE**: Fix error of exporting graph with multiple program blocks (#1180)
+
+- Enhancement
+    - **BE**: Do not crash vdl when logdir is missing in launching parameters （#1171）
+    - **BE**: Add add_scalars component (#1175)
+
+
 ## v2.4.1 - 2022-09-14
 
 **ZH**

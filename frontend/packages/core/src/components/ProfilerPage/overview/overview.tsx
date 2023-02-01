@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, {FunctionComponent, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {FunctionComponent, useCallback, useEffect, useState} from 'react';
 import type {ColumnsType} from 'antd/lib/table';
 import PieChart from '~/components/pieChart';
 import StackColumnChart from '~/components/StackColumnChart';
@@ -129,10 +129,10 @@ interface chartDataType {
     gpu: cpuData[];
     cpu: cpuData[];
 }
-type SelectListItem<T> = {
-    value: T;
-    label: string;
-};
+// type SelectListItem<T> = {
+//     value: T;
+//     label: string;
+// };
 
 const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans, units, descriptions}) => {
     const {t} = useTranslation(['profiler', 'common']);
@@ -144,10 +144,10 @@ const OverView: FunctionComponent<overViewProps> = ({runs, views, workers, spans
     const [isExpend, setIsExpend] = useState(false);
     const [tableData, setTableData] = useState<tableType[] | Cpu[]>();
     const [tableLoading, settableLoading] = useState(true);
-    const [stepsList, setStepsList] = useState<SelectListItem<string>[]>([
-        {label: 'cpu', value: 'cpu'},
-        {label: 'gpu', value: 'gpu'}
-    ]);
+    // const [stepsList, setStepsList] = useState<SelectListItem<string>[]>([
+    //     {label: 'cpu', value: 'cpu'},
+    //     {label: 'gpu', value: 'gpu'}
+    // ]);
     const [TrainType, setTrainType] = useState<string>('cpu');
     const [PerformanceType, setPerformanceType] = useState<string>('cpu');
     const [tableData2, setTableData2] = useState<Event[]>();

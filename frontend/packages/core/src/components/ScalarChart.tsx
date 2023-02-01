@@ -21,7 +21,7 @@ import {rem, size} from '~/utils/style';
 
 import Chart from '~/components/Chart';
 import ChartToolbox from '~/components/ChartToolbox';
-import type {EChartsOption, LineSeriesOption} from 'echarts';
+import type {EChartsOption} from 'echarts';
 import TooltipTable from '~/components/TooltipTable';
 import {format} from 'd3-format';
 import {renderToStaticMarkup} from 'react-dom/server';

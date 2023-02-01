@@ -467,14 +467,20 @@ def launch_process(kwargs: dict):
     logfilename = 'logfile-{}'.format(get_random_string(8))
     while os.path.exists(os.path.join(FASTDEPLOYSERVER_PATH, logfilename)):
         logfilename = 'logfile-{}'.format(get_random_string(8))
-    p = Popen(
-        cmd,
-        stdout=open(
-            os.path.join(FASTDEPLOYSERVER_PATH, logfilename), 'w',
-            buffering=1),
-        stderr=STDOUT,
-        universal_newlines=True,
-        env=launch_env)
+    try:
+        p = Popen(
+            cmd,
+            stdout=open(
+                os.path.join(FASTDEPLOYSERVER_PATH, logfilename),
+                'w',
+                buffering=1),
+            stderr=STDOUT,
+            universal_newlines=True,
+            env=launch_env)
+    except Exception:
+        raise RuntimeError(
+            "Failed to launch fastdeployserver，please check fastdeployserver is installed in environment."
+        )
     server_name = start_args['server-name'] if start_args[
         'server-name'] else p.pid
     with open(

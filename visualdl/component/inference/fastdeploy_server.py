@@ -25,6 +25,7 @@ from pathlib import Path
 import requests
 
 from .fastdeploy_client.client_app import create_gradio_client_app
+from .fastdeploy_client.client_app import create_gradio_client_app_en
 from .fastdeploy_lib import analyse_config
 from .fastdeploy_lib import check_process_zombie
 from .fastdeploy_lib import copy_config_file_to_default_config
@@ -53,7 +54,8 @@ class FastDeployServerApi(object):
         self.root_dir = Path(os.getcwd())
         self.opened_servers = {
         }  # Use to store the opened server process pid and process itself
-        self.client_port = None
+        self.client_port = None  # Chinese version
+        self.client_en_port = None  # English version
 
     @result()
     def get_directory(self, cur_dir):
@@ -154,8 +156,8 @@ class FastDeployServerApi(object):
         self._poll_zombie_process()
         if check_process_zombie(server_id) is True:
             raise RuntimeError(
-                "Server {} is down due to exception or killed，please check the reason according to the log, \
-                then close this server.".format(server_id))
+                "Server {} is down due to exception or killed，please check the reason according to the log, "
+                "then close this server.".format(server_id))
         return
 
     @result()
@@ -205,8 +207,9 @@ class FastDeployServerApi(object):
             import fastdeploy as fd
         except Exception:
             raise RuntimeError(
-                "fastdeploy is required for visualizing results，please refer to \
-            https://github.com/PaddlePaddle/FastDeploy to install fastdeploy")
+                "fastdeploy is required for visualizing results，please refer to "
+                "https://github.com/PaddlePaddle/FastDeploy to install fastdeploy"
+            )
         model_path = fd.download_model(
             name=pretrain_model_name, path=version_resource_dir)
         if model_path:
@@ -351,34 +354,43 @@ class FastDeployServerApi(object):
                     version_filenames_dict_for_frontend)
         return version_info_for_frontend
 
-    def create_fastdeploy_client(self):
-        if self.client_port is None:
+    def create_fastdeploy_client(self, lang='zh'):
+        def get_free_tcp_port():
+            tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+            tcp.bind(('localhost', 0))
+            addr, port = tcp.getsockname()
+            tcp.close()
+            return port
 
-            def get_free_tcp_port():
-                tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                # tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-                tcp.bind(('localhost', 0))
-                addr, port = tcp.getsockname()
-                tcp.close()
-                return port
+        def check_alive(client_port):
+            while True:
+                try:
+                    requests.get('http://localhost:{}/'.format(client_port))
+                    break
+                except Exception:
+                    time.sleep(1)
 
-            self.client_port = get_free_tcp_port()
-            app = create_gradio_client_app()
-            thread = Process(
-                target=app.launch, kwargs={'server_port': self.client_port})
-            thread.start()
-
-            def check_alive():
-                while True:
-                    try:
-                        requests.get('http://localhost:{}/'.format(
-                            self.client_port))
-                        break
-                    except Exception:
-                        time.sleep(1)
-
-            check_alive()
-        return self.client_port
+        if lang == 'en':
+            if self.client_en_port is None:
+                self.client_en_port = get_free_tcp_port()
+                app = create_gradio_client_app_en()
+                thread = Process(
+                    target=app.launch,
+                    kwargs={'server_port': self.client_en_port})
+                thread.start()
+                check_alive(self.client_en_port)
+            return self.client_en_port
+        else:
+            if self.client_port is None:
+                self.client_port = get_free_tcp_port()
+                app = create_gradio_client_app()
+                thread = Process(
+                    target=app.launch,
+                    kwargs={'server_port': self.client_port})
+                thread.start()
+                check_alive(self.client_port)
+            return self.client_port
 
     def _poll_zombie_process(self):
         # check if there are servers killed by other vdl app instance and become zoombie
@@ -410,7 +422,7 @@ def create_fastdeploy_api_call():
         'start_server': (api.start_server, ['config']),
         'stop_server': (api.stop_server, ['server_id']),
         'get_server_output': (api.get_server_output, ['server_id', 'length']),
-        'create_fastdeploy_client': (api.create_fastdeploy_client, []),
+        'create_fastdeploy_client': (api.create_fastdeploy_client, ['lang']),
         'get_server_list': (api.get_server_list, []),
         'get_server_metric': (api.get_server_metric, ['server_id']),
         'get_server_config': (api.get_server_config, ['server_id']),

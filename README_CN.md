@@ -175,7 +175,7 @@ with LogWriter(logdir="./log/scalar_test/train") as writer:  # 将会创建日�
 使用命令行启动VisualDL面板，命令格式如下：
 
 ```python
-visualdl --logdir <dir_1, dir_2, ... , dir_n> --model <model_file> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only
+visualdl --logdir <dir_1, dir_2, ... , dir_n> --model <model_file> --host <host> --port <port> --cache-timeout <cache_timeout> --language <language> --public-path <public_path> --api-only --component_tabs <tab_name1, tab_name2, ...>
 ```
 
 参数详情：
@@ -190,6 +190,7 @@ visualdl --logdir <dir_1, dir_2, ... , dir_n> --model <model_file> --host <host>
 | --language      | VisualDL面板语言，可指定为'en'或'zh'，默认为浏览器使用语言   |
 | --public-path   | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app' |
 | --api-only      | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
+| --component_tabs | 设定需要显示的组件，当前支持'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram', 'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve', 'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'共15个组件。如果设置了此参数，将只展示所指定的组件。如果没有设置此参数，当指定了--logdir参数时候，将会根据日志文件中拥有的数据类型来自动显示相应的组件。当没有指定--logdir参数，默认显示'static_graph', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'这四个名称代表的组件 |
 
 针对上一步生成的日志，启动命令为：
 
@@ -228,6 +229,7 @@ visualdl.server.app.run(logdir,
 | public_path   | string                                           | VisualDL面板URL路径，默认是'/app'，即访问地址为'http://&lt;host&gt;:&lt;port&gt;/app' |
 | api_only      | boolean                                          | 是否只提供API，如果设置此参数，则VisualDL不提供页面展示，只提供API服务，此时API地址为'http://&lt;host&gt;:&lt;port&gt;/&lt;public_path&gt;/api'；若没有设置public_path参数，则默认为'http://&lt;host&gt;:&lt;port&gt;/api' |
 | open_browser  | boolean                                          | 是否打开浏览器，设置为True则在启动后自动打开浏览器并访问VisualDL面板，若设置api_only，则忽略此参数 |
+| --component_tabs | string或list[string_1, string_2, ... , string_n] | 设定需要显示的组件，当前支持'scalar', 'image', 'text', 'embeddings', 'audio', 'histogram', 'hyper_parameters', 'static_graph', 'dynamic_graph', 'pr_curve', 'roc_curve', 'profiler', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'共15个组件。如果设置了此参数，将只展示所指定的组件。如果没有设置此参数，当指定了--logdir参数时候，将会根据日志文件中拥有的数据类型来自动显示相应的组件。当没有指定--logdir参数，默认显示'static_graph', 'x2paddle', 'fastdeploy_server', 'fastdeploy_client'这四个名称代表的组件 |
 
 针对上一步生成的日志，我们的启动脚本为：
 
@@ -402,10 +404,32 @@ value: 3.1297709941864014
 </p>
 
 ### Profiler
-通过多个视图可视化性能分析的数据，辅助用户定位性能瓶颈并进行优化。可参考[使用VisualDL做性能分析](./profiler/README_CN.md)。
+通过多个视图可视化性能分析的数据，辅助用户定位性能瓶颈并进行优化。可参考[使用VisualDL做性能分析](./docs/components/profiler/README_CN.md)。
 <p align="center">
 <img src="https://user-images.githubusercontent.com/22424850/185893177-a049c8d5-2310-4138-8dd5-844cf198e425.gif" width="85%"/>
 </p>
+
+### X2Paddle
+提供onnx模型转paddle模型的可视化操作界面，帮助用户可视化onnx模型结构并且获取转换后的paddle模型结构和参数文件。
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203066-f2e43ef5-104f-436a-b44c-cad2b37ad518.gif" width="100%"/>
+</p>
+
+
+### FastDeployServer
+基于[FastDeploy](https://github.com/PaddlePaddle/FastDeploy)的Serving可视化部署，提供配置模型库、管理监控服务以及测试服务等功能。详细内容可参考[使用VisualDL进行Serving可视化部署](./docs/components/fastdeploy_server/README_CN.md)。
+ <p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211196832-1a05bf80-5aaa-493f-bba2-27e819c18bb9.gif" width="100%"/>
+</p>
+
+
+### FastDeployClient
+提供给用户访问fastdeployserver服务的客户端界面，进行一键预测和可视化结果。详细内容可参考[使用VisualDL作为fastdeployserver服务的客户端](./docs/components/fastdeploy_client/README_CN.md)。
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22424850/211203852-059d5b98-6299-4057-97d8-5209805aa67f.gif" width="100%"/>
+</p>
+
+
 
 
 ### VDL.service
@@ -436,8 +460,7 @@ Graph 相关功能由 [Netron](https://github.com/lutzroeder/netron) 提供技�
 
 ## 更多细节
 
-想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)。
-
+想了解更多关于VisualDL可视化功能的使用详情介绍，请查看[**VisualDL使用指南**](./docs/components/README_CN.md)，[**使用VisualDL做性能分析**](./docs/components/profiler/README_CN.md)，[**使用VisualDL进行Serving可视化部署**](./docs/components/fastdeploy_server/README_CN.md)，[**使用VisualDL作为fastdeployserver服务的客户端**](./docs/components/fastdeploy_client/README_CN.md)。
 ## 技术交流
 
 欢迎您加入VisualDL官方QQ群：1045783368 与飞桨团队以及其他用户共同针对VisualDL进行讨论与交流。

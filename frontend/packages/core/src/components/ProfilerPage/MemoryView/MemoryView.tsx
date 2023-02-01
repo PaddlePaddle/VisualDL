@@ -28,8 +28,8 @@ import SearchInput from '~/components/searchInput2';
 import GridLoader from 'react-spinners/GridLoader';
 import {Wraper, Title, FullWidthSelect, Configure, EchartPie} from '../../components';
 import type {devicesType, curveType, memory_events_type, Datum, op_memory_events_type, op_datum} from './type';
-import {number} from 'echarts';
-import NumberInput from '../NumberInput';
+// import {number} from 'echarts';
+// import NumberInput from '../NumberInput';
 interface DataType {
     key: React.Key;
     MemoryType: string;
@@ -178,6 +178,7 @@ const MemoryView: FunctionComponent<MemoryViewProps> = ({runs, workers, spans, u
                     const result = res as devicesType[];
                     const itemsLists = result.map(element => {
                         const regex1 = /\((.+?)\)/g;
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         const label: string = element.device.match(regex1)![0];
                         const labels = label.substring(1, label.length - 1);
                         return {label: labels, value: element.device};
