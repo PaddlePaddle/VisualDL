@@ -82,13 +82,13 @@ const routes: Route[] = [
         id: Pages.Graph,
         children: [
             {
-                id: 'graphDynamic',
-                path: '/graph/graphDynamic',
+                id: 'dynamic_graph',
+                path: '/graph/dynamic_graph',
                 component: React.lazy(() => import('~/pages/graphDynamic'))
             },
             {
-                id: 'graphStatic',
-                path: '/graph/graphStatic',
+                id: 'static_graph',
+                path: '/graph/static_graph',
                 component: React.lazy(() => import('~/pages/graphStatic'))
             }
         ]
