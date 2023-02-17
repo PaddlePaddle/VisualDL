@@ -268,7 +268,16 @@ const SubNav: FunctionComponent<{
 const Navbar: FunctionComponent = () => {
     const history = useHistory();
     const {t, i18n} = useTranslation('common');
+    // const {pathname: pathnames} = useLocation();
+    // console.log('pathnames', pathnames);
+    // const paths = pathnames.split('/');
+    // paths.shift();
+    // paths.shift();
+    // // join('/');
+    // const pathname = '/' + paths.join('/');
+    // console.log('pathname', pathname);
     const {pathname} = useLocation();
+
     const [navList, setNavlist] = useState<string[]>([]);
     const changeLanguage = useCallback(() => {
         const language = i18n.language;
@@ -285,8 +294,8 @@ const Navbar: FunctionComponent = () => {
             audio: 'audio',
             text: 'text',
             fastdeploy_server: 'fastdeploy_server',
-            graphStatic: 'static_graph',
-            graphDynamic: 'dynamic_graph',
+            static_graph: 'static_graph',
+            dynamic_graph: 'dynamic_graph',
             'high-dimensional': 'embeddings',
             'pr-curve': 'pr_curve',
             'roc-curve': 'roc_curve',
@@ -397,14 +406,18 @@ const Navbar: FunctionComponent = () => {
             id = `/${route.id}`;
         }
         // debugger;
-        if (routeEm[route.id] === path) {
-            console.log('path', route);
+        const paths = path.split('/');
+        if (routeEm[route.id] === paths[paths.length - 1]) {
+            console.log('path', route.id);
             history.push(id);
-            return;
+            return true;
         }
         if (route.children) {
             for (const Route of route.children) {
-                routesChange(Route, id, path);
+                const flag = routesChange(Route, id, path);
+                if (flag) {
+                    return true;
+                }
             }
         }
     };
@@ -427,13 +440,25 @@ const Navbar: FunctionComponent = () => {
             // const path = routeEm[pathNames];
             if (pathname === '/index') {
                 const path = navList[0];
-                for (const route of routes) {
-                    routesChange(route, '', path);
+                // for (const route of routes) {
+                //     routesChange(route, '', path);
+                // }
+                for (let index = 0; index < routes.length; index++) {
+                    const route = routes[index];
+                    const flag = routesChange(route, '', path);
+                    if (flag) {
+                        return;
+                    }
                 }
             } else {
                 const path = pathname;
-                for (const route of routes) {
-                    routesChange(route, '', path);
+                //
+                for (let index = 0; index < routes.length; index++) {
+                    const route = routes[index];
+                    const flag = routesChange(route, '', path);
+                    if (flag) {
+                        return;
+                    }
                 }
             }
 

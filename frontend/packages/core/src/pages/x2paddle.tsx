@@ -3,7 +3,7 @@ import {rem, primaryColor, size} from '~/utils/style';
 import Content from '~/components/Content';
 import {toast} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
-import GraphStatic from '~/pages/graphStatic';
+import GraphStatic from '~/pages/graphStatic3';
 import GraphStatic2 from '~/pages/graphStatic2';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
@@ -262,6 +262,7 @@ function App() {
             </div>
         );
     }, [show.show2]);
+    console.log('show', show);
     return (
         <Content>
             {loading && (

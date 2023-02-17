@@ -535,7 +535,7 @@ function getCaption(obj) {
 }
 const hash = getCaption(document.referrer);
 console.log('hash', hash);
-if (hash === 'graphStatic' || hash === 'x2paddle') {
+if (hash === 'static_graph' || hash === 'x2paddle') {
     window.__view__ = new view2.View(new host.BrowserHost());
 } else {
     window.__view__ = new view.View(new host.BrowserHost());
