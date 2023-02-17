@@ -130,14 +130,14 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata
         [setModelFile]
     );
 
-    const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/static_graph');
+    // const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/static_graph');
 
-    useEffect(() => {
-        if (data?.data?.size) {
-            setFiles([new File([data.data], data.filename || 'unknown_model')]);
-        }
-    }, [data]);
-    // const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
+    // useEffect(() => {
+    //     if (data?.data?.size) {
+    //         setFiles([new File([data.data], data.filename || 'unknown_model')]);
+    //     }
+    // }, [data]);
+    const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
     const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
     const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
