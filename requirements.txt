@@ -3,7 +3,7 @@ flask >= 1.1.1
 Flask-Babel >= 3.0.0
 numpy
 Pillow >= 7.0.0
-protobuf >= 3.11.0
+protobuf >= 3.20.0
 requests
 six >= 1.14.0
 matplotlib
