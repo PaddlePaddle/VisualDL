@@ -62,7 +62,7 @@ const App: FunctionComponent<ArgumentProps> = ({Datas}) => {
                     width: 150
                 },
                 {
-                    title: `${t('Fastdeploy:total')}(GB)`,
+                    title: `${t('Fastdeploy:used')}(GB)`,
                     dataIndex: 'nv_gpu_memory_used_bytes',
                     key: 'nv_gpu_memory_used_bytes',
                     width: 150
