@@ -4,6 +4,24 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.5.1 - 2023-02-20
+
+**ZH**
+
+- 其它改进
+  - **BE**: 响应框架protobuf升级需求，将proto的编译器protoc从v3.19继续升级到v4.21.12 (#1212)
+  - **FE**: 前端修复了路由跳转的问题 (#1207)
+
+**EN**
+
+- Enhancement
+
+  - **BE**: Be consistent with paddlepaddle protobuf upgradation, protoc v4.21.12 is required to compile proto. (#1212)
+  - **FE**: Fix url navigation error. (#1207)
+
+
+**EN**
+
 ## v2.5.0 - 2023-01-17
 
 **ZH**
