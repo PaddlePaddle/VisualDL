@@ -8,7 +8,6 @@ requests
 six >= 1.14.0
 matplotlib
 pandas
-multiprocess
 packaging
 x2paddle
 rarfile
