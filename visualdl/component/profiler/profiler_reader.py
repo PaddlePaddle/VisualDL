@@ -14,12 +14,12 @@
 # =======================================================================
 import os
 import re
+from multiprocessing import Process
+from multiprocessing import Queue
 from threading import Lock
 from threading import Thread
 
 import packaging.version
-from multiprocess import Process
-from multiprocess import Queue
 
 from .parser.const_description import *  # noqa: F403
 from .parser.event_node import load_profiler_json
