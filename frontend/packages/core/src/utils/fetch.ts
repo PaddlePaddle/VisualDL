@@ -109,10 +109,13 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
             const t = await logErrorAndReturnT(e);
             throw new Error(t('errors:parse-error'));
         }
+        const pathname = window.location.pathname;
         if (response && 'status' in response) {
             if (response.status !== 0) {
                 const t = await logErrorAndReturnT(response);
-                toast.error((response as ErrorData).msg);
+                if (!pathname.includes('profiler')) {
+                    toast.error((response as ErrorData).msg);
+                }
                 throw new Error((response as ErrorData).msg || t('errors:error'));
             } else {
                 return (response as SuccessData<T>).data;
