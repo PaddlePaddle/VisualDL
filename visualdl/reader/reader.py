@@ -13,6 +13,7 @@
 # limitations under the License.
 # =======================================================================
 import collections
+import os  # noqa: F401
 from functools import partial  # noqa: F401
 
 from visualdl.component import components
@@ -150,8 +151,6 @@ class LogReader(object):
         else:
             file_path = bfile.join(run, self.walks[run])
             reader = self._get_file_reader(file_path=file_path, update=False)
-            reader.dir = run
-            self.reader = reader
             remain = self.get_remain(reader=reader)
             data = self.read_log_data(
                 remain=remain, update=False)[component][tag]
@@ -276,6 +275,7 @@ class LogReader(object):
         if update:
             self.register_reader(file_path)
             self.reader = self.readers[file_path]
+            self.reader.dir = file_path
             return self.reader
         else:
             reader = RecordReader(filepath=file_path)
@@ -285,7 +285,6 @@ class LogReader(object):
         if update:
             if path not in list(self.readers.keys()):
                 reader = RecordReader(filepath=path, dir=dir)
-                reader.dir = dir
                 self.readers[path] = reader
         else:
             pass
