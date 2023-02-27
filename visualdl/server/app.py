@@ -17,6 +17,7 @@ import json
 import multiprocessing
 import os
 import re
+import signal
 import sys
 import threading
 import time
@@ -78,6 +79,9 @@ def create_app(args):  # noqa: C901
             lang = request.accept_languages.best_match(support_language)
         return lang
 
+    signal.signal(
+        signal.SIGINT, signal.SIG_DFL
+    )  # we add this to prevent SIGINT not work in multiprocess queue waiting
     babel = Babel(app, locale_selector=get_locale)  # noqa:F841
     # Babel api from flask_babel v3.0.0
     api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
