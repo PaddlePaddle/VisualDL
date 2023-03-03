@@ -1804,6 +1804,8 @@ class DistributedProfilerData:
             device_infos = profile_data.device_infos
             if not device_infos:
                 return data
+            if not profile_data.has_gpu:
+                continue
             gpu_id = int(next(iter(profile_data.gpu_ids)))
             data.append({
                 'worker_name':
@@ -1835,6 +1837,8 @@ class DistributedProfilerData:
         data['data'] = []
         new_data = defaultdict(list)
         for profile_data in self.profile_datas:
+            if not profile_data.distributed_parser:
+                continue
             data['worker_name'].append(profile_data.worker_name)
             if step != 'All':
                 new_data['ProfileStep'].append(
@@ -1867,6 +1871,8 @@ class DistributedProfilerData:
 
     def get_distributed_steps(self):
         for profile_data in self.profile_datas:
+            if not profile_data.distributed_parser:
+                continue
             steps = list(profile_data.distributed_time.keys())
             final_steps = ['All'] + sorted(
                 [int(step) for step in steps if step != 'All'])
