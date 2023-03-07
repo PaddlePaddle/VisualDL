@@ -10,6 +10,7 @@ matplotlib
 pandas
 packaging
 x2paddle
+paddle2onnx
 rarfile
 gradio
 tritonclient[all]
