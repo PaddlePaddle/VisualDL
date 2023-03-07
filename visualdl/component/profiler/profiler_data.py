@@ -131,6 +131,8 @@ class ProfilerData:
         return views
 
     def get_device_infos(self):
+        if not self.overview_parser:
+            return
         if not self.overview_parser.has_device:
             device_type = 'CPU'
             return {
@@ -219,6 +221,8 @@ class ProfilerData:
         '''
         Get total cpu and gpu statistics for model perspective of each profiler step.
         '''
+        if not self.overview_parser:
+            return
         data = OrderedDict()
         data['column_name'] = [
             "name", "calls", "total_time", "avg_time", "max_time", "min_time",
@@ -281,6 +285,8 @@ class ProfilerData:
         return data
 
     def get_model_perspective_perstep(self, device_type, time_unit):
+        if not self.overview_parser:
+            return
         try:
             data = OrderedDict()
             data['order'] = []
@@ -329,6 +335,8 @@ class ProfilerData:
         return new_data
 
     def get_event_type_perspective(self, device_type, time_unit):
+        if not self.overview_parser:
+            return
         data = OrderedDict()
         data['order'] = []
         if device_type == 'cpu':
@@ -416,6 +424,8 @@ class ProfilerData:
         return data
 
     def get_event_type_model_perspective(self, time_unit):  # noqa: C901
+        if not self.overview_parser:
+            return
         data = OrderedDict()
         data['order'] = []
         data['phase_type'] = []
@@ -470,6 +480,8 @@ class ProfilerData:
         return newdata
 
     def get_userdefined_perspective(self, time_unit):
+        if not self.overview_parser:
+            return
         data = OrderedDict()
         if self.overview_parser.has_device:
             data['column_name'] = [
@@ -542,6 +554,8 @@ class ProfilerData:
         return data
 
     def get_operator_pie(self, topk, time_unit='ms'):
+        if not self.operator_parser:
+            return
         data = OrderedDict()
         data['column_name'] = [
             "name", "calls", "total_time", "avg_time", "max_time", "min_time",
@@ -611,6 +625,8 @@ class ProfilerData:
 
     def get_operator_pie_expand(  # noqa: C901
             self, topk, device_type, time_unit):
+        if not self.operator_parser:
+            return
         data = OrderedDict()
         data['order'] = []
         data['phase_type'] = []
@@ -713,6 +729,9 @@ class ProfilerData:
             group_by='op_name',
             search_name=None,
             time_unit='ms'):
+        if not self.operator_parser:
+            return
+
         def get_children_data(event):
             datas = []
             for innerop_name, item in event.operator_inners.items():
@@ -1359,6 +1378,8 @@ class ProfilerData:
         return data
 
     def get_kernel_pie(self, topk, time_unit='ms'):
+        if not self.kernel_parser:
+            return
         data = OrderedDict()
         data['column_name'] = [
             "name", "calls", "total_time", "avg_time", "max_time", "min_time",
@@ -1405,6 +1426,8 @@ class ProfilerData:
         return data
 
     def get_kernel_table(self, group_by='', search_name=None, time_unit='ms'):
+        if not self.kernel_parser:
+            return
         data = OrderedDict()
         data['events'] = []
         total_gpu_time = 0
@@ -1561,6 +1584,8 @@ class ProfilerData:
         return data
 
     def get_kernel_tc_pie(self, topk, time_unit='ms'):
+        if not self.kernel_parser:
+            return
         data = OrderedDict()
         data['column_name'] = ["name", "calls", "ratio"]
 
@@ -1602,9 +1627,13 @@ class ProfilerData:
         return data
 
     def get_trace_data(self):
+        if not self.trace_parser:
+            return
         return self.trace_parser.content
 
     def get_memory_devices(self):
+        if not self.memory_parser:
+            return
         data = []
         for device in self.memory_curve.keys():
             data.append({
@@ -1620,6 +1649,8 @@ class ProfilerData:
         return data
 
     def get_memory_curve(self, device_type, time_unit='ms'):
+        if not self.memory_parser:
+            return
         curves = self.memory_curve[device_type]
         data = {}
         data['name'] = {
@@ -1647,6 +1678,8 @@ class ProfilerData:
                           max_size=float('inf'),
                           search_name=None,
                           time_unit='ms'):
+        if not self.memory_parser:
+            return
         data = {}
         data['column_name'] = [
             'MemoryAddr', 'MemoryType', 'AllocatedEvent', 'AllocatedTimestamp',
@@ -1705,6 +1738,8 @@ class ProfilerData:
         return data
 
     def get_op_memory_events(self, device_type, search_name=None):
+        if not self.memory_parser:
+            return
         data = {}
         data['column_name'] = [
             'EventName', 'MemoryType', 'AllocationCount', 'FreeCount',
@@ -1769,6 +1804,8 @@ class DistributedProfilerData:
             device_infos = profile_data.device_infos
             if not device_infos:
                 return data
+            if not profile_data.has_gpu:
+                continue
             gpu_id = int(next(iter(profile_data.gpu_ids)))
             data.append({
                 'worker_name':
@@ -1800,6 +1837,8 @@ class DistributedProfilerData:
         data['data'] = []
         new_data = defaultdict(list)
         for profile_data in self.profile_datas:
+            if not profile_data.distributed_parser:
+                continue
             data['worker_name'].append(profile_data.worker_name)
             if step != 'All':
                 new_data['ProfileStep'].append(
@@ -1832,6 +1871,8 @@ class DistributedProfilerData:
 
     def get_distributed_steps(self):
         for profile_data in self.profile_datas:
+            if not profile_data.distributed_parser:
+                continue
             steps = list(profile_data.distributed_time.keys())
             final_steps = ['All'] + sorted(
                 [int(step) for step in steps if step != 'All'])
