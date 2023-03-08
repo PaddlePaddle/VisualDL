@@ -93,7 +93,7 @@ class ModelConvertApi(object):
             if remote_data:  # we should check data is not empty,
                 # in case convertion failed but empty data is still uploaded before due to unknown reasons
                 model_encoded = base64.b64encode(remote_data).decode('utf-8')
-                result['pdmodel'] = model_encoded
+                result['model'] = model_encoded
                 return result
         target_path = os.path.join(X2PADDLE_CACHE_PATH, 'onnx2paddle',
                                    identity)
@@ -159,7 +159,7 @@ class ModelConvertApi(object):
             model_encoded = base64.b64encode(data).decode('utf-8')
         # delete target_path
         shutil.rmtree(target_path)
-        result['pdmodel'] = model_encoded
+        result['model'] = model_encoded
         return result
 
     @result('application/octet-stream')
@@ -210,7 +210,7 @@ class ModelConvertApi(object):
             if remote_data:  # we should check data is not empty,
                 # in case convertion failed but empty data is still uploaded before due to unknown reasons
                 model_encoded = base64.b64encode(remote_data).decode('utf-8')
-                result['pdmodel'] = model_encoded
+                result['model'] = model_encoded
                 return result
 
         with tempfile.NamedTemporaryFile() as model_fp:
@@ -244,7 +244,7 @@ class ModelConvertApi(object):
                             .format(identity, e))
                     model_encoded = base64.b64encode(onnx_model).decode(
                         'utf-8')
-        result['pdmodel'] = model_encoded
+        result['model'] = model_encoded
         return result
 
     @result('application/octet-stream')
