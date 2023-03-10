@@ -7,7 +7,7 @@ import Buttons from '~/components/Button';
 import {message, Upload, Button} from 'antd';
 import {fetcher} from '~/utils/fetch';
 import {useTranslation} from 'react-i18next';
-import { Name } from './ProfilerPage/MemoryView/type';
+import {Name} from './ProfilerPage/MemoryView/type';
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
     const [form] = Form.useForm();
@@ -88,7 +88,7 @@ export default function xpaddleUploader(props: any) {
                     // console.log("New file created:", file);
                     // debugger;
                     // const files2 = [new File([res.data], res.filename || 'unknown_model')];
-                    const Name = 
+                    // const Name =
                     const files2 = base64UrlToFile(res.model, 'name.onnx');
                     debugger;
                     props.setFiles([files2]);

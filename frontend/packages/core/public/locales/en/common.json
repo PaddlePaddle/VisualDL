@@ -11,7 +11,7 @@
     "error": "Error occurred",
     "graph": "Graphs",
     "dynamic_graph": "dynamic",
-    "ToggleGraph": "Model Convertion",
+    "x2paddle": "Model Convertion",
     "static_graph": "static",
     "high-dimensional": "High Dimensional",
     "profiler": "performance analysis",
