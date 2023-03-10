@@ -264,8 +264,9 @@ function App() {
             method: 'GET'
         }).then(
             (res: any) => {
+                const name = fileName + '.tar';
                 console.log('blobres', res, res.data);
-                downloadEvt(res.data, fileName);
+                downloadEvt(res.data, name);
                 setLoading(false);
             },
             res => {
