@@ -44,18 +44,26 @@ export default function xpaddleUploader(props: any) {
         'huawei_kirin_npu',
         'amlogic_npu'
     ];
-    const createFileFromData = (fileData: any): File => {
-        const {name, size, type, lastModified} = fileData;
-        const file = new File([], name, {type, lastModified});
-        Object.defineProperty(file, 'size', {value: size});
-        return file;
+    const createFileFromData = (fileData: any): any => {
+        const {name, type, lastModified} = fileData;
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(fileData.originFileObj);
+        return new Promise<any>(resolve => {
+            reader.onload = () => {
+                const arrayBuffer = reader.result as ArrayBuffer;
+                const blob = new Blob([arrayBuffer], {type});
+                const file = new File([blob], name, {type, lastModified});
+                resolve(file);
+            };
+        });
     };
+
     const lite_model_type = ['protobuf', 'naive_buffer'];
     const submodel = async () => {
         const values = await form.validateFields();
         const formData = new FormData();
         // // 将文件转二进制
-        const files1 = createFileFromData(values.model.file);
+        const files1 = await createFileFromData(values.model.file);
         // debugger;
         formData.append('convert_to_lite', values.convertToLite);
         formData.append('model', files1);

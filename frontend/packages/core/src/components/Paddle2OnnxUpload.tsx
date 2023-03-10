@@ -30,19 +30,26 @@ export default function xpaddleUploader(props: any) {
     };
     const LiteBackend = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
     const lite_model_type = ['onnxruntime', 'tensorrt', 'others'];
-    const createFileFromData = (fileData: any): File => {
-        const {name, size, type, lastModified} = fileData;
-        const file = new File([], name, {type, lastModified});
-        Object.defineProperty(file, 'size', {value: size});
-        return file;
+    const createFileFromData = (fileData: any): any => {
+        const {name, type, lastModified} = fileData;
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(fileData.originFileObj);
+        return new Promise<any>(resolve => {
+            reader.onload = () => {
+                const arrayBuffer = reader.result as ArrayBuffer;
+                const blob = new Blob([arrayBuffer], {type});
+                const file = new File([blob], name, {type, lastModified});
+                resolve(file);
+            };
+        });
     };
     const submodel = async () => {
         const values = await form.validateFields();
         // debugger;
         const formData = new FormData();
         // // 将文件转二进制
-        const files1 = createFileFromData(values.model.file);
-        const files2 = createFileFromData(values.model.file);
+        const files1 = await createFileFromData(values.model.file);
+        const files2 = await createFileFromData(values.model.file);
 
         formData.append('opset_version', values.opset_version);
         formData.append('model', files1);
