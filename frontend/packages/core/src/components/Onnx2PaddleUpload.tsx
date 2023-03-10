@@ -98,7 +98,7 @@ export default function xpaddleUploader(props: any) {
                     });
                     // console.log("New file created:", file);
                     // const files2 = [new File([res.data], res.filename || 'unknown_model')];
-                    const files2 = base64UrlToFile(res.model, 'name.tar');
+                    const files2 = base64UrlToFile(res.model, 'name.pdmodel');
                     debugger;
                     props.setFiles([file]);
                     props.changeFiles2(files2);
