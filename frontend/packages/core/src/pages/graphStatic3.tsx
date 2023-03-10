@@ -17,17 +17,19 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
-import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic';
+import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic3';
 import React, {useImperativeHandle, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions} from '~/store';
 import {primaryColor, rem, size} from '~/utils/style';
 import {useDispatch} from 'react-redux';
+import XpaddleUploader from '~/components/Onnx2PaddleUpload';
+import Paddle2OnnxUpload from '~/components/Paddle2OnnxUpload';
 
 import type {BlobResponse} from '~/utils/fetch';
-import Button from '~/components/Button';
+import Buttons from '~/components/Button';
 import Checkbox from '~/components/Checkbox';
-import Content from '~/components/Content';
+import Content from '~/components/ContentXpaddle';
 import Field from '~/components/Field';
 import HashLoader from 'react-spinners/HashLoader';
 import ModelPropertiesDialog from '~/components/GraphPage/ModelPropertiesDialog';
@@ -42,7 +44,7 @@ import styled from 'styled-components';
 import useRequest from '~/hooks/useRequest';
 import {useTranslation} from 'react-i18next';
 
-const FullWidthButton = styled(Button)`
+const FullWidthButton = styled(Buttons)`
     width: 100%;
 `;
 
@@ -87,280 +89,349 @@ const Loading = styled.div`
 `;
 type GraphProps = {
     changeName: (name: string) => void;
+    changeFlags: (flag: boolean) => void;
+    changeFiles2?: (file: any) => void;
     show?: boolean;
     changeshowdata?: () => void;
+    downloadEvent?: (baseId: number, fileName: string) => void;
     Xpaddlae?: boolean;
+    ModelValue?: number;
 };
 type pageRef = {
     files: FileList | File[] | null;
+    setnewfiles: () => void;
     setNodeDocumentations: () => void;
 };
-const Graph = React.forwardRef<pageRef, GraphProps>(({changeName, changeshowdata, Xpaddlae, show = true}, ref) => {
-    const {t} = useTranslation(['graph', 'common']);
+const Graph = React.forwardRef<pageRef, GraphProps>(
+    (
+        {changeName, changeshowdata, Xpaddlae, show = true, changeFlags, changeFiles2, downloadEvent, ModelValue},
+        ref
+    ) => {
+        const {t} = useTranslation(['graph', 'common']);
 
-    const storeDispatch = useDispatch();
-    // const storeModel = useSelector(selectors.graph.model);
+        const storeDispatch = useDispatch();
+        // const storeModel = useSelector(selectors.graph.model);
 
-    const graph = useRef<GraphRef>(null);
-    const file = useRef<HTMLInputElement>(null);
-    const [files, setFiles] = useState<any>();
-    const setModelFile = useCallback(
-        (f: FileList | File[]) => {
-            storeDispatch(actions.graph.setModel(f));
-            const name = f[0].name.substring(f[0].name.lastIndexOf('.') + 1);
-            changeName && changeName(name);
+        const graph = useRef<GraphRef>(null);
+        const file = useRef<HTMLInputElement>(null);
+        const [files, setFiles] = useState<any>();
+        const setModelFile = useCallback(
+            (f: FileList | File[]) => {
+                storeDispatch(actions.graph.setModel(f));
+                const name = f[0].name.substring(f[0].name.lastIndexOf('.') + 1);
+                changeName && changeName(name);
+                setFiles(f);
+                changeFlags(true);
+                changeshowdata && changeshowdata();
+            },
+            [storeDispatch]
+        );
+        const newsetfiles = (f: FileList | File[]) => {
             setFiles(f);
-            changeshowdata && changeshowdata();
-        },
-        [storeDispatch]
-    );
-    const onClickFile = useCallback(() => {
-        if (file.current) {
-            file.current.value = '';
-            file.current.click();
-        }
-    }, []);
-    const onChangeFile = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const target = e.target;
-            if (target && target.files && target.files.length) {
-                setModelFile(target.files);
+        };
+        const onClickFile = useCallback(() => {
+            if (file.current) {
+                file.current.value = '';
+                file.current.click();
             }
-        },
-        [setModelFile]
-    );
+        }, []);
+        const onChangeFile = useCallback(
+            (e: React.ChangeEvent<HTMLInputElement>) => {
+                const target = e.target;
+                if (target && target.files && target.files.length) {
+                    setModelFile(target.files);
+                }
+            },
+            [setModelFile]
+        );
 
-    // const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/static_graph');
+        // const {data, loading} = useRequest<BlobResponse>(files ? null : '/graph/static_graph');
 
-    // useEffect(() => {
-    //     if (data?.data?.size) {
-    //         setFiles([new File([data.data], data.filename || 'unknown_model')]);
-    //     }
-    // }, [data]);
-    const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
+        // useEffect(() => {
+        //     if (data?.data?.size) {
+        //         setFiles([new File([data.data], data.filename || 'unknown_model')]);
+        //     }
+        // }, [data]);
+        const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
 
-    const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
-    const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
-    const setOpenedModel = useCallback((data: OpenedResult) => {
-        setModelGraphs(data.graphs);
-        setSelectedGraph(data.selected || '');
-    }, []);
-    const changeGraph = useCallback((name: string) => {
-        setSelectedGraph(name);
-        graph.current?.changeGraph(name);
-    }, []);
+        const [modelGraphs, setModelGraphs] = useState<OpenedResult['graphs']>([]);
+        const [selectedGraph, setSelectedGraph] = useState<NonNullable<OpenedResult['selected']>>('');
+        const setOpenedModel = useCallback((data: OpenedResult) => {
+            setModelGraphs(data.graphs);
+            setSelectedGraph(data.selected || '');
+        }, []);
+        const changeGraph = useCallback((name: string) => {
+            setSelectedGraph(name);
+            graph.current?.changeGraph(name);
+        }, []);
 
-    const [search, setSearch] = useState('');
-    const [searching, setSearching] = useState(false);
-    const [searchResult, setSearchResult] = useState<SearchResult>({text: '', result: []});
-    const onSearch = useCallback((value: string) => {
-        setSearch(value);
-        graph.current?.search(value);
-    }, []);
-    const onSelect = useCallback((item: SearchItem) => {
-        setSearch(item.name);
-        graph.current?.select(item);
-    }, []);
+        const [search, setSearch] = useState('');
+        const [searching, setSearching] = useState(false);
+        const [searchResult, setSearchResult] = useState<SearchResult>({text: '', result: []});
+        const onSearch = useCallback((value: string) => {
+            setSearch(value);
+            graph.current?.search(value);
+        }, []);
+        const onSelect = useCallback((item: SearchItem) => {
+            setSearch(item.name);
+            graph.current?.select(item);
+        }, []);
 
-    const [showAttributes, setShowAttributes] = useState(false);
-    const [showInitializers, setShowInitializers] = useState(true);
-    const [showNames, setShowNames] = useState(false);
-    const [horizontal, setHorizontal] = useState(false);
+        const [showAttributes, setShowAttributes] = useState(false);
+        const [showInitializers, setShowInitializers] = useState(true);
+        const [showNames, setShowNames] = useState(false);
+        const [horizontal, setHorizontal] = useState(false);
 
-    const [modelData, setModelData] = useState<Properties | null>(null);
-    const [nodeData, setNodeData] = useState<Properties | null>(null);
-    const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
-    const [renderedflag3, setRenderedflag3] = useState(true);
+        const [modelData, setModelData] = useState<Properties | null>(null);
+        const [nodeData, setNodeData] = useState<Properties | null>(null);
+        const [nodeDocumentation, setNodeDocumentation] = useState<Documentation | null>(null);
+        const [renderedflag3, setRenderedflag3] = useState(true);
+        const [rendered, setRendered] = useState(false);
+        useEffect(() => {
+            setSearch('');
+            setSearchResult({text: '', result: []});
+        }, [files, showAttributes, showInitializers, showNames]);
+        useEffect(() => {
+            if (!show) {
+                setRenderedflag3(false);
+            } else {
+                setRenderedflag3(true);
+                setNodeData(null);
+            }
+        }, [show]);
+        useEffect(() => {
+            setFiles(undefined);
+        }, [ModelValue]);
+        useEffect(() => {
+            if (nodeData && renderedflag3) {
+                changeFlags(false);
+            }
+        }, [nodeData, renderedflag3]);
+        useEffect(() => {
+            if (rendered) {
+                changeFlags(true);
+            }
+        }, [rendered]);
+        const bottom = useMemo(
+            () =>
+                searching ? null : (
+                    <FullWidthButton type="primary" rounded onClick={onClickFile}>
+                        {t('graph:change-model')}
+                    </FullWidthButton>
+                ),
+            [t, onClickFile, searching]
+        );
 
-    useEffect(() => {
-        setSearch('');
-        setSearchResult({text: '', result: []});
-    }, [files, showAttributes, showInitializers, showNames]);
-    useEffect(() => {
-        if (!show) {
-            setRenderedflag3(false);
-        } else {
-            setRenderedflag3(true);
-            setNodeData(null);
-        }
-    }, [show]);
-    const bottom = useMemo(
-        () =>
-            searching ? null : (
-                <FullWidthButton type="primary" rounded onClick={onClickFile}>
-                    {t('graph:change-model')}
-                </FullWidthButton>
-            ),
-        [t, onClickFile, searching]
-    );
-
-    const [rendered, setRendered] = useState(false);
-    useImperativeHandle(ref, () => ({
-        files,
-        setNodeDocumentations: () => {
-            setRenderedflag3(false);
-        }
-    }));
-    const aside = useMemo(() => {
-        if (!rendered || loading) {
-            return null;
-        }
-        if (nodeDocumentation) {
+        useImperativeHandle(ref, () => ({
+            files,
+            setnewfiles: () => {
+                // debugger;
+                setFiles(undefined);
+            },
+            setNodeDocumentations: () => {
+                setRenderedflag3(false);
+            }
+        }));
+        const aside = useMemo(() => {
+            if (!rendered || loading) {
+                return null;
+            }
+            if (nodeDocumentation) {
+                return (
+                    <Aside width={rem(360)}>
+                        <NodeDocumentationSidebar
+                            data={nodeDocumentation}
+                            onClose={() => {
+                                changeFlags(true);
+                                setNodeDocumentation(null);
+                            }}
+                        />
+                    </Aside>
+                );
+            }
+            console.log('nodeData && renderedflag3', nodeData, renderedflag3);
+            if (nodeData && renderedflag3) {
+                return (
+                    <Aside width={rem(360)}>
+                        <NodePropertiesSidebar
+                            data={nodeData}
+                            onClose={() => {
+                                changeFlags(true);
+                                setNodeData(null);
+                            }}
+                            showNodeDocumentation={() => graph.current?.showNodeDocumentation(nodeData)}
+                        />
+                    </Aside>
+                );
+            }
             return (
-                <Aside width={rem(360)}>
-                    <NodeDocumentationSidebar data={nodeDocumentation} onClose={() => setNodeDocumentation(null)} />
-                </Aside>
-            );
-        }
-        console.log('nodeData && renderedflag3', nodeData, renderedflag3);
-        if (nodeData && renderedflag3) {
-            return (
-                <Aside width={rem(360)}>
-                    <NodePropertiesSidebar
-                        data={nodeData}
-                        onClose={() => setNodeData(null)}
-                        showNodeDocumentation={() => graph.current?.showNodeDocumentation(nodeData)}
-                    />
-                </Aside>
-            );
-        }
-        return (
-            <Aside bottom={bottom}>
-                <SearchSection>
-                    <Search
-                        text={search}
-                        data={searchResult}
-                        onChange={onSearch}
-                        onSelect={onSelect}
-                        onActive={() => setSearching(true)}
-                        onDeactive={() => setSearching(false)}
-                    />
-                </SearchSection>
-                {!searching && (
-                    <>
-                        <AsideSection>
-                            <FullWidthButton onClick={() => graph.current?.showModelProperties()}>
-                                {t('graph:model-properties')}
-                            </FullWidthButton>
-                        </AsideSection>
-                        {modelGraphs.length > 1 && (
+                // <Aside bottom={bottom}>
+
+                <Aside>
+                    <SearchSection>
+                        <Search
+                            text={search}
+                            data={searchResult}
+                            onChange={onSearch}
+                            onSelect={onSelect}
+                            onActive={() => setSearching(true)}
+                            onDeactive={() => setSearching(false)}
+                        />
+                    </SearchSection>
+                    {!searching && (
+                        <>
                             <AsideSection>
-                                <Field label={t('graph:subgraph')}>
-                                    <FullWidthSelect list={modelGraphs} value={selectedGraph} onChange={changeGraph} />
+                                <FullWidthButton onClick={() => graph.current?.showModelProperties()}>
+                                    {t('graph:model-properties')}
+                                </FullWidthButton>
+                            </AsideSection>
+                            {modelGraphs.length > 1 && (
+                                <AsideSection>
+                                    <Field label={t('graph:subgraph')}>
+                                        <FullWidthSelect
+                                            list={modelGraphs}
+                                            value={selectedGraph}
+                                            onChange={changeGraph}
+                                        />
+                                    </Field>
+                                </AsideSection>
+                            )}
+                            <AsideSection>
+                                <Field label={t('graph:display-data')}>
+                                    <div>
+                                        <Checkbox checked={showAttributes} onChange={setShowAttributes}>
+                                            {t('graph:show-attributes')}
+                                        </Checkbox>
+                                    </div>
+                                    <div>
+                                        <Checkbox checked={showInitializers} onChange={setShowInitializers}>
+                                            {t('graph:show-initializers')}
+                                        </Checkbox>
+                                    </div>
+                                    <div>
+                                        <Checkbox checked={showNames} onChange={setShowNames}>
+                                            {t('graph:show-node-names')}
+                                        </Checkbox>
+                                    </div>
                                 </Field>
                             </AsideSection>
-                        )}
-                        <AsideSection>
-                            <Field label={t('graph:display-data')}>
-                                <div>
-                                    <Checkbox checked={showAttributes} onChange={setShowAttributes}>
-                                        {t('graph:show-attributes')}
-                                    </Checkbox>
-                                </div>
-                                <div>
-                                    <Checkbox checked={showInitializers} onChange={setShowInitializers}>
-                                        {t('graph:show-initializers')}
-                                    </Checkbox>
-                                </div>
-                                <div>
-                                    <Checkbox checked={showNames} onChange={setShowNames}>
-                                        {t('graph:show-node-names')}
-                                    </Checkbox>
-                                </div>
-                            </Field>
-                        </AsideSection>
-                        <AsideSection>
-                            <Field label={t('graph:direction')}>
-                                <RadioGroup value={horizontal} onChange={setHorizontal}>
-                                    <RadioButton value={false}>{t('graph:vertical')}</RadioButton>
-                                    <RadioButton value={true}>{t('graph:horizontal')}</RadioButton>
-                                </RadioGroup>
-                            </Field>
-                        </AsideSection>
-                        <AsideSection>
-                            <Field label={t('graph:export-file')}>
-                                <ExportButtonWrapper>
-                                    <Button onClick={() => graph.current?.export('png')}>
-                                        {t('graph:export-png')}
-                                    </Button>
-                                    <Button onClick={() => graph.current?.export('svg')}>
-                                        {t('graph:export-svg')}
-                                    </Button>
-                                </ExportButtonWrapper>
-                            </Field>
-                        </AsideSection>
-                    </>
-                )}
-            </Aside>
-        );
-    }, [
-        t,
-        bottom,
-        search,
-        searching,
-        searchResult,
-        modelGraphs,
-        selectedGraph,
-        changeGraph,
-        onSearch,
-        onSelect,
-        showAttributes,
-        showInitializers,
-        showNames,
-        horizontal,
-        rendered,
-        loading,
-        nodeData,
-        nodeDocumentation,
-        renderedflag3
-    ]);
-    const uploader = useMemo(
-        () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} Xpaddlae={Xpaddlae} />,
-        [onClickFile, setModelFile]
-    );
-    return (
-        <>
-            <Title>{t('common:graph')}</Title>
-            <ModelPropertiesDialog data={modelData} onClose={() => setModelData(null)} />
-            <Content aside={aside}>
-                {loading ? (
-                    <Loading>
-                        <HashLoader size="60px" color={primaryColor} />
-                    </Loading>
-                ) : (
-                    <GraphComponent
-                        ref={graph}
-                        files={files}
-                        uploader={uploader}
-                        showAttributes={showAttributes}
-                        showInitializers={showInitializers}
-                        showNames={showNames}
-                        horizontal={horizontal}
-                        onRendered={() => setRendered(true)}
-                        onOpened={setOpenedModel}
-                        onSearch={data => {
-                            setSearchResult(data);
+                            <AsideSection>
+                                <Field label={t('graph:direction')}>
+                                    <RadioGroup value={horizontal} onChange={setHorizontal}>
+                                        <RadioButton value={false}>{t('graph:vertical')}</RadioButton>
+                                        <RadioButton value={true}>{t('graph:horizontal')}</RadioButton>
+                                    </RadioGroup>
+                                </Field>
+                            </AsideSection>
+                            <AsideSection>
+                                <Field label={t('graph:export-file')}>
+                                    <ExportButtonWrapper>
+                                        <Buttons onClick={() => graph.current?.export('png')}>
+                                            {t('graph:export-png')}
+                                        </Buttons>
+                                        <Buttons onClick={() => graph.current?.export('svg')}>
+                                            {t('graph:export-svg')}
+                                        </Buttons>
+                                    </ExportButtonWrapper>
+                                </Field>
+                            </AsideSection>
+                        </>
+                    )}
+                </Aside>
+            );
+        }, [
+            t,
+            bottom,
+            search,
+            searching,
+            searchResult,
+            modelGraphs,
+            selectedGraph,
+            changeGraph,
+            onSearch,
+            onSelect,
+            showAttributes,
+            showInitializers,
+            showNames,
+            horizontal,
+            rendered,
+            loading,
+            nodeData,
+            nodeDocumentation,
+            renderedflag3
+        ]);
+        // const uploader = useMemo(
+        //     () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} Xpaddlae={Xpaddlae} />,
+        //     [onClickFile, setModelFile]
+        // );
+        // const buttonItemLayout = formLayout === 'horizontal' ? {wrapperCol: {span: 14, offset: 4}} : null;
+        const uploader = useMemo(() => {
+            if (ModelValue === 1) {
+                return (
+                    <Paddle2OnnxUpload
+                        downloadEvent={downloadEvent}
+                        setFiles={newsetfiles}
+                        changeFiles2={changeFiles2}
+                    ></Paddle2OnnxUpload>
+                );
+            } else {
+                return (
+                    <XpaddleUploader
+                        downloadEvent={downloadEvent}
+                        setFiles={newsetfiles}
+                        changeFiles2={changeFiles2}
+                    ></XpaddleUploader>
+                );
+            }
+        }, [ModelValue]);
+        const flags = files && show;
+        console.log('flags', flags, aside);
+        const nodeShows = (nodeData && renderedflag3) || nodeDocumentation;
+        const nodeShow = nodeShows ? true : false;
+        return (
+            <>
+                <Title>{t('common:graph')}</Title>
+                <ModelPropertiesDialog data={modelData} onClose={() => setModelData(null)} />
+                <Content show={show} nodeShow={nodeShow} aside={flags ? aside : null}>
+                    {loading ? (
+                        <Loading>
+                            <HashLoader size="60px" color={primaryColor} />
+                        </Loading>
+                    ) : (
+                        <GraphComponent
+                            ref={graph}
+                            files={files}
+                            uploader={uploader}
+                            showAttributes={showAttributes}
+                            showInitializers={showInitializers}
+                            showNames={showNames}
+                            horizontal={horizontal}
+                            onRendered={() => setRendered(true)}
+                            onOpened={setOpenedModel}
+                            onSearch={data => {
+                                setSearchResult(data);
+                            }}
+                            onShowModelProperties={data => setModelData(data)}
+                            onShowNodeProperties={data => {
+                                setNodeData(data);
+                                setNodeDocumentation(null);
+                            }}
+                            onShowNodeDocumentation={data => setNodeDocumentation(data)}
+                        />
+                    )}
+                    <input
+                        ref={file}
+                        type="file"
+                        multiple={false}
+                        onChange={onChangeFile}
+                        style={{
+                            display: 'none'
                         }}
-                        onShowModelProperties={data => setModelData(data)}
-                        onShowNodeProperties={data => {
-                            setNodeData(data);
-                            setNodeDocumentation(null);
-                        }}
-                        onShowNodeDocumentation={data => setNodeDocumentation(data)}
                     />
-                )}
-                <input
-                    ref={file}
-                    type="file"
-                    multiple={false}
-                    onChange={onChangeFile}
-                    style={{
-                        display: 'none'
-                    }}
-                />
-            </Content>
-        </>
-    );
-});
+                </Content>
+            </>
+        );
+    }
+);
 
 export default Graph;
