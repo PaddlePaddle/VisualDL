@@ -6,10 +6,12 @@ import type {UploadProps} from 'antd';
 import Buttons from '~/components/Button';
 import {message, Upload, Button} from 'antd';
 import {fetcher} from '~/utils/fetch';
+import {useTranslation} from 'react-i18next';
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
     const [form] = Form.useForm();
     const formLayout: any = {labelCol: {span: 4}, wrapperCol: {span: 14}};
+    const {t} = useTranslation(['togglegraph', 'common']);
     const Uploadprops: UploadProps = {
         name: 'file',
         action: '',
@@ -72,6 +74,7 @@ export default function xpaddleUploader(props: any) {
                         lastModified: values.model.file.lastModified
                     });
                     // console.log("New file created:", file);
+                    debugger;
                     const files2 = [new File([res.data], res.filename || 'unknown_model')];
                     // debugger;
                     props.setFiles([file]);
@@ -94,7 +97,7 @@ export default function xpaddleUploader(props: any) {
                     fontSize: '26px'
                 }}
             >
-                Paddle2Onnx模型转换配置
+                {t('togglegraph:Paddle2OnnxTitle')}
             </div>
             <Form
                 // {...formItemLayout}
@@ -103,21 +106,29 @@ export default function xpaddleUploader(props: any) {
                 initialValues={{layout: formLayout}}
                 style={{maxWidth: 600}}
             >
-                <Form.Item label="模型结构文件" name="model" rules={[{required: true, message: '该项为必填项目'}]}>
+                <Form.Item
+                    label={t('togglegraph:pdmodels')}
+                    name="model"
+                    rules={[{required: true, message: t('isRequire')}]}
+                >
                     <Upload {...Uploadprops} maxCount={1}>
-                        <Button icon={<UploadOutlined />}>请选择文件</Button>
+                        <Button icon={<UploadOutlined />}>{t('togglegraph:Please')}</Button>
                     </Upload>
                 </Form.Item>
-                <Form.Item label="模型参数文件" name="param" rules={[{required: true, message: '该项为必填项目'}]}>
+                <Form.Item
+                    label={t('togglegraph:pdiparams')}
+                    name="param"
+                    rules={[{required: true, message: t('isRequire')}]}
+                >
                     <Upload {...Uploadprops} maxCount={1}>
-                        <Button icon={<UploadOutlined />}>请选择文件</Button>
+                        <Button icon={<UploadOutlined />}>{t('togglegraph:Please')}</Button>
                     </Upload>
                 </Form.Item>
 
                 <Form.Item
-                    label="op集合版本"
+                    label={t('togglegraph:opset_version')}
                     name="opset_version"
-                    rules={[{required: true, message: '该项为必填项目'}]}
+                    rules={[{required: true, message: t('isRequire')}]}
                 >
                     <Select placeholder="Please select a country">
                         {LiteBackend.map((item: number) => {
@@ -130,9 +141,9 @@ export default function xpaddleUploader(props: any) {
                     </Select>
                 </Form.Item>
                 <Form.Item
-                    label="Lite后端类型"
+                    label={t('togglegraph:deploy_backend')}
                     name="deployBackend"
-                    rules={[{required: true, message: '该项为必填项目'}]}
+                    rules={[{required: true, message: t('isRequire')}]}
                 >
                     <Select placeholder="Please select a country">
                         {lite_model_type.map((item: string) => {
@@ -153,7 +164,7 @@ export default function xpaddleUploader(props: any) {
                     submodel();
                 }}
             >
-                转换
+                {t('togglegraph:Conversion')}
             </Buttons>
         </div>
     );

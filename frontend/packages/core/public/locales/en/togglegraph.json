@@ -14,9 +14,17 @@
     "pdiparams": "pdiparams",
     "opset_version": "opset_version",
     "deploy_backend": "deploy_backend",
+    "lite_valid_places": "lite_valid_places",
+    "lite_model_type": "lite_model_type",
+    "convert_to_lite": "convert_to_lite",
+    "onnx_model": "onnx model",
     "Download": "Download",
     "Reload": "Reload",
     "View": "View",
     "Please": "Please select the file",
-    "isRequire": "This item is required"
+    "isRequire": "This item is required",
+    "isYes": "Yes",
+    "isNo": "No",
+    "Paddle2OnnxTitle": "Paddle2Onnx model conversion configuration",
+    "Onnx2PaddleTitle": "Onnx2Paddle model conversion configuration"
 }

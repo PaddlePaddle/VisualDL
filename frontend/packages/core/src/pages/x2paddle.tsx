@@ -97,7 +97,7 @@ function App() {
     const file = useRef<HTMLInputElement>(null);
     const Graph = useRef(null);
     const Graph2 = useRef(null);
-    const {data} = useRequest<BlobResponse>('/graph/static_graph');
+    // const {data} = useRequest<BlobResponse>('/graph/static_graph');
 
     // useEffect(() => {
     //     if (data?.data?.size) {
@@ -446,7 +446,7 @@ function App() {
                         width: '100%'
                     }}
                 >
-                    <Field label={'View'}>
+                    <Field label={t('togglegraph:View')}>
                         {/* <ExportButtonWrapper>
                             <Button>{}</Button>
                             <Button
@@ -462,7 +462,7 @@ function App() {
                             <RadioButton value={false}>Paddle</RadioButton>
                         </RadioGroup>
                     </Field>
-                    <Field label={'下载'}>
+                    <Field>
                         <ExportButtonWrapper>
                             <Button
                                 onClick={() => {
@@ -475,9 +475,9 @@ function App() {
                                     downloadFileByBase64(baseId, file_names);
                                 }}
                             >
-                                下载
+                                {t('togglegraph:Download')}
                             </Button>
-                            <Button onClick={resetModel}>重新载入</Button>
+                            <Button onClick={resetModel}>{t('togglegraph:Reload')}</Button>
                         </ExportButtonWrapper>
                     </Field>
                 </AsideSection>

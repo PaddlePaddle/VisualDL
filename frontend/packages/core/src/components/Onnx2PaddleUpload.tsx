@@ -6,9 +6,11 @@ import type {UploadProps} from 'antd';
 import Buttons from '~/components/Button';
 import {fetcher} from '~/utils/fetch';
 import {message, Upload, Button} from 'antd';
+import {useTranslation} from 'react-i18next';
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
     const [form] = Form.useForm();
+    const {t} = useTranslation(['togglegraph', 'common']);
     const formLayout: any = {labelCol: {span: 4}, wrapperCol: {span: 14}};
     const Uploadprops: UploadProps = {
         name: 'file',
@@ -77,7 +79,7 @@ export default function xpaddleUploader(props: any) {
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(values.model.file.originFileObj);
                 reader.onload = event => {
-                    // debugger;
+                    debugger;
                     const results: any = event?.target?.result;
                     const file = new File([results], values.model.file.name, {
                         type: values.model.file.type,
@@ -105,7 +107,7 @@ export default function xpaddleUploader(props: any) {
                     fontSize: '26px'
                 }}
             >
-                Onnx2Paddle模型转换配置
+                {t('togglegraph:Onnx2PaddleTitle')}
             </div>
             <Form
                 // {...formItemLayout}
@@ -114,25 +116,25 @@ export default function xpaddleUploader(props: any) {
                 initialValues={{layout: formLayout}}
                 style={{maxWidth: 600}}
             >
-                <Form.Item label="模型" name="model" rules={[{required: true, message: '该项为必填项目'}]}>
+                <Form.Item label="模型" name="model" rules={[{required: true, message: t('isRequire')}]}>
                     <Upload {...Uploadprops} maxCount={1}>
-                        <Button icon={<UploadOutlined />}>请选择文件</Button>
+                        <Button icon={<UploadOutlined />}>{t('togglegraph:Please')}</Button>
                     </Upload>
                 </Form.Item>
                 <Form.Item
                     name="convertToLite"
-                    label="转换Paddle-Lite支持格式"
-                    rules={[{required: true, message: '该项为必填项目'}]}
+                    label={t('togglegraph:convert_to_lite')}
+                    rules={[{required: true, message: t('isRequire')}]}
                 >
                     <Radio.Group>
-                        <Radio value="a">是</Radio>
-                        <Radio value="b">否</Radio>
+                        <Radio value="a">{t('togglegraph:isYes')}</Radio>
+                        <Radio value="b">{t('togglegraph:isNo')}</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item
-                    label="Lite后端"
+                    label={t('togglegraph:deploy_backend')}
                     name="liteValidPlaces"
-                    rules={[{required: true, message: '该项为必填项目'}]}
+                    rules={[{required: true, message: t('isRequire')}]}
                 >
                     <Select placeholder="Please select a country">
                         {LiteBackend.map((item: string) => {
@@ -144,7 +146,11 @@ export default function xpaddleUploader(props: any) {
                         })}
                     </Select>
                 </Form.Item>
-                <Form.Item label="Lite格式" name="liteModelType" rules={[{required: true, message: '该项为必填项目'}]}>
+                <Form.Item
+                    label={t('togglegraph:lite_model_type')}
+                    name="liteModelType"
+                    rules={[{required: true, message: t('isRequire')}]}
+                >
                     <Select placeholder="Please select a country">
                         {lite_model_type.map((item: string) => {
                             return (
@@ -164,7 +170,7 @@ export default function xpaddleUploader(props: any) {
                     submodel();
                 }}
             >
-                转换
+                {t('Conversion')}
             </Buttons>
         </div>
     );
