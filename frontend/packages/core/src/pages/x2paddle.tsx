@@ -457,10 +457,22 @@ function App() {
                                 {t('graph:export-svg')}
                             </Button>
                         </ExportButtonWrapper> */}
-                        <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                        {/* <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                         
                             <RadioButton value={true}>ONxx</RadioButton>
                             <RadioButton value={false}>Paddle</RadioButton>
-                        </RadioGroup>
+                        </RadioGroup> */}
+                        {modelValue === 2 ? (
+                            <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                                <RadioButton value={true}>ONxx</RadioButton>
+                                <RadioButton value={false}>Paddle</RadioButton>
+                            </RadioGroup>
+                        ) : (
+                            <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                                <RadioButton value={false}>ONxx</RadioButton>
+                                <RadioButton value={true}>Paddle</RadioButton>
+                            </RadioGroup>
+                        )}
                     </Field>
                     <Field>
                         <ExportButtonWrapper>

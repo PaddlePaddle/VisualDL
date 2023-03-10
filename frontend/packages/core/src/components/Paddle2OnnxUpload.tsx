@@ -74,11 +74,11 @@ export default function xpaddleUploader(props: any) {
                         lastModified: values.model.file.lastModified
                     });
                     // console.log("New file created:", file);
-                    debugger;
+                    // debugger;
                     const files2 = [new File([res.data], res.filename || 'unknown_model')];
                     // debugger;
-                    props.setFiles([file]);
-                    props.changeFiles2(files2);
+                    props.setFiles([files2]);
+                    props.changeFiles2(file);
                     props.downloadEvent(res['request_id'], res.filename);
                 };
             },
