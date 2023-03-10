@@ -21,7 +21,7 @@
     "Download": "下载",
     "Reload": "重新载入",
     "View": "视图",
-    "Please": "{t('togglegraph:Please')}",
+    "Please": "请上传模型文件",
     "isRequire": "该项为必填项",
     "isYes": "是",
     "isNo": "否",

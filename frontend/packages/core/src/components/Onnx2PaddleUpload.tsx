@@ -90,6 +90,8 @@ export default function xpaddleUploader(props: any) {
                     // debugger;
                     props.setFiles([file]);
                     props.changeFiles2(files2);
+                    // props.setFiles([file]);
+                    // props.changeFiles2(files2);
                     props.downloadEvent(res['request_id'], res.filename);
                 };
             },

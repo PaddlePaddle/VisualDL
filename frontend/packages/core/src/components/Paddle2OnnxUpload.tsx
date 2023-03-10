@@ -130,7 +130,7 @@ export default function xpaddleUploader(props: any) {
                     name="opset_version"
                     rules={[{required: true, message: t('isRequire')}]}
                 >
-                    <Select placeholder="Please select a country">
+                    <Select placeholder="Please select a version">
                         {LiteBackend.map((item: number) => {
                             return (
                                 <Option value={item} key={item}>
@@ -145,7 +145,7 @@ export default function xpaddleUploader(props: any) {
                     name="deployBackend"
                     rules={[{required: true, message: t('isRequire')}]}
                 >
-                    <Select placeholder="Please select a country">
+                    <Select placeholder="Please select a version">
                         {lite_model_type.map((item: string) => {
                             return (
                                 <Option value={item} key={item}>
