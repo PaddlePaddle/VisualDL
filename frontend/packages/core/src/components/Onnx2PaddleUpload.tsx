@@ -44,14 +44,21 @@ export default function xpaddleUploader(props: any) {
         'huawei_kirin_npu',
         'amlogic_npu'
     ];
+    const createFileFromData = (fileData: any): File => {
+        const {name, size, type, lastModified} = fileData;
+        const file = new File([], name, {type, lastModified});
+        Object.defineProperty(file, 'size', {value: size});
+        return file;
+    };
     const lite_model_type = ['protobuf', 'naive_buffer'];
     const submodel = async () => {
         const values = await form.validateFields();
-        // debugger;
         const formData = new FormData();
         // // 将文件转二进制
+        const files1 = createFileFromData(values.model.file);
+        // debugger;
         formData.append('convert_to_lite', values.convertToLite);
-        formData.append('model', values.model.file);
+        formData.append('model', files1);
         formData.append('lite_valid_places', values.liteValidPlaces);
         formData.append('lite_model_type:', values.liteModelType);
         fetcher(`/inference/onnx2paddle/convert`, {
@@ -62,6 +69,7 @@ export default function xpaddleUploader(props: any) {
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(values.model.file.originFileObj);
                 reader.onload = event => {
+                    // debugger;
                     const results: any = event?.target?.result;
                     const file = new File([results], values.model.file.name, {
                         type: values.model.file.type,

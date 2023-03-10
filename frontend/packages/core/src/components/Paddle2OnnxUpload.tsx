@@ -30,15 +30,25 @@ export default function xpaddleUploader(props: any) {
     };
     const LiteBackend = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
     const lite_model_type = ['onnxruntime', 'tensorrt', 'others'];
+    const createFileFromData = (fileData: any): File => {
+        const {name, size, type, lastModified} = fileData;
+        const file = new File([], name, {type, lastModified});
+        Object.defineProperty(file, 'size', {value: size});
+        return file;
+    };
     const submodel = async () => {
         const values = await form.validateFields();
         // debugger;
         const formData = new FormData();
         // // 将文件转二进制
+        const files1 = createFileFromData(values.model.file);
+        const files2 = createFileFromData(values.model.file);
+
         formData.append('opset_version', values.opset_version);
-        formData.append('model', values.model.file);
-        formData.append('param', values.param.file);
+        formData.append('model', files1);
+        formData.append('param', files2);
         formData.append('deploy_backend:', values['deployBackend']);
+        // debugger;
         fetcher(`/inference/paddle2onnx/convert`, {
             method: 'POST',
             body: formData
