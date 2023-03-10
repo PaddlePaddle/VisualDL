@@ -61,6 +61,17 @@ export default function xpaddleUploader(props: any) {
     };
 
     const lite_model_type = ['protobuf', 'naive_buffer'];
+    const base64UrlToFile = (base64Url: any, filename: any) => {
+        // const arr = base64Url.split(',');
+        // const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(base64Url);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename);
+    };
     const submodel = async () => {
         const values = await form.validateFields();
         const formData = new FormData();
@@ -86,7 +97,8 @@ export default function xpaddleUploader(props: any) {
                         lastModified: values.model.file.lastModified
                     });
                     // console.log("New file created:", file);
-                    const files2 = [new File([res.data], res.filename || 'unknown_model')];
+                    // const files2 = [new File([res.data], res.filename || 'unknown_model')];
+                    const files2 = base64UrlToFile(res.pdmodel, 'name');
                     // debugger;
                     props.setFiles([file]);
                     props.changeFiles2(files2);
