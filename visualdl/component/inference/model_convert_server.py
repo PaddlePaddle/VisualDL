@@ -192,7 +192,7 @@ class ModelConvertApi(object):
         try:
             opset_version = int(opset_version)
         except Exception:
-            opset_version = 9
+            opset_version = 11
         if deploy_backend not in ['onnxruntime', 'tensorrt', 'others']:
             deploy_backend = 'onnxruntime'
 
@@ -230,6 +230,10 @@ class ModelConvertApi(object):
                         "[Convertion error] {}.\n Please open an issue at "
                         "https://github.com/PaddlePaddle/Paddle2ONNX/issues to report your problem."
                         .format(e))
+                if not onnx_model:
+                    raise RuntimeError(
+                        "[Convertion error] Please check your input model and param files."
+                    )
 
                 # upload transformed model to vdl bos
                 filename = 'bos://{}/paddle2onnx/{}/model.onnx'.format(
