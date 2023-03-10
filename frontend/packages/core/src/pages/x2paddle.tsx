@@ -469,8 +469,8 @@ function App() {
                             </RadioGroup>
                         ) : (
                             <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
-                                <RadioButton value={false}>ONxx</RadioButton>
                                 <RadioButton value={true}>Paddle</RadioButton>
+                                <RadioButton value={false}>ONxx</RadioButton>
                             </RadioGroup>
                         )}
                     </Field>
