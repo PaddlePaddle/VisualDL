@@ -49,7 +49,7 @@ export default function xpaddleUploader(props: any) {
         const formData = new FormData();
         // // 将文件转二进制
         const files1 = await createFileFromData(values.model.file);
-        const files2 = await createFileFromData(values.model.file);
+        const files2 = await createFileFromData(values.param.file);
 
         formData.append('opset_version', values.opset_version);
         formData.append('model', files1);
@@ -108,7 +108,7 @@ export default function xpaddleUploader(props: any) {
                         <Button icon={<UploadOutlined />}>请选择文件</Button>
                     </Upload>
                 </Form.Item>
-                <Form.Item label="模型参数文件(" name="param" rules={[{required: true, message: '该项为必填项目'}]}>
+                <Form.Item label="模型参数文件" name="param" rules={[{required: true, message: '该项为必填项目'}]}>
                     <Upload {...Uploadprops} maxCount={1}>
                         <Button icon={<UploadOutlined />}>请选择文件</Button>
                     </Upload>

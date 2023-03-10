@@ -11,7 +11,7 @@
     "error": "发生错误",
     "graph": "网络结构",
     "dynamic_graph": "动态",
-    "ToggleGraph": "X2Paddle",
+    "ToggleGraph": "模型转换",
     "static_graph": "静态",
     "high-dimensional": "数据降维",
     "profiler": "性能分析",

@@ -8,5 +8,15 @@
     "warin-info4": "模型已转换,请勿再次点击",
     "warin-info5": "请上传模型文件并转换",
     "warin-info6": "模型文件已转换，请勿再次点击",
-    "warin-info7": "请上传模型文件"
+    "warin-info7": "请上传模型文件",
+    "Conversion": "转换",
+    "pdmodels": "模型结构文件",
+    "pdiparams": "模型参数文件",
+    "opset_version": "op集合版本",
+    "deploy_backend": "Lite后端类型",
+    "Download": "下载",
+    "Reload": "重新载入",
+    "View": "视图",
+    "Please": "请选择文件",
+    "isRequire": "该项为必填项"
 }

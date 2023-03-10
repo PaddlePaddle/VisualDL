@@ -8,5 +8,15 @@
     "warin-info4": "The model has been converted, please do not click again",
     "warin-info5": "Please upload the model file and convert it",
     "warin-info6": "Model file has been converted, please do not click again",
-    "warin-info7": "Please upload the model file"
+    "warin-info7": "Please upload the model file",
+    "Conversion": "Conversion",
+    "pdmodels": "pdmodels",
+    "pdiparams": "pdiparams",
+    "opset_version": "opset_version",
+    "deploy_backend": "deploy_backend",
+    "Download": "Download",
+    "Reload": "Reload",
+    "View": "View",
+    "Please": "Please select the file",
+    "isRequire": "This item is required"
 }
