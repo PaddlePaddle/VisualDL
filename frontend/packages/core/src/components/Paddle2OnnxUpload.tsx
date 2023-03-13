@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import {Form, Input, Radio, Select} from 'antd';
 import {UploadOutlined} from '@ant-design/icons';
@@ -8,6 +9,10 @@ import {message, Upload, Button} from 'antd';
 import {fetcher} from '~/utils/fetch';
 import {useTranslation} from 'react-i18next';
 import {Name} from './ProfilerPage/MemoryView/type';
+import Loader from 'react-loader-spinner';
+import LoadingIndicator from '~/components/LoadingIndicator';
+import { trackPromise } from 'react-promise-tracker';
+
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
     const [form] = Form.useForm();
@@ -70,7 +75,8 @@ export default function xpaddleUploader(props: any) {
         formData.append('model', files1);
         formData.append('param', files2);
         formData.append('deploy_backend:', values['deployBackend']);
-        // debugger;
+        
+        trackPromise(
         fetcher(`/inference/paddle2onnx/convert`, {
             method: 'POST',
             body: formData
@@ -104,7 +110,7 @@ export default function xpaddleUploader(props: any) {
                 props.changeLoading(false);
                 console.log(res);
             }
-        );
+        ));
     };
     return (
         <div>
@@ -184,6 +190,7 @@ export default function xpaddleUploader(props: any) {
             >
                 {t('togglegraph:Conversion')}
             </Buttons>
+            <LoadingIndicator />
         </div>
     );
 }

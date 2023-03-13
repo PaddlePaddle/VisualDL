@@ -26,5 +26,6 @@
     "isYes": "是",
     "isNo": "否",
     "Paddle2OnnxTitle": "Paddle2Onnx模型转换配置",
-    "Onnx2PaddleTitle": "Onnx2Paddle模型转换配置"
+    "Onnx2PaddleTitle": "Onnx2Paddle模型转换配置",
+    "converting": "转换中，请稍等片刻"
 }
