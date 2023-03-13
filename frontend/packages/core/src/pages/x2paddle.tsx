@@ -485,11 +485,11 @@ function App() {
                             <Button
                                 onClick={() => {
                                     console.log('showData', showData);
-                                    if (!showData) {
-                                        // toast.warning('请上传模型文件并转换');
-                                        toast.warning(t('warin-info5'));
-                                        return;
-                                    }
+                                    // if (!showData) {
+                                    //     // toast.warning('请上传模型文件并转换');
+                                    //     toast.warning(t('warin-info5'));
+                                    //     return;
+                                    // }
                                     downloadFileByBase64(baseId, file_names);
                                 }}
                             >
