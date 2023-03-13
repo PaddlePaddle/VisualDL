@@ -56,7 +56,7 @@ class ModelConvertApi(object):
 
     @result()  # noqa:C901
     def onnx2paddle_model_convert(self, convert_to_lite, lite_valid_places,
-                                  lite_model_type):
+                                  lite_model_type):  # noqa:C901
         '''
         Convert onnx model to paddle model.
         '''
