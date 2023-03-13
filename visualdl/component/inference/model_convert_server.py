@@ -1,3 +1,4 @@
+# flake8: noqa
 # Copyright (c) 2022 VisualDL Authors. All Rights Reserve.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +55,7 @@ class ModelConvertApi(object):
             self.bos_client.renew_bos_client_from_server()
             self.bucket_name = 'visualdl-server'
 
-    @result()  # noqa:C901
+    @result()
     def onnx2paddle_model_convert(self, convert_to_lite, lite_valid_places,
                                   lite_model_type):  # noqa:C901
         '''
