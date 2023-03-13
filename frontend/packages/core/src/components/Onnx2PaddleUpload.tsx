@@ -91,7 +91,7 @@ export default function xpaddleUploader(props: any) {
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(values.model.file.originFileObj);
                 reader.onload = event => {
-                    debugger;
+                    // debugger;
                     const results: any = event?.target?.result;
                     const file = new File([results], values.model.file.name, {
                         type: values.model.file.type,
@@ -100,7 +100,7 @@ export default function xpaddleUploader(props: any) {
                     // console.log("New file created:", file);
                     // const files2 = [new File([res.data], res.filename || 'unknown_model')];
                     const files2 = base64UrlToFile(res.model, 'name.pdmodel');
-                    debugger;
+                    // debugger;
                     props.setFiles([file]);
                     props.changeFiles2([files2]);
                     // props.setFiles([file]);

@@ -283,7 +283,7 @@ function App() {
         if (showData) {
             console.log('Graph2', showData);
             // const files = [showData];
-            debugger;
+            // debugger;
             Graphs2?.current?.setModelFiles(showData);
             // Graphs2?.current?.setModelFiles(files);
         }
@@ -326,7 +326,7 @@ function App() {
             //     // debugger;
             //     setshowData([new File([data.data], data.filename || 'unknown_model')]);
             // }
-            debugger;
+            // debugger;
             setshowData(files2);
         }
         // 改动

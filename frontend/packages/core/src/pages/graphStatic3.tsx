@@ -223,7 +223,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
         // }, [nodeData, renderedflag3]);
         useEffect(() => {
             if (rendered) {
-                debugger;
+                // debugger;
                 // if ()
                 changeFlags(true);
                 changeLoading && changeLoading(false);

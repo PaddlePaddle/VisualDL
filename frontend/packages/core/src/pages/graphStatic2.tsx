@@ -110,7 +110,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
     const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
-            debugger;
+            // debugger;
             storeDispatch(actions.graph.setModel(f));
             setFiles(f);
         },
