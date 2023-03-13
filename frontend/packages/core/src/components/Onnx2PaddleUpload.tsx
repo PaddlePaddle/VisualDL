@@ -101,7 +101,7 @@ export default function xpaddleUploader(props: any) {
                     const files2 = base64UrlToFile(res.model, 'name.pdmodel');
                     debugger;
                     props.setFiles([file]);
-                    props.changeFiles2(files2);
+                    props.changeFiles2([files2]);
                     // props.setFiles([file]);
                     // props.changeFiles2(files2);
                     props.downloadEvent(res['request_id'], res.filename);

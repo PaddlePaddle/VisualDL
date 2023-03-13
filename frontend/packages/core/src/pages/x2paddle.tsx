@@ -280,8 +280,8 @@ function App() {
         const Graphs2: any = Graph2;
         if (showData) {
             console.log('Graph2', showData);
-            const files = [showData];
-            // debugger;
+            // const files = [showData];
+            debugger;
             Graphs2?.current?.setModelFiles(showData);
             // Graphs2?.current?.setModelFiles(files);
         }
@@ -315,7 +315,6 @@ function App() {
         setOpen(false);
     };
     const view2 = () => {
-        debugger;
         if (!showData && files2) {
             // // toast.warning('请先进行转换,再查看');
             // toast.warning(t('warin-info3'));
@@ -325,6 +324,7 @@ function App() {
             //     // debugger;
             //     setshowData([new File([data.data], data.filename || 'unknown_model')]);
             // }
+            debugger;
             setshowData(files2);
         }
         // 改动
@@ -470,8 +470,8 @@ function App() {
                             </RadioGroup>
                         ) : (
                             <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
-                                <RadioButton value={true}>Paddle</RadioButton>
-                                <RadioButton value={false}>ONxx</RadioButton>
+                                <RadioButton value={false}>Paddle</RadioButton>
+                                <RadioButton value={true}>ONxx</RadioButton>
                             </RadioGroup>
                         )}
                     </Field>

@@ -90,9 +90,9 @@ export default function xpaddleUploader(props: any) {
                     // const files2 = [new File([res.data], res.filename || 'unknown_model')];
                     // const Name =
                     const files2 = base64UrlToFile(res.model, 'name.onnx');
-                    debugger;
+                    // debugger;
                     props.setFiles([files2]);
-                    props.changeFiles2(file);
+                    props.changeFiles2([file]);
                     props.downloadEvent(res['request_id'], res.filename);
                 };
             },
