@@ -259,6 +259,7 @@ function App() {
 
         if (baseId === undefined || !fileName) return;
         setLoading(true);
+        setflags(false);
         const url = modelValue === 1 ? '/inference/paddle2onnx/download' : '/inference/onnx2paddle/download';
         fetcher(`${url}?request_id=${baseId}`, {
             method: 'GET'
@@ -267,6 +268,7 @@ function App() {
                 const name = fileName + '.tar';
                 console.log('blobres', res, res.data);
                 downloadEvt(res.data, name);
+                setflags(true);
                 setLoading(false);
             },
             res => {

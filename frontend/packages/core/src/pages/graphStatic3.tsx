@@ -204,11 +204,13 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
         }, [ModelValue]);
         useEffect(() => {
             if (nodeData && renderedflag3) {
+                debugger;
                 changeFlags(false);
             }
         }, [nodeData, renderedflag3]);
         useEffect(() => {
             if (rendered) {
+                debugger;
                 changeFlags(true);
             }
         }, [rendered]);
