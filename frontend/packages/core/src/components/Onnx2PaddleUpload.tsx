@@ -73,6 +73,7 @@ export default function xpaddleUploader(props: any) {
         return new File([u8arr], filename);
     };
     const submodel = async () => {
+        props.changeLoading(true);
         const values = await form.validateFields();
         const formData = new FormData();
         // // 将文件转二进制
@@ -109,6 +110,7 @@ export default function xpaddleUploader(props: any) {
                 };
             },
             res => {
+                props.changeLoading(false);
                 console.log(res);
             }
         );

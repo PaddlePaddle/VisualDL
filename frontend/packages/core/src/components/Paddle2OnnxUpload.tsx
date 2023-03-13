@@ -58,6 +58,7 @@ export default function xpaddleUploader(props: any) {
         return new File([u8arr], filename);
     };
     const submodel = async () => {
+        props.changeLoading(true);
         const values = await form.validateFields();
         // debugger;
         const formData = new FormData();
@@ -77,6 +78,7 @@ export default function xpaddleUploader(props: any) {
             (res: any) => {
                 // debugger;
                 // console.log(res);
+
                 const reader = new FileReader();
                 reader.readAsArrayBuffer(values.model.file.originFileObj);
                 reader.onload = event => {
@@ -99,6 +101,7 @@ export default function xpaddleUploader(props: any) {
             },
             res => {
                 // debugger;
+                props.changeLoading(false);
                 console.log(res);
             }
         );

@@ -94,6 +94,7 @@ type GraphProps = {
     show?: boolean;
     changeshowdata?: () => void;
     downloadEvent?: (baseId: number, fileName: string) => void;
+    changeLoading?: (value: any) => void;
     Xpaddlae?: boolean;
     ModelValue?: number;
 };
@@ -104,7 +105,17 @@ type pageRef = {
 };
 const Graph = React.forwardRef<pageRef, GraphProps>(
     (
-        {changeName, changeshowdata, Xpaddlae, show = true, changeFlags, changeFiles2, downloadEvent, ModelValue},
+        {
+            changeName,
+            changeshowdata,
+            Xpaddlae,
+            show = true,
+            changeFlags,
+            changeLoading,
+            changeFiles2,
+            downloadEvent,
+            ModelValue
+        },
         ref
     ) => {
         const {t} = useTranslation(['graph', 'common']);
@@ -127,7 +138,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
             [storeDispatch]
         );
         const newsetfiles = (f: FileList | File[]) => {
-            changeFlags(false);
+            // changeFlags(false);
+            setRendered(false);
             setFiles(f);
         };
         const onClickFile = useCallback(() => {
@@ -212,6 +224,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
         useEffect(() => {
             if (rendered) {
                 debugger;
+                // if ()
+                changeLoading && changeLoading(true);
                 changeFlags(true);
             }
         }, [rendered]);
@@ -372,6 +386,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
             if (ModelValue === 1) {
                 return (
                     <Paddle2OnnxUpload
+                        changeLoading={changeLoading}
                         downloadEvent={downloadEvent}
                         setFiles={newsetfiles}
                         changeFiles2={changeFiles2}
@@ -380,6 +395,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
             } else {
                 return (
                     <XpaddleUploader
+                        changeLoading={changeLoading}
                         downloadEvent={downloadEvent}
                         setFiles={newsetfiles}
                         changeFiles2={changeFiles2}

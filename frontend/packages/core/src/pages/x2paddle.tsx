@@ -423,6 +423,9 @@ function App() {
                         changeFiles2={(file: any) => {
                             setfiles2(file);
                         }}
+                        changeLoading={(flag: any) => {
+                            setLoading(false);
+                        }}
                         ModelValue={modelValue}
                         changeshowdata={() => {
                             // 更换模型
