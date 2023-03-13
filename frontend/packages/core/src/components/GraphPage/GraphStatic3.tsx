@@ -119,7 +119,7 @@ type GraphProps = {
     showInitializers: boolean;
     showNames: boolean;
     horizontal: boolean;
-    onRendered?: () => unknown;
+    onRendered?: (flag: boolean) => unknown;
     onOpened?: (data: OpenedResult) => unknown;
     onSearch?: (data: SearchResult) => unknown;
     onShowModelProperties?: (data: Properties) => unknown;
