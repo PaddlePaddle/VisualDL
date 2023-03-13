@@ -225,8 +225,8 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
             if (rendered) {
                 debugger;
                 // if ()
-                changeLoading && changeLoading(true);
                 changeFlags(true);
+                changeLoading && changeLoading(false);
             }
         }, [rendered]);
         const bottom = useMemo(
