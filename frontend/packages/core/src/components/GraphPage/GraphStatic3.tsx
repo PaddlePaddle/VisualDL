@@ -168,7 +168,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 case 'rendered':
                                     setLoading(false);
                                     setRendered(true);
-                                    onRendered?.();
+                                    debugger;
+                                    onRendered?.(true);
                                     return;
                             }
                             return;

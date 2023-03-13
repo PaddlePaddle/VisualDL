@@ -127,6 +127,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
             [storeDispatch]
         );
         const newsetfiles = (f: FileList | File[]) => {
+            changeFlags(false);
             setFiles(f);
         };
         const onClickFile = useCallback(() => {
@@ -202,12 +203,12 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
         useEffect(() => {
             setFiles(undefined);
         }, [ModelValue]);
-        useEffect(() => {
-            if (nodeData && renderedflag3) {
-                debugger;
-                changeFlags(false);
-            }
-        }, [nodeData, renderedflag3]);
+        // useEffect(() => {
+        //     if (nodeData && renderedflag3) {
+        //         debugger;
+        //         changeFlags(false);
+        //     }
+        // }, [nodeData, renderedflag3]);
         useEffect(() => {
             if (rendered) {
                 debugger;
@@ -408,7 +409,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(
                             showInitializers={showInitializers}
                             showNames={showNames}
                             horizontal={horizontal}
-                            onRendered={() => setRendered(true)}
+                            onRendered={flag => setRendered(flag)}
                             onOpened={setOpenedModel}
                             onSearch={data => {
                                 setSearchResult(data);
