@@ -27,7 +27,7 @@ import {useDispatch} from 'react-redux';
 import type {BlobResponse} from '~/utils/fetch';
 import Button from '~/components/Button';
 import Checkbox from '~/components/Checkbox';
-import Content from '~/components/Content';
+import Content from '~/components/ContentXpaddle';
 import Field from '~/components/Field';
 import HashLoader from 'react-spinners/HashLoader';
 import ModelPropertiesDialog from '~/components/GraphPage/ModelPropertiesDialog';
@@ -110,6 +110,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
     const {loading} = useRequest<BlobResponse>(files ? null : '/graph/graph');
     const setModelFile = useCallback(
         (f: FileList | File[]) => {
+            // debugger;
             storeDispatch(actions.graph.setModel(f));
             setFiles(f);
         },
@@ -290,6 +291,7 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
                                 </RadioGroup>
                             </Field>
                         </AsideSection>
+
                         <AsideSection>
                             <Field label={t('graph:export-file')}>
                                 <ExportButtonWrapper>
@@ -332,12 +334,14 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
         () => <Uploader onClickUpload={onClickFile} onDropFiles={setModelFile} />,
         [onClickFile, setModelFile]
     );
-
+    // const flags = false;
+    const flags = files && show;
+    console.log('flags2', flags, aside);
     return (
         <>
             <Title>{t('common:graph')}</Title>
             <ModelPropertiesDialog data={modelData} onClose={() => setModelData(null)} />
-            <Content aside={aside}>
+            <Content show={show} aside={flags ? aside : null}>
                 {loading ? (
                     <Loading>
                         <HashLoader size="60px" color={primaryColor} />

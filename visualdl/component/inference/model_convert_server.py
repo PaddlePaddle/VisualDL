@@ -194,6 +194,7 @@ class ModelConvertApi(object):
             opset_version = int(opset_version)
         except Exception:
             opset_version = 11
+
         if deploy_backend not in ['onnxruntime', 'tensorrt', 'others']:
             deploy_backend = 'onnxruntime'
 

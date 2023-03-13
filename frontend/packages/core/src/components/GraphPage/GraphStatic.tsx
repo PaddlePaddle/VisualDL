@@ -71,6 +71,7 @@ const Content = styled.div`
 
     > iframe {
         ${size('100%', '100%')}
+        // ${size('50%', '100%')}
         border: none;
     }
 

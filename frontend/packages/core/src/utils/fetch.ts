@@ -115,6 +115,8 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
                 toast.error((response as ErrorData).msg);
                 throw new Error((response as ErrorData).msg || t('errors:error'));
             } else {
+                // console.log('response', response);
+
                 return (response as SuccessData<T>).data;
             }
         }

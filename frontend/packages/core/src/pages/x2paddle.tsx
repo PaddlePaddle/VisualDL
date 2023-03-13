@@ -1,6 +1,14 @@
 import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {rem, primaryColor, size} from '~/utils/style';
 import Content from '~/components/Content';
+// import type {DrawerProps} from 'antd';
+import RadioButton from '~/components/RadioButton';
+import RadioGroup from '~/components/RadioGroup';
+import {AsideSection} from '~/components/Aside';
+import type {BlobResponse} from '~/utils/fetch';
+import type {RadioChangeEvent} from 'antd';
+import {Radio, Space} from 'antd';
+import {Button, Drawer} from 'antd';
 import {toast} from 'react-toastify';
 import {fetcher} from '~/utils/fetch';
 import GraphStatic from '~/pages/graphStatic3';
@@ -8,6 +16,9 @@ import GraphStatic2 from '~/pages/graphStatic2';
 import HashLoader from 'react-spinners/HashLoader';
 import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
+import useRequest from '~/hooks/useRequest';
+import Field from '~/components/Field';
+import {Model} from '../store/graph/types';
 const ButtonContent = styled.section`
     display: flex;
     .active {
@@ -24,7 +35,18 @@ const ButtonContent = styled.section`
         cursor: not-allowed;
     }
 `;
+const ExportButtonWrapper = styled.div`
+    display: flex;
+    justify-content: space-between;
 
+    > * {
+        flex: 1 1 auto;
+
+        &:not(:last-child) {
+            margin-right: ${rem(20)};
+        }
+    }
+`;
 const Article = styled.article`
     flex: auto;
     display: flex;
@@ -63,15 +85,26 @@ function App() {
         show: true,
         show2: false
     });
+    const [modelValue, setModelValue] = useState(1);
     const [showData, setshowData] = useState<any>(null);
     const [baseId, setBaseId] = useState<any>(false);
     const [loading, setLoading] = useState<any>(false);
     const [file_names, setfile_names] = useState<any>(false);
+    const [files2, setfiles2] = useState<any>();
     const [names, setNames] = useState('');
-
+    const [open, setOpen] = useState(false);
+    const [flags, setflags] = useState(false);
     const file = useRef<HTMLInputElement>(null);
     const Graph = useRef(null);
     const Graph2 = useRef(null);
+    // const {data} = useRequest<BlobResponse>('/graph/static_graph');
+
+    // useEffect(() => {
+    //     if (data?.data?.size) {
+    //         // debugger;
+    //         setshowData([new File([data.data], data.filename || 'unknown_model')]);
+    //     }
+    // }, [data]);
     // 创建 axios 实例
     // const blobToFile = function (theBlob: any, fileName: any, type: any) {
     //     theBlob.lastModifiedDate = new Date();
@@ -108,7 +141,18 @@ function App() {
         document.body.removeChild(el);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // const blobToFile = (blob: Blob, fileName: string) => {
+    //     const url = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = fileName;
+    //     a.click();
+    //     window.URL.revokeObjectURL(url);
+    //     return url;
+    // };
     const fileUploader = (files: FileList, formats = 'caffe') => {
+        // 转换模型文件
+        // debugger;
         if (!files) {
             toast.warning('请上传模型文件模型文件');
             return;
@@ -124,7 +168,6 @@ function App() {
             body: formData
         }).then(
             (res: any) => {
-                // debugger
                 const name2: string = files[0].name.substring(files[0].name.lastIndexOf('.') + 1) + '.paddle';
                 console.log('res', res, name2);
                 const file = base64UrlToFile(res.pdmodel, name2);
@@ -136,20 +179,18 @@ function App() {
                 setLoading(false);
             },
             res => {
-                // debugger
                 console.log('errres', res);
                 setLoading(false);
-                // const newFilesId = filesId + 1;
-                // setFilesId(newFilesId);
             }
         );
         // fetcher('/graph/graph').then((res: any) => {
+        //     debugger;
         //     console.log('res', res);
         //     setTimeout(() => {
+        //         const file = blobToFile(res.data, res.filename);
         //         // const file = blobToFile(res.data, res.filename, res.type);
-        //         const file = blobToFile(res.data, res.filename, res.type);
-        //         console.log('bolbfile', file);
-        //         downloadEvt(res.data, res.filename);
+        //         // console.log('bolbfile', file);
+        //         // downloadEvt(res.data, res.filename);
         //         setshowData(file);
         //         setLoading(false);
         //     }, 5000);
@@ -218,12 +259,16 @@ function App() {
 
         if (baseId === undefined || !fileName) return;
         setLoading(true);
-        fetcher(`/inference/download?request_id=${baseId}`, {
+        setflags(false);
+        const url = modelValue === 1 ? '/inference/paddle2onnx/download' : '/inference/onnx2paddle/download';
+        fetcher(`${url}?request_id=${baseId}`, {
             method: 'GET'
         }).then(
             (res: any) => {
+                const name = fileName + '.tar';
                 console.log('blobres', res, res.data);
-                downloadEvt(res.data, fileName);
+                downloadEvt(res.data, name);
+                setflags(true);
                 setLoading(false);
             },
             res => {
@@ -237,8 +282,10 @@ function App() {
         const Graphs2: any = Graph2;
         if (showData) {
             console.log('Graph2', showData);
-            const files = [showData];
-            Graphs2?.current?.setModelFiles(files);
+            // const files = [showData];
+            // debugger;
+            Graphs2?.current?.setModelFiles(showData);
+            // Graphs2?.current?.setModelFiles(files);
         }
     }, [showData]);
     const Graphs2 = useMemo(() => {
@@ -262,7 +309,76 @@ function App() {
             </div>
         );
     }, [show.show2]);
+    const showDrawer = () => {
+        setOpen(true);
+    };
+
+    const onClose = () => {
+        setOpen(false);
+    };
+    const view2 = () => {
+        if (!showData && files2) {
+            // // toast.warning('请先进行转换,再查看');
+            // toast.warning(t('warin-info3'));
+            // return;
+            // 改动
+            // if (data?.data?.size) {
+            //     // debugger;
+            //     setshowData([new File([data.data], data.filename || 'unknown_model')]);
+            // }
+            // debugger;
+            setshowData(files2);
+        }
+        // 改动
+        setShow({
+            show: false,
+            show2: true
+        });
+        // setShow({
+        //     show: true,
+        //     show2: true
+        // });
+    };
+    const view1 = () => {
+        // 改动
+        setShow({
+            show: true,
+            show2: false
+        });
+        // setShow({
+        //     show: true,
+        //     show2: true
+        // });
+    };
+    const changeView = () => {
+        if (show.show) {
+            view2();
+        } else {
+            view1();
+        }
+    };
+    const resetModel = () => {
+        const Graphs: any = Graph?.current;
+        Graphs.setnewfiles();
+        // debugger;
+        setshowData(null);
+        setShow({
+            show: true,
+            show2: false
+        });
+        setflags(false);
+    };
+
+    const onChange = (e: RadioChangeEvent) => {
+        setModelValue(e.target.value);
+        resetModel();
+    };
+    const downloadEvent = (baseId: number, fileName: string) => {
+        setBaseId(baseId);
+        setfile_names(fileName);
+    };
     console.log('show', show);
+    console.log('Graph?.current?.files', Graph?.current);
     return (
         <Content>
             {loading && (
@@ -270,10 +386,22 @@ function App() {
                     <HashLoader size="60px" color={primaryColor} />
                 </Loading>
             )}
+            <Button
+                style={{
+                    position: 'absolute',
+                    top: '4.428571428571429rem',
+                    left: '0rem'
+                }}
+                type="primary"
+                onClick={showDrawer}
+            >
+                O
+            </Button>
             <Contents
                 style={{
                     height: !loading ? 'auto' : '0px',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    position: 'relative'
                 }}
             >
                 <div
@@ -283,11 +411,24 @@ function App() {
                         overflowY: 'hidden'
                     }}
                 >
+                    {/* <Dropdown menu={{items}} placement="bottomRight">
+                        <Button>bottomRight</Button>
+                    </Dropdown> */}
                     <GraphStatic
                         ref={Graph}
                         changeName={setNames}
+                        downloadEvent={downloadEvent}
                         show={show.show}
+                        changeFlags={setflags}
+                        changeFiles2={(file: any) => {
+                            setfiles2(file);
+                        }}
+                        changeLoading={(flag: any) => {
+                            setLoading(false);
+                        }}
+                        ModelValue={modelValue}
                         changeshowdata={() => {
+                            // 更换模型
                             setshowData(null);
                         }}
                         Xpaddlae={true}
@@ -295,18 +436,86 @@ function App() {
                 </div>
                 {Graphs2}
             </Contents>
-
-            {names && !loading && (
+            <div
+                style={{
+                    display: flags ? 'flex' : 'none',
+                    position: 'absolute',
+                    bottom: '-24px',
+                    right: '20px',
+                    width: '260px',
+                    background: 'white',
+                    height: '200px'
+                }}
+            >
+                <AsideSection
+                    style={{
+                        width: '100%'
+                    }}
+                >
+                    <Field label={t('togglegraph:View')}>
+                        {/* <ExportButtonWrapper>
+                            <Button>{}</Button>
+                            <Button
+                                onClick={() => {
+                                    console.log(111);
+                                }}
+                            >
+                                {t('graph:export-svg')}
+                            </Button>
+                        </ExportButtonWrapper> */}
+                        {/* <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                         
+                            <RadioButton value={true}>ONxx</RadioButton>
+                            <RadioButton value={false}>Paddle</RadioButton>
+                        </RadioGroup> */}
+                        {modelValue === 2 ? (
+                            <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                                <RadioButton value={true}>ONxx</RadioButton>
+                                <RadioButton value={false}>Paddle</RadioButton>
+                            </RadioGroup>
+                        ) : (
+                            <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
+                                <RadioButton value={false}>Paddle</RadioButton>
+                                <RadioButton value={true}>ONxx</RadioButton>
+                            </RadioGroup>
+                        )}
+                    </Field>
+                    <Field>
+                        <ExportButtonWrapper>
+                            <Button
+                                onClick={() => {
+                                    console.log('showData', showData);
+                                    // if (!showData) {
+                                    //     // toast.warning('请上传模型文件并转换');
+                                    //     toast.warning(t('warin-info5'));
+                                    //     return;
+                                    // }
+                                    downloadFileByBase64(baseId, file_names);
+                                }}
+                            >
+                                {t('togglegraph:Download')}
+                            </Button>
+                            <Button onClick={resetModel}>{t('togglegraph:Reload')}</Button>
+                        </ExportButtonWrapper>
+                    </Field>
+                </AsideSection>
+            </div>
+            {/* {names && !loading && (
                 <ButtonContent style={{marginTop: '20px'}}>
                     <Article>
                         <Buttons
                             style={{marginRight: '3px'}}
                             className={show.show ? 'active' : 'un_active'}
                             onClick={() => {
+                                // 改动
                                 setShow({
                                     show: true,
                                     show2: false
                                 });
+                                // setShow({
+                                //     show: true,
+                                //     show2: true
+                                // });
                             }}
                         >
                             {names ? names : 'Toggle'}
@@ -314,15 +523,26 @@ function App() {
                         <Buttons
                             className={!showData ? 'disabled' : show.show2 ? 'active' : 'un_active'}
                             onClick={() => {
+                                // debugger;
                                 if (!showData) {
-                                    // toast.warning('请先进行转换,再查看');
-                                    toast.warning(t('warin-info3'));
-                                    return;
+                                    // // toast.warning('请先进行转换,再查看');
+                                    // toast.warning(t('warin-info3'));
+                                    // return;
+                                    // 改动
+                                    if (data?.data?.size) {
+                                        // debugger;
+                                        setshowData([new File([data.data], data.filename || 'unknown_model')]);
+                                    }
                                 }
+                                // 改动
                                 setShow({
                                     show: false,
                                     show2: true
                                 });
+                                // setShow({
+                                //     show: true,
+                                //     show2: true
+                                // });
                             }}
                         >
                             paddle
@@ -330,6 +550,7 @@ function App() {
                     </Article>
                     <Aside>
                         <Buttons
+                            // 转换按钮
                             style={{marginRight: '3px'}}
                             className={!showData && names ? 'active' : 'disabled'}
                             onClick={() => {
@@ -349,6 +570,7 @@ function App() {
                             {t('togglegraph:transformation')}
                         </Buttons>
                         <Buttons
+                            // 下载按钮
                             className={showData ? 'active' : 'disabled'}
                             onClick={() => {
                                 console.log('showData', showData);
@@ -363,8 +585,16 @@ function App() {
                             {t('togglegraph:download')}
                         </Buttons>
                     </Aside>
-                </ButtonContent>
-            )}
+                </ButtonContent> 
+            )}*/}
+            <Drawer title="Basic Drawer" placement={'left'} closable={false} onClose={onClose} open={open} key={'left'}>
+                <Radio.Group onChange={onChange} value={modelValue}>
+                    <Space direction="vertical">
+                        <Radio value={1}>Paddle2Onnx</Radio>
+                        <Radio value={2}>Onnx2Paddle</Radio>
+                    </Space>
+                </Radio.Group>
+            </Drawer>
             <input
                 ref={file}
                 type="file"
