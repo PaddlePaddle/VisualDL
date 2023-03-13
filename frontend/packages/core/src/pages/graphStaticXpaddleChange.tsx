@@ -17,7 +17,8 @@
 
 import Aside, {AsideSection} from '~/components/Aside';
 import type {Documentation, OpenedResult, Properties, SearchItem, SearchResult} from '~/resource/graph/types';
-import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStatic2';
+import GraphComponent, {GraphRef} from '~/components/GraphPage/GraphStaticXpaddleChange';
+// graphStaticXpaddleChange
 import React, {useImperativeHandle, useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Select, {SelectProps} from '~/components/Select';
 import {actions} from '~/store';
