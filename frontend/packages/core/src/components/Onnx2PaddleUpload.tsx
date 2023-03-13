@@ -104,7 +104,8 @@ export default function xpaddleUploader(props: any) {
                     props.changeFiles2([files2]);
                     // props.setFiles([file]);
                     // props.changeFiles2(files2);
-                    props.downloadEvent(res['request_id'], res.filename);
+                    // props.downloadEvent(res['request_id'], res.filename);
+                    props.downloadEvent(res['request_id'], 'name.pdmodel');
                 };
             },
             res => {
