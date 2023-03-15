@@ -18,8 +18,10 @@ import type {TFunction} from 'i18next';
 import i18next from 'i18next';
 import queryString from 'query-string';
 import {toast} from 'react-toastify';
+import axios from 'axios';
+
 const API_TOKEN_KEY: string = import.meta.env.SNOWPACK_PUBLIC_API_TOKEN_KEY;
-const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL;
+export const API_URL: string = import.meta.env.SNOWPACK_PUBLIC_API_URL;
 console.log('API_URL', API_TOKEN_KEY);
 
 const API_TOKEN_HEADER = 'X-VisualDL-Instance-ID';
@@ -89,7 +91,6 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         // res = await fetch('http://10.181.196.14:8040/app/api/deploy/convert?format=onnx', addApiToken(options));
 
         res = await fetch(API_URL + url, addApiToken(options));
-        console.log('ressponse', res);
     } catch (e) {
         const t = await logErrorAndReturnT(e);
         throw new Error(t('errors:network-error'));
@@ -115,8 +116,6 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
                 toast.error((response as ErrorData).msg);
                 throw new Error((response as ErrorData).msg || t('errors:error'));
             } else {
-                // console.log('response', response);
-
                 return (response as SuccessData<T>).data;
             }
         }
@@ -133,7 +132,6 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
     } else {
         let data: Blob;
         try {
-            console.log('datas', res);
             data = await res.blob();
         } catch (e) {
             const t = await logErrorAndReturnT(e);
@@ -142,7 +140,6 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
         const disposition = res.headers.get('Content-Disposition');
         // support safari
         if (!data.arrayBuffer) {
-            console.log('arrayBuffer', data);
             data.arrayBuffer = async () =>
                 new Promise<ArrayBuffer>((resolve, reject) => {
                     const fileReader = new FileReader();
@@ -152,8 +149,64 @@ export async function fetcher<T = unknown>(url: string, options?: RequestInit): 
                     fileReader.readAsArrayBuffer(data);
                 });
         }
-        console.log('datas', data);
         let filename: string | null = null;
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+            const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+        return {data, type: res.headers.get('Content-Type'), filename};
+    }
+}
+
+export async function axios_fetcher<T = unknown>(url: string, options?: RequestInit, config?: object): Promise<BlobResponse | string | T> {
+    let res: any;
+    try {
+        if (options!.method==="POST"){
+        res = await axios.post(API_URL + url, options!.body, config);
+        } else if(options!.method==="GET"){
+        res = await axios.get(API_URL + url, config);
+        }else{
+        res = await axios(API_URL + url);
+        }
+    } catch (e) {
+        const t = await logErrorAndReturnT(e);
+        throw new Error(t('errors:network-error'));
+    }
+    const contentType = res.headers.get('content-type') ?? '';
+    if (contentType.includes('application/json')) {
+        let response: Data<T> | T;
+        try {
+            response =  res.data;
+        } catch (e) {
+            const t = await logErrorAndReturnT(e);
+            throw new Error(t('errors:parse-error'));
+        }
+        if (response && 'status' in response) {
+            if (response.status !== 0) {
+                const t = await logErrorAndReturnT(response);
+                toast.error((response as ErrorData).msg);
+                throw new Error((response as ErrorData).msg || t('errors:error'));
+            } else {
+                return (response as SuccessData<T>).data;
+            }
+        }
+        return response;
+    } else if (contentType.startsWith('text/')) {
+        let response: string;
+        try {
+            response = res.data;
+        } catch (e) {
+            const t = await logErrorAndReturnT(e);
+            throw new Error(t('errors:parse-error'));
+        }
+        return response;
+    } else {
+        let data: any;
+        data = res.data;
+        let filename: string | null = null;
+        const disposition = res.headers.get('Content-Disposition');
         if (disposition && disposition.indexOf('attachment') !== -1) {
             const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
             if (matches != null && matches[1]) {

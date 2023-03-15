@@ -1,22 +1,23 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable prettier/prettier */
-import React from 'react';
+
+import React, {useState} from 'react';
 import {Form, Input, Radio, Select} from 'antd';
 import {UploadOutlined} from '@ant-design/icons';
 import type {UploadProps} from 'antd';
 import Buttons from '~/components/Button';
-import {fetcher} from '~/utils/fetch';
+import {fetcher, axios_fetcher} from '~/utils/fetch';
 import {message, Upload, Button} from 'antd';
 import { useTranslation } from 'react-i18next';
-import LoadingIndicator from '~/components/LoadingIndicator';
-import { trackPromise } from 'react-promise-tracker';
-
+import { Progress, Space  } from "antd";
+import styles from './styles.css'
 
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
     const [form] = Form.useForm();
     const {t} = useTranslation(['togglegraph', 'common']);
     const formLayout: any = {labelCol: {span: 4}, wrapperCol: {span: 14}};
+    const [convertProcess, setConvertProgress] = useState(0);
+    const [convertProcessFlag, setconvertProcessFlag] = useState(false);
     const Uploadprops: UploadProps = {
         name: 'file',
         action: '',
@@ -47,23 +48,10 @@ export default function xpaddleUploader(props: any) {
         'huawei_ascend_npu',
         'imagination_nna',
         'rockchip_npu',
-        ' mediatek_apu',
+        'mediatek_apu',
         'huawei_kirin_npu',
         'amlogic_npu'
     ];
-    const createFileFromData = (fileData: any): any => {
-        const {name, type, lastModified} = fileData;
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(fileData.originFileObj);
-        return new Promise<any>(resolve => {
-            reader.onload = () => {
-                const arrayBuffer = reader.result as ArrayBuffer;
-                const blob = new Blob([arrayBuffer], {type});
-                const file = new File([blob], name, {type, lastModified});
-                resolve(file);
-            };
-        });
-    };
 
     const lite_model_type = ['protobuf', 'naive_buffer'];
     const base64UrlToFile = (base64Url: any, filename: any) => {
@@ -81,46 +69,37 @@ export default function xpaddleUploader(props: any) {
         props.changeLoading(true);
         const values = await form.validateFields();
         const formData = new FormData();
-        // // 将文件转二进制
-        const files1 = await createFileFromData(values.model.file);
-        // debugger;
+        
+        const onnx_file_component = document.getElementById("upload_onnx_model_file") as HTMLInputElement;
+        const onnx_file = onnx_file_component!.files![0];
         formData.append('convert_to_lite', values.convertToLite);
-        formData.append('model', files1);
+        formData.append('model', onnx_file);
         formData.append('lite_valid_places', values.liteValidPlaces);
         formData.append('lite_model_type:', values.liteModelType);
 
-        trackPromise(
-        fetcher(`/inference/onnx2paddle/convert`, {
+        axios_fetcher(`/inference/onnx2paddle/convert`, {
             method: 'POST',
             body: formData
-        }).then(
+        },{
+            onDownloadProgress: function (axiosProgressEvent: any) {
+                setConvertProgress(Math.round(axiosProgressEvent.progress! * 100));
+                setconvertProcessFlag(true);
+            }
+          }).then(
             (res: any) => {
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(values.model.file.originFileObj);
-                reader.onload = event => {
-                    // debugger;
-                    const results: any = event?.target?.result;
-                    const file = new File([results], values.model.file.name, {
-                        type: values.model.file.type,
-                        lastModified: values.model.file.lastModified
-                    });
-                    // console.log("New file created:", file);
-                    // const files2 = [new File([res.data], res.filename || 'unknown_model')];
                     const files2 = base64UrlToFile(res.model, 'name.pdmodel');
-                    // debugger;
-                    props.setFiles([file]);
+                    props.setFiles([onnx_file]);
                     props.changeFiles2([files2]);
-                    // props.setFiles([file]);
-                    // props.changeFiles2(files2);
-                    // props.downloadEvent(res['request_id'], res.filename);
-                    props.downloadEvent(res['request_id'], 'name.pdmodel');
-                };
+
+                    const current_date = new Date();
+                    const filename = `${current_date.getFullYear()}_${current_date.getMonth()}_${current_date.getDay()}_${current_date.getHours()}_${current_date.getMinutes()}_${current_date.getSeconds()}_paddlemodel.tar`;
+                    props.downloadEvent(res['request_id'], filename);
             },
             res => {
                 props.changeLoading(false);
                 console.log(res);
             }
-        ));
+        ).finally(()=>{setconvertProcessFlag(false);});
     };
     return (
         <div>
@@ -134,33 +113,32 @@ export default function xpaddleUploader(props: any) {
                 {t('togglegraph:Onnx2PaddleTitle')}
             </div>
             <Form
-                // {...formItemLayout}
                 layout={formLayout}
                 form={form}
                 initialValues={{layout: formLayout}}
                 style={{maxWidth: 600}}
             >
                 <Form.Item label="模型" name="model" rules={[{required: true, message: t('isRequire')}]}>
-                    <Upload {...Uploadprops} maxCount={1}>
-                        <Button icon={<UploadOutlined />}>{t('togglegraph:Please')}</Button>
-                    </Upload>
+                <Input type="file" id="upload_onnx_model_file" accept=".onnx" />
                 </Form.Item>
                 <Form.Item
                     name="convertToLite"
                     label={t('togglegraph:convert_to_lite')}
                     rules={[{required: true, message: t('isRequire')}]}
+                    initialValue="no"
                 >
                     <Radio.Group>
-                        <Radio value="a">{t('togglegraph:isYes')}</Radio>
-                        <Radio value="b">{t('togglegraph:isNo')}</Radio>
+                        <Radio value="yes">{t('togglegraph:isYes')}</Radio>
+                        <Radio value="no">{t('togglegraph:isNo')}</Radio>
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item
-                    label={t('togglegraph:deploy_backend')}
+                    label={t('togglegraph:lite_valid_places')}
                     name="liteValidPlaces"
-                    rules={[{required: true, message: t('isRequire')}]}
+                    rules={[{required: false}]}
+                    initialValue="arm"
                 >
-                    <Select placeholder="Please select a country">
+                    <Select placeholder="Please select a lite place">
                         {LiteBackend.map((item: string) => {
                             return (
                                 <Option value={item} key={item}>
@@ -173,9 +151,10 @@ export default function xpaddleUploader(props: any) {
                 <Form.Item
                     label={t('togglegraph:lite_model_type')}
                     name="liteModelType"
-                    rules={[{required: true, message: t('isRequire')}]}
+                    rules={[{required: false}]}
+                    initialValue="naive_buffer"
                 >
-                    <Select placeholder="Please select a country">
+                    <Select placeholder="Please select a lite model type">
                         {lite_model_type.map((item: string) => {
                             return (
                                 <Option value={item} key={item}>
@@ -189,14 +168,23 @@ export default function xpaddleUploader(props: any) {
                             <Button type="primary">Submit</Button>
                         </Form.Item> */}
             </Form>
-            <Buttons
-                onClick={() => {
+            <div
+                style={{
+                    textAlign: 'center'
+                }}
+            >
+            <Buttons 
+                    onClick={() => {
+                    setConvertProgress(0);
+                    setconvertProcessFlag(true);
                     submodel();
                 }}
             >
                 {t('Conversion')}
             </Buttons>
-            <LoadingIndicator />
+            {convertProcessFlag ? <Progress type="circle" className={styles.processCircle} percent={convertProcess} /> : null}
+            {convertProcessFlag ? <h1> {t('togglegraph:converting')} </h1> : null}
+            </div>
         </div>
     );
 }

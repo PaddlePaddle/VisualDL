@@ -13,7 +13,7 @@
     "pdmodels": "模型结构文件",
     "pdiparams": "模型参数文件",
     "opset_version": "op集合版本",
-    "deploy_backend": "Lite后端类型",
+    "deploy_backend": "部署后端类型",
     "lite_valid_places": "Lite后端类型",
     "lite_model_type": "Lite模型类型",
     "convert_to_lite": "是否转成Paddle-Lite支持格式",
@@ -27,5 +27,6 @@
     "isNo": "否",
     "Paddle2OnnxTitle": "Paddle2Onnx模型转换配置",
     "Onnx2PaddleTitle": "Onnx2Paddle模型转换配置",
-    "converting": "转换中，请稍等片刻"
+    "converting": "转换中，请稍等片刻",
+    "downloading": "文件下载中，请稍等片刻"
 }

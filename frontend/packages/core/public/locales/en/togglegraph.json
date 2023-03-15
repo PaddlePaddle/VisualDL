@@ -27,5 +27,6 @@
     "isNo": "No",
     "Paddle2OnnxTitle": "Paddle2Onnx model conversion configuration",
     "Onnx2PaddleTitle": "Onnx2Paddle model conversion configuration",
-    "converting": "Converting Now, please wait"
+    "converting": "Converting now, please wait",
+    "downloading": "Downloading now, please wait"
 }
