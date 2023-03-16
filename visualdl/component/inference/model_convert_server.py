@@ -20,6 +20,7 @@ import os
 import shutil
 import tempfile
 
+import paddle
 import paddle2onnx
 from flask import request
 from x2paddle.convert import onnx2paddle
@@ -85,17 +86,7 @@ class ModelConvertApi(object):
         hl.update(data)
         identity = hl.hexdigest()
         result['request_id'] = identity
-        # check whether model has been transfromed before
-        # if model has been transformed before, data is stored at bos
-        pdmodel_filename = 'bos://{}/onnx2paddle/{}/model.pdmodel'.format(
-            self.bucket_name, identity)
-        if self.bos_client.exists(pdmodel_filename):
-            remote_data = self.bos_client.read_file(pdmodel_filename)
-            if remote_data:  # we should check data is not empty,
-                # in case convertion failed but empty data is still uploaded before due to unknown reasons
-                model_encoded = base64.b64encode(remote_data).decode('utf-8')
-                result['model'] = model_encoded
-                return result
+
         target_path = os.path.join(X2PADDLE_CACHE_PATH, 'onnx2paddle',
                                    identity)
         if not os.path.exists(target_path):
@@ -111,15 +102,19 @@ class ModelConvertApi(object):
                 )
             try:
                 if convert_to_lite is False:
-                    onnx2paddle(
-                        fp.name, target_path, convert_to_lite=convert_to_lite)
+                    with paddle.fluid.dygraph.guard():
+                        onnx2paddle(
+                            fp.name,
+                            target_path,
+                            convert_to_lite=convert_to_lite)
                 else:
-                    onnx2paddle(
-                        fp.name,
-                        target_path,
-                        convert_to_lite=convert_to_lite,
-                        lite_valid_places=lite_valid_places,
-                        lite_model_type=lite_model_type)
+                    with paddle.fluid.dygraph.guard():
+                        onnx2paddle(
+                            fp.name,
+                            target_path,
+                            convert_to_lite=convert_to_lite,
+                            lite_valid_places=lite_valid_places,
+                            lite_model_type=lite_model_type)
             except Exception as e:
                 raise RuntimeError(
                     "[Convertion error] {}.\n Please open an issue at "
@@ -138,7 +133,7 @@ class ModelConvertApi(object):
                 filename = 'bos://{}/onnx2paddle/{}.tar'.format(
                     self.bucket_name, identity)
                 try:
-                    self.bos_client.write(filename, data)
+                    self.bos_client.write(filename, data, append=False)
                 except Exception as e:
                     print(
                         "Exception: Write file {}.tar to bos failed, due to {}"
@@ -161,6 +156,7 @@ class ModelConvertApi(object):
         # delete target_path
         shutil.rmtree(target_path)
         result['model'] = model_encoded
+        print(len(model_encoded))
         return result
 
     @result('application/octet-stream')
@@ -177,6 +173,7 @@ class ModelConvertApi(object):
             raise RuntimeError(
                 "The requested model can not be downloaded due to not existing or convertion failed."
             )
+        print(len(data))
         return data
 
     @result()
@@ -194,6 +191,7 @@ class ModelConvertApi(object):
             opset_version = int(opset_version)
         except Exception:
             opset_version = 11
+
         if deploy_backend not in ['onnxruntime', 'tensorrt', 'others']:
             deploy_backend = 'onnxruntime'
 
@@ -202,17 +200,6 @@ class ModelConvertApi(object):
         hl.update(model_data + param_data)
         identity = hl.hexdigest()
         result['request_id'] = identity
-        # check whether model has been transfromed before
-        # if model has been transformed before, data is stored at bos
-        model_filename = 'bos://{}/paddle2onnx/{}/model.onnx'.format(
-            self.bucket_name, identity)
-        if self.bos_client.exists(model_filename):
-            remote_data = self.bos_client.read_file(model_filename)
-            if remote_data:  # we should check data is not empty,
-                # in case convertion failed but empty data is still uploaded before due to unknown reasons
-                model_encoded = base64.b64encode(remote_data).decode('utf-8')
-                result['model'] = model_encoded
-                return result
 
         with tempfile.NamedTemporaryFile() as model_fp:
             with tempfile.NamedTemporaryFile() as param_fp:
@@ -242,7 +229,8 @@ class ModelConvertApi(object):
                 model_encoded = None
                 if onnx_model:
                     try:
-                        self.bos_client.write(filename, onnx_model)
+                        self.bos_client.write(
+                            filename, onnx_model, append=False)
                     except Exception as e:
                         print(
                             "Exception: Write file {}/model.onnx to bos failed, due to {}"
@@ -250,6 +238,7 @@ class ModelConvertApi(object):
                     model_encoded = base64.b64encode(onnx_model).decode(
                         'utf-8')
         result['model'] = model_encoded
+        print(len(model_encoded))
         return result
 
     @result('application/octet-stream')
@@ -266,6 +255,7 @@ class ModelConvertApi(object):
             raise RuntimeError(
                 "The requested model can not be downloaded due to not existing or convertion failed."
             )
+        print(len(data))
         return data
 
 

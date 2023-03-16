@@ -22,6 +22,7 @@ import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
 import netron from '@visualdl/netron';
+import netron2 from '@visualdl/netron2';
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import useTheme from '~/hooks/useTheme';
@@ -118,7 +119,7 @@ type GraphProps = {
     showInitializers: boolean;
     showNames: boolean;
     horizontal: boolean;
-    onRendered?: () => unknown;
+    onRendered?: (flag: boolean) => unknown;
     onOpened?: (data: OpenedResult) => unknown;
     onSearch?: (data: SearchResult) => unknown;
     onShowModelProperties?: (data: Properties) => unknown;
@@ -167,7 +168,8 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                                 case 'rendered':
                                     setLoading(false);
                                     setRendered(true);
-                                    onRendered?.();
+                                    // debugger;
+                                    onRendered?.(true);
                                     return;
                             }
                             return;
@@ -258,16 +260,21 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                     </Loading>
                 );
             }
+            if (!files) {
+                // debugger;
+                return uploader;
+            }
             if (ready && !rendered) {
+                // debugger;
                 return uploader;
             }
             return null;
-        }, [ready, loading, rendered, uploader]);
-
+        }, [ready, loading, rendered, uploader, files]);
+        const shows = !loading && rendered && files;
         return (
             <Wrapper>
                 {content}
-                <RenderContent show={!loading && rendered}>
+                <RenderContent show={shows ? true : false}>
                     <Toolbox
                         items={[
                             {
@@ -290,6 +297,14 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                         tooltipPlacement="bottom"
                     />
                     <Content>
+                        {/* <iframe
+                            ref={iframe}
+                            src={PUBLIC_PATH + netron}
+                            frameBorder={0}
+                            scrolling="no"
+                            marginWidth={0}
+                            marginHeight={0}
+                        ></iframe> */}
                         <iframe
                             ref={iframe}
                             src={PUBLIC_PATH + netron}
