@@ -18,8 +18,7 @@ import styled from 'styled-components';
 import {useTranslation} from 'react-i18next';
 import useRequest from '~/hooks/useRequest';
 import Field from '~/components/Field';
-import { Model } from '../store/graph/types';
-
+import {Model} from '../store/graph/types';
 
 const ButtonContent = styled.section`
     display: flex;
@@ -84,29 +83,27 @@ const Aside = styled.aside`
 `;
 function App() {
     const {t} = useTranslation(['togglegraph']);
-    const [show, setShow] = useState({
-        show: true,
-        show2: false
-    });
+    const [showRadio, setShowRadio] = useState(0); // 0 for paddle, 1 for onnx
     const [modelValue, setModelValue] = useState(1);
     const [showData, setshowData] = useState<any>(null);
     const [baseId, setBaseId] = useState<any>(false);
     const [file_names, setfile_names] = useState<any>(false);
     const [files2, setfiles2] = useState<any>();
+    const [loadFiles2, setLoadFiles2] = useState<any>(false);
     const [names, setNames] = useState('');
     const [open, setOpen] = useState(false);
+    const [configPage, setConfigPage] = useState(true);
     const [flags, setflags] = useState(false);
     const file = useRef<HTMLInputElement>(null);
     const Graph = useRef(null);
     const Graph2 = useRef(null);
-   
+
     const downloadFileByBase64 = (baseId: any, fileName: string) => {
-        console.log('baseId', baseId, fileName);
         if (baseId === undefined || !fileName) return;
         const url = modelValue === 1 ? '/inference/paddle2onnx/download' : '/inference/onnx2paddle/download';
-        var elem = document.createElement('a');
+        const elem = document.createElement('a');
         elem.href = API_URL + `${url}?request_id=${baseId}`;
-        elem.setAttribute('download', fileName)
+        elem.setAttribute('download', fileName);
         elem.target = 'hiddenIframe';
         elem.click();
     };
@@ -114,31 +111,30 @@ function App() {
         // const Graphs: any = Graph;
         const Graphs2: any = Graph2;
         if (showData) {
-            // console.log('Graph2', showData);
             Graphs2?.current?.setModelFiles(showData);
         }
-    }, [showData]);
+    }, [loadFiles2]);
     const Graphs2 = useMemo(() => {
+        if ((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) {
+            setLoadFiles2(true);
+        }
         return (
             <div
                 style={{
-                    height: show.show2 ? 'auto' : '0px',
+                    height: (modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0) ? 'auto' : '0px',
                     overflowY: 'hidden'
                 }}
             >
                 <GraphStatic2
                     ref={Graph2}
                     changeRendered={() => {
-                        setShow({
-                            show: false,
-                            show2: true
-                        });
+                        // do nothing.
                     }}
-                    show={show.show2}
+                    show={(modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)}
                 />
             </div>
         );
-    }, [show.show2]);
+    }, [showData, showRadio]);
     const showDrawer = () => {
         setOpen(true);
     };
@@ -146,57 +142,45 @@ function App() {
     const onClose = () => {
         setOpen(false);
     };
-    const view2 = () => {
+    const viewTranslated = () => {
         if (!showData && files2) {
-            // // toast.warning('请先进行转换,再查看');
-            // toast.warning(t('warin-info3'));
-            // return;
-            // 改动
-            // if (data?.data?.size) {
-            //     // debugger;
-            //     setshowData([new File([data.data], data.filename || 'unknown_model')]);
-            // }
-            // debugger;
             setshowData(files2);
         }
-        // 改动
-        setShow({
-            show: false,
-            show2: true
-        });
-        // setShow({
-        //     show: true,
-        //     show2: true
-        // });
     };
-    const view1 = () => {
-        // 改动
-        setShow({
-            show: true,
-            show2: false
-        });
-        // setShow({
-        //     show: true,
-        //     show2: true
-        // });
+
+    const viewUserInput = () => {
+        // do nothing.
     };
-    const changeView = () => {
-        if (show.show) {
-            view2();
-        } else {
-            view1();
+
+    const changeView = (e: RadioChangeEvent) => {
+        setShowRadio(e.target.value);
+        const current_showRadio = e.target.value;
+        if (modelValue == 1) {
+            // paddle2onnx
+            if (current_showRadio == 1) {
+                // onnx view
+                viewTranslated();
+            } else {
+                viewUserInput();
+            }
+        } else if (modelValue == 2) {
+            // onnx2paddle
+            if (current_showRadio == 0) {
+                // paddle view
+                viewTranslated();
+            } else {
+                viewUserInput();
+            }
         }
     };
     const resetModel = () => {
         const Graphs: any = Graph?.current;
         Graphs.setnewfiles();
-        // debugger;
         setshowData(null);
-        setShow({
-            show: true,
-            show2: false
-        });
+        setConfigPage(true);
+        setShowRadio(0);
         setflags(false);
+        setLoadFiles2(false);
     };
 
     const onChange = (e: RadioChangeEvent) => {
@@ -207,8 +191,7 @@ function App() {
         setBaseId(baseId);
         setfile_names(fileName);
     };
-    // console.log('show', show);
-    // console.log('Graph?.current?.files', Graph?.current);
+
     return (
         <Content>
             <Button
@@ -231,7 +214,10 @@ function App() {
             >
                 <div
                     style={{
-                        height: show.show ? 'auto' : '0px',
+                        height:
+                            (modelValue == 1 && showRadio == 0) || (modelValue == 2 && showRadio == 1) || configPage
+                                ? 'auto'
+                                : '0px',
                         // opacity: show2 ? 1 : 0
                         overflowY: 'hidden'
                     }}
@@ -243,12 +229,17 @@ function App() {
                         ref={Graph}
                         changeName={setNames}
                         downloadEvent={downloadEvent}
-                        show={show.show}
+                        show={(modelValue == 1 && showRadio == 0) || (modelValue == 2 && showRadio == 1) || configPage}
                         changeFlags={setflags}
                         changeFiles2={(file: any) => {
+                            setConfigPage(false);
                             setfiles2(file);
+                            if (!showData && file) {
+                                setshowData(file);
+                            }
                         }}
                         changeLoading={(flag: any) => {
+                            // do nothing.
                         }}
                         ModelValue={modelValue}
                         changeshowdata={() => {
@@ -278,15 +269,15 @@ function App() {
                 >
                     <Field label={t('togglegraph:View')}>
                         {modelValue === 2 ? (
-                            <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
-                                <RadioButton value={true}>Onnx</RadioButton>
-                                <RadioButton value={false}>Paddle</RadioButton>
-                            </RadioGroup>
+                            <Radio.Group defaultValue={showRadio} onChange={changeView}>
+                                <Radio.Button value={0}>Paddle</Radio.Button>
+                                <Radio.Button value={1}>Onnx</Radio.Button>
+                            </Radio.Group>
                         ) : (
-                            <RadioGroup value={show.show ? show.show : show.show2} onChange={changeView}>
-                                <RadioButton value={false}>Paddle</RadioButton>
-                                <RadioButton value={true}>Onnx</RadioButton>
-                            </RadioGroup>
+                            <Radio.Group defaultValue={showRadio} onChange={changeView}>
+                                <Radio.Button value={0}>Paddle</Radio.Button>
+                                <Radio.Button value={1}>Onnx</Radio.Button>
+                            </Radio.Group>
                         )}
                     </Field>
                     <Field>

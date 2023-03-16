@@ -471,16 +471,30 @@ class BosFileSystem(object):
         self._file_contents_count = 0
         self._start_append_time = time.time()
 
-    def write(self, filename, file_content, binary_mode=False):
-        self.append(filename, file_content, binary_mode=False)
-
-        # bucket_name, object_key = BosFileSystem._get_object_info(filename)
-        #
-        # self.bos_client.append_object(bucket_name=bucket_name,
-        #                               key=object_key,
-        #                               data=file_content,
-        #                               content_md5=content_md5(file_content),
-        #                               content_length=len(file_content))
+    def write(self, filename, file_content, binary_mode=False, append=True):
+        if append:
+            self.append(filename, file_content, binary_mode=False)
+        else:
+            bucket_name, object_key = get_object_info(filename)
+            try:
+                self.bos_client.put_object(
+                    bucket_name=bucket_name,
+                    key=object_key,
+                    data=file_content,
+                    content_length=len(file_content),
+                    content_md5=content_md5(file_content))
+            except (exception.BceServerError,
+                    exception.BceHttpClientError) as e:  # sts token invalid
+                if bucket_name == 'visualdl-server':  # only sts token from visualdl-server, we can renew automatically
+                    self.renew_bos_client_from_server()
+                    self.bos_client.put_object(
+                        bucket_name=bucket_name,
+                        key=object_key,
+                        data=file_content,
+                        content_length=len(file_content),
+                        content_md5=content_md5(file_content))
+                else:
+                    raise e  # user defined bos token, we have no idea to renew the token, so throw the exception
 
     def walk(self, dir):
         class WalkGenerator():

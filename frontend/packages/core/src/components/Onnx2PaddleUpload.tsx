@@ -2,14 +2,12 @@
 
 import React, {useState} from 'react';
 import {Form, Input, Radio, Select} from 'antd';
-import {UploadOutlined} from '@ant-design/icons';
 import type {UploadProps} from 'antd';
 import Buttons from '~/components/Button';
-import {fetcher, axios_fetcher} from '~/utils/fetch';
-import {message, Upload, Button} from 'antd';
-import { useTranslation } from 'react-i18next';
-import { Progress, Space  } from "antd";
-import styles from './styles.css'
+import {axios_fetcher} from '~/utils/fetch';
+import {message} from 'antd';
+import {useTranslation} from 'react-i18next';
+import {Progress} from 'antd';
 
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
@@ -69,37 +67,44 @@ export default function xpaddleUploader(props: any) {
         props.changeLoading(true);
         const values = await form.validateFields();
         const formData = new FormData();
-        
-        const onnx_file_component = document.getElementById("upload_onnx_model_file") as HTMLInputElement;
+        const onnx_file_component = document.getElementById('upload_onnx_model_file') as HTMLInputElement;
         const onnx_file = onnx_file_component!.files![0];
         formData.append('convert_to_lite', values.convertToLite);
         formData.append('model', onnx_file);
         formData.append('lite_valid_places', values.liteValidPlaces);
         formData.append('lite_model_type:', values.liteModelType);
 
-        axios_fetcher(`/inference/onnx2paddle/convert`, {
-            method: 'POST',
-            body: formData
-        },{
-            onDownloadProgress: function (axiosProgressEvent: any) {
-                setConvertProgress(Math.round(axiosProgressEvent.progress! * 100));
-                setconvertProcessFlag(true);
+        axios_fetcher(
+            `/inference/onnx2paddle/convert`,
+            {
+                method: 'POST',
+                body: formData
+            },
+            {
+                onDownloadProgress: function (axiosProgressEvent: any) {
+                    setConvertProgress(Math.round(axiosProgressEvent.progress! * 100));
+                    setconvertProcessFlag(true);
+                }
             }
-          }).then(
-            (res: any) => {
-                    const files2 = base64UrlToFile(res.model, 'name.pdmodel');
+        )
+            .then(
+                (res: any) => {
+                    const files2 = base64UrlToFile(res.model, 'model.pdmodel');
                     props.setFiles([onnx_file]);
                     props.changeFiles2([files2]);
 
                     const current_date = new Date();
                     const filename = `${current_date.getFullYear()}_${current_date.getMonth()}_${current_date.getDay()}_${current_date.getHours()}_${current_date.getMinutes()}_${current_date.getSeconds()}_paddlemodel.tar`;
                     props.downloadEvent(res['request_id'], filename);
-            },
-            res => {
-                props.changeLoading(false);
-                console.log(res);
-            }
-        ).finally(()=>{setconvertProcessFlag(false);});
+                },
+                res => {
+                    props.changeLoading(false);
+                    console.log(res);
+                }
+            )
+            .finally(() => {
+                setconvertProcessFlag(false);
+            });
     };
     return (
         <div>
@@ -112,14 +117,9 @@ export default function xpaddleUploader(props: any) {
             >
                 {t('togglegraph:Onnx2PaddleTitle')}
             </div>
-            <Form
-                layout={formLayout}
-                form={form}
-                initialValues={{layout: formLayout}}
-                style={{maxWidth: 600}}
-            >
+            <Form layout={formLayout} form={form} initialValues={{layout: formLayout}} style={{maxWidth: 600}}>
                 <Form.Item label="模型" name="model" rules={[{required: true, message: t('isRequire')}]}>
-                <Input type="file" id="upload_onnx_model_file" accept=".onnx" />
+                    <Input type="file" id="upload_onnx_model_file" accept=".onnx" />
                 </Form.Item>
                 <Form.Item
                     name="convertToLite"
@@ -173,17 +173,17 @@ export default function xpaddleUploader(props: any) {
                     textAlign: 'center'
                 }}
             >
-            <Buttons 
+                <Buttons
                     onClick={() => {
-                    setConvertProgress(0);
-                    setconvertProcessFlag(true);
-                    submodel();
-                }}
-            >
-                {t('Conversion')}
-            </Buttons>
-            {convertProcessFlag ? <Progress type="circle" className={styles.processCircle} percent={convertProcess} /> : null}
-            {convertProcessFlag ? <h1> {t('togglegraph:converting')} </h1> : null}
+                        setConvertProgress(0);
+                        setconvertProcessFlag(true);
+                        submodel();
+                    }}
+                >
+                    {t('Conversion')}
+                </Buttons>
+                {convertProcessFlag ? <Progress type="circle" percent={convertProcess} /> : null}
+                {convertProcessFlag ? <h1> {t('togglegraph:converting')} </h1> : null}
             </div>
         </div>
     );

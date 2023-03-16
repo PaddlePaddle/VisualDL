@@ -8,7 +8,7 @@ import Buttons from '~/components/Button';
 import {message, Upload, Button} from 'antd';
 import {fetcher, axios_fetcher} from '~/utils/fetch';
 import {useTranslation} from 'react-i18next';
-import { Progress, Space  } from "antd";
+import {Progress, Space} from 'antd';
 
 const {Option} = Select;
 export default function xpaddleUploader(props: any) {
@@ -54,40 +54,48 @@ export default function xpaddleUploader(props: any) {
         const values = await form.validateFields();
         // debugger;
         const formData = new FormData();
-        
-        const model_file_component = document.getElementById("upload_pd_model_file") as HTMLInputElement;
+
+        const model_file_component = document.getElementById('upload_pd_model_file') as HTMLInputElement;
         const model_file = model_file_component!.files![0];
-        const param_file_component = document.getElementById("upload_pd_param_file") as HTMLInputElement;
+        const param_file_component = document.getElementById('upload_pd_param_file') as HTMLInputElement;
         const param_file = param_file_component!.files![0];
 
         formData.append('model', model_file);
         formData.append('param', param_file);
         formData.append('opset_version', values['opset_version']);
         formData.append('deploy_backend:', values['deployBackend']);
-        
-        axios_fetcher(`/inference/paddle2onnx/convert`, {
-            method: 'POST',
-            body: formData
-        },{
-            onDownloadProgress: function (axiosProgressEvent: any) {
-                setConvertProgress(Math.round(axiosProgressEvent.progress! * 100));
-                setconvertProcessFlag(true);
-            }
-          }).then(
-            (res: any) => {
-                const files2 = base64UrlToFile(res.model, 'name.onnx');
-                props.setFiles([files2]);
-                props.changeFiles2([model_file]);
-                const current_date = new Date();
-                const filename = `${current_date.getFullYear()}_${current_date.getMonth()}_${current_date.getDay()}_${current_date.getHours()}_${current_date.getMinutes()}_${current_date.getSeconds()}_onnxmodel.onnx`
-                props.downloadEvent(res['request_id'], filename);
+
+        axios_fetcher(
+            `/inference/paddle2onnx/convert`,
+            {
+                method: 'POST',
+                body: formData
             },
-            res => {
-                // debugger;
-                props.changeLoading(false);
-                console.log(res);
+            {
+                onDownloadProgress: function (axiosProgressEvent: any) {
+                    setConvertProgress(Math.round(axiosProgressEvent.progress! * 100));
+                    setconvertProcessFlag(true);
+                }
             }
-        ).finally(()=>{setconvertProcessFlag(false);});
+        )
+            .then(
+                (res: any) => {
+                    const files2 = base64UrlToFile(res.model, 'model.onnx');
+                    props.setFiles([model_file]);
+                    props.changeFiles2([files2]);
+                    const current_date = new Date();
+                    const filename = `${current_date.getFullYear()}_${current_date.getMonth()}_${current_date.getDay()}_${current_date.getHours()}_${current_date.getMinutes()}_${current_date.getSeconds()}_onnxmodel.onnx`;
+                    props.downloadEvent(res['request_id'], filename);
+                },
+                res => {
+                    // debugger;
+                    props.changeLoading(false);
+                    console.log(res);
+                }
+            )
+            .finally(() => {
+                setconvertProcessFlag(false);
+            });
     };
     return (
         <div>
@@ -112,14 +120,14 @@ export default function xpaddleUploader(props: any) {
                     name="model"
                     rules={[{required: true, message: t('isRequire')}]}
                 >
-                <Input type="file" id="upload_pd_model_file" accept=".pdmodel" />
+                    <Input type="file" id="upload_pd_model_file" accept=".pdmodel" />
                 </Form.Item>
                 <Form.Item
                     label={t('togglegraph:pdiparams')}
                     name="param"
                     rules={[{required: true, message: t('isRequire')}]}
                 >
-                <Input type="file" id="upload_pd_param_file" accept=".pdiparams" />
+                    <Input type="file" id="upload_pd_param_file" accept=".pdiparams" />
                 </Form.Item>
 
                 <Form.Item
@@ -160,19 +168,20 @@ export default function xpaddleUploader(props: any) {
                     textAlign: 'center'
                 }}
             >
-            <Buttons
+                <Buttons
                     onClick={() => {
-                    setConvertProgress(0);
-                    setconvertProcessFlag(true);
-                    submodel();
-                }}
-            >
-            {t('togglegraph:Conversion')}
-            </Buttons>
-            {convertProcessFlag ? <Progress type="circle" className="processCircle" percent={convertProcess} /> : null}
-            {convertProcessFlag ? <h1> {t('togglegraph:converting')} </h1> : null}
+                        setConvertProgress(0);
+                        setconvertProcessFlag(true);
+                        submodel();
+                    }}
+                >
+                    {t('togglegraph:Conversion')}
+                </Buttons>
+                {convertProcessFlag ? (
+                    <Progress type="circle" className="processCircle" percent={convertProcess} />
+                ) : null}
+                {convertProcessFlag ? <h1> {t('togglegraph:converting')} </h1> : null}
             </div>
-            
         </div>
     );
 }

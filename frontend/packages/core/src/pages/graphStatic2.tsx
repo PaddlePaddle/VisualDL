@@ -225,7 +225,6 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
                 </Aside>
             );
         }
-        console.log('nodeData && renderedflag3', nodeData, renderedflag3);
 
         if (nodeData && renderedflag3) {
             return (
@@ -336,7 +335,6 @@ const Graph = React.forwardRef<pageRef, GraphProps>(({changeRendered, show = tru
     );
     // const flags = false;
     const flags = files && show;
-    console.log('flags2', flags, aside);
     return (
         <>
             <Title>{t('common:graph')}</Title>
