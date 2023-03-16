@@ -121,7 +121,10 @@ function App() {
         return (
             <div
                 style={{
-                    height: ((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) && !configPage ? 'auto' : '0px',
+                    height:
+                        ((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) && !configPage
+                            ? 'auto'
+                            : '0px',
                     overflowY: 'hidden'
                 }}
             >

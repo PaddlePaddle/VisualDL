@@ -118,7 +118,11 @@ export default function xpaddleUploader(props: any) {
                 {t('togglegraph:Onnx2PaddleTitle')}
             </div>
             <Form layout={formLayout} form={form} initialValues={{layout: formLayout}} style={{maxWidth: 600}}>
-                <Form.Item label={t('togglegraph:model')} name="model" rules={[{required: true, message: t('isRequire')}]}>
+                <Form.Item
+                    label={t('togglegraph:model')}
+                    name="model"
+                    rules={[{required: true, message: t('isRequire')}]}
+                >
                     <Input type="file" id="upload_onnx_model_file" accept=".onnx" />
                 </Form.Item>
                 <Form.Item
