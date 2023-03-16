@@ -111,7 +111,7 @@ def construct_edges(var_name, all_ops, all_vars, all_edges):
             src_base_node = src_node
             while True:
                 parent_node = all_ops[src_base_node]['parent_node']
-                if parent_node == common_ancestor:
+                if parent_node in [common_ancestor, ""]:
                     break
                 if (src_base_node, parent_node) not in all_edges:
                     all_edges[(src_base_node, parent_node)] = {
@@ -127,7 +127,7 @@ def construct_edges(var_name, all_ops, all_vars, all_edges):
             dst_base_node = dst_node
             while True:
                 parent_node = all_ops[dst_base_node]['parent_node']
-                if parent_node == common_ancestor:
+                if parent_node in [common_ancestor, ""]:
                     break
                 if (parent_node, dst_base_node) not in all_edges:
                     all_edges[(parent_node, dst_base_node)] = {
