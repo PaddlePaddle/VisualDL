@@ -115,13 +115,13 @@ function App() {
         }
     }, [loadFiles2]);
     const Graphs2 = useMemo(() => {
-        if ((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) {
+        if (((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) && !configPage) {
             setLoadFiles2(true);
         }
         return (
             <div
                 style={{
-                    height: (modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0) ? 'auto' : '0px',
+                    height: ((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) && !configPage ? 'auto' : '0px',
                     overflowY: 'hidden'
                 }}
             >
@@ -130,7 +130,7 @@ function App() {
                     changeRendered={() => {
                         // do nothing.
                     }}
-                    show={(modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)}
+                    show={((modelValue == 1 && showRadio == 1) || (modelValue == 2 && showRadio == 0)) && !configPage}
                 />
             </div>
         );

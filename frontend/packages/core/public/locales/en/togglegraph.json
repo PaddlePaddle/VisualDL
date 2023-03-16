@@ -12,6 +12,7 @@
     "Conversion": "Conversion",
     "pdmodels": "pdmodels",
     "pdiparams": "pdiparams",
+    "model": "model",
     "opset_version": "opset_version",
     "deploy_backend": "deploy_backend",
     "lite_valid_places": "lite_valid_places",
