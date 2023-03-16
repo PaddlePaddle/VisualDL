@@ -23,6 +23,8 @@ import ChartToolbox from '~/components/ChartToolbox';
 import HashLoader from 'react-spinners/HashLoader';
 import logo from '~/assets/images/netron.png';
 import netron2 from '@visualdl/netron2';
+import netron from '@visualdl/netron';
+
 import styled from 'styled-components';
 import {toast} from 'react-toastify';
 import useTheme from '~/hooks/useTheme';
@@ -72,6 +74,7 @@ const Content = styled.div`
     height: calc(100% - ${toolboxHeight});
 
     > iframe {
+        // ${size('50%', '100%')}
         ${size('100%', '100%')}
         border: none;
     }
@@ -300,9 +303,17 @@ const Graph = React.forwardRef<GraphRef, GraphProps>(
                         tooltipPlacement="bottom"
                     />
                     <Content>
+                        {/* <iframe
+                            // ref={iframe}
+                            src={PUBLIC_PATH + netron2}
+                            frameBorder={0}
+                            scrolling="no"
+                            marginWidth={0}
+                            marginHeight={0}
+                        ></iframe> */}
                         <iframe
                             ref={iframe}
-                            src={PUBLIC_PATH + netron2}
+                            src={PUBLIC_PATH + netron}
                             frameBorder={0}
                             scrolling="no"
                             marginWidth={0}
