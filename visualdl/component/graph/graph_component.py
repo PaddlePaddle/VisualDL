@@ -14,6 +14,7 @@
 # =======================================================================
 import collections
 import os.path
+import pathlib
 import re
 
 _graph_version = '1.0.0'
@@ -108,6 +109,7 @@ def construct_edges(var_name, all_ops, all_vars, all_edges):
                 all_edges[(src_node, dst_node)]['vars'].add(var_name)
         else:
             common_ancestor = os.path.commonpath([src_node, dst_node])
+            common_ancestor = pathlib.Path(common_ancestor).as_posix()  # in windows, os.path.commonpath will return windows path, we should convert it to posix
             src_base_node = src_node
             while True:
                 parent_node = all_ops[src_base_node]['parent_node']
