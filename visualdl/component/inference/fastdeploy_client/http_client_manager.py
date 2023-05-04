@@ -18,13 +18,6 @@ import re
 import numpy as np
 import requests
 import tritonclient.http as httpclient
-from attrdict import AttrDict
-
-
-def convert_http_metadata_config(metadata):
-    metadata = AttrDict(metadata)
-
-    return metadata
 
 
 def prepare_request(inputs_meta, inputs_data, outputs_meta):
@@ -58,7 +51,7 @@ def prepare_request(inputs_meta, inputs_data, outputs_meta):
         inputs.append(infer_input)
     outputs = []
     for output_dict in outputs_meta:
-        infer_output = httpclient.InferRequestedOutput(output_dict.name)
+        infer_output = httpclient.InferRequestedOutput(output_dict['name'])
         outputs.append(infer_output)
     return inputs, outputs
 
@@ -321,8 +314,8 @@ class HttpClientManager:
 
         results = {}
         for output in output_metadata:
-            result = response.as_numpy(output.name)  # datatype: numpy
-            if output.datatype == 'BYTES':  # datatype: bytes
+            result = response.as_numpy(output['name'])  # datatype: numpy
+            if output['datatype'] == 'BYTES':  # datatype: bytes
                 try:
                     value = result
                     if len(result.shape) == 1:
@@ -336,7 +329,7 @@ class HttpClientManager:
                     pass
             else:
                 result = result[0]
-            results[output.name] = result
+            results[output['name']] = result
         return results
 
     def raw_infer(self, server_url, model_name, model_version, raw_input):
@@ -353,8 +346,6 @@ class HttpClientManager:
         except Exception as e:
             raise RuntimeError("Failed to retrieve the metadata: " + str(e))
 
-        model_metadata = convert_http_metadata_config(model_metadata)
-
-        input_metadata = model_metadata.inputs
-        output_metadata = model_metadata.outputs
+        input_metadata = model_metadata['inputs']
+        output_metadata = model_metadata['outputs']
         return input_metadata, output_metadata

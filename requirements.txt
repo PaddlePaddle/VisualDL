@@ -12,8 +12,7 @@ packaging
 x2paddle >= 1.4.0
 paddle2onnx >= 1.0.5
 rarfile
-gradio
+gradio == 3.11.0
 tritonclient[all]
-attrdict
 psutil
 onnx >= 1.6.0
