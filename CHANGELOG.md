@@ -4,6 +4,29 @@ VisualDL的更新记录在此查看。
 
 This is the Changelog for the VisualDL 2.0 project.
 
+## v2.5.2 - 2023-05-04
+
+**ZH**
+
+- 功能新增
+  - **BE**: 增加Paddle2Onnx模型转换组件 (#1228)
+  - **FE**: 增加模型转换界面 (#1232)
+
+- 问题修复
+  - **BE**: 修复windows动态图导出bug（#1244)
+  - **BE**: 修复兼容性问题 (#1249)
+
+**EN**
+
+- Features
+
+  - **BE**: Add Paddle2Onnx component (#1228)
+  - **FE**: Add model convertion page (#1232)
+
+- Bug Fixes
+  - **BE**: Fix bug for exporting dynamic graph in Windows（#1244)
+  - **BE**: Fix compatible problem (#1249)
+
 ## v2.5.1 - 2023-02-20
 
 **ZH**

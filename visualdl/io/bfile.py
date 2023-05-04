@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =======================================================================
-
+import base64
+import hashlib
 import os
 import tempfile
-import hashlib
-import base64
 import time
 
 try:
@@ -251,6 +250,13 @@ class BosConfigClient(object):
         return result
 
     def upload_object_from_file(self, path, filename):
+        """!
+        Upload a local file to baidu bos filesystem. The path can de divided as bucket name and prefix directory.
+        The file would be uploaded in bucket at path `join(prefix directory in path, filename)`
+        @param self object
+        @param path(str)  bos directory path to store file, which consists of bucket_name + prefix directory.
+        @param filename(str) local file path to upload
+        """
         if not self.exists(path):
             self.makedirs(path)
         bucket_name, object_key = get_object_info(path)
@@ -265,18 +271,21 @@ class BosConfigClient(object):
 
 class BosFileSystem(object):
     def __init__(self, write_flag=True):
+        self.max_contents_count = 1
+        self.max_contents_time = 1
+        self.file_length_map = {}
+
+        self._file_contents_to_add = b''
+        self._file_contents_count = 0
+        self._start_append_time = time.time()
         if write_flag:
-            self.max_contents_count = 1
-            self.max_contents_time = 1
             self.get_bos_config()
             self.bos_client = BosClient(self.config)
-            self.file_length_map = {}
-
-            self._file_contents_to_add = b''
-            self._file_contents_count = 0
-            self._start_append_time = time.time()
 
     def get_bos_config(self):
+        '''
+        Get Bos configuration from environment variables.
+        '''
         bos_host = os.getenv("BOS_HOST")
         if not bos_host:
             raise KeyError('${BOS_HOST} is not found.')
@@ -296,6 +305,9 @@ class BosFileSystem(object):
 
     def set_bos_config(self, bos_ak, bos_sk, bos_sts,
                        bos_host="bj.bcebos.com"):
+        '''
+        Set Bos configuration and get bos client according to parameters.
+        '''
         self.config = BceClientConfiguration(
             credentials=BceCredentials(bos_ak, bos_sk),
             endpoint=bos_host,
@@ -303,6 +315,9 @@ class BosFileSystem(object):
         self.bos_client = BosClient(self.config)
 
     def renew_bos_client_from_server(self):
+        '''
+        Get bos client by visualdl provided ak, sk, and sts token
+        '''
         import requests
         import json
         from visualdl.utils.dir import CONFIG_PATH
@@ -407,12 +422,14 @@ class BosFileSystem(object):
                     data=init_data,
                     content_md5=content_md5(init_data),
                     content_length=len(init_data))
-            except (exception.BceServerError, exception.BceHttpClientError) as e:
+            except (exception.BceServerError,
+                    exception.BceHttpClientError) as e:
                 if bucket_name == 'visualdl-server':  # only sts token from visualdl-server, we can renew automatically
                     self.renew_bos_client_from_server()
                     # we should add a judgement for case 2
                     try:
-                        self.bos_client.get_object_meta_data(bucket_name, object_key)
+                        self.bos_client.get_object_meta_data(
+                            bucket_name, object_key)
                     except exception.BceError:
                         # the file not exists, then create the file
                         self.bos_client.append_object(
@@ -454,16 +471,30 @@ class BosFileSystem(object):
         self._file_contents_count = 0
         self._start_append_time = time.time()
 
-    def write(self, filename, file_content, binary_mode=False):
-        self.append(filename, file_content, binary_mode=False)
-
-        # bucket_name, object_key = BosFileSystem._get_object_info(filename)
-        #
-        # self.bos_client.append_object(bucket_name=bucket_name,
-        #                               key=object_key,
-        #                               data=file_content,
-        #                               content_md5=content_md5(file_content),
-        #                               content_length=len(file_content))
+    def write(self, filename, file_content, binary_mode=False, append=True):
+        if append:
+            self.append(filename, file_content, binary_mode=False)
+        else:
+            bucket_name, object_key = get_object_info(filename)
+            try:
+                self.bos_client.put_object(
+                    bucket_name=bucket_name,
+                    key=object_key,
+                    data=file_content,
+                    content_length=len(file_content),
+                    content_md5=content_md5(file_content))
+            except (exception.BceServerError,
+                    exception.BceHttpClientError) as e:  # sts token invalid
+                if bucket_name == 'visualdl-server':  # only sts token from visualdl-server, we can renew automatically
+                    self.renew_bos_client_from_server()
+                    self.bos_client.put_object(
+                        bucket_name=bucket_name,
+                        key=object_key,
+                        data=file_content,
+                        content_length=len(file_content),
+                        content_md5=content_md5(file_content))
+                else:
+                    raise e  # user defined bos token, we have no idea to renew the token, so throw the exception
 
     def walk(self, dir):
         class WalkGenerator():
