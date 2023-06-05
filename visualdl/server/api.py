@@ -417,10 +417,7 @@ def get_component_tabs(*apis, vdl_args, request_args):
             all_tabs.update(api('component_tabs', request_args))
             all_tabs.add('static_graph')
     else:
-        return [
-            'static_graph', 'x2paddle', 'fastdeploy_server',
-            'fastdeploy_client'
-        ]
+        return ['static_graph']
     return list(all_tabs)
 
 
