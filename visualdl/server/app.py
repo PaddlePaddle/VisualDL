@@ -36,8 +36,6 @@ from flask_babel import Babel
 import visualdl.server
 from visualdl import __version__
 from visualdl.component.inference.fastdeploy_lib import get_start_arguments
-from visualdl.component.inference.fastdeploy_server import create_fastdeploy_api_call
-from visualdl.component.inference.model_convert_server import create_model_convert_api_call
 from visualdl.component.profiler.profiler_server import create_profiler_api_call
 from visualdl.server.api import create_api_call
 from visualdl.server.api import get_component_tabs
@@ -101,6 +99,7 @@ def create_app(args):  # noqa: C901
                 import paddle2onnx  # noqa F401
             except Exception:
                 os.system('pip install paddle2onnx')
+            from visualdl.component.inference.model_convert_server import create_model_convert_api_call
             inference_api_call = create_model_convert_api_call()
 
             @app.route(
@@ -124,6 +123,7 @@ def create_app(args):  # noqa: C901
                 import gradio  # noqa F401
             except Exception:
                 os.system('pip install gradio==3.11.0')
+            from visualdl.component.inference.fastdeploy_server import create_fastdeploy_api_call
             fastdeploy_api_call = create_fastdeploy_api_call()
 
             @app.route(
