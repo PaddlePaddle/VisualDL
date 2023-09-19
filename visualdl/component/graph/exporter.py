@@ -17,19 +17,24 @@ import os
 import tempfile
 
 from .graph_component import analyse_model
+from .graph_component import analyse_program
 from .utils import create_opname_scope
 from .utils import print_model
 
 
-def translate_graph(model, input_spec, verbose=True):
+def translate_graph(model, input_spec, verbose=True, is_newir=False):
     import paddle
     with tempfile.TemporaryDirectory() as tmp:
-        model._full_name = '{}[{}]'.format(model.__class__.__name__, "model")
-        create_opname_scope(model)
-        model = paddle.jit.to_static(model, input_spec)
-        paddle.jit.save(model, os.path.join(tmp, 'temp'))
-        model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
-        result = analyse_model(model_data)
+        if (not is_newir):
+            model._full_name = '{}[{}]'.format(model.__class__.__name__,
+                                               "model")
+            create_opname_scope(model)
+            model = paddle.jit.to_static(model, input_spec)
+            paddle.jit.save(model, os.path.join(tmp, 'temp'))
+            model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
+            result = analyse_model(model_data)
+        else:
+            result = analyse_program(model)
     if verbose:
         print_model(result)
     result = json.dumps(result, indent=2)

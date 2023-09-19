@@ -77,6 +77,8 @@ def create_app(args):  # noqa: C901
         lang = args.language
         if not lang or lang not in support_language:
             lang = request.accept_languages.best_match(support_language)
+        if (not lang):
+            lang = 'zh'
         return lang
 
     signal.signal(
@@ -102,14 +104,13 @@ def create_app(args):  # noqa: C901
 
     if not args.api_only:
 
-        template = Template(
-            os.path.join(server_path, template_file_path),
-            PUBLIC_PATH=public_path,
-            BASE_URI=public_path,
-            API_URL=api_path,
-            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b'
-            if args.telemetry else '',
-            THEME='' if args.theme is None else args.theme)
+        template = Template(os.path.join(server_path, template_file_path),
+                            PUBLIC_PATH=public_path,
+                            BASE_URI=public_path,
+                            API_URL=api_path,
+                            TELEMETRY_ID='63a600296f8a71f576c4806376a9245b'
+                            if args.telemetry else '',
+                            THEME='' if args.theme is None else args.theme)
 
         @app.route('/')
         def base():
@@ -124,8 +125,8 @@ def create_app(args):  # noqa: C901
 
         @app.route(public_path + '/')
         def index():
-            return redirect(
-                append_query_string(public_path + '/index'), code=302)
+            return redirect(append_query_string(public_path + '/index'),
+                            code=302)
 
         @app.route(public_path + '/<path:filename>')
         def serve_static(filename):
@@ -133,26 +134,25 @@ def create_app(args):  # noqa: C901
             response = template.render(
                 filename if is_not_page_request else 'index.html')
             if not is_not_page_request:
-                response.set_cookie(
-                    'vdl_lng',
-                    get_locale(),
-                    path='/',
-                    samesite='Strict',
-                    secure=False,
-                    httponly=False)
+                response.set_cookie('vdl_lng',
+                                    get_locale(),
+                                    path='/',
+                                    samesite='Strict',
+                                    secure=False,
+                                    httponly=False)
             return response
 
     @app.route(api_path + '/<path:method>', methods=["GET", "POST"])
     def serve_api(method):
         data, mimetype, headers = api_call(method, request.args)
-        return make_response(
-            Response(data, mimetype=mimetype, headers=headers))
+        return make_response(Response(data, mimetype=mimetype,
+                                      headers=headers))
 
     @app.route(api_path + '/profiler/<path:method>', methods=["GET", "POST"])
     def serve_profiler_api(method):
         data, mimetype, headers = profiler_api_call(method, request.args)
-        return make_response(
-            Response(data, mimetype=mimetype, headers=headers))
+        return make_response(Response(data, mimetype=mimetype,
+                                      headers=headers))
 
     @app.route(api_path + '/inference/<path:method>', methods=["GET", "POST"])
     def serve_inference_api(method):
@@ -160,8 +160,8 @@ def create_app(args):  # noqa: C901
             data, mimetype, headers = inference_api_call(method, request.form)
         else:
             data, mimetype, headers = inference_api_call(method, request.args)
-        return make_response(
-            Response(data, mimetype=mimetype, headers=headers))
+        return make_response(Response(data, mimetype=mimetype,
+                                      headers=headers))
 
     @app.route(api_path + '/fastdeploy/<path:method>', methods=["GET", "POST"])
     def serve_fastdeploy_api(method):
@@ -169,11 +169,11 @@ def create_app(args):  # noqa: C901
             data, mimetype, headers = fastdeploy_api_call(method, request.form)
         else:
             data, mimetype, headers = fastdeploy_api_call(method, request.args)
-        return make_response(
-            Response(data, mimetype=mimetype, headers=headers))
+        return make_response(Response(data, mimetype=mimetype,
+                                      headers=headers))
 
-    @app.route(
-        api_path + '/fastdeploy/fastdeploy_client', methods=["GET", "POST"])
+    @app.route(api_path + '/fastdeploy/fastdeploy_client',
+               methods=["GET", "POST"])
     def serve_fastdeploy_create_fastdeploy_client():
         try:
             if request.method == 'POST':
@@ -191,12 +191,11 @@ def create_app(args):  # noqa: C901
             return redirect(
                 api_path + "/fastdeploy/fastdeploy_client/app?{}".format(args),
                 code=302)
-        return redirect(
-            api_path + "/fastdeploy/fastdeploy_client/app", code=302)
+        return redirect(api_path + "/fastdeploy/fastdeploy_client/app",
+                        code=302)
 
-    @app.route(
-        api_path + "/fastdeploy/fastdeploy_client/<path:path>",
-        methods=["GET", "POST"])
+    @app.route(api_path + "/fastdeploy/fastdeploy_client/<path:path>",
+               methods=["GET", "POST"])
     def request_fastdeploy_create_fastdeploy_client_app(path: str):
         '''
         Gradio app server url interface. We route urls for gradio app to gradio server.
@@ -241,16 +240,16 @@ def create_app(args):  # noqa: C901
                 request.host_url.rstrip('/') + api_path +
                 '/fastdeploy/fastdeploy_client/',
                 'http://localhost:{}/'.format(port))
-        resp = requests.request(
-            method=request.method,
-            url=proxy_url,
-            headers={
-                key: value
-                for (key, value) in request.headers if key != 'Host'
-            },
-            data=request.get_data(),
-            cookies=request.cookies,
-            allow_redirects=False)
+        resp = requests.request(method=request.method,
+                                url=proxy_url,
+                                headers={
+                                    key: value
+                                    for (key, value) in request.headers
+                                    if key != 'Host'
+                                },
+                                data=request.get_data(),
+                                cookies=request.cookies,
+                                allow_redirects=False)
         if path == 'app':
             content = resp.content
             if request_args and 'server_id' in request_args:
@@ -292,10 +291,9 @@ def create_app(args):  # noqa: C901
                                 0).count('"label"') >= 2:
                             http_port_match = re.search(
                                 '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
-                                    json.dumps(
-                                        "server port",
-                                        ensure_ascii=True).replace(
-                                            '\\', '\\\\')), content)
+                                    json.dumps("server port",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
                         default_http_port = http_port_match.group(0)
 
                         if '"value": ""' in default_http_port:
@@ -318,10 +316,9 @@ def create_app(args):  # noqa: C901
                                 0).count('"label"') >= 2:
                             metrics_port_match = re.search(
                                 '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
-                                    json.dumps(
-                                        "metrics port",
-                                        ensure_ascii=True).replace(
-                                            '\\', '\\\\')), content)
+                                    json.dumps("metrics port",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
                         default_metrics_port = metrics_port_match.group(0)
                         if '"value": ""' in default_metrics_port:
                             cur_metrics_port = default_metrics_port.replace(
@@ -343,10 +340,9 @@ def create_app(args):  # noqa: C901
                                 0).count('"label"') >= 2:
                             model_name_match = re.search(
                                 '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
-                                    json.dumps(
-                                        "model name",
-                                        ensure_ascii=True).replace(
-                                            '\\', '\\\\')), content)
+                                    json.dumps("model name",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
                         default_model_name = model_name_match.group(0)
                         if '"value": ""' in default_model_name:
                             cur_model_name = default_model_name.replace(
@@ -368,10 +364,9 @@ def create_app(args):  # noqa: C901
                                 0).count('"label"') >= 2:
                             model_version_match = re.search(
                                 '"value":\\s*"".*?"label":\\s*{}.*?}}'.format(
-                                    json.dumps(
-                                        "model version",
-                                        ensure_ascii=True).replace(
-                                            '\\', '\\\\')), content)
+                                    json.dumps("model version",
+                                               ensure_ascii=True).replace(
+                                                   '\\', '\\\\')), content)
                         default_model_version = model_version_match.group(0)
                         if '"value": ""' in default_model_version:
                             cur_model_version = default_model_version.replace(
@@ -436,10 +431,9 @@ def create_app(args):  # noqa: C901
                                 http_port_match = re.search(
                                     '"label":\\s*{}.*?"value":\\s*"".*?}}'.
                                     format(
-                                        json.dumps(
-                                            "推理服务端口",
-                                            ensure_ascii=False).replace(
-                                                '\\', '\\\\')), content)
+                                        json.dumps("推理服务端口",
+                                                   ensure_ascii=False).replace(
+                                                       '\\', '\\\\')), content)
                                 if not http_port_match or http_port_match.group(
                                         0).count('"label"') >= 2:
                                     http_port_match = re.search(
@@ -478,10 +472,9 @@ def create_app(args):  # noqa: C901
                                 metrics_port_match = re.search(
                                     '"label":\\s*{}.*?"value":\\s*"".*?}}'.
                                     format(
-                                        json.dumps(
-                                            "性能服务端口",
-                                            ensure_ascii=False).replace(
-                                                '\\', '\\\\')), content)
+                                        json.dumps("性能服务端口",
+                                                   ensure_ascii=False).replace(
+                                                       '\\', '\\\\')), content)
                                 if not metrics_port_match or metrics_port_match.group(
                                         0).count('"label"') >= 2:
                                     metrics_port_match = re.search(
@@ -591,13 +584,12 @@ def create_app(args):  # noqa: C901
 
     @app.route(api_path + '/component_tabs')
     def component_tabs():
-        data, mimetype, headers = get_component_tabs(
-            api_call,
-            profiler_api_call,
-            vdl_args=args,
-            request_args=request.args)
-        return make_response(
-            Response(data, mimetype=mimetype, headers=headers))
+        data, mimetype, headers = get_component_tabs(api_call,
+                                                     profiler_api_call,
+                                                     vdl_args=args,
+                                                     request_args=request.args)
+        return make_response(Response(data, mimetype=mimetype,
+                                      headers=headers))
 
     @app.route(check_live_path)
     def check_live():
@@ -636,7 +628,7 @@ def _run(args):
     info('\033[1;33mVisualDL %s\033[0m', __version__)
     app = create_app(args)
     threading.Thread(target=wait_until_live, args=(args, )).start()
-    app.run(debug=False, host=args.host, port=args.port, threaded=False)
+    app.run(debug=True, host=args.host, port=args.port, threaded=False)
 
 
 def run(logdir=None, **options):

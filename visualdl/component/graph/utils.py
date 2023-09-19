@@ -16,6 +16,25 @@ from collections import Counter
 from collections import deque
 
 _name_scope_stack = deque()
+var_name = {}
+var_idx = [0]
+
+
+def gen_var_name(ops):
+    if not isinstance(ops, list):
+        ops = [ops]
+    for op in ops:
+        var = op.get_defining_op()
+        if var in var_name:
+            return var_name[var]
+        else:
+            if (op.is_persistable):
+                name = op.name
+            else:
+                name = "tmp_var_" + str(var_idx[0])
+                var_idx[0] += 1
+            var_name[var] = name
+            return var_name[var]
 
 
 def _opname_creation_prehook(layer, inputs):
