@@ -16,6 +16,7 @@ import os
 import time
 
 import numpy as np
+from paddle.framework import in_pir_mode
 
 from visualdl.component.base_component import audio
 from visualdl.component.base_component import embedding
@@ -613,7 +614,7 @@ class LogWriter(object):
                       num_thresholds=num_thresholds,
                       weights=weights))
 
-    def add_graph(self, model, input_spec, verbose=False, is_newir=False):
+    def add_graph(self, model, input_spec, verbose=False):
         """
         Add a model graph to vdl graph file.
         Args:
@@ -654,7 +655,9 @@ class LogWriter(object):
                     verbose=True)
         """
         try:
-            result = translate_graph(model, input_spec, verbose, is_newir)
+            if in_pir_mode():
+                is_pir = True
+            result = translate_graph(model, input_spec, verbose, is_pir=False)
         except Exception as e:
             print("Failed to save model graph, error: {}".format(e))
             raise e

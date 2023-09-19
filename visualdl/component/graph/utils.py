@@ -16,6 +16,8 @@ from collections import Counter
 from collections import deque
 
 _name_scope_stack = deque()
+
+# TODO(Difers): remove it when the new IR's "name" interface is available.
 var_name = {}
 var_idx = [0]
 

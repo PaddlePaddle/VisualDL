@@ -365,7 +365,7 @@ def analyse_model(model_pb):  # noqa: C901
     return final_data
 
 
-def analyse_program(program):
+def analyse_pir(program):
     from paddle.utils.unique_name import generate
 
     all_ops = {}
