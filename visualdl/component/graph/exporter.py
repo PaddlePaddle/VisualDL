@@ -22,8 +22,8 @@ from .utils import create_opname_scope
 from .utils import print_model
 
 
-def translate_graph(model, input_spec, verbose=True, is_pir=False):
-    import paddle
+def translate_graph(model, input_spec, verbose=True, **kwargs):
+    is_pir = kwargs.get('is_pir', False)
     with tempfile.TemporaryDirectory() as tmp:
         if (not is_pir):
             model._full_name = '{}[{}]'.format(model.__class__.__name__,

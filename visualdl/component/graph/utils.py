@@ -30,9 +30,9 @@ def gen_var_name(ops):
         if var in var_name:
             return var_name[var]
         else:
-            if (op.is_persistable):
+            try:
                 name = op.name
-            else:
+            except ValueError:
                 name = "tmp_var_" + str(var_idx[0])
                 var_idx[0] += 1
             var_name[var] = name

@@ -25,4 +25,4 @@ with LogWriter(logdir="./log/program_test/") as writer:
         model=newir_program,
         input_spec=[paddle.static.InputSpec([-1, 1, 28, 28], 'float32')],
         verbose=True,
-        is_newir=True)
+        is_pir=True)
