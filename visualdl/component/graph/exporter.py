@@ -17,19 +17,24 @@ import os
 import tempfile
 
 from .graph_component import analyse_model
+from .graph_component import analyse_pir
 from .utils import create_opname_scope
 from .utils import print_model
 
 
-def translate_graph(model, input_spec, verbose=True):
-    import paddle
+def translate_graph(model, input_spec, verbose=True, **kwargs):
+    is_pir = kwargs.get('is_pir', False)
     with tempfile.TemporaryDirectory() as tmp:
-        model._full_name = '{}[{}]'.format(model.__class__.__name__, "model")
-        create_opname_scope(model)
-        model = paddle.jit.to_static(model, input_spec)
-        paddle.jit.save(model, os.path.join(tmp, 'temp'))
-        model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
-        result = analyse_model(model_data)
+        if (not is_pir):
+            model._full_name = '{}[{}]'.format(model.__class__.__name__,
+                                               "model")
+            create_opname_scope(model)
+            model = paddle.jit.to_static(model, input_spec)
+            paddle.jit.save(model, os.path.join(tmp, 'temp'))
+            model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
+            result = analyse_model(model_data)
+        else:
+            result = analyse_pir(model)
     if verbose:
         print_model(result)
     result = json.dumps(result, indent=2)

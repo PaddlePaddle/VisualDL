@@ -17,6 +17,27 @@ from collections import deque
 
 _name_scope_stack = deque()
 
+# TODO(Difers): remove it when the new IR's "name" interface is available.
+var_name = {}
+var_idx = [0]
+
+
+def gen_var_name(ops):
+    if not isinstance(ops, list):
+        ops = [ops]
+    for op in ops:
+        var = op.get_defining_op()
+        if var in var_name:
+            return var_name[var]
+        else:
+            try:
+                name = op.name
+            except ValueError:
+                name = "tmp_var_" + str(var_idx[0])
+                var_idx[0] += 1
+            var_name[var] = name
+            return var_name[var]
+
 
 def _opname_creation_prehook(layer, inputs):
     from paddle.static import name_scope

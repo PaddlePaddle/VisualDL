@@ -40,7 +40,6 @@ from visualdl.writer.record_writer import RecordFileWriter
 class DummyFileWriter(object):
     """A fake file writer that writes nothing to the disk.
     """
-
     def __init__(self, logdir):
         self._logdir = logdir
 
@@ -76,7 +75,6 @@ class LogWriter(object):
     The class `LogWriter` provides APIs to create record file and add records to
     it. The class updates log file asynchronously without slowing down training.
     """
-
     def __init__(self,
                  logdir=None,
                  comment='',
@@ -162,11 +160,10 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            meta_data(
-                tag=tag,
-                display_name=display_name,
-                step=step,
-                walltime=walltime))
+            meta_data(tag=tag,
+                      display_name=display_name,
+                      step=step,
+                      walltime=walltime))
 
     def add_scalar(self, tag, value, step, walltime=None):
         """Add a scalar to vdl record file.
@@ -234,12 +231,11 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            image(
-                tag=tag,
-                image_array=img,
-                step=step,
-                walltime=walltime,
-                dataformats=dataformats))
+            image(tag=tag,
+                  image_array=img,
+                  step=step,
+                  walltime=walltime,
+                  dataformats=dataformats))
 
     def add_figure(self, tag, figure, step, walltime=None):
         """Add an figure to vdl record file.
@@ -283,9 +279,10 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            text(
-                tag=tag, text_string=text_string, step=step,
-                walltime=walltime))
+            text(tag=tag,
+                 text_string=text_string,
+                 step=step,
+                 walltime=walltime))
 
     def add_image_matrix(self,
                          tag,
@@ -317,14 +314,15 @@ class LogWriter(object):
         if '%' in tag:
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
-        img = merge_images(
-            imgs=imgs, dataformats=dataformats, scale=scale, rows=rows)
-        self.add_image(
-            tag=tag,
-            img=img,
-            step=step,
-            walltime=walltime,
-            dataformats=dataformats)
+        img = merge_images(imgs=imgs,
+                           dataformats=dataformats,
+                           scale=scale,
+                           rows=rows)
+        self.add_image(tag=tag,
+                       img=img,
+                       step=step,
+                       walltime=walltime,
+                       dataformats=dataformats)
 
     def add_embeddings(self,
                        tag,
@@ -414,13 +412,12 @@ class LogWriter(object):
         step = 0
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            embedding(
-                tag=tag,
-                labels=metadata,
-                labels_meta=metadata_header,
-                hot_vectors=mat,
-                step=step,
-                walltime=walltime))
+            embedding(tag=tag,
+                      labels=metadata,
+                      labels_meta=metadata_header,
+                      hot_vectors=mat,
+                      step=step,
+                      walltime=walltime))
 
     def add_audio(self,
                   tag,
@@ -461,12 +458,11 @@ class LogWriter(object):
         if isinstance(audio_array, list):
             audio_array = np.array(audio_array)
         self._get_file_writer().add_record(
-            audio(
-                tag=tag,
-                audio_array=audio_array,
-                sample_rate=sample_rate,
-                step=step,
-                walltime=walltime))
+            audio(tag=tag,
+                  audio_array=audio_array,
+                  sample_rate=sample_rate,
+                  step=step,
+                  walltime=walltime))
 
     def add_histogram(self, tag, values, step, walltime=None, buckets=10):
         """Add an histogram to vdl record file.
@@ -491,12 +487,11 @@ class LogWriter(object):
         hist, bin_edges = np.histogram(values, bins=buckets)
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            histogram(
-                tag=tag,
-                hist=hist,
-                bin_edges=bin_edges,
-                step=step,
-                walltime=walltime))
+            histogram(tag=tag,
+                      hist=hist,
+                      bin_edges=bin_edges,
+                      step=step,
+                      walltime=walltime))
 
     def add_hparams(self, hparams_dict, metrics_list, walltime=None):
         """Add an histogram to vdl record file.
@@ -531,11 +526,10 @@ class LogWriter(object):
         walltime = round(time.time() * 1000) if walltime is None else walltime
 
         self._get_file_writer().add_record(
-            hparam(
-                name=md5(self.file_name),
-                hparam_dict=hparams_dict,
-                metric_list=metrics_list,
-                walltime=walltime))
+            hparam(name=md5(self.file_name),
+                   hparam_dict=hparams_dict,
+                   metric_list=metrics_list,
+                   walltime=walltime))
 
     def add_pr_curve(self,
                      tag,
@@ -571,14 +565,13 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            pr_curve(
-                tag=tag,
-                labels=labels,
-                predictions=predictions,
-                step=step,
-                walltime=walltime,
-                num_thresholds=num_thresholds,
-                weights=weights))
+            pr_curve(tag=tag,
+                     labels=labels,
+                     predictions=predictions,
+                     step=step,
+                     walltime=walltime,
+                     num_thresholds=num_thresholds,
+                     weights=weights))
 
     def add_roc_curve(self,
                       tag,
@@ -612,16 +605,15 @@ class LogWriter(object):
             raise RuntimeError("% can't appear in tag!")
         walltime = round(time.time() * 1000) if walltime is None else walltime
         self._get_file_writer().add_record(
-            roc_curve(
-                tag=tag,
-                labels=labels,
-                predictions=predictions,
-                step=step,
-                walltime=walltime,
-                num_thresholds=num_thresholds,
-                weights=weights))
+            roc_curve(tag=tag,
+                      labels=labels,
+                      predictions=predictions,
+                      step=step,
+                      walltime=walltime,
+                      num_thresholds=num_thresholds,
+                      weights=weights))
 
-    def add_graph(self, model, input_spec, verbose=False):
+    def add_graph(self, model, input_spec, verbose=False, **kwargs):
         """
         Add a model graph to vdl graph file.
         Args:
@@ -662,7 +654,8 @@ class LogWriter(object):
                     verbose=True)
         """
         try:
-            result = translate_graph(model, input_spec, verbose)
+            is_pir = kwargs.get('is_pir', False)
+            result = translate_graph(model, input_spec, verbose, is_pir=is_pir)
         except Exception as e:
             print("Failed to save model graph, error: {}".format(e))
             raise e

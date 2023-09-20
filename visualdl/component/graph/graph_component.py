@@ -17,6 +17,8 @@ import os.path
 import pathlib
 import re
 
+from . import utils
+
 _graph_version = '1.0.0'
 
 
@@ -73,9 +75,8 @@ def create_non_leaf_nodes(parent_node_name, child_node_name, all_ops,
     if parent_node_name == '/':  # root node
         return
     else:
-        create_non_leaf_nodes(
-            os.path.dirname(parent_node_name), parent_node_name, all_ops,
-            general_children_dict)
+        create_non_leaf_nodes(os.path.dirname(parent_node_name),
+                              parent_node_name, all_ops, general_children_dict)
 
 
 def construct_edges(var_name, all_ops, all_vars, all_edges):
@@ -298,8 +299,8 @@ def analyse_model(model_pb):  # noqa: C901
 
     all_op_names = list(all_ops.keys())
     for op_name in all_op_names:
-        create_non_leaf_nodes(
-            os.path.dirname(op_name), op_name, all_ops, general_children_dict)
+        create_non_leaf_nodes(os.path.dirname(op_name), op_name, all_ops,
+                              general_children_dict)
 
     # fill all non-leaf node's  'output_nodes' 'input_nodes' 'output_vars' 'input_vars'
     # post-order traverse tree
@@ -345,14 +346,108 @@ def analyse_model(model_pb):  # noqa: C901
     for src_node, to_node in all_edges.keys():
         all_ops[src_node]['edge_output_nodes'].append(to_node)
         all_ops[to_node]['edge_input_nodes'].append(src_node)
-        all_edges[(src_node, to_node)]['vars'] = list(
-            all_edges[(src_node, to_node)]['vars'])
+        all_edges[(src_node,
+                   to_node)]['vars'] = list(all_edges[(src_node,
+                                                       to_node)]['vars'])
         if len(all_edges[(src_node, to_node)]['vars']) > 1:
             all_edges[(src_node, to_node)]['label'] = str(
                 len(all_edges[(src_node, to_node)]['vars'])) + ' tensors'
         elif len(all_edges[(src_node, to_node)]['vars']) == 1:
             all_edges[(src_node, to_node)]['label'] = str(
                 all_vars[all_edges[(src_node, to_node)]['vars'][0]]['shape'])
+
+    final_data = {
+        'version': _graph_version,
+        'nodes': list(all_ops.values()),
+        'vars': list(all_vars.values()),
+        'edges': list(all_edges.values())
+    }
+    return final_data
+
+
+def analyse_pir(program):
+    from paddle.utils.unique_name import generate
+
+    all_ops = {}
+    all_vars = {}
+    all_edges = {}
+    # vars info
+    for op in (program.global_block().ops):
+        var_name = utils.gen_var_name(op.results())
+        all_vars[var_name] = {}
+        all_vars[var_name]['name'] = var_name
+        attrs = op.results()[0].get_defining_op().attrs()
+
+        if 'place' in attrs:
+            attrs['place'] = str(attrs['place'])
+        attrs['dtype'] = op.result(0).dtype.name
+
+        all_vars[var_name]['shape'] = op.result(0).shape
+        all_vars[var_name]['type'] = op.result(0).dtype.name
+        all_vars[var_name]['dtype'] = op.result(0).dtype.name
+
+        all_vars[var_name]['value'] = []
+        all_vars[var_name]['persistable'] = op.result(0).is_persistable
+        all_vars[var_name]['attrs'] = attrs
+        all_vars[var_name]['from_node'] = ''
+        all_vars[var_name]['to_nodes'] = []
+
+    # ops info
+    for op in (program.global_block().ops):
+        op_name = generate(op.name())
+
+        if op.num_operands() > 0:
+            all_ops[op_name] = {}
+            all_ops[op_name]['name'] = op_name
+            all_ops[op_name]['show_name'] = op_name
+            all_ops[op_name]['type'] = op.result(0).dtype.name
+            all_ops[op_name]['dtype'] = op.result(0).dtype.name
+
+            all_ops[op_name]['input_vars'] = {}
+            all_ops[op_name]['output_vars'] = {}
+
+            all_ops[op_name]['is_leaf_node'] = True
+            now_var = utils.gen_var_name(op.results())
+            for source in op.operands_source():
+                input_name = utils.gen_var_name(source)
+                all_ops[op_name]['input_vars'][input_name] = [input_name]
+                all_vars[input_name]['to_nodes'].append(op_name)
+            all_vars[now_var]['from_node'] = op_name
+            all_ops[op_name]['output_vars'][now_var] = [now_var]
+
+            all_ops[op_name]['attrs'] = attrs
+            all_ops[op_name]['attr_types'] = attrs
+            all_ops[op_name]['children_node'] = []
+            all_ops[op_name]['input_nodes'] = []
+            all_ops[op_name]['output_nodes'] = []
+            all_ops[op_name]['edge_input_nodes'] = []
+            all_ops[op_name]['edge_output_nodes'] = []
+
+    # create '/' op
+    all_ops['/'] = {}
+    all_ops['/']['name'] = '/'
+    all_ops['/']['show_name'] = '/'
+    all_ops['/']['type'] = ''
+    all_ops['/']['attrs'] = {}
+    all_ops['/']['input_vars'] = {}
+    all_ops['/']['output_vars'] = {}
+    all_ops['/']['is_leaf_node'] = False
+    all_ops['/']['children_node'] = []
+    for node in all_ops:
+        if node != '/':
+            all_ops['/']['children_node'].append(node)
+
+    for variable_name in all_vars:
+        if all_vars[variable_name]['from_node'] == '':
+            continue
+        from_node_name = all_vars[variable_name]['from_node']
+        for to_node_name in all_vars[variable_name]['to_nodes']:
+            if to_node_name != from_node_name:
+                all_ops[from_node_name]['output_nodes'].append(to_node_name)
+                all_ops[to_node_name]['input_nodes'].append(from_node_name)
+
+    # edge info
+    # TODO(Difers):add edge info in future
 
     final_data = {
         'version': _graph_version,
