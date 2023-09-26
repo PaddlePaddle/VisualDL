@@ -42,7 +42,7 @@
         "get-port": "5.1.1",
         "mime-types": "2.1.32",
         "mkdirp": "1.0.4",
-        "node-fetch": "3.0.0",
+        "node-fetch": "3.2.10",
         "rimraf": "3.0.2",
         "ts-node": "10.2.1",
         "typescript": "4.4.2"
