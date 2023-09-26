@@ -73,7 +73,7 @@
         "i18next-fetch-backend": "3.0.0",
         "jszip": "3.7.1",
         "mime-types": "2.1.32",
-        "moment": "2.29.1",
+        "moment": "2.29.4",
         "nprogress": "0.2.0",
         "numeric": "1.2.6",
         "polished": "4.1.3",
