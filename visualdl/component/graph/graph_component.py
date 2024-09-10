@@ -16,6 +16,7 @@ import collections
 import os.path
 import pathlib
 import re
+import paddle
 
 from . import utils
 
@@ -365,44 +366,247 @@ def analyse_model(model_pb):  # noqa: C901
     return final_data
 
 
+def is_control_flow(op):
+    return op.name() == "pd_op.if" or op.name() == "pd_op.while"
+
+
+def is_same_block_op(from_node, to_node, all_ops):
+    if all_ops[to_node]["parent_node"] == '/':
+        return False
+    from_ancestors = set()
+    while all_ops[from_node]["parent_node"] != '/':
+        from_ancestors.add(all_ops[from_node]["parent_node"])
+        from_node = all_ops[from_node]["parent_node"]
+    if all_ops[to_node]["parent_node"] in from_ancestors:
+        return False
+    else:
+        return True
+
+
+def create_control_output_node(all_ops, all_vars, control_node_name):
+    op_name = control_node_name + '/' + "output"
+    all_ops[op_name] = {}
+    all_ops[op_name]['name'] = op_name
+    all_ops[op_name]['show_name'] = op_name
+
+    all_ops[op_name]['type'] = "control_op.output"
+    all_ops[op_name]['dtype'] = all_ops[control_node_name]['dtype']
+    all_ops[op_name]['input_vars'] = {}
+    all_ops[op_name]['output_vars'] = all_ops[control_node_name]['output_vars']
+
+    all_ops[op_name]['is_leaf_node'] = True
+    for var in all_vars:
+        if all_vars[var]['from_node'] == control_node_name:
+            all_ops[op_name]['output_vars'][var] = [var]
+            all_vars[var]['from_node'] = op_name
+
+    all_ops[op_name]['attrs'] = all_ops[control_node_name]['attrs']
+    all_ops[op_name]['attr_types'] = all_ops[control_node_name]['attr_types']
+    all_ops[op_name]['children_node'] = []
+    all_ops[op_name]['input_nodes'] = []
+    all_ops[op_name]['output_nodes'] = []
+    all_ops[op_name]['edge_input_nodes'] = []
+    all_ops[op_name]['edge_output_nodes'] = []
+    all_ops[op_name]['parent_node'] = control_node_name
+    all_ops[control_node_name]['children_node'].append(op_name)
+    return all_ops, all_vars
+
+
+def get_sub_ops(op, op_name, all_ops, all_vars):
+    for sub_block in op.blocks():
+        for sub_op in sub_block.ops:
+            sub_op_name0 = paddle.utils.unique_name.generate(sub_op.name())
+            sub_op_name = op_name + '/' + sub_op_name0
+            all_ops[sub_op_name] = {}
+            all_ops[sub_op_name]['name'] = sub_op_name
+            all_ops[sub_op_name]['show_name'] = sub_op_name
+            all_ops[sub_op_name]['type'] = sub_op.name().replace("pd_op.", "")
+
+            try:
+                all_ops[sub_op_name]['dtype'] = sub_op.result(0).dtype.name
+            except Exception as e:
+                all_ops[sub_op_name]['dtype'] = ''
+
+            all_ops[sub_op_name]['input_vars'] = {}
+            all_ops[sub_op_name]['output_vars'] = {}
+            all_ops[sub_op_name]['is_leaf_node'] = True
+            now_var = utils.gen_var_name(sub_op.results())
+            for source in sub_op.operands_source():
+                input_name = utils.gen_var_name(source)
+                if sub_op.name() == "pd_op.increment_":
+                    all_vars[now_var]['to_nodes'].append(all_vars[input_name]['from_node'])
+                    all_ops[all_vars[input_name]['from_node']]['input_vars'][now_var] = [now_var]
+                all_ops[sub_op_name]['input_vars'][input_name] = [input_name]
+                all_vars[input_name]['to_nodes'].append(sub_op_name)
+            all_vars[now_var]['from_node'] = sub_op_name
+            all_ops[sub_op_name]['output_vars'][now_var] = [now_var]
+
+            try:
+                attrs = op.results()[0].get_defining_op().attrs()
+                if 'place' in attrs:
+                    attrs['place'] = str(attrs['place'])
+                try:
+                    attrs['dtype'] = op.result(0).dtype.name
+                except Exception as e:
+                    attrs['dtype'] = ''
+            except Exception as e:
+                # attrs = {}
+                pass
+
+            all_ops[sub_op_name]['attrs'] = attrs
+            all_ops[sub_op_name]['attr_types'] = attrs
+            all_ops[sub_op_name]['children_node'] = []
+            all_ops[sub_op_name]['input_nodes'] = []
+            all_ops[sub_op_name]['output_nodes'] = []
+            all_ops[sub_op_name]['edge_input_nodes'] = []
+            all_ops[sub_op_name]['edge_output_nodes'] = []
+            all_ops[sub_op_name]["parent_node"] = op_name
+            all_ops[op_name]['children_node'].append(sub_op_name)
+
+            # yield
+            if sub_op.name() == 'cf.yield':
+                var_name = "tmp_var_" + sub_op_name0
+                all_vars[var_name] = {}
+                all_vars[var_name]['name'] = var_name
+                all_vars[var_name]['dtype'] = ''
+                all_vars[var_name]['shape'] = []
+                all_vars[var_name]['value'] = []
+                all_vars[var_name]['persistable'] = False
+                all_vars[var_name]['attrs'] = {}
+                all_vars[var_name]['from_node'] = sub_op_name
+                all_ops[sub_op_name]['output_vars'][var_name] = [var_name]
+                control_output = all_ops[sub_op_name]["parent_node"] + '/' + "output"
+                all_vars[var_name]['to_nodes'] = [control_output]
+                all_ops[control_output]['input_vars'][var_name] = [var_name]
+            if is_control_flow(sub_op):
+                all_ops[sub_op_name]['is_leaf_node'] = False
+                all_ops, all_vars = create_control_output_node(all_ops, all_vars, sub_op_name)
+                all_ops, all_vars = get_sub_ops(sub_op, sub_op_name, all_ops, all_vars)
+
+    return all_ops, all_vars
+
+
+def get_sub_var(op, all_vars):
+    for sub_block in op.blocks():
+        for sub_op in sub_block.ops:
+            var_name = utils.gen_var_name(sub_op.results())
+            all_vars[var_name] = {}
+            all_vars[var_name]['name'] = var_name
+            try:
+                attrs = op.results()[0].get_defining_op().attrs()
+                if 'place' in attrs:
+                    attrs['place'] = str(attrs['place'])
+                try:
+                    attrs['dtype'] = op.result(0).dtype.name
+                except Exception as e:
+                    attrs['dtype'] = ''
+            except Exception as e:
+                attrs = {}
+
+            try:
+                all_vars[var_name]['shape'] = sub_op.result(0).shape
+            except Exception as e:
+                all_vars[var_name]['shape'] = []
+            try:
+                all_vars[var_name]['type'] = sub_op.result(0).dtype.name
+            except Exception as e:
+                all_vars[var_name]['type'] = ''
+            try:
+                all_vars[var_name]['dtype'] = sub_op.result(0).dtype.name
+            except Exception as e:
+                all_vars[var_name]['dtype'] = ''
+
+            all_vars[var_name]['value'] = []
+            try:
+                all_vars[var_name]['persistable'] = sub_op.result(0).persistable
+            except Exception as e:
+                all_vars[var_name]['persistable'] = False
+
+            if sub_op.name() == "builtin.parameter":
+                all_vars[var_name]['persistable'] = False
+            all_vars[var_name]['attrs'] = attrs
+            all_vars[var_name]['from_node'] = ''
+            all_vars[var_name]['to_nodes'] = []
+            if is_control_flow(sub_op):
+                all_vars = get_sub_var(sub_op, all_vars)
+    return all_vars
+
+
 def analyse_pir(program):
     from paddle.utils.unique_name import generate
 
     all_ops = {}
     all_vars = {}
     all_edges = {}
+
+    # create '/' op
+    all_ops['/'] = {}
+    all_ops['/']['name'] = '/'
+    all_ops['/']['show_name'] = '/'
+    all_ops['/']['type'] = ''
+    all_ops['/']['attrs'] = {}
+    all_ops['/']['input_vars'] = {}
+    all_ops['/']['output_vars'] = {}
+    all_ops['/']['is_leaf_node'] = False
+    all_ops['/']['children_node'] = []
+
     # vars info
-    for op in (program.global_block().ops):
+    for op in program.global_block().ops:
         var_name = utils.gen_var_name(op.results())
         all_vars[var_name] = {}
         all_vars[var_name]['name'] = var_name
-        attrs = op.results()[0].get_defining_op().attrs()
+        try:
+            attrs = op.results()[0].get_defining_op().attrs()
+            if 'place' in attrs:
+                attrs['place'] = str(attrs['place'])
+            try:
+                attrs['dtype'] = op.result(0).dtype.name
+            except Exception as e:
+                attrs['dtype'] = ''
+        except Exception as e:
+            pass
 
-        if 'place' in attrs:
-            attrs['place'] = str(attrs['place'])
-        attrs['dtype'] = op.result(0).dtype.name
-
-        all_vars[var_name]['shape'] = op.result(0).shape
-        all_vars[var_name]['type'] = op.result(0).dtype.name
-        all_vars[var_name]['dtype'] = op.result(0).dtype.name
+        try:
+            all_vars[var_name]['shape'] = op.result(0).shape
+        except Exception as e:
+            all_vars[var_name]['shape'] = []
+        try:
+            all_vars[var_name]['type'] = var_name
+        except Exception as e:
+            all_vars[var_name]['type'] = ''
+        try:
+            all_vars[var_name]['dtype'] = op.result(0).dtype.name
+        except Exception as e:
+            all_vars[var_name]['dtype'] = ''
 
         all_vars[var_name]['value'] = []
-        all_vars[var_name]['persistable'] = op.result(0).is_persistable
+        try:
+            all_vars[var_name]['persistable'] = op.result(0).persistable
+        except Exception as e:
+            all_vars[var_name]['persistable'] = False
+        if op.name() == "builtin.parameter":
+            all_vars[var_name]['persistable'] = False
         all_vars[var_name]['attrs'] = attrs
         all_vars[var_name]['from_node'] = ''
         all_vars[var_name]['to_nodes'] = []
+        if is_control_flow(op):
+            all_vars = get_sub_var(op, all_vars)
 
     # ops info
-    for op in (program.global_block().ops):
+    for op in program.global_block().ops:
         op_name = generate(op.name())
+        op_name = '/' + op_name
 
-        if op.num_operands() > 0:
+        if op.num_operands() >= 0:
             all_ops[op_name] = {}
             all_ops[op_name]['name'] = op_name
             all_ops[op_name]['show_name'] = op_name
-            all_ops[op_name]['type'] = op.result(0).dtype.name
-            all_ops[op_name]['dtype'] = op.result(0).dtype.name
 
+            all_ops[op_name]['type'] = op.name().replace("pd_op.", "")
+            try:
+                all_ops[op_name]['dtype'] = op.result(0).dtype.name
+            except Exception as e:
+                all_ops[op_name]['dtype'] = ''
             all_ops[op_name]['input_vars'] = {}
             all_ops[op_name]['output_vars'] = {}
 
@@ -410,6 +614,9 @@ def analyse_pir(program):
             now_var = utils.gen_var_name(op.results())
             for source in op.operands_source():
                 input_name = utils.gen_var_name(source)
+                if op.name() == "pd_op.increment_":
+                    all_vars[now_var]['to_nodes'].append(all_vars[input_name]['from_node'])
+                    all_ops[all_vars[input_name]['from_node']]['input_vars'][now_var] = [now_var]
                 all_ops[op_name]['input_vars'][input_name] = [input_name]
                 all_vars[input_name]['to_nodes'].append(op_name)
             all_vars[now_var]['from_node'] = op_name
@@ -422,32 +629,49 @@ def analyse_pir(program):
             all_ops[op_name]['output_nodes'] = []
             all_ops[op_name]['edge_input_nodes'] = []
             all_ops[op_name]['edge_output_nodes'] = []
+            all_ops[op_name]['parent_node'] = '/'
+            all_ops['/']['children_node'].append(op_name)
 
-    # create '/' op
-    all_ops['/'] = {}
-    all_ops['/']['name'] = '/'
-    all_ops['/']['show_name'] = '/'
-    all_ops['/']['type'] = ''
-    all_ops['/']['attrs'] = {}
-    all_ops['/']['input_vars'] = {}
-    all_ops['/']['output_vars'] = {}
-    all_ops['/']['is_leaf_node'] = False
-    all_ops['/']['children_node'] = []
-    for node in all_ops:
-        if node != '/':
-            all_ops['/']['children_node'].append(node)
+            if is_control_flow(op):
+                all_ops[op_name]['is_leaf_node'] = False
+                all_ops, all_vars = create_control_output_node(all_ops, all_vars, op_name)
+                all_ops, all_vars = get_sub_ops(op, op_name, all_ops, all_vars)
 
     for variable_name in all_vars:
         if all_vars[variable_name]['from_node'] == '':
             continue
+        from_node = all_vars[variable_name]['from_node']
+        for to_node in all_vars[variable_name]['to_nodes']:
+            if is_same_block_op(from_node, to_node, all_ops):
+                all_vars[variable_name]['to_nodes'].append(all_ops[to_node]["parent_node"])
+                all_ops[all_ops[to_node]["parent_node"]]['input_vars'][variable_name] = [variable_name]
         from_node_name = all_vars[variable_name]['from_node']
         for to_node_name in all_vars[variable_name]['to_nodes']:
             if to_node_name != from_node_name:
                 all_ops[from_node_name]['output_nodes'].append(to_node_name)
                 all_ops[to_node_name]['input_nodes'].append(from_node_name)
+        all_vars[variable_name]['to_nodes'] = list(set(all_vars[variable_name]['to_nodes']))
+    for node in all_ops:
+        if node != '/':
+            all_ops[node]['input_nodes'] = list(set(all_ops[node]['input_nodes']))
+            all_ops[node]['output_nodes'] = list(set(all_ops[node]['output_nodes']))
 
     # edge info
-    # TODO(Difers):add edge info in future
+    for var_name in all_vars.keys():
+        construct_edges(var_name, all_ops, all_vars, all_edges)
+
+    for src_node, to_node in all_edges.keys():
+        all_ops[src_node]['edge_output_nodes'].append(to_node)
+        all_ops[to_node]['edge_input_nodes'].append(src_node)
+        all_edges[(src_node,
+                   to_node)]['vars'] = list(all_edges[(src_node,
+                                                       to_node)]['vars'])
+        if len(all_edges[(src_node, to_node)]['vars']) > 1:
+            all_edges[(src_node, to_node)]['label'] = str(
+                len(all_edges[(src_node, to_node)]['vars'])) + ' tensors'
+        elif len(all_edges[(src_node, to_node)]['vars']) == 1:
+            all_edges[(src_node, to_node)]['label'] = str(
+                all_vars[all_edges[(src_node, to_node)]['vars'][0]]['shape'])
 
     final_data = {
         'version': _graph_version,

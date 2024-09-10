@@ -15,6 +15,7 @@
 import json
 import os
 import tempfile
+import paddle
 
 from .graph_component import analyse_model
 from .graph_component import analyse_pir
@@ -34,7 +35,13 @@ def translate_graph(model, input_spec, verbose=True, **kwargs):
             model_data = open(os.path.join(tmp, 'temp.pdmodel'), 'rb').read()
             result = analyse_model(model_data)
         else:
-            result = analyse_pir(model)
+            if isinstance(model, paddle.base.libpaddle.pir.Program):
+                result = analyse_pir(model)
+            else:
+                model = paddle.jit.to_static(model, input_spec)
+                paddle.jit.save(model, os.path.join(tmp, 'temp'))
+                model_data = paddle.jit.load(os.path.join(tmp, 'temp'))
+                result = analyse_pir(model_data.program())
     if verbose:
         print_model(result)
     result = json.dumps(result, indent=2)
