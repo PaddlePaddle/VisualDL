@@ -14,6 +14,7 @@
 # =======================================================================
 from .exporter import translate_graph
 from .graph_component import analyse_model
+from .graph_component import analyse_pir
 from .netron_graph import Model
 
-__all__ = ['translate_graph', 'analyse_model', 'Model']
+__all__ = ['translate_graph', 'analyse_model', 'analyse_pir', 'Model']

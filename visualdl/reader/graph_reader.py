@@ -14,10 +14,13 @@
 # =======================================================================
 import json
 import os
+import tempfile
 
 from visualdl.component.graph import analyse_model
+from visualdl.component.graph import analyse_pir
 from visualdl.component.graph import Model
 from visualdl.io import bfile
+from paddle.jit import load
 
 
 def is_VDLGraph_file(path):
@@ -30,7 +33,7 @@ def is_VDLGraph_file(path):
     Returns:
         True if the file is a VDL graph file, otherwise false.
     """
-    if "vdlgraph" not in path and 'pdmodel' not in path:
+    if "vdlgraph" not in path and 'pdmodel' not in path and 'json' not in path:
         return False
     return True
 
@@ -136,6 +139,13 @@ class GraphReader(object):
             data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
             if 'pdmodel' in self.walks[run]:
                 graph_model = Model(analyse_model(data))
+            elif 'json' in self.walks[run]:
+                json_object = json.loads(data)
+                with tempfile.TemporaryDirectory() as tmp:
+                    with open(os.path.join(tmp, 'temp.json'), 'w') as json_file:
+                        json.dump(json_object, json_file, indent=4)
+                    model_data = load(os.path.join(tmp, 'temp'))
+                graph_model = Model(analyse_pir(model_data.program()))
             else:
                 graph_model = Model(json.loads(data.decode()))
             self.graph_buffer[run] = graph_model
@@ -163,6 +173,13 @@ class GraphReader(object):
             data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
             if 'pdmodel' in self.walks[run]:
                 graph_model = Model(analyse_model(data))
+            elif 'json' in self.walks[run]:
+                json_object = json.loads(data)
+                with tempfile.TemporaryDirectory() as tmp:
+                    with open(os.path.join(tmp, 'temp.json'), 'w') as json_file:
+                        json.dump(json_object, json_file, indent=4)
+                    model_data = load(os.path.join(tmp, 'temp'))
+                graph_model = Model(analyse_pir(model_data.program()))
             else:
                 graph_model = Model(json.loads(data.decode()))
             self.graph_buffer[run] = graph_model
@@ -184,6 +201,13 @@ class GraphReader(object):
             data = bfile.BFile(bfile.join(run, self.walks[run]), 'rb').read()
             if 'pdmodel' in self.walks[run]:
                 graph_model = Model(analyse_model(data))
+            elif 'json' in self.walks[run]:
+                json_object = json.loads(data)
+                with tempfile.TemporaryDirectory() as tmp:
+                    with open(os.path.join(tmp, 'temp.json'), 'w') as json_file:
+                        json.dump(json_object, json_file, indent=4)
+                    model_data = load(os.path.join(tmp, 'temp'))
+                graph_model = Model(analyse_pir(model_data.program()))
             else:
                 graph_model = Model(json.loads(data.decode()))
             self.graph_buffer[run] = graph_model
@@ -206,12 +230,23 @@ class GraphReader(object):
                 return
             if 'pdmodel' in content:
                 file_type = 'pdmodel'
+            elif 'json' in content:
+                file_type = 'json'
             else:
                 file_type = 'vdlgraph'
             content = bfile.BFile(content, 'rb').read()
 
         if file_type == 'pdmodel':
             data = analyse_model(content)
+            self.graph_buffer['manual_input_model'] = Model(data)
+
+        elif file_type == 'json':
+            json_object = json.loads(content)
+            with tempfile.TemporaryDirectory() as tmp:
+                with open(os.path.join(tmp, 'temp.json'), 'w') as json_file:
+                    json.dump(json_object, json_file, indent=4)
+                model_data = load(os.path.join(tmp, 'temp'))
+            data = analyse_pir(model_data.program())
             self.graph_buffer['manual_input_model'] = Model(data)
 
         elif file_type == 'vdlgraph':
