@@ -198,7 +198,7 @@ if op.name() == "builtin.parameter":
 #### 测试脚本
 1. cd VisualDL
 2. export FLAGS_enable_pir_api=1
-3. python demo/components/pir_program_test.py （pir_graph_test，cond_test，while_test，cond_inside_cond_test）输出文件将在VisualDL/log/cond_test路径下
+3. python demo/components/pir_program_test.py （pir_graph_test，cond_test，while_test，cond_inside_cond_test）输出文件将在VisualDL/log/program_test路径下
 4. visualdl --logdir ./log/program_test/ --host 0.0.0.0 注意此时在VisualDL目录下
 
 #### 测试效果
