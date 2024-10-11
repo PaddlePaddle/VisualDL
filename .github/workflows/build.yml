@@ -9,7 +9,6 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.9']
         node-version: ['14']
-        architecture: ['x64']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,6 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          architecture: 'x64'
       - name: Install requirements
         run: |
           pip install -U wheel
