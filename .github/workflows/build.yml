@@ -31,7 +31,7 @@ jobs:
         run: |
           python setup.py bdist_wheel
       - name: Upload whl
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: VisualDL
           path: dist/*.whl
