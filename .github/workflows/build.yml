@@ -9,6 +9,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.9']
         node-version: ['14']
+        architecture: ['x64']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
