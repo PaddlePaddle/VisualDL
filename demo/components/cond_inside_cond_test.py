@@ -31,6 +31,7 @@ from visualdl import LogWriter
 """
 paddle.enable_static()
 
+
 def less_than_branch(i, a):
     return paddle.static.nn.cond(
         i >= 3.0,
@@ -38,12 +39,14 @@ def less_than_branch(i, a):
         lambda: paddle.subtract(a, a),
     )
 
+
 def greater_equal_branch(i, a):
     return paddle.static.nn.cond(
         i < 8.0,
         lambda: paddle.multiply(a, a),
         lambda: paddle.divide(a, a),
     )
+
 
 main_program = paddle.static.Program()
 startup_program = paddle.static.Program()
