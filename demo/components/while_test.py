@@ -19,26 +19,27 @@ paddle.enable_static()
 main_program = paddle.static.Program()
 startup_program = paddle.static.Program()
 with paddle.static.program_guard(main_program, startup_program):
-		linear = paddle.nn.Linear(16, 10)
-		def cond(i, loop_len, x, result):
-			return i < loop_len
+    linear = paddle.nn.Linear(16, 10)
 
-		def body(i, loop_len, x, result):
-			result = linear(x)
-			paddle.increment(i)
-			return [i, loop_len, x, result]
-			
-		x = paddle.static.data(name='x', shape=[32, 16], dtype='float32')
-		i = paddle.zeros(shape=[1], dtype='int64')
-		loop_len = paddle.ones(shape=[1], dtype='int64')
-		result = paddle.zeros(
-				shape=x.shape[:-1] + linear.weight.shape[-1:], dtype="float32"
-		)
-		result.stop_gradient = False
-		_, _, _, results = paddle.static.nn.while_loop(
-				cond, body, [i, loop_len, x, result]
-		)
-		loss = paddle.mean(results)
+    def cond(i, loop_len, x, result):
+        return i < loop_len
+
+    def body(i, loop_len, x, result):
+        result = linear(x)
+        paddle.increment(i)
+        return [i, loop_len, x, result]
+
+    x = paddle.static.data(name='x', shape=[32, 16], dtype='float32')
+    i = paddle.zeros(shape=[1], dtype='int64')
+    loop_len = paddle.ones(shape=[1], dtype='int64')
+    result = paddle.zeros(
+        shape=x.shape[:-1] + linear.weight.shape[-1:], dtype="float32"
+    )
+    result.stop_gradient = False
+    _, _, _, results = paddle.static.nn.while_loop(
+        cond, body, [i, loop_len, x, result]
+    )
+    loss = paddle.mean(results)
 
 with LogWriter(logdir="./log/while_test/") as writer:
     writer.add_graph(

@@ -25,6 +25,8 @@ paddle.enable_static()
         else:
             return a - a
 """
+
+
 class ConditionalLayer(paddle.nn.Layer):
     def __init__(self):
         super(ConditionalLayer, self).__init__()
@@ -38,6 +40,7 @@ class ConditionalLayer(paddle.nn.Layer):
         )
         return out
 
+
 main_program = paddle.static.Program()
 startup_program = paddle.static.Program()
 with paddle.static.program_guard(main_program, startup_program):
@@ -49,7 +52,7 @@ with paddle.static.program_guard(main_program, startup_program):
         lambda: paddle.add(a, a),
         lambda: paddle.subtract(a, a),
     )
-    mean = paddle.mean(out) 
+    mean = paddle.mean(out)
 
 with LogWriter(logdir="./log/cond_test/") as writer:
     writer.add_graph(

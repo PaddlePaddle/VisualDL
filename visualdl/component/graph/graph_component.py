@@ -412,6 +412,37 @@ def create_control_output_node(all_ops, all_vars, control_node_name):
     return all_ops, all_vars
 
 
+def safe_get_shape(op):
+    try:
+        return op.result(0).shape
+    except Exception:
+        return []
+
+
+def safe_get_type(op):
+    try:
+        return op.result(0).dtype.name
+    except Exception:
+        return ''
+
+
+def safe_get_dtype(op):
+    try:
+        return op.result(0).dtype.name
+    except Exception:
+        return ''
+
+
+def safe_get_persistable(op):
+    try:
+        if op.name() == "builtin.parameter":
+            return False
+        else:
+            return op.result(0).persistable
+    except Exception:
+        return False
+
+
 def get_sub_ops(op, op_name, all_ops, all_vars):
     for sub_block in op.blocks():
         for sub_op in sub_block.ops:
@@ -421,12 +452,7 @@ def get_sub_ops(op, op_name, all_ops, all_vars):
             all_ops[sub_op_name]['name'] = sub_op_name
             all_ops[sub_op_name]['show_name'] = sub_op_name
             all_ops[sub_op_name]['type'] = sub_op.name().replace("pd_op.", "")
-
-            try:
-                all_ops[sub_op_name]['dtype'] = sub_op.result(0).dtype.name
-            except Exception as e:
-                all_ops[sub_op_name]['dtype'] = ''
-
+            all_ops[sub_op_name]['dtype'] = safe_get_dtype(sub_op)
             all_ops[sub_op_name]['input_vars'] = {}
             all_ops[sub_op_name]['output_vars'] = {}
             all_ops[sub_op_name]['is_leaf_node'] = True
@@ -445,11 +471,8 @@ def get_sub_ops(op, op_name, all_ops, all_vars):
                 attrs = op.results()[0].get_defining_op().attrs()
                 if 'place' in attrs:
                     attrs['place'] = str(attrs['place'])
-                try:
-                    attrs['dtype'] = op.result(0).dtype.name
-                except Exception as e:
-                    attrs['dtype'] = ''
-            except Exception as e:
+                attrs['dtype'] = safe_get_dtype(op)
+            except Exception:
                 # attrs = {}
                 pass
 
@@ -496,40 +519,45 @@ def get_sub_var(op, all_vars):
                 attrs = op.results()[0].get_defining_op().attrs()
                 if 'place' in attrs:
                     attrs['place'] = str(attrs['place'])
-                try:
-                    attrs['dtype'] = op.result(0).dtype.name
-                except Exception as e:
-                    attrs['dtype'] = ''
-            except Exception as e:
+                attrs['dtype'] = safe_get_dtype(op)
+            except Exception:
                 attrs = {}
 
-            try:
-                all_vars[var_name]['shape'] = sub_op.result(0).shape
-            except Exception as e:
-                all_vars[var_name]['shape'] = []
-            try:
-                all_vars[var_name]['type'] = sub_op.result(0).dtype.name
-            except Exception as e:
-                all_vars[var_name]['type'] = ''
-            try:
-                all_vars[var_name]['dtype'] = sub_op.result(0).dtype.name
-            except Exception as e:
-                all_vars[var_name]['dtype'] = ''
-
+            all_vars[var_name]['shape'] = safe_get_shape(sub_op)
+            all_vars[var_name]['type'] = safe_get_type(sub_op)
+            all_vars[var_name]['dtype'] = safe_get_dtype(sub_op)
             all_vars[var_name]['value'] = []
-            try:
-                all_vars[var_name]['persistable'] = sub_op.result(0).persistable
-            except Exception as e:
-                all_vars[var_name]['persistable'] = False
-
-            if sub_op.name() == "builtin.parameter":
-                all_vars[var_name]['persistable'] = False
+            all_vars[var_name]['persistable'] = safe_get_persistable(sub_op)
             all_vars[var_name]['attrs'] = attrs
             all_vars[var_name]['from_node'] = ''
             all_vars[var_name]['to_nodes'] = []
             if is_control_flow(sub_op):
                 all_vars = get_sub_var(sub_op, all_vars)
     return all_vars
+
+
+def update_node_connections(all_vars, all_ops):
+    for variable_name in all_vars:
+        if all_vars[variable_name]['from_node'] == '':
+            continue
+        from_node = all_vars[variable_name]['from_node']
+        for to_node in all_vars[variable_name]['to_nodes']:
+            if is_same_block_op(from_node, to_node, all_ops):
+                all_vars[variable_name]['to_nodes'].append(all_ops[to_node]["parent_node"])
+                all_ops[all_ops[to_node]["parent_node"]]['input_vars'][variable_name] = [variable_name]
+        from_node_name = all_vars[variable_name]['from_node']
+        for to_node_name in all_vars[variable_name]['to_nodes']:
+            if to_node_name != from_node_name:
+                all_ops[from_node_name]['output_nodes'].append(to_node_name)
+                all_ops[to_node_name]['input_nodes'].append(from_node_name)
+        all_vars[variable_name]['to_nodes'] = list(set(all_vars[variable_name]['to_nodes']))
+
+    for node in all_ops:
+        if node != '/':
+            all_ops[node]['input_nodes'] = list(set(all_ops[node]['input_nodes']))
+            all_ops[node]['output_nodes'] = list(set(all_ops[node]['output_nodes']))
+
+    return all_vars, all_ops
 
 
 def analyse_pir(program):
@@ -559,33 +587,15 @@ def analyse_pir(program):
             attrs = op.results()[0].get_defining_op().attrs()
             if 'place' in attrs:
                 attrs['place'] = str(attrs['place'])
-            try:
-                attrs['dtype'] = op.result(0).dtype.name
-            except Exception as e:
-                attrs['dtype'] = ''
-        except Exception as e:
+            attrs['dtype'] = safe_get_dtype(op)
+        except Exception:
             pass
 
-        try:
-            all_vars[var_name]['shape'] = op.result(0).shape
-        except Exception as e:
-            all_vars[var_name]['shape'] = []
-        try:
-            all_vars[var_name]['type'] = var_name
-        except Exception as e:
-            all_vars[var_name]['type'] = ''
-        try:
-            all_vars[var_name]['dtype'] = op.result(0).dtype.name
-        except Exception as e:
-            all_vars[var_name]['dtype'] = ''
-
+        all_vars[var_name]['shape'] = safe_get_shape(op)
+        all_vars[var_name]['type'] = safe_get_type(op)
+        all_vars[var_name]['dtype'] = safe_get_dtype(op)
         all_vars[var_name]['value'] = []
-        try:
-            all_vars[var_name]['persistable'] = op.result(0).persistable
-        except Exception as e:
-            all_vars[var_name]['persistable'] = False
-        if op.name() == "builtin.parameter":
-            all_vars[var_name]['persistable'] = False
+        all_vars[var_name]['persistable'] = safe_get_persistable(op)
         all_vars[var_name]['attrs'] = attrs
         all_vars[var_name]['from_node'] = ''
         all_vars[var_name]['to_nodes'] = []
@@ -603,10 +613,7 @@ def analyse_pir(program):
             all_ops[op_name]['show_name'] = op_name
 
             all_ops[op_name]['type'] = op.name().replace("pd_op.", "")
-            try:
-                all_ops[op_name]['dtype'] = op.result(0).dtype.name
-            except Exception as e:
-                all_ops[op_name]['dtype'] = ''
+            all_ops[op_name]['dtype'] = safe_get_dtype(op)
             all_ops[op_name]['input_vars'] = {}
             all_ops[op_name]['output_vars'] = {}
 
@@ -637,24 +644,8 @@ def analyse_pir(program):
                 all_ops, all_vars = create_control_output_node(all_ops, all_vars, op_name)
                 all_ops, all_vars = get_sub_ops(op, op_name, all_ops, all_vars)
 
-    for variable_name in all_vars:
-        if all_vars[variable_name]['from_node'] == '':
-            continue
-        from_node = all_vars[variable_name]['from_node']
-        for to_node in all_vars[variable_name]['to_nodes']:
-            if is_same_block_op(from_node, to_node, all_ops):
-                all_vars[variable_name]['to_nodes'].append(all_ops[to_node]["parent_node"])
-                all_ops[all_ops[to_node]["parent_node"]]['input_vars'][variable_name] = [variable_name]
-        from_node_name = all_vars[variable_name]['from_node']
-        for to_node_name in all_vars[variable_name]['to_nodes']:
-            if to_node_name != from_node_name:
-                all_ops[from_node_name]['output_nodes'].append(to_node_name)
-                all_ops[to_node_name]['input_nodes'].append(from_node_name)
-        all_vars[variable_name]['to_nodes'] = list(set(all_vars[variable_name]['to_nodes']))
-    for node in all_ops:
-        if node != '/':
-            all_ops[node]['input_nodes'] = list(set(all_ops[node]['input_nodes']))
-            all_ops[node]['output_nodes'] = list(set(all_ops[node]['output_nodes']))
+    # update node connections
+    all_vars, all_ops = update_node_connections(all_vars, all_ops)
 
     # edge info
     for var_name in all_vars.keys():
