@@ -16,7 +16,6 @@ import collections
 import os.path
 import pathlib
 import re
-import paddle
 
 from . import utils
 
@@ -444,9 +443,16 @@ def safe_get_persistable(op):
 
 
 def get_sub_ops(op, op_name, all_ops, all_vars):
+    try:
+        from paddle.utils.unique_name import generate
+    except Exception:
+        print("Paddlepaddle is required to use add_graph interface.\n\
+              Please refer to \
+              https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html\
+              to install paddlepaddle.")
     for sub_block in op.blocks():
         for sub_op in sub_block.ops:
-            sub_op_name0 = paddle.utils.unique_name.generate(sub_op.name())
+            sub_op_name0 = generate(sub_op.name())
             sub_op_name = op_name + '/' + sub_op_name0
             all_ops[sub_op_name] = {}
             all_ops[sub_op_name]['name'] = sub_op_name
@@ -561,7 +567,13 @@ def update_node_connections(all_vars, all_ops):
 
 
 def analyse_pir(program):
-    from paddle.utils.unique_name import generate
+    try:
+        from paddle.utils.unique_name import generate
+    except Exception:
+        print("Paddlepaddle is required to use add_graph interface.\n\
+              Please refer to \
+              https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html\
+              to install paddlepaddle.")
 
     all_ops = {}
     all_vars = {}

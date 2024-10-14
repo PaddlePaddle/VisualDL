@@ -15,7 +15,6 @@
 import json
 import os
 import tempfile
-import paddle
 
 from .graph_component import analyse_model
 from .graph_component import analyse_pir
@@ -24,6 +23,13 @@ from .utils import print_model
 
 
 def translate_graph(model, input_spec, verbose=True, **kwargs):
+    try:
+        import paddle
+    except Exception:
+        print("Paddlepaddle is required to use add_graph interface.\n\
+              Please refer to \
+              https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html\
+              to install paddlepaddle.")
     is_pir = kwargs.get('is_pir', False)
     with tempfile.TemporaryDirectory() as tmp:
         if (not is_pir):
