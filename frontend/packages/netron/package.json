@@ -35,7 +35,7 @@
         "dagre": "0.8.5",
         "flatbuffers": "1.12.0",
         "long": "4.0.0",
-        "marked": "2.0.7",
+        "marked": "4.0.10",
         "netron": "PeterPanZH/netron",
         "pako": "1.0.11"
     },
