@@ -1394,7 +1394,7 @@ view.ModelFactoryService = class {
         this.register('./uff', ['.uff', '.pb', '.trt', '.pbtxt', '.uff.txt']);
         this.register('./sklearn', ['.pkl', '.pickle', '.joblib', '.model', '.meta', '.pb', '.pt', '.h5']);
         this.register('./cntk', ['.model', '.cntk', '.cmf', '.dnn']);
-        this.register('./paddle', ['.paddle', '.pdmodel', '__model__']);
+        this.register('./paddle', ['.paddle', '.pdmodel', '.json', '__model__']);
         this.register('./armnn', ['.armnn']);
         this.register('./bigdl', ['.model', '.bigdl']);
         this.register('./darknet', ['.cfg', '.model']);

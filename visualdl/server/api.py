@@ -351,6 +351,9 @@ class Api(object):
             if 'pdmodel' in file_handle.filename:
                 graph_reader.set_input_graph(file_handle.stream.read(),
                                              'pdmodel')
+            elif 'json' in file_handle.filename:
+                graph_reader.set_input_graph(file_handle.stream.read(),
+                                             'json')
             elif 'vdlgraph' in file_handle.filename:
                 graph_reader.set_input_graph(file_handle.stream.read(),
                                              'vdlgraph')

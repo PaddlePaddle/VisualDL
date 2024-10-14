@@ -101,7 +101,7 @@ const Graph: FunctionComponent = () => {
     const onChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const target = e.target as EventTarget & HTMLInputElement;
         const file: FileList | null = target.files as FileList;
-        if (file[0].name.split('.')[1] !== 'pdmodel') {
+        if (file[0].name.split('.')[1] !== 'pdmodel' && file[0].name.split('.')[1] !== 'json') {
             alert('该页面只能解析paddle的模型,如需解析请跳转网络结构静态图页面');
             return;
         }
