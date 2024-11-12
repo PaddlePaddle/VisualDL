@@ -17,9 +17,24 @@ fi
 # wasm-pack
 # wasm-pack will be installed by npm package
 # https://rustwasm.github.io/wasm-pack/installer/
-# if ! hash wasm-pack 2>/dev/null; then
-#     curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-# fi
+if ! hash wasm-pack 2>/dev/null; then
+    curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+fi
+
+# copy wasm-pack
+destination="$HOME/.config/wasm-pack-nodejs/bin"
+source=$(which wasm-pack)
+if [ -z "$source" ]; then
+    echo "wasm-pack is not installed or not found in PATH"
+else
+    echo "$source"
+    if [ -d "$destination" ]; then
+    cp "$source" "$destination"
+    else
+    mkdir -p "$destination"
+    cp "$source" "$destination"
+    fi
+fi
 
 
 # yarn
