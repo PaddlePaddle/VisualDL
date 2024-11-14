@@ -39,7 +39,7 @@
         "@visualdl/core": "2.2.1",
         "dotenv": "10.0.0",
         "enhanced-resolve": "5.8.2",
-        "express": "4.17.1",
+        "express": "4.17.3",
         "http-proxy-middleware": "2.0.1",
         "pm2": "5.1.1"
     },
