@@ -71,7 +71,7 @@
         "i18next": "20.6.0",
         "i18next-browser-languagedetector": "6.1.2",
         "i18next-fetch-backend": "3.0.0",
-        "jszip": "3.7.1",
+        "jszip": "3.8.0",
         "mime-types": "2.1.32",
         "moment": "2.29.1",
         "nprogress": "0.2.0",
