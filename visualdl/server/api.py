@@ -77,9 +77,13 @@ def try_call(function, *args, **kwargs):
 
 
 class Api(object):
-    def __init__(self, logdir, model, cache_timeout):
+    def __init__(self, logdir, model, modelfile, cache_timeout):
+        self.model_name = ''
+        if not logdir and modelfile:
+            logdir = os.path.dirname(modelfile)
+            self.model_name = os.path.basename(modelfile)
         self._reader = LogReader(logdir)
-        self._graph_reader = GraphReader(logdir)
+        self._graph_reader = GraphReader(logdir, self.model_name)
         self._graph_reader.set_displayname(self._reader)
         if model:
             if 'vdlgraph' in model:
@@ -415,7 +419,7 @@ def get_component_tabs(*apis, vdl_args, request_args):
     all_tabs = set()
     if vdl_args.component_tabs:
         return list(vdl_args.component_tabs)
-    if vdl_args.logdir:
+    if vdl_args.logdir or vdl_args.modelfile:
         for api in apis:
             all_tabs.update(api('component_tabs', request_args))
             all_tabs.add('static_graph')
@@ -427,8 +431,8 @@ def get_component_tabs(*apis, vdl_args, request_args):
     return list(all_tabs)
 
 
-def create_api_call(logdir, model, cache_timeout):
-    api = Api(logdir, model, cache_timeout)
+def create_api_call(logdir, model, modelfile, cache_timeout):
+    api = Api(logdir, model, modelfile, cache_timeout)
     routes = {
         'components': (api.components, []),
         'runs': (api.runs, []),

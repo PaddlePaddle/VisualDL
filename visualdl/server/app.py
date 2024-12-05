@@ -86,7 +86,7 @@ def create_app(args):  # noqa: C901
     )  # we add this to prevent SIGINT not work in multiprocess queue waiting
     babel = Babel(app, locale_selector=get_locale)  # noqa:F841
     # Babel api from flask_babel v3.0.0
-    api_call = create_api_call(args.logdir, args.model, args.cache_timeout)
+    api_call = create_api_call(args.logdir, args.model, args.modelfile, args.cache_timeout)
     profiler_api_call = create_profiler_api_call(args.logdir)
     inference_api_call = create_model_convert_api_call()
     fastdeploy_api_call = create_fastdeploy_api_call()

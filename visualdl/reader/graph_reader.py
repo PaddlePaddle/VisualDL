@@ -41,7 +41,7 @@ class GraphReader(object):
     """Graph reader to read vdl graph files, support for frontend api in lib.py.
     """
 
-    def __init__(self, logdir=''):
+    def __init__(self, logdir='', model_name=''):
         """Instance of GraphReader
 
         Args:
@@ -52,6 +52,7 @@ class GraphReader(object):
         else:
             self.dir = logdir
 
+        self.model_name = model_name
         self.walks = {}
         self.displayname2runs = {}
         self.runs2displayname = {}
@@ -102,7 +103,10 @@ class GraphReader(object):
                 ]
                 tags_temp.sort(reverse=True)
                 if len(tags_temp) > 0:
-                    walks_temp.update({run: tags_temp[0]})
+                    if self.model_name:
+                        walks_temp.update({run: self.model_name})
+                    else:
+                        walks_temp.update({run: tags_temp[0]})
             self.walks = walks_temp
         return self.walks
 

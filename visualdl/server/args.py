@@ -40,6 +40,7 @@ class DefaultArgs(object):
         self.api_only = args.get('api_only', False)
         self.open_browser = args.get('open_browser', False)
         self.model = args.get('model', '')
+        self.modelfile = args.get('modelfile', '')
         self.product = args.get('product', default_product)
         self.telemetry = args.get('telemetry', True)
         self.theme = args.get('theme', None)
@@ -123,6 +124,7 @@ class ParseArgs(object):
         self.api_only = args.api_only
         self.open_browser = args.open_browser
         self.model = args.model
+        self.modelfile = args.modelfile
         self.product = args.product
         self.telemetry = args.telemetry
         self.theme = args.theme
@@ -140,6 +142,13 @@ def parse_args():
         description="VisualDL, a tool to visualize deep learning.",
         epilog="For more information: https://github.com/PaddlePaddle/VisualDL"
     )
+
+    parser.add_argument(
+        "--modelfile",
+        type=str,
+        action="store",
+        default="",
+        help="json model file path")
 
     parser.add_argument(
         "--logdir", action="store", nargs="+", help="log file directory")
