@@ -16,3 +16,4 @@ gradio == 3.11.0
 tritonclient[all]
 psutil
 onnx >= 1.6.0
+httpx == 0.24.1
