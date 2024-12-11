@@ -474,13 +474,13 @@ def get_sub_ops(op, op_name, all_ops, all_vars):
             all_ops[sub_op_name]['output_vars'][now_var] = [now_var]
 
             try:
-                attrs = op.results()[0].get_defining_op().attrs()
+                attrs = sub_op.results()[0].get_defining_op().attrs()
                 if 'place' in attrs:
                     attrs['place'] = str(attrs['place'])
-                attrs['dtype'] = safe_get_dtype(op)
+                attrs['dtype'] = safe_get_dtype(sub_op)
             except Exception:
-                # attrs = {}
-                pass
+                attrs = {}
+                #pass
 
             all_ops[sub_op_name]['attrs'] = attrs
             all_ops[sub_op_name]['attr_types'] = attrs
@@ -601,7 +601,8 @@ def analyse_pir(program):
                 attrs['place'] = str(attrs['place'])
             attrs['dtype'] = safe_get_dtype(op)
         except Exception:
-            pass
+            #pass
+            attrs = {}
 
         all_vars[var_name]['shape'] = safe_get_shape(op)
         all_vars[var_name]['type'] = safe_get_type(op)
@@ -640,6 +641,15 @@ def analyse_pir(program):
                 all_vars[input_name]['to_nodes'].append(op_name)
             all_vars[now_var]['from_node'] = op_name
             all_ops[op_name]['output_vars'][now_var] = [now_var]
+
+            try:
+                attrs = op.results()[0].get_defining_op().attrs()
+                if 'place' in attrs:
+                    attrs['place'] = str(attrs['place'])
+                attrs['dtype'] = safe_get_dtype(op)
+            except Exception:
+                #pass
+                attrs = {}
 
             all_ops[op_name]['attrs'] = attrs
             all_ops[op_name]['attr_types'] = attrs
