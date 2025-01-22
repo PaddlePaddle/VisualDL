@@ -484,7 +484,24 @@ class ProfilerResult:
                             if not hasenter:
                                 firstposition = i
                                 hasenter = True
-                            stack_top_node.runtime_node.append(runtimenode)
+                            inserted_node = stack_top_node
+                            runtimenode_stack = [stack_top_node]
+                            while runtimenode_stack:
+                                inserted_node = runtimenode_stack.pop()
+                                if inserted_node is not None:
+                                    runtimenode_stack.append(inserted_node)
+                                    runtimenode_stack.append(None)
+                                    for child in reversed(inserted_node.runtime_node):
+                                        if runtimenode.start_ns >= child.start_ns and \
+                                            runtimenode.end_ns <= child.end_ns:
+                                            runtimenode_stack.append(child)
+                                else:
+                                    inserted_node = runtimenode_stack.pop()
+                                    if runtimenode.start_ns >= inserted_node.start_ns and \
+                                            runtimenode.end_ns <= inserted_node.end_ns:
+                                        inserted_node.runtime_node.append(runtimenode)
+                                        break
+
                         else:
                             # from this runtime node, not within stack_top_node, erase the
                             # nodes from runtime_event_nodes
@@ -506,7 +523,23 @@ class ProfilerResult:
                     if not hasenter:
                         firstposition = i
                         hasenter = True
-                    stack_top_node.runtime_node.append(runtimenode)
+                    inserted_node = stack_top_node
+                    runtimenode_stack = [stack_top_node]
+                    while runtimenode_stack:
+                        inserted_node = runtimenode_stack.pop()
+                        if inserted_node is not None:
+                            runtimenode_stack.append(inserted_node)
+                            runtimenode_stack.append(None)
+                            for child in reversed(inserted_node.runtime_node):
+                                if runtimenode.start_ns >= child.start_ns and \
+                                    runtimenode.end_ns <= child.end_ns:
+                                    runtimenode_stack.append(child)
+                        else:
+                            inserted_node = runtimenode_stack.pop()
+                            if runtimenode.start_ns >= inserted_node.start_ns and \
+                                    runtimenode.end_ns <= inserted_node.end_ns:
+                                inserted_node.runtime_node.append(runtimenode)
+                                break
                 else:
                     # from this runtime node, not within stack_top_node, erase the
                     # nodes from runtime_event_nodes
