@@ -211,7 +211,7 @@ def analyse_model(model_pb):  # noqa: C901
                 all_vars[var_name]['persistable'] = var_desc.persistable()
                 attr_dict = {}
                 for attr_name in var_desc.attr_names():
-                    attr_dict[attr_name] = var_desc.attr(attr_name)
+                    attr_dict[attr_name] = str(var_desc.attr(attr_name))
                 all_vars[var_name]['attrs'] = attr_dict
                 all_vars[var_name]['from_node'] = ''
                 all_vars[var_name]['to_nodes'] = []
@@ -228,7 +228,7 @@ def analyse_model(model_pb):  # noqa: C901
                 all_vars[var_name]['persistable'] = var_desc.persistable()
                 attr_dict = {}
                 for attr_name in var_desc.attr_names():
-                    attr_dict[attr_name] = var_desc.attr(attr_name)
+                    attr_dict[attr_name] = str(var_desc.attr(attr_name))
                 all_vars[var_name]['attrs'] = attr_dict
                 all_vars[var_name]['from_node'] = ''
                 all_vars[var_name]['to_nodes'] = []
@@ -269,7 +269,7 @@ def analyse_model(model_pb):  # noqa: C901
                 try:
                     if attr_name == 'sub_block':
                         continue
-                    attr_dict[attr_name] = op_desc.attr(attr_name)
+                    attr_dict[attr_name] = str(op_desc.attr(attr_name))
                     attr_type = op_desc.attr_type(attr_name)
                     attr_type_dict[attr_name] = attr_type_name[
                         attr_type] if attr_type in attr_type_name else str(
